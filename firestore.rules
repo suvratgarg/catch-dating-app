@@ -931,6 +931,23 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Reusable Event Success layouts are organizer-owned operational assets.
+    // Hosts can list/select them directly, while all mutations stay behind the
+    // validated callable so unit geometry and document identity remain atomic.
+    match /organizerEventSuccessLayouts/{layoutDocumentId} {
+      allow get, list: if isAuthed()
+        && resource.data.organizerId is string
+        && exists(/databases/$(database)/documents/organizers/$(
+          resource.data.organizerId
+        ))
+        && isClubHostData(get(
+          /databases/$(database)/documents/organizers/$(
+            resource.data.organizerId
+          )
+        ).data);
+      allow create, update, delete: if false;
+    }
+
     match /organizerFollows/{followId} {
       allow read: if isAuthed() && resource.data.uid == request.auth.uid;
       allow write: if false;
@@ -1308,7 +1325,9 @@ service cloud.firestore {
           'targetAttendeeCount', 'structureConfig', 'hostGoal', 'wingmanRequestsEnabled',
           'contextualOpenersEnabled', 'compatibilityAffectsRanking',
           'questionnaireConfig',
-          'activeStepIndex', 'status',
+          'activeStepIndex', 'liveControlRevision',
+          'assignmentDraftRevision', 'publishedRotationRoundIndex',
+          'publishedRevealRoundIndex', 'status',
           'revealStatus', 'activeRevealRoundIndex', 'revealStartedAt',
           'attendeePrompt', 'createdAt', 'updatedAt', 'frozenAt',
           'completedAt'
@@ -1375,6 +1394,8 @@ service cloud.firestore {
           'unitSize',
           'unitCount',
           'rotationIntervalMinutes',
+          'topology',
+          'resourceCapacity',
           'revealCountdownSeconds',
           'rotationRepeatStrategy',
           'maxPairMeetings',
@@ -1401,11 +1422,57 @@ service cloud.firestore {
             && data.rotationIntervalMinutes <= 180
           )
         )
+        && (
+          !hasField(data, 'topology')
+          || data.topology in ['set', 'sequence', 'adjacency']
+        )
+        && (
+          !hasField(data, 'resourceCapacity')
+          || data.resourceCapacity == null
+          || (
+            isValidEventSuccessResourceCapacity(data.resourceCapacity)
+            && (
+              data.resourceCapacity.seatsPerUnit == null
+              || data.topology == 'adjacency'
+            )
+          )
+        )
         && data.revealCountdownSeconds is number
         && data.revealCountdownSeconds >= 0
         && data.revealCountdownSeconds <= 60
         && optionalString(data, 'rotationRepeatStrategy')
         && optionalNumber(data, 'maxPairMeetings');
+    }
+
+    function isValidEventSuccessResourceCapacity(data) {
+      return data is map
+        && data.keys().hasOnly([
+          'concurrentUnits',
+          'resourceLabelId',
+          'seatsPerUnit'
+        ])
+        && data.keys().hasAll([
+          'concurrentUnits',
+          'resourceLabelId',
+          'seatsPerUnit'
+        ])
+        && (
+          data.concurrentUnits == null
+          || (
+            data.concurrentUnits is number
+            && data.concurrentUnits >= 1
+            && data.concurrentUnits <= 200
+          )
+        )
+        && data.resourceLabelId in ['court', 'table', 'lane', 'board']
+        && (
+          data.seatsPerUnit == null
+          || (
+            data.seatsPerUnit is number
+            && data.seatsPerUnit >= 1
+            && data.seatsPerUnit <= 1000
+          )
+        );
     }
 
     function isValidEventSuccessQuestionnaireConfig(data) {
@@ -1471,6 +1538,10 @@ service cloud.firestore {
         && !eventSuccessSetupBlockedByEvent(eventId)
         && request.resource.data.status == 'setup'
         && request.resource.data.activeStepIndex == 0
+        && !request.resource.data.keys().hasAny([
+          'liveControlRevision', 'assignmentDraftRevision',
+          'publishedRotationRoundIndex', 'publishedRevealRoundIndex'
+        ])
         && (
           !request.resource.data.keys().hasAny(['revealStatus'])
           || request.resource.data.revealStatus == 'idle'
@@ -1493,35 +1564,21 @@ service cloud.firestore {
         );
     }
 
-    function isEventSuccessLiveOnlyUpdate() {
-      return eventSuccessPlanChangedKeys().hasOnly([
-        'activeStepIndex', 'status', 'revealStatus',
-        'activeRevealRoundIndex', 'revealStartedAt',
-        'updatedAt', 'frozenAt', 'completedAt'
-      ]);
-    }
-
-    function isEventSuccessSetupOrLiveUpdate() {
+    function isEventSuccessSetupUpdate() {
       return eventSuccessPlanChangedKeys().hasOnly([
         'playbookId', 'selectedModuleIds', 'targetAttendeeCount',
         'structureConfig', 'hostGoal', 'wingmanRequestsEnabled',
         'contextualOpenersEnabled', 'compatibilityAffectsRanking',
-        'questionnaireConfig', 'attendeePrompt',
-        'activeStepIndex', 'status', 'revealStatus',
-        'activeRevealRoundIndex', 'revealStartedAt',
-        'updatedAt', 'frozenAt', 'completedAt'
+        'questionnaireConfig', 'attendeePrompt', 'updatedAt'
       ]);
     }
 
     function isEventSuccessPlanUpdateAllowed(eventId) {
-      return isValidEventSuccessPlan(eventId, request.resource.data)
-        && eventSuccessPlanImmutableFieldsUnchanged()
-        && (
-          eventSuccessSetupBlockedByEvent(eventId)
-            || eventSuccessPlanSetupFrozen()
-            ? isEventSuccessLiveOnlyUpdate()
-            : isEventSuccessSetupOrLiveUpdate()
-        );
+      return eventSuccessPlanImmutableFieldsUnchanged()
+        && !eventSuccessSetupBlockedByEvent(eventId)
+        && !eventSuccessPlanSetupFrozen()
+        && isEventSuccessSetupUpdate()
+        && isValidEventSuccessPlan(eventId, request.resource.data);
     }
 
     function isValidEventSuccessFeedback(feedbackId, data) {
@@ -1753,6 +1810,33 @@ service cloud.firestore {
         && resource.data.eventId is string
         && resource.data.moduleId is string
         && isClubHostForEvent(resource.data.eventId);
+      allow write: if false;
+    }
+
+    match /eventSuccessAssignmentDrafts/{assignmentDraftId} {
+      allow get, list: if isAuthed()
+        && resource.data.eventId is string
+        && resource.data.moduleId == 'guided_rotations'
+        && isClubHostForEvent(resource.data.eventId);
+      allow write: if false;
+    }
+
+    match /eventSuccessUnitOutcomes/{eventId} {
+      allow get: if isAuthed()
+        && resource.data.eventId == eventId
+        && isClubHostForEvent(eventId);
+      allow list: if false;
+      allow write: if false;
+    }
+
+    match /eventSuccessStandings/{eventId} {
+      allow get: if isAuthed()
+        && resource.data.eventId == eventId
+        && (
+          isClubHostForEvent(eventId)
+          || hasEventSuccessParticipantAccess(eventId, request.auth.uid)
+        );
+      allow list: if false;
       allow write: if false;
     }
 

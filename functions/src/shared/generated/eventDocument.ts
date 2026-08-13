@@ -102,6 +102,14 @@ export interface EventDocument {
         | "socialCohortBalance"
         | "mutualInterestOnly"
         | "questionnaireClueOnly";
+      matchingObjective?:
+        | "coverage"
+        | "romantic"
+        | "affinity"
+        | "novelty"
+        | "balance"
+        | "spread";
+      unitOutcome?: "none" | "completion" | "score" | "rank";
     };
     activityDetails?: {
       [k: string]: unknown;

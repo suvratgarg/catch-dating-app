@@ -18,3 +18,17 @@ class EventSuccessRevealActionState {
   final bool isLoading;
   final Object? error;
 }
+
+class EventSuccessOutcomeActionState {
+  const EventSuccessOutcomeActionState({this.isLoading = false, this.error});
+
+  final bool isLoading;
+  final Object? error;
+}
+
+final class EventSuccessOutcomeUnit {
+  const EventSuccessOutcomeUnit({required this.id, required this.label});
+
+  final String id;
+  final String label;
+}

@@ -5,6 +5,7 @@ export 'domain/event_success_coach.dart';
 export 'domain/event_success_compatibility_response.dart';
 export 'domain/event_success_conversation_cue.dart';
 export 'domain/event_success_feature_state.dart';
+export 'domain/event_success_layout.dart';
 export 'domain/event_success_models.dart';
 export 'domain/event_success_plan.dart';
 export 'domain/event_success_playbooks.dart';
@@ -19,3 +20,4 @@ export 'presentation/event_success_defaults_panel.dart'; // public-api: shared p
 export 'presentation/event_success_host_screen.dart'; // public-api: route entry point exposed to app routing
 export 'presentation/event_success_live_reveal_card.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/event_success_questionnaire_config_editor.dart'; // public-api: shared presentation component used outside this feature
+export 'presentation/event_success_room_map.dart'; // public-api: shared host and attendee spatial projection

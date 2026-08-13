@@ -8,14 +8,19 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_progress_cue.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_preference.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card_state.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -33,27 +38,33 @@ part 'live_reveal_parts/event_success_live_reveal_copy.dart';
 
 enum EventSuccessRevealAssignmentKind {
   microPods,
-  rotations;
+  rotations,
+  standings;
 
   String label(AppLocalizations l10n) => switch (this) {
     EventSuccessRevealAssignmentKind.microPods =>
       l10n.eventSuccessEventSuccessLiveRevealCardLabelPodReveal,
     EventSuccessRevealAssignmentKind.rotations =>
       l10n.eventSuccessEventSuccessLiveRevealCardLabelRotationReveal,
+    EventSuccessRevealAssignmentKind.standings =>
+      l10n.eventSuccessLiveControlStandingsRevealLabel,
   };
 
   String get assignmentNoun => switch (this) {
     EventSuccessRevealAssignmentKind.microPods => 'pod',
     EventSuccessRevealAssignmentKind.rotations => 'rotation',
+    EventSuccessRevealAssignmentKind.standings => 'standing',
   };
 
   String get assignmentNounPlural => switch (this) {
     EventSuccessRevealAssignmentKind.microPods => 'pods',
     EventSuccessRevealAssignmentKind.rotations => 'rotations',
+    EventSuccessRevealAssignmentKind.standings => 'standings',
   };
 
   IconData get icon => switch (this) {
     EventSuccessRevealAssignmentKind.microPods => CatchIcons.groups2Outlined,
     EventSuccessRevealAssignmentKind.rotations => CatchIcons.syncAltRounded,
+    EventSuccessRevealAssignmentKind.standings => CatchIcons.insightsOutlined,
   };
 }

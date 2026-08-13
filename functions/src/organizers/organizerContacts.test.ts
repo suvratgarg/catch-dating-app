@@ -5,7 +5,9 @@ import {
   csvCell,
   decodeContactCursor,
   encodeContactCursor,
+  summarizeContactRevenue,
 } from "./organizerContacts";
+import {PaymentDocument} from "../shared/generated/firestoreAdminTypes";
 
 test("contact cursors round trip every query plan", () => {
   for (const cursor of [
@@ -55,4 +57,35 @@ test("contact cursor rejects malformed and unrecognized values", () => {
     segmentId: null,
   })).toString("base64url");
   assert.throws(() => decodeContactCursor(unsupported));
+});
+
+test("customer revenue includes completed organizer payments only", () => {
+  const timestamp = {toMillis: () => 1700000000000} as
+    FirebaseFirestore.Timestamp;
+  const payment = (
+    eventId: string,
+    status: PaymentDocument["status"],
+    amountMinor: number
+  ): PaymentDocument => ({
+    userId: "user-1",
+    orderId: `${eventId}-${status}`,
+    paymentId: `${eventId}-${status}`,
+    eventId,
+    amount: amountMinor,
+    amountMinor,
+    currency: "INR",
+    status,
+    signUpFailed: false,
+    createdAt: timestamp,
+  });
+  const revenue = summarizeContactRevenue([
+    payment("event-1", "completed", 25000),
+    payment("event-1", "refunded", 25000),
+    payment("other-event", "completed", 90000),
+  ], new Set(["event-1"]), "exact");
+
+  assert.deepEqual(revenue, {
+    coverage: "exact",
+    amounts: [{currency: "INR", amountMinor: 25000, paidOrderCount: 1}],
+  });
 });

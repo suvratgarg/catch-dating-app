@@ -48,6 +48,17 @@ export interface GetOrganizerContactDetailCallableResponse {
     smsStatus: "unknown" | "optedIn" | "optedOut";
     sourceCoverage: "exact" | "partial" | "insufficientData";
   };
+  revenue: {
+    coverage: "exact" | "partial" | "unavailable";
+    /**
+     * @maxItems 8
+     */
+    amounts: {
+      currency: string;
+      amountMinor: number;
+      paidOrderCount: number;
+    }[];
+  };
   /**
    * @maxItems 100
    */

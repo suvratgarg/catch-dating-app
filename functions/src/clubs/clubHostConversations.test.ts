@@ -4,6 +4,7 @@ import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {
   clubHostInquiryMatchId,
   startClubHostConversationHandler,
+  startOrganizerContactConversationHandler,
   startOrganizerConversationHandler,
 } from "./clubHostConversations";
 
@@ -11,6 +12,10 @@ type FakeData = Record<string, unknown>;
 
 class FakeDocRef {
   constructor(readonly firestore: FakeFirestore, readonly path: string) {}
+
+  async get(): Promise<FakeSnapshot> {
+    return new FakeSnapshot(this.firestore.get(this.path));
+  }
 }
 
 class FakeSnapshot {
@@ -200,6 +205,99 @@ test("startOrganizerConversationHandler uses organizer authority", async () => {
     "organizer-1"
   );
 });
+
+test("startOrganizerContactConversationHandler requires a linked contact",
+  async () => {
+    const h = harness({
+      "organizers/organizer-1": organizer(),
+      "organizerContacts/contact-1": {
+        organizerId: "organizer-1",
+        identityState: "verified",
+        linkedUid: "customer-1",
+        ambiguousCandidateContactIds: [],
+        mergedIntoContactId: null,
+        hiddenAt: null,
+        deletedAt: null,
+      },
+    });
+
+    const result = await startOrganizerContactConversationHandler(
+      request("owner-1", {
+        organizerId: "organizer-1",
+        contactId: "contact-1",
+      }),
+      h.deps
+    );
+    const matchId = clubHostInquiryMatchId({
+      clubId: "organizer-1",
+      user1Id: "customer-1",
+      user2Id: "owner-1",
+    });
+
+    assert.deepEqual(result, {matchId});
+    assert.deepEqual(h.rateLimitCalls, [
+      "owner-1:startOrganizerConversation",
+    ]);
+    assert.deepEqual(
+      h.firestore.get(`matches/${matchId}`)?.participantIds,
+      ["customer-1", "owner-1"]
+    );
+  }
+);
+
+test("startOrganizerContactConversationHandler rejects unlinked contacts",
+  async () => {
+    const h = harness({
+      "organizers/organizer-1": organizer(),
+      "organizerContacts/contact-1": {
+        organizerId: "organizer-1",
+        identityState: "unlinked",
+        linkedUid: null,
+        hiddenAt: null,
+        deletedAt: null,
+      },
+    });
+
+    await assert.rejects(
+      () => startOrganizerContactConversationHandler(
+        request("owner-1", {
+          organizerId: "organizer-1",
+          contactId: "contact-1",
+        }),
+        h.deps
+      ),
+      (error) => assertHttpsCode(error, "failed-precondition")
+    );
+  }
+);
+
+test("startOrganizerContactConversationHandler rejects ambiguous contacts",
+  async () => {
+    const h = harness({
+      "organizers/organizer-1": organizer(),
+      "organizerContacts/contact-1": {
+        organizerId: "organizer-1",
+        identityState: "verified",
+        linkedUid: "customer-1",
+        ambiguousCandidateContactIds: ["contact-2"],
+        mergedIntoContactId: null,
+        hiddenAt: null,
+        deletedAt: null,
+      },
+    });
+
+    await assert.rejects(
+      () => startOrganizerContactConversationHandler(
+        request("owner-1", {
+          organizerId: "organizer-1",
+          contactId: "contact-1",
+        }),
+        h.deps
+      ),
+      (error) => assertHttpsCode(error, "failed-precondition")
+    );
+  }
+);
 
 test("startClubHostConversationHandler never reuses a dating match",
   async () => {

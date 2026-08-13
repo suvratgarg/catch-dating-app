@@ -657,6 +657,26 @@ const schemaEventDocumentSchema = <String, Object?>{
                 'questionnaireClueOnly',
               ],
             },
+            'matchingObjective': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'coverage',
+                'romantic',
+                'affinity',
+                'novelty',
+                'balance',
+                'spread',
+              ],
+            },
+            'unitOutcome': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'none',
+                'completion',
+                'score',
+                'rank',
+              ],
+            },
           },
         },
         'activityDetails': <String, Object?>{

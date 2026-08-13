@@ -6,16 +6,12 @@ class HostEventsScaffold extends StatefulWidget {
     required this.clubs,
     required this.currentUid,
     this.initialClubId,
-    this.initialTab = HostHomeTab.today,
-    this.onViewEvents,
     this.now,
   });
 
   final List<Club> clubs;
   final String currentUid;
   final String? initialClubId;
-  final HostHomeTab initialTab;
-  final VoidCallback? onViewEvents;
   final DateTime? now;
 
   @override
@@ -35,7 +31,6 @@ class _HostEventsScaffoldState extends State<HostEventsScaffold> {
       clubs: widget.clubs,
       currentUid: widget.currentUid,
       selectedClubId: widget.initialClubId,
-      selectedTab: widget.initialTab,
     );
     _resetClock();
   }
@@ -48,7 +43,6 @@ class _HostEventsScaffoldState extends State<HostEventsScaffold> {
       currentUid: widget.currentUid,
       selectedClubIndex: _state.selectedClubIndex,
       selectedClubId: _state.selectedClub?.id,
-      selectedTab: _state.selectedTab,
     );
     if (oldWidget.now != widget.now) _resetClock();
   }
@@ -86,59 +80,6 @@ class _HostEventsScaffoldState extends State<HostEventsScaffold> {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final selectedClub = _state.selectedClub;
-
-    if (_state.selectedTab == HostHomeTab.today) {
-      return Scaffold(
-        backgroundColor: t.bg,
-        body: SafeArea(
-          bottom: false,
-          child: selectedClub == null
-              ? CustomScrollView(
-                  slivers: [
-                    SliverToBoxAdapter(
-                      child: CatchScreenHeaderTitle.block(
-                        title: context.l10n.hostNavigationToday,
-                      ),
-                    ),
-                    CatchSliverEmptyState(
-                      icon: CatchIcons.groupsOutlined,
-                      title: context
-                          .l10n
-                          .hostsHostEventsScaffoldTitleCreateYourFirstClub,
-                      message:
-                          context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
-                      action: CatchButton(
-                        label:
-                            context.l10n.hostsHostEventsScaffoldLabelCreateClub,
-                        icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
-                        size: CatchButtonSize.sm,
-                        onPressed: () =>
-                            context.pushNamed(Routes.hostCreateClubScreen.name),
-                      ),
-                    ),
-                    const CatchSliverTerminalPadding(),
-                  ],
-                )
-              : HostTodayDashboardCard(
-                  club: selectedClub,
-                  currentUid: _state.currentUid,
-                  clubs: _state.clubs,
-                  showClubPicker: _state.showClubPicker,
-                  onSwitchClubIndex: (index) =>
-                      setState(() => _state = _state.selectClubIndex(index)),
-                  onViewEvents:
-                      widget.onViewEvents ??
-                      () => setState(
-                        () => _state = _state.selectTab(HostHomeTab.events),
-                      ),
-                  onCreateEvent: _openCreateEvent,
-                  onManageEvent: _openTodayEvent,
-                  onOpenTask: _openTodayTask,
-                  now: _clockNow,
-                ),
-        ),
-      );
-    }
 
     return Scaffold(
       backgroundColor: t.bg,
@@ -184,7 +125,8 @@ class _HostEventsScaffoldState extends State<HostEventsScaffold> {
                 onCreateEvent: _openCreateEvent,
                 onConnectExternalEvent: _openExternalEvent,
                 onRepeatEvent: _openRepeatEvent,
-                onManageEvent: _openManageEvent,
+                onManageEvent: _openEvent,
+                onOpenTask: _openAttentionTask,
                 now: _clockNow,
               ),
       ),
@@ -225,33 +167,30 @@ class _HostEventsScaffoldState extends State<HostEventsScaffold> {
     );
   }
 
-  void _openManageEvent(Club club, Event event) {
-    context.pushNamed(
-      Routes.hostAppEventManageScreen.name,
-      pathParameters: {'clubId': club.id, 'eventId': event.id},
-      extra: event,
-    );
-  }
-
-  void _openTodayEvent(Club club, Event event) {
+  void _openEvent(Club club, Event event) {
     final isLive =
         !event.startTime.isAfter(_clockNow) && event.endTime.isAfter(_clockNow);
+    final section = isLive
+        ? 'live'
+        : event.endTime.isAfter(_clockNow)
+        ? 'setup'
+        : 'report';
     context.pushNamed(
       Routes.hostAppEventManageScreen.name,
       pathParameters: {'clubId': club.id, 'eventId': event.id},
-      queryParameters: {'section': isLive ? 'live' : 'setup'},
+      queryParameters: {'section': section},
       extra: event,
     );
   }
 
-  void _openTodayTask(Club club, Event event, HostHomeTodayTaskData task) {
+  void _openAttentionTask(Club club, Event event, HostEventAttentionData task) {
     context.pushNamed(
       Routes.hostAppEventManageScreen.name,
       pathParameters: {'clubId': club.id, 'eventId': event.id},
       queryParameters: {
         'section': switch (task.destination) {
-          HostHomeTodayTaskDestination.guests => 'guests',
-          HostHomeTodayTaskDestination.setup => 'setup',
+          HostEventAttentionDestination.guests => 'guests',
+          HostEventAttentionDestination.setup => 'setup',
         },
       },
       extra: event,

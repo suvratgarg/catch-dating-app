@@ -100,6 +100,30 @@ class FakeBatch {
   }
 }
 
+class FakeTransaction {
+  constructor(private readonly firestore: FakeFirestore) {}
+
+  async get(reference: {get: () => Promise<unknown>}): Promise<unknown> {
+    return reference.get();
+  }
+
+  set(ref: FakeDocRef, data: FakeData, options?: {merge: boolean}) {
+    if (options?.merge) {
+      this.firestore.merge(ref.path, data);
+    } else {
+      this.firestore.set(ref.path, data);
+    }
+  }
+
+  update(ref: FakeDocRef, data: FakeData) {
+    this.firestore.merge(ref.path, data);
+  }
+
+  delete(ref: FakeDocRef) {
+    this.firestore.delete(ref.path);
+  }
+}
+
 class FakeFirestore {
   constructor(private readonly docs: Record<string, FakeData | undefined>) {}
 
@@ -111,9 +135,23 @@ class FakeFirestore {
     return new FakeBatch(this);
   }
 
+  async runTransaction<T>(
+    callback: (transaction: FakeTransaction) => Promise<T>
+  ): Promise<T> {
+    return callback(new FakeTransaction(this));
+  }
+
   get(path: string): FakeData | undefined {
     const data = this.docs[path];
-    return data === undefined ? undefined : {...data};
+    if (data !== undefined) return {...data};
+    const draftPath = path.replace(
+      "eventSuccessAssignments/",
+      "eventSuccessAssignmentDrafts/"
+    );
+    const draft = this.docs[draftPath];
+    const assignment = draft?.assignment;
+    return assignment !== null && typeof assignment === "object" ?
+      {...assignment as FakeData} : undefined;
   }
 
   set(path: string, data: FakeData) {
@@ -178,6 +216,9 @@ function harness(overrides: Record<string, FakeData | undefined> = {}) {
       eventId: "event-1",
       clubId: "club-1",
       selectedModuleIds: ["guided_rotations"],
+      liveControlRevision: 0,
+      assignmentDraftRevision: 0,
+      publishedRotationRoundIndex: -1,
       structureConfig: {
         unitKind: "pairs",
         unitSize: 2,
@@ -208,7 +249,7 @@ function harness(overrides: Record<string, FakeData | undefined> = {}) {
   };
 }
 
-test("generates default-cadence mutual-interest schedules", async () => {
+test("pickleball defaults to profile-free coverage schedules", async () => {
   const {firestore, deps, rateLimitCalls} = harness({
     ...participation("man-1"),
     ...participation("man-2"),
@@ -225,27 +266,198 @@ test("generates default-cadence mutual-interest schedules", async () => {
     deps
   );
 
-  assert.deepEqual(result, {assignmentCount: 4, roundCount: 2});
+  assert.deepEqual(result, {assignmentCount: 4, roundCount: 3});
   assert.deepEqual(rateLimitCalls, ["host-1:generateEventSuccessRotations"]);
+  assert.equal(
+    firestore.query("eventSuccessAssignments", []).length,
+    0,
+    "preparation must not write attendee-readable assignments"
+  );
+  const preparedDraft = firestore.get(
+    "eventSuccessAssignmentDrafts/event-1_guided_rotations_man-1"
+  );
+  assert.equal(preparedDraft?.roundIndex, 0);
+  assert.equal(preparedDraft?.baseAssignmentRevision, 1);
+  assert.equal(
+    (preparedDraft?.assignment as FakeData).moduleId,
+    "guided_rotations"
+  );
+  assert.deepEqual(firestore.get("eventSuccessPlans/event-1"), {
+    eventId: "event-1",
+    clubId: "club-1",
+    selectedModuleIds: ["guided_rotations"],
+    liveControlRevision: 1,
+    assignmentDraftRevision: 1,
+    publishedRotationRoundIndex: -1,
+    affinityConstraints: [],
+    spatialOverrides: [],
+    structureConfig: {
+      unitKind: "pairs",
+      unitSize: 2,
+      rotationIntervalMinutes: 15,
+      revealCountdownSeconds: 10,
+    },
+    updatedAt: {__serverTimestamp: true},
+  });
   const manOne = firestore.get(
     "eventSuccessAssignments/event-1_guided_rotations_man-1"
   );
-  assert.equal(manOne?.displayTitle, "2 guided rotations");
-  assert.deepEqual(manOne?.peerUids, ["woman-1", "woman-2"]);
+  assert.equal(manOne?.displayTitle, "3 guided rotations");
+  assert.deepEqual(manOne?.peerUids, ["man-2", "woman-1", "woman-2"]);
   const slots = manOne?.rotationSlots as Array<Record<string, unknown>>;
-  assert.equal(slots.length, 2);
-  assert.equal(slots[0].compatibility, "mutual_interest");
+  assert.equal(slots.length, 3);
+  assert.equal(slots[0].compatibility, "social");
   assert.equal(slots[0].label, "Round 1");
   assert.equal(slots[0].slotId, "round-0-pair-0");
   assert.equal(slots[0].unitKind, "pairs");
   assert.equal(slots[0].peerCount, 1);
   assert.ok((slots[0].whyCodes as string[]).includes("fresh_peer"));
   assert.deepEqual(manOne?.rotationFairness, {
-    assignedRoundCount: 2,
+    assignedRoundCount: 3,
     sitOutRoundCount: 0,
-    uniquePeerCount: 2,
+    uniquePeerCount: 3,
     repeatPeerCount: 0,
   });
+});
+
+test("sequence topology uses configured court capacity", async () => {
+  const {firestore, deps} = harness({
+    "eventSuccessPlans/event-1": {
+      eventId: "event-1",
+      clubId: "club-1",
+      selectedModuleIds: ["guided_rotations"],
+      liveControlRevision: 0,
+      assignmentDraftRevision: 0,
+      publishedRotationRoundIndex: -1,
+      layoutId: "courts",
+      structureConfig: {
+        unitKind: "pairs",
+        unitSize: 2,
+        rotationIntervalMinutes: 15,
+        topology: "sequence",
+        resourceCapacity: {
+          concurrentUnits: 1,
+          resourceLabelId: "court",
+          seatsPerUnit: null,
+        },
+        revealCountdownSeconds: 10,
+      },
+    },
+    "organizerEventSuccessLayouts/club-1_courts": {
+      organizerId: "club-1",
+      layoutId: "courts",
+      label: "One court",
+      units: [{
+        id: "court-a",
+        label: "A",
+        shape: "court",
+        capacity: 2,
+        gridX: 0,
+        gridY: 0,
+        order: 1,
+      }],
+    },
+    ...participation("man-1"),
+    ...participation("man-2"),
+    ...participation("woman-1"),
+    ...participation("woman-2"),
+    "users/man-1": user("man", ["woman"]),
+    "users/man-2": user("man", ["woman"]),
+    "users/woman-1": user("woman", ["man"]),
+    "users/woman-2": user("woman", ["man"]),
+  });
+
+  const result = await generateEventSuccessRotationsHandler(
+    callableRequest("host-1"),
+    deps
+  );
+
+  assert.deepEqual(result, {assignmentCount: 4, roundCount: 4});
+  const assignments = ["man-1", "man-2", "woman-1", "woman-2"].map(
+    (uid) => firestore.get(
+      `eventSuccessAssignments/event-1_guided_rotations_${uid}`
+    ) as FakeData
+  );
+  const sitOutCounts = assignments.map((assignment) =>
+    (assignment.sitOutSlots as unknown[] | undefined)?.length ?? 0
+  );
+  assert.ok(Math.max(...sitOutCounts) - Math.min(...sitOutCounts) <= 1);
+  for (const assignment of assignments) {
+    const slots = assignment.rotationSlots as Array<Record<string, unknown>>;
+    assert.ok(slots.every((slot) => slot.resourceUnitId === "court-a"));
+    assert.ok(slots.every((slot) =>
+      (slot.label as string).includes("Court 1")
+    ));
+  }
+});
+
+test("adjacency topology fails instead of using pair rotations", async () => {
+  const {deps} = harness({
+    "eventSuccessPlans/event-1": {
+      eventId: "event-1",
+      clubId: "club-1",
+      selectedModuleIds: ["guided_rotations"],
+      structureConfig: {
+        unitKind: "tables",
+        unitSize: 4,
+        topology: "adjacency",
+        revealCountdownSeconds: 10,
+      },
+    },
+  });
+
+  await assert.rejects(
+    () => generateEventSuccessRotationsHandler(callableRequest("host-1"), deps),
+    (error) => {
+      isHttpsError(error, "failed-precondition", "not implemented");
+      return true;
+    }
+  );
+});
+
+test("does not prepare a phantom round after the schedule ends", async () => {
+  const {firestore, deps} = harness({
+    "eventSuccessPlans/event-1": {
+      eventId: "event-1",
+      clubId: "club-1",
+      selectedModuleIds: ["guided_rotations"],
+      liveControlRevision: 4,
+      assignmentDraftRevision: 3,
+      publishedRotationRoundIndex: 2,
+      structureConfig: {
+        unitKind: "pairs",
+        unitSize: 2,
+        rotationIntervalMinutes: 15,
+        revealCountdownSeconds: 10,
+      },
+    },
+    "eventSuccessAssignmentDrafts/event-1_guided_rotations_stale": {
+      eventId: "event-1",
+      moduleId: "guided_rotations",
+      roundIndex: 2,
+      baseAssignmentRevision: 3,
+      assignment: {},
+    },
+    ...participation("man-1"),
+    ...participation("man-2"),
+    ...participation("woman-1"),
+    ...participation("woman-2"),
+    "users/man-1": user("man", ["woman"]),
+    "users/man-2": user("man", ["woman"]),
+    "users/woman-1": user("woman", ["man"]),
+    "users/woman-2": user("woman", ["man"]),
+  });
+
+  const result = await generateEventSuccessRotationsHandler(
+    callableRequest("host-1", {expectedRevision: 4}),
+    deps
+  );
+
+  assert.deepEqual(result, {assignmentCount: 0, roundCount: 3});
+  assert.equal(
+    firestore.query("eventSuccessAssignmentDrafts", []).length,
+    0
+  );
 });
 
 test("uses the saved event-structure rotation cadence", async () => {
@@ -344,6 +556,11 @@ test(
   "uses questionnaire answers as an opt-in rotation ranking boost",
   async () => {
     const {firestore, deps} = harness({
+      "events/event-1": rotationEvent({
+        assignmentAlgorithm: "pairRotations",
+        compatibilityPolicy: "questionnaireClueOnly",
+        matchingObjective: "affinity",
+      }),
       "eventSuccessPlans/event-1": {
         eventId: "event-1",
         clubId: "club-1",
@@ -388,6 +605,11 @@ test(
   "prioritizes mutual interest before fallback rotation pairings",
   async () => {
     const {firestore, deps} = harness({
+      "events/event-1": rotationEvent({
+        assignmentAlgorithm: "pairRotations",
+        compatibilityPolicy: "mutualInterestOnly",
+        matchingObjective: "romantic",
+      }),
       "eventSuccessPlans/event-1": {
         eventId: "event-1",
         clubId: "club-1",
@@ -429,9 +651,14 @@ test(
 );
 
 test(
-  "ignores questionnaire answers when ranking opt-in is disabled",
+  "falls back to coverage when affinity ranking is disabled",
   async () => {
     const {firestore, deps} = harness({
+      "events/event-1": rotationEvent({
+        assignmentAlgorithm: "pairRotations",
+        compatibilityPolicy: "questionnaireClueOnly",
+        matchingObjective: "affinity",
+      }),
       "eventSuccessPlans/event-1": {
         eventId: "event-1",
         clubId: "club-1",
@@ -464,14 +691,19 @@ test(
     );
     const slots = manOne?.rotationSlots as Array<Record<string, unknown>>;
     assert.equal(slots[0].peerUid, "woman-1");
-    assert.equal(slots[0].compatibility, "mutual_interest");
+    assert.equal(slots[0].compatibility, "social");
   }
 );
 
 test(
-  "ignores questionnaire answers unless the module is selected",
+  "falls back to coverage when the questionnaire module is absent",
   async () => {
     const {firestore, deps} = harness({
+      "events/event-1": rotationEvent({
+        assignmentAlgorithm: "pairRotations",
+        compatibilityPolicy: "questionnaireClueOnly",
+        matchingObjective: "affinity",
+      }),
       "eventSuccessPlans/event-1": {
         eventId: "event-1",
         clubId: "club-1",
@@ -501,12 +733,12 @@ test(
     );
     const slots = manOne?.rotationSlots as Array<Record<string, unknown>>;
     assert.equal(slots[0].peerUid, "woman-1");
-    assert.equal(slots[0].compatibility, "mutual_interest");
+    assert.equal(slots[0].compatibility, "social");
   }
 );
 
 test(
-  "uses event duration and removes opted-out stale assignments",
+  "uses event duration and removes opted-out stale drafts",
   async () => {
     const {firestore, deps} = harness({
       "events/event-1": {
@@ -516,6 +748,11 @@ test(
           version: 1,
           activityKind: "pickleball",
           interactionModel: "pairedRotations",
+          eventSuccessPrimitives: {
+            assignmentAlgorithm: "pairRotations",
+            compatibilityPolicy: "mutualInterestOnly",
+            matchingObjective: "romantic",
+          },
         },
         startTime: fakeTimestamp("2026-05-21T08:00:00.000Z"),
         endTime: fakeTimestamp("2026-05-21T08:30:00.000Z"),
@@ -531,10 +768,19 @@ test(
         uid: "woman-2",
         guidedRotationsOptedOut: true,
       },
-      "eventSuccessAssignments/event-1_guided_rotations_woman-2": {
+      "eventSuccessAssignmentDrafts/event-1_guided_rotations_woman-2": {
         eventId: "event-1",
+        clubId: "club-1",
+        organizerId: "club-1",
         moduleId: "guided_rotations",
         uid: "woman-2",
+        roundIndex: 0,
+        baseAssignmentRevision: 1,
+        assignment: {
+          eventId: "event-1",
+          moduleId: "guided_rotations",
+          uid: "woman-2",
+        },
       },
     });
 
@@ -579,17 +825,11 @@ test(
   "exhausts mutual-interest rotations before fallback pairings",
   async () => {
     const {firestore, deps} = harness({
-      "events/event-1": {
-        clubId: "club-1",
-        status: "active",
-        eventFormat: {
-          version: 1,
-          activityKind: "pickleball",
-          interactionModel: "pairedRotations",
-        },
-        startTime: fakeTimestamp("2026-05-21T08:00:00.000Z"),
-        endTime: fakeTimestamp("2026-05-21T08:45:00.000Z"),
-      },
+      "events/event-1": rotationEvent({
+        assignmentAlgorithm: "pairRotations",
+        compatibilityPolicy: "mutualInterestOnly",
+        matchingObjective: "romantic",
+      }, "2026-05-21T08:45:00.000Z"),
       ...participation("man-1"),
       ...participation("man-2"),
       ...participation("woman-1"),
@@ -706,6 +946,58 @@ test("lets hosts override rotation pairings", async () => {
   const slots = manOne?.rotationSlots as Array<Record<string, unknown>>;
   assert.equal(slots[0].compatibility, "host_override");
   assert.equal(slots[1].label, "Round 2");
+});
+
+test("host override cannot exceed sequence resource capacity", async () => {
+  const {deps} = harness({
+    "eventSuccessPlans/event-1": {
+      eventId: "event-1",
+      clubId: "club-1",
+      selectedModuleIds: ["guided_rotations"],
+      liveControlRevision: 0,
+      assignmentDraftRevision: 0,
+      publishedRotationRoundIndex: -1,
+      structureConfig: {
+        unitKind: "pairs",
+        unitSize: 2,
+        rotationIntervalMinutes: 15,
+        topology: "sequence",
+        resourceCapacity: {
+          concurrentUnits: 1,
+          resourceLabelId: "court",
+          seatsPerUnit: null,
+        },
+        revealCountdownSeconds: 10,
+      },
+    },
+    ...participation("man-1"),
+    ...participation("man-2"),
+    ...participation("woman-1"),
+    ...participation("woman-2"),
+    "users/man-1": user("man", ["woman"]),
+    "users/man-2": user("man", ["woman"]),
+    "users/woman-1": user("woman", ["man"]),
+    "users/woman-2": user("woman", ["man"]),
+  });
+
+  await assert.rejects(
+    () => overrideEventSuccessRotationsHandler(
+      callableRequest("host-1", {
+        rounds: [{
+          roundIndex: 0,
+          pairings: [
+            {uidA: "man-1", uidB: "woman-1"},
+            {uidA: "man-2", uidB: "woman-2"},
+          ],
+        }],
+      }),
+      deps
+    ),
+    (error) => {
+      isHttpsError(error, "failed-precondition", "resource capacity");
+      return true;
+    }
+  );
 });
 
 test("rejects override pairings that repeat an attendee", async () => {
@@ -873,13 +1165,31 @@ function user(gender: string, interestedInGenders: string[]): FakeData {
   };
 }
 
+function rotationEvent(
+  eventSuccessPrimitives: FakeData,
+  endTime = "2026-05-21T09:00:00.000Z"
+): FakeData {
+  return {
+    clubId: "club-1",
+    status: "active",
+    eventFormat: {
+      version: 1,
+      activityKind: "pickleball",
+      interactionModel: "pairedRotations",
+      eventSuccessPrimitives,
+    },
+    startTime: fakeTimestamp("2026-05-21T08:00:00.000Z"),
+    endTime: fakeTimestamp(endTime),
+  };
+}
+
 function callableRequest(
   uid: string,
-  data: Record<string, unknown> = {eventId: "event-1"}
+  data: Record<string, unknown> = {}
 ): CallableRequest<unknown> {
   return {
     auth: {uid},
-    data,
+    data: {eventId: "event-1", expectedRevision: 0, ...data},
   } as CallableRequest<unknown>;
 }
 

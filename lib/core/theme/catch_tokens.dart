@@ -900,7 +900,7 @@ abstract final class CatchInsets {
   );
 
   /// Compact selected-club trigger around the avatar, name, and chevron.
-  static const EdgeInsets hostTodayClubSwitcher = EdgeInsets.fromLTRB(
+  static const EdgeInsets hostOrganizerSwitcher = EdgeInsets.fromLTRB(
     CatchSpacing.micro6,
     CatchSpacing.micro6,
     CatchSpacing.s3,
@@ -908,7 +908,7 @@ abstract final class CatchInsets {
   );
 
   /// Popup menu item content in Host Today's club switcher.
-  static const EdgeInsets hostTodayClubMenuItem = EdgeInsets.symmetric(
+  static const EdgeInsets hostOrganizerMenuItem = EdgeInsets.symmetric(
     horizontal: CatchSpacing.micro14,
     vertical: CatchLayout.menuRowVerticalPadding,
   );
@@ -1768,6 +1768,7 @@ abstract final class CatchMotion {
   static const Duration eventSuccessActionDebounce = Duration(
     milliseconds: 500,
   );
+  static const Duration eventSuccessThresholdTick = Duration(milliseconds: 1);
   static const Duration slow = Duration(milliseconds: 420);
   static const Duration afterglowBeatEntry = Duration(milliseconds: 480);
   static const Duration afterglowCountUp = Duration(milliseconds: 600);
@@ -2615,6 +2616,7 @@ abstract final class CatchAspectRatio {
   static const double square = 1.0;
   static const double wide16x9 = 16 / 9;
   static const double activityCard = 16 / 10;
+  static const double roomMap = activityCard;
   static const double standardPhoto = 4 / 3;
   static const double portrait4x5 = 4 / 5;
   static const double portrait3x4 = 3 / 4;

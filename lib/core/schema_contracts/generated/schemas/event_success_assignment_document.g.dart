@@ -121,6 +121,19 @@ const schemaEventSuccessAssignmentDocumentSchema = <String, Object?>{
       'maxLength': 80,
       'x-catch-ownership': 'callable-owned',
     },
+    'layoutUnitId': <String, Object?>{
+      'type': 'string',
+      'pattern': '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
+      'x-catch-ownership': 'callable-owned',
+    },
+    'confirmedLayoutUnitId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'pattern': '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
+      'x-catch-ownership': 'callable-owned',
+    },
     'whySummary': <String, Object?>{
       'type': 'string',
       'minLength': 1,
@@ -353,6 +366,10 @@ const schemaEventSuccessAssignmentDocumentSchema = <String, Object?>{
             'type': 'integer',
             'minimum': 0,
             'maximum': 100,
+          },
+          'resourceUnitId': <String, Object?>{
+            'type': 'string',
+            'pattern': '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
           },
           'peerCount': <String, Object?>{
             'type': 'integer',

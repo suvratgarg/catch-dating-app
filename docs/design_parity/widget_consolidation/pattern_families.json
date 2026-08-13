@@ -339,8 +339,8 @@
       "intent": "Review compact current-context controls that combine identity art, a constrained label, and an optional switch menu. They should not be flattened into generic chips. Event Detail symbols are excluded while the parallel Event Detail change is in flight.",
       "priority": "P1",
       "status": "implemented",
-      "targetContract": "HostTodayClubPill",
-      "qualityReference": "HostTodayClubPill",
+      "targetContract": "HostOrganizerIdentityPill",
+      "qualityReference": "HostOrganizerIdentityPill",
       "decisionSource": "user-approved:2026-07-13",
       "acceptedVisualDelta": [
         "Multi-club identity surfaces are whole-surface interactive; single-club surfaces are explicitly passive.",
@@ -382,9 +382,9 @@
       ],
       "members": [
         {
-          "symbol": "HostTodayClubPill",
+          "symbol": "HostOrganizerIdentityPill",
           "disposition": "repair",
-          "target": "HostTodayClubPill",
+          "target": "HostOrganizerIdentityPill",
           "preview": "required",
           "rationale": "Use the whole bounded identity surface as the switch action when multiple clubs exist, render a passive state for one club, show real logo art with a deterministic fallback, and expose selected and role context in the menu."
         }

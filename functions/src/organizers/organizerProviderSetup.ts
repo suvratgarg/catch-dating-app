@@ -691,6 +691,7 @@ export function lumaAttendeeDocument(params: {
     phoneE164: params.normalizedPhone ?? old?.phoneE164 ?? null,
     email: params.normalizedEmail ?? old?.email ?? null,
     externalReference: guest.id,
+    arrivalGroup: old?.arrivalGroup ?? null,
     ticketType: guest.ticketType ?? old?.ticketType ?? null,
     importId: old?.importId ?? null,
     sourceRowId: old?.sourceRowId ?? guest.id,

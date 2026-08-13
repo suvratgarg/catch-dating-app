@@ -25,6 +25,7 @@ export interface NormalizedRosterImportRow {
   phone: string | null;
   email: string | null;
   externalReference: string | null;
+  arrivalGroup: string | null;
   ticketType: string | null;
   status: "invited" | "registered" | "waitlisted";
 }
@@ -142,7 +143,7 @@ export function prepareCsvRosterImport(
     headers,
     rows: matrix.slice(1).filter((row) => row.some((value) => value.trim())),
   }, adapter);
-  const mapping = suggestRosterMapping(normalized.headers);
+  const mapping = suggestRosterMapping(normalized.headers, adapter.adapterId);
   const nameIndex = mapping.displayName;
   if (nameIndex === null) throw new Error("roster_missing_name_column");
   const rows: NormalizedRosterImportRow[] = [];
@@ -157,6 +158,7 @@ export function prepareCsvRosterImport(
       phone: nullableValueAt(row, mapping.phone),
       email: nullableValueAt(row, mapping.email),
       externalReference: nullableValueAt(row, mapping.externalReference),
+      arrivalGroup: nullableValueAt(row, mapping.arrivalGroup),
       ticketType: nullableValueAt(row, mapping.ticketType),
       status: rosterStatus(nullableValueAt(row, mapping.status)),
     });
@@ -209,11 +211,15 @@ export function parseCsvMatrix(source: string): string[][] {
   return rows;
 }
 
-function suggestRosterMapping(headers: string[]): {
+function suggestRosterMapping(
+  headers: string[],
+  adapterId: RosterAdapterId
+): {
   displayName: number | null;
   phone: number | null;
   email: number | null;
   externalReference: number | null;
+  arrivalGroup: number | null;
   ticketType: number | null;
   status: number | null;
 } {
@@ -226,10 +232,11 @@ function suggestRosterMapping(headers: string[]): {
     email: findHeader(headers, new Set([
       "email", "emailaddress", "guestemail", "attendeeemail",
     ])),
-    externalReference: findHeader(headers, new Set([
-      "id", "reference", "bookingid", "orderid", "ticketid", "guestkey",
-      "ticketkey", "attendeeid", "order", "ordernumber",
-    ])),
+    externalReference: findHeader(
+      headers,
+      externalReferenceAliases(adapterId)
+    ),
+    arrivalGroup: findHeader(headers, arrivalGroupAliases(adapterId)),
     ticketType: findHeader(headers, new Set([
       "ticket", "tickettype", "category", "pass", "ticketname",
     ])),
@@ -238,6 +245,41 @@ function suggestRosterMapping(headers: string[]): {
       "approvalstatus", "attendeestatus", "checkinstatus",
     ])),
   };
+}
+
+/**
+ * Returns attendee-level provider identifiers. Group/order identifiers are
+ * deliberately excluded for adapters where one booking can contain multiple
+ * guests; those values belong in arrivalGroup instead.
+ */
+function externalReferenceAliases(adapterId: RosterAdapterId): Set<string> {
+  if (adapterId === "eventbrite-v1") {
+    return new Set(["attendeeid", "ticketid", "ticketkey", "id"]);
+  }
+  if (adapterId === "posh-v1") {
+    return new Set(["attendeeid", "ticketid", "ticketkey", "id"]);
+  }
+  if (adapterId === "luma-v1") {
+    return new Set(["guestkey", "guestid", "attendeeid", "id"]);
+  }
+  return new Set([
+    "id", "reference", "bookingid", "orderid", "ticketid", "guestkey",
+    "ticketkey", "attendeeid", "order", "ordernumber",
+  ]);
+}
+
+/** Returns provider booking/group fields used to associate arriving guests. */
+function arrivalGroupAliases(adapterId: RosterAdapterId): Set<string> {
+  const common = [
+    "arrivalgroup", "groupid", "partyid", "bookinggroup", "buyeremail",
+    "ticketbuyeremail",
+  ];
+  if (adapterId === "eventbrite-v1" || adapterId === "posh-v1") {
+    return new Set([
+      "orderid", "ordernumber", "order", "bookingid", ...common,
+    ]);
+  }
+  return new Set(common);
 }
 
 function uniqueHeaders(headers: string[]): string[] {

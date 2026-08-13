@@ -5,6 +5,7 @@ class EventSuccessCompanionScreen extends StatefulWidget {
     super.key,
     required this.event,
     required this.plan,
+    this.spatialLayout,
     required this.userProfile,
     required this.participation,
     required this.wingmanRequestCandidates,
@@ -16,6 +17,7 @@ class EventSuccessCompanionScreen extends StatefulWidget {
     this.assignmentPeersLoading = false,
     this.microPodsOptedOut = false,
     this.rotationAssignment,
+    this.standings,
     this.rotationPeerProfiles = const [],
     this.rotationPeersLoading = false,
     this.guidedRotationsOptedOut = false,
@@ -45,6 +47,7 @@ class EventSuccessCompanionScreen extends StatefulWidget {
 
   final Event event;
   final EventSuccessPlan plan;
+  final EventSuccessLayout? spatialLayout;
   final UserProfile userProfile;
   final EventParticipation participation;
   final List<PublicProfile> wingmanRequestCandidates;
@@ -56,6 +59,7 @@ class EventSuccessCompanionScreen extends StatefulWidget {
   final bool assignmentPeersLoading;
   final bool microPodsOptedOut;
   final EventSuccessAssignment? rotationAssignment;
+  final EventSuccessStandings? standings;
   final List<PublicProfile> rotationPeerProfiles;
   final bool rotationPeersLoading;
   final bool guidedRotationsOptedOut;
@@ -309,10 +313,11 @@ class _EventSuccessCompanionScreenState
     // kinds), so we render the non-reveal cards here directly and let the
     // dedicated reveal branch below handle the reveal case.
     if (attendeeMoment.showPodAssignment) {
+      final assignment = widget.microPodsOptedOut ? null : widget.assignment;
       addMomentContent(
         MicroPodCard(
           event: event,
-          assignment: widget.microPodsOptedOut ? null : widget.assignment,
+          assignment: assignment,
           peerProfiles: widget.assignmentPeerProfiles,
           peersLoading: widget.assignmentPeersLoading,
           actionState: microPodsActionState,
@@ -324,14 +329,24 @@ class _EventSuccessCompanionScreenState
               .eventSuccessEventSuccessCompanionBodyScreenVisiblecopyMicroPod,
         ),
       );
+      if (widget.spatialLayout != null && assignment?.layoutUnitId != null) {
+        addMomentContent(
+          EventSuccessRoomMap(
+            layout: widget.spatialLayout!,
+            assignments: [assignment!],
+          ),
+          momentKey: screenState.transitionKey('micro-pod-room-map'),
+        );
+      }
     }
     if (attendeeMoment.showRotationSchedule) {
+      final assignment = widget.guidedRotationsOptedOut
+          ? null
+          : widget.rotationAssignment;
       addMomentContent(
         RotationScheduleCard(
           event: event,
-          assignment: widget.guidedRotationsOptedOut
-              ? null
-              : widget.rotationAssignment,
+          assignment: assignment,
           peerProfiles: widget.rotationPeerProfiles,
           peersLoading: widget.rotationPeersLoading,
           actionState: guidedRotationsActionState,
@@ -343,8 +358,19 @@ class _EventSuccessCompanionScreenState
               .eventSuccessEventSuccessCompanionBodyScreenVisiblecopyRotationSchedule,
         ),
       );
+      if (widget.spatialLayout != null && assignment?.layoutUnitId != null) {
+        addMomentContent(
+          EventSuccessRoomMap(
+            layout: widget.spatialLayout!,
+            assignments: [assignment!],
+          ),
+          momentKey: screenState.transitionKey('rotation-room-map'),
+        );
+      }
     }
     if (attendeeMoment.showLiveReveal && screenState.revealKind != null) {
+      final isStandings =
+          screenState.revealKind == EventSuccessRevealAssignmentKind.standings;
       final isRotations =
           screenState.revealKind == EventSuccessRevealAssignmentKind.rotations;
       addMomentContent(
@@ -352,24 +378,31 @@ class _EventSuccessCompanionScreenState
           event: event,
           plan: plan,
           kind: screenState.revealKind!,
-          assignment: isRotations
+          assignment: isStandings
+              ? null
+              : isRotations
               ? (widget.guidedRotationsOptedOut
                     ? null
                     : widget.rotationAssignment)
               : (widget.microPodsOptedOut ? null : widget.assignment),
+          standings: isStandings ? widget.standings : null,
           peerProfiles: isRotations
               ? widget.rotationPeerProfiles
               : widget.assignmentPeerProfiles,
           peersLoading: isRotations
               ? widget.rotationPeersLoading
               : widget.assignmentPeersLoading,
-          optedOut: isRotations
+          optedOut: isStandings
+              ? false
+              : isRotations
               ? widget.guidedRotationsOptedOut
               : widget.microPodsOptedOut,
           isSavingOptOut: isRotations
               ? guidedRotationsActionState.isSaving
               : microPodsActionState.isSaving,
-          onIncludeChanged: isRotations
+          onIncludeChanged: isStandings
+              ? null
+              : isRotations
               ? setGuidedRotationsIncluded
               : setMicroPodsIncluded,
           now: widget.now,
@@ -380,6 +413,20 @@ class _EventSuccessCompanionScreenState
               .eventSuccessEventSuccessCompanionBodyScreenVisiblecopyLiveReveal,
         ),
       );
+      final assignment = isStandings
+          ? null
+          : isRotations
+          ? (widget.guidedRotationsOptedOut ? null : widget.rotationAssignment)
+          : (widget.microPodsOptedOut ? null : widget.assignment);
+      if (widget.spatialLayout != null && assignment?.layoutUnitId != null) {
+        addMomentContent(
+          EventSuccessRoomMap(
+            layout: widget.spatialLayout!,
+            assignments: [assignment!],
+          ),
+          momentKey: screenState.transitionKey('reveal-room-map'),
+        );
+      }
     }
     if (attendeeMoment.showWingmanRequest) {
       addMomentContent(

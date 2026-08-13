@@ -25,6 +25,7 @@
           "phone": {"type": ["string", "null"], "maxLength": 40},
           "email": {"type": ["string", "null"], "maxLength": 320},
           "externalReference": {"type": ["string", "null"], "maxLength": 180},
+          "arrivalGroup": {"type": ["string", "null"], "maxLength": 180},
           "ticketType": {"type": ["string", "null"], "maxLength": 120},
           "status": {"type": "string", "enum": ["invited", "registered", "waitlisted"]}
         }

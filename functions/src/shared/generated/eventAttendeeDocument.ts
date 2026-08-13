@@ -22,6 +22,10 @@ export interface EventAttendeeDocument {
   phoneE164: string | null;
   email: string | null;
   externalReference: string | null;
+  /**
+   * Provider or import-supplied booking/arrival group shared by guests who are expected to arrive together.
+   */
+  arrivalGroup: string | null;
   ticketType: string | null;
   importId: string | null;
   sourceRowId: string | null;

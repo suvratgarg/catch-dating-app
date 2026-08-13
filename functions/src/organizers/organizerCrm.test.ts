@@ -126,6 +126,7 @@ function attendee(overrides: Partial<OrganizerCrmAttendeeRow> & {
     phoneE164: "+919876543210",
     email: null,
     externalReference: null,
+    arrivalGroup: null,
     ticketType: null,
     importId: null,
     sourceRowId: null,

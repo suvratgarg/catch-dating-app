@@ -44,6 +44,27 @@
       "$ref": "../shared/event_common.schema.json#/definitions/documentId",
       "x-catch-ownership": "callable-owned"
     },
+    "layoutId": {
+      "type": ["string", "null"],
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "affinityConstraints": {
+      "type": "array",
+      "maxItems": 300,
+      "items": {
+        "$ref": "../shared/event_success_layout.schema.json#/definitions/affinityConstraint"
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "spatialOverrides": {
+      "type": "array",
+      "maxItems": 300,
+      "items": {
+        "$ref": "../shared/event_success_layout.schema.json#/definitions/spatialOverride"
+      },
+      "x-catch-ownership": "callable-owned"
+    },
     "playbookId": {
       "type": "string",
       "minLength": 1,
@@ -94,6 +115,30 @@
     "activeStepIndex": {
       "type": "integer",
       "minimum": 0,
+      "maximum": 100,
+      "x-catch-ownership": "callable-owned"
+    },
+    "liveControlRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647,
+      "x-catch-ownership": "callable-owned"
+    },
+    "assignmentDraftRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647,
+      "x-catch-ownership": "callable-owned"
+    },
+    "publishedRotationRoundIndex": {
+      "type": "integer",
+      "minimum": -1,
+      "maximum": 100,
+      "x-catch-ownership": "callable-owned"
+    },
+    "publishedRevealRoundIndex": {
+      "type": "integer",
+      "minimum": -1,
       "maximum": 100,
       "x-catch-ownership": "callable-owned"
     },

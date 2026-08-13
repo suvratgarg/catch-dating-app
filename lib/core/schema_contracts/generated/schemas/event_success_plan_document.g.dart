@@ -56,6 +56,95 @@ const schemaEventSuccessPlanDocumentSchema = <String, Object?>{
       'maxLength': 180,
       'x-catch-ownership': 'callable-owned',
     },
+    'layoutId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'pattern': '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+      'x-catch-ownership': 'callable-owned',
+    },
+    'affinityConstraints': <String, Object?>{
+      'type': 'array',
+      'maxItems': 300,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'aUid',
+          'bUid',
+          'value',
+          'scope',
+        ],
+        'properties': <String, Object?>{
+          'aUid': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'bUid': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'value': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'mustPair',
+              'mustSplit',
+              'avoidRepeat',
+              'neutral',
+            ],
+          },
+          'scope': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'thisRound',
+              'pinned',
+            ],
+          },
+        },
+      },
+      'x-catch-ownership': 'callable-owned',
+    },
+    'spatialOverrides': <String, Object?>{
+      'type': 'array',
+      'maxItems': 300,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'uid',
+          'targetPeerUid',
+          'layoutUnitId',
+          'scope',
+        ],
+        'properties': <String, Object?>{
+          'uid': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'targetPeerUid': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'layoutUnitId': <String, Object?>{
+            'type': 'string',
+            'pattern': '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
+          },
+          'scope': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'thisRound',
+              'pinned',
+            ],
+          },
+        },
+      },
+      'x-catch-ownership': 'callable-owned',
+    },
     'playbookId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
@@ -118,6 +207,57 @@ const schemaEventSuccessPlanDocumentSchema = <String, Object?>{
           'minimum': 5,
           'maximum': 180,
         },
+        'topology': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'set',
+            'sequence',
+            'adjacency',
+          ],
+        },
+        'resourceCapacity': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'concurrentUnits',
+                'resourceLabelId',
+                'seatsPerUnit',
+              ],
+              'properties': <String, Object?>{
+                'concurrentUnits': <String, Object?>{
+                  'type': <Object?>[
+                    'integer',
+                    'null',
+                  ],
+                  'minimum': 1,
+                  'maximum': 200,
+                },
+                'resourceLabelId': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'court',
+                    'table',
+                    'lane',
+                    'board',
+                  ],
+                },
+                'seatsPerUnit': <String, Object?>{
+                  'type': <Object?>[
+                    'integer',
+                    'null',
+                  ],
+                  'minimum': 1,
+                  'maximum': 1000,
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
         'revealCountdownSeconds': <String, Object?>{
           'type': 'integer',
           'minimum': 0,
@@ -162,6 +302,38 @@ const schemaEventSuccessPlanDocumentSchema = <String, Object?>{
           },
         },
       },
+      'allOf': <Object?>[
+        <String, Object?>{
+          'if': <String, Object?>{
+            'required': <Object?>[
+              'resourceCapacity',
+            ],
+            'properties': <String, Object?>{
+              'resourceCapacity': <String, Object?>{
+                'type': 'object',
+                'required': <Object?>[
+                  'seatsPerUnit',
+                ],
+                'properties': <String, Object?>{
+                  'seatsPerUnit': <String, Object?>{
+                    'type': 'integer',
+                  },
+                },
+              },
+            },
+          },
+          'then': <String, Object?>{
+            'required': <Object?>[
+              'topology',
+            ],
+            'properties': <String, Object?>{
+              'topology': <String, Object?>{
+                'const': 'adjacency',
+              },
+            },
+          },
+        },
+      ],
       'x-catch-ownership': 'callable-owned',
     },
     'hostGoal': <String, Object?>{
@@ -256,6 +428,30 @@ const schemaEventSuccessPlanDocumentSchema = <String, Object?>{
     'activeStepIndex': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
+      'maximum': 100,
+      'x-catch-ownership': 'callable-owned',
+    },
+    'liveControlRevision': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 2147483647,
+      'x-catch-ownership': 'callable-owned',
+    },
+    'assignmentDraftRevision': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 2147483647,
+      'x-catch-ownership': 'callable-owned',
+    },
+    'publishedRotationRoundIndex': <String, Object?>{
+      'type': 'integer',
+      'minimum': -1,
+      'maximum': 100,
+      'x-catch-ownership': 'callable-owned',
+    },
+    'publishedRevealRoundIndex': <String, Object?>{
+      'type': 'integer',
+      'minimum': -1,
       'maximum': 100,
       'x-catch-ownership': 'callable-owned',
     },

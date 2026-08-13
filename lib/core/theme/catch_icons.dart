@@ -35,6 +35,8 @@ abstract final class CatchIcons {
   static IconData get tabYouFilled => PhosphorIconsFill.user;
   static IconData get tabEvents => PhosphorIconsRegular.ticket;
   static IconData get tabEventsFilled => PhosphorIconsFill.ticket;
+  static IconData get tabCustomers => PhosphorIconsRegular.usersThree;
+  static IconData get tabCustomersFilled => PhosphorIconsFill.usersThree;
   static IconData get tabOrganizer => PhosphorIconsRegular.storefront;
   static IconData get tabOrganizerFilled => PhosphorIconsFill.storefront;
 

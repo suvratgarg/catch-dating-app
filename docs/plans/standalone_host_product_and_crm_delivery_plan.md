@@ -1,7 +1,7 @@
 ---
 doc_id: standalone_host_product_and_crm_delivery_plan
-version: 4.0.0
-updated: 2026-08-12
+version: 4.1.0
+updated: 2026-08-13
 owner: host_tooling
 status: active
 ---
@@ -82,6 +82,38 @@ independent layers:
 This snapshot is the source-of-truth answer to “what works at what integration
 level.” Later sections retain the full architecture, safety constraints and
 remaining promotion work.
+
+### Host Customers workspace cutover
+
+The Host shell now gives CRM people their own `/host/customers` branch between
+Events and Inbox. The default surface is an organizer-scoped, server-paginated
+directory sourced from `organizerContacts`; it supports name search, reviewed
+fixed-trait filters, organizer switching, manual name-only contacts, and a
+route-level detail at `/host/customers/:contactId`. “At risk” is presentation
+copy for the versioned `lapsed_regular` rule. It is never an opaque churn score.
+
+The detail route exposes only contact endpoints, explainable attendance facts,
+bounded event history, and completed non-refunded Catch payments for events in
+that contact's organizer history. Revenue carries `exact`, `partial`, or
+`unavailable` coverage. External-provider face value and unreconciled sales are
+not inferred. A manager can start or reuse a direct conversation only when the
+contact has one verified linked Catch UID; name-only or ambiguous identities
+keep the action unavailable.
+
+`HostCustomersDirectoryController` owns pagination and deduplication;
+`HostCustomersController` owns create and conversation mutations;
+`HostCrmRepository` remains the only Flutter callable boundary. The existing
+Organizer Audience campaign/setup pane remains available during extraction so
+the navigation cutover does not remove campaign functionality. Campaigns,
+notes/tags, merge review, and value-segment projection can move under Customers
+incrementally without creating another contact model.
+
+The first Customers cutover deliberately does not label anyone “high spender.”
+Customer detail revenue is implemented, but organizer-wide `known_spender` and
+`top_spender` sorting still requires a payment-triggered, indexed contact-trait
+projection. Until that projection and definition version ship, the directory
+offers only attendance, reliability, lapse, and advocacy tags whose source
+coverage is already enforceable.
 
 ## Target Customer And First Wedge
 

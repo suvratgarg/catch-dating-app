@@ -12,6 +12,26 @@ Stream<EventSuccessPlan?> watchEventSuccessPlan(Ref ref, String eventId) =>
     ref.watch(eventSuccessRepositoryProvider).watchPlan(eventId);
 
 @riverpod
+Stream<EventSuccessStandings?> watchEventSuccessStandings(
+  Ref ref,
+  String eventId,
+) => ref.watch(eventSuccessRepositoryProvider).watchStandingsForEvent(eventId);
+
+@riverpod
+Stream<List<EventSuccessLayout>> watchOrganizerEventSuccessLayouts(
+  Ref ref,
+  String organizerId,
+) => ref
+    .watch(eventSuccessRepositoryProvider)
+    .watchOrganizerLayouts(organizerId);
+
+@riverpod
+Future<EventSuccessLayout?> eventSuccessSpatialLayout(
+  Ref ref,
+  String eventId,
+) => ref.watch(eventSuccessRepositoryProvider).fetchSpatialLayout(eventId);
+
+@riverpod
 Stream<List<EventSuccessFeedback>> watchEventSuccessFeedback(
   Ref ref,
   String eventId,
@@ -65,6 +85,14 @@ Stream<List<EventSuccessAssignment>> watchEventSuccessRotationAssignments(
 ) => ref
     .watch(eventSuccessRepositoryProvider)
     .watchRotationAssignmentsForEvent(eventId: eventId);
+
+@riverpod
+Stream<List<EventSuccessAssignmentDraft>> watchEventSuccessRotationDrafts(
+  Ref ref,
+  String eventId,
+) => ref
+    .watch(eventSuccessRepositoryProvider)
+    .watchRotationDraftsForEvent(eventId: eventId);
 
 @riverpod
 Stream<EventSuccessPreference?> watchUserEventSuccessPreference(

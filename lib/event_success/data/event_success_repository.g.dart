@@ -135,6 +135,248 @@ final class WatchEventSuccessPlanFamily extends $Family
   String toString() => r'watchEventSuccessPlanProvider';
 }
 
+@ProviderFor(watchEventSuccessStandings)
+final watchEventSuccessStandingsProvider = WatchEventSuccessStandingsFamily._();
+
+final class WatchEventSuccessStandingsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<EventSuccessStandings?>,
+          EventSuccessStandings?,
+          Stream<EventSuccessStandings?>
+        >
+    with
+        $FutureModifier<EventSuccessStandings?>,
+        $StreamProvider<EventSuccessStandings?> {
+  WatchEventSuccessStandingsProvider._({
+    required WatchEventSuccessStandingsFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'watchEventSuccessStandingsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$watchEventSuccessStandingsHash();
+
+  @override
+  String toString() {
+    return r'watchEventSuccessStandingsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<EventSuccessStandings?> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<EventSuccessStandings?> create(Ref ref) {
+    final argument = this.argument as String;
+    return watchEventSuccessStandings(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WatchEventSuccessStandingsProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$watchEventSuccessStandingsHash() =>
+    r'e4194f21f6c77f9a3b4f17bac6d84941c04ae231';
+
+final class WatchEventSuccessStandingsFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<EventSuccessStandings?>, String> {
+  WatchEventSuccessStandingsFamily._()
+    : super(
+        retry: null,
+        name: r'watchEventSuccessStandingsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  WatchEventSuccessStandingsProvider call(String eventId) =>
+      WatchEventSuccessStandingsProvider._(argument: eventId, from: this);
+
+  @override
+  String toString() => r'watchEventSuccessStandingsProvider';
+}
+
+@ProviderFor(watchOrganizerEventSuccessLayouts)
+final watchOrganizerEventSuccessLayoutsProvider =
+    WatchOrganizerEventSuccessLayoutsFamily._();
+
+final class WatchOrganizerEventSuccessLayoutsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<EventSuccessLayout>>,
+          List<EventSuccessLayout>,
+          Stream<List<EventSuccessLayout>>
+        >
+    with
+        $FutureModifier<List<EventSuccessLayout>>,
+        $StreamProvider<List<EventSuccessLayout>> {
+  WatchOrganizerEventSuccessLayoutsProvider._({
+    required WatchOrganizerEventSuccessLayoutsFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'watchOrganizerEventSuccessLayoutsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() =>
+      _$watchOrganizerEventSuccessLayoutsHash();
+
+  @override
+  String toString() {
+    return r'watchOrganizerEventSuccessLayoutsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<List<EventSuccessLayout>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<EventSuccessLayout>> create(Ref ref) {
+    final argument = this.argument as String;
+    return watchOrganizerEventSuccessLayouts(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WatchOrganizerEventSuccessLayoutsProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$watchOrganizerEventSuccessLayoutsHash() =>
+    r'a9071789dcfec1b4958acca1ff266457190bb608';
+
+final class WatchOrganizerEventSuccessLayoutsFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<List<EventSuccessLayout>>, String> {
+  WatchOrganizerEventSuccessLayoutsFamily._()
+    : super(
+        retry: null,
+        name: r'watchOrganizerEventSuccessLayoutsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  WatchOrganizerEventSuccessLayoutsProvider call(String organizerId) =>
+      WatchOrganizerEventSuccessLayoutsProvider._(
+        argument: organizerId,
+        from: this,
+      );
+
+  @override
+  String toString() => r'watchOrganizerEventSuccessLayoutsProvider';
+}
+
+@ProviderFor(eventSuccessSpatialLayout)
+final eventSuccessSpatialLayoutProvider = EventSuccessSpatialLayoutFamily._();
+
+final class EventSuccessSpatialLayoutProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<EventSuccessLayout?>,
+          EventSuccessLayout?,
+          FutureOr<EventSuccessLayout?>
+        >
+    with
+        $FutureModifier<EventSuccessLayout?>,
+        $FutureProvider<EventSuccessLayout?> {
+  EventSuccessSpatialLayoutProvider._({
+    required EventSuccessSpatialLayoutFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'eventSuccessSpatialLayoutProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$eventSuccessSpatialLayoutHash();
+
+  @override
+  String toString() {
+    return r'eventSuccessSpatialLayoutProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<EventSuccessLayout?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<EventSuccessLayout?> create(Ref ref) {
+    final argument = this.argument as String;
+    return eventSuccessSpatialLayout(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is EventSuccessSpatialLayoutProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$eventSuccessSpatialLayoutHash() =>
+    r'eb7e2c95206f8173823738680fa9821bc8331ae5';
+
+final class EventSuccessSpatialLayoutFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<EventSuccessLayout?>, String> {
+  EventSuccessSpatialLayoutFamily._()
+    : super(
+        retry: null,
+        name: r'eventSuccessSpatialLayoutProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  EventSuccessSpatialLayoutProvider call(String eventId) =>
+      EventSuccessSpatialLayoutProvider._(argument: eventId, from: this);
+
+  @override
+  String toString() => r'eventSuccessSpatialLayoutProvider';
+}
+
 @ProviderFor(watchEventSuccessFeedback)
 final watchEventSuccessFeedbackProvider = WatchEventSuccessFeedbackFamily._();
 
@@ -743,6 +985,90 @@ final class WatchEventSuccessRotationAssignmentsFamily extends $Family
 
   @override
   String toString() => r'watchEventSuccessRotationAssignmentsProvider';
+}
+
+@ProviderFor(watchEventSuccessRotationDrafts)
+final watchEventSuccessRotationDraftsProvider =
+    WatchEventSuccessRotationDraftsFamily._();
+
+final class WatchEventSuccessRotationDraftsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<EventSuccessAssignmentDraft>>,
+          List<EventSuccessAssignmentDraft>,
+          Stream<List<EventSuccessAssignmentDraft>>
+        >
+    with
+        $FutureModifier<List<EventSuccessAssignmentDraft>>,
+        $StreamProvider<List<EventSuccessAssignmentDraft>> {
+  WatchEventSuccessRotationDraftsProvider._({
+    required WatchEventSuccessRotationDraftsFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'watchEventSuccessRotationDraftsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$watchEventSuccessRotationDraftsHash();
+
+  @override
+  String toString() {
+    return r'watchEventSuccessRotationDraftsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<List<EventSuccessAssignmentDraft>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<EventSuccessAssignmentDraft>> create(Ref ref) {
+    final argument = this.argument as String;
+    return watchEventSuccessRotationDrafts(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WatchEventSuccessRotationDraftsProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$watchEventSuccessRotationDraftsHash() =>
+    r'2065ae868b8051f08abea70046ee8ba80dc2f9e0';
+
+final class WatchEventSuccessRotationDraftsFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          Stream<List<EventSuccessAssignmentDraft>>,
+          String
+        > {
+  WatchEventSuccessRotationDraftsFamily._()
+    : super(
+        retry: null,
+        name: r'watchEventSuccessRotationDraftsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  WatchEventSuccessRotationDraftsProvider call(String eventId) =>
+      WatchEventSuccessRotationDraftsProvider._(argument: eventId, from: this);
+
+  @override
+  String toString() => r'watchEventSuccessRotationDraftsProvider';
 }
 
 @ProviderFor(watchUserEventSuccessPreference)

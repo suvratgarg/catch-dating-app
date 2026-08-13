@@ -18,6 +18,7 @@ export interface EventSuccessRosterParticipant {
   gender?: Gender;
   interestedInGenders: Gender[];
   displayName: string;
+  arrivalGroup: string | null;
   cohortAtSignup: string;
   profile: Partial<UserProfileDocument>;
   source: "catchParticipation" | "externalRuntime";
@@ -76,6 +77,7 @@ export async function loadEventSuccessRoster(
       interestedInGenders: interests,
       displayName: profile.displayName || profile.name ||
         publicProfile?.name || edge.uid,
+      arrivalGroup: null,
       cohortAtSignup: edge.cohortAtSignup ??
         cohortFor(gender, interests),
       profile,
@@ -112,6 +114,7 @@ export async function loadEventSuccessRoster(
       gender,
       interestedInGenders: interests,
       displayName: edge.runtimeProfile.displayName,
+      arrivalGroup: attendee.arrivalGroup ?? null,
       cohortAtSignup: cohortFor(gender, interests),
       profile: {
         gender,
@@ -178,6 +181,7 @@ export async function loadEventSuccessRosterParticipant(
         interestedInGenders: interests,
         displayName: profile.displayName || profile.name ||
           publicProfile?.name || uid,
+        arrivalGroup: null,
         cohortAtSignup: edge.cohortAtSignup ??
           cohortFor(gender, interests),
         profile,
@@ -212,6 +216,7 @@ export async function loadEventSuccessRosterParticipant(
     gender: edge.runtimeProfile.gender ?? undefined,
     interestedInGenders: edge.runtimeProfile.interestedInGenders,
     displayName: edge.runtimeProfile.displayName,
+    arrivalGroup: attendee.arrivalGroup ?? null,
     cohortAtSignup: cohortFor(
       edge.runtimeProfile.gender ?? undefined,
       edge.runtimeProfile.interestedInGenders

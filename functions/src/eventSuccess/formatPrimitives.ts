@@ -2,6 +2,7 @@ import {
   EventFormatSnapshot,
   EventSuccessFormatPrimitives,
 } from "../shared/generated/firestoreAdminTypes";
+import type {EventSuccessTopology} from "./assignmentTopology";
 
 export type EventSuccessAssignmentAlgorithm = NonNullable<
   EventSuccessFormatPrimitives["assignmentAlgorithm"]
@@ -19,10 +20,111 @@ export type EventSuccessCompatibilityPolicy = NonNullable<
   EventSuccessFormatPrimitives["compatibilityPolicy"]
 >;
 
+export type EventSuccessMatchingObjective = NonNullable<
+  EventSuccessFormatPrimitives["matchingObjective"]
+>;
+
+export type EventSuccessUnitOutcome = NonNullable<
+  EventSuccessFormatPrimitives["unitOutcome"]
+>;
+
+export type EventSuccessVariableResolutionStatus =
+  "supported" | "unsupported";
+
+export interface EventSuccessVariableResolution {
+  assignmentAlgorithm: EventSuccessAssignmentAlgorithm;
+  compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  matchingObjective: EventSuccessMatchingObjective;
+  topology: EventSuccessTopology;
+  unitOutcome: EventSuccessUnitOutcome;
+  status: EventSuccessVariableResolutionStatus;
+  reason: string;
+}
+
 export interface ResolvedEventSuccessPrimitives {
   assignmentAlgorithm: EventSuccessAssignmentAlgorithm;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  matchingObjective: EventSuccessMatchingObjective;
+  unitOutcome: EventSuccessUnitOutcome;
+  assignmentResolution: EventSuccessVariableResolution;
 }
+
+const EVENT_SUCCESS_ASSIGNMENT_ALGORITHM_MEMBERS:
+  Record<EventSuccessAssignmentAlgorithm, true> = {
+    none: true,
+    pacePods: true,
+    socialPods: true,
+    pairRotations: true,
+    teamBalancer: true,
+    tableSeating: true,
+  };
+
+const EVENT_SUCCESS_COMPATIBILITY_POLICY_MEMBERS:
+  Record<EventSuccessCompatibilityPolicy, true> = {
+    none: true,
+    socialCohortBalance: true,
+    mutualInterestOnly: true,
+    questionnaireClueOnly: true,
+  };
+
+const EVENT_SUCCESS_MATCHING_OBJECTIVE_MEMBERS:
+  Record<EventSuccessMatchingObjective, true> = {
+    coverage: true,
+    romantic: true,
+    affinity: true,
+    novelty: true,
+    balance: true,
+    spread: true,
+  };
+
+const EVENT_SUCCESS_UNIT_OUTCOME_MEMBERS:
+  Record<EventSuccessUnitOutcome, true> = {
+    none: true,
+    completion: true,
+    score: true,
+    rank: true,
+  };
+
+export const EVENT_SUCCESS_ASSIGNMENT_ALGORITHMS =
+  Object.keys(EVENT_SUCCESS_ASSIGNMENT_ALGORITHM_MEMBERS) as
+    EventSuccessAssignmentAlgorithm[];
+
+export const EVENT_SUCCESS_COMPATIBILITY_POLICIES =
+  Object.keys(EVENT_SUCCESS_COMPATIBILITY_POLICY_MEMBERS) as
+    EventSuccessCompatibilityPolicy[];
+
+export const EVENT_SUCCESS_MATCHING_OBJECTIVES =
+  Object.keys(EVENT_SUCCESS_MATCHING_OBJECTIVE_MEMBERS) as
+    EventSuccessMatchingObjective[];
+
+export const EVENT_SUCCESS_UNIT_OUTCOMES =
+  Object.keys(EVENT_SUCCESS_UNIT_OUTCOME_MEMBERS) as
+    EventSuccessUnitOutcome[];
+
+export const EVENT_SUCCESS_TOPOLOGIES: readonly EventSuccessTopology[] =
+  ["set", "sequence", "adjacency"];
+
+/**
+ * Closed resolution table for every implemented variable axis through T7.
+ */
+export const EVENT_SUCCESS_VARIABLE_RESOLUTION_TABLE:
+  readonly EventSuccessVariableResolution[] =
+  EVENT_SUCCESS_ASSIGNMENT_ALGORITHMS.flatMap((assignmentAlgorithm) =>
+    EVENT_SUCCESS_COMPATIBILITY_POLICIES.flatMap((compatibilityPolicy) =>
+      EVENT_SUCCESS_MATCHING_OBJECTIVES.flatMap((matchingObjective) =>
+        EVENT_SUCCESS_TOPOLOGIES.flatMap((topology) =>
+          EVENT_SUCCESS_UNIT_OUTCOMES.map((unitOutcome) => ({
+            assignmentAlgorithm,
+            compatibilityPolicy,
+            matchingObjective,
+            topology,
+            unitOutcome,
+            ...assignmentAlgorithmResolution(assignmentAlgorithm, topology),
+          }))
+        )
+      )
+    )
+  );
 
 /**
  * Resolves optional contract primitives from the event format.
@@ -53,7 +155,73 @@ export function eventSuccessPrimitivesFor(
     isEventSuccessCompatibilityPolicy(raw?.compatibilityPolicy) ?
       raw.compatibilityPolicy :
       defaultCompatibilityPolicyFor(format, interactionModel);
-  return {assignmentAlgorithm, compatibilityPolicy};
+  const matchingObjective =
+    isEventSuccessMatchingObjective(raw?.matchingObjective) ?
+      raw.matchingObjective :
+      defaultMatchingObjectiveFor(interactionModel, compatibilityPolicy);
+  const unitOutcome = isEventSuccessUnitOutcome(raw?.unitOutcome) ?
+    raw.unitOutcome : defaultUnitOutcomeFor(interactionModel);
+  return {
+    assignmentAlgorithm,
+    compatibilityPolicy,
+    matchingObjective,
+    unitOutcome,
+    assignmentResolution: eventSuccessVariableResolutionFor({
+      assignmentAlgorithm,
+      compatibilityPolicy,
+      matchingObjective,
+      unitOutcome,
+    }),
+  };
+}
+
+/**
+ * Resolves one closed variable combination without behavioral fallback.
+ * @param {object} variables Assignment behavior variables.
+ * @return {EventSuccessVariableResolution} Supported or honest unsupported.
+ */
+export function eventSuccessVariableResolutionFor(variables: {
+  assignmentAlgorithm: EventSuccessAssignmentAlgorithm;
+  compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  matchingObjective: EventSuccessMatchingObjective;
+  topology?: EventSuccessTopology;
+  unitOutcome?: EventSuccessUnitOutcome;
+}): EventSuccessVariableResolution {
+  const topology = variables.topology ?? "set";
+  const unitOutcome = variables.unitOutcome ?? "none";
+  const resolution = EVENT_SUCCESS_VARIABLE_RESOLUTION_TABLE.find((entry) =>
+    entry.assignmentAlgorithm === variables.assignmentAlgorithm &&
+    entry.compatibilityPolicy === variables.compatibilityPolicy &&
+    entry.matchingObjective === variables.matchingObjective &&
+    entry.topology === topology &&
+    entry.unitOutcome === unitOutcome
+  );
+  if (resolution === undefined) {
+    throw new Error(
+      "Event Success variable combination is absent from the resolution table."
+    );
+  }
+  return resolution;
+}
+
+/** Returns the default recorded result primitive for an interaction model. */
+export function defaultUnitOutcomeFor(
+  interactionModel: EventFormatSnapshot["interactionModel"]
+): EventSuccessUnitOutcome {
+  switch (interactionModel) {
+  case "pacePods":
+    return "completion";
+  case "teamRotations":
+    return "score";
+  case "pairedRotations":
+    return "rank";
+  case "seatedTable":
+  case "freeFormMixer":
+  case "hostLedProgram":
+  case "openFormat":
+  default:
+    return "none";
+  }
 }
 
 /**
@@ -137,6 +305,37 @@ export function defaultCompatibilityPolicyFor(
 }
 
 /**
+ * Returns the reviewed matching-objective binding for a resolved format.
+ * Coverage remains the engine default and the missing-signal fallback.
+ * @param {string} interactionModel Effective interaction model.
+ * @param {EventSuccessCompatibilityPolicy} compatibilityPolicy Signal policy.
+ * @return {EventSuccessMatchingObjective} Matching objective.
+ */
+export function defaultMatchingObjectiveFor(
+  interactionModel: EventFormatSnapshot["interactionModel"],
+  compatibilityPolicy: EventSuccessCompatibilityPolicy
+): EventSuccessMatchingObjective {
+  switch (interactionModel) {
+  case "pacePods":
+    return "affinity";
+  case "pairedRotations":
+    return "balance";
+  case "teamRotations":
+    return "spread";
+  case "seatedTable":
+    return "affinity";
+  case "freeFormMixer":
+    return compatibilityPolicy === "mutualInterestOnly" ?
+      "romantic" :
+      "coverage";
+  case "hostLedProgram":
+  case "openFormat":
+  default:
+    return "coverage";
+  }
+}
+
+/**
  * Checks assignment primitive membership.
  * @param {unknown} value Raw value.
  * @return {boolean} Whether the value is supported.
@@ -164,6 +363,81 @@ export function isEventSuccessCompatibilityPolicy(
     value === "socialCohortBalance" ||
     value === "mutualInterestOnly" ||
     value === "questionnaireClueOnly";
+}
+
+/**
+ * Checks matching-objective membership.
+ * @param {unknown} value Raw value.
+ * @return {boolean} Whether the value is supported.
+ */
+export function isEventSuccessMatchingObjective(
+  value: unknown
+): value is EventSuccessMatchingObjective {
+  return value === "coverage" ||
+    value === "romantic" ||
+    value === "affinity" ||
+    value === "novelty" ||
+    value === "balance" ||
+    value === "spread";
+}
+
+/** Checks unit-outcome primitive membership. */
+export function isEventSuccessUnitOutcome(
+  value: unknown
+): value is EventSuccessUnitOutcome {
+  return value === "none" ||
+    value === "completion" ||
+    value === "score" ||
+    value === "rank";
+}
+
+/** Returns the implemented endpoint for an assignment algorithm. */
+function assignmentAlgorithmResolution(
+  assignmentAlgorithm: EventSuccessAssignmentAlgorithm,
+  topology: EventSuccessTopology
+): Pick<EventSuccessVariableResolution, "status" | "reason"> {
+  if (topology === "adjacency") {
+    return {
+      status: "unsupported",
+      reason: "Seat adjacency and table seating are not implemented yet.",
+    };
+  }
+  if (topology === "sequence" && assignmentAlgorithm !== "pairRotations") {
+    return {
+      status: "unsupported",
+      reason: "Sequence topology currently requires pair rotations.",
+    };
+  }
+  switch (assignmentAlgorithm) {
+  case "pacePods":
+  case "socialPods":
+    return {
+      status: "supported",
+      reason: "Assignments use the implemented micro-pod engine.",
+    };
+  case "pairRotations":
+    return {
+      status: "supported",
+      reason: topology === "sequence" ?
+        "Assignments use the capacity-aware sequence scheduler." :
+        "Assignments use the implemented pair-rotation engine.",
+    };
+  case "none":
+    return {
+      status: "unsupported",
+      reason: "This format does not select an assignment algorithm.",
+    };
+  case "teamBalancer":
+    return {
+      status: "unsupported",
+      reason: "Team balancing is not implemented yet.",
+    };
+  case "tableSeating":
+    return {
+      status: "unsupported",
+      reason: "Table seating and seat adjacency are not implemented yet.",
+    };
+  }
 }
 
 /**

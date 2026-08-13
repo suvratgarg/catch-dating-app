@@ -1,7 +1,7 @@
 {
   "$schema": "./state_matrix.schema.json",
   "version": 1,
-  "updated": "2026-08-12",
+  "updated": "2026-08-13",
   "requiredStateKinds": [
     "loading",
     "populated",
@@ -4887,7 +4887,7 @@
               "tests": [
                 "test/hosts/host_operations_screen_test.dart"
               ],
-              "notes": "Host Home separates HostHomeTab.today from HostHomeTab.events and mounts both through the production HostAppShell. Events implements the Host-v2 lifecycle workspace and, after the first-class Audience destination was added to Host navigation, is bounded at 14.93% mismatch / 19.05 meanDelta under HOST-V2-EVENTS-VISUAL-DRIFT-001 while the canonical mean-delta threshold remains 18. Today now uses a minute-refreshing countdown, event-identified cross-event waitlist tasks with exact-event routing, lifecycle-aware live run-of-show routing, and later-event rows while omitting unsupported task types; it remains open at 28.48% / 37.31 under HOST-V2-TODAY-FUNCTIONAL-PARITY-001.",
+              "notes": "Host Events is the single production HostAppShell destination for operational and lifecycle work. HostEventsClubCard maps one event snapshot into a live-or-next operational spotlight, every truthful event-identified attention task, and the Upcoming/Live/Past workspace while suppressing the featured event from duplicate lifecycle rows. The existing Host Events visual-drift threshold is historical evidence only until an approved consolidated reference replaces the pre-merge composition.",
               "previewIds": [
                 "hostHomeRouteStates",
                 "hostHomeEventSectionStates",
@@ -4931,7 +4931,7 @@
               "tests": [
                 "test/hosts/host_operations_screen_test.dart"
               ],
-              "notes": "_HostEventsScaffold owns the typed manage-event callback and pushes hostAppEventManageScreen with clubId, eventId, and event extra. HostEventLifecycleRow renders provider/router-free lifecycle data and delegates taps to its parent.",
+              "notes": "HostEventsScaffold owns one lifecycle-aware event callback and pushes hostAppEventManageScreen with clubId, eventId, event extra, and live/setup/report section. HostEventOperationalSpotlight and HostEventLifecycleRow remain provider/router-free and delegate taps to their parent.",
               "previewIds": [
                 "hostHomeRouteStates",
                 "HostEventLifecycleRow/Exact catalog"
@@ -5000,17 +5000,219 @@
             {
               "id": "DP-HOST-HOME-003",
               "status": "closed",
-              "nextAction": "HostHomeRouteState maps uid plus host-club async state into auth-required, loading, error, empty, or loaded branches before shell composition. HostHomeScreenState owns selected-club and HostHomeTab selection; HostHomeTodayDashboardState maps Today branches; HostEventsWorkspaceState owns Events loading/error/empty/populated lifecycle branches, filtering, grouping, Repeat availability, and render-ready rows."
+              "nextAction": "HostHomeRouteState maps uid plus host-club async state into auth-required, loading, error, empty, or loaded branches before shell composition. HostHomeScreenState owns selected organizer; HostEventsOverviewState owns live-or-next spotlight and attention derivation; HostEventsWorkspaceState owns lifecycle loading/error/empty/populated branches, filtering, grouping, featured-event de-duplication, Repeat availability, and render-ready rows."
             },
             {
               "id": "DP-HOST-HOME-004",
               "status": "blocked",
-              "nextAction": "Restore Events below the canonical mean-delta threshold and remove HOST-V2-EVENTS-VISUAL-DRIFT-001. Continue HOST-V2-TODAY-FUNCTIONAL-PARITY-001 by composing real pending-approval, offer, draft, and guest-inquiry sources; remove the Today regressionThresholds only after the canonical threshold passes. Additional loading/empty/role/theme variants still need design exports."
+              "nextAction": "Create and approve a canonical consolidated Events reference before recalculating or removing historical Host Events and Today comparison debt. Compose real pending-approval, offer, draft, and guest-inquiry sources into the attention model only when their backend owners exist. Additional loading/empty/role/theme variants still need design exports."
             },
             {
               "id": "DS-HOST-HOME-005",
               "status": "open",
               "nextAction": "Close feature.host_home evidence exceptions with focused tests for 12 registered route, nested-event, empty, offline, accessibility, and theme states; standalone captures for create/manage navigation; and a dedicated Widgetbook scenario for nested hosted-event offline."
+            }
+          ]
+        },
+        {
+          "id": "host.customers",
+          "routeId": "hostCustomersScreen",
+          "routeIds": [
+            "hostCustomersScreen",
+            "hostCustomerDetailScreen"
+          ],
+          "implementationPaths": [
+            "lib/hosts/presentation/customers/host_customers_screen.dart",
+            "lib/hosts/presentation/customers/host_customers_screen_state.dart",
+            "lib/hosts/presentation/customers/host_customers_controller.dart",
+            "lib/hosts/data/host_crm_repository.dart"
+          ],
+          "componentIds": [
+            "catch.button",
+            "catch.chip",
+            "catch.empty_state",
+            "catch.error_state",
+            "catch.field",
+            "catch.person_row",
+            "catch.search_field",
+            "catch.section",
+            "catch.skeleton",
+            "catch.surface",
+            "catch.top_bar"
+          ],
+          "captureIds": [],
+          "designRefs": [
+            {
+              "id": "host-customers-feature-contract",
+              "kind": "repo",
+              "status": "available",
+              "path": "design/features/host_customers.feature.json",
+              "notes": "Typed directory/detail state, action, identity, revenue, and evidence contract."
+            },
+            {
+              "id": "host-customers-generated-contract",
+              "kind": "generated",
+              "status": "available",
+              "path": "design/features/generated/host_customers.feature_contract.json",
+              "notes": "Generated Host Customers orchestration projection."
+            }
+          ],
+          "states": [
+            {
+              "id": "customers_loading",
+              "kind": "loading",
+              "status": "implemented",
+              "notes": "The directory controller and shared skeleton own initial loading; deterministic capture and dedicated preview remain planned."
+            },
+            {
+              "id": "customers_error",
+              "kind": "error",
+              "status": "implemented",
+              "notes": "CatchErrorState maps the directory error and route-scoped retry."
+            },
+            {
+              "id": "customers_empty",
+              "kind": "empty",
+              "status": "implemented",
+              "notes": "The directory explains attendance, registration, import, and manual-add supply."
+            },
+            {
+              "id": "customers_populated",
+              "kind": "populated",
+              "status": "tested",
+              "previewIds": ["hostCustomersStates"],
+              "tests": [
+                "test/hosts/host_customers_screen_state_test.dart",
+                "test/routing/host_shell_navigation_test.dart"
+              ],
+              "notes": "Populated directory reuses organizer identity, summary, search, chips, and person-row primitives."
+            },
+            {
+              "id": "customers_filtered_empty",
+              "kind": "empty",
+              "status": "tested",
+              "tests": ["test/hosts/host_customers_screen_state_test.dart"],
+              "notes": "Search and lifecycle-filter misses use a distinct active-filter empty state."
+            },
+            {
+              "id": "customers_paginating",
+              "kind": "mutation",
+              "status": "implemented",
+              "notes": "Load-more keeps existing contacts visible and de-duplicates the returned page by contact id."
+            },
+            {
+              "id": "manual_add_pending",
+              "kind": "mutation",
+              "status": "implemented",
+              "notes": "The name-only add sheet owns pending and failure feedback without inventing identity or consent."
+            },
+            {
+              "id": "customer_detail_loading",
+              "kind": "loading",
+              "status": "implemented",
+              "notes": "Nested detail uses the shared page skeleton while the contact callable resolves."
+            },
+            {
+              "id": "customer_detail_error",
+              "kind": "error",
+              "status": "implemented",
+              "notes": "Detail failure invalidates only the selected organizer-contact provider."
+            },
+            {
+              "id": "customer_detail_linked",
+              "kind": "populated",
+              "status": "tested",
+              "previewIds": ["hostCustomersStates"],
+              "tests": [
+                "test/hosts/host_crm_repository_test.dart",
+                "test/hosts/host_customers_screen_state_test.dart"
+              ],
+              "notes": "Verified linked identity can expose authoritative revenue and manager-authorized direct conversation."
+            },
+            {
+              "id": "customer_detail_unlinked",
+              "kind": "permission",
+              "status": "tested",
+              "tests": ["test/hosts/host_customers_screen_state_test.dart"],
+              "notes": "Manual and unmatched identities keep conversation and revenue availability explicitly gated."
+            },
+            {
+              "id": "customer_detail_ambiguous",
+              "kind": "permission",
+              "status": "tested",
+              "tests": ["test/hosts/host_customers_screen_state_test.dart"],
+              "notes": "Ambiguous identity candidates fail closed for direct conversation."
+            },
+            {
+              "id": "customer_revenue_exact",
+              "kind": "populated",
+              "status": "tested",
+              "previewIds": ["hostCustomersStates"],
+              "tests": ["test/hosts/host_crm_repository_test.dart"],
+              "notes": "Exact coverage displays completed non-refunded Catch payments per currency and paid-order counts."
+            },
+            {
+              "id": "customer_revenue_partial",
+              "kind": "populated",
+              "status": "implemented",
+              "notes": "Bounded payment or event history displays a partial-coverage warning instead of an exact total claim."
+            },
+            {
+              "id": "customer_revenue_unavailable",
+              "kind": "permission",
+              "status": "implemented",
+              "notes": "Unlinked or ambiguous contacts render revenue unavailable rather than zero."
+            },
+            {
+              "id": "conversation_available",
+              "kind": "populated",
+              "status": "tested",
+              "previewIds": ["hostCustomersStates"],
+              "tests": ["test/hosts/host_customers_screen_state_test.dart"],
+              "notes": "Only an unambiguous verified linked Catch identity enables the direct-conversation action."
+            },
+            {
+              "id": "conversation_unavailable",
+              "kind": "permission",
+              "status": "tested",
+              "tests": ["test/hosts/host_customers_screen_state_test.dart"],
+              "notes": "The disabled conversation card explains unlinked and ambiguous identity states."
+            },
+            {
+              "id": "offline",
+              "kind": "offline",
+              "status": "implemented",
+              "notes": "Repository errors use shared offline mapping and scoped retry; deterministic capture remains planned."
+            },
+            {
+              "id": "text_scale_2",
+              "kind": "accessibility",
+              "status": "planned",
+              "notes": "Verify directory chips, rows, stats, and detail sections at 2x text scale."
+            },
+            {
+              "id": "reduced_motion",
+              "kind": "accessibility",
+              "status": "planned",
+              "notes": "Verify bottom-sheet and route transitions with reduced motion."
+            },
+            {
+              "id": "light_dark",
+              "kind": "theme",
+              "status": "planned",
+              "notes": "Capture directory and detail with the tokenized light and dark themes."
+            }
+          ],
+          "gaps": [
+            {
+              "id": "DP-HOST-CUSTOMERS-001",
+              "status": "blocked",
+              "nextAction": "Add High spender only after payment writes maintain an indexed versioned organizer-contact spend trait; never scan all payments from the directory."
+            },
+            {
+              "id": "DP-HOST-CUSTOMERS-002",
+              "status": "open",
+              "nextAction": "Add deterministic full-shell directory/detail captures and the remaining Widgetbook recovery, identity, revenue, accessibility, and theme variants."
             }
           ]
         },

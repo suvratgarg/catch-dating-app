@@ -12,6 +12,7 @@ _EventSuccessPlan _$EventSuccessPlanFromJson(
   id: json['id'] as String,
   eventId: json['eventId'] as String,
   clubId: json['clubId'] as String,
+  layoutId: json['layoutId'] as String?,
   playbookId: json['playbookId'] as String,
   selectedModuleIds: (json['selectedModuleIds'] as List<dynamic>)
       .map((e) => e as String)
@@ -33,6 +34,13 @@ _EventSuccessPlan _$EventSuccessPlanFromJson(
           json['questionnaireConfig'] as Map<String, dynamic>?,
         ),
   activeStepIndex: (json['activeStepIndex'] as num?)?.toInt() ?? 0,
+  liveControlRevision: (json['liveControlRevision'] as num?)?.toInt() ?? 0,
+  assignmentDraftRevision:
+      (json['assignmentDraftRevision'] as num?)?.toInt() ?? 0,
+  publishedRotationRoundIndex:
+      (json['publishedRotationRoundIndex'] as num?)?.toInt() ?? -1,
+  publishedRevealRoundIndex:
+      (json['publishedRevealRoundIndex'] as num?)?.toInt() ?? -1,
   status:
       $enumDecodeNullable(_$EventSuccessPlanStatusEnumMap, json['status']) ??
       EventSuccessPlanStatus.setup,
@@ -58,6 +66,7 @@ Map<String, dynamic> _$EventSuccessPlanToJson(_EventSuccessPlan instance) =>
     <String, dynamic>{
       'eventId': instance.eventId,
       'clubId': instance.clubId,
+      'layoutId': instance.layoutId,
       'playbookId': instance.playbookId,
       'selectedModuleIds': instance.selectedModuleIds,
       'targetAttendeeCount': instance.targetAttendeeCount,
@@ -68,6 +77,10 @@ Map<String, dynamic> _$EventSuccessPlanToJson(_EventSuccessPlan instance) =>
       'compatibilityAffectsRanking': instance.compatibilityAffectsRanking,
       'questionnaireConfig': instance.questionnaireConfig.toJson(),
       'activeStepIndex': instance.activeStepIndex,
+      'liveControlRevision': instance.liveControlRevision,
+      'assignmentDraftRevision': instance.assignmentDraftRevision,
+      'publishedRotationRoundIndex': instance.publishedRotationRoundIndex,
+      'publishedRevealRoundIndex': instance.publishedRevealRoundIndex,
       'status': _$EventSuccessPlanStatusEnumMap[instance.status]!,
       'revealStatus': _$EventSuccessRevealStatusEnumMap[instance.revealStatus]!,
       'activeRevealRoundIndex': instance.activeRevealRoundIndex,

@@ -67,6 +67,7 @@ export async function projectEventParticipationToAttendee(
     phoneE164: phone ?? existing?.phoneE164 ?? null,
     email: user?.email?.trim() || existing?.email || null,
     externalReference: existing?.externalReference ?? null,
+    arrivalGroup: existing?.arrivalGroup ?? null,
     ticketType: existing?.ticketType ?? null,
     importId: existing?.importId ?? null,
     sourceRowId: existing?.sourceRowId ?? null,

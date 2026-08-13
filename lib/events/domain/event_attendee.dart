@@ -40,6 +40,7 @@ abstract class EventAttendee with _$EventAttendee {
     String? phoneE164,
     String? email,
     String? externalReference,
+    String? arrivalGroup,
     String? ticketType,
     String? importId,
     String? sourceRowId,
@@ -75,6 +76,7 @@ class EventAttendeeImportRow {
     this.phone,
     this.email,
     this.externalReference,
+    this.arrivalGroup,
     this.ticketType,
   });
 
@@ -84,6 +86,7 @@ class EventAttendeeImportRow {
   final String? phone;
   final String? email;
   final String? externalReference;
+  final String? arrivalGroup;
   final String? ticketType;
 
   Map<String, Object?> toJson() => {
@@ -93,6 +96,7 @@ class EventAttendeeImportRow {
     'phone': phone,
     'email': email,
     'externalReference': externalReference,
+    'arrivalGroup': arrivalGroup,
     'ticketType': ticketType,
   };
 }

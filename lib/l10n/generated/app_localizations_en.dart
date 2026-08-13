@@ -46,10 +46,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get consumerNavigationProfile => 'You';
 
   @override
-  String get hostNavigationToday => 'Today';
+  String get hostNavigationEvents => 'Events';
 
   @override
-  String get hostNavigationEvents => 'Events';
+  String get hostNavigationCustomers => 'Customers';
 
   @override
   String get hostNavigationInbox => 'Inbox';
@@ -5432,13 +5432,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Reveal now';
 
   @override
-  String get eventSuccessEventSuccessLiveRevealActionsLabelReset => 'Reset';
-
-  @override
-  String get eventSuccessEventSuccessLiveRevealActionsLabelResetReveal =>
-      'Reset reveal';
-
-  @override
   String eventSuccessEventSuccessLiveRevealActionsLabelRevealRoundValue1({
     required Object value1,
   }) {
@@ -6115,20 +6108,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'This preview is capped at 2,500 roster records.';
 
   @override
-  String get hostsHostTodayTitleNoActiveEventsYet => 'No active events yet';
-
-  @override
-  String hostsHostTodayBodyCreateAnEventFor({required Object name}) {
-    return 'Create an event for $name to start filling the host dashboard.';
-  }
-
-  @override
-  String get hostsHostTodayLabelNewEvent => 'New event';
-
-  @override
-  String get hostsHostTodayLabelEvents => 'Events';
-
-  @override
   String get hostsHostTodayTitleNeedsYou => 'Needs you';
 
   @override
@@ -6136,25 +6115,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'Nothing needs you right now.';
 
   @override
-  String get hostsHostTodayTitleLaterThisWeek => 'Later this week';
-
-  @override
-  String get hostsHostTodayLabelAllEvents => 'All events';
-
-  @override
   String hostsHostTodayTextLongweekdayDaypart({
     required Object longWeekday,
     required Object daypart,
   }) {
     return '$longWeekday $daypart';
-  }
-
-  @override
-  String hostsHostTodayTextGoodDaypartHostname({
-    required Object daypart,
-    required Object hostName,
-  }) {
-    return 'Good $daypart,\n$hostName';
   }
 
   @override
@@ -6182,12 +6147,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostTodayLabelSetUpRun => 'Set up & run';
-
-  @override
-  String get hostsHostTodayLabelD => 'D';
-
-  @override
-  String get hostsHostTodayLabelM => 'M';
 
   @override
   String get coreBlockUserDialogMessageYouWillStopSeeing =>
@@ -10241,6 +10200,24 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get eventSuccessControlRoomExclusionAlertTitle =>
+      'Guests need an introduction';
+
+  @override
+  String eventSuccessControlRoomExclusionAlertBody({
+    required int count,
+    required int minutes,
+  }) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count people have',
+      one: '1 person has',
+    );
+    return '$_temp0 not been assigned to anyone in $minutes minutes.';
+  }
+
+  @override
   String get eventSuccessControlRoomHelpFallback => 'Help & fallback';
 
   @override
@@ -11834,6 +11811,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsOperationalRosterFieldReference => 'Booking reference';
 
   @override
+  String get hostsOperationalRosterFieldArrivalGroup => 'Arrival group';
+
+  @override
   String get hostsOperationalRosterFieldTicket => 'Ticket type';
 
   @override
@@ -12567,4 +12547,341 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsOperationalRosterOutboxDiscard => 'Discard stale changes';
+
+  @override
+  String get eventSuccessLiveControlCancelCountdownLabel => 'Cancel countdown';
+
+  @override
+  String get eventSuccessLiveControlPublishRevealTitle =>
+      'Publish this reveal?';
+
+  @override
+  String eventSuccessLiveControlPublishRevealMessage({
+    required int roundNumber,
+  }) {
+    return 'Round $roundNumber will become visible to everyone and cannot be hidden again.';
+  }
+
+  @override
+  String get eventSuccessLiveControlPublishRevealConfirmLabel =>
+      'Publish reveal';
+
+  @override
+  String get eventSuccessLiveControlStartCountdownTitle =>
+      'Start the final countdown?';
+
+  @override
+  String eventSuccessLiveControlStartCountdownMessage({
+    required int roundNumber,
+    required int countdownSeconds,
+  }) {
+    return 'Round $roundNumber will publish after $countdownSeconds seconds and cannot be hidden again.';
+  }
+
+  @override
+  String get eventSuccessLiveControlStartCountdownConfirmLabel =>
+      'Start countdown';
+
+  @override
+  String eventSuccessLiveControlPublishRotationRoundLabel({
+    required int roundNumber,
+  }) {
+    return 'Publish round $roundNumber';
+  }
+
+  @override
+  String get eventSuccessLiveControlPublishRotationTitle =>
+      'Publish this rotation?';
+
+  @override
+  String eventSuccessLiveControlPublishRotationMessage({
+    required int roundNumber,
+  }) {
+    return 'Round $roundNumber will become visible to attendees and cannot be withdrawn.';
+  }
+
+  @override
+  String get eventSuccessLiveControlPublishRotationConfirmLabel =>
+      'Publish rotation';
+
+  @override
+  String get eventSuccessLiveControlStandingsRevealLabel => 'Standings reveal';
+
+  @override
+  String eventSuccessLiveControlPointsValue({required num points}) {
+    return '$points pts';
+  }
+
+  @override
+  String eventSuccessLiveControlRankValue({required int rank}) {
+    return 'Rank $rank';
+  }
+
+  @override
+  String eventSuccessLiveControlRecordRoundTitle({required int roundNumber}) {
+    return 'Record round $roundNumber';
+  }
+
+  @override
+  String get eventSuccessLiveControlRankEntryInstructions =>
+      'Enter one unique rank for every unit. The table stays hidden until the existing reveal.';
+
+  @override
+  String get eventSuccessLiveControlScoreEntryInstructions =>
+      'Enter this round’s score for every unit. Totals stay hidden until the existing reveal.';
+
+  @override
+  String get eventSuccessLiveControlEmptyUnitsMessage =>
+      'Generate the live units before recording outcomes.';
+
+  @override
+  String get eventSuccessLiveControlSaveRoundLabel => 'Save round for reveal';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutTitle => 'Room layout';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutSubtitle =>
+      'Choose a reusable coarse layout for live placement. This is not a to-scale floor plan.';
+
+  @override
+  String hostsEventSuccessStepRoomLayoutUnitCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count units',
+      one: '1 unit',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutSelected => 'Selected';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutCreate => 'Create reusable layout';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutWholeGroupTitle =>
+      'No room map for whole-group mode';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutWholeGroupBody =>
+      'Switch to pods, pairs, teams, or tables if this event needs mapped placement.';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutAuthorTitle =>
+      'Build a room layout';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutAuthorSubtitle =>
+      'Set the topology once, then reuse it across events.';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutName => 'Layout name';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutNameRequired =>
+      'Enter a layout name.';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutShape => 'Unit shape';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutShapeRound => 'Round tables';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutShapeRectangle =>
+      'Rectangular tables';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutShapeRow => 'Rows';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutShapeCourt => 'Courts';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutShapeZone => 'Zones';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutUnits => 'Number of units';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutCapacity => 'People per unit';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutColumns => 'Units per row';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutDecreaseUnits =>
+      'Decrease number of units';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutIncreaseUnits =>
+      'Increase number of units';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutDecreaseCapacity =>
+      'Decrease unit capacity';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutIncreaseCapacity =>
+      'Increase unit capacity';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutDecreaseColumns =>
+      'Decrease units per row';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutIncreaseColumns =>
+      'Increase units per row';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutSave => 'Save and select layout';
+
+  @override
+  String get eventSuccessRoomMapTitle => 'Room map';
+
+  @override
+  String get eventSuccessRoomMapSubtitle =>
+      'Outlined means assigned. Filled means the Host confirmed the attendee is there.';
+
+  @override
+  String get eventSuccessRoomMapAssigned => 'Assigned';
+
+  @override
+  String get eventSuccessRoomMapConfirmed => 'Host confirmed';
+
+  @override
+  String eventSuccessRoomMapPeopleCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count people',
+      one: '1 person',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get eventSuccessRoomMapSelectAttendee =>
+      'Select an attendee, then choose a destination.';
+
+  @override
+  String get eventSuccessRoomMapScopeThisRound => 'This round only';
+
+  @override
+  String get eventSuccessRoomMapScopePinned => 'Pinned until released';
+
+  @override
+  String get eventSuccessRoomMapReasonCapacity => 'This unit is at capacity.';
+
+  @override
+  String get eventSuccessRoomMapReasonSafety =>
+      'A safety separation keeps this destination unavailable.';
+
+  @override
+  String get eventSuccessRoomMapReasonConstraint =>
+      'A declared placement constraint keeps this destination unavailable.';
+
+  @override
+  String get eventSuccessRoomMapConfirmPosition => 'Confirm position';
+
+  @override
+  String get eventSuccessRoomMapReleasePinned => 'Release pinned placement';
+
+  @override
+  String get eventSuccessRoomMapDragHint =>
+      'On larger screens, drag is also available. Tap controls always work.';
+
+  @override
+  String get hostCustomersIntro =>
+      'Everyone who has attended, registered, been imported, or been added by your team.';
+
+  @override
+  String get hostCustomersAdd => 'Add customer';
+
+  @override
+  String get hostCustomersAddTitle => 'Add a customer';
+
+  @override
+  String get hostCustomersName => 'Customer name';
+
+  @override
+  String get hostCustomersAddHelp =>
+      'This creates an organizer-only contact. It does not create a Catch account or grant messaging permission.';
+
+  @override
+  String get hostCustomersFilterByTag => 'Filter by tag';
+
+  @override
+  String get hostCustomersFilterAttended => 'Attended';
+
+  @override
+  String get hostCustomersFilterAtRisk => 'At risk';
+
+  @override
+  String get hostCustomersEmpty => 'No customers yet';
+
+  @override
+  String get hostCustomersEmptyBody =>
+      'Customers appear after attendance, registration, import, or a manual add.';
+
+  @override
+  String get hostCustomersNoResults => 'No customers match these filters.';
+
+  @override
+  String get hostCustomersLoadMore => 'Load more';
+
+  @override
+  String get hostCustomersDetailAttendance => 'Attendance';
+
+  @override
+  String get hostCustomersExpected => 'Expected';
+
+  @override
+  String get hostCustomersAttendanceRate => 'Attendance rate';
+
+  @override
+  String get hostCustomersDetailRevenue => 'Revenue';
+
+  @override
+  String get hostCustomersDetailNoRevenue =>
+      'No completed Catch payments for this organizer.';
+
+  @override
+  String get hostCustomersDetailRevenueUnavailable =>
+      'Revenue is unavailable until this customer has an unambiguous linked Catch account.';
+
+  @override
+  String get hostCustomersDetailRevenuePartial =>
+      'Revenue includes known completed Catch payments only; some history may be outside this bounded result.';
+
+  @override
+  String hostCustomersDetailPaidOrders({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count paid orders',
+      one: '1 paid order',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostCustomersNewConversation => 'New conversation';
+
+  @override
+  String get hostCustomersConversationUnlinked =>
+      'A conversation becomes available after this customer is unambiguously linked to a Catch account.';
+
+  @override
+  String get hostCustomersConversationAmbiguous =>
+      'Resolve this customer’s identity before starting a conversation.';
+
+  @override
+  String get hostCustomersEventHistory => 'Past attendance';
+
+  @override
+  String get hostCustomersNoAttendance => 'No checked-in events yet.';
 }

@@ -43,7 +43,8 @@ options when specific functions need higher or lower limits.
 | `getEventRuntimeBootstrap` / `claimEventRuntimeAccess` / `submitEventRuntimeProfile` / `checkInEventRuntime` / `approveEventRuntimeClaim` | `src/eventSuccess/eventRuntime.ts` | Run the no-download attendee bootstrap, verified roster claim or Host approval, event-scoped intake, and check-in workflow |
 | `getOrganizerCrmSummary` | `src/organizers/organizerCrm.ts` | Privacy-bounded, deduplicated past-attendee and channel-readiness counts for organizer managers |
 | `getEventRosterInsights` | `src/organizers/eventRosterInsights.ts` | Manager-only, event-relative customer labels for the live operational roster; incomplete identity/history fails closed and spend is limited to completed Catch payments |
-| `listOrganizerContacts` / `getOrganizerContactDetail` / `mutateOrganizerContact` / `exportOrganizerContacts` | `src/organizers/organizerContacts.ts` | Search, inspect, safely update, and export the organizer-owned audience directory |
+| `listOrganizerContacts` / `getOrganizerContactDetail` / `createOrganizerContact` / `mutateOrganizerContact` / `exportOrganizerContacts` | `src/organizers/organizerContacts.ts` | Search, inspect, manually add, safely update, and export the organizer-owned audience directory |
+| `startOrganizerContactConversation` | `src/clubs/clubHostConversations.ts` | Start or resume a conversation with a verified, unambiguous linked organizer contact |
 | `mergeOrganizerContacts` / `unmergeOrganizerContacts` | `src/organizers/organizerContactMerges.ts` | Reversible manager-reviewed contact identity reconciliation |
 | `getOrganizerMessagingSetup` / `completeOrganizerWhatsappConnection` / `syncOrganizerWhatsappTemplates` / `sendOrganizerWhatsappTest` / `disconnectOrganizerWhatsappConnection` | `src/organizers/organizerMessagingSetup.ts` | Connect and verify an organizer-owned Meta WhatsApp sender and synchronize approved templates |
 | `upsertOrganizerCampaign` / `previewOrganizerCampaign` / `approveOrganizerCampaign` / `cancelOrganizerCampaign` / `getOrganizerCampaignReport` | `src/organizers/organizerCampaigns.ts` | Draft, freeze, approve, cancel, and report consent-gated organizer campaigns |
@@ -55,7 +56,10 @@ options when specific functions need higher or lower limits.
 | `markEventAttendance` | `src/events/` | Host marks attendance |
 | `selfCheckInAttendance` | `src/events/` | Participant self-check-in with GPS |
 | `generateEventSuccessPods` | `src/eventSuccess/` | Generate event-success pod suggestions |
-| `generateEventSuccessRotations` / `overrideEventSuccessRotations` | `src/eventSuccess/` | Generate or override event-success rotations |
+| `generateEventSuccessRotations` / `overrideEventSuccessRotations` | `src/eventSuccess/` | Generate or override revision-fenced Host-only rotation drafts |
+| `controlEventSuccessLive` / `publishEventSuccessRotationRound` | `src/eventSuccess/liveControl.ts` | Revision-fenced live state and confirmed, idempotent prepared-round publication |
+| `upsertEventSuccessLayout` / `getEventSuccessSpatialLayout` / `controlEventSuccessSpatial` | `src/eventSuccess/layoutAssets.ts` | Persist reusable room layouts, resolve event spatial state, and control revision-fenced live reveal placement |
+| `recordEventSuccessUnitOutcomes` | `src/eventSuccess/unitOutcomes.ts` | Record revision-safe unit outcomes used by standings-backed event formats |
 | `fetchEventSuccessWingmanCandidates` / `submitEventSuccessWingmanRequest` / `withdrawEventSuccessWingmanRequest` | `src/eventSuccess/` | Wingman candidate and request workflow |
 | `fetchSwipeCandidates` | `src/matching/` | Resolve privacy-filtered post-event matching candidates without exposing event rosters |
 | `setCrossPathsEventConsent` | `src/crossPaths/` | Store or revoke private event-level Cross Paths consent after confirmed booking |
@@ -110,6 +114,7 @@ options when specific functions need higher or lower limits.
 | `onMatchCreated` | `src/matching/` | `matches/{id}` onCreate — FCM push to both users |
 | `onMessageCreated` | `src/matching/` | `matches/{id}/messages/{id}` onCreate — unread conversation flag + FCM |
 | `onEventSuccessFeedbackWritten` | `src/marketplace/` | Event-success feedback write — recomputes scorecard inputs |
+| `onEventSuccessPlanLiveControlUpdated` | `src/eventSuccess/rotationDraftTrigger.ts` | Prepares guided-rotation round N+1 asynchronously after live start or round-N publication |
 | `syncClubReviewStats` | `src/reviews/` | `reviews/{id}` onWrite — recalculates club rating |
 | `onBlockCreated` | `src/safety/` | `blocks/{id}` onCreate — closes existing matches |
 | `onCrossPathsConsentWritten` | `src/crossPaths/` | Cross Paths consent onWrite — invalidates pending invitations after revocation while preserving accepted intent |
@@ -254,6 +259,13 @@ Use `src/shared/generated/firestoreAdminTypes.ts` for Admin SDK reads/writes
 that return live `FirebaseFirestore.Timestamp` instances. Do not add validation
 logic or canonical field definitions there; add or edit the relevant schema in
 `contracts/` first.
+
+## Runtime configuration
+
+`EVENT_SUCCESS_DRAFT_PREPARATION_ATTEMPTS` controls the bounded attempts used by
+the asynchronous next-rotation draft trigger. It accepts an integer from 1 to
+10 and defaults to 3 when absent or invalid. This configuration affects retry
+resilience only; rotation publication never performs synchronous generation.
 
 ## Secrets
 

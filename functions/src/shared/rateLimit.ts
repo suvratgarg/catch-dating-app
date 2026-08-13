@@ -83,6 +83,9 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   markEventAttendeeAttendance: {maxRequests: 120, windowMs: 60 * 1000},
   registerPublicEvent: {maxRequests: 10, windowMs: 60 * 60 * 1000},
   getEventRuntimeBootstrap: {maxRequests: 60, windowMs: 60 * 1000},
+  getEventSuccessSpatialLayout: {maxRequests: 60, windowMs: 60 * 1000},
+  upsertEventSuccessLayout: {maxRequests: 20, windowMs: 60 * 1000},
+  controlEventSuccessSpatial: {maxRequests: 120, windowMs: 60 * 1000},
   claimEventRuntimeAccess: {maxRequests: 10, windowMs: 60 * 60 * 1000},
   submitEventRuntimeProfile: {maxRequests: 30, windowMs: 60 * 60 * 1000},
   checkInEventRuntime: {maxRequests: 20, windowMs: 60 * 1000},
@@ -152,6 +155,8 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   fetchEventSuccessWingmanCandidates: {maxRequests: 30, windowMs: 60 * 1000},
   submitEventSuccessWingmanRequest: {maxRequests: 10, windowMs: 60 * 1000},
   withdrawEventSuccessWingmanRequest: {maxRequests: 10, windowMs: 60 * 1000},
+  controlEventSuccessLive: {maxRequests: 120, windowMs: 60 * 1000},
+  publishEventSuccessRotationRound: {maxRequests: 30, windowMs: 60 * 1000},
   // Places is keystroke-driven, so it needs a higher cap than mutations.
   placesAutocomplete: {maxRequests: 60, windowMs: 60 * 1000},
   placeDetails: {maxRequests: 30, windowMs: 60 * 1000},

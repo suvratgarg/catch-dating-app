@@ -37,17 +37,18 @@
       ]
     },
     {
-      "branchKey": "keys.hostToday",
-      "routeName": "Routes.hostHomeScreen.name",
+      "branchKey": "keys.hostEvents",
+      "routeName": "Routes.hostEventsScreen.name",
       "surfaces": [
         {"path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart", "symbol": "_HostEventsScaffoldState", "owner": "CatchScreenHeaderTitle.block"}
       ]
     },
     {
-      "branchKey": "keys.hostEvents",
-      "routeName": "Routes.hostEventsScreen.name",
+      "branchKey": "keys.hostCustomers",
+      "routeName": "Routes.hostCustomersScreen.name",
       "surfaces": [
-        {"path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart", "symbol": "_HostEventsScaffoldState", "owner": "CatchScreenHeaderTitle.block"}
+        {"path": "lib/hosts/presentation/customers/host_customers_screen.dart", "symbol": "_HostCustomersScreenState", "owner": "CatchScreenHeaderTitle.block"},
+        {"path": "lib/hosts/presentation/customers/host_customers_screen.dart", "symbol": "HostCustomersNoOrganizer", "owner": "CatchScreenHeaderTitle.block"}
       ]
     },
     {
@@ -153,6 +154,14 @@
     },
     {
       "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
+      "leading": "back"
+    },
+    {
+      "path": "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar",
       "owner": "CatchTopBar",
@@ -300,13 +309,6 @@
       "role": "step-flow",
       "owner": "CatchStepHeader",
       "reason": "Create Event delegates wizard progress and navigation chrome to the canonical step header."
-    },
-    {
-      "path": "lib/hosts/presentation/host_operations/host_today.dart",
-      "symbol": "HostTodayHeader",
-      "role": "screen",
-      "owner": "CatchScreenHeaderTitle.block",
-      "reason": "Host Today owns a body-level identity header and delegates its greeting, daypart, and action geometry to the canonical screen title block."
     },
     {
       "path": "lib/onboarding/presentation/onboarding_screen.dart",

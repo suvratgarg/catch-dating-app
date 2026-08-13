@@ -21,6 +21,8 @@ export interface EventSuccessAssignmentDocument {
   unitKind?: "wholeGroup" | "pods" | "pairs" | "teams" | "tables";
   unitIndex?: number;
   unitLabel?: string;
+  layoutUnitId?: string;
+  confirmedLayoutUnitId?: string | null;
   whySummary?: string;
   /**
    * @maxItems 12
@@ -97,6 +99,7 @@ export interface EventSuccessAssignmentDocument {
     peerUid: string;
     unitKind?: "pairs";
     unitIndex?: number;
+    resourceUnitId?: string;
     peerCount?: number;
     compatibility:
       | "mutual_interest"

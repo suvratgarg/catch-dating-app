@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_analytics_kit.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
@@ -32,12 +33,16 @@ import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_exclusion_ledger.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_preference.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_runtime.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
@@ -45,6 +50,7 @@ import 'package:catch_dating_app/event_success/presentation/event_success_featur
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_room_map.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_setup_body.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_skeletons.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
@@ -90,7 +96,8 @@ class EventSuccessHostSection extends ConsumerStatefulWidget {
     this.operationalRosterSummary,
     this.onOpenGuests,
     this.fixtureActions,
-  });
+    this.exclusionAlertThreshold = defaultEventSuccessExclusionAlertThreshold,
+  }) : assert(exclusionAlertThreshold > Duration.zero);
 
   final Event event;
   final EventSuccessHostTab initialTab;
@@ -99,6 +106,7 @@ class EventSuccessHostSection extends ConsumerStatefulWidget {
   final EventSuccessOperationalRosterSummary? operationalRosterSummary;
   final VoidCallback? onOpenGuests;
   final EventSuccessHostFixtureActions? fixtureActions;
+  final Duration exclusionAlertThreshold;
 
   @override
   ConsumerState<EventSuccessHostSection> createState() =>
@@ -139,8 +147,14 @@ class _EventSuccessHostSectionState
     final revealRoundMutation = ref.watch(
       EventSuccessController.revealRoundMutation,
     );
-    final resetRevealMutation = ref.watch(
-      EventSuccessController.resetRevealMutation,
+    final cancelRevealCountdownMutation = ref.watch(
+      EventSuccessController.cancelRevealCountdownMutation,
+    );
+    final recordUnitOutcomesMutation = ref.watch(
+      EventSuccessController.recordUnitOutcomesMutation,
+    );
+    final publishRotationRoundMutation = ref.watch(
+      EventSuccessController.publishRotationRoundMutation,
     );
     final persistedPlan = planAsync.asData?.value;
     final hasSavedGuide = persistedPlan != null;
@@ -152,6 +166,24 @@ class _EventSuccessHostSectionState
         hasSavedGuide && (showTabs || initialTab == EventSuccessHostTab.live);
     final shouldLoadPreferences = shouldLoadAssignments;
     final shouldLoadWingmanRequests = shouldLoadAssignments;
+    final unitOutcome = EventSuccessActivityProfile.forFormat(
+      event.eventFormat,
+    ).unitOutcome;
+    final shouldLoadStandings =
+        shouldLoadAssignments &&
+        (unitOutcome == EventSuccessUnitOutcome.score ||
+            unitOutcome == EventSuccessUnitOutcome.rank);
+    final AsyncValue<EventSuccessStandings?> standingsAsync =
+        shouldLoadStandings
+        ? ref.watch(watchEventSuccessStandingsProvider(event.id))
+        : const AsyncData<EventSuccessStandings?>(null);
+    final AsyncValue<EventSuccessLayout?> spatialLayoutAsync =
+        shouldLoadAssignments &&
+            persistedPlan.layoutId != null &&
+            persistedPlan.structureConfig.unitKind !=
+                EventSuccessUnitKind.wholeGroup
+        ? ref.watch(eventSuccessSpatialLayoutProvider(event.id))
+        : const AsyncData<EventSuccessLayout?>(null);
     final AsyncValue<EventParticipationRoster> rosterAsync = shouldLoadRoster
         ? ref.watch(watchEventParticipationRosterProvider(event.id))
         : AsyncData(EventParticipationRoster.empty());
@@ -173,6 +205,9 @@ class _EventSuccessHostSectionState
     final generateGuidedRotationsError =
         generateGuidedRotationsMutation.hasError
         ? _mutationError(generateGuidedRotationsMutation)
+        : null;
+    final recordUnitOutcomesError = recordUnitOutcomesMutation.hasError
+        ? _mutationError(recordUnitOutcomesMutation)
         : null;
     final AsyncValue<EventSuccessScorecard?> scorecardAsync =
         shouldLoadScorecard
@@ -199,7 +234,14 @@ class _EventSuccessHostSectionState
         shouldLoadAssignments
         ? ref.watch(watchEventSuccessRotationAssignmentsProvider(event.id))
         : const AsyncData(<EventSuccessAssignment>[]);
+    final AsyncValue<List<EventSuccessAssignmentDraft>> rotationDraftsAsync =
+        shouldLoadAssignments
+        ? ref.watch(watchEventSuccessRotationDraftsProvider(event.id))
+        : const AsyncData(<EventSuccessAssignmentDraft>[]);
     final rotationAssignmentsPreview =
+        rotationDraftsAsync.asData?.value
+            .map((draft) => draft.assignment)
+            .toList(growable: false) ??
         rotationAssignmentsAsync.asData?.value ??
         const <EventSuccessAssignment>[];
     final rotationParticipantUidsKey = eventSuccessPeerUidsKey(
@@ -245,6 +287,7 @@ class _EventSuccessHostSectionState
         assignmentParticipantProfilesAsync,
       ),
       rotationAssignmentsState: _catchAsyncState(rotationAssignmentsAsync),
+      rotationDraftsState: _catchAsyncState(rotationDraftsAsync),
       rotationParticipantProfilesState: _catchAsyncState(
         rotationParticipantProfilesAsync,
       ),
@@ -288,13 +331,16 @@ class _EventSuccessHostSectionState
       event: event,
       plan: state.plan,
       planIsPersisted: state.planIsPersisted,
+      spatialLayout: spatialLayoutAsync.asData?.value,
       roster: state.roster,
       scorecard: state.scorecard,
       assignments: state.assignments,
       assignmentParticipantProfiles: state.assignmentParticipantProfiles,
       rotationAssignments: state.rotationAssignments,
+      rotationDraftAssignments: state.rotationDraftAssignments,
       rotationParticipantProfiles: state.rotationParticipantProfiles,
       preferences: state.preferences,
+      standings: standingsAsync.asData?.value,
       wingmanRequests: state.wingmanRequests,
       wingmanProfiles: state.wingmanProfiles,
       initialTab: initialTab,
@@ -316,10 +362,15 @@ class _EventSuccessHostSectionState
         stepError: updateStepError,
         completeError: completePlanError,
       ),
-      onSetLiveStep: (index) =>
-          _setEventSuccessLiveStep(eventId: event.id, index: index),
-      onCompleteLiveGuide: () =>
-          _completeEventSuccessLiveGuide(eventId: event.id),
+      onSetLiveStep: (index) => _setEventSuccessLiveStep(
+        eventId: event.id,
+        index: index,
+        expectedRevision: state.plan.liveControlRevision,
+      ),
+      onCompleteLiveGuide: () => _completeEventSuccessLiveGuide(
+        eventId: event.id,
+        expectedRevision: state.plan.liveControlRevision,
+      ),
       microPodsGenerationState:
           EventSuccessAssignmentGenerationActionState.resolve(
             pending: generateMicroPodsMutation.isPending,
@@ -327,13 +378,25 @@ class _EventSuccessHostSectionState
           ),
       rotationsGenerationState:
           EventSuccessAssignmentGenerationActionState.resolve(
-            pending: generateGuidedRotationsMutation.isPending,
-            error: generateGuidedRotationsError,
+            pending:
+                generateGuidedRotationsMutation.isPending ||
+                publishRotationRoundMutation.isPending,
+            error: publishRotationRoundMutation.hasError
+                ? _mutationError(publishRotationRoundMutation)
+                : generateGuidedRotationsError,
           ),
       onGenerateMicroPods: () =>
           _generateEventSuccessMicroPods(eventId: event.id),
-      onGenerateGuidedRotations: () =>
-          _generateEventSuccessGuidedRotations(eventId: event.id),
+      onGenerateGuidedRotations: () => _generateEventSuccessGuidedRotations(
+        eventId: event.id,
+        expectedRevision: state.plan.liveControlRevision,
+      ),
+      onPublishGuidedRotationRound: (roundIndex) =>
+          _publishEventSuccessGuidedRotationRound(
+            eventId: event.id,
+            roundIndex: roundIndex,
+            expectedRevision: state.plan.liveControlRevision,
+          ),
       onOverrideGroupAssignments: (rounds) =>
           _overrideEventSuccessGroupAssignments(
             eventId: event.id,
@@ -342,31 +405,85 @@ class _EventSuccessHostSectionState
       onOverrideGuidedRotations: (rounds) =>
           _overrideEventSuccessGuidedRotations(
             eventId: event.id,
+            expectedRevision: state.plan.liveControlRevision,
             rounds: rounds,
           ),
+      onPreviewSpatial: (assignment) => _controlEventSuccessSpatial(
+        eventId: event.id,
+        expectedRevision: state.plan.liveControlRevision,
+        action: EventSuccessSpatialAction.previewReassignment,
+        assignment: assignment,
+      ).then((result) => result.destinations),
+      onReassignSpatial: (assignment, destinationUnitId, scope) =>
+          _controlEventSuccessSpatial(
+            eventId: event.id,
+            expectedRevision: state.plan.liveControlRevision,
+            action: EventSuccessSpatialAction.reassign,
+            assignment: assignment,
+            destinationUnitId: destinationUnitId,
+            scope: scope,
+          ),
+      onConfirmSpatial: (assignment) => _controlEventSuccessSpatial(
+        eventId: event.id,
+        expectedRevision: state.plan.liveControlRevision,
+        action: EventSuccessSpatialAction.confirmPosition,
+        assignment: assignment,
+      ),
+      onReleaseSpatial: (assignment) => _controlEventSuccessSpatial(
+        eventId: event.id,
+        expectedRevision: state.plan.liveControlRevision,
+        action: EventSuccessSpatialAction.releasePinned,
+        assignment: assignment,
+      ),
       revealActionState: EventSuccessRevealActionState.resolve(
         startPending: startRevealCountdownMutation.isPending,
         revealPending: revealRoundMutation.isPending,
-        resetPending: resetRevealMutation.isPending,
+        resetPending: cancelRevealCountdownMutation.isPending,
         startError: startRevealCountdownMutation.hasError
             ? (startRevealCountdownMutation as MutationError).error
             : null,
         revealError: revealRoundMutation.hasError
             ? (revealRoundMutation as MutationError).error
             : null,
-        resetError: resetRevealMutation.hasError
-            ? (resetRevealMutation as MutationError).error
+        resetError: cancelRevealCountdownMutation.hasError
+            ? (cancelRevealCountdownMutation as MutationError).error
             : null,
       ),
       onStartRevealCountdown: (roundIndex, _) =>
           _startEventSuccessRevealCountdown(
             eventId: event.id,
             roundIndex: roundIndex,
+            expectedRevision: state.plan.liveControlRevision,
           ),
-      onRevealRound: (roundIndex) =>
-          _revealEventSuccessRound(eventId: event.id, roundIndex: roundIndex),
-      onResetReveal: () => _resetEventSuccessReveal(eventId: event.id),
+      onRevealRound: (roundIndex) => _revealEventSuccessRound(
+        eventId: event.id,
+        roundIndex: roundIndex,
+        expectedRevision: state.plan.liveControlRevision,
+      ),
+      onResetReveal: () => _cancelEventSuccessRevealCountdown(
+        eventId: event.id,
+        expectedRevision: state.plan.liveControlRevision,
+      ),
+      outcomeActionState: EventSuccessOutcomeActionState(
+        isLoading:
+            standingsAsync.isLoading || recordUnitOutcomesMutation.isPending,
+        error: standingsAsync.hasError
+            ? standingsAsync.error
+            : recordUnitOutcomesError,
+      ),
+      onRecordOutcomes:
+          ({
+            required expectedRevision,
+            required roundIndex,
+            required entries,
+          }) => _recordEventSuccessUnitOutcomes(
+            eventId: event.id,
+            expectedRevision: expectedRevision,
+            roundIndex: roundIndex,
+            entries: entries,
+          ),
       fixtureActions: fixtureActions,
+      exclusionAlertThreshold: widget.exclusionAlertThreshold,
     );
   }
 
@@ -387,6 +504,28 @@ class _EventSuccessHostSectionState
     });
   }
 
+  Future<EventSuccessSpatialActionResult> _controlEventSuccessSpatial({
+    required String eventId,
+    required int expectedRevision,
+    required EventSuccessSpatialAction action,
+    required EventSuccessAssignment assignment,
+    String? destinationUnitId,
+    EventSuccessSpatialScope? scope,
+  }) => EventSuccessController.spatialControlMutation.run(
+    ref,
+    (tx) => tx
+        .get(eventSuccessControllerProvider.notifier)
+        .controlSpatialPlacement(
+          eventId: eventId,
+          expectedRevision: expectedRevision,
+          action: action,
+          moduleId: assignment.moduleId,
+          uid: assignment.uid,
+          destinationUnitId: destinationUnitId,
+          scope: scope,
+        ),
+  );
+
   Future<void> _generateEventSuccessMicroPods({required String eventId}) {
     return EventSuccessController.generateMicroPodsMutation.run(
       ref,
@@ -396,45 +535,106 @@ class _EventSuccessHostSectionState
     );
   }
 
-  Future<void> _generateEventSuccessGuidedRotations({required String eventId}) {
+  Future<void> _generateEventSuccessGuidedRotations({
+    required String eventId,
+    required int expectedRevision,
+  }) {
     return EventSuccessController.generateGuidedRotationsMutation.run(
       ref,
       (tx) => tx
           .get(eventSuccessControllerProvider.notifier)
-          .generateGuidedRotations(eventId: eventId),
+          .generateGuidedRotations(
+            eventId: eventId,
+            expectedRevision: expectedRevision,
+          ),
     );
   }
 
   Future<void> _startEventSuccessRevealCountdown({
     required String eventId,
     required int roundIndex,
+    required int expectedRevision,
   }) {
     return EventSuccessController.startRevealCountdownMutation.run(
       ref,
       (tx) => tx
           .get(eventSuccessControllerProvider.notifier)
-          .startRevealCountdown(eventId: eventId, roundIndex: roundIndex),
+          .startRevealCountdown(
+            eventId: eventId,
+            roundIndex: roundIndex,
+            expectedRevision: expectedRevision,
+            confirmed: true,
+          ),
     );
   }
 
   Future<void> _revealEventSuccessRound({
     required String eventId,
     required int roundIndex,
+    required int expectedRevision,
   }) {
     return EventSuccessController.revealRoundMutation.run(
       ref,
       (tx) => tx
           .get(eventSuccessControllerProvider.notifier)
-          .revealRound(eventId: eventId, roundIndex: roundIndex),
+          .revealRound(
+            eventId: eventId,
+            roundIndex: roundIndex,
+            expectedRevision: expectedRevision,
+            confirmed: true,
+          ),
     );
   }
 
-  Future<void> _resetEventSuccessReveal({required String eventId}) {
-    return EventSuccessController.resetRevealMutation.run(
+  Future<void> _cancelEventSuccessRevealCountdown({
+    required String eventId,
+    required int expectedRevision,
+  }) {
+    return EventSuccessController.cancelRevealCountdownMutation.run(
       ref,
       (tx) => tx
           .get(eventSuccessControllerProvider.notifier)
-          .resetReveal(eventId: eventId),
+          .cancelRevealCountdown(
+            eventId: eventId,
+            expectedRevision: expectedRevision,
+          ),
+    );
+  }
+
+  Future<void> _recordEventSuccessUnitOutcomes({
+    required String eventId,
+    required int expectedRevision,
+    required int roundIndex,
+    required List<EventSuccessUnitOutcomeEntryInput> entries,
+  }) {
+    return EventSuccessController.recordUnitOutcomesMutation.run(
+      ref,
+      (tx) => tx
+          .get(eventSuccessControllerProvider.notifier)
+          .recordUnitOutcomes(
+            eventId: eventId,
+            expectedRevision: expectedRevision,
+            roundIndex: roundIndex,
+            entries: entries,
+          ),
+    );
+  }
+
+  Future<void> _publishEventSuccessGuidedRotationRound({
+    required String eventId,
+    required int roundIndex,
+    required int expectedRevision,
+  }) {
+    return EventSuccessController.publishRotationRoundMutation.run(
+      ref,
+      (tx) => tx
+          .get(eventSuccessControllerProvider.notifier)
+          .publishGuidedRotationRound(
+            eventId: eventId,
+            roundIndex: roundIndex,
+            expectedRevision: expectedRevision,
+            confirmed: true,
+          ),
     );
   }
 
@@ -452,19 +652,25 @@ class _EventSuccessHostSectionState
 
   Future<void> _overrideEventSuccessGuidedRotations({
     required String eventId,
+    required int expectedRevision,
     required List<EventSuccessRotationOverrideRound> rounds,
   }) {
     return EventSuccessController.overrideGuidedRotationsMutation.run(
       ref,
       (tx) => tx
           .get(eventSuccessControllerProvider.notifier)
-          .overrideGuidedRotations(eventId: eventId, rounds: rounds),
+          .overrideGuidedRotations(
+            eventId: eventId,
+            expectedRevision: expectedRevision,
+            rounds: rounds,
+          ),
     );
   }
 
   Future<void> _setEventSuccessLiveStep({
     required String eventId,
     required int index,
+    required int expectedRevision,
   }) {
     unawaited(
       ref
@@ -475,11 +681,18 @@ class _EventSuccessHostSectionState
       ref,
       (tx) => tx
           .get(eventSuccessControllerProvider.notifier)
-          .updateActiveStep(eventId: eventId, activeStepIndex: index),
+          .updateActiveStep(
+            eventId: eventId,
+            activeStepIndex: index,
+            expectedRevision: expectedRevision,
+          ),
     );
   }
 
-  Future<void> _completeEventSuccessLiveGuide({required String eventId}) {
+  Future<void> _completeEventSuccessLiveGuide({
+    required String eventId,
+    required int expectedRevision,
+  }) {
     unawaited(
       ref
           .read(eventSuccessLiveEffectsControllerProvider)
@@ -487,8 +700,9 @@ class _EventSuccessHostSectionState
     );
     return EventSuccessController.completePlanMutation.run(
       ref,
-      (tx) =>
-          tx.get(eventSuccessControllerProvider.notifier).completePlan(eventId),
+      (tx) => tx
+          .get(eventSuccessControllerProvider.notifier)
+          .completePlan(eventId: eventId, expectedRevision: expectedRevision),
     );
   }
 
@@ -508,6 +722,8 @@ class _EventSuccessHostSectionState
         ref.invalidate(watchEventSuccessAssignmentsProvider(eventId));
       case EventSuccessHostRetryIntent.rotationAssignments:
         ref.invalidate(watchEventSuccessRotationAssignmentsProvider(eventId));
+      case EventSuccessHostRetryIntent.rotationDrafts:
+        ref.invalidate(watchEventSuccessRotationDraftsProvider(eventId));
       case EventSuccessHostRetryIntent.assignmentParticipantProfiles:
         ref.invalidate(
           eventSuccessAssignmentPeerProfilesProvider(
@@ -545,6 +761,7 @@ AppErrorContext _eventSuccessHostRetryContext(
     EventSuccessHostRetryIntent.roster ||
     EventSuccessHostRetryIntent.assignments ||
     EventSuccessHostRetryIntent.rotationAssignments ||
+    EventSuccessHostRetryIntent.rotationDrafts ||
     EventSuccessHostRetryIntent.preferences ||
     EventSuccessHostRetryIntent.wingmanRequests ||
     EventSuccessHostRetryIntent.scorecard => AppErrorContext.event,
@@ -740,13 +957,16 @@ class EventSuccessHostPanel extends StatefulWidget {
     required this.event,
     required this.plan,
     required this.planIsPersisted,
+    this.spatialLayout,
     required this.roster,
     this.scorecard,
     this.assignments = const [],
     this.assignmentParticipantProfiles = const [],
     this.rotationAssignments = const [],
+    this.rotationDraftAssignments = const [],
     this.rotationParticipantProfiles = const [],
     this.preferences = const [],
+    this.standings,
     this.wingmanRequests = const [],
     this.wingmanProfiles = const [],
     this.initialTab = EventSuccessHostTab.setup,
@@ -767,25 +987,37 @@ class EventSuccessHostPanel extends StatefulWidget {
         const EventSuccessAssignmentGenerationActionState(),
     this.onGenerateMicroPods,
     this.onGenerateGuidedRotations,
+    this.onPublishGuidedRotationRound,
     this.onOverrideGroupAssignments,
     this.onOverrideGuidedRotations,
+    this.onPreviewSpatial,
+    this.onReassignSpatial,
+    this.onConfirmSpatial,
+    this.onReleaseSpatial,
     this.revealActionState = const EventSuccessRevealActionState(),
     this.onStartRevealCountdown,
     this.onRevealRound,
     this.onResetReveal,
+    this.outcomeActionState = const EventSuccessOutcomeActionState(),
+    this.onRecordOutcomes,
     this.fixtureActions,
-  });
+    this.exclusionAlertThreshold = defaultEventSuccessExclusionAlertThreshold,
+    this.exclusionReferenceNow,
+  }) : assert(exclusionAlertThreshold > Duration.zero);
 
   final Event event;
   final EventSuccessPlan plan;
   final bool planIsPersisted;
+  final EventSuccessLayout? spatialLayout;
   final EventParticipationRoster roster;
   final EventSuccessScorecard? scorecard;
   final List<EventSuccessAssignment> assignments;
   final List<PublicProfile> assignmentParticipantProfiles;
   final List<EventSuccessAssignment> rotationAssignments;
+  final List<EventSuccessAssignment> rotationDraftAssignments;
   final List<PublicProfile> rotationParticipantProfiles;
   final List<EventSuccessPreference> preferences;
+  final EventSuccessStandings? standings;
   final List<EventSuccessWingmanRequest> wingmanRequests;
   final List<PublicProfile> wingmanProfiles;
   final EventSuccessHostTab initialTab;
@@ -806,16 +1038,32 @@ class EventSuccessHostPanel extends StatefulWidget {
   final EventSuccessAssignmentGenerationActionState rotationsGenerationState;
   final Future<void> Function()? onGenerateMicroPods;
   final Future<void> Function()? onGenerateGuidedRotations;
+  final Future<void> Function(int roundIndex)? onPublishGuidedRotationRound;
   final Future<void> Function(List<EventSuccessGroupOverrideRound> rounds)?
   onOverrideGroupAssignments;
   final Future<void> Function(List<EventSuccessRotationOverrideRound> rounds)?
   onOverrideGuidedRotations;
+  final EventSuccessSpatialPreview? onPreviewSpatial;
+  final EventSuccessSpatialReassign? onReassignSpatial;
+  final Future<void> Function(EventSuccessAssignment assignment)?
+  onConfirmSpatial;
+  final Future<void> Function(EventSuccessAssignment assignment)?
+  onReleaseSpatial;
   final EventSuccessRevealActionState revealActionState;
   final Future<void> Function(int roundIndex, int countdownSeconds)?
   onStartRevealCountdown;
   final Future<void> Function(int roundIndex)? onRevealRound;
   final Future<void> Function()? onResetReveal;
+  final EventSuccessOutcomeActionState outcomeActionState;
+  final Future<void> Function({
+    required int expectedRevision,
+    required int roundIndex,
+    required List<EventSuccessUnitOutcomeEntryInput> entries,
+  })?
+  onRecordOutcomes;
   final EventSuccessHostFixtureActions? fixtureActions;
+  final Duration exclusionAlertThreshold;
+  final DateTime? exclusionReferenceNow;
 
   @override
   State<EventSuccessHostPanel> createState() => _EventSuccessHostPanelState();
@@ -852,12 +1100,15 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         event: widget.event,
         plan: widget.plan,
         planIsPersisted: widget.planIsPersisted,
+        spatialLayout: widget.spatialLayout,
         roster: widget.roster,
         assignments: widget.assignments,
         assignmentParticipantProfiles: widget.assignmentParticipantProfiles,
         rotationAssignments: widget.rotationAssignments,
+        rotationDraftAssignments: widget.rotationDraftAssignments,
         rotationParticipantProfiles: widget.rotationParticipantProfiles,
         preferences: widget.preferences,
+        standings: widget.standings,
         wingmanRequests: widget.wingmanRequests,
         wingmanProfiles: widget.wingmanProfiles,
         compactLiveControls: widget.compactLiveControls,
@@ -886,13 +1137,22 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
           widget.fixtureActions?.onGenerateGuidedRotations,
           widget.onGenerateGuidedRotations,
         ),
+        onPublishGuidedRotationRound: widget.onPublishGuidedRotationRound,
         onOverrideGroupAssignments: _groupOverrideCallback(),
         onOverrideGuidedRotations: _rotationOverrideCallback(),
+        onPreviewSpatial: widget.onPreviewSpatial,
+        onReassignSpatial: widget.onReassignSpatial,
+        onConfirmSpatial: widget.onConfirmSpatial,
+        onReleaseSpatial: widget.onReleaseSpatial,
         revealActionState: widget.revealActionState,
         onStartRevealCountdown: _startRevealCountdownCallback(),
         onRevealRound: _revealRoundCallback(),
         onResetReveal: _resetRevealCallback(),
+        outcomeActionState: widget.outcomeActionState,
+        onRecordOutcomes: widget.onRecordOutcomes,
         fixtureActions: widget.fixtureActions,
+        exclusionAlertThreshold: widget.exclusionAlertThreshold,
+        exclusionReferenceNow: widget.exclusionReferenceNow,
         embedded: widget.embedded,
       ),
       EventSuccessHostTab.report => ReportTab(

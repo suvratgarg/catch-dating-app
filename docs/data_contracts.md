@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.15.0
-updated: 2026-08-12
+version: 1.21.0
+updated: 2026-08-13
 owner: recursive_audit_loop
 status: active
 ---
@@ -47,6 +47,113 @@ Read this before changing:
 
 Do not hand-edit generated outputs. Change the contract source, run the schema
 generator, and commit the generated diff.
+
+### Event Success Format Primitives
+
+`contracts/shared/event_common.schema.json` owns the closed
+`eventSuccessMatchingObjective` enum (`coverage`, `romantic`, `affinity`,
+`novelty`, `balance`, and `spread`) and the optional `matchingObjective` format
+primitive. The same source owns the closed `eventSuccessUnitOutcome` enum
+(`none`, `completion`, `score`, and `rank`) and its optional `unitOutcome`
+primitive. The schema generator projects those contracts into Functions, Dart,
+and tool registries. Runtime resolution, including the profile-free `coverage`
+default, format-bound outcome defaults, and explicit unsupported assignment
+algorithms, is owned by the Event Success format resolver documented in
+`docs/event_success.md`; generated contract files must not encode a separate
+fallback.
+
+### Event Success Live-Control Boundary
+
+`contracts/firestore/event_success_plans.schema.json` declares the persisted
+live revision and monotonic publication cursors. Direct clients serialize only
+setup-owned plan fields; `liveControlRevision`, `assignmentDraftRevision`,
+`publishedRotationRoundIndex`, and `publishedRevealRoundIndex` are written by
+backend live-control transactions. Legacy documents may omit these fields and
+resolve to their schema defaults.
+
+Prepared guided rotations use
+`eventSuccessAssignmentDrafts/{eventId_moduleId_uid}` and the source schema
+`contracts/firestore/event_success_assignment_drafts.schema.json`. Each wrapper
+binds the event, organizer, attendee, module, target round, base assignment
+revision, and full Host-preview assignment. Rules permit only the event Host to
+read drafts and deny every direct client write. Attendee-readable
+`eventSuccessAssignments` contain only slots through the rotation round
+published by `publishEventSuccessRotationRound`; later precomputed slots remain
+inside the Host-only draft.
+
+Live actions, draft preparation, and rotation publication use the generated
+callable request schemas under `contracts/callables/`. Every mutating request
+carries an expected revision, and reveal or rotation publication also carries
+explicit confirmation. The asynchronous draft trigger's bounded retry count is
+deployment configuration, not a persisted plan constant.
+
+### Event Success Spatial Layout Boundary
+
+`contracts/shared/event_success_layout.schema.json` owns the reusable
+parametric layout shape: coarse integer-grid units with bounded capacity,
+stable order, and the closed `round`, `rect`, `row`, `court`, and `zone` enum.
+`contracts/firestore/organizer_event_success_layouts.schema.json` stores those
+assets at `organizerEventSuccessLayouts/{organizerId_layoutId}`. Layouts are
+organizer-scoped, not event-scoped, and derived coordinates are never stored.
+Organizer managers may query their assets; all direct client writes are denied.
+
+`eventSuccessPlans.layoutId` selects an asset. Assignment documents separately
+store `layoutUnitId` and nullable `confirmedLayoutUnitId`; assigned position is
+not evidence of Host confirmation. `affinityConstraints` and
+`spatialOverrides` retain the explicit T2 `thisRound` / `pinned` consequence.
+The spatial callable request/response schemas own authoring, authorized layout
+fetch, destination preview, reassignment, confirmation, and release. Mutating
+actions carry `expectedRevision` and share `liveControlRevision` with the T4
+control path.
+
+`contracts/catalogs/event_success_layout.json` is the cross-runtime fixture for
+all five shapes and normalized grid-cell rendering. Unit proximity is a
+complete Euclidean graph derived from the stored grid with no cutoff. A
+`wholeGroup` structure suppresses layout projection even if a legacy plan or
+assignment contains stale spatial fields.
+
+### Event Success Sequence Capacity Boundary
+
+`contracts/shared/event_common.schema.json` owns the closed `topology` values
+(`set`, `sequence`, `adjacency`) and the optional `resourceCapacity` object.
+`concurrentUnits` is a configurable simultaneous-resource limit; null means
+unconstrained. `resourceLabelId` is one of `court`, `table`, `lane`, or `board`.
+`seatsPerUnit` may be non-null only for `adjacency` and does not enable the
+deferred table-seating engine.
+
+`sequence` is implemented only with `pairRotations`. The server scheduler
+produces ordered, capacity-bounded rounds, explicit sit-out slots, and stable
+`resourceUnitId` values on rotation slots. It consumes the same cumulative
+exclusion totals used by T3 and the derived `unitProximity` graph from T5.
+`adjacency`, `tableSeating`, and other sequence-algorithm combinations remain
+explicitly unsupported in the exhaustive resolution table; no neighbouring
+engine fallback is permitted.
+
+### Event Success Unit Outcomes And Standings
+
+`contracts/firestore/event_success_unit_outcomes.schema.json` owns the
+server-written round facts at `eventSuccessUnitOutcomes/{eventId}`. One entry
+contains exactly one of `completed`, `score`, or `rank`; duplicate units,
+partial rank orders, non-sequential new rounds, and values that do not match the
+saved `unitOutcome` fail closed. Outcome facts are Host-readable and never
+direct-client writable.
+
+`recordEventSuccessUnitOutcomes` is the organizer-manager-only,
+App-Check-protected writer. Its generated request carries `expectedRevision`, one round
+index, and a complete unit-entry set. Exact replay is idempotent before revision
+checking. A correction replaces that round: score projections are recomputed
+as accumulated totals, while rank projections use the latest complete ordering.
+`completion` persists source facts without creating a standings projection;
+`none` rejects recording.
+
+`contracts/firestore/event_success_standings.schema.json` owns the derived
+`eventSuccessStandings/{eventId}` snapshots for `score` and `rank`. Authorized
+Hosts, active participants, and ready no-download runtime identities may get
+the event-scoped projection; list and every direct write are denied. The
+projection stores a snapshot for each recorded round so Flutter and the guest
+runtime can select only the latest snapshot at or before the plan's published
+reveal round. It reuses `publishedRevealRoundIndex` and the existing
+server-anchored reveal state; it does not define a second ceremony or cursor.
 
 ### TypeScript Timestamp Projections
 
@@ -423,6 +530,10 @@ replaces `eventParticipations`:
 - deterministic contact/source keys make retry and re-import idempotent inside
   one event. A phone/email match may converge rows inside that event only; it
   does not build a cross-event identity graph;
+- `arrivalGroup` retains an optional provider booking/order/group or
+  ticket-buyer key shared by guests expected to arrive together. Adapters keep
+  it separate from attendee-level external references, imports include it in
+  their canonical payload hash, and it remains private roster data;
 - `eventAttendeeImports` records actor, event, client idempotency key, format,
   canonical payload hash, counts, bounded row errors and terminal state. It is
   not a copy of the uploaded file.
@@ -525,6 +636,14 @@ identity or contact fields. `listOrganizerContacts` and
 `getOrganizerContactDetail` are separate manager-authorized, server-paginated
 boundaries. They return only organizer-owned endpoints plus explainable
 attendance/reachability facts; no Event Success private input is a CRM field.
+`createOrganizerContact` may add a name-only contact and its zero-history trait,
+but creates no attendee, endpoint evidence, UID, Consumer profile, or messaging
+grant. The Customer detail revenue block joins only a verified linked UID to
+completed, non-refunded Catch payments whose event ids already occur in that
+contact's organizer event edges. It reports partial coverage when either the
+bounded event timeline or linked-UID payment scan truncates, and unavailable
+coverage for unlinked or ambiguous contacts. External-provider revenue remains
+absent until a provider supplies financially complete reconciled facts.
 Hosts currently retain event-scoped roster access through the existing
 authorized roster boundary. The Host Audience client consumes the directory,
 detail, export and contact-mutation callables; it never reads these collections

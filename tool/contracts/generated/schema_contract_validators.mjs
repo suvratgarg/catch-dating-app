@@ -76,12 +76,16 @@ import {
   eventBroadcastDocumentSchema,
   eventWaitlistOfferDocumentSchema,
   eventSuccessPlanDocumentSchema,
+  organizerEventSuccessLayoutDocumentSchema,
+  eventSuccessAssignmentDraftDocumentSchema,
   eventSuccessFeedbackDocumentSchema,
   eventSuccessPreferenceDocumentSchema,
   eventSuccessCompatibilityResponseDocumentSchema,
   eventSuccessWingmanRequestDocumentSchema,
   eventSuccessArrivalMissionDocumentSchema,
   eventSuccessAssignmentDocumentSchema,
+  eventSuccessUnitOutcomesDocumentSchema,
+  eventSuccessStandingsDocumentSchema,
   eventSuccessScorecardDocumentSchema,
   eventSafetyReportDocumentSchema,
   clubScheduleLockDocumentSchema,
@@ -172,6 +176,7 @@ import {
   adminTakedownExternalEventCallablePayloadSchema,
   startClubHostConversationCallablePayloadSchema,
   startOrganizerConversationCallablePayloadSchema,
+  startOrganizerContactConversationCallablePayloadSchema,
   archiveClubCallablePayloadSchema,
   deleteClubCallablePayloadSchema,
   clubMembershipCallablePayloadSchema,
@@ -224,6 +229,12 @@ import {
   registerPublicEventCallablePayloadSchema,
   registerPublicEventCallableResponseSchema,
   getEventRuntimeBootstrapCallablePayloadSchema,
+  upsertEventSuccessLayoutCallablePayloadSchema,
+  upsertEventSuccessLayoutCallableResponseSchema,
+  getEventSuccessSpatialLayoutCallablePayloadSchema,
+  getEventSuccessSpatialLayoutCallableResponseSchema,
+  eventSuccessSpatialActionCallablePayloadSchema,
+  eventSuccessSpatialActionCallableResponseSchema,
   getEventRuntimeBootstrapCallableResponseSchema,
   claimEventRuntimeAccessCallablePayloadSchema,
   claimEventRuntimeAccessCallableResponseSchema,
@@ -240,6 +251,8 @@ import {
   getEventRosterInsightsCallableResponseSchema,
   getOrganizerCrmSummaryCallableResponseSchema,
   listOrganizerContactsCallablePayloadSchema,
+  createOrganizerContactCallablePayloadSchema,
+  createOrganizerContactCallableResponseSchema,
   listOrganizerContactsCallableResponseSchema,
   getOrganizerContactDetailCallablePayloadSchema,
   getOrganizerContactDetailCallableResponseSchema,
@@ -252,6 +265,11 @@ import {
   mutateOrganizerContactMergeCallableResponseSchema,
   eventJoinRequestDecisionCallablePayloadSchema,
   overrideEventSuccessRotationsCallablePayloadSchema,
+  prepareEventSuccessRotationDraftCallablePayloadSchema,
+  publishEventSuccessRotationRoundCallablePayloadSchema,
+  eventSuccessLiveActionCallablePayloadSchema,
+  recordEventSuccessUnitOutcomesCallablePayloadSchema,
+  recordEventSuccessUnitOutcomesCallableResponseSchema,
   overrideEventSuccessGroupsCallablePayloadSchema,
   submitEventSuccessWingmanRequestCallablePayloadSchema,
   startEventSuccessFirstHelloMissionCallablePayloadSchema,
@@ -421,12 +439,16 @@ export const validateCrossPathsPairHoldDocument = ajv.compile(crossPathsPairHold
 export const validateEventBroadcastDocument = ajv.compile(eventBroadcastDocumentSchema);
 export const validateEventWaitlistOfferDocument = ajv.compile(eventWaitlistOfferDocumentSchema);
 export const validateEventSuccessPlanDocument = ajv.compile(eventSuccessPlanDocumentSchema);
+export const validateOrganizerEventSuccessLayoutDocument = ajv.compile(organizerEventSuccessLayoutDocumentSchema);
+export const validateEventSuccessAssignmentDraftDocument = ajv.compile(eventSuccessAssignmentDraftDocumentSchema);
 export const validateEventSuccessFeedbackDocument = ajv.compile(eventSuccessFeedbackDocumentSchema);
 export const validateEventSuccessPreferenceDocument = ajv.compile(eventSuccessPreferenceDocumentSchema);
 export const validateEventSuccessCompatibilityResponseDocument = ajv.compile(eventSuccessCompatibilityResponseDocumentSchema);
 export const validateEventSuccessWingmanRequestDocument = ajv.compile(eventSuccessWingmanRequestDocumentSchema);
 export const validateEventSuccessArrivalMissionDocument = ajv.compile(eventSuccessArrivalMissionDocumentSchema);
 export const validateEventSuccessAssignmentDocument = ajv.compile(eventSuccessAssignmentDocumentSchema);
+export const validateEventSuccessUnitOutcomesDocument = ajv.compile(eventSuccessUnitOutcomesDocumentSchema);
+export const validateEventSuccessStandingsDocument = ajv.compile(eventSuccessStandingsDocumentSchema);
 export const validateEventSuccessScorecardDocument = ajv.compile(eventSuccessScorecardDocumentSchema);
 export const validateEventSafetyReportDocument = ajv.compile(eventSafetyReportDocumentSchema);
 export const validateClubScheduleLockDocument = ajv.compile(clubScheduleLockDocumentSchema);
@@ -517,6 +539,7 @@ export const validateAdminPublishExternalEventCallablePayload = ajv.compile(admi
 export const validateAdminTakedownExternalEventCallablePayload = ajv.compile(adminTakedownExternalEventCallablePayloadSchema);
 export const validateStartClubHostConversationCallablePayload = ajv.compile(startClubHostConversationCallablePayloadSchema);
 export const validateStartOrganizerConversationCallablePayload = ajv.compile(startOrganizerConversationCallablePayloadSchema);
+export const validateStartOrganizerContactConversationCallablePayload = ajv.compile(startOrganizerContactConversationCallablePayloadSchema);
 export const validateArchiveClubCallablePayload = ajv.compile(archiveClubCallablePayloadSchema);
 export const validateDeleteClubCallablePayload = ajv.compile(deleteClubCallablePayloadSchema);
 export const validateClubMembershipCallablePayload = ajv.compile(clubMembershipCallablePayloadSchema);
@@ -569,6 +592,12 @@ export const validateEventStaffListCallableResponse = ajv.compile(eventStaffList
 export const validateRegisterPublicEventCallablePayload = ajv.compile(registerPublicEventCallablePayloadSchema);
 export const validateRegisterPublicEventCallableResponse = ajv.compile(registerPublicEventCallableResponseSchema);
 export const validateGetEventRuntimeBootstrapCallablePayload = ajv.compile(getEventRuntimeBootstrapCallablePayloadSchema);
+export const validateUpsertEventSuccessLayoutCallablePayload = ajv.compile(upsertEventSuccessLayoutCallablePayloadSchema);
+export const validateUpsertEventSuccessLayoutCallableResponse = ajv.compile(upsertEventSuccessLayoutCallableResponseSchema);
+export const validateGetEventSuccessSpatialLayoutCallablePayload = ajv.compile(getEventSuccessSpatialLayoutCallablePayloadSchema);
+export const validateGetEventSuccessSpatialLayoutCallableResponse = ajv.compile(getEventSuccessSpatialLayoutCallableResponseSchema);
+export const validateEventSuccessSpatialActionCallablePayload = ajv.compile(eventSuccessSpatialActionCallablePayloadSchema);
+export const validateEventSuccessSpatialActionCallableResponse = ajv.compile(eventSuccessSpatialActionCallableResponseSchema);
 export const validateGetEventRuntimeBootstrapCallableResponse = ajv.compile(getEventRuntimeBootstrapCallableResponseSchema);
 export const validateClaimEventRuntimeAccessCallablePayload = ajv.compile(claimEventRuntimeAccessCallablePayloadSchema);
 export const validateClaimEventRuntimeAccessCallableResponse = ajv.compile(claimEventRuntimeAccessCallableResponseSchema);
@@ -585,6 +614,8 @@ export const validateGetEventRosterInsightsCallablePayload = ajv.compile(getEven
 export const validateGetEventRosterInsightsCallableResponse = ajv.compile(getEventRosterInsightsCallableResponseSchema);
 export const validateGetOrganizerCrmSummaryCallableResponse = ajv.compile(getOrganizerCrmSummaryCallableResponseSchema);
 export const validateListOrganizerContactsCallablePayload = ajv.compile(listOrganizerContactsCallablePayloadSchema);
+export const validateCreateOrganizerContactCallablePayload = ajv.compile(createOrganizerContactCallablePayloadSchema);
+export const validateCreateOrganizerContactCallableResponse = ajv.compile(createOrganizerContactCallableResponseSchema);
 export const validateListOrganizerContactsCallableResponse = ajv.compile(listOrganizerContactsCallableResponseSchema);
 export const validateGetOrganizerContactDetailCallablePayload = ajv.compile(getOrganizerContactDetailCallablePayloadSchema);
 export const validateGetOrganizerContactDetailCallableResponse = ajv.compile(getOrganizerContactDetailCallableResponseSchema);
@@ -597,6 +628,11 @@ export const validateUnmergeOrganizerContactsCallablePayload = ajv.compile(unmer
 export const validateMutateOrganizerContactMergeCallableResponse = ajv.compile(mutateOrganizerContactMergeCallableResponseSchema);
 export const validateEventJoinRequestDecisionCallablePayload = ajv.compile(eventJoinRequestDecisionCallablePayloadSchema);
 export const validateOverrideEventSuccessRotationsCallablePayload = ajv.compile(overrideEventSuccessRotationsCallablePayloadSchema);
+export const validatePrepareEventSuccessRotationDraftCallablePayload = ajv.compile(prepareEventSuccessRotationDraftCallablePayloadSchema);
+export const validatePublishEventSuccessRotationRoundCallablePayload = ajv.compile(publishEventSuccessRotationRoundCallablePayloadSchema);
+export const validateEventSuccessLiveActionCallablePayload = ajv.compile(eventSuccessLiveActionCallablePayloadSchema);
+export const validateRecordEventSuccessUnitOutcomesCallablePayload = ajv.compile(recordEventSuccessUnitOutcomesCallablePayloadSchema);
+export const validateRecordEventSuccessUnitOutcomesCallableResponse = ajv.compile(recordEventSuccessUnitOutcomesCallableResponseSchema);
 export const validateOverrideEventSuccessGroupsCallablePayload = ajv.compile(overrideEventSuccessGroupsCallablePayloadSchema);
 export const validateSubmitEventSuccessWingmanRequestCallablePayload = ajv.compile(submitEventSuccessWingmanRequestCallablePayloadSchema);
 export const validateStartEventSuccessFirstHelloMissionCallablePayload = ajv.compile(startEventSuccessFirstHelloMissionCallablePayloadSchema);

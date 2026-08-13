@@ -1984,6 +1984,8 @@ String _fieldCopy(
   HostRosterField.email => context.l10n.hostsOperationalRosterFieldEmail,
   HostRosterField.externalReference =>
     context.l10n.hostsOperationalRosterFieldReference,
+  HostRosterField.arrivalGroup =>
+    context.l10n.hostsOperationalRosterFieldArrivalGroup,
   HostRosterField.ticketType => context.l10n.hostsOperationalRosterFieldTicket,
   HostRosterField.status => context.l10n.hostsOperationalRosterFieldStatus,
 };

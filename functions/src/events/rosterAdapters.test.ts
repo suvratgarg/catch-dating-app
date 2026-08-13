@@ -46,8 +46,9 @@ test("flags providers without reviewed export samples", () => {
 
 test("prepares bounded normalized rows for the shared importer", () => {
   const prepared = prepareCsvRosterImport(
-    "First Name,Last Name,Email,Order ID,Ticket Type,Attendee Status\n" +
-      "Asha,Shah,asha@example.com,order-1,General,Attending",
+    "First Name,Last Name,Email,Order ID,Attendee ID,Ticket Type," +
+      "Attendee Status\n" +
+      "Asha,Shah,asha@example.com,order-1,attendee-1,General,Attending",
     "eventbrite"
   );
   assert.equal(prepared.adapter.adapterId, "eventbrite-v1");
@@ -56,8 +57,45 @@ test("prepares bounded normalized rows for the shared importer", () => {
     displayName: "Asha Shah",
     phone: null,
     email: "asha@example.com",
-    externalReference: "order-1",
+    externalReference: "attendee-1",
+    arrivalGroup: "order-1",
     ticketType: "General",
     status: "registered",
   });
 });
+
+test(
+  "keeps Eventbrite group-ticket guests distinct with one arrival group",
+  () => {
+    const prepared = prepareCsvRosterImport(
+      "First Name,Last Name,Email,Order ID,Attendee ID,Ticket Type," +
+      "Attendee Status\n" +
+      "Asha,Shah,buyer@example.com,order-7,attendee-7a,General,Attending\n" +
+      "Ravi,Rao,buyer@example.com,order-7,attendee-7b,General,Attending",
+      "eventbrite"
+    );
+
+    assert.deepEqual(prepared.rows, [
+      {
+        rowId: "2",
+        displayName: "Asha Shah",
+        phone: null,
+        email: "buyer@example.com",
+        externalReference: "attendee-7a",
+        arrivalGroup: "order-7",
+        ticketType: "General",
+        status: "registered",
+      },
+      {
+        rowId: "3",
+        displayName: "Ravi Rao",
+        phone: null,
+        email: "buyer@example.com",
+        externalReference: "attendee-7b",
+        arrivalGroup: "order-7",
+        ticketType: "General",
+        status: "registered",
+      },
+    ]);
+  }
+);

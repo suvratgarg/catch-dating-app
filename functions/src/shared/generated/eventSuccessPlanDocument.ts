@@ -9,6 +9,25 @@ export interface EventSuccessPlanDocument {
   eventId: string;
   clubId: string;
   organizerId?: string;
+  layoutId?: string | null;
+  /**
+   * @maxItems 300
+   */
+  affinityConstraints?: {
+    aUid: string;
+    bUid: string;
+    value: "mustPair" | "mustSplit" | "avoidRepeat" | "neutral";
+    scope: "thisRound" | "pinned";
+  }[];
+  /**
+   * @maxItems 300
+   */
+  spatialOverrides?: {
+    uid: string;
+    targetPeerUid: string;
+    layoutUnitId: string;
+    scope: "thisRound" | "pinned";
+  }[];
   playbookId: string;
   /**
    * @maxItems 24
@@ -16,21 +35,7 @@ export interface EventSuccessPlanDocument {
   selectedModuleIds: string[];
   targetAttendeeCount: number;
   structureConfig?: {
-    unitKind: "wholeGroup" | "pods" | "pairs" | "teams" | "tables";
-    unitSize: number;
-    unitCount?: number | null;
-    rotationIntervalMinutes?: number | null;
-    revealCountdownSeconds: number;
-    rotationRepeatStrategy?: "avoid" | "allowWhenExhausted";
-    maxPairMeetings?: number;
-    /**
-     * @maxItems 8
-     */
-    balanceActivityAttributes?: ("paceBand" | "skillBand" | "roleBand")[];
-    /**
-     * @maxItems 8
-     */
-    clusterActivityAttributes?: ("paceBand" | "skillBand" | "roleBand")[];
+    [k: string]: unknown;
   };
   hostGoal: string;
   wingmanRequestsEnabled: boolean;
@@ -56,6 +61,10 @@ export interface EventSuccessPlanDocument {
     }[];
   };
   activeStepIndex: number;
+  liveControlRevision?: number;
+  assignmentDraftRevision?: number;
+  publishedRotationRoundIndex?: number;
+  publishedRevealRoundIndex?: number;
   status: "setup" | "live" | "complete";
   revealStatus?: "idle" | "countingDown" | "revealed";
   activeRevealRoundIndex?: number;

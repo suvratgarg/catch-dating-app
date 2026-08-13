@@ -166,17 +166,17 @@ abstract class AppLocalizations {
   /// **'You'**
   String get consumerNavigationProfile;
 
-  /// Host bottom navigation label for the daily operations tab.
-  ///
-  /// In en, this message translates to:
-  /// **'Today'**
-  String get hostNavigationToday;
-
   /// Host bottom navigation label for the event-management tab.
   ///
   /// In en, this message translates to:
   /// **'Events'**
   String get hostNavigationEvents;
+
+  /// Host bottom navigation label for the organizer CRM directory.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers'**
+  String get hostNavigationCustomers;
 
   /// Host bottom navigation label for attendee inquiries.
   ///
@@ -8596,18 +8596,6 @@ abstract class AppLocalizations {
   /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_actions.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Reset'**
-  String get eventSuccessEventSuccessLiveRevealActionsLabelReset;
-
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_actions.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Reset reveal'**
-  String get eventSuccessEventSuccessLiveRevealActionsLabelResetReveal;
-
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_actions.dart (label).
-  ///
-  /// In en, this message translates to:
   /// **'Reveal round {value1}'**
   String eventSuccessEventSuccessLiveRevealActionsLabelRevealRoundValue1({
     required Object value1,
@@ -9697,30 +9685,6 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'No active events yet'**
-  String get hostsHostTodayTitleNoActiveEventsYet;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'Create an event for {name} to start filling the host dashboard.'**
-  String hostsHostTodayBodyCreateAnEventFor({required Object name});
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'New event'**
-  String get hostsHostTodayLabelNewEvent;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Events'**
-  String get hostsHostTodayLabelEvents;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (title).
-  ///
-  /// In en, this message translates to:
   /// **'Needs you'**
   String get hostsHostTodayTitleNeedsYou;
 
@@ -9730,18 +9694,6 @@ abstract class AppLocalizations {
   /// **'Nothing needs you right now.'**
   String get hostsHostTodayTextNothingNeedsYouRight;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Later this week'**
-  String get hostsHostTodayTitleLaterThisWeek;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'All events'**
-  String get hostsHostTodayLabelAllEvents;
-
   /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (Text).
   ///
   /// In en, this message translates to:
@@ -9749,15 +9701,6 @@ abstract class AppLocalizations {
   String hostsHostTodayTextLongweekdayDaypart({
     required Object longWeekday,
     required Object daypart,
-  });
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Good {daypart},\n{hostName}'**
-  String hostsHostTodayTextGoodDaypartHostname({
-    required Object daypart,
-    required Object hostName,
   });
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (tooltip).
@@ -9804,18 +9747,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Set up & run'**
   String get hostsHostTodayLabelSetUpRun;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'D'**
-  String get hostsHostTodayLabelD;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'M'**
-  String get hostsHostTodayLabelM;
 
   /// Product copy used by lib/core/widgets/block_user_dialog.dart (message).
   ///
@@ -15963,6 +15894,21 @@ abstract class AppLocalizations {
   /// **'{checkedIn} checked in'**
   String eventSuccessControlRoomGuestsCheckedInOnly({required int checkedIn});
 
+  /// Live Control Room intervention title when checked-in attendees reach the exclusion threshold.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests need an introduction'**
+  String get eventSuccessControlRoomExclusionAlertTitle;
+
+  /// Aggregate-only live alert for attendees at or above the configured cumulative exclusion threshold.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1 {1 person has} other {{count} people have}} not been assigned to anyone in {minutes} minutes.'**
+  String eventSuccessControlRoomExclusionAlertBody({
+    required int count,
+    required int minutes,
+  });
+
   /// Control Room destination for lightweight recovery guidance.
   ///
   /// In en, this message translates to:
@@ -18452,6 +18398,12 @@ abstract class AppLocalizations {
   /// **'Booking reference'**
   String get hostsOperationalRosterFieldReference;
 
+  /// Roster mapping field for guests who share one booking or arrive together.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrival group'**
+  String get hostsOperationalRosterFieldArrivalGroup;
+
   /// Roster mapping field for ticket type.
   ///
   /// In en, this message translates to:
@@ -19618,6 +19570,525 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Discard stale changes'**
   String get hostsOperationalRosterOutboxDiscard;
+
+  /// Cancels a reveal countdown before publication.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel countdown'**
+  String get eventSuccessLiveControlCancelCountdownLabel;
+
+  /// Confirmation title before an irreversible assignment reveal.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish this reveal?'**
+  String get eventSuccessLiveControlPublishRevealTitle;
+
+  /// Irreversible reveal confirmation message.
+  ///
+  /// In en, this message translates to:
+  /// **'Round {roundNumber} will become visible to everyone and cannot be hidden again.'**
+  String eventSuccessLiveControlPublishRevealMessage({
+    required int roundNumber,
+  });
+
+  /// Confirms an irreversible assignment reveal.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish reveal'**
+  String get eventSuccessLiveControlPublishRevealConfirmLabel;
+
+  /// Confirmation title before starting an auto-publishing reveal countdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Start the final countdown?'**
+  String get eventSuccessLiveControlStartCountdownTitle;
+
+  /// Countdown confirmation explains automatic irreversible publication.
+  ///
+  /// In en, this message translates to:
+  /// **'Round {roundNumber} will publish after {countdownSeconds} seconds and cannot be hidden again.'**
+  String eventSuccessLiveControlStartCountdownMessage({
+    required int roundNumber,
+    required int countdownSeconds,
+  });
+
+  /// Confirms an auto-publishing reveal countdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Start countdown'**
+  String get eventSuccessLiveControlStartCountdownConfirmLabel;
+
+  /// Publishes the prepared next rotation round.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish round {roundNumber}'**
+  String eventSuccessLiveControlPublishRotationRoundLabel({
+    required int roundNumber,
+  });
+
+  /// Confirmation title before publishing a prepared rotation.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish this rotation?'**
+  String get eventSuccessLiveControlPublishRotationTitle;
+
+  /// Irreversible rotation publication message.
+  ///
+  /// In en, this message translates to:
+  /// **'Round {roundNumber} will become visible to attendees and cannot be withdrawn.'**
+  String eventSuccessLiveControlPublishRotationMessage({
+    required int roundNumber,
+  });
+
+  /// Confirms an irreversible prepared rotation publication.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish rotation'**
+  String get eventSuccessLiveControlPublishRotationConfirmLabel;
+
+  /// Labels the standings reveal mode in the live event control room.
+  ///
+  /// In en, this message translates to:
+  /// **'Standings reveal'**
+  String get eventSuccessLiveControlStandingsRevealLabel;
+
+  /// Formats a unit score in the published standings.
+  ///
+  /// In en, this message translates to:
+  /// **'{points} pts'**
+  String eventSuccessLiveControlPointsValue({required num points});
+
+  /// Formats a unit rank in the published standings.
+  ///
+  /// In en, this message translates to:
+  /// **'Rank {rank}'**
+  String eventSuccessLiveControlRankValue({required int rank});
+
+  /// Heads the host form for recording a round outcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Record round {roundNumber}'**
+  String eventSuccessLiveControlRecordRoundTitle({required int roundNumber});
+
+  /// Explains how the host records ranked unit outcomes before reveal.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter one unique rank for every unit. The table stays hidden until the existing reveal.'**
+  String get eventSuccessLiveControlRankEntryInstructions;
+
+  /// Explains how the host records scored unit outcomes before reveal.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter this round’s score for every unit. Totals stay hidden until the existing reveal.'**
+  String get eventSuccessLiveControlScoreEntryInstructions;
+
+  /// Explains why round outcomes cannot be recorded before units exist.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate the live units before recording outcomes.'**
+  String get eventSuccessLiveControlEmptyUnitsMessage;
+
+  /// Saves the current round outcomes for a later reveal.
+  ///
+  /// In en, this message translates to:
+  /// **'Save round for reveal'**
+  String get eventSuccessLiveControlSaveRoundLabel;
+
+  /// Reusable room layout selection title.
+  ///
+  /// In en, this message translates to:
+  /// **'Room layout'**
+  String get hostsEventSuccessStepRoomLayoutTitle;
+
+  /// Explains reusable coarse layout assets.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a reusable coarse layout for live placement. This is not a to-scale floor plan.'**
+  String get hostsEventSuccessStepRoomLayoutSubtitle;
+
+  /// Layout unit count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 unit} other{{count} units}}'**
+  String hostsEventSuccessStepRoomLayoutUnitCount({required int count});
+
+  /// Selected layout state.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected'**
+  String get hostsEventSuccessStepRoomLayoutSelected;
+
+  /// Opens parametric layout authoring.
+  ///
+  /// In en, this message translates to:
+  /// **'Create reusable layout'**
+  String get hostsEventSuccessStepRoomLayoutCreate;
+
+  /// Whole-group layout omission title.
+  ///
+  /// In en, this message translates to:
+  /// **'No room map for whole-group mode'**
+  String get hostsEventSuccessStepRoomLayoutWholeGroupTitle;
+
+  /// Whole-group layout omission explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to pods, pairs, teams, or tables if this event needs mapped placement.'**
+  String get hostsEventSuccessStepRoomLayoutWholeGroupBody;
+
+  /// Layout author sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'Build a room layout'**
+  String get hostsEventSuccessStepRoomLayoutAuthorTitle;
+
+  /// Layout author sheet subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set the topology once, then reuse it across events.'**
+  String get hostsEventSuccessStepRoomLayoutAuthorSubtitle;
+
+  /// Layout asset name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Layout name'**
+  String get hostsEventSuccessStepRoomLayoutName;
+
+  /// Required layout name error.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a layout name.'**
+  String get hostsEventSuccessStepRoomLayoutNameRequired;
+
+  /// Layout unit shape field.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit shape'**
+  String get hostsEventSuccessStepRoomLayoutShape;
+
+  /// Round layout unit shape.
+  ///
+  /// In en, this message translates to:
+  /// **'Round tables'**
+  String get hostsEventSuccessStepRoomLayoutShapeRound;
+
+  /// Rectangular layout unit shape.
+  ///
+  /// In en, this message translates to:
+  /// **'Rectangular tables'**
+  String get hostsEventSuccessStepRoomLayoutShapeRectangle;
+
+  /// Row layout unit shape.
+  ///
+  /// In en, this message translates to:
+  /// **'Rows'**
+  String get hostsEventSuccessStepRoomLayoutShapeRow;
+
+  /// Court layout unit shape.
+  ///
+  /// In en, this message translates to:
+  /// **'Courts'**
+  String get hostsEventSuccessStepRoomLayoutShapeCourt;
+
+  /// Zone layout unit shape.
+  ///
+  /// In en, this message translates to:
+  /// **'Zones'**
+  String get hostsEventSuccessStepRoomLayoutShapeZone;
+
+  /// Layout unit count parameter.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of units'**
+  String get hostsEventSuccessStepRoomLayoutUnits;
+
+  /// Layout unit capacity parameter.
+  ///
+  /// In en, this message translates to:
+  /// **'People per unit'**
+  String get hostsEventSuccessStepRoomLayoutCapacity;
+
+  /// Layout column parameter.
+  ///
+  /// In en, this message translates to:
+  /// **'Units per row'**
+  String get hostsEventSuccessStepRoomLayoutColumns;
+
+  /// Unit count decrease semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Decrease number of units'**
+  String get hostsEventSuccessStepRoomLayoutDecreaseUnits;
+
+  /// Unit count increase semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Increase number of units'**
+  String get hostsEventSuccessStepRoomLayoutIncreaseUnits;
+
+  /// Capacity decrease semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Decrease unit capacity'**
+  String get hostsEventSuccessStepRoomLayoutDecreaseCapacity;
+
+  /// Capacity increase semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Increase unit capacity'**
+  String get hostsEventSuccessStepRoomLayoutIncreaseCapacity;
+
+  /// Column count decrease semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Decrease units per row'**
+  String get hostsEventSuccessStepRoomLayoutDecreaseColumns;
+
+  /// Column count increase semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Increase units per row'**
+  String get hostsEventSuccessStepRoomLayoutIncreaseColumns;
+
+  /// Saves and selects a reusable layout.
+  ///
+  /// In en, this message translates to:
+  /// **'Save and select layout'**
+  String get hostsEventSuccessStepRoomLayoutSave;
+
+  /// Spatial room map title.
+  ///
+  /// In en, this message translates to:
+  /// **'Room map'**
+  String get eventSuccessRoomMapTitle;
+
+  /// Explains assigned and confirmed placement states.
+  ///
+  /// In en, this message translates to:
+  /// **'Outlined means assigned. Filled means the Host confirmed the attendee is there.'**
+  String get eventSuccessRoomMapSubtitle;
+
+  /// Assigned placement legend.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned'**
+  String get eventSuccessRoomMapAssigned;
+
+  /// Confirmed placement legend.
+  ///
+  /// In en, this message translates to:
+  /// **'Host confirmed'**
+  String get eventSuccessRoomMapConfirmed;
+
+  /// People count for a map unit.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 person} other{{count} people}}'**
+  String eventSuccessRoomMapPeopleCount({required int count});
+
+  /// Tap placement instruction.
+  ///
+  /// In en, this message translates to:
+  /// **'Select an attendee, then choose a destination.'**
+  String get eventSuccessRoomMapSelectAttendee;
+
+  /// Temporary spatial constraint scope.
+  ///
+  /// In en, this message translates to:
+  /// **'This round only'**
+  String get eventSuccessRoomMapScopeThisRound;
+
+  /// Durable spatial constraint scope.
+  ///
+  /// In en, this message translates to:
+  /// **'Pinned until released'**
+  String get eventSuccessRoomMapScopePinned;
+
+  /// Invalid destination capacity reason.
+  ///
+  /// In en, this message translates to:
+  /// **'This unit is at capacity.'**
+  String get eventSuccessRoomMapReasonCapacity;
+
+  /// Invalid destination safety reason.
+  ///
+  /// In en, this message translates to:
+  /// **'A safety separation keeps this destination unavailable.'**
+  String get eventSuccessRoomMapReasonSafety;
+
+  /// Invalid destination constraint reason.
+  ///
+  /// In en, this message translates to:
+  /// **'A declared placement constraint keeps this destination unavailable.'**
+  String get eventSuccessRoomMapReasonConstraint;
+
+  /// Host confirms attendee placement.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm position'**
+  String get eventSuccessRoomMapConfirmPosition;
+
+  /// Releases durable attendee placement.
+  ///
+  /// In en, this message translates to:
+  /// **'Release pinned placement'**
+  String get eventSuccessRoomMapReleasePinned;
+
+  /// Additive drag affordance explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'On larger screens, drag is also available. Tap controls always work.'**
+  String get eventSuccessRoomMapDragHint;
+
+  /// Customers directory scope explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone who has attended, registered, been imported, or been added by your team.'**
+  String get hostCustomersIntro;
+
+  /// Adds a name-only organizer CRM contact.
+  ///
+  /// In en, this message translates to:
+  /// **'Add customer'**
+  String get hostCustomersAdd;
+
+  /// Manual CRM contact sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a customer'**
+  String get hostCustomersAddTitle;
+
+  /// Manual CRM contact name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer name'**
+  String get hostCustomersName;
+
+  /// Manual CRM identity boundary.
+  ///
+  /// In en, this message translates to:
+  /// **'This creates an organizer-only contact. It does not create a Catch account or grant messaging permission.'**
+  String get hostCustomersAddHelp;
+
+  /// Customer segment filter heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by tag'**
+  String get hostCustomersFilterByTag;
+
+  /// Customers with at least one check-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Attended'**
+  String get hostCustomersFilterAttended;
+
+  /// Explainable alias for the versioned lapsed-regular segment.
+  ///
+  /// In en, this message translates to:
+  /// **'At risk'**
+  String get hostCustomersFilterAtRisk;
+
+  /// Empty customer directory title.
+  ///
+  /// In en, this message translates to:
+  /// **'No customers yet'**
+  String get hostCustomersEmpty;
+
+  /// Empty customer directory explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers appear after attendance, registration, import, or a manual add.'**
+  String get hostCustomersEmptyBody;
+
+  /// Filtered customer directory empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'No customers match these filters.'**
+  String get hostCustomersNoResults;
+
+  /// Loads the next customer directory page.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more'**
+  String get hostCustomersLoadMore;
+
+  /// Customer attendance stats heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendance'**
+  String get hostCustomersDetailAttendance;
+
+  /// Customer events with a confirmed or checked-in attendance edge.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected'**
+  String get hostCustomersExpected;
+
+  /// Checked-in events divided by expected events for a customer.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendance rate'**
+  String get hostCustomersAttendanceRate;
+
+  /// Authoritative Catch revenue stats heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Revenue'**
+  String get hostCustomersDetailRevenue;
+
+  /// Zero authoritative Catch revenue state.
+  ///
+  /// In en, this message translates to:
+  /// **'No completed Catch payments for this organizer.'**
+  String get hostCustomersDetailNoRevenue;
+
+  /// Revenue identity coverage boundary.
+  ///
+  /// In en, this message translates to:
+  /// **'Revenue is unavailable until this customer has an unambiguous linked Catch account.'**
+  String get hostCustomersDetailRevenueUnavailable;
+
+  /// Partial revenue coverage warning.
+  ///
+  /// In en, this message translates to:
+  /// **'Revenue includes known completed Catch payments only; some history may be outside this bounded result.'**
+  String get hostCustomersDetailRevenuePartial;
+
+  /// Completed order count for one currency.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 paid order} other{{count} paid orders}}'**
+  String hostCustomersDetailPaidOrders({required int count});
+
+  /// Starts or reuses a direct organizer-customer thread.
+  ///
+  /// In en, this message translates to:
+  /// **'New conversation'**
+  String get hostCustomersNewConversation;
+
+  /// Unlinked customer messaging boundary.
+  ///
+  /// In en, this message translates to:
+  /// **'A conversation becomes available after this customer is unambiguously linked to a Catch account.'**
+  String get hostCustomersConversationUnlinked;
+
+  /// Ambiguous customer messaging boundary.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolve this customer’s identity before starting a conversation.'**
+  String get hostCustomersConversationAmbiguous;
+
+  /// Customer event history heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Past attendance'**
+  String get hostCustomersEventHistory;
+
+  /// Customer with no checked-in event history.
+  ///
+  /// In en, this message translates to:
+  /// **'No checked-in events yet.'**
+  String get hostCustomersNoAttendance;
 }
 
 class _AppLocalizationsDelegate

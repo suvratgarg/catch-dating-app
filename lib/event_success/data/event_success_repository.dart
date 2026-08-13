@@ -6,17 +6,25 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
     show
         CompleteEventSuccessFirstHelloMissionCallableRequest,
         EventIdCallableRequest,
+        EventSuccessSpatialActionCallableRequest,
+        GetEventSuccessSpatialLayoutCallableRequest,
         OverrideEventSuccessGroupsCallableRequest,
         OverrideEventSuccessRotationsCallableRequest,
+        PrepareEventSuccessRotationDraftCallableRequest,
+        PublishEventSuccessRotationRoundCallableRequest,
+        EventSuccessLiveActionCallableRequest,
         StartEventSuccessFirstHelloMissionCallableRequest,
-        SubmitEventSuccessWingmanRequestCallableRequest;
+        SubmitEventSuccessWingmanRequestCallableRequest,
+        UpsertEventSuccessLayoutCallableRequest;
 import 'package:catch_dating_app/event_success/data/event_success_callable_responses.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_arrival_mission.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_preference.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -35,16 +43,31 @@ part 'event_success_repository/preference.dart';
 part 'event_success_repository/compatibility.dart';
 part 'event_success_repository/wingman.dart';
 part 'event_success_repository/arrival.dart';
+part 'event_success_repository/layout.dart';
+part 'event_success_repository/standings.dart';
 part 'event_success_repository/providers.dart';
 
 const _plansPath = 'eventSuccessPlans';
 const _feedbackPath = 'eventSuccessFeedback';
 const _assignmentsPath = 'eventSuccessAssignments';
+const _assignmentDraftsPath = 'eventSuccessAssignmentDrafts';
 const _preferencesPath = 'eventSuccessPreferences';
 const _wingmanRequestsPath = 'eventSuccessWingmanRequests';
 const _arrivalMissionsPath = 'eventSuccessArrivalMissions';
 const _compatibilityResponsesPath = 'eventSuccessCompatibilityResponses';
 const _scorecardsPath = 'eventSuccessScorecards';
+const _standingsPath = 'eventSuccessStandings';
+const _layoutsPath = 'organizerEventSuccessLayouts';
+
+Map<String, dynamic> _eventSuccessPlanToClientJson(EventSuccessPlan plan) {
+  final data = plan.toJson();
+  // These fields are authored only by revision-fenced backend live controls.
+  data.remove('liveControlRevision');
+  data.remove('assignmentDraftRevision');
+  data.remove('publishedRotationRoundIndex');
+  data.remove('publishedRevealRoundIndex');
+  return data;
+}
 
 abstract class _EventSuccessRepositoryCore {
   const _EventSuccessRepositoryCore();
@@ -54,8 +77,11 @@ abstract class _EventSuccessRepositoryCore {
 
   CollectionReference<EventSuccessFeedback> get _feedbackRef;
   CollectionReference<EventSuccessAssignment> get _assignmentsRef;
+  CollectionReference<EventSuccessAssignmentDraft> get _assignmentDraftsRef;
   CollectionReference<EventSuccessPreference> get _preferencesRef;
   CollectionReference<EventSuccessWingmanRequest> get _wingmanRequestsRef;
+  CollectionReference<EventSuccessStandings> get _standingsRef;
+  CollectionReference<EventSuccessLayout> get _layoutsRef;
 
   DocumentReference<EventSuccessPlan> _planRef(String eventId);
 
@@ -97,7 +123,9 @@ class EventSuccessRepository extends _EventSuccessRepositoryCore
         _EventSuccessPreferenceRepository,
         _EventSuccessCompatibilityRepository,
         _EventSuccessWingmanRepository,
-        _EventSuccessArrivalRepository {
+        _EventSuccessArrivalRepository,
+        _EventSuccessLayoutRepository,
+        _EventSuccessStandingsRepository {
   const EventSuccessRepository(this._db, {FirebaseFunctions? functions})
     // Keep the public named parameter as `functions:` for tests and callers.
     // ignore: prefer_initializing_formals
@@ -114,7 +142,7 @@ class EventSuccessRepository extends _EventSuccessRepositoryCore
       .withDocumentIdConverter<EventSuccessPlan>(
         idField: 'id',
         fromJson: EventSuccessPlan.fromJson,
-        toJson: (plan) => plan.toJson(),
+        toJson: _eventSuccessPlanToClientJson,
       );
 
   @override
@@ -133,6 +161,26 @@ class EventSuccessRepository extends _EventSuccessRepositoryCore
         idField: 'id',
         fromJson: EventSuccessAssignment.fromJson,
         toJson: (assignment) => assignment.toJson(),
+      );
+
+  @override
+  CollectionReference<EventSuccessAssignmentDraft> get _assignmentDraftsRef =>
+      _db
+          .collection(_assignmentDraftsPath)
+          .withDocumentIdConverter<EventSuccessAssignmentDraft>(
+            idField: 'id',
+            fromJson: EventSuccessAssignmentDraft.fromJson,
+            toJson: (_) =>
+                throw UnsupportedError('Assignment drafts are server-owned.'),
+          );
+
+  @override
+  CollectionReference<EventSuccessStandings> get _standingsRef => _db
+      .collection(_standingsPath)
+      .withDocumentIdConverter<EventSuccessStandings>(
+        idField: 'id',
+        fromJson: EventSuccessStandings.fromJson,
+        toJson: (standings) => standings.toJson(),
       );
 
   @override
@@ -168,6 +216,15 @@ class EventSuccessRepository extends _EventSuccessRepositoryCore
         idField: 'id',
         fromJson: EventSuccessCompatibilityResponse.fromJson,
         toJson: (response) => response.toJson(),
+      );
+
+  @override
+  CollectionReference<EventSuccessLayout> get _layoutsRef => _db
+      .collection(_layoutsPath)
+      .withDocumentIdConverter<EventSuccessLayout>(
+        idField: '_documentId',
+        fromJson: EventSuccessLayout.fromJson,
+        toJson: (_) => throw UnsupportedError('Layouts are callable-owned.'),
       );
 
   @override

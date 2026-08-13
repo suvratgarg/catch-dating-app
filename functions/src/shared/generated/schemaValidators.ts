@@ -77,12 +77,16 @@ import {CrossPathsPairHoldDocument} from "./crossPathsPairHoldDocument";
 import {EventBroadcastDocument} from "./eventBroadcastDocument";
 import {EventWaitlistOfferDocument} from "./eventWaitlistOfferDocument";
 import {EventSuccessPlanDocument} from "./eventSuccessPlanDocument";
+import {OrganizerEventSuccessLayoutDocument} from "./organizerEventSuccessLayoutDocument";
+import {EventSuccessAssignmentDraftDocument} from "./eventSuccessAssignmentDraftDocument";
 import {EventSuccessFeedbackDocument} from "./eventSuccessFeedbackDocument";
 import {EventSuccessPreferenceDocument} from "./eventSuccessPreferenceDocument";
 import {EventSuccessCompatibilityResponseDocument} from "./eventSuccessCompatibilityResponseDocument";
 import {EventSuccessWingmanRequestDocument} from "./eventSuccessWingmanRequestDocument";
 import {EventSuccessArrivalMissionDocument} from "./eventSuccessArrivalMissionDocument";
 import {EventSuccessAssignmentDocument} from "./eventSuccessAssignmentDocument";
+import {EventSuccessUnitOutcomesDocument} from "./eventSuccessUnitOutcomesDocument";
+import {EventSuccessStandingsDocument} from "./eventSuccessStandingsDocument";
 import {EventSuccessScorecardDocument} from "./eventSuccessScorecardDocument";
 import {EventSafetyReportDocument} from "./eventSafetyReportDocument";
 import {ClubScheduleLockDocument} from "./clubScheduleLockDocument";
@@ -173,6 +177,7 @@ import {AdminPublishExternalEventCallablePayload} from "./adminPublishExternalEv
 import {AdminTakedownExternalEventCallablePayload} from "./adminTakedownExternalEventCallablePayload";
 import {StartClubHostConversationCallablePayload} from "./startClubHostConversationCallablePayload";
 import {StartOrganizerConversationCallablePayload} from "./startOrganizerConversationCallablePayload";
+import {StartOrganizerContactConversationCallablePayload} from "./startOrganizerContactConversationCallablePayload";
 import {ArchiveClubCallablePayload} from "./archiveClubCallablePayload";
 import {DeleteClubCallablePayload} from "./deleteClubCallablePayload";
 import {ClubMembershipCallablePayload} from "./clubMembershipCallablePayload";
@@ -225,6 +230,12 @@ import {EventStaffListCallableResponse} from "./eventStaffListCallableResponse";
 import {RegisterPublicEventCallablePayload} from "./registerPublicEventCallablePayload";
 import {RegisterPublicEventCallableResponse} from "./registerPublicEventCallableResponse";
 import {GetEventRuntimeBootstrapCallablePayload} from "./getEventRuntimeBootstrapCallablePayload";
+import {UpsertEventSuccessLayoutCallablePayload} from "./upsertEventSuccessLayoutCallablePayload";
+import {UpsertEventSuccessLayoutCallableResponse} from "./upsertEventSuccessLayoutCallableResponse";
+import {GetEventSuccessSpatialLayoutCallablePayload} from "./getEventSuccessSpatialLayoutCallablePayload";
+import {GetEventSuccessSpatialLayoutCallableResponse} from "./getEventSuccessSpatialLayoutCallableResponse";
+import {EventSuccessSpatialActionCallablePayload} from "./eventSuccessSpatialActionCallablePayload";
+import {EventSuccessSpatialActionCallableResponse} from "./eventSuccessSpatialActionCallableResponse";
 import {GetEventRuntimeBootstrapCallableResponse} from "./getEventRuntimeBootstrapCallableResponse";
 import {ClaimEventRuntimeAccessCallablePayload} from "./claimEventRuntimeAccessCallablePayload";
 import {ClaimEventRuntimeAccessCallableResponse} from "./claimEventRuntimeAccessCallableResponse";
@@ -241,6 +252,8 @@ import {GetEventRosterInsightsCallablePayload} from "./getEventRosterInsightsCal
 import {GetEventRosterInsightsCallableResponse} from "./getEventRosterInsightsCallableResponse";
 import {GetOrganizerCrmSummaryCallableResponse} from "./getOrganizerCrmSummaryCallableResponse";
 import {ListOrganizerContactsCallablePayload} from "./listOrganizerContactsCallablePayload";
+import {CreateOrganizerContactCallablePayload} from "./createOrganizerContactCallablePayload";
+import {CreateOrganizerContactCallableResponse} from "./createOrganizerContactCallableResponse";
 import {ListOrganizerContactsCallableResponse} from "./listOrganizerContactsCallableResponse";
 import {GetOrganizerContactDetailCallablePayload} from "./getOrganizerContactDetailCallablePayload";
 import {GetOrganizerContactDetailCallableResponse} from "./getOrganizerContactDetailCallableResponse";
@@ -253,6 +266,11 @@ import {UnmergeOrganizerContactsCallablePayload} from "./unmergeOrganizerContact
 import {MutateOrganizerContactMergeCallableResponse} from "./mutateOrganizerContactMergeCallableResponse";
 import {EventJoinRequestDecisionCallablePayload} from "./eventJoinRequestDecisionCallablePayload";
 import {OverrideEventSuccessRotationsCallablePayload} from "./overrideEventSuccessRotationsCallablePayload";
+import {PrepareEventSuccessRotationDraftCallablePayload} from "./prepareEventSuccessRotationDraftCallablePayload";
+import {PublishEventSuccessRotationRoundCallablePayload} from "./publishEventSuccessRotationRoundCallablePayload";
+import {EventSuccessLiveActionCallablePayload} from "./eventSuccessLiveActionCallablePayload";
+import {RecordEventSuccessUnitOutcomesCallablePayload} from "./recordEventSuccessUnitOutcomesCallablePayload";
+import {RecordEventSuccessUnitOutcomesCallableResponse} from "./recordEventSuccessUnitOutcomesCallableResponse";
 import {OverrideEventSuccessGroupsCallablePayload} from "./overrideEventSuccessGroupsCallablePayload";
 import {SubmitEventSuccessWingmanRequestCallablePayload} from "./submitEventSuccessWingmanRequestCallablePayload";
 import {StartEventSuccessFirstHelloMissionCallablePayload} from "./startEventSuccessFirstHelloMissionCallablePayload";
@@ -399,12 +417,16 @@ import {
   eventBroadcastDocumentSchema,
   eventWaitlistOfferDocumentSchema,
   eventSuccessPlanDocumentSchema,
+  organizerEventSuccessLayoutDocumentSchema,
+  eventSuccessAssignmentDraftDocumentSchema,
   eventSuccessFeedbackDocumentSchema,
   eventSuccessPreferenceDocumentSchema,
   eventSuccessCompatibilityResponseDocumentSchema,
   eventSuccessWingmanRequestDocumentSchema,
   eventSuccessArrivalMissionDocumentSchema,
   eventSuccessAssignmentDocumentSchema,
+  eventSuccessUnitOutcomesDocumentSchema,
+  eventSuccessStandingsDocumentSchema,
   eventSuccessScorecardDocumentSchema,
   eventSafetyReportDocumentSchema,
   clubScheduleLockDocumentSchema,
@@ -495,6 +517,7 @@ import {
   adminTakedownExternalEventCallablePayloadSchema,
   startClubHostConversationCallablePayloadSchema,
   startOrganizerConversationCallablePayloadSchema,
+  startOrganizerContactConversationCallablePayloadSchema,
   archiveClubCallablePayloadSchema,
   deleteClubCallablePayloadSchema,
   clubMembershipCallablePayloadSchema,
@@ -547,6 +570,12 @@ import {
   registerPublicEventCallablePayloadSchema,
   registerPublicEventCallableResponseSchema,
   getEventRuntimeBootstrapCallablePayloadSchema,
+  upsertEventSuccessLayoutCallablePayloadSchema,
+  upsertEventSuccessLayoutCallableResponseSchema,
+  getEventSuccessSpatialLayoutCallablePayloadSchema,
+  getEventSuccessSpatialLayoutCallableResponseSchema,
+  eventSuccessSpatialActionCallablePayloadSchema,
+  eventSuccessSpatialActionCallableResponseSchema,
   getEventRuntimeBootstrapCallableResponseSchema,
   claimEventRuntimeAccessCallablePayloadSchema,
   claimEventRuntimeAccessCallableResponseSchema,
@@ -563,6 +592,8 @@ import {
   getEventRosterInsightsCallableResponseSchema,
   getOrganizerCrmSummaryCallableResponseSchema,
   listOrganizerContactsCallablePayloadSchema,
+  createOrganizerContactCallablePayloadSchema,
+  createOrganizerContactCallableResponseSchema,
   listOrganizerContactsCallableResponseSchema,
   getOrganizerContactDetailCallablePayloadSchema,
   getOrganizerContactDetailCallableResponseSchema,
@@ -575,6 +606,11 @@ import {
   mutateOrganizerContactMergeCallableResponseSchema,
   eventJoinRequestDecisionCallablePayloadSchema,
   overrideEventSuccessRotationsCallablePayloadSchema,
+  prepareEventSuccessRotationDraftCallablePayloadSchema,
+  publishEventSuccessRotationRoundCallablePayloadSchema,
+  eventSuccessLiveActionCallablePayloadSchema,
+  recordEventSuccessUnitOutcomesCallablePayloadSchema,
+  recordEventSuccessUnitOutcomesCallableResponseSchema,
   overrideEventSuccessGroupsCallablePayloadSchema,
   submitEventSuccessWingmanRequestCallablePayloadSchema,
   startEventSuccessFirstHelloMissionCallablePayloadSchema,
@@ -944,6 +980,14 @@ export const validateEventSuccessPlanDocument:
   ValidateFunction<EventSuccessPlanDocument> =
     ajv.compile(eventSuccessPlanDocumentSchema) as
       ValidateFunction<EventSuccessPlanDocument>;
+export const validateOrganizerEventSuccessLayoutDocument:
+  ValidateFunction<OrganizerEventSuccessLayoutDocument> =
+    ajv.compile(organizerEventSuccessLayoutDocumentSchema) as
+      ValidateFunction<OrganizerEventSuccessLayoutDocument>;
+export const validateEventSuccessAssignmentDraftDocument:
+  ValidateFunction<EventSuccessAssignmentDraftDocument> =
+    ajv.compile(eventSuccessAssignmentDraftDocumentSchema) as
+      ValidateFunction<EventSuccessAssignmentDraftDocument>;
 export const validateEventSuccessFeedbackDocument:
   ValidateFunction<EventSuccessFeedbackDocument> =
     ajv.compile(eventSuccessFeedbackDocumentSchema) as
@@ -968,6 +1012,14 @@ export const validateEventSuccessAssignmentDocument:
   ValidateFunction<EventSuccessAssignmentDocument> =
     ajv.compile(eventSuccessAssignmentDocumentSchema) as
       ValidateFunction<EventSuccessAssignmentDocument>;
+export const validateEventSuccessUnitOutcomesDocument:
+  ValidateFunction<EventSuccessUnitOutcomesDocument> =
+    ajv.compile(eventSuccessUnitOutcomesDocumentSchema) as
+      ValidateFunction<EventSuccessUnitOutcomesDocument>;
+export const validateEventSuccessStandingsDocument:
+  ValidateFunction<EventSuccessStandingsDocument> =
+    ajv.compile(eventSuccessStandingsDocumentSchema) as
+      ValidateFunction<EventSuccessStandingsDocument>;
 export const validateEventSuccessScorecardDocument:
   ValidateFunction<EventSuccessScorecardDocument> =
     ajv.compile(eventSuccessScorecardDocumentSchema) as
@@ -1328,6 +1380,10 @@ export const validateStartOrganizerConversationCallablePayload:
   ValidateFunction<StartOrganizerConversationCallablePayload> =
     ajv.compile(startOrganizerConversationCallablePayloadSchema) as
       ValidateFunction<StartOrganizerConversationCallablePayload>;
+export const validateStartOrganizerContactConversationCallablePayload:
+  ValidateFunction<StartOrganizerContactConversationCallablePayload> =
+    ajv.compile(startOrganizerContactConversationCallablePayloadSchema) as
+      ValidateFunction<StartOrganizerContactConversationCallablePayload>;
 export const validateArchiveClubCallablePayload:
   ValidateFunction<ArchiveClubCallablePayload> =
     ajv.compile(archiveClubCallablePayloadSchema) as
@@ -1536,6 +1592,30 @@ export const validateGetEventRuntimeBootstrapCallablePayload:
   ValidateFunction<GetEventRuntimeBootstrapCallablePayload> =
     ajv.compile(getEventRuntimeBootstrapCallablePayloadSchema) as
       ValidateFunction<GetEventRuntimeBootstrapCallablePayload>;
+export const validateUpsertEventSuccessLayoutCallablePayload:
+  ValidateFunction<UpsertEventSuccessLayoutCallablePayload> =
+    ajv.compile(upsertEventSuccessLayoutCallablePayloadSchema) as
+      ValidateFunction<UpsertEventSuccessLayoutCallablePayload>;
+export const validateUpsertEventSuccessLayoutCallableResponse:
+  ValidateFunction<UpsertEventSuccessLayoutCallableResponse> =
+    ajv.compile(upsertEventSuccessLayoutCallableResponseSchema) as
+      ValidateFunction<UpsertEventSuccessLayoutCallableResponse>;
+export const validateGetEventSuccessSpatialLayoutCallablePayload:
+  ValidateFunction<GetEventSuccessSpatialLayoutCallablePayload> =
+    ajv.compile(getEventSuccessSpatialLayoutCallablePayloadSchema) as
+      ValidateFunction<GetEventSuccessSpatialLayoutCallablePayload>;
+export const validateGetEventSuccessSpatialLayoutCallableResponse:
+  ValidateFunction<GetEventSuccessSpatialLayoutCallableResponse> =
+    ajv.compile(getEventSuccessSpatialLayoutCallableResponseSchema) as
+      ValidateFunction<GetEventSuccessSpatialLayoutCallableResponse>;
+export const validateEventSuccessSpatialActionCallablePayload:
+  ValidateFunction<EventSuccessSpatialActionCallablePayload> =
+    ajv.compile(eventSuccessSpatialActionCallablePayloadSchema) as
+      ValidateFunction<EventSuccessSpatialActionCallablePayload>;
+export const validateEventSuccessSpatialActionCallableResponse:
+  ValidateFunction<EventSuccessSpatialActionCallableResponse> =
+    ajv.compile(eventSuccessSpatialActionCallableResponseSchema) as
+      ValidateFunction<EventSuccessSpatialActionCallableResponse>;
 export const validateGetEventRuntimeBootstrapCallableResponse:
   ValidateFunction<GetEventRuntimeBootstrapCallableResponse> =
     ajv.compile(getEventRuntimeBootstrapCallableResponseSchema) as
@@ -1600,6 +1680,14 @@ export const validateListOrganizerContactsCallablePayload:
   ValidateFunction<ListOrganizerContactsCallablePayload> =
     ajv.compile(listOrganizerContactsCallablePayloadSchema) as
       ValidateFunction<ListOrganizerContactsCallablePayload>;
+export const validateCreateOrganizerContactCallablePayload:
+  ValidateFunction<CreateOrganizerContactCallablePayload> =
+    ajv.compile(createOrganizerContactCallablePayloadSchema) as
+      ValidateFunction<CreateOrganizerContactCallablePayload>;
+export const validateCreateOrganizerContactCallableResponse:
+  ValidateFunction<CreateOrganizerContactCallableResponse> =
+    ajv.compile(createOrganizerContactCallableResponseSchema) as
+      ValidateFunction<CreateOrganizerContactCallableResponse>;
 export const validateListOrganizerContactsCallableResponse:
   ValidateFunction<ListOrganizerContactsCallableResponse> =
     ajv.compile(listOrganizerContactsCallableResponseSchema) as
@@ -1648,6 +1736,26 @@ export const validateOverrideEventSuccessRotationsCallablePayload:
   ValidateFunction<OverrideEventSuccessRotationsCallablePayload> =
     ajv.compile(overrideEventSuccessRotationsCallablePayloadSchema) as
       ValidateFunction<OverrideEventSuccessRotationsCallablePayload>;
+export const validatePrepareEventSuccessRotationDraftCallablePayload:
+  ValidateFunction<PrepareEventSuccessRotationDraftCallablePayload> =
+    ajv.compile(prepareEventSuccessRotationDraftCallablePayloadSchema) as
+      ValidateFunction<PrepareEventSuccessRotationDraftCallablePayload>;
+export const validatePublishEventSuccessRotationRoundCallablePayload:
+  ValidateFunction<PublishEventSuccessRotationRoundCallablePayload> =
+    ajv.compile(publishEventSuccessRotationRoundCallablePayloadSchema) as
+      ValidateFunction<PublishEventSuccessRotationRoundCallablePayload>;
+export const validateEventSuccessLiveActionCallablePayload:
+  ValidateFunction<EventSuccessLiveActionCallablePayload> =
+    ajv.compile(eventSuccessLiveActionCallablePayloadSchema) as
+      ValidateFunction<EventSuccessLiveActionCallablePayload>;
+export const validateRecordEventSuccessUnitOutcomesCallablePayload:
+  ValidateFunction<RecordEventSuccessUnitOutcomesCallablePayload> =
+    ajv.compile(recordEventSuccessUnitOutcomesCallablePayloadSchema) as
+      ValidateFunction<RecordEventSuccessUnitOutcomesCallablePayload>;
+export const validateRecordEventSuccessUnitOutcomesCallableResponse:
+  ValidateFunction<RecordEventSuccessUnitOutcomesCallableResponse> =
+    ajv.compile(recordEventSuccessUnitOutcomesCallableResponseSchema) as
+      ValidateFunction<RecordEventSuccessUnitOutcomesCallableResponse>;
 export const validateOverrideEventSuccessGroupsCallablePayload:
   ValidateFunction<OverrideEventSuccessGroupsCallablePayload> =
     ajv.compile(overrideEventSuccessGroupsCallablePayloadSchema) as

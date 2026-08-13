@@ -21,7 +21,7 @@ import 'package:catch_dating_app/event_success/presentation/event_success_featur
 import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart'
     show CountdownBeatRail;
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart'
-    show HostTodayClubPill;
+    show HostOrganizerIdentityPill;
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:flutter/material.dart';
@@ -506,7 +506,7 @@ class _IdentitySwitcherFamily extends StatelessWidget {
         _PreviewCard(
           title: 'Single context',
           note: 'Real club art in a stable, intentionally passive surface.',
-          child: HostTodayClubPill(
+          child: HostOrganizerIdentityPill(
             club: logoClub,
             currentUid: HostOperationsFixtures.hostUid,
             clubs: clubs,
@@ -517,7 +517,7 @@ class _IdentitySwitcherFamily extends StatelessWidget {
         _PreviewCard(
           title: 'Switchable context',
           note: 'The whole bounded identity surface opens the club menu.',
-          child: HostTodayClubPill(
+          child: HostOrganizerIdentityPill(
             club: logoClub,
             currentUid: HostOperationsFixtures.hostUid,
             clubs: clubs,
@@ -529,7 +529,7 @@ class _IdentitySwitcherFamily extends StatelessWidget {
           title: 'Long identity',
           note:
               'Tests whether the 104px label constraint loses too much context.',
-          child: HostTodayClubPill(
+          child: HostOrganizerIdentityPill(
             club: longClub,
             currentUid: HostOperationsFixtures.hostUid,
             clubs: [longClub, ...clubs.skip(1)],

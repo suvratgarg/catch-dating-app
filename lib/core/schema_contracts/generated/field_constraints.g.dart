@@ -3416,6 +3416,12 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['none', 'socialCohortBalance', 'mutualInterestOnly', 'questionnaireClueOnly'],
   );
 
+  static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatEventSuccessPrimitivesMatchingObjective = CatchContractFieldConstraints(
+    path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.eventSuccessPrimitives.matchingObjective',
+    valueTypes: <String>['string'],
+    enumValues: <String>['coverage', 'romantic', 'affinity', 'novelty', 'balance', 'spread'],
+  );
+
   static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatEventSuccessPrimitivesPhoneAvailability = CatchContractFieldConstraints(
     path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.eventSuccessPrimitives.phoneAvailability',
     valueTypes: <String>['string'],
@@ -3426,6 +3432,12 @@ abstract final class CatchContractConstraints {
     path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.eventSuccessPrimitives.rotationSuitability',
     valueTypes: <String>['string'],
     enumValues: <String>['none', 'plannedBreaks', 'continuousRounds'],
+  );
+
+  static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatEventSuccessPrimitivesUnitOutcome = CatchContractFieldConstraints(
+    path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.eventSuccessPrimitives.unitOutcome',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'completion', 'score', 'rank'],
   );
 
   static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatInteractionModel = CatchContractFieldConstraints(
@@ -4642,6 +4654,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const clubDocumentHostDefaultsEventSuccessLayoutId = CatchContractFieldConstraints(
+    path: 'clubDocument.hostDefaults.eventSuccess.layoutId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
   static const clubDocumentHostDefaultsEventSuccessModuleSelectionConfigured = CatchContractFieldConstraints(
     path: 'clubDocument.hostDefaults.eventSuccess.moduleSelectionConfigured',
     valueTypes: <String>['boolean'],
@@ -4771,6 +4789,27 @@ abstract final class CatchContractConstraints {
     maximum: 10,
   );
 
+  static const clubDocumentHostDefaultsEventSuccessStructureConfigResourceCapacityConcurrentUnits = CatchContractFieldConstraints(
+    path: 'clubDocument.hostDefaults.eventSuccess.structureConfig.resourceCapacity.concurrentUnits',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const clubDocumentHostDefaultsEventSuccessStructureConfigResourceCapacityResourceLabelId = CatchContractFieldConstraints(
+    path: 'clubDocument.hostDefaults.eventSuccess.structureConfig.resourceCapacity.resourceLabelId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['court', 'table', 'lane', 'board'],
+  );
+
+  static const clubDocumentHostDefaultsEventSuccessStructureConfigResourceCapacitySeatsPerUnit = CatchContractFieldConstraints(
+    path: 'clubDocument.hostDefaults.eventSuccess.structureConfig.resourceCapacity.seatsPerUnit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
   static const clubDocumentHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds = CatchContractFieldConstraints(
     path: 'clubDocument.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds',
     required: true,
@@ -4790,6 +4829,12 @@ abstract final class CatchContractConstraints {
     path: 'clubDocument.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy',
     valueTypes: <String>['string'],
     enumValues: <String>['avoid', 'allowWhenExhausted'],
+  );
+
+  static const clubDocumentHostDefaultsEventSuccessStructureConfigTopology = CatchContractFieldConstraints(
+    path: 'clubDocument.hostDefaults.eventSuccess.structureConfig.topology',
+    valueTypes: <String>['string'],
+    enumValues: <String>['set', 'sequence', 'adjacency'],
   );
 
   static const clubDocumentHostDefaultsEventSuccessStructureConfigUnitCount = CatchContractFieldConstraints(
@@ -6750,6 +6795,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const createClubCallablePayloadHostDefaultsEventSuccessLayoutId = CatchContractFieldConstraints(
+    path: 'createClubCallablePayload.hostDefaults.eventSuccess.layoutId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
   static const createClubCallablePayloadHostDefaultsEventSuccessModuleSelectionConfigured = CatchContractFieldConstraints(
     path: 'createClubCallablePayload.hostDefaults.eventSuccess.moduleSelectionConfigured',
     valueTypes: <String>['boolean'],
@@ -6879,6 +6930,27 @@ abstract final class CatchContractConstraints {
     maximum: 10,
   );
 
+  static const createClubCallablePayloadHostDefaultsEventSuccessStructureConfigResourceCapacityConcurrentUnits = CatchContractFieldConstraints(
+    path: 'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.resourceCapacity.concurrentUnits',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const createClubCallablePayloadHostDefaultsEventSuccessStructureConfigResourceCapacityResourceLabelId = CatchContractFieldConstraints(
+    path: 'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.resourceCapacity.resourceLabelId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['court', 'table', 'lane', 'board'],
+  );
+
+  static const createClubCallablePayloadHostDefaultsEventSuccessStructureConfigResourceCapacitySeatsPerUnit = CatchContractFieldConstraints(
+    path: 'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.resourceCapacity.seatsPerUnit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
   static const createClubCallablePayloadHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds = CatchContractFieldConstraints(
     path: 'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds',
     required: true,
@@ -6898,6 +6970,12 @@ abstract final class CatchContractConstraints {
     path: 'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy',
     valueTypes: <String>['string'],
     enumValues: <String>['avoid', 'allowWhenExhausted'],
+  );
+
+  static const createClubCallablePayloadHostDefaultsEventSuccessStructureConfigTopology = CatchContractFieldConstraints(
+    path: 'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.topology',
+    valueTypes: <String>['string'],
+    enumValues: <String>['set', 'sequence', 'adjacency'],
   );
 
   static const createClubCallablePayloadHostDefaultsEventSuccessStructureConfigUnitCount = CatchContractFieldConstraints(
@@ -7285,6 +7363,12 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['none', 'socialCohortBalance', 'mutualInterestOnly', 'questionnaireClueOnly'],
   );
 
+  static const createEventCallablePayloadEventFormatEventSuccessPrimitivesMatchingObjective = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventFormat.eventSuccessPrimitives.matchingObjective',
+    valueTypes: <String>['string'],
+    enumValues: <String>['coverage', 'romantic', 'affinity', 'novelty', 'balance', 'spread'],
+  );
+
   static const createEventCallablePayloadEventFormatEventSuccessPrimitivesPhoneAvailability = CatchContractFieldConstraints(
     path: 'createEventCallablePayload.eventFormat.eventSuccessPrimitives.phoneAvailability',
     valueTypes: <String>['string'],
@@ -7295,6 +7379,12 @@ abstract final class CatchContractConstraints {
     path: 'createEventCallablePayload.eventFormat.eventSuccessPrimitives.rotationSuitability',
     valueTypes: <String>['string'],
     enumValues: <String>['none', 'plannedBreaks', 'continuousRounds'],
+  );
+
+  static const createEventCallablePayloadEventFormatEventSuccessPrimitivesUnitOutcome = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventFormat.eventSuccessPrimitives.unitOutcome',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'completion', 'score', 'rank'],
   );
 
   static const createEventCallablePayloadEventFormatInteractionModel = CatchContractFieldConstraints(
@@ -7678,6 +7768,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const createEventCallablePayloadEventSuccessDefaultsLayoutId = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventSuccessDefaults.layoutId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
   static const createEventCallablePayloadEventSuccessDefaultsModuleSelectionConfigured = CatchContractFieldConstraints(
     path: 'createEventCallablePayload.eventSuccessDefaults.moduleSelectionConfigured',
     valueTypes: <String>['boolean'],
@@ -7807,6 +7903,27 @@ abstract final class CatchContractConstraints {
     maximum: 10,
   );
 
+  static const createEventCallablePayloadEventSuccessDefaultsStructureConfigResourceCapacityConcurrentUnits = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventSuccessDefaults.structureConfig.resourceCapacity.concurrentUnits',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const createEventCallablePayloadEventSuccessDefaultsStructureConfigResourceCapacityResourceLabelId = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventSuccessDefaults.structureConfig.resourceCapacity.resourceLabelId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['court', 'table', 'lane', 'board'],
+  );
+
+  static const createEventCallablePayloadEventSuccessDefaultsStructureConfigResourceCapacitySeatsPerUnit = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventSuccessDefaults.structureConfig.resourceCapacity.seatsPerUnit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
   static const createEventCallablePayloadEventSuccessDefaultsStructureConfigRevealCountdownSeconds = CatchContractFieldConstraints(
     path: 'createEventCallablePayload.eventSuccessDefaults.structureConfig.revealCountdownSeconds',
     required: true,
@@ -7826,6 +7943,12 @@ abstract final class CatchContractConstraints {
     path: 'createEventCallablePayload.eventSuccessDefaults.structureConfig.rotationRepeatStrategy',
     valueTypes: <String>['string'],
     enumValues: <String>['avoid', 'allowWhenExhausted'],
+  );
+
+  static const createEventCallablePayloadEventSuccessDefaultsStructureConfigTopology = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventSuccessDefaults.structureConfig.topology',
+    valueTypes: <String>['string'],
+    enumValues: <String>['set', 'sequence', 'adjacency'],
   );
 
   static const createEventCallablePayloadEventSuccessDefaultsStructureConfigUnitCount = CatchContractFieldConstraints(
@@ -8311,6 +8434,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const createOrganizerCallablePayloadHostDefaultsEventSuccessLayoutId = CatchContractFieldConstraints(
+    path: 'createOrganizerCallablePayload.hostDefaults.eventSuccess.layoutId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
   static const createOrganizerCallablePayloadHostDefaultsEventSuccessModuleSelectionConfigured = CatchContractFieldConstraints(
     path: 'createOrganizerCallablePayload.hostDefaults.eventSuccess.moduleSelectionConfigured',
     valueTypes: <String>['boolean'],
@@ -8440,6 +8569,27 @@ abstract final class CatchContractConstraints {
     maximum: 10,
   );
 
+  static const createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigResourceCapacityConcurrentUnits = CatchContractFieldConstraints(
+    path: 'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.resourceCapacity.concurrentUnits',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigResourceCapacityResourceLabelId = CatchContractFieldConstraints(
+    path: 'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.resourceCapacity.resourceLabelId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['court', 'table', 'lane', 'board'],
+  );
+
+  static const createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigResourceCapacitySeatsPerUnit = CatchContractFieldConstraints(
+    path: 'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.resourceCapacity.seatsPerUnit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
   static const createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds = CatchContractFieldConstraints(
     path: 'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds',
     required: true,
@@ -8459,6 +8609,12 @@ abstract final class CatchContractConstraints {
     path: 'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy',
     valueTypes: <String>['string'],
     enumValues: <String>['avoid', 'allowWhenExhausted'],
+  );
+
+  static const createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigTopology = CatchContractFieldConstraints(
+    path: 'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.topology',
+    valueTypes: <String>['string'],
+    enumValues: <String>['set', 'sequence', 'adjacency'],
   );
 
   static const createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigUnitCount = CatchContractFieldConstraints(
@@ -8786,6 +8942,54 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerContactCallablePayloadDisplayName = CatchContractFieldConstraints(
+    path: 'createOrganizerContactCallablePayload.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerContactCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'createOrganizerContactCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerContactCallableResponseContactId = CatchContractFieldConstraints(
+    path: 'createOrganizerContactCallableResponse.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerContactCallableResponseDisplayName = CatchContractFieldConstraints(
+    path: 'createOrganizerContactCallableResponse.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerContactCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'createOrganizerContactCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerContactCallableResponseRevision = CatchContractFieldConstraints(
+    path: 'createOrganizerContactCallableResponse.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
   );
 
   static const createOrganizerPostCallablePayloadEventId = CatchContractFieldConstraints(
@@ -10145,6 +10349,13 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const eventAttendeeDocumentArrivalGroup = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.arrivalGroup',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const eventAttendeeDocumentAttendanceRevision = CatchContractFieldConstraints(
     path: 'eventAttendeeDocument.attendanceRevision',
     valueTypes: <String>['integer'],
@@ -11327,6 +11538,12 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['none', 'socialCohortBalance', 'mutualInterestOnly', 'questionnaireClueOnly'],
   );
 
+  static const eventDocumentEventFormatEventSuccessPrimitivesMatchingObjective = CatchContractFieldConstraints(
+    path: 'eventDocument.eventFormat.eventSuccessPrimitives.matchingObjective',
+    valueTypes: <String>['string'],
+    enumValues: <String>['coverage', 'romantic', 'affinity', 'novelty', 'balance', 'spread'],
+  );
+
   static const eventDocumentEventFormatEventSuccessPrimitivesPhoneAvailability = CatchContractFieldConstraints(
     path: 'eventDocument.eventFormat.eventSuccessPrimitives.phoneAvailability',
     valueTypes: <String>['string'],
@@ -11337,6 +11554,12 @@ abstract final class CatchContractConstraints {
     path: 'eventDocument.eventFormat.eventSuccessPrimitives.rotationSuitability',
     valueTypes: <String>['string'],
     enumValues: <String>['none', 'plannedBreaks', 'continuousRounds'],
+  );
+
+  static const eventDocumentEventFormatEventSuccessPrimitivesUnitOutcome = CatchContractFieldConstraints(
+    path: 'eventDocument.eventFormat.eventSuccessPrimitives.unitOutcome',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'completion', 'score', 'rank'],
   );
 
   static const eventDocumentEventFormatInteractionModel = CatchContractFieldConstraints(
@@ -14304,6 +14527,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventSuccessAssignmentDocumentConfirmedLayoutUnitId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDocument.confirmedLayoutUnitId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
+  );
+
   static const eventSuccessAssignmentDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'eventSuccessAssignmentDocument.createdAt._nanoseconds',
     required: true,
@@ -14502,6 +14731,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventSuccessAssignmentDocumentLayoutUnitId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDocument.layoutUnitId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
+  );
+
   static const eventSuccessAssignmentDocumentModuleId = CatchContractFieldConstraints(
     path: 'eventSuccessAssignmentDocument.moduleId',
     required: true,
@@ -14614,6 +14849,12 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDocumentRotationSlotsItemsResourceUnitId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDocument.rotationSlots.items.resourceUnitId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
   );
 
   static const eventSuccessAssignmentDocumentRotationSlotsItemsRoundIndex = CatchContractFieldConstraints(
@@ -14849,6 +15090,662 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentClubId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.clubId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentConfirmedLayoutUnitId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.confirmedLayoutUnitId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentDemoOps = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.demoOps',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentDemoOpsCommand = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.demoOpsCommand',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentDemoOpsId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.demoOpsId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentDisplaySubtitle = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.displaySubtitle',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentDisplayTitle = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.displayTitle',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentEventId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlots = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 24,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsCompatibility = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.compatibility',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['mutual_interest', 'one_way_interest', 'questionnaire_match', 'social', 'mixed', 'host_override'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsEndsAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.endsAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsEndsAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.endsAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsLabel = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsPeerCount = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.peerCount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 20,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsPeerUids = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.peerUids',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsPeerUidsItems = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.peerUids.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsRoundIndex = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.roundIndex',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsSlotId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.slotId',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsStartsAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.startsAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsStartsAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.startsAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsUnitIndex = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.unitIndex',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsUnitKind = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.unitKind',
+    valueTypes: <String>['string'],
+    enumValues: <String>['wholeGroup', 'pods', 'pairs', 'teams', 'tables'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsUnitLabel = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.unitLabel',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsWhyCodes = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.whyCodes',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['host_override', 'mutual_interest', 'questionnaire_match', 'social_fallback', 'balanced_group', 'fresh_peer', 'repeat_peer', 'pair_slot', 'pod_slot', 'table_slot', 'team_slot', 'whole_group_slot'],
+    maxItems: 12,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsWhyCodesItems = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.whyCodes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['host_override', 'mutual_interest', 'questionnaire_match', 'social_fallback', 'balanced_group', 'fresh_peer', 'repeat_peer', 'pair_slot', 'pod_slot', 'table_slot', 'team_slot', 'whole_group_slot'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsWhySummary = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.whySummary',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentLabel = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentLayoutUnitId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.layoutUnitId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentModuleId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.moduleId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['micro_pods', 'guided_rotations'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentPeerUids = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.peerUids',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentPeerUidsItems = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.peerUids.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationFairnessAssignedRoundCount = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationFairness.assignedRoundCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationFairnessRepeatPeerCount = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationFairness.repeatPeerCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationFairnessSitOutRoundCount = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationFairness.sitOutRoundCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationFairnessUniquePeerCount = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationFairness.uniquePeerCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlots = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 24,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsCompatibility = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.compatibility',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['mutual_interest', 'one_way_interest', 'questionnaire_match', 'social', 'host_override'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsEndsAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.endsAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsEndsAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.endsAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsLabel = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsPeerCount = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.peerCount',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 20,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsPeerUid = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.peerUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsResourceUnitId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.resourceUnitId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsRoundIndex = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.roundIndex',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsSlotId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.slotId',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsStartsAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.startsAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsStartsAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.startsAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsUnitIndex = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.unitIndex',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsUnitKind = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.unitKind',
+    valueTypes: <String>['string'],
+    enumValues: <String>['pairs'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsWhyCodes = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.whyCodes',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['host_override', 'mutual_interest', 'one_way_interest', 'questionnaire_match', 'social_fallback', 'fresh_peer', 'repeat_peer', 'pair_slot'],
+    maxItems: 12,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsWhyCodesItems = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.whyCodes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['host_override', 'mutual_interest', 'one_way_interest', 'questionnaire_match', 'social_fallback', 'fresh_peer', 'repeat_peer', 'pair_slot'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsWhySummary = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.whySummary',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentScenario = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.scenario',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentSeedPrefix = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.seedPrefix',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentSitOutSlots = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 24,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsEndsAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.endsAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsEndsAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.endsAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsLabel = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsRoundIndex = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.roundIndex',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsStartsAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.startsAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsStartsAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.startsAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsWhyCodes = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.whyCodes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['sit_out'],
+    maxItems: 12,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsWhyCodesItems = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.whyCodes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['sit_out'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsWhySummary = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.whySummary',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentSource = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['server_v1', 'host_override_v1', 'server'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentSynthetic = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.synthetic',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentUid = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentUnitIndex = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.unitIndex',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentUnitKind = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.unitKind',
+    valueTypes: <String>['string'],
+    enumValues: <String>['wholeGroup', 'pods', 'pairs', 'teams', 'tables'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentUnitLabel = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.unitLabel',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentWhyCodes = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.whyCodes',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['host_override', 'mutual_interest', 'one_way_interest', 'questionnaire_match', 'social_fallback', 'balanced_group', 'fresh_peer', 'repeat_peer', 'sit_out', 'pair_slot', 'pod_slot', 'table_slot', 'team_slot', 'whole_group_slot'],
+    maxItems: 12,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentWhyCodesItems = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.whyCodes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['host_override', 'mutual_interest', 'one_way_interest', 'questionnaire_match', 'social_fallback', 'balanced_group', 'fresh_peer', 'repeat_peer', 'sit_out', 'pair_slot', 'pod_slot', 'table_slot', 'team_slot', 'whole_group_slot'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentWhySummary = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.whySummary',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentBaseAssignmentRevision = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.baseAssignmentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 2147483647,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentClubId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.clubId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentModuleId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.moduleId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['guided_rotations'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentRoundIndex = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.roundIndex',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentUid = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
   );
 
   static const eventSuccessCompatibilityResponseDocumentAnswerIds = CatchContractFieldConstraints(
@@ -15108,6 +16005,48 @@ abstract final class CatchContractConstraints {
     maximum: 5,
   );
 
+  static const eventSuccessLiveActionCallablePayloadAction = CatchContractFieldConstraints(
+    path: 'eventSuccessLiveActionCallablePayload.action',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['setActiveStep', 'startRevealCountdown', 'cancelRevealCountdown', 'publishReveal', 'complete'],
+  );
+
+  static const eventSuccessLiveActionCallablePayloadActiveStepIndex = CatchContractFieldConstraints(
+    path: 'eventSuccessLiveActionCallablePayload.activeStepIndex',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventSuccessLiveActionCallablePayloadConfirmed = CatchContractFieldConstraints(
+    path: 'eventSuccessLiveActionCallablePayload.confirmed',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventSuccessLiveActionCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'eventSuccessLiveActionCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessLiveActionCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'eventSuccessLiveActionCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const eventSuccessLiveActionCallablePayloadRoundIndex = CatchContractFieldConstraints(
+    path: 'eventSuccessLiveActionCallablePayload.roundIndex',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
   static const eventSuccessPlanDocumentActiveRevealRoundIndex = CatchContractFieldConstraints(
     path: 'eventSuccessPlanDocument.activeRevealRoundIndex',
     valueTypes: <String>['integer'],
@@ -15121,6 +16060,50 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 100,
+  );
+
+  static const eventSuccessPlanDocumentAffinityConstraints = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.affinityConstraints',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 300,
+  );
+
+  static const eventSuccessPlanDocumentAffinityConstraintsItemsAUid = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.affinityConstraints.items.aUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessPlanDocumentAffinityConstraintsItemsBUid = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.affinityConstraints.items.bUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessPlanDocumentAffinityConstraintsItemsScope = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.affinityConstraints.items.scope',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['thisRound', 'pinned'],
+  );
+
+  static const eventSuccessPlanDocumentAffinityConstraintsItemsValue = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.affinityConstraints.items.value',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['mustPair', 'mustSplit', 'avoidRepeat', 'neutral'],
+  );
+
+  static const eventSuccessPlanDocumentAssignmentDraftRevision = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.assignmentDraftRevision',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
   );
 
   static const eventSuccessPlanDocumentAttendeePrompt = CatchContractFieldConstraints(
@@ -15226,6 +16209,19 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventSuccessPlanDocumentLayoutId = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.layoutId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const eventSuccessPlanDocumentLiveControlRevision = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.liveControlRevision',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
   static const eventSuccessPlanDocumentOrganizerId = CatchContractFieldConstraints(
     path: 'eventSuccessPlanDocument.organizerId',
     maxLength: 180,
@@ -15240,6 +16236,20 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessPlanDocumentPublishedRevealRoundIndex = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.publishedRevealRoundIndex',
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 100,
+  );
+
+  static const eventSuccessPlanDocumentPublishedRotationRoundIndex = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.publishedRotationRoundIndex',
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 100,
   );
 
   static const eventSuccessPlanDocumentQuestionnaireConfigCustomQuestions = CatchContractFieldConstraints(
@@ -15356,6 +16366,43 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventSuccessPlanDocumentSpatialOverrides = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.spatialOverrides',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 300,
+  );
+
+  static const eventSuccessPlanDocumentSpatialOverridesItemsLayoutUnitId = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.spatialOverrides.items.layoutUnitId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
+  );
+
+  static const eventSuccessPlanDocumentSpatialOverridesItemsScope = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.spatialOverrides.items.scope',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['thisRound', 'pinned'],
+  );
+
+  static const eventSuccessPlanDocumentSpatialOverridesItemsTargetPeerUid = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.spatialOverrides.items.targetPeerUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessPlanDocumentSpatialOverridesItemsUid = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.spatialOverrides.items.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const eventSuccessPlanDocumentStatus = CatchContractFieldConstraints(
     path: 'eventSuccessPlanDocument.status',
     required: true,
@@ -15402,6 +16449,27 @@ abstract final class CatchContractConstraints {
     maximum: 10,
   );
 
+  static const eventSuccessPlanDocumentStructureConfigResourceCapacityConcurrentUnits = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.structureConfig.resourceCapacity.concurrentUnits',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const eventSuccessPlanDocumentStructureConfigResourceCapacityResourceLabelId = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.structureConfig.resourceCapacity.resourceLabelId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['court', 'table', 'lane', 'board'],
+  );
+
+  static const eventSuccessPlanDocumentStructureConfigResourceCapacitySeatsPerUnit = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.structureConfig.resourceCapacity.seatsPerUnit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
   static const eventSuccessPlanDocumentStructureConfigRevealCountdownSeconds = CatchContractFieldConstraints(
     path: 'eventSuccessPlanDocument.structureConfig.revealCountdownSeconds',
     required: true,
@@ -15421,6 +16489,12 @@ abstract final class CatchContractConstraints {
     path: 'eventSuccessPlanDocument.structureConfig.rotationRepeatStrategy',
     valueTypes: <String>['string'],
     enumValues: <String>['avoid', 'allowWhenExhausted'],
+  );
+
+  static const eventSuccessPlanDocumentStructureConfigTopology = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.structureConfig.topology',
+    valueTypes: <String>['string'],
+    enumValues: <String>['set', 'sequence', 'adjacency'],
   );
 
   static const eventSuccessPlanDocumentStructureConfigUnitCount = CatchContractFieldConstraints(
@@ -15951,6 +17025,414 @@ abstract final class CatchContractConstraints {
 
   static const eventSuccessScorecardDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
     path: 'eventSuccessScorecardDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventSuccessSpatialActionCallablePayloadAction = CatchContractFieldConstraints(
+    path: 'eventSuccessSpatialActionCallablePayload.action',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['previewReassignment', 'reassign', 'confirmPosition', 'releasePinned'],
+  );
+
+  static const eventSuccessSpatialActionCallablePayloadDestinationUnitId = CatchContractFieldConstraints(
+    path: 'eventSuccessSpatialActionCallablePayload.destinationUnitId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
+  );
+
+  static const eventSuccessSpatialActionCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'eventSuccessSpatialActionCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessSpatialActionCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'eventSuccessSpatialActionCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const eventSuccessSpatialActionCallablePayloadModuleId = CatchContractFieldConstraints(
+    path: 'eventSuccessSpatialActionCallablePayload.moduleId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['micro_pods', 'guided_rotations'],
+  );
+
+  static const eventSuccessSpatialActionCallablePayloadScope = CatchContractFieldConstraints(
+    path: 'eventSuccessSpatialActionCallablePayload.scope',
+    valueTypes: <String>['string'],
+    enumValues: <String>['thisRound', 'pinned'],
+  );
+
+  static const eventSuccessSpatialActionCallablePayloadUid = CatchContractFieldConstraints(
+    path: 'eventSuccessSpatialActionCallablePayload.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessSpatialActionCallableResponseDestinations = CatchContractFieldConstraints(
+    path: 'eventSuccessSpatialActionCallableResponse.destinations',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 200,
+  );
+
+  static const eventSuccessSpatialActionCallableResponseDestinationsItemsReason = CatchContractFieldConstraints(
+    path: 'eventSuccessSpatialActionCallableResponse.destinations.items.reason',
+    valueTypes: <String>['string'],
+    enumValues: <String>['capacity', 'safetyKeepApart', 'declaredConstraint'],
+  );
+
+  static const eventSuccessSpatialActionCallableResponseDestinationsItemsRecommendedScope = CatchContractFieldConstraints(
+    path: 'eventSuccessSpatialActionCallableResponse.destinations.items.recommendedScope',
+    valueTypes: <String>['string'],
+    enumValues: <String>['thisRound', 'pinned'],
+  );
+
+  static const eventSuccessSpatialActionCallableResponseDestinationsItemsUnitId = CatchContractFieldConstraints(
+    path: 'eventSuccessSpatialActionCallableResponse.destinations.items.unitId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
+  );
+
+  static const eventSuccessSpatialActionCallableResponseDestinationsItemsValid = CatchContractFieldConstraints(
+    path: 'eventSuccessSpatialActionCallableResponse.destinations.items.valid',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventSuccessSpatialActionCallableResponseRevision = CatchContractFieldConstraints(
+    path: 'eventSuccessSpatialActionCallableResponse.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const eventSuccessStandingsDocumentClubId = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.clubId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessStandingsDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessStandingsDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventSuccessStandingsDocumentEntries = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.entries',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 200,
+  );
+
+  static const eventSuccessStandingsDocumentEntriesItemsPosition = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.entries.items.position',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const eventSuccessStandingsDocumentEntriesItemsRoundsRecorded = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.entries.items.roundsRecorded',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 101,
+  );
+
+  static const eventSuccessStandingsDocumentEntriesItemsUnitId = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.entries.items.unitId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const eventSuccessStandingsDocumentEntriesItemsUnitLabel = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.entries.items.unitLabel',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessStandingsDocumentEntriesItemsValue = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.entries.items.value',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -100000000,
+    maximum: 100000000,
+  );
+
+  static const eventSuccessStandingsDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessStandingsDocumentLatestRoundIndex = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.latestRoundIndex',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventSuccessStandingsDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessStandingsDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const eventSuccessStandingsDocumentRounds = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.rounds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 101,
+  );
+
+  static const eventSuccessStandingsDocumentRoundsItemsEntries = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.rounds.items.entries',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 200,
+  );
+
+  static const eventSuccessStandingsDocumentRoundsItemsEntriesItemsPosition = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.rounds.items.entries.items.position',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const eventSuccessStandingsDocumentRoundsItemsEntriesItemsRoundsRecorded = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.rounds.items.entries.items.roundsRecorded',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 101,
+  );
+
+  static const eventSuccessStandingsDocumentRoundsItemsEntriesItemsUnitId = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.rounds.items.entries.items.unitId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const eventSuccessStandingsDocumentRoundsItemsEntriesItemsUnitLabel = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.rounds.items.entries.items.unitLabel',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessStandingsDocumentRoundsItemsEntriesItemsValue = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.rounds.items.entries.items.value',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -100000000,
+    maximum: 100000000,
+  );
+
+  static const eventSuccessStandingsDocumentRoundsItemsRoundIndex = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.rounds.items.roundIndex',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventSuccessStandingsDocumentUnitOutcome = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.unitOutcome',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['score', 'rank'],
+  );
+
+  static const eventSuccessStandingsDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessStandingsDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventSuccessUnitOutcomesDocumentClubId = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.clubId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessUnitOutcomesDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessUnitOutcomesDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventSuccessUnitOutcomesDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessUnitOutcomesDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessUnitOutcomesDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const eventSuccessUnitOutcomesDocumentRounds = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.rounds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 101,
+  );
+
+  static const eventSuccessUnitOutcomesDocumentRoundsItemsEntries = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.rounds.items.entries',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 200,
+  );
+
+  static const eventSuccessUnitOutcomesDocumentRoundsItemsEntriesItemsCompleted = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.rounds.items.entries.items.completed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventSuccessUnitOutcomesDocumentRoundsItemsEntriesItemsRank = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.rounds.items.entries.items.rank',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const eventSuccessUnitOutcomesDocumentRoundsItemsEntriesItemsScore = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.rounds.items.entries.items.score',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -1000000,
+    maximum: 1000000,
+  );
+
+  static const eventSuccessUnitOutcomesDocumentRoundsItemsEntriesItemsUnitId = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.rounds.items.entries.items.unitId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const eventSuccessUnitOutcomesDocumentRoundsItemsEntriesItemsUnitLabel = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.rounds.items.entries.items.unitLabel',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessUnitOutcomesDocumentRoundsItemsRoundIndex = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.rounds.items.roundIndex',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventSuccessUnitOutcomesDocumentUnitOutcome = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.unitOutcome',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['completion', 'score', 'rank'],
+  );
+
+  static const eventSuccessUnitOutcomesDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessUnitOutcomesDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.updatedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
   );
@@ -17857,6 +19339,84 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const getEventRuntimeBootstrapCallableResponseEventLayoutLabel = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.layout.label',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventLayoutLayoutId = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.layout.layoutId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventLayoutUnits = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.layout.units',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 200,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventLayoutUnitsItemsCapacity = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.layout.units.items.capacity',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventLayoutUnitsItemsGridX = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.layout.units.items.gridX',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 199,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventLayoutUnitsItemsGridY = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.layout.units.items.gridY',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 199,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventLayoutUnitsItemsId = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.layout.units.items.id',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventLayoutUnitsItemsLabel = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.layout.units.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventLayoutUnitsItemsOrder = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.layout.units.items.order',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventLayoutUnitsItemsShape = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.layout.units.items.shape',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['round', 'rect', 'row', 'court', 'zone'],
+  );
+
   static const getEventRuntimeBootstrapCallableResponseEventLocationName = CatchContractFieldConstraints(
     path: 'getEventRuntimeBootstrapCallableResponse.event.locationName',
     maxLength: 240,
@@ -18113,6 +19673,92 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['relationship', 'casual', 'marriage', 'friendship', 'unsure'],
   );
 
+  static const getEventSuccessSpatialLayoutCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'getEventSuccessSpatialLayoutCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventSuccessSpatialLayoutCallableResponseLayoutLabel = CatchContractFieldConstraints(
+    path: 'getEventSuccessSpatialLayoutCallableResponse.layout.label',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventSuccessSpatialLayoutCallableResponseLayoutLayoutId = CatchContractFieldConstraints(
+    path: 'getEventSuccessSpatialLayoutCallableResponse.layout.layoutId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const getEventSuccessSpatialLayoutCallableResponseLayoutUnits = CatchContractFieldConstraints(
+    path: 'getEventSuccessSpatialLayoutCallableResponse.layout.units',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 200,
+  );
+
+  static const getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsCapacity = CatchContractFieldConstraints(
+    path: 'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.capacity',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsGridX = CatchContractFieldConstraints(
+    path: 'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.gridX',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 199,
+  );
+
+  static const getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsGridY = CatchContractFieldConstraints(
+    path: 'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.gridY',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 199,
+  );
+
+  static const getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsId = CatchContractFieldConstraints(
+    path: 'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.id',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
+  );
+
+  static const getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsLabel = CatchContractFieldConstraints(
+    path: 'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsOrder = CatchContractFieldConstraints(
+    path: 'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.order',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsShape = CatchContractFieldConstraints(
+    path: 'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.shape',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['round', 'rect', 'row', 'court', 'zone'],
+  );
+
   static const getOrganizerContactDetailCallablePayloadContactId = CatchContractFieldConstraints(
     path: 'getOrganizerContactDetailCallablePayload.contactId',
     maxLength: 180,
@@ -18314,6 +19960,44 @@ abstract final class CatchContractConstraints {
     path: 'getOrganizerContactDetailCallableResponse.phoneE164',
     valueTypes: <String>['string'],
     pattern: '^\\+[1-9][0-9]{7,14}\$',
+  );
+
+  static const getOrganizerContactDetailCallableResponseRevenueAmounts = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.revenue.amounts',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 8,
+  );
+
+  static const getOrganizerContactDetailCallableResponseRevenueAmountsItemsAmountMinor = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.revenue.amounts.items.amountMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getOrganizerContactDetailCallableResponseRevenueAmountsItemsCurrency = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.revenue.amounts.items.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const getOrganizerContactDetailCallableResponseRevenueAmountsItemsPaidOrderCount = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.revenue.amounts.items.paidOrderCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const getOrganizerContactDetailCallableResponseRevenueCoverage = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.revenue.coverage',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['exact', 'partial', 'unavailable'],
   );
 
   static const getOrganizerContactDetailCallableResponseRevision = CatchContractFieldConstraints(
@@ -20189,6 +21873,12 @@ abstract final class CatchContractConstraints {
     maxItems: 250,
   );
 
+  static const importEventAttendeesCallablePayloadRowsItemsArrivalGroup = CatchContractFieldConstraints(
+    path: 'importEventAttendeesCallablePayload.rows.items.arrivalGroup',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
   static const importEventAttendeesCallablePayloadRowsItemsDisplayName = CatchContractFieldConstraints(
     path: 'importEventAttendeesCallablePayload.rows.items.displayName',
     maxLength: 120,
@@ -20691,6 +22381,14 @@ abstract final class CatchContractConstraints {
     path: 'joinWaitlistHTTPResponse.alreadyJoined',
     required: true,
     valueTypes: <String>['boolean'],
+  );
+
+  static const joinWaitlistHTTPResponseError = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPResponse.error',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const joinWaitlistHTTPResponseOk = CatchContractFieldConstraints(
@@ -25761,6 +27459,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerDocumentHostDefaultsEventSuccessLayoutId = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostDefaults.eventSuccess.layoutId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
   static const organizerDocumentHostDefaultsEventSuccessModuleSelectionConfigured = CatchContractFieldConstraints(
     path: 'organizerDocument.hostDefaults.eventSuccess.moduleSelectionConfigured',
     valueTypes: <String>['boolean'],
@@ -25890,6 +27594,27 @@ abstract final class CatchContractConstraints {
     maximum: 10,
   );
 
+  static const organizerDocumentHostDefaultsEventSuccessStructureConfigResourceCapacityConcurrentUnits = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostDefaults.eventSuccess.structureConfig.resourceCapacity.concurrentUnits',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const organizerDocumentHostDefaultsEventSuccessStructureConfigResourceCapacityResourceLabelId = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostDefaults.eventSuccess.structureConfig.resourceCapacity.resourceLabelId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['court', 'table', 'lane', 'board'],
+  );
+
+  static const organizerDocumentHostDefaultsEventSuccessStructureConfigResourceCapacitySeatsPerUnit = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostDefaults.eventSuccess.structureConfig.resourceCapacity.seatsPerUnit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
   static const organizerDocumentHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds = CatchContractFieldConstraints(
     path: 'organizerDocument.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds',
     required: true,
@@ -25909,6 +27634,12 @@ abstract final class CatchContractConstraints {
     path: 'organizerDocument.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy',
     valueTypes: <String>['string'],
     enumValues: <String>['avoid', 'allowWhenExhausted'],
+  );
+
+  static const organizerDocumentHostDefaultsEventSuccessStructureConfigTopology = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostDefaults.eventSuccess.structureConfig.topology',
+    valueTypes: <String>['string'],
+    enumValues: <String>['set', 'sequence', 'adjacency'],
   );
 
   static const organizerDocumentHostDefaultsEventSuccessStructureConfigUnitCount = CatchContractFieldConstraints(
@@ -27353,6 +29084,120 @@ abstract final class CatchContractConstraints {
 
   static const organizerEventLocationResolutionDecisionDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
     path: 'organizerEventLocationResolutionDecisionDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerEventSuccessLayoutDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerEventSuccessLayoutDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerEventSuccessLayoutDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerEventSuccessLayoutDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerEventSuccessLayoutDocumentLabel = CatchContractFieldConstraints(
+    path: 'organizerEventSuccessLayoutDocument.label',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventSuccessLayoutDocumentLayoutId = CatchContractFieldConstraints(
+    path: 'organizerEventSuccessLayoutDocument.layoutId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const organizerEventSuccessLayoutDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerEventSuccessLayoutDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventSuccessLayoutDocumentUnits = CatchContractFieldConstraints(
+    path: 'organizerEventSuccessLayoutDocument.units',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 200,
+  );
+
+  static const organizerEventSuccessLayoutDocumentUnitsItemsCapacity = CatchContractFieldConstraints(
+    path: 'organizerEventSuccessLayoutDocument.units.items.capacity',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const organizerEventSuccessLayoutDocumentUnitsItemsGridX = CatchContractFieldConstraints(
+    path: 'organizerEventSuccessLayoutDocument.units.items.gridX',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 199,
+  );
+
+  static const organizerEventSuccessLayoutDocumentUnitsItemsGridY = CatchContractFieldConstraints(
+    path: 'organizerEventSuccessLayoutDocument.units.items.gridY',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 199,
+  );
+
+  static const organizerEventSuccessLayoutDocumentUnitsItemsId = CatchContractFieldConstraints(
+    path: 'organizerEventSuccessLayoutDocument.units.items.id',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
+  );
+
+  static const organizerEventSuccessLayoutDocumentUnitsItemsLabel = CatchContractFieldConstraints(
+    path: 'organizerEventSuccessLayoutDocument.units.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventSuccessLayoutDocumentUnitsItemsOrder = CatchContractFieldConstraints(
+    path: 'organizerEventSuccessLayoutDocument.units.items.order',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const organizerEventSuccessLayoutDocumentUnitsItemsShape = CatchContractFieldConstraints(
+    path: 'organizerEventSuccessLayoutDocument.units.items.shape',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['round', 'rect', 'row', 'court', 'zone'],
+  );
+
+  static const organizerEventSuccessLayoutDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerEventSuccessLayoutDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerEventSuccessLayoutDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerEventSuccessLayoutDocument.updatedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
   );
@@ -29698,6 +31543,14 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const overrideEventSuccessRotationsCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'overrideEventSuccessRotationsCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
   static const overrideEventSuccessRotationsCallablePayloadRounds = CatchContractFieldConstraints(
     path: 'overrideEventSuccessRotationsCallablePayload.rounds',
     required: true,
@@ -30093,6 +31946,22 @@ abstract final class CatchContractConstraints {
     maxLength: 1000,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const prepareEventSuccessRotationDraftCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'prepareEventSuccessRotationDraftCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const prepareEventSuccessRotationDraftCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'prepareEventSuccessRotationDraftCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
   );
 
   static const profilePhotoCreatedAtNanoseconds = CatchContractFieldConstraints(
@@ -31001,6 +32870,36 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const publishEventSuccessRotationRoundCallablePayloadConfirmed = CatchContractFieldConstraints(
+    path: 'publishEventSuccessRotationRoundCallablePayload.confirmed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const publishEventSuccessRotationRoundCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'publishEventSuccessRotationRoundCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const publishEventSuccessRotationRoundCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'publishEventSuccessRotationRoundCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const publishEventSuccessRotationRoundCallablePayloadRoundIndex = CatchContractFieldConstraints(
+    path: 'publishEventSuccessRotationRoundCallablePayload.roundIndex',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
   static const rateLimitDocumentAction = CatchContractFieldConstraints(
     path: 'rateLimitDocument.action',
     maxLength: 120,
@@ -31221,6 +33120,98 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['hostApp', 'consumerApp', 'runtimeWeb'],
+  );
+
+  static const recordEventSuccessUnitOutcomesCallablePayloadEntries = CatchContractFieldConstraints(
+    path: 'recordEventSuccessUnitOutcomesCallablePayload.entries',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 200,
+  );
+
+  static const recordEventSuccessUnitOutcomesCallablePayloadEntriesItemsCompleted = CatchContractFieldConstraints(
+    path: 'recordEventSuccessUnitOutcomesCallablePayload.entries.items.completed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const recordEventSuccessUnitOutcomesCallablePayloadEntriesItemsRank = CatchContractFieldConstraints(
+    path: 'recordEventSuccessUnitOutcomesCallablePayload.entries.items.rank',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const recordEventSuccessUnitOutcomesCallablePayloadEntriesItemsScore = CatchContractFieldConstraints(
+    path: 'recordEventSuccessUnitOutcomesCallablePayload.entries.items.score',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -1000000,
+    maximum: 1000000,
+  );
+
+  static const recordEventSuccessUnitOutcomesCallablePayloadEntriesItemsUnitId = CatchContractFieldConstraints(
+    path: 'recordEventSuccessUnitOutcomesCallablePayload.entries.items.unitId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const recordEventSuccessUnitOutcomesCallablePayloadEntriesItemsUnitLabel = CatchContractFieldConstraints(
+    path: 'recordEventSuccessUnitOutcomesCallablePayload.entries.items.unitLabel',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const recordEventSuccessUnitOutcomesCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'recordEventSuccessUnitOutcomesCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const recordEventSuccessUnitOutcomesCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'recordEventSuccessUnitOutcomesCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const recordEventSuccessUnitOutcomesCallablePayloadRoundIndex = CatchContractFieldConstraints(
+    path: 'recordEventSuccessUnitOutcomesCallablePayload.roundIndex',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const recordEventSuccessUnitOutcomesCallableResponseReplayed = CatchContractFieldConstraints(
+    path: 'recordEventSuccessUnitOutcomesCallableResponse.replayed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const recordEventSuccessUnitOutcomesCallableResponseRevision = CatchContractFieldConstraints(
+    path: 'recordEventSuccessUnitOutcomesCallableResponse.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const recordEventSuccessUnitOutcomesCallableResponseStandingCount = CatchContractFieldConstraints(
+    path: 'recordEventSuccessUnitOutcomesCallableResponse.standingCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 200,
   );
 
   static const recordOrganizerAnalyticsEventCallablePayloadClubId = CatchContractFieldConstraints(
@@ -32642,6 +34633,22 @@ abstract final class CatchContractConstraints {
     maximum: 180,
   );
 
+  static const startOrganizerContactConversationCallablePayloadContactId = CatchContractFieldConstraints(
+    path: 'startOrganizerContactConversationCallablePayload.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const startOrganizerContactConversationCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'startOrganizerContactConversationCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const startOrganizerConversationCallablePayloadEventId = CatchContractFieldConstraints(
     path: 'startOrganizerConversationCallablePayload.eventId',
     maxLength: 180,
@@ -33355,6 +35362,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const updateClubPatchHostDefaultsEventSuccessLayoutId = CatchContractFieldConstraints(
+    path: 'updateClubPatch.hostDefaults.eventSuccess.layoutId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
   static const updateClubPatchHostDefaultsEventSuccessModuleSelectionConfigured = CatchContractFieldConstraints(
     path: 'updateClubPatch.hostDefaults.eventSuccess.moduleSelectionConfigured',
     valueTypes: <String>['boolean'],
@@ -33484,6 +35497,27 @@ abstract final class CatchContractConstraints {
     maximum: 10,
   );
 
+  static const updateClubPatchHostDefaultsEventSuccessStructureConfigResourceCapacityConcurrentUnits = CatchContractFieldConstraints(
+    path: 'updateClubPatch.hostDefaults.eventSuccess.structureConfig.resourceCapacity.concurrentUnits',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const updateClubPatchHostDefaultsEventSuccessStructureConfigResourceCapacityResourceLabelId = CatchContractFieldConstraints(
+    path: 'updateClubPatch.hostDefaults.eventSuccess.structureConfig.resourceCapacity.resourceLabelId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['court', 'table', 'lane', 'board'],
+  );
+
+  static const updateClubPatchHostDefaultsEventSuccessStructureConfigResourceCapacitySeatsPerUnit = CatchContractFieldConstraints(
+    path: 'updateClubPatch.hostDefaults.eventSuccess.structureConfig.resourceCapacity.seatsPerUnit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
   static const updateClubPatchHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds = CatchContractFieldConstraints(
     path: 'updateClubPatch.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds',
     required: true,
@@ -33503,6 +35537,12 @@ abstract final class CatchContractConstraints {
     path: 'updateClubPatch.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy',
     valueTypes: <String>['string'],
     enumValues: <String>['avoid', 'allowWhenExhausted'],
+  );
+
+  static const updateClubPatchHostDefaultsEventSuccessStructureConfigTopology = CatchContractFieldConstraints(
+    path: 'updateClubPatch.hostDefaults.eventSuccess.structureConfig.topology',
+    valueTypes: <String>['string'],
+    enumValues: <String>['set', 'sequence', 'adjacency'],
   );
 
   static const updateClubPatchHostDefaultsEventSuccessStructureConfigUnitCount = CatchContractFieldConstraints(
@@ -34376,6 +36416,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessLayoutId = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.layoutId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
   static const updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessModuleSelectionConfigured = CatchContractFieldConstraints(
     path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.moduleSelectionConfigured',
     valueTypes: <String>['boolean'],
@@ -34505,6 +36551,27 @@ abstract final class CatchContractConstraints {
     maximum: 10,
   );
 
+  static const updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigResourceCapacityConcurrentUnits = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.resourceCapacity.concurrentUnits',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigResourceCapacityResourceLabelId = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.resourceCapacity.resourceLabelId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['court', 'table', 'lane', 'board'],
+  );
+
+  static const updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigResourceCapacitySeatsPerUnit = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.resourceCapacity.seatsPerUnit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
   static const updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds = CatchContractFieldConstraints(
     path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds',
     required: true,
@@ -34524,6 +36591,12 @@ abstract final class CatchContractConstraints {
     path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy',
     valueTypes: <String>['string'],
     enumValues: <String>['avoid', 'allowWhenExhausted'],
+  );
+
+  static const updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigTopology = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.topology',
+    valueTypes: <String>['string'],
+    enumValues: <String>['set', 'sequence', 'adjacency'],
   );
 
   static const updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigUnitCount = CatchContractFieldConstraints(
@@ -35438,6 +37511,169 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     format: 'uri',
+  );
+
+  static const upsertEventSuccessLayoutCallablePayloadLabel = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallablePayload.label',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertEventSuccessLayoutCallablePayloadLayoutId = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallablePayload.layoutId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const upsertEventSuccessLayoutCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertEventSuccessLayoutCallablePayloadUnits = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallablePayload.units',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 200,
+  );
+
+  static const upsertEventSuccessLayoutCallablePayloadUnitsItemsCapacity = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallablePayload.units.items.capacity',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const upsertEventSuccessLayoutCallablePayloadUnitsItemsGridX = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallablePayload.units.items.gridX',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 199,
+  );
+
+  static const upsertEventSuccessLayoutCallablePayloadUnitsItemsGridY = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallablePayload.units.items.gridY',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 199,
+  );
+
+  static const upsertEventSuccessLayoutCallablePayloadUnitsItemsId = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallablePayload.units.items.id',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
+  );
+
+  static const upsertEventSuccessLayoutCallablePayloadUnitsItemsLabel = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallablePayload.units.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertEventSuccessLayoutCallablePayloadUnitsItemsOrder = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallablePayload.units.items.order',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const upsertEventSuccessLayoutCallablePayloadUnitsItemsShape = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallablePayload.units.items.shape',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['round', 'rect', 'row', 'court', 'zone'],
+  );
+
+  static const upsertEventSuccessLayoutCallableResponseLayoutLabel = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallableResponse.layout.label',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertEventSuccessLayoutCallableResponseLayoutLayoutId = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallableResponse.layout.layoutId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const upsertEventSuccessLayoutCallableResponseLayoutUnits = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallableResponse.layout.units',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 200,
+  );
+
+  static const upsertEventSuccessLayoutCallableResponseLayoutUnitsItemsCapacity = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallableResponse.layout.units.items.capacity',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const upsertEventSuccessLayoutCallableResponseLayoutUnitsItemsGridX = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallableResponse.layout.units.items.gridX',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 199,
+  );
+
+  static const upsertEventSuccessLayoutCallableResponseLayoutUnitsItemsGridY = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallableResponse.layout.units.items.gridY',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 199,
+  );
+
+  static const upsertEventSuccessLayoutCallableResponseLayoutUnitsItemsId = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallableResponse.layout.units.items.id',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
+  );
+
+  static const upsertEventSuccessLayoutCallableResponseLayoutUnitsItemsLabel = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallableResponse.layout.units.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertEventSuccessLayoutCallableResponseLayoutUnitsItemsOrder = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallableResponse.layout.units.items.order',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const upsertEventSuccessLayoutCallableResponseLayoutUnitsItemsShape = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallableResponse.layout.units.items.shape',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['round', 'rect', 'row', 'court', 'zone'],
   );
 
   static const upsertOrganizerCampaignCallablePayloadCampaignId = CatchContractFieldConstraints(
@@ -36942,11 +39178,6 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
-  static const websiteHostListingProjectionCatchEventsItemsScorecard = CatchContractFieldConstraints(
-    path: 'websiteHostListingProjection.catchEvents.items.scorecard',
-    valueTypes: <String>['object'],
-  );
-
   static const websiteHostListingProjectionCatchEventsItemsStartTime = CatchContractFieldConstraints(
     path: 'websiteHostListingProjection.catchEvents.items.startTime',
     minLength: 1,
@@ -38142,8 +40373,10 @@ abstract final class CatchContractConstraints {
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.defaultPlaybookId': adminUpdateEventDetailsCallablePayloadFieldsEventFormatDefaultPlaybookId,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.eventSuccessPrimitives.assignmentAlgorithm': adminUpdateEventDetailsCallablePayloadFieldsEventFormatEventSuccessPrimitivesAssignmentAlgorithm,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.eventSuccessPrimitives.compatibilityPolicy': adminUpdateEventDetailsCallablePayloadFieldsEventFormatEventSuccessPrimitivesCompatibilityPolicy,
+    'adminUpdateEventDetailsCallablePayload.fields.eventFormat.eventSuccessPrimitives.matchingObjective': adminUpdateEventDetailsCallablePayloadFieldsEventFormatEventSuccessPrimitivesMatchingObjective,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.eventSuccessPrimitives.phoneAvailability': adminUpdateEventDetailsCallablePayloadFieldsEventFormatEventSuccessPrimitivesPhoneAvailability,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.eventSuccessPrimitives.rotationSuitability': adminUpdateEventDetailsCallablePayloadFieldsEventFormatEventSuccessPrimitivesRotationSuitability,
+    'adminUpdateEventDetailsCallablePayload.fields.eventFormat.eventSuccessPrimitives.unitOutcome': adminUpdateEventDetailsCallablePayloadFieldsEventFormatEventSuccessPrimitivesUnitOutcome,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.interactionModel': adminUpdateEventDetailsCallablePayloadFieldsEventFormatInteractionModel,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.version': adminUpdateEventDetailsCallablePayloadFieldsEventFormatVersion,
     'adminUpdateEventDetailsCallablePayload.fields.pace': adminUpdateEventDetailsCallablePayloadFieldsPace,
@@ -38319,6 +40552,7 @@ abstract final class CatchContractConstraints {
     'clubDocument.hostDefaults.eventSuccess.contextualOpenersEnabled': clubDocumentHostDefaultsEventSuccessContextualOpenersEnabled,
     'clubDocument.hostDefaults.eventSuccess.enabled': clubDocumentHostDefaultsEventSuccessEnabled,
     'clubDocument.hostDefaults.eventSuccess.hostGoal': clubDocumentHostDefaultsEventSuccessHostGoal,
+    'clubDocument.hostDefaults.eventSuccess.layoutId': clubDocumentHostDefaultsEventSuccessLayoutId,
     'clubDocument.hostDefaults.eventSuccess.moduleSelectionConfigured': clubDocumentHostDefaultsEventSuccessModuleSelectionConfigured,
     'clubDocument.hostDefaults.eventSuccess.playbookId': clubDocumentHostDefaultsEventSuccessPlaybookId,
     'clubDocument.hostDefaults.eventSuccess.questionnaireConfig.customQuestions': clubDocumentHostDefaultsEventSuccessQuestionnaireConfigCustomQuestions,
@@ -38336,9 +40570,13 @@ abstract final class CatchContractConstraints {
     'clubDocument.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes': clubDocumentHostDefaultsEventSuccessStructureConfigClusterActivityAttributes,
     'clubDocument.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes.items': clubDocumentHostDefaultsEventSuccessStructureConfigClusterActivityAttributesItems,
     'clubDocument.hostDefaults.eventSuccess.structureConfig.maxPairMeetings': clubDocumentHostDefaultsEventSuccessStructureConfigMaxPairMeetings,
+    'clubDocument.hostDefaults.eventSuccess.structureConfig.resourceCapacity.concurrentUnits': clubDocumentHostDefaultsEventSuccessStructureConfigResourceCapacityConcurrentUnits,
+    'clubDocument.hostDefaults.eventSuccess.structureConfig.resourceCapacity.resourceLabelId': clubDocumentHostDefaultsEventSuccessStructureConfigResourceCapacityResourceLabelId,
+    'clubDocument.hostDefaults.eventSuccess.structureConfig.resourceCapacity.seatsPerUnit': clubDocumentHostDefaultsEventSuccessStructureConfigResourceCapacitySeatsPerUnit,
     'clubDocument.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds': clubDocumentHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds,
     'clubDocument.hostDefaults.eventSuccess.structureConfig.rotationIntervalMinutes': clubDocumentHostDefaultsEventSuccessStructureConfigRotationIntervalMinutes,
     'clubDocument.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy': clubDocumentHostDefaultsEventSuccessStructureConfigRotationRepeatStrategy,
+    'clubDocument.hostDefaults.eventSuccess.structureConfig.topology': clubDocumentHostDefaultsEventSuccessStructureConfigTopology,
     'clubDocument.hostDefaults.eventSuccess.structureConfig.unitCount': clubDocumentHostDefaultsEventSuccessStructureConfigUnitCount,
     'clubDocument.hostDefaults.eventSuccess.structureConfig.unitKind': clubDocumentHostDefaultsEventSuccessStructureConfigUnitKind,
     'clubDocument.hostDefaults.eventSuccess.structureConfig.unitSize': clubDocumentHostDefaultsEventSuccessStructureConfigUnitSize,
@@ -38609,6 +40847,7 @@ abstract final class CatchContractConstraints {
     'createClubCallablePayload.hostDefaults.eventSuccess.contextualOpenersEnabled': createClubCallablePayloadHostDefaultsEventSuccessContextualOpenersEnabled,
     'createClubCallablePayload.hostDefaults.eventSuccess.enabled': createClubCallablePayloadHostDefaultsEventSuccessEnabled,
     'createClubCallablePayload.hostDefaults.eventSuccess.hostGoal': createClubCallablePayloadHostDefaultsEventSuccessHostGoal,
+    'createClubCallablePayload.hostDefaults.eventSuccess.layoutId': createClubCallablePayloadHostDefaultsEventSuccessLayoutId,
     'createClubCallablePayload.hostDefaults.eventSuccess.moduleSelectionConfigured': createClubCallablePayloadHostDefaultsEventSuccessModuleSelectionConfigured,
     'createClubCallablePayload.hostDefaults.eventSuccess.playbookId': createClubCallablePayloadHostDefaultsEventSuccessPlaybookId,
     'createClubCallablePayload.hostDefaults.eventSuccess.questionnaireConfig.customQuestions': createClubCallablePayloadHostDefaultsEventSuccessQuestionnaireConfigCustomQuestions,
@@ -38626,9 +40865,13 @@ abstract final class CatchContractConstraints {
     'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigClusterActivityAttributes,
     'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes.items': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigClusterActivityAttributesItems,
     'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.maxPairMeetings': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigMaxPairMeetings,
+    'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.resourceCapacity.concurrentUnits': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigResourceCapacityConcurrentUnits,
+    'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.resourceCapacity.resourceLabelId': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigResourceCapacityResourceLabelId,
+    'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.resourceCapacity.seatsPerUnit': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigResourceCapacitySeatsPerUnit,
     'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds,
     'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.rotationIntervalMinutes': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigRotationIntervalMinutes,
     'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigRotationRepeatStrategy,
+    'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.topology': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigTopology,
     'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.unitCount': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigUnitCount,
     'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.unitKind': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigUnitKind,
     'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.unitSize': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigUnitSize,
@@ -38683,8 +40926,10 @@ abstract final class CatchContractConstraints {
     'createEventCallablePayload.eventFormat.defaultPlaybookId': createEventCallablePayloadEventFormatDefaultPlaybookId,
     'createEventCallablePayload.eventFormat.eventSuccessPrimitives.assignmentAlgorithm': createEventCallablePayloadEventFormatEventSuccessPrimitivesAssignmentAlgorithm,
     'createEventCallablePayload.eventFormat.eventSuccessPrimitives.compatibilityPolicy': createEventCallablePayloadEventFormatEventSuccessPrimitivesCompatibilityPolicy,
+    'createEventCallablePayload.eventFormat.eventSuccessPrimitives.matchingObjective': createEventCallablePayloadEventFormatEventSuccessPrimitivesMatchingObjective,
     'createEventCallablePayload.eventFormat.eventSuccessPrimitives.phoneAvailability': createEventCallablePayloadEventFormatEventSuccessPrimitivesPhoneAvailability,
     'createEventCallablePayload.eventFormat.eventSuccessPrimitives.rotationSuitability': createEventCallablePayloadEventFormatEventSuccessPrimitivesRotationSuitability,
+    'createEventCallablePayload.eventFormat.eventSuccessPrimitives.unitOutcome': createEventCallablePayloadEventFormatEventSuccessPrimitivesUnitOutcome,
     'createEventCallablePayload.eventFormat.interactionModel': createEventCallablePayloadEventFormatInteractionModel,
     'createEventCallablePayload.eventFormat.version': createEventCallablePayloadEventFormatVersion,
     'createEventCallablePayload.eventId': createEventCallablePayloadEventId,
@@ -38739,6 +40984,7 @@ abstract final class CatchContractConstraints {
     'createEventCallablePayload.eventSuccessDefaults.contextualOpenersEnabled': createEventCallablePayloadEventSuccessDefaultsContextualOpenersEnabled,
     'createEventCallablePayload.eventSuccessDefaults.enabled': createEventCallablePayloadEventSuccessDefaultsEnabled,
     'createEventCallablePayload.eventSuccessDefaults.hostGoal': createEventCallablePayloadEventSuccessDefaultsHostGoal,
+    'createEventCallablePayload.eventSuccessDefaults.layoutId': createEventCallablePayloadEventSuccessDefaultsLayoutId,
     'createEventCallablePayload.eventSuccessDefaults.moduleSelectionConfigured': createEventCallablePayloadEventSuccessDefaultsModuleSelectionConfigured,
     'createEventCallablePayload.eventSuccessDefaults.playbookId': createEventCallablePayloadEventSuccessDefaultsPlaybookId,
     'createEventCallablePayload.eventSuccessDefaults.questionnaireConfig.customQuestions': createEventCallablePayloadEventSuccessDefaultsQuestionnaireConfigCustomQuestions,
@@ -38756,9 +41002,13 @@ abstract final class CatchContractConstraints {
     'createEventCallablePayload.eventSuccessDefaults.structureConfig.clusterActivityAttributes': createEventCallablePayloadEventSuccessDefaultsStructureConfigClusterActivityAttributes,
     'createEventCallablePayload.eventSuccessDefaults.structureConfig.clusterActivityAttributes.items': createEventCallablePayloadEventSuccessDefaultsStructureConfigClusterActivityAttributesItems,
     'createEventCallablePayload.eventSuccessDefaults.structureConfig.maxPairMeetings': createEventCallablePayloadEventSuccessDefaultsStructureConfigMaxPairMeetings,
+    'createEventCallablePayload.eventSuccessDefaults.structureConfig.resourceCapacity.concurrentUnits': createEventCallablePayloadEventSuccessDefaultsStructureConfigResourceCapacityConcurrentUnits,
+    'createEventCallablePayload.eventSuccessDefaults.structureConfig.resourceCapacity.resourceLabelId': createEventCallablePayloadEventSuccessDefaultsStructureConfigResourceCapacityResourceLabelId,
+    'createEventCallablePayload.eventSuccessDefaults.structureConfig.resourceCapacity.seatsPerUnit': createEventCallablePayloadEventSuccessDefaultsStructureConfigResourceCapacitySeatsPerUnit,
     'createEventCallablePayload.eventSuccessDefaults.structureConfig.revealCountdownSeconds': createEventCallablePayloadEventSuccessDefaultsStructureConfigRevealCountdownSeconds,
     'createEventCallablePayload.eventSuccessDefaults.structureConfig.rotationIntervalMinutes': createEventCallablePayloadEventSuccessDefaultsStructureConfigRotationIntervalMinutes,
     'createEventCallablePayload.eventSuccessDefaults.structureConfig.rotationRepeatStrategy': createEventCallablePayloadEventSuccessDefaultsStructureConfigRotationRepeatStrategy,
+    'createEventCallablePayload.eventSuccessDefaults.structureConfig.topology': createEventCallablePayloadEventSuccessDefaultsStructureConfigTopology,
     'createEventCallablePayload.eventSuccessDefaults.structureConfig.unitCount': createEventCallablePayloadEventSuccessDefaultsStructureConfigUnitCount,
     'createEventCallablePayload.eventSuccessDefaults.structureConfig.unitKind': createEventCallablePayloadEventSuccessDefaultsStructureConfigUnitKind,
     'createEventCallablePayload.eventSuccessDefaults.structureConfig.unitSize': createEventCallablePayloadEventSuccessDefaultsStructureConfigUnitSize,
@@ -38828,6 +41078,7 @@ abstract final class CatchContractConstraints {
     'createOrganizerCallablePayload.hostDefaults.eventSuccess.contextualOpenersEnabled': createOrganizerCallablePayloadHostDefaultsEventSuccessContextualOpenersEnabled,
     'createOrganizerCallablePayload.hostDefaults.eventSuccess.enabled': createOrganizerCallablePayloadHostDefaultsEventSuccessEnabled,
     'createOrganizerCallablePayload.hostDefaults.eventSuccess.hostGoal': createOrganizerCallablePayloadHostDefaultsEventSuccessHostGoal,
+    'createOrganizerCallablePayload.hostDefaults.eventSuccess.layoutId': createOrganizerCallablePayloadHostDefaultsEventSuccessLayoutId,
     'createOrganizerCallablePayload.hostDefaults.eventSuccess.moduleSelectionConfigured': createOrganizerCallablePayloadHostDefaultsEventSuccessModuleSelectionConfigured,
     'createOrganizerCallablePayload.hostDefaults.eventSuccess.playbookId': createOrganizerCallablePayloadHostDefaultsEventSuccessPlaybookId,
     'createOrganizerCallablePayload.hostDefaults.eventSuccess.questionnaireConfig.customQuestions': createOrganizerCallablePayloadHostDefaultsEventSuccessQuestionnaireConfigCustomQuestions,
@@ -38845,9 +41096,13 @@ abstract final class CatchContractConstraints {
     'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes': createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigClusterActivityAttributes,
     'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes.items': createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigClusterActivityAttributesItems,
     'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.maxPairMeetings': createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigMaxPairMeetings,
+    'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.resourceCapacity.concurrentUnits': createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigResourceCapacityConcurrentUnits,
+    'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.resourceCapacity.resourceLabelId': createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigResourceCapacityResourceLabelId,
+    'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.resourceCapacity.seatsPerUnit': createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigResourceCapacitySeatsPerUnit,
     'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds': createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds,
     'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.rotationIntervalMinutes': createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigRotationIntervalMinutes,
     'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy': createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigRotationRepeatStrategy,
+    'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.topology': createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigTopology,
     'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.unitCount': createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigUnitCount,
     'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.unitKind': createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigUnitKind,
     'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.unitSize': createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigUnitSize,
@@ -38894,6 +41149,12 @@ abstract final class CatchContractConstraints {
     'createOrganizerCallablePayload.phoneNumber': createOrganizerCallablePayloadPhoneNumber,
     'createOrganizerCallablePayload.profileImageUrl': createOrganizerCallablePayloadProfileImageUrl,
     'createOrganizerCallableResponse.organizerId': createOrganizerCallableResponseOrganizerId,
+    'createOrganizerContactCallablePayload.displayName': createOrganizerContactCallablePayloadDisplayName,
+    'createOrganizerContactCallablePayload.organizerId': createOrganizerContactCallablePayloadOrganizerId,
+    'createOrganizerContactCallableResponse.contactId': createOrganizerContactCallableResponseContactId,
+    'createOrganizerContactCallableResponse.displayName': createOrganizerContactCallableResponseDisplayName,
+    'createOrganizerContactCallableResponse.organizerId': createOrganizerContactCallableResponseOrganizerId,
+    'createOrganizerContactCallableResponse.revision': createOrganizerContactCallableResponseRevision,
     'createOrganizerPostCallablePayload.eventId': createOrganizerPostCallablePayloadEventId,
     'createOrganizerPostCallablePayload.organizerId': createOrganizerPostCallablePayloadOrganizerId,
     'createOrganizerPostCallablePayload.photoPath': createOrganizerPostCallablePayloadPhotoPath,
@@ -39080,6 +41341,7 @@ abstract final class CatchContractConstraints {
     'eventAttendeeAttendanceReceiptDocument.expiresAt._seconds': eventAttendeeAttendanceReceiptDocumentExpiresAtSeconds,
     'eventAttendeeAttendanceReceiptDocument.organizerId': eventAttendeeAttendanceReceiptDocumentOrganizerId,
     'eventAttendeeAttendanceReceiptDocument.priorRevision': eventAttendeeAttendanceReceiptDocumentPriorRevision,
+    'eventAttendeeDocument.arrivalGroup': eventAttendeeDocumentArrivalGroup,
     'eventAttendeeDocument.attendanceRevision': eventAttendeeDocumentAttendanceRevision,
     'eventAttendeeDocument.cancelledAt._nanoseconds': eventAttendeeDocumentCancelledAtNanoseconds,
     'eventAttendeeDocument.cancelledAt._seconds': eventAttendeeDocumentCancelledAtSeconds,
@@ -39242,8 +41504,10 @@ abstract final class CatchContractConstraints {
     'eventDocument.eventFormat.defaultPlaybookId': eventDocumentEventFormatDefaultPlaybookId,
     'eventDocument.eventFormat.eventSuccessPrimitives.assignmentAlgorithm': eventDocumentEventFormatEventSuccessPrimitivesAssignmentAlgorithm,
     'eventDocument.eventFormat.eventSuccessPrimitives.compatibilityPolicy': eventDocumentEventFormatEventSuccessPrimitivesCompatibilityPolicy,
+    'eventDocument.eventFormat.eventSuccessPrimitives.matchingObjective': eventDocumentEventFormatEventSuccessPrimitivesMatchingObjective,
     'eventDocument.eventFormat.eventSuccessPrimitives.phoneAvailability': eventDocumentEventFormatEventSuccessPrimitivesPhoneAvailability,
     'eventDocument.eventFormat.eventSuccessPrimitives.rotationSuitability': eventDocumentEventFormatEventSuccessPrimitivesRotationSuitability,
+    'eventDocument.eventFormat.eventSuccessPrimitives.unitOutcome': eventDocumentEventFormatEventSuccessPrimitivesUnitOutcome,
     'eventDocument.eventFormat.interactionModel': eventDocumentEventFormatInteractionModel,
     'eventDocument.eventFormat.version': eventDocumentEventFormatVersion,
     'eventDocument.eventOrigin.adapterVersion': eventDocumentEventOriginAdapterVersion,
@@ -39656,6 +41920,7 @@ abstract final class CatchContractConstraints {
     'eventSuccessArrivalMissionDocument.updatedAt._nanoseconds': eventSuccessArrivalMissionDocumentUpdatedAtNanoseconds,
     'eventSuccessArrivalMissionDocument.updatedAt._seconds': eventSuccessArrivalMissionDocumentUpdatedAtSeconds,
     'eventSuccessAssignmentDocument.clubId': eventSuccessAssignmentDocumentClubId,
+    'eventSuccessAssignmentDocument.confirmedLayoutUnitId': eventSuccessAssignmentDocumentConfirmedLayoutUnitId,
     'eventSuccessAssignmentDocument.createdAt._nanoseconds': eventSuccessAssignmentDocumentCreatedAtNanoseconds,
     'eventSuccessAssignmentDocument.createdAt._seconds': eventSuccessAssignmentDocumentCreatedAtSeconds,
     'eventSuccessAssignmentDocument.demoOps': eventSuccessAssignmentDocumentDemoOps,
@@ -39683,6 +41948,7 @@ abstract final class CatchContractConstraints {
     'eventSuccessAssignmentDocument.groupRotationSlots.items.whyCodes.items': eventSuccessAssignmentDocumentGroupRotationSlotsItemsWhyCodesItems,
     'eventSuccessAssignmentDocument.groupRotationSlots.items.whySummary': eventSuccessAssignmentDocumentGroupRotationSlotsItemsWhySummary,
     'eventSuccessAssignmentDocument.label': eventSuccessAssignmentDocumentLabel,
+    'eventSuccessAssignmentDocument.layoutUnitId': eventSuccessAssignmentDocumentLayoutUnitId,
     'eventSuccessAssignmentDocument.moduleId': eventSuccessAssignmentDocumentModuleId,
     'eventSuccessAssignmentDocument.organizerId': eventSuccessAssignmentDocumentOrganizerId,
     'eventSuccessAssignmentDocument.peerUids': eventSuccessAssignmentDocumentPeerUids,
@@ -39698,6 +41964,7 @@ abstract final class CatchContractConstraints {
     'eventSuccessAssignmentDocument.rotationSlots.items.label': eventSuccessAssignmentDocumentRotationSlotsItemsLabel,
     'eventSuccessAssignmentDocument.rotationSlots.items.peerCount': eventSuccessAssignmentDocumentRotationSlotsItemsPeerCount,
     'eventSuccessAssignmentDocument.rotationSlots.items.peerUid': eventSuccessAssignmentDocumentRotationSlotsItemsPeerUid,
+    'eventSuccessAssignmentDocument.rotationSlots.items.resourceUnitId': eventSuccessAssignmentDocumentRotationSlotsItemsResourceUnitId,
     'eventSuccessAssignmentDocument.rotationSlots.items.roundIndex': eventSuccessAssignmentDocumentRotationSlotsItemsRoundIndex,
     'eventSuccessAssignmentDocument.rotationSlots.items.slotId': eventSuccessAssignmentDocumentRotationSlotsItemsSlotId,
     'eventSuccessAssignmentDocument.rotationSlots.items.startsAt._nanoseconds': eventSuccessAssignmentDocumentRotationSlotsItemsStartsAtNanoseconds,
@@ -39730,6 +41997,95 @@ abstract final class CatchContractConstraints {
     'eventSuccessAssignmentDocument.whyCodes': eventSuccessAssignmentDocumentWhyCodes,
     'eventSuccessAssignmentDocument.whyCodes.items': eventSuccessAssignmentDocumentWhyCodesItems,
     'eventSuccessAssignmentDocument.whySummary': eventSuccessAssignmentDocumentWhySummary,
+    'eventSuccessAssignmentDraftDocument.assignment.clubId': eventSuccessAssignmentDraftDocumentAssignmentClubId,
+    'eventSuccessAssignmentDraftDocument.assignment.confirmedLayoutUnitId': eventSuccessAssignmentDraftDocumentAssignmentConfirmedLayoutUnitId,
+    'eventSuccessAssignmentDraftDocument.assignment.createdAt._nanoseconds': eventSuccessAssignmentDraftDocumentAssignmentCreatedAtNanoseconds,
+    'eventSuccessAssignmentDraftDocument.assignment.createdAt._seconds': eventSuccessAssignmentDraftDocumentAssignmentCreatedAtSeconds,
+    'eventSuccessAssignmentDraftDocument.assignment.demoOps': eventSuccessAssignmentDraftDocumentAssignmentDemoOps,
+    'eventSuccessAssignmentDraftDocument.assignment.demoOpsCommand': eventSuccessAssignmentDraftDocumentAssignmentDemoOpsCommand,
+    'eventSuccessAssignmentDraftDocument.assignment.demoOpsId': eventSuccessAssignmentDraftDocumentAssignmentDemoOpsId,
+    'eventSuccessAssignmentDraftDocument.assignment.displaySubtitle': eventSuccessAssignmentDraftDocumentAssignmentDisplaySubtitle,
+    'eventSuccessAssignmentDraftDocument.assignment.displayTitle': eventSuccessAssignmentDraftDocumentAssignmentDisplayTitle,
+    'eventSuccessAssignmentDraftDocument.assignment.eventId': eventSuccessAssignmentDraftDocumentAssignmentEventId,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlots,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.compatibility': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsCompatibility,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.endsAt._nanoseconds': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsEndsAtNanoseconds,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.endsAt._seconds': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsEndsAtSeconds,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.label': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsLabel,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.peerCount': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsPeerCount,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.peerUids': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsPeerUids,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.peerUids.items': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsPeerUidsItems,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.roundIndex': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsRoundIndex,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.slotId': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsSlotId,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.startsAt._nanoseconds': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsStartsAtNanoseconds,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.startsAt._seconds': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsStartsAtSeconds,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.unitIndex': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsUnitIndex,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.unitKind': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsUnitKind,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.unitLabel': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsUnitLabel,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.whyCodes': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsWhyCodes,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.whyCodes.items': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsWhyCodesItems,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.whySummary': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsWhySummary,
+    'eventSuccessAssignmentDraftDocument.assignment.label': eventSuccessAssignmentDraftDocumentAssignmentLabel,
+    'eventSuccessAssignmentDraftDocument.assignment.layoutUnitId': eventSuccessAssignmentDraftDocumentAssignmentLayoutUnitId,
+    'eventSuccessAssignmentDraftDocument.assignment.moduleId': eventSuccessAssignmentDraftDocumentAssignmentModuleId,
+    'eventSuccessAssignmentDraftDocument.assignment.organizerId': eventSuccessAssignmentDraftDocumentAssignmentOrganizerId,
+    'eventSuccessAssignmentDraftDocument.assignment.peerUids': eventSuccessAssignmentDraftDocumentAssignmentPeerUids,
+    'eventSuccessAssignmentDraftDocument.assignment.peerUids.items': eventSuccessAssignmentDraftDocumentAssignmentPeerUidsItems,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationFairness.assignedRoundCount': eventSuccessAssignmentDraftDocumentAssignmentRotationFairnessAssignedRoundCount,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationFairness.repeatPeerCount': eventSuccessAssignmentDraftDocumentAssignmentRotationFairnessRepeatPeerCount,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationFairness.sitOutRoundCount': eventSuccessAssignmentDraftDocumentAssignmentRotationFairnessSitOutRoundCount,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationFairness.uniquePeerCount': eventSuccessAssignmentDraftDocumentAssignmentRotationFairnessUniquePeerCount,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots': eventSuccessAssignmentDraftDocumentAssignmentRotationSlots,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.compatibility': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsCompatibility,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.endsAt._nanoseconds': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsEndsAtNanoseconds,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.endsAt._seconds': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsEndsAtSeconds,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.label': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsLabel,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.peerCount': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsPeerCount,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.peerUid': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsPeerUid,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.resourceUnitId': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsResourceUnitId,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.roundIndex': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsRoundIndex,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.slotId': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsSlotId,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.startsAt._nanoseconds': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsStartsAtNanoseconds,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.startsAt._seconds': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsStartsAtSeconds,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.unitIndex': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsUnitIndex,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.unitKind': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsUnitKind,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.whyCodes': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsWhyCodes,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.whyCodes.items': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsWhyCodesItems,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.whySummary': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsWhySummary,
+    'eventSuccessAssignmentDraftDocument.assignment.scenario': eventSuccessAssignmentDraftDocumentAssignmentScenario,
+    'eventSuccessAssignmentDraftDocument.assignment.seedPrefix': eventSuccessAssignmentDraftDocumentAssignmentSeedPrefix,
+    'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots': eventSuccessAssignmentDraftDocumentAssignmentSitOutSlots,
+    'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.endsAt._nanoseconds': eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsEndsAtNanoseconds,
+    'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.endsAt._seconds': eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsEndsAtSeconds,
+    'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.label': eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsLabel,
+    'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.roundIndex': eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsRoundIndex,
+    'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.startsAt._nanoseconds': eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsStartsAtNanoseconds,
+    'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.startsAt._seconds': eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsStartsAtSeconds,
+    'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.whyCodes': eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsWhyCodes,
+    'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.whyCodes.items': eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsWhyCodesItems,
+    'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.whySummary': eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsWhySummary,
+    'eventSuccessAssignmentDraftDocument.assignment.source': eventSuccessAssignmentDraftDocumentAssignmentSource,
+    'eventSuccessAssignmentDraftDocument.assignment.synthetic': eventSuccessAssignmentDraftDocumentAssignmentSynthetic,
+    'eventSuccessAssignmentDraftDocument.assignment.uid': eventSuccessAssignmentDraftDocumentAssignmentUid,
+    'eventSuccessAssignmentDraftDocument.assignment.unitIndex': eventSuccessAssignmentDraftDocumentAssignmentUnitIndex,
+    'eventSuccessAssignmentDraftDocument.assignment.unitKind': eventSuccessAssignmentDraftDocumentAssignmentUnitKind,
+    'eventSuccessAssignmentDraftDocument.assignment.unitLabel': eventSuccessAssignmentDraftDocumentAssignmentUnitLabel,
+    'eventSuccessAssignmentDraftDocument.assignment.updatedAt._nanoseconds': eventSuccessAssignmentDraftDocumentAssignmentUpdatedAtNanoseconds,
+    'eventSuccessAssignmentDraftDocument.assignment.updatedAt._seconds': eventSuccessAssignmentDraftDocumentAssignmentUpdatedAtSeconds,
+    'eventSuccessAssignmentDraftDocument.assignment.whyCodes': eventSuccessAssignmentDraftDocumentAssignmentWhyCodes,
+    'eventSuccessAssignmentDraftDocument.assignment.whyCodes.items': eventSuccessAssignmentDraftDocumentAssignmentWhyCodesItems,
+    'eventSuccessAssignmentDraftDocument.assignment.whySummary': eventSuccessAssignmentDraftDocumentAssignmentWhySummary,
+    'eventSuccessAssignmentDraftDocument.baseAssignmentRevision': eventSuccessAssignmentDraftDocumentBaseAssignmentRevision,
+    'eventSuccessAssignmentDraftDocument.clubId': eventSuccessAssignmentDraftDocumentClubId,
+    'eventSuccessAssignmentDraftDocument.createdAt._nanoseconds': eventSuccessAssignmentDraftDocumentCreatedAtNanoseconds,
+    'eventSuccessAssignmentDraftDocument.createdAt._seconds': eventSuccessAssignmentDraftDocumentCreatedAtSeconds,
+    'eventSuccessAssignmentDraftDocument.eventId': eventSuccessAssignmentDraftDocumentEventId,
+    'eventSuccessAssignmentDraftDocument.moduleId': eventSuccessAssignmentDraftDocumentModuleId,
+    'eventSuccessAssignmentDraftDocument.organizerId': eventSuccessAssignmentDraftDocumentOrganizerId,
+    'eventSuccessAssignmentDraftDocument.roundIndex': eventSuccessAssignmentDraftDocumentRoundIndex,
+    'eventSuccessAssignmentDraftDocument.uid': eventSuccessAssignmentDraftDocumentUid,
+    'eventSuccessAssignmentDraftDocument.updatedAt._nanoseconds': eventSuccessAssignmentDraftDocumentUpdatedAtNanoseconds,
+    'eventSuccessAssignmentDraftDocument.updatedAt._seconds': eventSuccessAssignmentDraftDocumentUpdatedAtSeconds,
     'eventSuccessCompatibilityResponseDocument.answerIds': eventSuccessCompatibilityResponseDocumentAnswerIds,
     'eventSuccessCompatibilityResponseDocument.answerIds.items': eventSuccessCompatibilityResponseDocumentAnswerIdsItems,
     'eventSuccessCompatibilityResponseDocument.clubId': eventSuccessCompatibilityResponseDocumentClubId,
@@ -39765,8 +42121,20 @@ abstract final class CatchContractConstraints {
     'eventSuccessFeedbackDocument.updatedAt._nanoseconds': eventSuccessFeedbackDocumentUpdatedAtNanoseconds,
     'eventSuccessFeedbackDocument.updatedAt._seconds': eventSuccessFeedbackDocumentUpdatedAtSeconds,
     'eventSuccessFeedbackDocument.welcomeRating': eventSuccessFeedbackDocumentWelcomeRating,
+    'eventSuccessLiveActionCallablePayload.action': eventSuccessLiveActionCallablePayloadAction,
+    'eventSuccessLiveActionCallablePayload.activeStepIndex': eventSuccessLiveActionCallablePayloadActiveStepIndex,
+    'eventSuccessLiveActionCallablePayload.confirmed': eventSuccessLiveActionCallablePayloadConfirmed,
+    'eventSuccessLiveActionCallablePayload.eventId': eventSuccessLiveActionCallablePayloadEventId,
+    'eventSuccessLiveActionCallablePayload.expectedRevision': eventSuccessLiveActionCallablePayloadExpectedRevision,
+    'eventSuccessLiveActionCallablePayload.roundIndex': eventSuccessLiveActionCallablePayloadRoundIndex,
     'eventSuccessPlanDocument.activeRevealRoundIndex': eventSuccessPlanDocumentActiveRevealRoundIndex,
     'eventSuccessPlanDocument.activeStepIndex': eventSuccessPlanDocumentActiveStepIndex,
+    'eventSuccessPlanDocument.affinityConstraints': eventSuccessPlanDocumentAffinityConstraints,
+    'eventSuccessPlanDocument.affinityConstraints.items.aUid': eventSuccessPlanDocumentAffinityConstraintsItemsAUid,
+    'eventSuccessPlanDocument.affinityConstraints.items.bUid': eventSuccessPlanDocumentAffinityConstraintsItemsBUid,
+    'eventSuccessPlanDocument.affinityConstraints.items.scope': eventSuccessPlanDocumentAffinityConstraintsItemsScope,
+    'eventSuccessPlanDocument.affinityConstraints.items.value': eventSuccessPlanDocumentAffinityConstraintsItemsValue,
+    'eventSuccessPlanDocument.assignmentDraftRevision': eventSuccessPlanDocumentAssignmentDraftRevision,
     'eventSuccessPlanDocument.attendeePrompt': eventSuccessPlanDocumentAttendeePrompt,
     'eventSuccessPlanDocument.clubId': eventSuccessPlanDocumentClubId,
     'eventSuccessPlanDocument.compatibilityAffectsRanking': eventSuccessPlanDocumentCompatibilityAffectsRanking,
@@ -39782,8 +42150,12 @@ abstract final class CatchContractConstraints {
     'eventSuccessPlanDocument.frozenAt._nanoseconds': eventSuccessPlanDocumentFrozenAtNanoseconds,
     'eventSuccessPlanDocument.frozenAt._seconds': eventSuccessPlanDocumentFrozenAtSeconds,
     'eventSuccessPlanDocument.hostGoal': eventSuccessPlanDocumentHostGoal,
+    'eventSuccessPlanDocument.layoutId': eventSuccessPlanDocumentLayoutId,
+    'eventSuccessPlanDocument.liveControlRevision': eventSuccessPlanDocumentLiveControlRevision,
     'eventSuccessPlanDocument.organizerId': eventSuccessPlanDocumentOrganizerId,
     'eventSuccessPlanDocument.playbookId': eventSuccessPlanDocumentPlaybookId,
+    'eventSuccessPlanDocument.publishedRevealRoundIndex': eventSuccessPlanDocumentPublishedRevealRoundIndex,
+    'eventSuccessPlanDocument.publishedRotationRoundIndex': eventSuccessPlanDocumentPublishedRotationRoundIndex,
     'eventSuccessPlanDocument.questionnaireConfig.customQuestions': eventSuccessPlanDocumentQuestionnaireConfigCustomQuestions,
     'eventSuccessPlanDocument.questionnaireConfig.customQuestions.items.id': eventSuccessPlanDocumentQuestionnaireConfigCustomQuestionsItemsId,
     'eventSuccessPlanDocument.questionnaireConfig.customQuestions.items.options': eventSuccessPlanDocumentQuestionnaireConfigCustomQuestionsItemsOptions,
@@ -39799,15 +42171,24 @@ abstract final class CatchContractConstraints {
     'eventSuccessPlanDocument.seedPrefix': eventSuccessPlanDocumentSeedPrefix,
     'eventSuccessPlanDocument.selectedModuleIds': eventSuccessPlanDocumentSelectedModuleIds,
     'eventSuccessPlanDocument.selectedModuleIds.items': eventSuccessPlanDocumentSelectedModuleIdsItems,
+    'eventSuccessPlanDocument.spatialOverrides': eventSuccessPlanDocumentSpatialOverrides,
+    'eventSuccessPlanDocument.spatialOverrides.items.layoutUnitId': eventSuccessPlanDocumentSpatialOverridesItemsLayoutUnitId,
+    'eventSuccessPlanDocument.spatialOverrides.items.scope': eventSuccessPlanDocumentSpatialOverridesItemsScope,
+    'eventSuccessPlanDocument.spatialOverrides.items.targetPeerUid': eventSuccessPlanDocumentSpatialOverridesItemsTargetPeerUid,
+    'eventSuccessPlanDocument.spatialOverrides.items.uid': eventSuccessPlanDocumentSpatialOverridesItemsUid,
     'eventSuccessPlanDocument.status': eventSuccessPlanDocumentStatus,
     'eventSuccessPlanDocument.structureConfig.balanceActivityAttributes': eventSuccessPlanDocumentStructureConfigBalanceActivityAttributes,
     'eventSuccessPlanDocument.structureConfig.balanceActivityAttributes.items': eventSuccessPlanDocumentStructureConfigBalanceActivityAttributesItems,
     'eventSuccessPlanDocument.structureConfig.clusterActivityAttributes': eventSuccessPlanDocumentStructureConfigClusterActivityAttributes,
     'eventSuccessPlanDocument.structureConfig.clusterActivityAttributes.items': eventSuccessPlanDocumentStructureConfigClusterActivityAttributesItems,
     'eventSuccessPlanDocument.structureConfig.maxPairMeetings': eventSuccessPlanDocumentStructureConfigMaxPairMeetings,
+    'eventSuccessPlanDocument.structureConfig.resourceCapacity.concurrentUnits': eventSuccessPlanDocumentStructureConfigResourceCapacityConcurrentUnits,
+    'eventSuccessPlanDocument.structureConfig.resourceCapacity.resourceLabelId': eventSuccessPlanDocumentStructureConfigResourceCapacityResourceLabelId,
+    'eventSuccessPlanDocument.structureConfig.resourceCapacity.seatsPerUnit': eventSuccessPlanDocumentStructureConfigResourceCapacitySeatsPerUnit,
     'eventSuccessPlanDocument.structureConfig.revealCountdownSeconds': eventSuccessPlanDocumentStructureConfigRevealCountdownSeconds,
     'eventSuccessPlanDocument.structureConfig.rotationIntervalMinutes': eventSuccessPlanDocumentStructureConfigRotationIntervalMinutes,
     'eventSuccessPlanDocument.structureConfig.rotationRepeatStrategy': eventSuccessPlanDocumentStructureConfigRotationRepeatStrategy,
+    'eventSuccessPlanDocument.structureConfig.topology': eventSuccessPlanDocumentStructureConfigTopology,
     'eventSuccessPlanDocument.structureConfig.unitCount': eventSuccessPlanDocumentStructureConfigUnitCount,
     'eventSuccessPlanDocument.structureConfig.unitKind': eventSuccessPlanDocumentStructureConfigUnitKind,
     'eventSuccessPlanDocument.structureConfig.unitSize': eventSuccessPlanDocumentStructureConfigUnitSize,
@@ -39883,6 +42264,60 @@ abstract final class CatchContractConstraints {
     'eventSuccessScorecardDocument.synthetic': eventSuccessScorecardDocumentSynthetic,
     'eventSuccessScorecardDocument.updatedAt._nanoseconds': eventSuccessScorecardDocumentUpdatedAtNanoseconds,
     'eventSuccessScorecardDocument.updatedAt._seconds': eventSuccessScorecardDocumentUpdatedAtSeconds,
+    'eventSuccessSpatialActionCallablePayload.action': eventSuccessSpatialActionCallablePayloadAction,
+    'eventSuccessSpatialActionCallablePayload.destinationUnitId': eventSuccessSpatialActionCallablePayloadDestinationUnitId,
+    'eventSuccessSpatialActionCallablePayload.eventId': eventSuccessSpatialActionCallablePayloadEventId,
+    'eventSuccessSpatialActionCallablePayload.expectedRevision': eventSuccessSpatialActionCallablePayloadExpectedRevision,
+    'eventSuccessSpatialActionCallablePayload.moduleId': eventSuccessSpatialActionCallablePayloadModuleId,
+    'eventSuccessSpatialActionCallablePayload.scope': eventSuccessSpatialActionCallablePayloadScope,
+    'eventSuccessSpatialActionCallablePayload.uid': eventSuccessSpatialActionCallablePayloadUid,
+    'eventSuccessSpatialActionCallableResponse.destinations': eventSuccessSpatialActionCallableResponseDestinations,
+    'eventSuccessSpatialActionCallableResponse.destinations.items.reason': eventSuccessSpatialActionCallableResponseDestinationsItemsReason,
+    'eventSuccessSpatialActionCallableResponse.destinations.items.recommendedScope': eventSuccessSpatialActionCallableResponseDestinationsItemsRecommendedScope,
+    'eventSuccessSpatialActionCallableResponse.destinations.items.unitId': eventSuccessSpatialActionCallableResponseDestinationsItemsUnitId,
+    'eventSuccessSpatialActionCallableResponse.destinations.items.valid': eventSuccessSpatialActionCallableResponseDestinationsItemsValid,
+    'eventSuccessSpatialActionCallableResponse.revision': eventSuccessSpatialActionCallableResponseRevision,
+    'eventSuccessStandingsDocument.clubId': eventSuccessStandingsDocumentClubId,
+    'eventSuccessStandingsDocument.createdAt._nanoseconds': eventSuccessStandingsDocumentCreatedAtNanoseconds,
+    'eventSuccessStandingsDocument.createdAt._seconds': eventSuccessStandingsDocumentCreatedAtSeconds,
+    'eventSuccessStandingsDocument.entries': eventSuccessStandingsDocumentEntries,
+    'eventSuccessStandingsDocument.entries.items.position': eventSuccessStandingsDocumentEntriesItemsPosition,
+    'eventSuccessStandingsDocument.entries.items.roundsRecorded': eventSuccessStandingsDocumentEntriesItemsRoundsRecorded,
+    'eventSuccessStandingsDocument.entries.items.unitId': eventSuccessStandingsDocumentEntriesItemsUnitId,
+    'eventSuccessStandingsDocument.entries.items.unitLabel': eventSuccessStandingsDocumentEntriesItemsUnitLabel,
+    'eventSuccessStandingsDocument.entries.items.value': eventSuccessStandingsDocumentEntriesItemsValue,
+    'eventSuccessStandingsDocument.eventId': eventSuccessStandingsDocumentEventId,
+    'eventSuccessStandingsDocument.latestRoundIndex': eventSuccessStandingsDocumentLatestRoundIndex,
+    'eventSuccessStandingsDocument.organizerId': eventSuccessStandingsDocumentOrganizerId,
+    'eventSuccessStandingsDocument.revision': eventSuccessStandingsDocumentRevision,
+    'eventSuccessStandingsDocument.rounds': eventSuccessStandingsDocumentRounds,
+    'eventSuccessStandingsDocument.rounds.items.entries': eventSuccessStandingsDocumentRoundsItemsEntries,
+    'eventSuccessStandingsDocument.rounds.items.entries.items.position': eventSuccessStandingsDocumentRoundsItemsEntriesItemsPosition,
+    'eventSuccessStandingsDocument.rounds.items.entries.items.roundsRecorded': eventSuccessStandingsDocumentRoundsItemsEntriesItemsRoundsRecorded,
+    'eventSuccessStandingsDocument.rounds.items.entries.items.unitId': eventSuccessStandingsDocumentRoundsItemsEntriesItemsUnitId,
+    'eventSuccessStandingsDocument.rounds.items.entries.items.unitLabel': eventSuccessStandingsDocumentRoundsItemsEntriesItemsUnitLabel,
+    'eventSuccessStandingsDocument.rounds.items.entries.items.value': eventSuccessStandingsDocumentRoundsItemsEntriesItemsValue,
+    'eventSuccessStandingsDocument.rounds.items.roundIndex': eventSuccessStandingsDocumentRoundsItemsRoundIndex,
+    'eventSuccessStandingsDocument.unitOutcome': eventSuccessStandingsDocumentUnitOutcome,
+    'eventSuccessStandingsDocument.updatedAt._nanoseconds': eventSuccessStandingsDocumentUpdatedAtNanoseconds,
+    'eventSuccessStandingsDocument.updatedAt._seconds': eventSuccessStandingsDocumentUpdatedAtSeconds,
+    'eventSuccessUnitOutcomesDocument.clubId': eventSuccessUnitOutcomesDocumentClubId,
+    'eventSuccessUnitOutcomesDocument.createdAt._nanoseconds': eventSuccessUnitOutcomesDocumentCreatedAtNanoseconds,
+    'eventSuccessUnitOutcomesDocument.createdAt._seconds': eventSuccessUnitOutcomesDocumentCreatedAtSeconds,
+    'eventSuccessUnitOutcomesDocument.eventId': eventSuccessUnitOutcomesDocumentEventId,
+    'eventSuccessUnitOutcomesDocument.organizerId': eventSuccessUnitOutcomesDocumentOrganizerId,
+    'eventSuccessUnitOutcomesDocument.revision': eventSuccessUnitOutcomesDocumentRevision,
+    'eventSuccessUnitOutcomesDocument.rounds': eventSuccessUnitOutcomesDocumentRounds,
+    'eventSuccessUnitOutcomesDocument.rounds.items.entries': eventSuccessUnitOutcomesDocumentRoundsItemsEntries,
+    'eventSuccessUnitOutcomesDocument.rounds.items.entries.items.completed': eventSuccessUnitOutcomesDocumentRoundsItemsEntriesItemsCompleted,
+    'eventSuccessUnitOutcomesDocument.rounds.items.entries.items.rank': eventSuccessUnitOutcomesDocumentRoundsItemsEntriesItemsRank,
+    'eventSuccessUnitOutcomesDocument.rounds.items.entries.items.score': eventSuccessUnitOutcomesDocumentRoundsItemsEntriesItemsScore,
+    'eventSuccessUnitOutcomesDocument.rounds.items.entries.items.unitId': eventSuccessUnitOutcomesDocumentRoundsItemsEntriesItemsUnitId,
+    'eventSuccessUnitOutcomesDocument.rounds.items.entries.items.unitLabel': eventSuccessUnitOutcomesDocumentRoundsItemsEntriesItemsUnitLabel,
+    'eventSuccessUnitOutcomesDocument.rounds.items.roundIndex': eventSuccessUnitOutcomesDocumentRoundsItemsRoundIndex,
+    'eventSuccessUnitOutcomesDocument.unitOutcome': eventSuccessUnitOutcomesDocumentUnitOutcome,
+    'eventSuccessUnitOutcomesDocument.updatedAt._nanoseconds': eventSuccessUnitOutcomesDocumentUpdatedAtNanoseconds,
+    'eventSuccessUnitOutcomesDocument.updatedAt._seconds': eventSuccessUnitOutcomesDocumentUpdatedAtSeconds,
     'eventSuccessWingmanRequestDocument.clubId': eventSuccessWingmanRequestDocumentClubId,
     'eventSuccessWingmanRequestDocument.createdAt._nanoseconds': eventSuccessWingmanRequestDocumentCreatedAtNanoseconds,
     'eventSuccessWingmanRequestDocument.createdAt._seconds': eventSuccessWingmanRequestDocumentCreatedAtSeconds,
@@ -40146,6 +42581,16 @@ abstract final class CatchContractConstraints {
     'getEventRuntimeBootstrapCallablePayload.publicRuntimeId': getEventRuntimeBootstrapCallablePayloadPublicRuntimeId,
     'getEventRuntimeBootstrapCallableResponse.event.endTimeMillis': getEventRuntimeBootstrapCallableResponseEventEndTimeMillis,
     'getEventRuntimeBootstrapCallableResponse.event.eventId': getEventRuntimeBootstrapCallableResponseEventEventId,
+    'getEventRuntimeBootstrapCallableResponse.event.layout.label': getEventRuntimeBootstrapCallableResponseEventLayoutLabel,
+    'getEventRuntimeBootstrapCallableResponse.event.layout.layoutId': getEventRuntimeBootstrapCallableResponseEventLayoutLayoutId,
+    'getEventRuntimeBootstrapCallableResponse.event.layout.units': getEventRuntimeBootstrapCallableResponseEventLayoutUnits,
+    'getEventRuntimeBootstrapCallableResponse.event.layout.units.items.capacity': getEventRuntimeBootstrapCallableResponseEventLayoutUnitsItemsCapacity,
+    'getEventRuntimeBootstrapCallableResponse.event.layout.units.items.gridX': getEventRuntimeBootstrapCallableResponseEventLayoutUnitsItemsGridX,
+    'getEventRuntimeBootstrapCallableResponse.event.layout.units.items.gridY': getEventRuntimeBootstrapCallableResponseEventLayoutUnitsItemsGridY,
+    'getEventRuntimeBootstrapCallableResponse.event.layout.units.items.id': getEventRuntimeBootstrapCallableResponseEventLayoutUnitsItemsId,
+    'getEventRuntimeBootstrapCallableResponse.event.layout.units.items.label': getEventRuntimeBootstrapCallableResponseEventLayoutUnitsItemsLabel,
+    'getEventRuntimeBootstrapCallableResponse.event.layout.units.items.order': getEventRuntimeBootstrapCallableResponseEventLayoutUnitsItemsOrder,
+    'getEventRuntimeBootstrapCallableResponse.event.layout.units.items.shape': getEventRuntimeBootstrapCallableResponseEventLayoutUnitsItemsShape,
     'getEventRuntimeBootstrapCallableResponse.event.locationName': getEventRuntimeBootstrapCallableResponseEventLocationName,
     'getEventRuntimeBootstrapCallableResponse.event.moduleIds': getEventRuntimeBootstrapCallableResponseEventModuleIds,
     'getEventRuntimeBootstrapCallableResponse.event.moduleIds.items': getEventRuntimeBootstrapCallableResponseEventModuleIdsItems,
@@ -40180,6 +42625,17 @@ abstract final class CatchContractConstraints {
     'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.interestedInGenders': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileInterestedInGenders,
     'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.interestedInGenders.items': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileInterestedInGendersItems,
     'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.relationshipGoal': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileRelationshipGoal,
+    'getEventSuccessSpatialLayoutCallablePayload.eventId': getEventSuccessSpatialLayoutCallablePayloadEventId,
+    'getEventSuccessSpatialLayoutCallableResponse.layout.label': getEventSuccessSpatialLayoutCallableResponseLayoutLabel,
+    'getEventSuccessSpatialLayoutCallableResponse.layout.layoutId': getEventSuccessSpatialLayoutCallableResponseLayoutLayoutId,
+    'getEventSuccessSpatialLayoutCallableResponse.layout.units': getEventSuccessSpatialLayoutCallableResponseLayoutUnits,
+    'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.capacity': getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsCapacity,
+    'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.gridX': getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsGridX,
+    'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.gridY': getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsGridY,
+    'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.id': getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsId,
+    'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.label': getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsLabel,
+    'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.order': getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsOrder,
+    'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.shape': getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsShape,
     'getOrganizerContactDetailCallablePayload.contactId': getOrganizerContactDetailCallablePayloadContactId,
     'getOrganizerContactDetailCallablePayload.organizerId': getOrganizerContactDetailCallablePayloadOrganizerId,
     'getOrganizerContactDetailCallableResponse.ambiguousCandidateContactIds': getOrganizerContactDetailCallableResponseAmbiguousCandidateContactIds,
@@ -40209,6 +42665,11 @@ abstract final class CatchContractConstraints {
     'getOrganizerContactDetailCallableResponse.linkedAccount': getOrganizerContactDetailCallableResponseLinkedAccount,
     'getOrganizerContactDetailCallableResponse.organizerId': getOrganizerContactDetailCallableResponseOrganizerId,
     'getOrganizerContactDetailCallableResponse.phoneE164': getOrganizerContactDetailCallableResponsePhoneE164,
+    'getOrganizerContactDetailCallableResponse.revenue.amounts': getOrganizerContactDetailCallableResponseRevenueAmounts,
+    'getOrganizerContactDetailCallableResponse.revenue.amounts.items.amountMinor': getOrganizerContactDetailCallableResponseRevenueAmountsItemsAmountMinor,
+    'getOrganizerContactDetailCallableResponse.revenue.amounts.items.currency': getOrganizerContactDetailCallableResponseRevenueAmountsItemsCurrency,
+    'getOrganizerContactDetailCallableResponse.revenue.amounts.items.paidOrderCount': getOrganizerContactDetailCallableResponseRevenueAmountsItemsPaidOrderCount,
+    'getOrganizerContactDetailCallableResponse.revenue.coverage': getOrganizerContactDetailCallableResponseRevenueCoverage,
     'getOrganizerContactDetailCallableResponse.revision': getOrganizerContactDetailCallableResponseRevision,
     'getOrganizerContactDetailCallableResponse.sourceDisplayName': getOrganizerContactDetailCallableResponseSourceDisplayName,
     'getOrganizerContactDetailCallableResponse.traits.attendanceRate': getOrganizerContactDetailCallableResponseTraitsAttendanceRate,
@@ -40470,6 +42931,7 @@ abstract final class CatchContractConstraints {
     'importEventAttendeesCallablePayload.format': importEventAttendeesCallablePayloadFormat,
     'importEventAttendeesCallablePayload.importKey': importEventAttendeesCallablePayloadImportKey,
     'importEventAttendeesCallablePayload.rows': importEventAttendeesCallablePayloadRows,
+    'importEventAttendeesCallablePayload.rows.items.arrivalGroup': importEventAttendeesCallablePayloadRowsItemsArrivalGroup,
     'importEventAttendeesCallablePayload.rows.items.displayName': importEventAttendeesCallablePayloadRowsItemsDisplayName,
     'importEventAttendeesCallablePayload.rows.items.email': importEventAttendeesCallablePayloadRowsItemsEmail,
     'importEventAttendeesCallablePayload.rows.items.externalReference': importEventAttendeesCallablePayloadRowsItemsExternalReference,
@@ -40548,6 +43010,7 @@ abstract final class CatchContractConstraints {
     'joinWaitlistHTTPRequest.role': joinWaitlistHTTPRequestRole,
     'joinWaitlistHTTPRequest.website': joinWaitlistHTTPRequestWebsite,
     'joinWaitlistHTTPResponse.alreadyJoined': joinWaitlistHTTPResponseAlreadyJoined,
+    'joinWaitlistHTTPResponse.error': joinWaitlistHTTPResponseError,
     'joinWaitlistHTTPResponse.ok': joinWaitlistHTTPResponseOk,
     'listOrganizerContactsCallablePayload.cursor': listOrganizerContactsCallablePayloadCursor,
     'listOrganizerContactsCallablePayload.limit': listOrganizerContactsCallablePayloadLimit,
@@ -41249,6 +43712,7 @@ abstract final class CatchContractConstraints {
     'organizerDocument.hostDefaults.eventSuccess.contextualOpenersEnabled': organizerDocumentHostDefaultsEventSuccessContextualOpenersEnabled,
     'organizerDocument.hostDefaults.eventSuccess.enabled': organizerDocumentHostDefaultsEventSuccessEnabled,
     'organizerDocument.hostDefaults.eventSuccess.hostGoal': organizerDocumentHostDefaultsEventSuccessHostGoal,
+    'organizerDocument.hostDefaults.eventSuccess.layoutId': organizerDocumentHostDefaultsEventSuccessLayoutId,
     'organizerDocument.hostDefaults.eventSuccess.moduleSelectionConfigured': organizerDocumentHostDefaultsEventSuccessModuleSelectionConfigured,
     'organizerDocument.hostDefaults.eventSuccess.playbookId': organizerDocumentHostDefaultsEventSuccessPlaybookId,
     'organizerDocument.hostDefaults.eventSuccess.questionnaireConfig.customQuestions': organizerDocumentHostDefaultsEventSuccessQuestionnaireConfigCustomQuestions,
@@ -41266,9 +43730,13 @@ abstract final class CatchContractConstraints {
     'organizerDocument.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes': organizerDocumentHostDefaultsEventSuccessStructureConfigClusterActivityAttributes,
     'organizerDocument.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes.items': organizerDocumentHostDefaultsEventSuccessStructureConfigClusterActivityAttributesItems,
     'organizerDocument.hostDefaults.eventSuccess.structureConfig.maxPairMeetings': organizerDocumentHostDefaultsEventSuccessStructureConfigMaxPairMeetings,
+    'organizerDocument.hostDefaults.eventSuccess.structureConfig.resourceCapacity.concurrentUnits': organizerDocumentHostDefaultsEventSuccessStructureConfigResourceCapacityConcurrentUnits,
+    'organizerDocument.hostDefaults.eventSuccess.structureConfig.resourceCapacity.resourceLabelId': organizerDocumentHostDefaultsEventSuccessStructureConfigResourceCapacityResourceLabelId,
+    'organizerDocument.hostDefaults.eventSuccess.structureConfig.resourceCapacity.seatsPerUnit': organizerDocumentHostDefaultsEventSuccessStructureConfigResourceCapacitySeatsPerUnit,
     'organizerDocument.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds': organizerDocumentHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds,
     'organizerDocument.hostDefaults.eventSuccess.structureConfig.rotationIntervalMinutes': organizerDocumentHostDefaultsEventSuccessStructureConfigRotationIntervalMinutes,
     'organizerDocument.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy': organizerDocumentHostDefaultsEventSuccessStructureConfigRotationRepeatStrategy,
+    'organizerDocument.hostDefaults.eventSuccess.structureConfig.topology': organizerDocumentHostDefaultsEventSuccessStructureConfigTopology,
     'organizerDocument.hostDefaults.eventSuccess.structureConfig.unitCount': organizerDocumentHostDefaultsEventSuccessStructureConfigUnitCount,
     'organizerDocument.hostDefaults.eventSuccess.structureConfig.unitKind': organizerDocumentHostDefaultsEventSuccessStructureConfigUnitKind,
     'organizerDocument.hostDefaults.eventSuccess.structureConfig.unitSize': organizerDocumentHostDefaultsEventSuccessStructureConfigUnitSize,
@@ -41471,6 +43939,21 @@ abstract final class CatchContractConstraints {
     'organizerEventLocationResolutionDecisionDocument.schemaVersion': organizerEventLocationResolutionDecisionDocumentSchemaVersion,
     'organizerEventLocationResolutionDecisionDocument.updatedAt._nanoseconds': organizerEventLocationResolutionDecisionDocumentUpdatedAtNanoseconds,
     'organizerEventLocationResolutionDecisionDocument.updatedAt._seconds': organizerEventLocationResolutionDecisionDocumentUpdatedAtSeconds,
+    'organizerEventSuccessLayoutDocument.createdAt._nanoseconds': organizerEventSuccessLayoutDocumentCreatedAtNanoseconds,
+    'organizerEventSuccessLayoutDocument.createdAt._seconds': organizerEventSuccessLayoutDocumentCreatedAtSeconds,
+    'organizerEventSuccessLayoutDocument.label': organizerEventSuccessLayoutDocumentLabel,
+    'organizerEventSuccessLayoutDocument.layoutId': organizerEventSuccessLayoutDocumentLayoutId,
+    'organizerEventSuccessLayoutDocument.organizerId': organizerEventSuccessLayoutDocumentOrganizerId,
+    'organizerEventSuccessLayoutDocument.units': organizerEventSuccessLayoutDocumentUnits,
+    'organizerEventSuccessLayoutDocument.units.items.capacity': organizerEventSuccessLayoutDocumentUnitsItemsCapacity,
+    'organizerEventSuccessLayoutDocument.units.items.gridX': organizerEventSuccessLayoutDocumentUnitsItemsGridX,
+    'organizerEventSuccessLayoutDocument.units.items.gridY': organizerEventSuccessLayoutDocumentUnitsItemsGridY,
+    'organizerEventSuccessLayoutDocument.units.items.id': organizerEventSuccessLayoutDocumentUnitsItemsId,
+    'organizerEventSuccessLayoutDocument.units.items.label': organizerEventSuccessLayoutDocumentUnitsItemsLabel,
+    'organizerEventSuccessLayoutDocument.units.items.order': organizerEventSuccessLayoutDocumentUnitsItemsOrder,
+    'organizerEventSuccessLayoutDocument.units.items.shape': organizerEventSuccessLayoutDocumentUnitsItemsShape,
+    'organizerEventSuccessLayoutDocument.updatedAt._nanoseconds': organizerEventSuccessLayoutDocumentUpdatedAtNanoseconds,
+    'organizerEventSuccessLayoutDocument.updatedAt._seconds': organizerEventSuccessLayoutDocumentUpdatedAtSeconds,
     'organizerFollowCallablePayload.organizerId': organizerFollowCallablePayloadOrganizerId,
     'organizerFollowDocument.followedAt._nanoseconds': organizerFollowDocumentFollowedAtNanoseconds,
     'organizerFollowDocument.followedAt._seconds': organizerFollowDocumentFollowedAtSeconds,
@@ -41812,6 +44295,7 @@ abstract final class CatchContractConstraints {
     'overrideEventSuccessGroupsCallablePayload.rounds.items.groups.items.participantUids.items': overrideEventSuccessGroupsCallablePayloadRoundsItemsGroupsItemsParticipantUidsItems,
     'overrideEventSuccessGroupsCallablePayload.rounds.items.roundIndex': overrideEventSuccessGroupsCallablePayloadRoundsItemsRoundIndex,
     'overrideEventSuccessRotationsCallablePayload.eventId': overrideEventSuccessRotationsCallablePayloadEventId,
+    'overrideEventSuccessRotationsCallablePayload.expectedRevision': overrideEventSuccessRotationsCallablePayloadExpectedRevision,
     'overrideEventSuccessRotationsCallablePayload.rounds': overrideEventSuccessRotationsCallablePayloadRounds,
     'overrideEventSuccessRotationsCallablePayload.rounds.items.pairings': overrideEventSuccessRotationsCallablePayloadRoundsItemsPairings,
     'overrideEventSuccessRotationsCallablePayload.rounds.items.pairings.items.uidA': overrideEventSuccessRotationsCallablePayloadRoundsItemsPairingsItemsUidA,
@@ -41866,6 +44350,8 @@ abstract final class CatchContractConstraints {
     'placesAutocompleteCallableResponse.predictions.items.mainText': placesAutocompleteCallableResponsePredictionsItemsMainText,
     'placesAutocompleteCallableResponse.predictions.items.placeId': placesAutocompleteCallableResponsePredictionsItemsPlaceId,
     'placesAutocompleteCallableResponse.predictions.items.secondaryText': placesAutocompleteCallableResponsePredictionsItemsSecondaryText,
+    'prepareEventSuccessRotationDraftCallablePayload.eventId': prepareEventSuccessRotationDraftCallablePayloadEventId,
+    'prepareEventSuccessRotationDraftCallablePayload.expectedRevision': prepareEventSuccessRotationDraftCallablePayloadExpectedRevision,
     'profilePhoto.createdAt._nanoseconds': profilePhotoCreatedAtNanoseconds,
     'profilePhoto.createdAt._seconds': profilePhotoCreatedAtSeconds,
     'profilePhoto.id': profilePhotoId,
@@ -41988,6 +44474,10 @@ abstract final class CatchContractConstraints {
     'publicRouteReservationDocument.targetPath': publicRouteReservationDocumentTargetPath,
     'publicRouteReservationDocument.updatedAt._nanoseconds': publicRouteReservationDocumentUpdatedAtNanoseconds,
     'publicRouteReservationDocument.updatedAt._seconds': publicRouteReservationDocumentUpdatedAtSeconds,
+    'publishEventSuccessRotationRoundCallablePayload.confirmed': publishEventSuccessRotationRoundCallablePayloadConfirmed,
+    'publishEventSuccessRotationRoundCallablePayload.eventId': publishEventSuccessRotationRoundCallablePayloadEventId,
+    'publishEventSuccessRotationRoundCallablePayload.expectedRevision': publishEventSuccessRotationRoundCallablePayloadExpectedRevision,
+    'publishEventSuccessRotationRoundCallablePayload.roundIndex': publishEventSuccessRotationRoundCallablePayloadRoundIndex,
     'rateLimitDocument.action': rateLimitDocumentAction,
     'rateLimitDocument.count': rateLimitDocumentCount,
     'rateLimitDocument.expiresAt._nanoseconds': rateLimitDocumentExpiresAtNanoseconds,
@@ -42018,6 +44508,18 @@ abstract final class CatchContractConstraints {
     'recordEventShareIntentCallablePayload.eventId': recordEventShareIntentCallablePayloadEventId,
     'recordEventShareIntentCallablePayload.inviteLinkId': recordEventShareIntentCallablePayloadInviteLinkId,
     'recordEventShareIntentCallablePayload.surface': recordEventShareIntentCallablePayloadSurface,
+    'recordEventSuccessUnitOutcomesCallablePayload.entries': recordEventSuccessUnitOutcomesCallablePayloadEntries,
+    'recordEventSuccessUnitOutcomesCallablePayload.entries.items.completed': recordEventSuccessUnitOutcomesCallablePayloadEntriesItemsCompleted,
+    'recordEventSuccessUnitOutcomesCallablePayload.entries.items.rank': recordEventSuccessUnitOutcomesCallablePayloadEntriesItemsRank,
+    'recordEventSuccessUnitOutcomesCallablePayload.entries.items.score': recordEventSuccessUnitOutcomesCallablePayloadEntriesItemsScore,
+    'recordEventSuccessUnitOutcomesCallablePayload.entries.items.unitId': recordEventSuccessUnitOutcomesCallablePayloadEntriesItemsUnitId,
+    'recordEventSuccessUnitOutcomesCallablePayload.entries.items.unitLabel': recordEventSuccessUnitOutcomesCallablePayloadEntriesItemsUnitLabel,
+    'recordEventSuccessUnitOutcomesCallablePayload.eventId': recordEventSuccessUnitOutcomesCallablePayloadEventId,
+    'recordEventSuccessUnitOutcomesCallablePayload.expectedRevision': recordEventSuccessUnitOutcomesCallablePayloadExpectedRevision,
+    'recordEventSuccessUnitOutcomesCallablePayload.roundIndex': recordEventSuccessUnitOutcomesCallablePayloadRoundIndex,
+    'recordEventSuccessUnitOutcomesCallableResponse.replayed': recordEventSuccessUnitOutcomesCallableResponseReplayed,
+    'recordEventSuccessUnitOutcomesCallableResponse.revision': recordEventSuccessUnitOutcomesCallableResponseRevision,
+    'recordEventSuccessUnitOutcomesCallableResponse.standingCount': recordEventSuccessUnitOutcomesCallableResponseStandingCount,
     'recordOrganizerAnalyticsEventCallablePayload.clubId': recordOrganizerAnalyticsEventCallablePayloadClubId,
     'recordOrganizerAnalyticsEventCallablePayload.eventId': recordOrganizerAnalyticsEventCallablePayloadEventId,
     'recordOrganizerAnalyticsEventCallablePayload.eventName': recordOrganizerAnalyticsEventCallablePayloadEventName,
@@ -42214,6 +44716,8 @@ abstract final class CatchContractConstraints {
     'startEventSuccessFirstHelloMissionCallablePayload.eventId': startEventSuccessFirstHelloMissionCallablePayloadEventId,
     'startEventSuccessFirstHelloMissionCallablePayload.latitude': startEventSuccessFirstHelloMissionCallablePayloadLatitude,
     'startEventSuccessFirstHelloMissionCallablePayload.longitude': startEventSuccessFirstHelloMissionCallablePayloadLongitude,
+    'startOrganizerContactConversationCallablePayload.contactId': startOrganizerContactConversationCallablePayloadContactId,
+    'startOrganizerContactConversationCallablePayload.organizerId': startOrganizerContactConversationCallablePayloadOrganizerId,
     'startOrganizerConversationCallablePayload.eventId': startOrganizerConversationCallablePayloadEventId,
     'startOrganizerConversationCallablePayload.hostUid': startOrganizerConversationCallablePayloadHostUid,
     'startOrganizerConversationCallablePayload.organizerId': startOrganizerConversationCallablePayloadOrganizerId,
@@ -42314,6 +44818,7 @@ abstract final class CatchContractConstraints {
     'updateClubPatch.hostDefaults.eventSuccess.contextualOpenersEnabled': updateClubPatchHostDefaultsEventSuccessContextualOpenersEnabled,
     'updateClubPatch.hostDefaults.eventSuccess.enabled': updateClubPatchHostDefaultsEventSuccessEnabled,
     'updateClubPatch.hostDefaults.eventSuccess.hostGoal': updateClubPatchHostDefaultsEventSuccessHostGoal,
+    'updateClubPatch.hostDefaults.eventSuccess.layoutId': updateClubPatchHostDefaultsEventSuccessLayoutId,
     'updateClubPatch.hostDefaults.eventSuccess.moduleSelectionConfigured': updateClubPatchHostDefaultsEventSuccessModuleSelectionConfigured,
     'updateClubPatch.hostDefaults.eventSuccess.playbookId': updateClubPatchHostDefaultsEventSuccessPlaybookId,
     'updateClubPatch.hostDefaults.eventSuccess.questionnaireConfig.customQuestions': updateClubPatchHostDefaultsEventSuccessQuestionnaireConfigCustomQuestions,
@@ -42331,9 +44836,13 @@ abstract final class CatchContractConstraints {
     'updateClubPatch.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes': updateClubPatchHostDefaultsEventSuccessStructureConfigClusterActivityAttributes,
     'updateClubPatch.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes.items': updateClubPatchHostDefaultsEventSuccessStructureConfigClusterActivityAttributesItems,
     'updateClubPatch.hostDefaults.eventSuccess.structureConfig.maxPairMeetings': updateClubPatchHostDefaultsEventSuccessStructureConfigMaxPairMeetings,
+    'updateClubPatch.hostDefaults.eventSuccess.structureConfig.resourceCapacity.concurrentUnits': updateClubPatchHostDefaultsEventSuccessStructureConfigResourceCapacityConcurrentUnits,
+    'updateClubPatch.hostDefaults.eventSuccess.structureConfig.resourceCapacity.resourceLabelId': updateClubPatchHostDefaultsEventSuccessStructureConfigResourceCapacityResourceLabelId,
+    'updateClubPatch.hostDefaults.eventSuccess.structureConfig.resourceCapacity.seatsPerUnit': updateClubPatchHostDefaultsEventSuccessStructureConfigResourceCapacitySeatsPerUnit,
     'updateClubPatch.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds': updateClubPatchHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds,
     'updateClubPatch.hostDefaults.eventSuccess.structureConfig.rotationIntervalMinutes': updateClubPatchHostDefaultsEventSuccessStructureConfigRotationIntervalMinutes,
     'updateClubPatch.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy': updateClubPatchHostDefaultsEventSuccessStructureConfigRotationRepeatStrategy,
+    'updateClubPatch.hostDefaults.eventSuccess.structureConfig.topology': updateClubPatchHostDefaultsEventSuccessStructureConfigTopology,
     'updateClubPatch.hostDefaults.eventSuccess.structureConfig.unitCount': updateClubPatchHostDefaultsEventSuccessStructureConfigUnitCount,
     'updateClubPatch.hostDefaults.eventSuccess.structureConfig.unitKind': updateClubPatchHostDefaultsEventSuccessStructureConfigUnitKind,
     'updateClubPatch.hostDefaults.eventSuccess.structureConfig.unitSize': updateClubPatchHostDefaultsEventSuccessStructureConfigUnitSize,
@@ -42459,6 +44968,7 @@ abstract final class CatchContractConstraints {
     'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.contextualOpenersEnabled': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessContextualOpenersEnabled,
     'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.enabled': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessEnabled,
     'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.hostGoal': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessHostGoal,
+    'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.layoutId': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessLayoutId,
     'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.moduleSelectionConfigured': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessModuleSelectionConfigured,
     'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.playbookId': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessPlaybookId,
     'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.questionnaireConfig.customQuestions': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessQuestionnaireConfigCustomQuestions,
@@ -42476,9 +44986,13 @@ abstract final class CatchContractConstraints {
     'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigClusterActivityAttributes,
     'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes.items': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigClusterActivityAttributesItems,
     'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.maxPairMeetings': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigMaxPairMeetings,
+    'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.resourceCapacity.concurrentUnits': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigResourceCapacityConcurrentUnits,
+    'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.resourceCapacity.resourceLabelId': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigResourceCapacityResourceLabelId,
+    'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.resourceCapacity.seatsPerUnit': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigResourceCapacitySeatsPerUnit,
     'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds,
     'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.rotationIntervalMinutes': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigRotationIntervalMinutes,
     'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigRotationRepeatStrategy,
+    'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.topology': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigTopology,
     'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.unitCount': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigUnitCount,
     'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.unitKind': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigUnitKind,
     'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.unitSize': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigUnitSize,
@@ -42608,6 +45122,27 @@ abstract final class CatchContractConstraints {
     'uploadedPhoto.updatedAt._nanoseconds': uploadedPhotoUpdatedAtNanoseconds,
     'uploadedPhoto.updatedAt._seconds': uploadedPhotoUpdatedAtSeconds,
     'uploadedPhoto.url': uploadedPhotoUrl,
+    'upsertEventSuccessLayoutCallablePayload.label': upsertEventSuccessLayoutCallablePayloadLabel,
+    'upsertEventSuccessLayoutCallablePayload.layoutId': upsertEventSuccessLayoutCallablePayloadLayoutId,
+    'upsertEventSuccessLayoutCallablePayload.organizerId': upsertEventSuccessLayoutCallablePayloadOrganizerId,
+    'upsertEventSuccessLayoutCallablePayload.units': upsertEventSuccessLayoutCallablePayloadUnits,
+    'upsertEventSuccessLayoutCallablePayload.units.items.capacity': upsertEventSuccessLayoutCallablePayloadUnitsItemsCapacity,
+    'upsertEventSuccessLayoutCallablePayload.units.items.gridX': upsertEventSuccessLayoutCallablePayloadUnitsItemsGridX,
+    'upsertEventSuccessLayoutCallablePayload.units.items.gridY': upsertEventSuccessLayoutCallablePayloadUnitsItemsGridY,
+    'upsertEventSuccessLayoutCallablePayload.units.items.id': upsertEventSuccessLayoutCallablePayloadUnitsItemsId,
+    'upsertEventSuccessLayoutCallablePayload.units.items.label': upsertEventSuccessLayoutCallablePayloadUnitsItemsLabel,
+    'upsertEventSuccessLayoutCallablePayload.units.items.order': upsertEventSuccessLayoutCallablePayloadUnitsItemsOrder,
+    'upsertEventSuccessLayoutCallablePayload.units.items.shape': upsertEventSuccessLayoutCallablePayloadUnitsItemsShape,
+    'upsertEventSuccessLayoutCallableResponse.layout.label': upsertEventSuccessLayoutCallableResponseLayoutLabel,
+    'upsertEventSuccessLayoutCallableResponse.layout.layoutId': upsertEventSuccessLayoutCallableResponseLayoutLayoutId,
+    'upsertEventSuccessLayoutCallableResponse.layout.units': upsertEventSuccessLayoutCallableResponseLayoutUnits,
+    'upsertEventSuccessLayoutCallableResponse.layout.units.items.capacity': upsertEventSuccessLayoutCallableResponseLayoutUnitsItemsCapacity,
+    'upsertEventSuccessLayoutCallableResponse.layout.units.items.gridX': upsertEventSuccessLayoutCallableResponseLayoutUnitsItemsGridX,
+    'upsertEventSuccessLayoutCallableResponse.layout.units.items.gridY': upsertEventSuccessLayoutCallableResponseLayoutUnitsItemsGridY,
+    'upsertEventSuccessLayoutCallableResponse.layout.units.items.id': upsertEventSuccessLayoutCallableResponseLayoutUnitsItemsId,
+    'upsertEventSuccessLayoutCallableResponse.layout.units.items.label': upsertEventSuccessLayoutCallableResponseLayoutUnitsItemsLabel,
+    'upsertEventSuccessLayoutCallableResponse.layout.units.items.order': upsertEventSuccessLayoutCallableResponseLayoutUnitsItemsOrder,
+    'upsertEventSuccessLayoutCallableResponse.layout.units.items.shape': upsertEventSuccessLayoutCallableResponseLayoutUnitsItemsShape,
     'upsertOrganizerCampaignCallablePayload.campaignId': upsertOrganizerCampaignCallablePayloadCampaignId,
     'upsertOrganizerCampaignCallablePayload.connectionId': upsertOrganizerCampaignCallablePayloadConnectionId,
     'upsertOrganizerCampaignCallablePayload.eventId': upsertOrganizerCampaignCallablePayloadEventId,
@@ -42821,7 +45356,6 @@ abstract final class CatchContractConstraints {
     'websiteHostListingProjection.catchEvents.items.publicRegistrationEnabled': websiteHostListingProjectionCatchEventsItemsPublicRegistrationEnabled,
     'websiteHostListingProjection.catchEvents.items.requirements': websiteHostListingProjectionCatchEventsItemsRequirements,
     'websiteHostListingProjection.catchEvents.items.role': websiteHostListingProjectionCatchEventsItemsRole,
-    'websiteHostListingProjection.catchEvents.items.scorecard': websiteHostListingProjectionCatchEventsItemsScorecard,
     'websiteHostListingProjection.catchEvents.items.startTime': websiteHostListingProjectionCatchEventsItemsStartTime,
     'websiteHostListingProjection.catchEvents.items.summary': websiteHostListingProjectionCatchEventsItemsSummary,
     'websiteHostListingProjection.catchEvents.items.timeline': websiteHostListingProjectionCatchEventsItemsTimeline,

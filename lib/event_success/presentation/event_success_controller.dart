@@ -4,7 +4,9 @@ import 'package:catch_dating_app/event_success/domain/event_success_arrival_miss
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
 import 'package:catch_dating_app/events/data/event_check_in_location_service.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -20,7 +22,8 @@ class EventSuccessController extends _$EventSuccessController {
   static final updateStepMutation = Mutation<void>();
   static final startRevealCountdownMutation = Mutation<void>();
   static final revealRoundMutation = Mutation<void>();
-  static final resetRevealMutation = Mutation<void>();
+  static final cancelRevealCountdownMutation = Mutation<void>();
+  static final publishRotationRoundMutation = Mutation<void>();
   static final completePlanMutation = Mutation<void>();
   static final feedbackMutation = Mutation<void>();
   static final compatibilityResponseMutation = Mutation<void>();
@@ -33,6 +36,10 @@ class EventSuccessController extends _$EventSuccessController {
   static final overrideGroupAssignmentsMutation = Mutation<void>();
   static final microPodsOptOutMutation = Mutation<void>();
   static final guidedRotationsOptOutMutation = Mutation<void>();
+  static final upsertLayoutMutation = Mutation<EventSuccessLayout>();
+  static final spatialControlMutation =
+      Mutation<EventSuccessSpatialActionResult>();
+  static final recordUnitOutcomesMutation = Mutation<void>();
 
   @override
   void build() {}
@@ -40,6 +47,44 @@ class EventSuccessController extends _$EventSuccessController {
   Future<EventSuccessPlan> ensurePlan(Event event) async {
     requireSignedInUid(ref, action: 'set up the live event guide');
     return ref.read(eventSuccessRepositoryProvider).ensurePlanForEvent(event);
+  }
+
+  Future<EventSuccessLayout> upsertLayout({
+    required String organizerId,
+    required EventSuccessLayout layout,
+    String? layoutId,
+  }) async {
+    requireSignedInUid(ref, action: 'save a reusable event room layout');
+    return ref
+        .read(eventSuccessRepositoryProvider)
+        .upsertOrganizerLayout(
+          organizerId: organizerId,
+          layout: layout,
+          layoutId: layoutId,
+        );
+  }
+
+  Future<EventSuccessSpatialActionResult> controlSpatialPlacement({
+    required String eventId,
+    required int expectedRevision,
+    required EventSuccessSpatialAction action,
+    required String moduleId,
+    required String uid,
+    String? destinationUnitId,
+    EventSuccessSpatialScope? scope,
+  }) async {
+    requireSignedInUid(ref, action: 'control event room placement');
+    return ref
+        .read(eventSuccessRepositoryProvider)
+        .controlSpatialPlacement(
+          eventId: eventId,
+          expectedRevision: expectedRevision,
+          action: action,
+          moduleId: moduleId,
+          uid: uid,
+          destinationUnitId: destinationUnitId,
+          scope: scope,
+        );
   }
 
   Future<void> saveSetup({
@@ -64,45 +109,90 @@ class EventSuccessController extends _$EventSuccessController {
   Future<void> updateActiveStep({
     required String eventId,
     required int activeStepIndex,
+    required int expectedRevision,
   }) async {
     requireSignedInUid(ref, action: 'run live event guide');
     await ref
         .read(eventSuccessRepositoryProvider)
-        .updateActiveStep(eventId: eventId, activeStepIndex: activeStepIndex);
+        .updateActiveStep(
+          eventId: eventId,
+          activeStepIndex: activeStepIndex,
+          expectedRevision: expectedRevision,
+        );
   }
 
   Future<void> startRevealCountdown({
     required String eventId,
     required int roundIndex,
+    required int expectedRevision,
+    required bool confirmed,
   }) async {
     requireSignedInUid(ref, action: 'start event reveal countdown');
     await ref
         .read(eventSuccessRepositoryProvider)
-        .startLiveRevealCountdown(eventId: eventId, roundIndex: roundIndex);
+        .startLiveRevealCountdown(
+          eventId: eventId,
+          roundIndex: roundIndex,
+          expectedRevision: expectedRevision,
+          confirmed: confirmed,
+        );
   }
 
   Future<void> revealRound({
     required String eventId,
     required int roundIndex,
+    required int expectedRevision,
+    required bool confirmed,
   }) async {
     requireSignedInUid(ref, action: 'reveal event round');
     await ref
         .read(eventSuccessRepositoryProvider)
-        .revealLiveRound(eventId: eventId, roundIndex: roundIndex);
+        .revealLiveRound(
+          eventId: eventId,
+          roundIndex: roundIndex,
+          expectedRevision: expectedRevision,
+          confirmed: confirmed,
+        );
   }
 
-  Future<void> resetReveal({required String eventId}) async {
-    requireSignedInUid(ref, action: 'reset event reveal');
+  Future<void> cancelRevealCountdown({
+    required String eventId,
+    required int expectedRevision,
+  }) async {
+    requireSignedInUid(ref, action: 'cancel event reveal countdown');
     await ref
         .read(eventSuccessRepositoryProvider)
-        .resetLiveReveal(eventId: eventId);
+        .cancelLiveRevealCountdown(
+          eventId: eventId,
+          expectedRevision: expectedRevision,
+        );
   }
 
-  Future<void> completePlan(String eventId) async {
+  Future<void> recordUnitOutcomes({
+    required String eventId,
+    required int expectedRevision,
+    required int roundIndex,
+    required List<EventSuccessUnitOutcomeEntryInput> entries,
+  }) async {
+    requireSignedInUid(ref, action: 'record event outcomes');
+    await ref
+        .read(eventSuccessRepositoryProvider)
+        .recordUnitOutcomes(
+          eventId: eventId,
+          expectedRevision: expectedRevision,
+          roundIndex: roundIndex,
+          entries: entries,
+        );
+  }
+
+  Future<void> completePlan({
+    required String eventId,
+    required int expectedRevision,
+  }) async {
     requireSignedInUid(ref, action: 'complete the live event guide');
     await ref
         .read(eventSuccessRepositoryProvider)
-        .completePlan(eventId: eventId);
+        .completePlan(eventId: eventId, expectedRevision: expectedRevision);
   }
 
   Future<void> submitFeedback(EventSuccessFeedback feedback) async {
@@ -191,21 +281,49 @@ class EventSuccessController extends _$EventSuccessController {
         .generateMicroPodAssignments(eventId: eventId);
   }
 
-  Future<void> generateGuidedRotations({required String eventId}) async {
+  Future<void> generateGuidedRotations({
+    required String eventId,
+    required int expectedRevision,
+  }) async {
     requireSignedInUid(ref, action: 'generate event rotations');
     await ref
         .read(eventSuccessRepositoryProvider)
-        .generateGuidedRotations(eventId: eventId);
+        .generateGuidedRotations(
+          eventId: eventId,
+          expectedRevision: expectedRevision,
+        );
   }
 
   Future<void> overrideGuidedRotations({
     required String eventId,
+    required int expectedRevision,
     required List<EventSuccessRotationOverrideRound> rounds,
   }) async {
     requireSignedInUid(ref, action: 'override event rotations');
     await ref
         .read(eventSuccessRepositoryProvider)
-        .overrideGuidedRotations(eventId: eventId, rounds: rounds);
+        .overrideGuidedRotations(
+          eventId: eventId,
+          expectedRevision: expectedRevision,
+          rounds: rounds,
+        );
+  }
+
+  Future<void> publishGuidedRotationRound({
+    required String eventId,
+    required int roundIndex,
+    required int expectedRevision,
+    required bool confirmed,
+  }) async {
+    requireSignedInUid(ref, action: 'publish event rotation round');
+    await ref
+        .read(eventSuccessRepositoryProvider)
+        .publishGuidedRotationRound(
+          eventId: eventId,
+          roundIndex: roundIndex,
+          expectedRevision: expectedRevision,
+          confirmed: confirmed,
+        );
   }
 
   Future<void> overrideGroupAssignments({

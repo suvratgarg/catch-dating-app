@@ -39,6 +39,19 @@ export interface AssignmentPairConstraint {
   bUid: string;
 }
 
+export type AssignmentAffinityConstraintValue =
+  "mustPair" |
+  "mustSplit" |
+  "avoidRepeat" |
+  "neutral";
+
+export type AssignmentAffinityConstraintScope = "thisRound" | "pinned";
+
+export interface AssignmentAffinityConstraint extends AssignmentPairConstraint {
+  value: AssignmentAffinityConstraintValue;
+  scope: AssignmentAffinityConstraintScope;
+}
+
 export interface AssignmentHostConstraints {
   keepTogetherPairs?: AssignmentPairConstraint[];
   keepApartPairs?: AssignmentPairConstraint[];
@@ -51,13 +64,22 @@ export interface AssignmentActivityConstraints {
   clusterAttributes?: string[];
 }
 
+export interface AssignmentExclusionLedgerConfig {
+  cumulativeMinutesByUid?: Record<string, number>;
+  intervalMinutes?: number;
+  alertThresholdMinutes?: number;
+}
+
 export interface AssignmentConstraintConfig {
+  affinityConstraints?: AssignmentAffinityConstraint[];
   host?: AssignmentHostConstraints;
   activity?: AssignmentActivityConstraints;
+  exclusionLedger?: AssignmentExclusionLedgerConfig;
 }
 
 export interface AssignmentConstraintParticipant {
   uid: string;
+  arrivalGroup?: string | null;
   activityAttributes?: Record<string, string | number | boolean | null>;
 }
 
@@ -78,13 +100,20 @@ export interface AssignmentConstraintPair<
 export interface NormalizedAssignmentConstraints {
   keepTogetherPairs: Set<string>;
   keepApartPairs: Set<string>;
+  avoidRepeatPairs: Set<string>;
   requestedRepeatPairs: Set<string>;
+  affinityConstraintsByPair: Map<string, AssignmentAffinityConstraint>;
   keepTogetherPeersByUid: Map<string, Set<string>>;
   anchorGroupByUid: Map<string, number>;
   anchorUidsByGroupIndex: Map<number, Set<string>>;
   balanceActivityAttributes: string[];
   clusterActivityAttributes: string[];
+  exclusionMinutesByUid: Map<string, number>;
+  exclusionIntervalMinutes: number;
+  exclusionAlertThresholdMinutes: number;
 }
+
+export const DEFAULT_EVENT_SUCCESS_EXCLUSION_ALERT_THRESHOLD_MINUTES = 40;
 
 const HOST_ANCHOR_MATCH_REWARD = -120;
 const HOST_ANCHOR_MISMATCH_PENALTY = 450;
@@ -92,6 +121,7 @@ const HOST_KEEP_TOGETHER_MATCH_REWARD = -180;
 const HOST_KEEP_TOGETHER_SPLIT_PENALTY = 260;
 const HOST_KEEP_TOGETHER_PAIR_SCORE = 150;
 const HOST_REQUESTED_REPEAT_PAIR_SCORE = 260;
+const HOST_AVOID_REPEAT_PAIR_SCORE = -260;
 const ACTIVITY_BALANCE_SAME_VALUE_PENALTY = 55;
 const ACTIVITY_CLUSTER_MISMATCH_PENALTY = 95;
 const ACTIVITY_CLUSTER_MATCH_REWARD = 35;
@@ -116,11 +146,17 @@ export function assignmentConstraintPairKey(
  * @return {NormalizedAssignmentConstraints} Normalized constraints.
  */
 export function normalizeAssignmentConstraints(
-  config?: AssignmentConstraintConfig
+  config?: AssignmentConstraintConfig,
+  defaultExclusionIntervalMinutes = 0
 ): NormalizedAssignmentConstraints {
   const keepTogetherPairs = new Set<string>();
   const keepApartPairs = new Set<string>();
+  const avoidRepeatPairs = new Set<string>();
   const requestedRepeatPairs = new Set<string>();
+  const affinityConstraintsByPair = new Map<
+    string,
+    AssignmentAffinityConstraint
+  >();
   const keepTogetherPeersByUid = new Map<string, Set<string>>();
   const anchorGroupByUid = new Map<string, number>();
   const anchorUidsByGroupIndex = new Map<number, Set<string>>();
@@ -130,6 +166,43 @@ export function normalizeAssignmentConstraints(
   const clusterActivityAttributes = normalizeAttributeNames(
     config?.activity?.clusterAttributes
   );
+  const exclusionMinutesByUid = normalizeExclusionMinutesByUid(
+    config?.exclusionLedger?.cumulativeMinutesByUid
+  );
+  const exclusionIntervalMinutes = nonNegativeFiniteNumber(
+    config?.exclusionLedger?.intervalMinutes,
+    defaultExclusionIntervalMinutes
+  );
+  const exclusionAlertThresholdMinutes = positiveFiniteNumber(
+    config?.exclusionLedger?.alertThresholdMinutes,
+    DEFAULT_EVENT_SUCCESS_EXCLUSION_ALERT_THRESHOLD_MINUTES
+  );
+
+  for (const constraint of config?.affinityConstraints ?? []) {
+    if (constraint.aUid === constraint.bUid) continue;
+    const key = assignmentConstraintPairKey(
+      constraint.aUid,
+      constraint.bUid
+    );
+    affinityConstraintsByPair.set(key, constraint);
+  }
+  for (const [key, constraint] of affinityConstraintsByPair) {
+    switch (constraint.value) {
+    case "mustPair":
+      keepTogetherPairs.add(key);
+      addPeer(keepTogetherPeersByUid, constraint.aUid, constraint.bUid);
+      addPeer(keepTogetherPeersByUid, constraint.bUid, constraint.aUid);
+      break;
+    case "mustSplit":
+      keepApartPairs.add(key);
+      break;
+    case "avoidRepeat":
+      avoidRepeatPairs.add(key);
+      break;
+    case "neutral":
+      break;
+    }
+  }
 
   for (const pair of config?.host?.keepTogetherPairs ?? []) {
     if (pair.aUid === pair.bUid) continue;
@@ -167,13 +240,31 @@ export function normalizeAssignmentConstraints(
   return {
     keepTogetherPairs,
     keepApartPairs,
+    avoidRepeatPairs,
     requestedRepeatPairs,
+    affinityConstraintsByPair,
     keepTogetherPeersByUid,
     anchorGroupByUid,
     anchorUidsByGroupIndex,
     balanceActivityAttributes,
     clusterActivityAttributes,
+    exclusionMinutesByUid,
+    exclusionIntervalMinutes,
+    exclusionAlertThresholdMinutes,
   };
+}
+
+/**
+ * Returns one attendee's current cumulative exclusion time.
+ * @param {string} uid Participant uid.
+ * @param {NormalizedAssignmentConstraints} constraints Constraint lookups.
+ * @return {number} Non-negative cumulative minutes.
+ */
+export function assignmentExclusionMinutes(
+  uid: string,
+  constraints: NormalizedAssignmentConstraints
+): number {
+  return constraints.exclusionMinutesByUid.get(uid) ?? 0;
 }
 
 /**
@@ -186,6 +277,7 @@ export function hasHostConstraints(
 ): boolean {
   return constraints.keepTogetherPairs.size > 0 ||
     constraints.keepApartPairs.size > 0 ||
+    constraints.avoidRepeatPairs.size > 0 ||
     constraints.requestedRepeatPairs.size > 0 ||
     constraints.anchorGroupByUid.size > 0;
 }
@@ -417,6 +509,38 @@ export function hostRequestedRepeatPairScoreAdjustment(
 }
 
 /**
+ * Deprioritizes regrouping a host-declared avoid-repeat pair. Fresh meetings
+ * remain neutral; the penalty applies only after a prior shared occurrence.
+ * @param {string} uidA First uid.
+ * @param {string} uidB Second uid.
+ * @param {number} previousMeetingCount Prior shared occurrence count.
+ * @param {NormalizedAssignmentConstraints} constraints Constraint lookups.
+ * @return {number} Score delta where higher is better.
+ */
+export function affinityRepeatPairScoreAdjustment(
+  uidA: string,
+  uidB: string,
+  previousMeetingCount: number,
+  constraints: NormalizedAssignmentConstraints
+): number {
+  if (previousMeetingCount <= 0) return 0;
+  return constraints.avoidRepeatPairs.has(
+    assignmentConstraintPairKey(uidA, uidB)
+  ) ? HOST_AVOID_REPEAT_PAIR_SCORE * previousMeetingCount : 0;
+}
+
+/** Returns the persisted scope for one active affinity constraint. */
+export function affinityConstraintScopeForPair(
+  uidA: string,
+  uidB: string,
+  constraints: NormalizedAssignmentConstraints
+): AssignmentAffinityConstraintScope | null {
+  return constraints.affinityConstraintsByPair.get(
+    assignmentConstraintPairKey(uidA, uidB)
+  )?.scope ?? null;
+}
+
+/**
  * Evaluates host-authored constraints against generated assignments.
  * @param {object} params Evaluation inputs.
  * @return {AssignmentConstraintEvaluation[]} Constraint evaluations.
@@ -478,6 +602,45 @@ function normalizeAttributeNames(attributes?: string[]): string[] {
       .map((attribute) => attribute.trim())
       .filter((attribute) => attribute.length > 0)
   )].sort();
+}
+
+/**
+ * Normalizes a JSON-shaped exclusion ledger into finite non-negative values.
+ */
+function normalizeExclusionMinutesByUid(
+  raw?: Record<string, number>
+): Map<string, number> {
+  const normalized = new Map<string, number>();
+  for (const [rawUid, rawMinutes] of Object.entries(raw ?? {})) {
+    const uid = rawUid.trim();
+    if (uid.length === 0 || !Number.isFinite(rawMinutes)) continue;
+    normalized.set(uid, Math.max(0, rawMinutes));
+  }
+  return normalized;
+}
+
+/** Resolves a finite non-negative number or a sanitized fallback. */
+function nonNegativeFiniteNumber(
+  value: number | undefined,
+  fallback: number
+): number {
+  const safeFallback = Number.isFinite(fallback) ? Math.max(0, fallback) : 0;
+  if (value === undefined || !Number.isFinite(value)) return safeFallback;
+  return Math.max(0, value);
+}
+
+/** Resolves a finite positive number or a sanitized positive fallback. */
+function positiveFiniteNumber(
+  value: number | undefined,
+  fallback: number
+): number {
+  const safeFallback = Number.isFinite(fallback) && fallback > 0 ?
+    fallback :
+    DEFAULT_EVENT_SUCCESS_EXCLUSION_ALERT_THRESHOLD_MINUTES;
+  if (value === undefined || !Number.isFinite(value) || value <= 0) {
+    return safeFallback;
+  }
+  return value;
 }
 
 /**

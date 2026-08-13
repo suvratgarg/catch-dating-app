@@ -13,7 +13,6 @@ import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_arrival_mission.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
@@ -504,6 +503,8 @@ void main() {
         rotationAssignmentsState:
             rotationAssignmentsState ??
             const CatchAsyncState<List<EventSuccessAssignment>>.data([]),
+        rotationDraftsState:
+            const CatchAsyncState<List<EventSuccessAssignmentDraft>>.data([]),
         rotationParticipantProfilesState:
             rotationProfilesState ??
             const CatchAsyncState<List<PublicProfile>>.data([]),
@@ -636,72 +637,6 @@ void main() {
       expect(ready.plan, plan);
     },
   );
-
-  test('companion route state maps moment loading and retry intent', () {
-    final event = buildEvent(id: 'event-companion-moment-state');
-    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
-    final profile = buildUser();
-    final participation = buildEventParticipation(
-      event: event,
-      uid: 'runner-1',
-    );
-    final ready =
-        EventSuccessCompanionRouteState.resolveCore(
-              l10n: _l10n,
-              eventState: CatchAsyncState<Event?>.data(event),
-              initialEvent: null,
-              uidState: const CatchAsyncState<String?>.data('runner-1'),
-              profileState: CatchAsyncState<UserProfile?>.data(profile),
-              participationState: CatchAsyncState<EventParticipation?>.data(
-                participation,
-              ),
-              planState: CatchAsyncState<EventSuccessPlan?>.data(plan),
-              referenceNow: event.startTime,
-            )
-            .withArrivalMission(
-              const CatchAsyncState<EventSuccessArrivalMission?>.data(null),
-            )
-            .withCompatibilityResponse(
-              const CatchAsyncState<EventSuccessCompatibilityResponse?>.data(
-                null,
-              ),
-            );
-
-    final loading = ready.withMomentData(
-      feedbackState: const CatchAsyncState<EventSuccessFeedback?>.loading(),
-      preferenceState: const CatchAsyncState<EventSuccessPreference?>.data(
-        null,
-      ),
-      wingmanCandidatesState: const CatchAsyncState<List<PublicProfile>>.data(
-        [],
-      ),
-      wingmanRequestState:
-          const CatchAsyncState<EventSuccessWingmanRequest?>.data(null),
-      assignmentState: const CatchAsyncState<EventSuccessAssignment?>.data(
-        null,
-      ),
-      rotationState: const CatchAsyncState<EventSuccessAssignment?>.data(null),
-    );
-    expect(loading.status, EventSuccessCompanionRouteStatus.loading);
-
-    final error = StateError('preference failed');
-    final failed = ready.withMomentData(
-      feedbackState: const CatchAsyncState<EventSuccessFeedback?>.data(null),
-      preferenceState: CatchAsyncState<EventSuccessPreference?>.error(error),
-      wingmanCandidatesState: const CatchAsyncState<List<PublicProfile>>.data(
-        [],
-      ),
-      wingmanRequestState:
-          const CatchAsyncState<EventSuccessWingmanRequest?>.data(null),
-      assignmentState: const CatchAsyncState<EventSuccessAssignment?>.data(
-        null,
-      ),
-      rotationState: const CatchAsyncState<EventSuccessAssignment?>.data(null),
-    );
-    expect(failed.status, EventSuccessCompanionRouteStatus.error);
-    expect(failed.error, error);
-    expect(failed.retryIntent, EventSuccessCompanionRetryIntent.preference);
-  });
 
   testWidgets('host report remains available for legacy module selections', (
     tester,
@@ -3321,7 +3256,14 @@ Event _racketEvent({required DateTime startTime, required DateTime endTime}) {
   return buildEvent(
     startTime: startTime,
     endTime: endTime,
-    eventFormat: EventFormatSnapshot.fromActivityKind(ActivityKind.pickleball),
+    eventFormat: const EventFormatSnapshot(
+      activityKind: ActivityKind.pickleball,
+      interactionModel: EventInteractionModel.pairedRotations,
+      defaultPlaybookId: 'pickleball_rotations',
+      // These tests exercise the assignment-payload ceremony. Rank formats
+      // use the standings-payload ceremony covered by the focused T7 tests.
+      eventSuccessPrimitives: {'unitOutcome': 'none'},
+    ),
     distanceKm: 0,
     meetingPoint: 'Court 2 by the clubhouse',
   );

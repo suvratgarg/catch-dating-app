@@ -23,12 +23,18 @@ import {
   EventRuntimePrivacy,
   EventRuntimeProfileQuestions,
   EventRuntimeQuestionnaire,
+  EventRuntimeRoomMap,
   FormStatus,
   SelectField,
   TextAreaField,
   TextField,
 } from "../../shared/ui/primitives";
 import {useEventRuntimeController} from "./useEventRuntimeController";
+import {
+  normalizeEventRuntimeLayoutUnits,
+  shouldRenderEventRuntimeRoomMap,
+  visibleEventRuntimeStandingRound,
+} from "./eventRuntimeModel";
 
 export function EventRuntimePage() {
   const {publicRuntimeId = ""} = useParams<{publicRuntimeId: string}>();
@@ -246,6 +252,11 @@ function LiveEventRuntime({
   const mission = controller.liveState.mission;
   const revealBlocked = modules.has("live_reveal") &&
     controller.liveState.plan?.revealStatus !== "revealed";
+  const standings = controller.liveState.standings;
+  const standingRound = visibleEventRuntimeStandingRound(
+    controller.liveState.plan,
+    standings
+  );
   return (
     <EventRuntimeLive>
       <EventRuntimeLiveHeader badge={eventRuntimeCopy.checkedIn}>
@@ -268,8 +279,26 @@ function LiveEventRuntime({
         </Button>
       </EventRuntimeModule>
 
-      <EventRuntimeModule title={eventRuntimeCopy.assignmentTitle} accent="coral">
-        {revealBlocked ? <p>{eventRuntimeCopy.revealWaiting}</p> :
+      <EventRuntimeModule
+        title={standings ? eventRuntimeCopy.standingsTitle : eventRuntimeCopy.assignmentTitle}
+        accent="coral"
+      >
+        {standings ? (
+          standingRound ? (
+            <EventRuntimeAssignments>
+              {standingRound.entries.map((entry) => (
+                <article key={entry.unitId}>
+                  <span>#{entry.position}</span>
+                  <h3>{entry.unitLabel}</h3>
+                  <p>{standings.unitOutcome === "score" ?
+                    `${entry.value} points` : `Rank ${entry.value}`}</p>
+                  <small>{entry.roundsRecorded} {entry.roundsRecorded === 1 ?
+                    "round recorded" : "rounds recorded"}</small>
+                </article>
+              ))}
+            </EventRuntimeAssignments>
+          ) : <p>{eventRuntimeCopy.revealWaiting}</p>
+        ) : revealBlocked ? <p>{eventRuntimeCopy.revealWaiting}</p> :
           controller.liveState.assignments.length ? (
           <EventRuntimeAssignments>
             {controller.liveState.assignments.map((assignment) => (
@@ -278,6 +307,19 @@ function LiveEventRuntime({
                 <h3>{assignment.displayTitle}</h3>
                 {assignment.displaySubtitle ? <p>{assignment.displaySubtitle}</p> : null}
                 {assignment.whySummary ? <small>{assignment.whySummary}</small> : null}
+                {shouldRenderEventRuntimeRoomMap(event.layout, assignment) ? (
+                  <EventRuntimeRoomMap
+                    assignedLabel={eventRuntimeCopy.roomMapAssigned}
+                    assignedUnitId={assignment.layoutUnitId!}
+                    confirmedLabel={eventRuntimeCopy.roomMapConfirmed}
+                    confirmedUnitId={assignment.confirmedLayoutUnitId}
+                    positions={normalizeEventRuntimeLayoutUnits(event.layout.units)}
+                    selfLabel={eventRuntimeCopy.roomMapSelf}
+                    subtitle={eventRuntimeCopy.roomMapSubtitle}
+                    title={eventRuntimeCopy.roomMapTitle}
+                    units={event.layout.units}
+                  />
+                ) : null}
               </article>
             ))}
           </EventRuntimeAssignments>

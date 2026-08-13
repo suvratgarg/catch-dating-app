@@ -69,6 +69,27 @@ void main() {
     );
   });
 
+  test('Eventbrite group tickets keep guest ids and shared arrival group', () {
+    final table = parseHostRosterFile(
+      fileName: 'eventbrite-group-tickets.csv',
+      bytes: Uint8List.fromList(
+        utf8.encode(
+          'First Name,Last Name,Email,Order ID,Attendee ID,Ticket Type,Attendee Status\n'
+          'Asha,Shah,buyer@example.com,order-7,attendee-7a,General,Attending\n'
+          'Ravi,Rao,buyer@example.com,order-7,attendee-7b,General,Attending',
+        ),
+      ),
+    );
+
+    final rows = table.mapRows(table.suggestedMapping).rows;
+    expect(rows, hasLength(2));
+    expect(rows.map((row) => row.externalReference), [
+      'attendee-7a',
+      'attendee-7b',
+    ]);
+    expect(rows.map((row) => row.arrivalGroup), ['order-7', 'order-7']);
+  });
+
   test('unverified provider hint keeps manual mapping available', () {
     final table = parseHostRosterFile(
       fileName: 'bookmyshow.csv',
@@ -124,6 +145,21 @@ void main() {
           EventAttendeeImportRow(
             rowId: '2',
             displayName: 'Asha Shah updated',
+            status: EventAttendeeStatus.registered,
+          ),
+        ],
+      ),
+      isNot(original),
+    );
+    expect(
+      hostRosterImportKey(
+        fileName: 'guests.csv',
+        format: EventAttendeeImportFormat.csv,
+        rows: const [
+          EventAttendeeImportRow(
+            rowId: '2',
+            displayName: 'Asha Shah',
+            arrivalGroup: 'order-7',
             status: EventAttendeeStatus.registered,
           ),
         ],

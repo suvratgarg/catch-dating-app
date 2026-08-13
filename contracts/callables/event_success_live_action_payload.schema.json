@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/event_success_live_action_payload.schema.json",
+  "title": "EventSuccessLiveActionCallablePayload",
+  "description": "Revision-fenced live control action accepted by controlEventSuccessLive.",
+  "x-callable-aliases": ["controlEventSuccessLive"],
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "expectedRevision", "action"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "setActiveStep",
+        "startRevealCountdown",
+        "cancelRevealCountdown",
+        "publishReveal",
+        "complete"
+      ]
+    },
+    "activeStepIndex": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "roundIndex": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "confirmed": {"type": "boolean"}
+  }
+}

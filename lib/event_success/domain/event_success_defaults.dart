@@ -20,6 +20,7 @@ abstract class EventSuccessDefaults with _$EventSuccessDefaults {
 
   const factory EventSuccessDefaults({
     @Default(false) bool enabled,
+    String? layoutId,
     @Default('social_run_light') String playbookId,
     @Default(<String>[]) List<String> selectedModuleIds,
     @Default(false) bool moduleSelectionConfigured,
@@ -48,6 +49,7 @@ abstract class EventSuccessDefaults with _$EventSuccessDefaults {
   factory EventSuccessDefaults.fromDraft(
     EventSuccessHostDraft draft, {
     bool enabled = true,
+    String? layoutId,
     String? attendeePrompt,
   }) {
     final selectedModuleIds = draft.playbook.effectiveModuleSelection(
@@ -55,6 +57,7 @@ abstract class EventSuccessDefaults with _$EventSuccessDefaults {
     );
     return EventSuccessDefaults(
       enabled: enabled,
+      layoutId: _trimToNull(layoutId),
       playbookId: draft.playbook.id,
       selectedModuleIds: selectedModuleIds.toList()..sort(),
       moduleSelectionConfigured: true,
@@ -194,6 +197,7 @@ abstract class EventSuccessDefaults with _$EventSuccessDefaults {
         questionnaireConfig: questionnaireConfig,
       ),
       enabled: enabled,
+      layoutId: layoutId,
       attendeePrompt: attendeePrompt,
     );
   }
@@ -207,6 +211,7 @@ abstract class EventSuccessDefaults with _$EventSuccessDefaults {
       id: event.id,
       eventId: event.id,
       clubId: event.clubId,
+      layoutId: normalized.layoutId,
       draft: normalized.toDraft(
         targetAttendeeCount: math.max(1, event.capacityLimit),
       ),

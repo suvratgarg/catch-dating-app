@@ -6,6 +6,7 @@ import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_card.dart';
@@ -384,10 +385,6 @@ void main() {
         findsNothing,
       );
 
-      expect(
-        find.text('Reveal countdown', skipOffstage: false),
-        findsOneWidget,
-      );
       expect(
         find.text('Switch partners every', skipOffstage: false),
         findsNothing,
@@ -959,22 +956,20 @@ void main() {
             watchEventSuccessAssignmentsProvider(
               event.id,
             ).overrideWith((ref) => Stream.value(const [])),
-            watchEventSuccessRotationAssignmentsProvider(
-              event.id,
-            ).overrideWith((ref) => Stream.value(const [])),
-            watchEventSuccessPreferencesProvider(
-              event.id,
-            ).overrideWith((ref) => Stream.value(const [])),
-            watchEventSuccessWingmanRequestsProvider(
-              event.id,
-            ).overrideWith((ref) => Stream.value(const [])),
+            ...emptyEventSuccessLiveOverrides(event.id),
           ],
           signedInUid: 'host-1',
         );
         await _pumpHostActionFrame(tester);
         await _pumpTestAnimation(tester);
 
-        expect(find.textContaining('LIVE NOW'), findsOneWidget);
+        expect(
+          find.byWidgetPredicate(
+            (widget) =>
+                widget is CatchBadge && widget.label.startsWith('Live now'),
+          ),
+          findsOneWidget,
+        );
         expect(find.text('1 checked in · 2 expected'), findsOneWidget);
         expect(find.text('Check guests in'), findsNothing);
         expect(find.text('1 of 2 arrived'), findsNothing);

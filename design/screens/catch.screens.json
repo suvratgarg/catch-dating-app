@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.screens.schema.json",
   "version": 1,
-  "updated": "2026-08-12",
+  "updated": "2026-08-13",
   "sourceOfTruth": {
     "purpose": "Screen contracts connect route state, controller ownership, section composition, captures, and design references.",
     "tokens": "Foundation values remain in design/tokens/catch.tokens.json.",
@@ -8557,17 +8557,12 @@
           ],
           "owner": "registered screen state controller and Catch state surfaces"
         },
-      "name": "Host Home",
+  "name": "Host Events",
       "owner": "hosts",
       "priority": "P1",
       "status": "in_progress",
       "routes": [
-        {
-          "id": "hostHomeScreen",
-          "path": "/host",
-          "role": "primary"
-        },
-        {
+    {
           "id": "hostEventsScreen",
           "path": "/host/events",
           "role": "primary"
@@ -8602,7 +8597,7 @@
           }
         ],
         "mutationOwners": [],
-        "notes": "HostOperationsHomeScreen reads uidProvider and _hostClubsForUserProvider, then maps them through HostHomeRouteState before composing auth/loading/error/empty/loaded route branches. HostHomeScreenState owns selected-club, selected HostHomeTab, owner/co-host role, title, and switcher state; HostHomeTodayDashboardState owns Today branches; HostEventsWorkspaceState owns Events loading/error/empty/populated lifecycle branches, ordering, month grouping, Repeat availability, and render-ready row data; _HostEventsScaffold owns New/Repeat/Manage route callbacks."
+    "notes": "HostOperationsHomeScreen reads uidProvider and _hostClubsForUserProvider, then maps them through HostHomeRouteState before composing auth/loading/error/empty/loaded route branches. HostHomeScreenState owns selected-club, owner/co-host role, title, and switcher state; HostEventsOverviewState owns the operational spotlight and event-attention work; HostEventsWorkspaceState owns Events loading/error/empty/populated lifecycle branches, ordering, month grouping, Repeat availability, featured-event de-duplication, and render-ready row data; HostEventsScaffold owns New/Repeat/lifecycle-aware Manage/task route callbacks."
       },
       "designRefs": [
         {
@@ -8610,27 +8605,27 @@
           "kind": "repo",
           "status": "available",
           "path": "design/features/host_home.feature.json",
-          "notes": "Authoritative Host Home feature orchestration source; the compiler requires exact coverage of all registered Host Home states and typed actions."
+      "notes": "Authoritative consolidated Host Events feature orchestration source; the compiler requires exact coverage of all registered Host Events states and typed actions."
         },
         {
           "id": "generated.host-home-feature-contract",
           "kind": "generated",
           "status": "available",
           "path": "design/features/generated/host_home.feature_contract.json",
-          "notes": "Generated Host Home state, action, evidence, component, and data-contract projection; do not edit directly."
+      "notes": "Generated Host Events state, action, evidence, component, and data-contract projection; do not edit directly."
         },
         {
           "id": "repo.host-operations-tests",
           "kind": "repo",
           "status": "available",
           "path": "test/hosts/host_operations_screen_test.dart",
-          "notes": "Host operations tests cover owned club, co-host switching, Add event affordance, and opening host event management from Host Home."
+      "notes": "Host operations tests cover operational spotlight/task routing, lifecycle filtering, owned club and co-host switching, event actions, and opening lifecycle-aware Host Event Manage sections."
         },
         {
           "id": "claude.host-home",
           "kind": "claude",
           "status": "available",
-          "notes": "Host Today reference exported to today_dashboard.png and registered for advisory comparison.",
+      "notes": "Historical Host Today reference remains registered as source material for the operational spotlight and attention composition now integrated into Events.",
           "path": "design/source_packs/host-v2/templates/hosts-today/Today.dc.html"
         },
         {
@@ -8645,12 +8640,12 @@
         {
           "id": "host_home_dashboard",
           "status": "captured",
-          "notes": "The 2026-07-10 deterministic full-shell capture renders the production HostAppShell and Bandra Social fixture. A truthful Today pass added a minute-refreshing countdown, event-identified cross-event waitlist routing, live run-of-show routing, and later-event rows while removing the unconditional setup task, synthetic review count, fake attendee stack, misleading approval cards, and task truncation. The comparison improved to 28.48% mismatch / 37.31 meanDelta; HOST-V2-TODAY-FUNCTIONAL-PARITY-001 tracks the still-uncomposed approval, offer, draft, and guest-inquiry sources."
+      "notes": "Historical deterministic capture of the former Today destination. Its truthful minute-refreshing countdown, event-identified waitlist routing, live run-of-show routing, and detail-rich metrics now supply the operational overview inside the canonical Events workspace; the capture ID remains evidence history and is not a separate navigation destination."
         },
         {
           "id": "host_home_events_list",
           "status": "captured",
-          "notes": "The deterministic full-shell capture renders the production HostAppShell at HostHomeTab.events with New/exact-policy-gated Repeat actions, minute-refreshed Upcoming/Live/Past filters, month groups, activity-spined rows, and truthful fill progress. The 2026-08-12 integrated result after adding Audience to Host navigation is 14.93% mismatch / 19.05 meanDelta, bounded at 18% / 19.1 by HOST-V2-EVENTS-VISUAL-DRIFT-001 while the canonical 18 mean-delta threshold remains unchanged."
+      "notes": "The deterministic full-shell capture is the canonical Host Events evidence ID. Events now combines the operational spotlight and Needs You work with New/exact-policy-gated Repeat actions, minute-refreshed Upcoming/Live/Past filters, month groups, activity-spined rows, and truthful fill progress. The pre-merge reference drift remains tracked by HOST-V2-EVENTS-VISUAL-DRIFT-001; canonical references are not refreshed merely to clear CI."
         },
         {
           "id": "host_home_switcher_cohost",
@@ -8781,7 +8776,7 @@
           "id": "one_owned_club",
           "kind": "populated",
           "status": "captured",
-          "source": "A single owned club renders Host Home Today without a switcher, then composes the next-event hero and needs-you task rows from HostHomeTodayDashboardState.",
+      "source": "A single owned club renders the consolidated Events workspace with a passive organizer identity, then composes the operational spotlight and needs-you task rows from HostEventsOverviewState above the lifecycle projection.",
           "tests": [
             "test/hosts/host_operations_screen_test.dart"
           ],
@@ -8797,7 +8792,7 @@
           "id": "multiple_clubs_switcher",
           "kind": "populated",
           "status": "captured",
-          "source": "Multiple owned/hosted clubs expose Switch club menu in the top bar and update selected club/event rows.",
+      "source": "Multiple owned/hosted clubs expose the organizer identity switcher in the Events header and update the operational spotlight, attention work, and lifecycle rows together.",
           "tests": [
             "test/hosts/host_operations_screen_test.dart"
           ],
@@ -8870,7 +8865,7 @@
           "tests": [
             "test/hosts/host_operations_screen_test.dart"
           ],
-          "nextAction": "Restore Host Events below the canonical mean-delta threshold and remove HOST-V2-EVENTS-VISUAL-DRIFT-001. HOST-V2-TODAY-FUNCTIONAL-PARITY-001 separately tracks real pending-approval, offer, draft, and guest-inquiry composition; the current truthful Today baseline is 28.48% / 37.31.",
+      "nextAction": "Re-baseline the deliberately consolidated Events composition through an approved design-parity change, then remove the applicable visual-drift debt. Pending approval, offer, draft, and guest-inquiry sources remain future truthful attention inputs rather than fabricated UI.",
           "previewIds": [
             "hostHomeRouteStates"
           ],
@@ -8883,7 +8878,7 @@
           "id": "empty_events",
           "kind": "empty",
           "status": "captured",
-          "source": "When selected club has no active events, Host Home still shows Add event and No active events yet copy.",
+      "source": "When the selected organizer has no events in the chosen lifecycle projection, Events retains its create actions and renders the canonical filter-specific empty state.",
           "nextAction": "Add owner-empty-events capture if it diverges from the co-host empty-events variant.",
           "previewIds": [
             "hostHomeRouteStates"
@@ -8909,7 +8904,7 @@
           "id": "manage_event_navigation",
           "kind": "populated",
           "status": "tested",
-          "source": "_HostEventsScaffold owns the typed manage-event callback and pushes hostAppEventManageScreen with clubId, eventId, and event extra; HostEventLifecycleRow passes row taps through to the scaffold instead of reading GoRouter.",
+      "source": "HostEventsScaffold owns one lifecycle-aware event callback and pushes hostAppEventManageScreen with clubId, eventId, event extra, and live/setup/report section; the operational spotlight and HostEventLifecycleRow both pass taps through instead of reading GoRouter.",
           "tests": [
             "test/hosts/host_operations_screen_test.dart"
           ],
@@ -8972,8 +8967,8 @@
         }
       ],
       "composition": {
-        "currentLayout": "HostOperationsHomeScreen reads auth and host club streams through HostHomeRouteState, then _HostEventsScaffold owns selected-club UI state, HostHomeTab selection, and New/Repeat/Manage route callbacks. HostTodayDashboardCard and HostEventsClubCard are narrow provider adapters over watchEventsForClubProvider, while HostHomeTodayDashboardState/HostTodayDashboardSection and HostEventsWorkspaceState/HostEventsClubSection own Today and Events loading/error/empty/content rendering before provider-free cards and lifecycle rows render.",
-        "targetLayout": "HostOperationsHomeScreen should continue selecting route state from an adapter/controller and compose provider-free Host Today dashboard, Host Events list, selected-club controls, action rows, empty/access/loading/error states, and typed route callbacks.",
+    "currentLayout": "HostOperationsHomeScreen reads auth and organizer streams through HostHomeRouteState, then HostEventsScaffold owns selected-club UI state and New/Repeat/lifecycle-aware Manage/task route callbacks. HostEventsClubCard is the single provider adapter over watchEventsForClubProvider; it derives HostEventsOverviewState plus HostEventsWorkspaceState from the same event snapshot and delegates the operational spotlight, attention work, filters, empty/error/loading states, and lifecycle rows to provider-free sections.",
+    "targetLayout": "Keep Host Events as one lifecycle workspace: route-state selection in the adapter, one selected-organizer context, a truthful operational spotlight and attention queue, lifecycle filtering and rows, canonical empty/access/loading/error states, and typed route callbacks. Reserve separate Host shell destinations for distinct domains such as Customers rather than duplicating an event projection.",
         "sections": [
           {
             "id": "section.host.home_screen_adapter",
@@ -9001,26 +8996,25 @@
               "loaded_club",
               "event_loading"
             ],
-            "migration": "HostHomeRouteState owns auth-required, loading, error, empty, and loaded route selection from uid plus host-club async state. HostHomeScreenState owns selected-club, selected HostHomeTab, title, switcher visibility, and owner/co-host display state; HostHomeTodayDashboardState owns Today next-event/task derivation; HostEventsWorkspaceState owns Events lifecycle/filter/group/repeat derivation; _HostEventsScaffold owns navigation callbacks.",
+        "migration": "HostHomeRouteState owns auth-required, loading, error, empty, and loaded route selection from uid plus host-club async state. HostHomeScreenState owns selected-club, title, switcher visibility, and owner/co-host display state; HostEventsOverviewState owns operational-event/task derivation; HostEventsWorkspaceState owns lifecycle/filter/group/repeat derivation and featured-event de-duplication; HostEventsScaffold owns navigation callbacks.",
             "previewIds": [
               "hostHomeRouteStates"
             ]
           },
           {
             "id": "section.host.home_top_bar",
-            "name": "Host Today identity header",
+        "name": "Host Events identity header",
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "HostTodayHeader",
-              "HostTodayClubPill"
+          "HostOrganizerIdentityPill"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_today.dart",
-              "symbol": "HostTodayHeader"
+          "file": "lib/hosts/presentation/host_operations/host_events_overview.dart",
+          "symbol": "HostOrganizerIdentityPill"
             },
-            "currentOwner": "HostTodayDashboardSection",
-            "targetOwner": "provider-free Host Today identity header",
+        "currentOwner": "HostEventsClubSection",
+        "targetOwner": "provider-free Host Events identity header",
             "dependencies": [
               "catch.top_bar",
               "catch.person_avatar",
@@ -9033,10 +9027,10 @@
               "owner",
               "host_team"
             ],
-            "migration": "HostTodayHeader delegates the greeting and daypart hierarchy to CatchScreenHeaderTitle.block. HostTodayClubPill owns passive single-club identity and whole-surface multi-club switching; route-state selection remains in HostHomeRouteState.",
+        "migration": "HostEventsClubSection delegates the Events title and daypart eyebrow to CatchScreenHeaderTitle.block. HostOrganizerIdentityPill owns passive single-organizer identity and whole-surface multi-organizer switching; route-state selection remains in HostHomeRouteState.",
             "previewIds": [
               "hostHomeRouteStates",
-              "HostTodayClubPill/Identity switcher states"
+          "HostOrganizerIdentityPill/Identity switcher states"
             ]
           },
           {
@@ -9068,7 +9062,7 @@
               "cancelled_filtered",
               "long_titles"
             ],
-            "migration": "Event loading/error/empty/populated mapping, lifecycle classification, sorting, month grouping, Repeat availability, and row display data live in HostEventsWorkspaceState. Provider-free HostEventsClubSection receives typed retry/filter/New/Repeat/Manage callbacks, while HostEventsClubCard remains the narrow provider adapter over watchEventsForClubProvider.",
+        "migration": "HostEventsClubCard maps one event snapshot into HostEventsOverviewState and HostEventsWorkspaceState. The overview owns the live-or-next spotlight and truthful attention tasks; the workspace owns loading/error/empty/populated mapping, lifecycle classification, sorting, month grouping, Repeat availability, featured-event de-duplication, and row display data. Provider-free sections receive typed retry/filter/New/Repeat/Manage/task callbacks.",
             "previewIds": [
               "hostHomeRouteStates",
               "hostHomeEventSectionStates"
@@ -9185,7 +9179,7 @@
         {
           "id": "DS-HOST-HOME-004",
           "status": "blocked",
-          "nextAction": "Blocked/reference-only until canonical state-variant exports exist: Host Today and Host Events references and masks are exported and registered. The current Claude sources only provide the base Today and Events compositions; loading, empty, role/cohost, offline/error, text-scale, reduced-motion, light/dark, and additional event-list variants need source exports before reference work can continue."
+      "nextAction": "Blocked/reference-only until canonical state-variant exports exist for the consolidated Events composition. The former Today and Events sources remain valid ingredient references, but loading, empty, role/cohost, offline/error, text-scale, reduced-motion, light/dark, and additional event-list variants need approved consolidated exports before reference work can continue."
         },
         {
           "id": "DS-HOST-HOME-005",
@@ -14866,6 +14860,151 @@
         "host_manage_private_access_missing_code",
         "host_manage_invite_links_disabled",
         "host_manage_invite_links_long_label_source"
+      ]
+    },
+    {
+      "id": "screen.host.customers",
+      "shell": {
+        "owner": "host",
+        "nestedScaffoldAllowed": false,
+        "reason": "The Host adaptive tab shell owns directory navigation chrome; the nested detail route is presented above that shell."
+      },
+      "topBar": {
+        "role": "shell",
+        "expression": "CatchScreenHeaderTitle.block + CatchScreenTopBar",
+        "owner": "HostCustomersScreen and HostCustomerDetailScreen",
+        "reason": "The tab directory uses shell chrome and organizer identity while the nested detail route owns a compact back title."
+      },
+      "statePolicy": {
+        "requiredStates": ["data", "empty", "error", "loading", "mutation", "offline", "permission"],
+        "owner": "HostCustomersDirectoryController, HostCustomersController, and hostAudienceContactDetailProvider"
+      },
+      "name": "Host Customers",
+      "owner": "hosts",
+      "priority": "P1",
+      "status": "in_progress",
+      "routes": [
+        {"id": "hostCustomersScreen", "path": "/host/customers", "role": "primary"},
+        {"id": "hostCustomerDetailScreen", "path": "/host/customers/:contactId", "role": "host"}
+      ],
+      "source": {
+        "file": "lib/hosts/presentation/customers/host_customers_screen.dart",
+        "symbol": "HostCustomersScreen"
+      },
+      "stateController": {
+        "primary": "hostCustomersDirectoryControllerProvider + hostAudienceContactDetailProvider",
+        "files": [
+          {"file": "lib/hosts/presentation/customers/host_customers_controller.dart", "symbol": "HostCustomersDirectoryController"},
+          {"file": "lib/hosts/presentation/customers/host_customers_screen_state.dart", "symbol": "HostCustomersDirectoryState"},
+          {"file": "lib/hosts/data/host_crm_repository.dart", "symbol": "hostAudienceContactDetail"}
+        ],
+        "mutationOwners": [
+          {"file": "lib/hosts/presentation/customers/host_customers_controller.dart", "symbol": "HostCustomersController"}
+        ],
+        "notes": "The directory request owns organizer, normalized search, tag filter, server cursor and id de-duplication. Customer detail keeps identity confidence and revenue coverage explicit; manual contact creation never implies a Catch account, and conversation creation remains server-authorized."
+      },
+      "designRefs": [
+        {
+          "id": "repo.host-customers-feature-contract",
+          "kind": "repo",
+          "status": "available",
+          "path": "design/features/host_customers.feature.json",
+          "notes": "Authoritative Host Customers state, action, identity, revenue, and evidence contract."
+        },
+        {
+          "id": "generated.host-customers-feature-contract",
+          "kind": "generated",
+          "status": "available",
+          "path": "design/features/generated/host_customers.feature_contract.json",
+          "notes": "Generated orchestration projection; do not edit directly."
+        }
+      ],
+      "captures": [],
+      "states": [
+        {"id": "customers_loading", "kind": "loading", "status": "implemented", "source": "HostCustomersDirectoryController build", "nextAction": "Add deterministic directory loading capture."},
+        {"id": "customers_error", "kind": "error", "status": "implemented", "source": "CatchErrorState in HostCustomersDirectory", "nextAction": "Add retry interaction test."},
+        {"id": "customers_empty", "kind": "empty", "status": "implemented", "source": "HostCustomersDirectory empty branch", "nextAction": "Capture the first-customer path."},
+        {"id": "customers_populated", "kind": "populated", "status": "implemented", "source": "HostCustomersDirectory + HostCustomerDirectoryRow", "previewIds": ["hostCustomersStates"], "tests": ["test/hosts/host_customers_screen_state_test.dart"], "nextAction": "Keep the populated Widgetbook fixture aligned with the directory contract."},
+        {"id": "customers_filtered_empty", "kind": "empty", "status": "implemented", "source": "HostCustomersDirectory filtered branch", "tests": ["test/hosts/host_customers_screen_state_test.dart"], "nextAction": "Add deterministic filtered-empty capture."},
+        {"id": "customers_paginating", "kind": "mutation", "status": "implemented", "source": "HostCustomersDirectoryController loadMore", "nextAction": "Add pagination controller test with duplicate contact ids."},
+        {"id": "manual_add_pending", "kind": "mutation", "status": "implemented", "source": "HostAddCustomerSheet submit lifecycle", "nextAction": "Add manual-add error and pending widget tests."},
+        {"id": "customer_detail_loading", "kind": "loading", "status": "implemented", "source": "hostAudienceContactDetailProvider", "nextAction": "Add deterministic detail loading capture."},
+        {"id": "customer_detail_error", "kind": "error", "status": "implemented", "source": "CatchErrorState in HostCustomerDetailScreen", "nextAction": "Add detail retry interaction test."},
+        {"id": "customer_detail_linked", "kind": "populated", "status": "implemented", "source": "HostCustomerIdentityCard", "previewIds": ["hostCustomersStates"], "tests": ["test/hosts/host_customers_screen_state_test.dart", "test/hosts/host_crm_repository_test.dart"], "nextAction": "Capture linked identity and conversation availability."},
+        {"id": "customer_detail_unlinked", "kind": "permission", "status": "implemented", "source": "HostCustomerIdentityCard + HostCustomerConversationAvailability", "tests": ["test/hosts/host_customers_screen_state_test.dart"], "nextAction": "Capture manual organizer-only identity messaging boundary."},
+        {"id": "customer_detail_ambiguous", "kind": "permission", "status": "implemented", "source": "HostCustomerConversationAvailability", "tests": ["test/hosts/host_customers_screen_state_test.dart"], "nextAction": "Capture ambiguous identity messaging boundary."},
+        {"id": "customer_revenue_exact", "kind": "populated", "status": "implemented", "source": "HostCustomerRevenueCard exact coverage", "previewIds": ["hostCustomersStates"], "tests": ["test/hosts/host_crm_repository_test.dart"], "nextAction": "Add multi-currency revenue formatting test."},
+        {"id": "customer_revenue_partial", "kind": "populated", "status": "implemented", "source": "HostCustomerRevenueCard partial coverage", "nextAction": "Capture bounded-history warning."},
+        {"id": "customer_revenue_unavailable", "kind": "permission", "status": "implemented", "source": "HostCustomerRevenueCard unavailable coverage", "nextAction": "Capture unlinked revenue boundary."},
+        {"id": "conversation_available", "kind": "populated", "status": "tested", "source": "HostCustomerConversationAvailability.available", "previewIds": ["hostCustomersStates"], "tests": ["test/hosts/host_customers_screen_state_test.dart"], "nextAction": "Add callable authorization integration test."},
+        {"id": "conversation_unavailable", "kind": "permission", "status": "tested", "source": "HostCustomerConversationAvailability", "tests": ["test/hosts/host_customers_screen_state_test.dart"], "nextAction": "Add rendered disabled-state coverage."},
+        {"id": "offline", "kind": "offline", "status": "implemented", "source": "CatchErrorState AppException mapping", "nextAction": "Add deterministic offline capture."},
+        {"id": "text_scale_2", "kind": "accessibility", "status": "planned", "source": "Host Customers screen contract", "nextAction": "Verify directory and detail at 2x text scale."},
+        {"id": "reduced_motion", "kind": "accessibility", "status": "planned", "source": "Host Customers screen contract", "nextAction": "Verify mutation and route transitions with reduced motion."},
+        {"id": "light_dark", "kind": "theme", "status": "planned", "source": "Catch token primitives", "nextAction": "Capture directory and detail in light and dark themes."}
+      ],
+      "composition": {
+        "currentLayout": "A dedicated Host tab presents organizer identity, CRM summary, search and lifecycle tags above a paginated person directory; a nested route presents customer identity, attendance, revenue and conversation eligibility.",
+        "targetLayout": "Keep the Customers branch lifecycle-oriented and provider-agnostic while progressively extracting campaign and contact administration spokes from Organizer Audience without duplicating ownership.",
+        "sections": [
+          {
+            "id": "section.host.customers.directory_header",
+            "name": "Organizer identity, summary, search, and tag filters",
+            "status": "implemented_local",
+            "layer": "screen-adapter",
+            "claudeComponents": [],
+            "flutter": {"file": "lib/hosts/presentation/customers/host_customers_screen.dart", "symbol": "HostCustomersScreen"},
+            "currentOwner": "hosts.presentation.customers",
+            "targetOwner": "hosts.presentation.customers",
+            "dependencies": ["catch.button", "catch.chip", "catch.search_field", "catch.surface", "catch.top_bar"],
+            "states": ["customers_loading", "customers_empty", "customers_populated", "customers_filtered_empty"],
+            "migration": "Reuses HostOrganizerIdentityPill, CatchStatColumn, CatchSearchField, CatchChip and CatchButton instead of introducing Customers-only primitive families."
+          },
+          {
+            "id": "section.host.customers.directory",
+            "name": "Paginated customer directory",
+            "status": "implemented_local",
+            "layer": "section",
+            "claudeComponents": [],
+            "flutter": {"file": "lib/hosts/presentation/customers/host_customers_screen.dart", "symbol": "HostCustomersDirectory"},
+            "currentOwner": "hosts.presentation.customers",
+            "targetOwner": "hosts.presentation.customers",
+            "dependencies": ["catch.empty_state", "catch.error_state", "catch.person_row", "catch.skeleton"],
+            "states": ["customers_loading", "customers_error", "customers_empty", "customers_populated", "customers_paginating"],
+            "migration": "Consumes only render-ready controller state and delegates cursor de-duplication to HostCustomersDirectoryController."
+          },
+          {
+            "id": "section.host.customers.detail_identity",
+            "name": "Customer identity and conversation eligibility",
+            "status": "implemented_local",
+            "layer": "section",
+            "claudeComponents": [],
+            "flutter": {"file": "lib/hosts/presentation/customers/host_customers_screen.dart", "symbol": "HostCustomerIdentityCard"},
+            "currentOwner": "hosts.presentation.customers",
+            "targetOwner": "hosts.presentation.customers",
+            "dependencies": ["catch.button", "catch.person_row", "catch.surface"],
+            "states": ["customer_detail_linked", "customer_detail_unlinked", "customer_detail_ambiguous", "conversation_available", "conversation_unavailable"],
+            "migration": "Identity confidence remains visible and the callable independently re-authorizes every conversation attempt."
+          },
+          {
+            "id": "section.host.customers.detail_history",
+            "name": "Attendance and authoritative revenue history",
+            "status": "implemented_local",
+            "layer": "section",
+            "claudeComponents": [],
+            "flutter": {"file": "lib/hosts/presentation/customers/host_customers_screen.dart", "symbol": "HostCustomerRevenueCard"},
+            "currentOwner": "hosts.presentation.customers",
+            "targetOwner": "hosts.presentation.customers",
+            "dependencies": ["catch.section", "catch.surface"],
+            "states": ["customer_revenue_exact", "customer_revenue_partial", "customer_revenue_unavailable"],
+            "migration": "Revenue is limited to completed, non-refunded Catch payments for the organizer's event set and never collapses exact, partial, and unavailable coverage."
+          }
+        ]
+      },
+      "openGaps": [
+        {"id": "HOST-CUSTOMERS-001", "status": "blocked", "nextAction": "Add High spender only after payment writes maintain an indexed, versioned organizer-contact trait projection; do not scan payment history in the directory."},
+        {"id": "HOST-CUSTOMERS-002", "status": "open", "nextAction": "Add Widgetbook and deterministic capture coverage for the directory, manual identity, revenue coverage, and conversation-gate states."},
+        {"id": "HOST-CUSTOMERS-003", "status": "in_progress", "nextAction": "Move campaign and provider administration from Organizer Audience into explicit Customers spokes only after equivalent route-level ownership exists."}
       ]
     },
     {

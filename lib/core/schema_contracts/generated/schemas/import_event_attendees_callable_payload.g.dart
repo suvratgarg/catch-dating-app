@@ -86,6 +86,13 @@ const schemaImportEventAttendeesCallablePayloadSchema = <String, Object?>{
             ],
             'maxLength': 180,
           },
+          'arrivalGroup': <String, Object?>{
+            'type': <Object?>[
+              'string',
+              'null',
+            ],
+            'maxLength': 180,
+          },
           'ticketType': <String, Object?>{
             'type': <Object?>[
               'string',

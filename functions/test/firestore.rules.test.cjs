@@ -495,6 +495,31 @@ function eventSuccessAssignment(overrides = {}) {
   };
 }
 
+function organizerEventSuccessLayout(overrides = {}) {
+  const updatedAt = Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z"));
+  return {
+    organizerId: "organizer-1",
+    layoutId: "layout-1",
+    label: "Main room",
+    units: [
+      {
+        id: "round-1",
+        label: "Table 1",
+        shape: "round",
+        capacity: 4,
+        gridX: 0,
+        gridY: 0,
+        gridWidth: 2,
+        gridHeight: 2,
+        order: 0,
+      },
+    ],
+    createdAt: updatedAt,
+    updatedAt,
+    ...overrides,
+  };
+}
+
 function eventSuccessPreference(overrides = {}) {
   return {
     eventId: "event-1",
@@ -817,6 +842,48 @@ describe("firestore.rules", () => {
         "organizerFollows",
         "organizer-1_runner-1",
       ), {status: "inactive"}));
+    });
+
+    it("limits reusable Event Success layouts to organizer managers", async () => {
+      await seed(["organizers", "organizer-1"], {
+        ownerUserId: "owner-1",
+        hostUserId: "owner-1",
+        hostUserIds: ["owner-1", "manager-1"],
+      });
+      await seed(
+        ["organizerEventSuccessLayouts", "organizer-1_layout-1"],
+        organizerEventSuccessLayout(),
+      );
+
+      const managerDb = authedDb("manager-1");
+      await assertSucceeds(getDoc(doc(
+        managerDb,
+        "organizerEventSuccessLayouts",
+        "organizer-1_layout-1",
+      )));
+      await assertSucceeds(getDocs(query(
+        collection(managerDb, "organizerEventSuccessLayouts"),
+        where("organizerId", "==", "organizer-1"),
+      )));
+      await assertFails(getDoc(doc(
+        authedDb("runner-1"),
+        "organizerEventSuccessLayouts",
+        "organizer-1_layout-1",
+      )));
+      await assertFails(getDocs(query(
+        collection(authedDb("runner-1"), "organizerEventSuccessLayouts"),
+        where("organizerId", "==", "organizer-1"),
+      )));
+      await assertFails(updateDoc(doc(
+        managerDb,
+        "organizerEventSuccessLayouts",
+        "organizer-1_layout-1",
+      ), {label: "Client edit"}));
+      await assertFails(setDoc(doc(
+        managerDb,
+        "organizerEventSuccessLayouts",
+        "organizer-1_layout-2",
+      ), organizerEventSuccessLayout({layoutId: "layout-2"})));
     });
 
     it("keeps organizer claims and schedule locks server-only", async () => {
@@ -2610,7 +2677,7 @@ describe("firestore.rules", () => {
   });
 
   describe("event success", () => {
-    it("allows only the event club host to create and update event success plans", async () => {
+    it("allows host setup writes but keeps live control callable-owned", async () => {
       await seed(["clubs", "club-1"], club());
       await seed(["events", "event-1"], event({
         startTime: Timestamp.fromDate(new Date("2099-05-02T01:30:00.000Z")),
@@ -2621,6 +2688,10 @@ describe("firestore.rules", () => {
 
       await assertSucceeds(setDoc(planRef, eventSuccessPlan()));
       await assertSucceeds(updateDoc(planRef, {
+        hostGoal: "Keep the event welcoming.",
+        updatedAt: serverTimestamp(),
+      }));
+      await assertFails(updateDoc(planRef, {
         activeStepIndex: 1,
         status: "live",
         compatibilityAffectsRanking: true,
@@ -2644,7 +2715,69 @@ describe("firestore.rules", () => {
       );
       await assertFails(
         updateDoc(planRef, {
-          hostGoal: "Rewrite the locked setup.",
+          liveControlRevision: 1,
+          updatedAt: serverTimestamp(),
+        }),
+      );
+      await assertSucceeds(
+        updateDoc(planRef, {
+          structureConfig: {
+            unitKind: "pairs",
+            unitSize: 2,
+            rotationIntervalMinutes: 15,
+            topology: "sequence",
+            resourceCapacity: {
+              concurrentUnits: 3,
+              resourceLabelId: "court",
+              seatsPerUnit: null,
+            },
+            revealCountdownSeconds: 10,
+          },
+          updatedAt: serverTimestamp(),
+        }),
+      );
+      await assertFails(
+        updateDoc(planRef, {
+          structureConfig: {
+            unitKind: "pairs",
+            unitSize: 2,
+            topology: "sequence",
+            resourceCapacity: {
+              concurrentUnits: 3,
+              resourceLabelId: "court",
+              seatsPerUnit: 2,
+            },
+            revealCountdownSeconds: 10,
+          },
+          updatedAt: serverTimestamp(),
+        }),
+      );
+      await assertFails(
+        updateDoc(planRef, {
+          structureConfig: {
+            unitKind: "pairs",
+            unitSize: 2,
+            rotationIntervalMinutes: 15,
+            topology: "sequence",
+            resourceCapacity: {
+              concurrentUnits: 0,
+              resourceLabelId: "court",
+              seatsPerUnit: null,
+            },
+            revealCountdownSeconds: 10,
+          },
+          updatedAt: serverTimestamp(),
+        }),
+      );
+      await assertFails(
+        updateDoc(planRef, {
+          structureConfig: {
+            unitKind: "pairs",
+            unitSize: 2,
+            rotationIntervalMinutes: 15,
+            topology: "neighbour",
+            revealCountdownSeconds: 10,
+          },
           updatedAt: serverTimestamp(),
         }),
       );
@@ -2716,7 +2849,7 @@ describe("firestore.rules", () => {
           updatedAt: serverTimestamp(),
         }),
       );
-      await assertSucceeds(
+      await assertFails(
         updateDoc(planRef, {
           activeStepIndex: 1,
           status: "live",
@@ -3392,6 +3525,138 @@ describe("firestore.rules", () => {
           eventSuccessAssignment({uid: "runner-2"}),
         ),
       );
+    });
+
+    it("keeps prepared rotation drafts host-only and server-owned", async () => {
+      await seed(["clubs", "club-1"], club());
+      await seed(["events", "event-1"], event());
+      await seed(
+        ["eventParticipations", "event-1_runner-1"],
+        eventParticipation({status: "signedUp"}),
+      );
+      await seed(
+        ["eventSuccessAssignmentDrafts", "event-1_guided_rotations_runner-1"],
+        {
+          eventId: "event-1",
+          clubId: "club-1",
+          organizerId: "club-1",
+          uid: "runner-1",
+          moduleId: "guided_rotations",
+          roundIndex: 0,
+          baseAssignmentRevision: 1,
+          assignment: eventSuccessAssignment({
+            moduleId: "guided_rotations",
+          }),
+          createdAt: Timestamp.fromDate(new Date("2026-05-02T01:00:00.000Z")),
+          updatedAt: Timestamp.fromDate(new Date("2026-05-02T01:00:00.000Z")),
+        },
+      );
+
+      const draftRef = (uid) => doc(
+        authedDb(uid),
+        "eventSuccessAssignmentDrafts",
+        "event-1_guided_rotations_runner-1",
+      );
+      await assertSucceeds(getDoc(draftRef("host-1")));
+      await assertFails(getDoc(draftRef("runner-1")));
+      await assertFails(setDoc(draftRef("host-1"), {
+        eventId: "event-1",
+      }));
+    });
+
+    it("keeps outcome facts Host-only and shares standings with participants", async () => {
+      await seed(["clubs", "club-1"], club());
+      await seed(["events", "event-1"], event());
+      await seed(
+        ["eventParticipations", "event-1_runner-1"],
+        eventParticipation({status: "signedUp"}),
+      );
+      await seed(
+        ["eventRuntimeParticipants", "event-1_runner-2"],
+        eventRuntimeParticipant({uid: "runner-2"}),
+      );
+      const timestamp = Timestamp.fromDate(
+        new Date("2026-05-02T03:00:00.000Z"),
+      );
+      const outcomes = {
+        eventId: "event-1",
+        clubId: "club-1",
+        unitOutcome: "score",
+        revision: 1,
+        rounds: [{
+          roundIndex: 0,
+          entries: [
+            {unitId: "team-a", unitLabel: "Team A", score: 12},
+          ],
+        }],
+        createdAt: timestamp,
+        updatedAt: timestamp,
+      };
+      const standings = {
+        eventId: "event-1",
+        clubId: "club-1",
+        unitOutcome: "score",
+        revision: 1,
+        latestRoundIndex: 0,
+        rounds: [{
+          roundIndex: 0,
+          entries: [{
+            unitId: "team-a",
+            unitLabel: "Team A",
+            position: 1,
+            value: 12,
+            roundsRecorded: 1,
+          }],
+        }],
+        entries: [{
+          unitId: "team-a",
+          unitLabel: "Team A",
+          position: 1,
+          value: 12,
+          roundsRecorded: 1,
+        }],
+        createdAt: timestamp,
+        updatedAt: timestamp,
+      };
+      await seed(["eventSuccessUnitOutcomes", "event-1"], outcomes);
+      await seed(["eventSuccessStandings", "event-1"], standings);
+
+      await assertSucceeds(getDoc(doc(
+        authedDb("host-1"),
+        "eventSuccessUnitOutcomes",
+        "event-1",
+      )));
+      await assertFails(getDoc(doc(
+        authedDb("runner-1"),
+        "eventSuccessUnitOutcomes",
+        "event-1",
+      )));
+      for (const uid of ["host-1", "runner-1", "runner-2"]) {
+        await assertSucceeds(getDoc(doc(
+          authedDb(uid),
+          "eventSuccessStandings",
+          "event-1",
+        )));
+      }
+      await assertFails(getDoc(doc(
+        authedDb("runner-3"),
+        "eventSuccessStandings",
+        "event-1",
+      )));
+      await assertFails(getDocs(collection(
+        authedDb("runner-1"),
+        "eventSuccessStandings",
+      )));
+      await assertFails(setDoc(doc(
+        authedDb("host-1"),
+        "eventSuccessStandings",
+        "event-1",
+      ), standings));
+      await assertFails(setDoc(doc(
+        authedDb("host-1"),
+        "eventSuccessUnitOutcomes",
+        "event-1",
+      ), outcomes));
     });
 
     it("exposes event scorecards only to the event host", async () => {

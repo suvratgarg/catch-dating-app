@@ -24,6 +24,8 @@ final class EventSuccessAssignment {
     this.rotationSlots = const [],
     this.groupRotationSlots = const [],
     this.sitOutSlots = const [],
+    this.layoutUnitId,
+    this.confirmedLayoutUnitId,
   });
 
   factory EventSuccessAssignment.fromJson(Map<String, dynamic> json) {
@@ -76,6 +78,8 @@ final class EventSuccessAssignment {
             ),
           )
           .toList(growable: false),
+      layoutUnitId: json['layoutUnitId'] as String?,
+      confirmedLayoutUnitId: json['confirmedLayoutUnitId'] as String?,
       source: json['source'] as String? ?? 'server',
       createdAt: dateTimeFromFirestoreValue(
         json['createdAt'],
@@ -106,6 +110,8 @@ final class EventSuccessAssignment {
   final List<EventSuccessRotationSlot> rotationSlots;
   final List<EventSuccessGroupRotationSlot> groupRotationSlots;
   final List<EventSuccessSitOutSlot> sitOutSlots;
+  final String? layoutUnitId;
+  final String? confirmedLayoutUnitId;
   final String source;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -139,10 +145,42 @@ final class EventSuccessAssignment {
         .map((slot) => slot.toJson())
         .toList(),
     'sitOutSlots': sitOutSlots.map((slot) => slot.toJson()).toList(),
+    'layoutUnitId': layoutUnitId,
+    'confirmedLayoutUnitId': confirmedLayoutUnitId,
     'source': source,
     'createdAt': firestoreTimestampFromDateTime(createdAt),
     'updatedAt': firestoreTimestampFromDateTime(updatedAt),
   };
+}
+
+final class EventSuccessAssignmentDraft {
+  const EventSuccessAssignmentDraft({
+    required this.id,
+    required this.eventId,
+    required this.roundIndex,
+    required this.baseAssignmentRevision,
+    required this.assignment,
+  });
+
+  factory EventSuccessAssignmentDraft.fromJson(Map<String, dynamic> json) {
+    final assignmentJson = Map<String, dynamic>.from(
+      json['assignment'] as Map? ?? const <String, dynamic>{},
+    );
+    assignmentJson['id'] = json['id'];
+    return EventSuccessAssignmentDraft(
+      id: json['id'] as String,
+      eventId: json['eventId'] as String,
+      roundIndex: json['roundIndex'] as int,
+      baseAssignmentRevision: json['baseAssignmentRevision'] as int,
+      assignment: EventSuccessAssignment.fromJson(assignmentJson),
+    );
+  }
+
+  final String id;
+  final String eventId;
+  final int roundIndex;
+  final int baseAssignmentRevision;
+  final EventSuccessAssignment assignment;
 }
 
 final class EventSuccessRotationFairness {

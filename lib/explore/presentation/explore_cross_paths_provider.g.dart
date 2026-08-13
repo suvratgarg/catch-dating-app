@@ -68,8 +68,8 @@ String _$crossPathsExploreSessionIdHash() =>
 /// Optional, failure-isolated enrichment for the default Explore list.
 ///
 /// The primary event feed never waits on this provider. Signed-out viewers,
-/// active search, disabled rollout configuration, and an unavailable event
-/// set all resolve to an empty list without invoking the callable.
+/// active search, and an unavailable event set all resolve to an empty list
+/// without invoking the callable.
 
 @ProviderFor(exploreCrossPathsSuggestions)
 final exploreCrossPathsSuggestionsProvider =
@@ -78,8 +78,8 @@ final exploreCrossPathsSuggestionsProvider =
 /// Optional, failure-isolated enrichment for the default Explore list.
 ///
 /// The primary event feed never waits on this provider. Signed-out viewers,
-/// active search, disabled rollout configuration, and an unavailable event
-/// set all resolve to an empty list without invoking the callable.
+/// active search, and an unavailable event set all resolve to an empty list
+/// without invoking the callable.
 
 final class ExploreCrossPathsSuggestionsProvider
     extends
@@ -94,8 +94,8 @@ final class ExploreCrossPathsSuggestionsProvider
   /// Optional, failure-isolated enrichment for the default Explore list.
   ///
   /// The primary event feed never waits on this provider. Signed-out viewers,
-  /// active search, disabled rollout configuration, and an unavailable event
-  /// set all resolve to an empty list without invoking the callable.
+  /// active search, and an unavailable event set all resolve to an empty list
+  /// without invoking the callable.
   ExploreCrossPathsSuggestionsProvider._()
     : super(
         from: null,
@@ -123,4 +123,4 @@ final class ExploreCrossPathsSuggestionsProvider
 }
 
 String _$exploreCrossPathsSuggestionsHash() =>
-    r'065e9b0d3e013414b8a5b114f741f24d1dec74c9';
+    r'f7b5808bc385decb724e2dc1bb21fe04ca23c219';

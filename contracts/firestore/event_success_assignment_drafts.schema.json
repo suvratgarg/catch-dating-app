@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_success_assignment_drafts.schema.json",
+  "title": "EventSuccessAssignmentDraftDocument",
+  "description": "Server-owned host-only precomputed assignment stored at eventSuccessAssignmentDrafts/{eventId_moduleId_uid} until its round is published.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSuccessAssignmentDrafts",
+  "x-firestore-path": "eventSuccessAssignmentDrafts/{assignmentDraftId}",
+  "x-document-id-field": "id",
+  "x-owner": "event-success assignment preparation",
+  "required": [
+    "eventId",
+    "clubId",
+    "organizerId",
+    "uid",
+    "moduleId",
+    "roundIndex",
+    "baseAssignmentRevision",
+    "assignment",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "clubId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "uid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "moduleId": {
+      "type": "string",
+      "enum": ["guided_rotations"],
+      "x-catch-ownership": "callable-owned"
+    },
+    "roundIndex": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "x-catch-ownership": "callable-owned"
+    },
+    "baseAssignmentRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "x-catch-ownership": "callable-owned"
+    },
+    "assignment": {
+      "$ref": "event_success_assignments.schema.json",
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+}

@@ -238,13 +238,29 @@ export interface EventSuccessFormatPrimitives {
     | "socialCohortBalance"
     | "mutualInterestOnly"
     | "questionnaireClueOnly";
+  matchingObjective?:
+    | "coverage"
+    | "romantic"
+    | "affinity"
+    | "novelty"
+    | "balance"
+    | "spread";
+  unitOutcome?: "none" | "completion" | "score" | "rank";
 }
 
-export interface EventSuccessStructureConfig {
+export type EventSuccessStructureConfig = {
+  [k: string]: unknown;
+} & {
   unitKind: "wholeGroup" | "pods" | "pairs" | "teams" | "tables";
   unitSize: number;
   unitCount?: number | null;
   rotationIntervalMinutes?: number | null;
+  topology?: "set" | "sequence" | "adjacency";
+  resourceCapacity?: {
+    concurrentUnits: number | null;
+    resourceLabelId: "court" | "table" | "lane" | "board";
+    seatsPerUnit: number | null;
+  } | null;
   revealCountdownSeconds: number;
   rotationRepeatStrategy?: "avoid" | "allowWhenExhausted";
   maxPairMeetings?: number;
@@ -256,7 +272,7 @@ export interface EventSuccessStructureConfig {
    * @maxItems 8
    */
   clusterActivityAttributes?: ("paceBand" | "skillBand" | "roleBand")[];
-}
+};
 
 export interface EventSuccessQuestionnaireConfig {
   templateId: string;
@@ -280,6 +296,7 @@ export interface EventSuccessQuestionnaireConfig {
 
 export interface EventSuccessDefaults {
   enabled?: boolean;
+  layoutId?: string | null;
   playbookId?: string;
   /**
    * @maxItems 24
@@ -1212,6 +1229,7 @@ export interface OrganizerDocument {
     };
     eventSuccess?: {
       enabled?: boolean;
+      layoutId?: string | null;
       playbookId?: string;
       /**
        * @maxItems 24
@@ -1219,21 +1237,7 @@ export interface OrganizerDocument {
       selectedModuleIds?: string[];
       moduleSelectionConfigured?: boolean;
       structureConfig?: {
-        unitKind: "wholeGroup" | "pods" | "pairs" | "teams" | "tables";
-        unitSize: number;
-        unitCount?: number | null;
-        rotationIntervalMinutes?: number | null;
-        revealCountdownSeconds: number;
-        rotationRepeatStrategy?: "avoid" | "allowWhenExhausted";
-        maxPairMeetings?: number;
-        /**
-         * @maxItems 8
-         */
-        balanceActivityAttributes?: ("paceBand" | "skillBand" | "roleBand")[];
-        /**
-         * @maxItems 8
-         */
-        clusterActivityAttributes?: ("paceBand" | "skillBand" | "roleBand")[];
+        [k: string]: unknown;
       };
       hostGoal?: string;
       wingmanRequestsEnabled?: boolean;
@@ -1263,6 +1267,7 @@ export interface OrganizerDocument {
     eventSuccessByActivityKind?: {
       [k: string]: {
         enabled?: boolean;
+        layoutId?: string | null;
         playbookId?: string;
         /**
          * @maxItems 24
@@ -1270,21 +1275,7 @@ export interface OrganizerDocument {
         selectedModuleIds?: string[];
         moduleSelectionConfigured?: boolean;
         structureConfig?: {
-          unitKind: "wholeGroup" | "pods" | "pairs" | "teams" | "tables";
-          unitSize: number;
-          unitCount?: number | null;
-          rotationIntervalMinutes?: number | null;
-          revealCountdownSeconds: number;
-          rotationRepeatStrategy?: "avoid" | "allowWhenExhausted";
-          maxPairMeetings?: number;
-          /**
-           * @maxItems 8
-           */
-          balanceActivityAttributes?: ("paceBand" | "skillBand" | "roleBand")[];
-          /**
-           * @maxItems 8
-           */
-          clusterActivityAttributes?: ("paceBand" | "skillBand" | "roleBand")[];
+          [k: string]: unknown;
         };
         hostGoal?: string;
         wingmanRequestsEnabled?: boolean;
@@ -2788,6 +2779,10 @@ export interface EventAttendeeDocument {
   phoneE164: string | null;
   email: string | null;
   externalReference: string | null;
+  /**
+   * Provider or import-supplied booking/arrival group shared by guests who are expected to arrive together.
+   */
+  arrivalGroup: string | null;
   ticketType: string | null;
   importId: string | null;
   sourceRowId: string | null;
@@ -3230,6 +3225,25 @@ export interface EventSuccessPlanDocument {
   eventId: string;
   clubId: string;
   organizerId?: string;
+  layoutId?: string | null;
+  /**
+   * @maxItems 300
+   */
+  affinityConstraints?: {
+    aUid: string;
+    bUid: string;
+    value: "mustPair" | "mustSplit" | "avoidRepeat" | "neutral";
+    scope: "thisRound" | "pinned";
+  }[];
+  /**
+   * @maxItems 300
+   */
+  spatialOverrides?: {
+    uid: string;
+    targetPeerUid: string;
+    layoutUnitId: string;
+    scope: "thisRound" | "pinned";
+  }[];
   playbookId: string;
   /**
    * @maxItems 24
@@ -3237,21 +3251,7 @@ export interface EventSuccessPlanDocument {
   selectedModuleIds: string[];
   targetAttendeeCount: number;
   structureConfig?: {
-    unitKind: "wholeGroup" | "pods" | "pairs" | "teams" | "tables";
-    unitSize: number;
-    unitCount?: number | null;
-    rotationIntervalMinutes?: number | null;
-    revealCountdownSeconds: number;
-    rotationRepeatStrategy?: "avoid" | "allowWhenExhausted";
-    maxPairMeetings?: number;
-    /**
-     * @maxItems 8
-     */
-    balanceActivityAttributes?: ("paceBand" | "skillBand" | "roleBand")[];
-    /**
-     * @maxItems 8
-     */
-    clusterActivityAttributes?: ("paceBand" | "skillBand" | "roleBand")[];
+    [k: string]: unknown;
   };
   hostGoal: string;
   wingmanRequestsEnabled: boolean;
@@ -3277,6 +3277,10 @@ export interface EventSuccessPlanDocument {
     }[];
   };
   activeStepIndex: number;
+  liveControlRevision?: number;
+  assignmentDraftRevision?: number;
+  publishedRotationRoundIndex?: number;
+  publishedRevealRoundIndex?: number;
   status: "setup" | "live" | "complete";
   revealStatus?: "idle" | "countingDown" | "revealed";
   activeRevealRoundIndex?: number;
@@ -3286,6 +3290,46 @@ export interface EventSuccessPlanDocument {
   updatedAt: FirebaseFirestore.Timestamp;
   frozenAt?: FirebaseFirestore.Timestamp | null;
   completedAt?: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Reusable organizer-owned parametric room layout stored at organizerEventSuccessLayouts/{organizerId_layoutId}. Derived coordinates and proximity edges are never persisted.
+ */
+export interface OrganizerEventSuccessLayoutDocument {
+  organizerId: string;
+  layoutId: string;
+  label: string;
+  /**
+   * @minItems 1
+   * @maxItems 200
+   */
+  units: {
+    id: string;
+    label: string;
+    shape: "round" | "rect" | "row" | "court" | "zone";
+    capacity: number;
+    gridX: number;
+    gridY: number;
+    order: number;
+  }[];
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Server-owned host-only precomputed assignment stored at eventSuccessAssignmentDrafts/{eventId_moduleId_uid} until its round is published.
+ */
+export interface EventSuccessAssignmentDraftDocument {
+  eventId: string;
+  clubId: string;
+  organizerId: string;
+  uid: string;
+  moduleId: "guided_rotations";
+  roundIndex: number;
+  baseAssignmentRevision: number;
+  assignment: EventSuccessAssignmentDocument;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
 }
 
 /**
@@ -3398,6 +3442,8 @@ export interface EventSuccessAssignmentDocument {
   unitKind?: "wholeGroup" | "pods" | "pairs" | "teams" | "tables";
   unitIndex?: number;
   unitLabel?: string;
+  layoutUnitId?: string;
+  confirmedLayoutUnitId?: string | null;
   whySummary?: string;
   /**
    * @maxItems 12
@@ -3450,6 +3496,7 @@ export interface EventSuccessAssignmentDocument {
     peerUid: string;
     unitKind?: "pairs";
     unitIndex?: number;
+    resourceUnitId?: string;
     peerCount?: number;
     compatibility:
       | "mutual_interest"
@@ -3516,6 +3563,89 @@ export interface EventSuccessAssignmentDocument {
     )[];
   }[];
   source: "server_v1" | "host_override_v1" | "server";
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Server-owned outcome rounds stored at eventSuccessUnitOutcomes/{eventId}. Hosts may read the source; attendees consume the standings projection.
+ */
+export interface EventSuccessUnitOutcomesDocument {
+  eventId: string;
+  clubId: string;
+  organizerId?: string;
+  unitOutcome: "completion" | "score" | "rank";
+  revision: number;
+  /**
+   * @maxItems 101
+   */
+  rounds: {
+    roundIndex: number;
+    /**
+     * @minItems 1
+     * @maxItems 200
+     */
+    entries: (
+      | {
+          unitId: string;
+          unitLabel: string;
+          completed: boolean;
+        }
+      | {
+          unitId: string;
+          unitLabel: string;
+          score: number;
+        }
+      | {
+          unitId: string;
+          unitLabel: string;
+          rank: number;
+        }
+    )[];
+  }[];
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Server-owned attendee-readable standings snapshots stored at eventSuccessStandings/{eventId}.
+ */
+export interface EventSuccessStandingsDocument {
+  eventId: string;
+  clubId: string;
+  organizerId?: string;
+  unitOutcome: "score" | "rank";
+  revision: number;
+  latestRoundIndex: number;
+  /**
+   * @minItems 1
+   * @maxItems 101
+   */
+  rounds: {
+    roundIndex: number;
+    /**
+     * @minItems 1
+     * @maxItems 200
+     */
+    entries: {
+      unitId: string;
+      unitLabel: string;
+      position: number;
+      value: number;
+      roundsRecorded: number;
+    }[];
+  }[];
+  /**
+   * @minItems 1
+   * @maxItems 200
+   */
+  entries: {
+    unitId: string;
+    unitLabel: string;
+    position: number;
+    value: number;
+    roundsRecorded: number;
+  }[];
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
 }

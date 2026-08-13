@@ -628,8 +628,10 @@ class RotationsHostCard extends StatelessWidget {
     required this.participantProfiles,
     required this.preferences,
     required this.actionState,
+    required this.nextRoundIndex,
     this.onGenerate,
     this.onOverride,
+    this.onPublish,
   });
 
   final Event event;
@@ -638,9 +640,11 @@ class RotationsHostCard extends StatelessWidget {
   final List<PublicProfile> participantProfiles;
   final List<EventSuccessPreference> preferences;
   final EventSuccessAssignmentGenerationActionState actionState;
+  final int nextRoundIndex;
   final Future<void> Function()? onGenerate;
   final Future<void> Function(List<EventSuccessRotationOverrideRound> rounds)?
   onOverride;
+  final Future<void> Function(int roundIndex)? onPublish;
 
   @override
   Widget build(BuildContext context) {
@@ -816,9 +820,45 @@ class RotationsHostCard extends StatelessWidget {
                 ),
               ],
             ),
+          if (activeAssignments.isNotEmpty && roundCount > nextRoundIndex) ...[
+            gapH10,
+            CatchButton(
+              label: context.l10n
+                  .eventSuccessLiveControlPublishRotationRoundLabel(
+                    roundNumber: nextRoundIndex + 1,
+                  ),
+              icon: Icon(CatchIcons.sendRounded),
+              isLoading: actionState.isGenerating,
+              onPressed: actionState.isGenerating || onPublish == null
+                  ? null
+                  : () => unawaited(
+                      _confirmAndPublishRotationRound(context, nextRoundIndex),
+                    ),
+              fullWidth: true,
+            ),
+          ],
         ],
       ),
     );
+  }
+
+  Future<void> _confirmAndPublishRotationRound(
+    BuildContext context,
+    int roundIndex,
+  ) async {
+    final confirmed = await showCatchConfirmDialog(
+      context: context,
+      title: context.l10n.eventSuccessLiveControlPublishRotationTitle,
+      message: context.l10n.eventSuccessLiveControlPublishRotationMessage(
+        roundNumber: roundIndex + 1,
+      ),
+      confirmLabel:
+          context.l10n.eventSuccessLiveControlPublishRotationConfirmLabel,
+      danger: true,
+    );
+    if (confirmed == true && context.mounted) {
+      await onPublish?.call(roundIndex);
+    }
   }
 }
 

@@ -425,16 +425,9 @@ void main() {
         home: Scaffold(
           body: const SizedBox.expand(),
           bottomNavigationBar: AppShellNavigationBar(
-            currentIndex: 2,
+            currentIndex: 1,
             unreadCount: 4,
             items: [
-              AppShellNavigationItem(
-                destination: AppShellNavigationDestination.hostToday,
-                materialIcon: CatchIcons.tabHome,
-                materialSelectedIcon: CatchIcons.tabHomeFilled,
-                cupertinoIcon: CatchIcons.tabHome,
-                cupertinoSelectedIcon: CatchIcons.tabHomeFilled,
-              ),
               AppShellNavigationItem(
                 destination: AppShellNavigationDestination.hostEvents,
                 materialIcon: CatchIcons.tabEvents,
@@ -474,7 +467,7 @@ void main() {
     expect(find.text('4'), findsOneWidget);
 
     await tester.tap(find.bySemanticsLabel('Organizer'));
-    expect(tappedIndex, 3);
+    expect(tappedIndex, 2);
   });
 
   testWidgets('navigation bar selection fires haptic feedback', (tester) async {

@@ -430,6 +430,20 @@ const schemaSpecs = [
       "functions/src/shared/generated/eventSuccessPlanDocument.ts",
   },
   {
+    name: "OrganizerEventSuccessLayoutDocument",
+    source: "firestore/organizer_event_success_layouts.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerEventSuccessLayoutDocument.ts",
+  },
+  {
+    name: "EventSuccessAssignmentDraftDocument",
+    source: "firestore/event_success_assignment_drafts.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "eventSuccessAssignmentDraftDocument.ts",
+  },
+  {
     name: "EventSuccessFeedbackDocument",
     source: "firestore/event_success_feedback.schema.json",
     typeOutput:
@@ -464,6 +478,18 @@ const schemaSpecs = [
     source: "firestore/event_success_assignments.schema.json",
     typeOutput:
       "functions/src/shared/generated/eventSuccessAssignmentDocument.ts",
+  },
+  {
+    name: "EventSuccessUnitOutcomesDocument",
+    source: "firestore/event_success_unit_outcomes.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventSuccessUnitOutcomesDocument.ts",
+  },
+  {
+    name: "EventSuccessStandingsDocument",
+    source: "firestore/event_success_standings.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventSuccessStandingsDocument.ts",
   },
   {
     name: "EventSuccessScorecardDocument",
@@ -1016,6 +1042,14 @@ const schemaSpecs = [
       "startOrganizerConversationCallablePayload.ts",
   },
   {
+    name: "StartOrganizerContactConversationCallablePayload",
+    source:
+      "callables/start_organizer_contact_conversation_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "startOrganizerContactConversationCallablePayload.ts",
+  },
+  {
     name: "ArchiveClubCallablePayload",
     source: "callables/archive_club_payload.schema.json",
     typeOutput:
@@ -1364,6 +1398,53 @@ const schemaSpecs = [
       "functions/src/shared/generated/getEventRuntimeBootstrapCallablePayload.ts",
   },
   {
+    name: "UpsertEventSuccessLayoutCallablePayload",
+    source: "callables/upsert_event_success_layout_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "upsertEventSuccessLayoutCallablePayload.ts",
+  },
+  {
+    name: "UpsertEventSuccessLayoutCallableResponse",
+    source:
+      "callable_responses/upsert_event_success_layout_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "upsertEventSuccessLayoutCallableResponse.ts",
+  },
+  {
+    name: "GetEventSuccessSpatialLayoutCallablePayload",
+    source:
+      "callables/get_event_success_spatial_layout_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "getEventSuccessSpatialLayoutCallablePayload.ts",
+  },
+  {
+    name: "GetEventSuccessSpatialLayoutCallableResponse",
+    source:
+      "callable_responses/" +
+      "get_event_success_spatial_layout_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "getEventSuccessSpatialLayoutCallableResponse.ts",
+  },
+  {
+    name: "EventSuccessSpatialActionCallablePayload",
+    source: "callables/event_success_spatial_action_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "eventSuccessSpatialActionCallablePayload.ts",
+  },
+  {
+    name: "EventSuccessSpatialActionCallableResponse",
+    source:
+      "callable_responses/event_success_spatial_action_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "eventSuccessSpatialActionCallableResponse.ts",
+  },
+  {
     name: "GetEventRuntimeBootstrapCallableResponse",
     source:
       "callable_responses/get_event_runtime_bootstrap_response.schema.json",
@@ -1468,6 +1549,19 @@ const schemaSpecs = [
       "functions/src/shared/generated/listOrganizerContactsCallablePayload.ts",
   },
   {
+    name: "CreateOrganizerContactCallablePayload",
+    source: "callables/create_organizer_contact_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createOrganizerContactCallablePayload.ts",
+  },
+  {
+    name: "CreateOrganizerContactCallableResponse",
+    source:
+      "callable_responses/create_organizer_contact_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createOrganizerContactCallableResponse.ts",
+  },
+  {
     name: "ListOrganizerContactsCallableResponse",
     source:
       "callable_responses/list_organizer_contacts_response.schema.json",
@@ -1544,6 +1638,46 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "overrideEventSuccessRotationsCallablePayload.ts",
+  },
+  {
+    name: "PrepareEventSuccessRotationDraftCallablePayload",
+    source:
+      "callables/prepare_event_success_rotation_draft_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "prepareEventSuccessRotationDraftCallablePayload.ts",
+  },
+  {
+    name: "PublishEventSuccessRotationRoundCallablePayload",
+    source:
+      "callables/publish_event_success_rotation_round_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "publishEventSuccessRotationRoundCallablePayload.ts",
+  },
+  {
+    name: "EventSuccessLiveActionCallablePayload",
+    source: "callables/event_success_live_action_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "eventSuccessLiveActionCallablePayload.ts",
+  },
+  {
+    name: "RecordEventSuccessUnitOutcomesCallablePayload",
+    source:
+      "callables/record_event_success_unit_outcomes_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "recordEventSuccessUnitOutcomesCallablePayload.ts",
+  },
+  {
+    name: "RecordEventSuccessUnitOutcomesCallableResponse",
+    source:
+      "callable_responses/" +
+      "record_event_success_unit_outcomes_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "recordEventSuccessUnitOutcomesCallableResponse.ts",
   },
   {
     name: "OverrideEventSuccessGroupsCallablePayload",
@@ -3374,10 +3508,18 @@ function collectFieldConstraints({schema, rootName, segments, constraints}) {
 function constraintObjectSchema(schema) {
   if (!schema || typeof schema !== "object") return null;
   if (schema.type === "object" || schema.properties) return schema;
-  for (const branch of schema.anyOf ?? schema.oneOf ?? []) {
-    if (branch?.type === "object" || branch?.properties) return branch;
-  }
-  return null;
+  const objectBranches = [...(schema.anyOf ?? []), ...(schema.oneOf ?? [])]
+    .filter((branch) => branch?.type === "object" || branch?.properties);
+  if (objectBranches.length === 0) return null;
+  return {
+    properties: Object.assign(
+      {},
+      ...objectBranches.map((branch) => branch.properties ?? {}),
+    ),
+    required: [...new Set(
+      objectBranches.flatMap((branch) => branch.required ?? []),
+    )],
+  };
 }
 
 function projectFieldConstraint(schema, parentRequired) {

@@ -1,15 +1,19 @@
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {EventDocument, BlockDocument} from
+import {
+  EventDocument,
+  BlockDocument,
+  OrganizerEventSuccessLayoutDocument,
+} from
   "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
-import {EventIdCallablePayload} from
-  "../shared/generated/eventIdCallablePayload";
+import {PrepareEventSuccessRotationDraftCallablePayload} from
+  "../shared/generated/prepareEventSuccessRotationDraftCallablePayload";
 import {OverrideEventSuccessRotationsCallablePayload} from
   "../shared/generated/overrideEventSuccessRotationsCallablePayload";
 import {
-  validateEventIdCallablePayload,
+  validatePrepareEventSuccessRotationDraftCallablePayload,
   validateOverrideEventSuccessRotationsCallablePayload,
 } from
   "../shared/generated/schemaValidators";
@@ -29,21 +33,32 @@ import {
   OptimizedPair,
   runAssignmentEngine,
 } from "./assignmentOptimizer";
-import {AssignmentConstraintConfig} from "./assignmentConstraints";
 import {
+  AssignmentConstraintConfig,
+  normalizeAssignmentConstraints,
+} from "./assignmentConstraints";
+import {
+  AssignmentTopology,
+  EventSuccessResourceLabelId,
   EventSuccessUnitKind,
   assertPairRotationTopology,
+  resolveAssignmentTopology,
   resolveRotationIntervalMinutes,
+  resolveSequenceConcurrentUnits,
   rotationRoundCountForDuration,
 } from "./assignmentTopology";
 import {
   CompatibilitySignal,
   QuestionnaireScoringMode,
+  scoreDatingCompatibilityPair,
+  scoreQuestionnaireObjectivePair,
 } from "./compatibilityPolicy";
 import {
   EventSuccessAssignmentAlgorithm,
   EventSuccessCompatibilityPolicy,
+  EventSuccessMatchingObjective,
   eventSuccessPrimitivesFor,
+  eventSuccessVariableResolutionFor,
 } from "./formatPrimitives";
 import {
   activityAttributesForProfile,
@@ -52,6 +67,14 @@ import {
   rotationPolicyForStructureConfig,
 } from "./assignmentPrimitiveControls";
 import {loadEventSuccessRoster} from "./eventSuccessRoster";
+import {
+  applyEventSuccessSpatialLayout,
+  assignmentConstraintsForSpatialPlan,
+  deriveEventSuccessUnitProximity,
+  loadSelectedEventSuccessLayout,
+  persistentSpatialPlanFields,
+} from "./spatialLayout";
+import {buildEventSuccessSequenceSchedule} from "./sequenceScheduler";
 
 const GUIDED_ROTATIONS_MODULE_ID = "guided_rotations";
 const COMPATIBILITY_QUESTIONNAIRE_MODULE_ID = "compatibility_questionnaire";
@@ -74,11 +97,29 @@ interface EventSuccessPlanDocument {
   clubId?: string;
   selectedModuleIds?: unknown;
   compatibilityAffectsRanking?: unknown;
+  liveControlRevision?: unknown;
+  assignmentDraftRevision?: unknown;
+  publishedRotationRoundIndex?: unknown;
+  layoutId?: string | null;
+  affinityConstraints?: Array<{
+    aUid: string;
+    bUid: string;
+    value: "mustPair" | "mustSplit" | "avoidRepeat" | "neutral";
+    scope: "thisRound" | "pinned";
+  }>;
+  spatialOverrides?: Array<{
+    uid: string;
+    targetPeerUid: string;
+    layoutUnitId: string;
+    scope: "thisRound" | "pinned";
+  }>;
   structureConfig?: {
     unitKind?: unknown;
     unitSize?: unknown;
     unitCount?: unknown;
     rotationIntervalMinutes?: unknown;
+    topology?: unknown;
+    resourceCapacity?: unknown;
   } & AssignmentPrimitiveStructureConfig;
 }
 
@@ -106,6 +147,10 @@ interface RotationPair {
   b: RotationParticipant;
   score: number;
   compatibility: CompatibilitySignal | "host_override";
+  unitIndex?: number;
+  resourceUnitId?: string;
+  movementCost?: number;
+  meetingIndex?: number;
 }
 
 interface RotationRound {
@@ -141,6 +186,7 @@ interface GeneratedRotationSlot {
   unitKind?: EventSuccessUnitKind;
   unitIndex?: number;
   peerCount?: number;
+  resourceUnitId?: string;
   compatibility: RotationPair["compatibility"];
   whySummary?: string;
   whyCodes?: AssignmentWhyCode[];
@@ -167,6 +213,8 @@ interface GeneratedAssignment {
   peerUids: string[];
   unitKind?: EventSuccessUnitKind;
   unitLabel?: string;
+  layoutUnitId?: string;
+  confirmedLayoutUnitId?: string | null;
   whySummary?: string;
   whyCodes?: AssignmentWhyCode[];
   rotationFairness?: RotationFairnessSummary;
@@ -194,30 +242,83 @@ export async function generateEventSuccessRotationsHandler(
   deps: EventSuccessRotationsDeps = defaultDeps
 ): Promise<{assignmentCount: number; roundCount: number}> {
   const uid = requireAuth(request);
-  const {eventId} = validateCallableWithAjv<EventIdCallablePayload>(
-    request,
-    validateEventIdCallablePayload,
-    normalizeEventIdPayload
-  );
+  const payload =
+    validateCallableWithAjv<PrepareEventSuccessRotationDraftCallablePayload>(
+      request,
+      validatePrepareEventSuccessRotationDraftCallablePayload,
+      normalizeEventIdPayload
+    );
 
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, uid, "generateEventSuccessRotations");
 
+  return prepareEventSuccessRotationDraft({
+    eventId: payload.eventId,
+    expectedRevision: payload.expectedRevision,
+    managerUid: uid,
+  }, deps);
+}
+
+/**
+ * Pre-computes the next unpublished round and stores it in the Host-only
+ * draft collection. This function is also used by the asynchronous plan
+ * trigger after a publish; beat transitions never import or invoke it.
+ * @param {object} input Preparation fence and optional manager authorization.
+ * @param {EventSuccessRotationsDeps} deps Injectable dependencies for tests.
+ * @return {Promise<object>} Prepared round summary.
+ */
+export async function prepareEventSuccessRotationDraft(
+  input: {
+    eventId: string;
+    expectedRevision: number;
+    managerUid?: string;
+  },
+  deps: EventSuccessRotationsDeps = defaultDeps
+): Promise<{assignmentCount: number; roundCount: number}> {
+  const db = deps.firestore();
+
   const {
     event,
+    plan,
     rotationIntervalMinutes,
     questionnaireMode,
     constraints,
     rotationPolicy,
   } =
-    await loadRotationEventContext(db, eventId, uid);
+    await loadRotationEventContext(db, input.eventId, input.managerUid);
+  const liveControlRevision = nonNegativeInteger(plan.liveControlRevision);
+  if (liveControlRevision !== input.expectedRevision) {
+    throw staleLiveControlError();
+  }
+  const primitives = eventSuccessPrimitivesFor(event.eventFormat);
   const {participants, blockedPairs} =
     await loadEligibleRotationParticipants(
       db,
-      eventId,
+      input.eventId,
       questionnaireMode !== "icebreaker"
     );
-  const primitives = eventSuccessPrimitivesFor(event.eventFormat);
+  const topology = {
+    ...resolveAssignmentTopology(plan, participants.length, {
+      defaultUnitKind: "pairs",
+      defaultUnitSize: 2,
+    }),
+    rotationIntervalMinutes,
+    rotationsEnabled: true,
+  };
+  const assignmentResolution = eventSuccessVariableResolutionFor({
+    assignmentAlgorithm: primitives.assignmentAlgorithm,
+    compatibilityPolicy: primitives.compatibilityPolicy,
+    matchingObjective: primitives.matchingObjective,
+    topology: topology.topology ?? "set",
+  });
+  if (assignmentResolution.status === "unsupported") {
+    throw new HttpsError("failed-precondition", assignmentResolution.reason);
+  }
+  const layout = await loadSelectedEventSuccessLayout(
+    db,
+    event.organizerId ?? event.clubId,
+    plan
+  );
   const rounds = buildRotationRounds({
     participants,
     blockedPairs,
@@ -227,22 +328,47 @@ export async function generateEventSuccessRotationsHandler(
     questionnaireMode,
     assignmentAlgorithm: primitives.assignmentAlgorithm,
     compatibilityPolicy: primitives.compatibilityPolicy,
+    matchingObjective: primitives.matchingObjective,
     constraints,
     rotationPolicy,
+    topology,
+    layout,
   });
-  const assignments = buildAssignments({
-    eventId,
+  const publishedRoundIndex = integerOr(
+    plan.publishedRotationRoundIndex,
+    -1
+  );
+  const targetRoundIndex = publishedRoundIndex + 1;
+  const hasTargetRound = rounds.some(
+    (round) => round.roundIndex === targetRoundIndex
+  );
+  const assignments = hasTargetRound ? buildAssignments({
+    eventId: input.eventId,
     clubId: event.clubId,
-
     organizerId: event.organizerId ?? event.clubId,
     participants,
     rounds,
     eventStartMillis: event.startTime.toMillis(),
     rotationIntervalMinutes,
+    resourceLabelId: topology.resourceCapacity?.resourceLabelId,
     source: "server_v1",
     now: deps.serverTimestamp(),
+  }) : new Map<string, GeneratedAssignment>();
+  applyEventSuccessSpatialLayout(
+    assignments,
+    layout,
+    plan,
+    targetRoundIndex
+  );
+  await writeAssignmentDrafts({
+    db,
+    eventId: input.eventId,
+    expectedRevision: input.expectedRevision,
+    expectedPublishedRoundIndex: publishedRoundIndex,
+    targetRoundIndex,
+    assignments,
+    now: deps.serverTimestamp(),
   });
-  await writeAssignments(db, eventId, assignments);
 
   return {
     assignmentCount: assignments.size,
@@ -275,10 +401,37 @@ export async function overrideEventSuccessRotationsHandler(
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, uid, "overrideEventSuccessRotations");
 
-  const {event, rotationIntervalMinutes} =
+  const {event, plan, rotationIntervalMinutes} =
     await loadRotationEventContext(db, payload.eventId, uid);
+  const liveControlRevision = nonNegativeInteger(plan.liveControlRevision);
+  if (liveControlRevision !== payload.expectedRevision) {
+    throw staleLiveControlError();
+  }
   const {participants, blockedPairs} =
     await loadEligibleRotationParticipants(db, payload.eventId, false);
+  const primitives = eventSuccessPrimitivesFor(event.eventFormat);
+  const topology = {
+    ...resolveAssignmentTopology(plan, participants.length, {
+      defaultUnitKind: "pairs",
+      defaultUnitSize: 2,
+    }),
+    rotationIntervalMinutes,
+    rotationsEnabled: true,
+  };
+  const assignmentResolution = eventSuccessVariableResolutionFor({
+    assignmentAlgorithm: primitives.assignmentAlgorithm,
+    compatibilityPolicy: primitives.compatibilityPolicy,
+    matchingObjective: primitives.matchingObjective,
+    topology: topology.topology ?? "set",
+  });
+  if (assignmentResolution.status === "unsupported") {
+    throw new HttpsError("failed-precondition", assignmentResolution.reason);
+  }
+  const layout = await loadSelectedEventSuccessLayout(
+    db,
+    event.organizerId ?? event.clubId,
+    plan
+  );
   const rounds = buildOverrideRounds({
     inputRounds: payload.rounds,
     participants,
@@ -286,6 +439,18 @@ export async function overrideEventSuccessRotationsHandler(
     eventStartMillis: event.startTime.toMillis(),
     eventEndMillis: event.endTime.toMillis(),
     rotationIntervalMinutes,
+    concurrentUnits: topology.topology === "sequence" ?
+      resolveSequenceConcurrentUnits(
+        plan,
+        participants.length,
+        layout?.units.length ?? null
+      ) :
+      null,
+    resourceUnitIds: sequenceResourceUnitIds({
+      topology,
+      layout,
+      participantCount: participants.length,
+    }),
   });
   const assignments = buildAssignments({
     eventId: payload.eventId,
@@ -296,10 +461,34 @@ export async function overrideEventSuccessRotationsHandler(
     rounds,
     eventStartMillis: event.startTime.toMillis(),
     rotationIntervalMinutes,
+    resourceLabelId: topology.resourceCapacity?.resourceLabelId,
     source: "host_override_v1",
     now: deps.serverTimestamp(),
   });
-  await writeAssignments(db, payload.eventId, assignments);
+  const publishedRoundIndex = integerOr(
+    plan.publishedRotationRoundIndex,
+    -1
+  );
+  const targetRoundIndex = publishedRoundIndex + 1;
+  if (!rounds.some((round) => round.roundIndex === targetRoundIndex)) {
+    throw new HttpsError("failed-precondition",
+      "The override must include the next unpublished round.");
+  }
+  applyEventSuccessSpatialLayout(
+    assignments,
+    layout,
+    plan,
+    targetRoundIndex
+  );
+  await writeAssignmentDrafts({
+    db,
+    eventId: payload.eventId,
+    expectedRevision: payload.expectedRevision,
+    expectedPublishedRoundIndex: publishedRoundIndex,
+    targetRoundIndex,
+    assignments,
+    now: deps.serverTimestamp(),
+  });
 
   return {
     assignmentCount: assignments.size,
@@ -322,9 +511,10 @@ export const overrideEventSuccessRotations = onCall(
 async function loadRotationEventContext(
   db: FirebaseFirestore.Firestore,
   eventId: string,
-  uid: string
+  uid?: string
 ): Promise<{
   event: EventDocument;
+  plan: EventSuccessPlanDocument;
   rotationIntervalMinutes: number;
   questionnaireMode: QuestionnaireScoringMode;
   constraints: AssignmentConstraintConfig;
@@ -357,11 +547,13 @@ async function loadRotationEventContext(
       "This event has been cancelled.");
   }
 
-  const organizerSnap = await eventOrganizerRef(db, event).get();
-  const organizer = requireEventOrganizer(organizerSnap, event);
-  if (!isEventOrganizerManager(organizer, event, uid)) {
-    throw new HttpsError("permission-denied",
-      "Only an organizer manager can manage event rotations.");
+  if (uid !== undefined) {
+    const organizerSnap = await eventOrganizerRef(db, event).get();
+    const organizer = requireEventOrganizer(organizerSnap, event);
+    if (!isEventOrganizerManager(organizer, event, uid)) {
+      throw new HttpsError("permission-denied",
+        "Only an organizer manager can manage event rotations.");
+    }
   }
 
   const plan = requireDoc<EventSuccessPlanDocument>(
@@ -384,6 +576,7 @@ async function loadRotationEventContext(
 
   return {
     event,
+    plan,
     rotationIntervalMinutes:
       resolveRotationIntervalMinutes(plan) ?? ROUND_LENGTH_MINUTES,
     questionnaireMode:
@@ -393,8 +586,9 @@ async function loadRotationEventContext(
       ) && plan.compatibilityAffectsRanking === true ?
         "light" :
         "icebreaker",
-    constraints: assignmentConstraintsForStructureConfig(
-      plan.structureConfig
+    constraints: assignmentConstraintsForSpatialPlan(
+      assignmentConstraintsForStructureConfig(plan.structureConfig),
+      plan
     ),
     rotationPolicy: rotationPolicyForStructureConfig(plan.structureConfig),
   };
@@ -427,6 +621,7 @@ async function loadEligibleRotationParticipants(
     status: participant.status,
     gender: participant.gender,
     interestedInGenders: participant.interestedInGenders,
+    arrivalGroup: participant.arrivalGroup,
     compatibilityAnswerIds: [],
     activityAttributes: activityAttributesForProfile(participant.profile),
   }));
@@ -568,6 +763,64 @@ async function fetchBlockedPairs(
   return pairs;
 }
 
+/** Returns stable physical resource ids in traversal order. */
+function sequenceResourceUnitIds(params: {
+  topology: AssignmentTopology;
+  layout: OrganizerEventSuccessLayoutDocument | null;
+  participantCount: number;
+}): string[] {
+  if (params.topology.topology !== "sequence") return [];
+  const concurrentUnits = resolveSequenceConcurrentUnits({
+    structureConfig: {
+      resourceCapacity: params.topology.resourceCapacity,
+    },
+  }, params.participantCount, params.layout?.units.length ?? null);
+  if (params.layout !== null) {
+    return [...params.layout.units]
+      .sort((a, b) => a.order - b.order || a.id.localeCompare(b.id))
+      .slice(0, concurrentUnits)
+      .map((unit) => unit.id);
+  }
+  const prefix = params.topology.resourceCapacity?.resourceLabelId ??
+    "resource";
+  return Array.from(
+    {length: concurrentUnits},
+    (_, index) => `${prefix}-${index + 1}`
+  );
+}
+
+/** Scores explainability metadata without changing round-robin ordering. */
+function sequencePairCompatibility(params: {
+  a: RotationParticipant;
+  b: RotationParticipant;
+  questionnaireMode: QuestionnaireScoringMode;
+  compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  matchingObjective: EventSuccessMatchingObjective;
+}): Pick<RotationPair, "score" | "compatibility"> {
+  if (params.compatibilityPolicy === "mutualInterestOnly") {
+    const result = scoreDatingCompatibilityPair(params.a, params.b, {
+      questionnaireMode: "off",
+      allowOrientationFallback: true,
+    });
+    return {score: result.score, compatibility: result.compatibility};
+  }
+  if (
+    params.compatibilityPolicy === "questionnaireClueOnly" &&
+    (params.questionnaireMode === "light" ||
+      params.questionnaireMode === "strong") &&
+    (params.matchingObjective === "affinity" ||
+      params.matchingObjective === "novelty")
+  ) {
+    const result = scoreQuestionnaireObjectivePair(
+      params.a,
+      params.b,
+      params.matchingObjective
+    );
+    return {score: result.score, compatibility: result.compatibility};
+  }
+  return {score: 0, compatibility: "social"};
+}
+
 /**
  * Builds scored, non-repeating rotation rounds.
  * @param {object} params Rotation inputs.
@@ -590,8 +843,11 @@ function buildRotationRounds(params: {
   questionnaireMode: QuestionnaireScoringMode;
   assignmentAlgorithm: EventSuccessAssignmentAlgorithm;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  matchingObjective: EventSuccessMatchingObjective;
   constraints?: AssignmentConstraintConfig;
   rotationPolicy?: AssignmentRotationPolicy;
+  topology: AssignmentTopology;
+  layout: OrganizerEventSuccessLayoutDocument | null;
 }): RotationRound[] {
   if (params.participants.length < 2) return [];
   const requestedRounds = rotationRoundCountForDuration({
@@ -599,6 +855,60 @@ function buildRotationRounds(params: {
     eventEndMillis: params.eventEndMillis,
     rotationIntervalMinutes: params.rotationIntervalMinutes,
   });
+  if (params.topology.topology === "sequence") {
+    const constraints = normalizeAssignmentConstraints(
+      params.constraints,
+      params.rotationIntervalMinutes
+    );
+    const resourceUnitIds = sequenceResourceUnitIds({
+      topology: params.topology,
+      layout: params.layout,
+      participantCount: params.participants.length,
+    });
+    const blockedPairKeys = new Set([
+      ...params.blockedPairs,
+      ...constraints.keepApartPairs,
+    ]);
+    const priorityPairKeys = new Set([
+      ...constraints.keepTogetherPairs,
+      ...constraints.requestedRepeatPairs,
+    ]);
+    const schedule = buildEventSuccessSequenceSchedule({
+      participants: params.participants,
+      roundLimit: requestedRounds,
+      concurrentUnits: resourceUnitIds.length,
+      resourceUnitIds,
+      unitProximity: params.layout === null ?
+        [] :
+        deriveEventSuccessUnitProximity(params.layout.units),
+      blockedPairKeys,
+      priorityPairKeys,
+      exclusionMinutesByUid: constraints.exclusionMinutesByUid,
+      exclusionIntervalMinutes: constraints.exclusionIntervalMinutes,
+      maxPairMeetings: params.rotationPolicy?.repeatStrategy ===
+        "allowWhenExhausted" ?
+        params.rotationPolicy.maxPairMeetings :
+        1,
+    });
+    return schedule.rounds.map((round) => ({
+      roundIndex: round.roundIndex,
+      pairs: round.matches.map((match) => ({
+        a: match.a,
+        b: match.b,
+        ...sequencePairCompatibility({
+          a: match.a,
+          b: match.b,
+          questionnaireMode: params.questionnaireMode,
+          compatibilityPolicy: params.compatibilityPolicy,
+          matchingObjective: params.matchingObjective,
+        }),
+        unitIndex: match.unitIndex,
+        resourceUnitId: match.resourceUnitId,
+        movementCost: match.movementCost,
+        meetingIndex: match.meetingIndex,
+      })),
+    }));
+  }
   const maxRounds = params.participants.length % 2 === 0 ?
     params.participants.length - 1 :
     params.participants.length;
@@ -610,15 +920,12 @@ function buildRotationRounds(params: {
     participants: params.participants,
     blockedPairs: params.blockedPairs,
     topology: {
-      unitKind: "pairs",
-      unitSize: 2,
-      groupCount: Math.max(1, Math.floor(params.participants.length / 2)),
-      maxGroupSize: 2,
-      rotationIntervalMinutes: params.rotationIntervalMinutes,
-      rotationsEnabled: true,
+      ...params.topology,
+      topology: params.topology.topology ?? "set",
     },
     assignmentAlgorithm: params.assignmentAlgorithm,
     compatibilityPolicy: params.compatibilityPolicy,
+    matchingObjective: params.matchingObjective,
     questionnaireMode: params.questionnaireMode,
     rotationRoundCount: roundCount,
     allowOrientationFallback: true,
@@ -648,6 +955,8 @@ function buildOverrideRounds(params: {
   eventStartMillis: number;
   eventEndMillis: number;
   rotationIntervalMinutes: number;
+  concurrentUnits: number | null;
+  resourceUnitIds: string[];
 }): RotationRound[] {
   const maxRoundCount = rotationRoundCountForDuration({
     eventStartMillis: params.eventStartMillis,
@@ -694,12 +1003,26 @@ function buildOverrideRounds(params: {
       }
       usedInRound.add(pairing.uidA);
       usedInRound.add(pairing.uidB);
+      const unitIndex = pairs.length;
       pairs.push({
         a: participantA,
         b: participantB,
         score: 0,
         compatibility: "host_override",
+        ...(params.concurrentUnits === null ? {} : {
+          unitIndex,
+          resourceUnitId: params.resourceUnitIds[unitIndex],
+        }),
       });
+    }
+    if (
+      params.concurrentUnits !== null &&
+      pairs.length > params.concurrentUnits
+    ) {
+      throw new HttpsError(
+        "failed-precondition",
+        "This round exceeds the configured simultaneous resource capacity."
+      );
     }
     if (pairs.length > 0) {
       rounds.push({roundIndex: inputRound.roundIndex, pairs});
@@ -751,6 +1074,7 @@ function buildAssignments(params: {
   rounds: RotationRound[];
   eventStartMillis: number;
   rotationIntervalMinutes: number;
+  resourceLabelId?: EventSuccessResourceLabelId;
   source: string;
   now: FirebaseFirestore.FieldValue;
 }): Map<string, GeneratedAssignment> {
@@ -772,13 +1096,18 @@ function buildAssignments(params: {
       startsAt.toMillis() + params.rotationIntervalMinutes * 60000
     );
     const usedUids = new Set<string>();
-    for (const [unitIndex, pair] of round.pairs.entries()) {
-      const label = `Round ${round.roundIndex + 1}`;
+    for (const [pairIndex, pair] of round.pairs.entries()) {
+      const unitIndex = pair.unitIndex ?? pairIndex;
+      const label = rotationSlotLabel(
+        round.roundIndex,
+        params.resourceLabelId,
+        unitIndex
+      );
       const repeatedForA =
         seenPeersByUid.get(pair.a.uid)?.has(pair.b.uid) === true;
       const repeatedForB =
         seenPeersByUid.get(pair.b.uid)?.has(pair.a.uid) === true;
-      const slotA = {
+      const slotA: GeneratedRotationSlot = {
         slotId: `round-${round.roundIndex}-pair-${unitIndex}`,
         roundIndex: round.roundIndex,
         label,
@@ -788,6 +1117,9 @@ function buildAssignments(params: {
         unitKind: "pairs" as const,
         unitIndex,
         peerCount: 1,
+        ...(pair.resourceUnitId === undefined ? {} : {
+          resourceUnitId: pair.resourceUnitId,
+        }),
         compatibility: pair.compatibility,
         whySummary: rotationWhySummary({
           compatibility: pair.compatibility,
@@ -801,7 +1133,7 @@ function buildAssignments(params: {
           repeatedPeer: repeatedForA,
         }),
       };
-      const slotB = {
+      const slotB: GeneratedRotationSlot = {
         slotId: `round-${round.roundIndex}-pair-${unitIndex}`,
         roundIndex: round.roundIndex,
         label,
@@ -811,6 +1143,9 @@ function buildAssignments(params: {
         unitKind: "pairs" as const,
         unitIndex,
         peerCount: 1,
+        ...(pair.resourceUnitId === undefined ? {} : {
+          resourceUnitId: pair.resourceUnitId,
+        }),
         compatibility: pair.compatibility,
         whySummary: rotationWhySummary({
           compatibility: pair.compatibility,
@@ -886,6 +1221,18 @@ function buildAssignments(params: {
     });
   }
   return assignments;
+}
+
+function rotationSlotLabel(
+  roundIndex: number,
+  resourceLabelId: EventSuccessResourceLabelId | undefined,
+  unitIndex: number
+): string {
+  const round = `Round ${roundIndex + 1}`;
+  if (resourceLabelId === undefined) return round;
+  const resource = resourceLabelId.charAt(0).toUpperCase() +
+    resourceLabelId.slice(1);
+  return `${round} · ${resource} ${unitIndex + 1}`;
 }
 
 /**
@@ -992,30 +1339,72 @@ function uniqueWhyCodes(codes: AssignmentWhyCode[]): AssignmentWhyCode[] {
  * @param {string} eventId Event id.
  * @param {Map<string, GeneratedAssignment>} assignments New assignments.
  */
-async function writeAssignments(
-  db: FirebaseFirestore.Firestore,
-  eventId: string,
-  assignments: Map<string, GeneratedAssignment>
-): Promise<void> {
-  const existingSnap = await db
-    .collection("eventSuccessAssignments")
-    .where("eventId", "==", eventId)
-    .where("moduleId", "==", GUIDED_ROTATIONS_MODULE_ID)
-    .get();
-  const batch = db.batch();
-  for (const doc of existingSnap.docs) {
-    if (!assignments.has(doc.id)) {
-      batch.delete(doc.ref);
+async function writeAssignmentDrafts(params: {
+  db: FirebaseFirestore.Firestore;
+  eventId: string;
+  expectedRevision: number;
+  expectedPublishedRoundIndex: number;
+  targetRoundIndex: number;
+  assignments: Map<string, GeneratedAssignment>;
+  now: FirebaseFirestore.FieldValue;
+}): Promise<{revision: number; assignmentRevision: number}> {
+  const planRef = params.db.collection("eventSuccessPlans").doc(params.eventId);
+  const draftQuery = params.db.collection("eventSuccessAssignmentDrafts")
+    .where("eventId", "==", params.eventId)
+    .where("moduleId", "==", GUIDED_ROTATIONS_MODULE_ID);
+  return params.db.runTransaction(async (transaction) => {
+    const [planSnap, existingSnap] = await Promise.all([
+      transaction.get(planRef),
+      transaction.get(draftQuery),
+    ]);
+    if (!planSnap.exists) {
+      throw new HttpsError("failed-precondition",
+        "Event-success setup has not been saved.");
     }
-  }
-  for (const [docId, assignment] of assignments.entries()) {
-    batch.set(
-      db.collection("eventSuccessAssignments").doc(docId),
-      assignment,
-      {merge: true}
+    const plan = planSnap.data() as EventSuccessPlanDocument;
+    const currentRevision = nonNegativeInteger(plan.liveControlRevision);
+    const publishedRoundIndex = integerOr(
+      plan.publishedRotationRoundIndex,
+      -1
     );
-  }
-  await batch.commit();
+    if (
+      currentRevision !== params.expectedRevision ||
+      publishedRoundIndex !== params.expectedPublishedRoundIndex
+    ) {
+      throw staleLiveControlError();
+    }
+    const revision = nextLiveControlRevision(currentRevision);
+    const assignmentRevision = nextLiveControlRevision(
+      nonNegativeInteger(plan.assignmentDraftRevision)
+    );
+    for (const doc of existingSnap.docs) {
+      transaction.delete(doc.ref);
+    }
+    for (const [docId, assignment] of params.assignments.entries()) {
+      transaction.set(
+        params.db.collection("eventSuccessAssignmentDrafts").doc(docId),
+        {
+          eventId: params.eventId,
+          clubId: assignment.clubId,
+          organizerId: assignment.organizerId,
+          uid: assignment.uid,
+          moduleId: GUIDED_ROTATIONS_MODULE_ID,
+          roundIndex: params.targetRoundIndex,
+          baseAssignmentRevision: assignmentRevision,
+          assignment,
+          createdAt: params.now,
+          updatedAt: params.now,
+        }
+      );
+    }
+    transaction.update(planRef, {
+      ...persistentSpatialPlanFields(plan),
+      liveControlRevision: revision,
+      assignmentDraftRevision: assignmentRevision,
+      updatedAt: params.now,
+    });
+    return {revision, assignmentRevision};
+  });
 }
 
 /**
@@ -1051,4 +1440,26 @@ function chunk<T>(values: T[], size: number): T[][] {
     chunks.push(values.slice(index, index + size));
   }
   return chunks;
+}
+
+function staleLiveControlError(): HttpsError {
+  return new HttpsError("aborted",
+    "The live event guide changed on another device. Refresh and retry.");
+}
+
+function nextLiveControlRevision(current: number): number {
+  if (current >= 2147483647) {
+    throw new HttpsError("resource-exhausted",
+      "The live-control revision limit has been reached.");
+  }
+  return current + 1;
+}
+
+function nonNegativeInteger(value: unknown): number {
+  return Number.isInteger(value) && (value as number) >= 0 ?
+    value as number : 0;
+}
+
+function integerOr(value: unknown, fallback: number): number {
+  return Number.isInteger(value) ? value as number : fallback;
 }

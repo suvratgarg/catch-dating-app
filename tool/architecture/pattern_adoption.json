@@ -793,6 +793,22 @@
           "status": "aligned"
         },
         {
+          "path": "test/hosts/host_events_screen_state_test.dart",
+          "role": "Host Events lifecycle, grouping, featured-event exclusion, attention-task, and async display-state behavior coverage",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/customers/host_customers_screen_state.dart",
+          "role": "provider-free Host Customers directory request, cursor state, lifecycle-filter mapping, and conversation-availability adapter",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "test/hosts/host_customers_screen_state_test.dart",
+          "role": "Host Customers directory request, pagination state, lifecycle-filter, and conversation-availability behavior coverage",
+          "status": "aligned"
+        },
+        {
           "path": "test/chats/chat_inbox_screen_test.dart",
           "role": "ChatsListScreenState, inbox empty/search/unread branches, batched roster lookup, host inbox filtering, and navigation behavior coverage",
           "status": "aligned"

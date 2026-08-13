@@ -7233,6 +7233,13 @@ export const clubDocumentSchema: Record<string, unknown> = {
             "enabled": {
               "type": "boolean"
             },
+            "layoutId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+            },
             "playbookId": {
               "type": "string",
               "minLength": 1,
@@ -7290,6 +7297,57 @@ export const clubDocumentSchema: Record<string, unknown> = {
                   "minimum": 5,
                   "maximum": 180
                 },
+                "topology": {
+                  "type": "string",
+                  "enum": [
+                    "set",
+                    "sequence",
+                    "adjacency"
+                  ]
+                },
+                "resourceCapacity": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "concurrentUnits",
+                        "resourceLabelId",
+                        "seatsPerUnit"
+                      ],
+                      "properties": {
+                        "concurrentUnits": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 200
+                        },
+                        "resourceLabelId": {
+                          "type": "string",
+                          "enum": [
+                            "court",
+                            "table",
+                            "lane",
+                            "board"
+                          ]
+                        },
+                        "seatsPerUnit": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 1000
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
                 "revealCountdownSeconds": {
                   "type": "integer",
                   "minimum": 0,
@@ -7333,7 +7391,39 @@ export const clubDocumentSchema: Record<string, unknown> = {
                     ]
                   }
                 }
-              }
+              },
+              "allOf": [
+                {
+                  "if": {
+                    "required": [
+                      "resourceCapacity"
+                    ],
+                    "properties": {
+                      "resourceCapacity": {
+                        "type": "object",
+                        "required": [
+                          "seatsPerUnit"
+                        ],
+                        "properties": {
+                          "seatsPerUnit": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "then": {
+                    "required": [
+                      "topology"
+                    ],
+                    "properties": {
+                      "topology": {
+                        "const": "adjacency"
+                      }
+                    }
+                  }
+                }
+              ]
             },
             "hostGoal": {
               "type": "string",
@@ -7438,6 +7528,13 @@ export const clubDocumentSchema: Record<string, unknown> = {
               "enabled": {
                 "type": "boolean"
               },
+              "layoutId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+              },
               "playbookId": {
                 "type": "string",
                 "minLength": 1,
@@ -7495,6 +7592,57 @@ export const clubDocumentSchema: Record<string, unknown> = {
                     "minimum": 5,
                     "maximum": 180
                   },
+                  "topology": {
+                    "type": "string",
+                    "enum": [
+                      "set",
+                      "sequence",
+                      "adjacency"
+                    ]
+                  },
+                  "resourceCapacity": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "concurrentUnits",
+                          "resourceLabelId",
+                          "seatsPerUnit"
+                        ],
+                        "properties": {
+                          "concurrentUnits": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "minimum": 1,
+                            "maximum": 200
+                          },
+                          "resourceLabelId": {
+                            "type": "string",
+                            "enum": [
+                              "court",
+                              "table",
+                              "lane",
+                              "board"
+                            ]
+                          },
+                          "seatsPerUnit": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "minimum": 1,
+                            "maximum": 1000
+                          }
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
                   "revealCountdownSeconds": {
                     "type": "integer",
                     "minimum": 0,
@@ -7538,7 +7686,39 @@ export const clubDocumentSchema: Record<string, unknown> = {
                       ]
                     }
                   }
-                }
+                },
+                "allOf": [
+                  {
+                    "if": {
+                      "required": [
+                        "resourceCapacity"
+                      ],
+                      "properties": {
+                        "resourceCapacity": {
+                          "type": "object",
+                          "required": [
+                            "seatsPerUnit"
+                          ],
+                          "properties": {
+                            "seatsPerUnit": {
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "then": {
+                      "required": [
+                        "topology"
+                      ],
+                      "properties": {
+                        "topology": {
+                          "const": "adjacency"
+                        }
+                      }
+                    }
+                  }
+                ]
               },
               "hostGoal": {
                 "type": "string",
@@ -9632,6 +9812,13 @@ export const organizerDocumentSchema: Record<string, unknown> = {
             "enabled": {
               "type": "boolean"
             },
+            "layoutId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+            },
             "playbookId": {
               "type": "string",
               "minLength": 1,
@@ -9689,6 +9876,57 @@ export const organizerDocumentSchema: Record<string, unknown> = {
                   "minimum": 5,
                   "maximum": 180
                 },
+                "topology": {
+                  "type": "string",
+                  "enum": [
+                    "set",
+                    "sequence",
+                    "adjacency"
+                  ]
+                },
+                "resourceCapacity": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "concurrentUnits",
+                        "resourceLabelId",
+                        "seatsPerUnit"
+                      ],
+                      "properties": {
+                        "concurrentUnits": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 200
+                        },
+                        "resourceLabelId": {
+                          "type": "string",
+                          "enum": [
+                            "court",
+                            "table",
+                            "lane",
+                            "board"
+                          ]
+                        },
+                        "seatsPerUnit": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 1000
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
                 "revealCountdownSeconds": {
                   "type": "integer",
                   "minimum": 0,
@@ -9732,7 +9970,39 @@ export const organizerDocumentSchema: Record<string, unknown> = {
                     ]
                   }
                 }
-              }
+              },
+              "allOf": [
+                {
+                  "if": {
+                    "required": [
+                      "resourceCapacity"
+                    ],
+                    "properties": {
+                      "resourceCapacity": {
+                        "type": "object",
+                        "required": [
+                          "seatsPerUnit"
+                        ],
+                        "properties": {
+                          "seatsPerUnit": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "then": {
+                    "required": [
+                      "topology"
+                    ],
+                    "properties": {
+                      "topology": {
+                        "const": "adjacency"
+                      }
+                    }
+                  }
+                }
+              ]
             },
             "hostGoal": {
               "type": "string",
@@ -9837,6 +10107,13 @@ export const organizerDocumentSchema: Record<string, unknown> = {
               "enabled": {
                 "type": "boolean"
               },
+              "layoutId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+              },
               "playbookId": {
                 "type": "string",
                 "minLength": 1,
@@ -9894,6 +10171,57 @@ export const organizerDocumentSchema: Record<string, unknown> = {
                     "minimum": 5,
                     "maximum": 180
                   },
+                  "topology": {
+                    "type": "string",
+                    "enum": [
+                      "set",
+                      "sequence",
+                      "adjacency"
+                    ]
+                  },
+                  "resourceCapacity": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "concurrentUnits",
+                          "resourceLabelId",
+                          "seatsPerUnit"
+                        ],
+                        "properties": {
+                          "concurrentUnits": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "minimum": 1,
+                            "maximum": 200
+                          },
+                          "resourceLabelId": {
+                            "type": "string",
+                            "enum": [
+                              "court",
+                              "table",
+                              "lane",
+                              "board"
+                            ]
+                          },
+                          "seatsPerUnit": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "minimum": 1,
+                            "maximum": 1000
+                          }
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
                   "revealCountdownSeconds": {
                     "type": "integer",
                     "minimum": 0,
@@ -9937,7 +10265,39 @@ export const organizerDocumentSchema: Record<string, unknown> = {
                       ]
                     }
                   }
-                }
+                },
+                "allOf": [
+                  {
+                    "if": {
+                      "required": [
+                        "resourceCapacity"
+                      ],
+                      "properties": {
+                        "resourceCapacity": {
+                          "type": "object",
+                          "required": [
+                            "seatsPerUnit"
+                          ],
+                          "properties": {
+                            "seatsPerUnit": {
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "then": {
+                      "required": [
+                        "topology"
+                      ],
+                      "properties": {
+                        "topology": {
+                          "const": "adjacency"
+                        }
+                      }
+                    }
+                  }
+                ]
               },
               "hostGoal": {
                 "type": "string",
@@ -17906,6 +18266,26 @@ export const eventDocumentSchema: Record<string, unknown> = {
                 "mutualInterestOnly",
                 "questionnaireClueOnly"
               ]
+            },
+            "matchingObjective": {
+              "type": "string",
+              "enum": [
+                "coverage",
+                "romantic",
+                "affinity",
+                "novelty",
+                "balance",
+                "spread"
+              ]
+            },
+            "unitOutcome": {
+              "type": "string",
+              "enum": [
+                "none",
+                "completion",
+                "score",
+                "rank"
+              ]
             }
           }
         },
@@ -20962,6 +21342,7 @@ export const eventAttendeeDocumentSchema: Record<string, unknown> = {
     "phoneE164",
     "email",
     "externalReference",
+    "arrivalGroup",
     "ticketType",
     "importId",
     "sourceRowId",
@@ -21050,6 +21431,15 @@ export const eventAttendeeDocumentSchema: Record<string, unknown> = {
       ],
       "minLength": 1,
       "maxLength": 180
+    },
+    "arrivalGroup": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Provider or import-supplied booking/arrival group shared by guests who are expected to arrive together."
     },
     "ticketType": {
       "type": [
@@ -24085,6 +24475,95 @@ export const eventSuccessPlanDocumentSchema: Record<string, unknown> = {
       "maxLength": 180,
       "x-catch-ownership": "callable-owned"
     },
+    "layoutId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "affinityConstraints": {
+      "type": "array",
+      "maxItems": 300,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "aUid",
+          "bUid",
+          "value",
+          "scope"
+        ],
+        "properties": {
+          "aUid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "bUid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "value": {
+            "type": "string",
+            "enum": [
+              "mustPair",
+              "mustSplit",
+              "avoidRepeat",
+              "neutral"
+            ]
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "thisRound",
+              "pinned"
+            ]
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "spatialOverrides": {
+      "type": "array",
+      "maxItems": 300,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uid",
+          "targetPeerUid",
+          "layoutUnitId",
+          "scope"
+        ],
+        "properties": {
+          "uid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "targetPeerUid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "layoutUnitId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "thisRound",
+              "pinned"
+            ]
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
     "playbookId": {
       "type": "string",
       "minLength": 1,
@@ -24147,6 +24626,57 @@ export const eventSuccessPlanDocumentSchema: Record<string, unknown> = {
           "minimum": 5,
           "maximum": 180
         },
+        "topology": {
+          "type": "string",
+          "enum": [
+            "set",
+            "sequence",
+            "adjacency"
+          ]
+        },
+        "resourceCapacity": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "concurrentUnits",
+                "resourceLabelId",
+                "seatsPerUnit"
+              ],
+              "properties": {
+                "concurrentUnits": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 1,
+                  "maximum": 200
+                },
+                "resourceLabelId": {
+                  "type": "string",
+                  "enum": [
+                    "court",
+                    "table",
+                    "lane",
+                    "board"
+                  ]
+                },
+                "seatsPerUnit": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 1,
+                  "maximum": 1000
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "revealCountdownSeconds": {
           "type": "integer",
           "minimum": 0,
@@ -24191,6 +24721,38 @@ export const eventSuccessPlanDocumentSchema: Record<string, unknown> = {
           }
         }
       },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "resourceCapacity"
+            ],
+            "properties": {
+              "resourceCapacity": {
+                "type": "object",
+                "required": [
+                  "seatsPerUnit"
+                ],
+                "properties": {
+                  "seatsPerUnit": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "topology"
+            ],
+            "properties": {
+              "topology": {
+                "const": "adjacency"
+              }
+            }
+          }
+        }
+      ],
       "x-catch-ownership": "callable-owned"
     },
     "hostGoal": {
@@ -24285,6 +24847,30 @@ export const eventSuccessPlanDocumentSchema: Record<string, unknown> = {
     "activeStepIndex": {
       "type": "integer",
       "minimum": 0,
+      "maximum": 100,
+      "x-catch-ownership": "callable-owned"
+    },
+    "liveControlRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647,
+      "x-catch-ownership": "callable-owned"
+    },
+    "assignmentDraftRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647,
+      "x-catch-ownership": "callable-owned"
+    },
+    "publishedRotationRoundIndex": {
+      "type": "integer",
+      "minimum": -1,
+      "maximum": 100,
+      "x-catch-ownership": "callable-owned"
+    },
+    "publishedRevealRoundIndex": {
+      "type": "integer",
+      "minimum": -1,
       "maximum": 100,
       "x-catch-ownership": "callable-owned"
     },
@@ -24477,6 +25063,898 @@ export const eventSuccessPlanDocumentSchema: Record<string, unknown> = {
       "minLength": 1,
       "maxLength": 80,
       "description": "Internal demo-operations command name used for cleanup and diagnostics."
+    }
+  }
+} as const;
+
+export const organizerEventSuccessLayoutDocumentSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_event_success_layouts.schema.json",
+  "title": "OrganizerEventSuccessLayoutDocument",
+  "description": "Reusable organizer-owned parametric room layout stored at organizerEventSuccessLayouts/{organizerId_layoutId}. Derived coordinates and proximity edges are never persisted.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerEventSuccessLayouts",
+  "x-firestore-path": "organizerEventSuccessLayouts/{layoutDocumentId}",
+  "x-document-id-field": "id",
+  "x-owner": "organizer manager through upsertEventSuccessLayout",
+  "required": [
+    "organizerId",
+    "layoutId",
+    "label",
+    "units",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "layoutId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
+    },
+    "units": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label",
+          "shape",
+          "capacity",
+          "gridX",
+          "gridY",
+          "order"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "shape": {
+            "type": "string",
+            "enum": [
+              "round",
+              "rect",
+              "row",
+              "court",
+              "zone"
+            ]
+          },
+          "capacity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000
+          },
+          "gridX": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 199
+          },
+          "gridY": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 199
+          },
+          "order": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+} as const;
+
+export const eventSuccessAssignmentDraftDocumentSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_success_assignment_drafts.schema.json",
+  "title": "EventSuccessAssignmentDraftDocument",
+  "description": "Server-owned host-only precomputed assignment stored at eventSuccessAssignmentDrafts/{eventId_moduleId_uid} until its round is published.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSuccessAssignmentDrafts",
+  "x-firestore-path": "eventSuccessAssignmentDrafts/{assignmentDraftId}",
+  "x-document-id-field": "id",
+  "x-owner": "event-success assignment preparation",
+  "required": [
+    "eventId",
+    "clubId",
+    "organizerId",
+    "uid",
+    "moduleId",
+    "roundIndex",
+    "baseAssignmentRevision",
+    "assignment",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "moduleId": {
+      "type": "string",
+      "enum": [
+        "guided_rotations"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "roundIndex": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "x-catch-ownership": "callable-owned"
+    },
+    "baseAssignmentRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "x-catch-ownership": "callable-owned"
+    },
+    "assignment": {
+      "title": "EventSuccessAssignmentDocument",
+      "description": "Server-owned live guidance assignment stored at eventSuccessAssignments/{eventId_moduleId_uid}.",
+      "type": "object",
+      "additionalProperties": false,
+      "x-firestore-collection": "eventSuccessAssignments",
+      "x-firestore-path": "eventSuccessAssignments/{assignmentId}",
+      "x-document-id-field": "id",
+      "x-owner": "event-success assignment callables",
+      "x-internal-demo-fields": [
+        "synthetic",
+        "seedPrefix",
+        "scenario",
+        "demoOps",
+        "demoOpsId",
+        "demoOpsCommand"
+      ],
+      "required": [
+        "eventId",
+        "clubId",
+        "uid",
+        "moduleId",
+        "label",
+        "displayTitle",
+        "peerUids",
+        "source",
+        "createdAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "x-catch-ownership": "callable-owned"
+        },
+        "clubId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "x-catch-ownership": "callable-owned"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "x-catch-ownership": "callable-owned"
+        },
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "x-catch-ownership": "callable-owned"
+        },
+        "moduleId": {
+          "type": "string",
+          "enum": [
+            "micro_pods",
+            "guided_rotations"
+          ],
+          "x-catch-ownership": "callable-owned"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "x-catch-ownership": "callable-owned"
+        },
+        "displayTitle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "x-catch-ownership": "callable-owned"
+        },
+        "displaySubtitle": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 240,
+          "x-catch-ownership": "callable-owned"
+        },
+        "peerUids": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "x-catch-ownership": "callable-owned"
+        },
+        "unitKind": {
+          "type": "string",
+          "enum": [
+            "wholeGroup",
+            "pods",
+            "pairs",
+            "teams",
+            "tables"
+          ],
+          "x-catch-ownership": "callable-owned"
+        },
+        "unitIndex": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "x-catch-ownership": "callable-owned"
+        },
+        "unitLabel": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "x-catch-ownership": "callable-owned"
+        },
+        "layoutUnitId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$",
+          "x-catch-ownership": "callable-owned"
+        },
+        "confirmedLayoutUnitId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$",
+          "x-catch-ownership": "callable-owned"
+        },
+        "whySummary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240,
+          "x-catch-ownership": "callable-owned"
+        },
+        "whyCodes": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "type": "string",
+            "enum": [
+              "host_override",
+              "mutual_interest",
+              "one_way_interest",
+              "questionnaire_match",
+              "social_fallback",
+              "balanced_group",
+              "fresh_peer",
+              "repeat_peer",
+              "sit_out",
+              "pair_slot",
+              "pod_slot",
+              "table_slot",
+              "team_slot",
+              "whole_group_slot"
+            ]
+          },
+          "x-catch-ownership": "callable-owned"
+        },
+        "rotationFairness": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "assignedRoundCount",
+            "sitOutRoundCount",
+            "uniquePeerCount",
+            "repeatPeerCount"
+          ],
+          "properties": {
+            "assignedRoundCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "sitOutRoundCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "uniquePeerCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "repeatPeerCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            }
+          },
+          "x-catch-ownership": "callable-owned"
+        },
+        "sitOutSlots": {
+          "type": "array",
+          "maxItems": 24,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "roundIndex",
+              "label",
+              "startsAt",
+              "endsAt",
+              "whySummary",
+              "whyCodes"
+            ],
+            "properties": {
+              "roundIndex": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "startsAt": {
+                "type": "object",
+                "description": "Serialized Firestore Timestamp fixture shape.",
+                "x-firestore-type": "timestamp",
+                "additionalProperties": false,
+                "required": [
+                  "_seconds",
+                  "_nanoseconds"
+                ],
+                "properties": {
+                  "_seconds": {
+                    "type": "integer"
+                  },
+                  "_nanoseconds": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 999999999
+                  }
+                }
+              },
+              "endsAt": {
+                "type": "object",
+                "description": "Serialized Firestore Timestamp fixture shape.",
+                "x-firestore-type": "timestamp",
+                "additionalProperties": false,
+                "required": [
+                  "_seconds",
+                  "_nanoseconds"
+                ],
+                "properties": {
+                  "_seconds": {
+                    "type": "integer"
+                  },
+                  "_nanoseconds": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 999999999
+                  }
+                }
+              },
+              "whySummary": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "whyCodes": {
+                "type": "array",
+                "maxItems": 12,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "sit_out"
+                  ]
+                }
+              }
+            }
+          },
+          "x-catch-ownership": "callable-owned"
+        },
+        "rotationSlots": {
+          "type": "array",
+          "maxItems": 24,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "roundIndex",
+              "label",
+              "startsAt",
+              "endsAt",
+              "peerUid",
+              "compatibility"
+            ],
+            "properties": {
+              "slotId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "roundIndex": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "startsAt": {
+                "type": "object",
+                "description": "Serialized Firestore Timestamp fixture shape.",
+                "x-firestore-type": "timestamp",
+                "additionalProperties": false,
+                "required": [
+                  "_seconds",
+                  "_nanoseconds"
+                ],
+                "properties": {
+                  "_seconds": {
+                    "type": "integer"
+                  },
+                  "_nanoseconds": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 999999999
+                  }
+                }
+              },
+              "endsAt": {
+                "type": "object",
+                "description": "Serialized Firestore Timestamp fixture shape.",
+                "x-firestore-type": "timestamp",
+                "additionalProperties": false,
+                "required": [
+                  "_seconds",
+                  "_nanoseconds"
+                ],
+                "properties": {
+                  "_seconds": {
+                    "type": "integer"
+                  },
+                  "_nanoseconds": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 999999999
+                  }
+                }
+              },
+              "peerUid": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "unitKind": {
+                "type": "string",
+                "enum": [
+                  "pairs"
+                ]
+              },
+              "unitIndex": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "resourceUnitId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+              },
+              "peerCount": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 20
+              },
+              "compatibility": {
+                "type": "string",
+                "enum": [
+                  "mutual_interest",
+                  "one_way_interest",
+                  "questionnaire_match",
+                  "social",
+                  "host_override"
+                ]
+              },
+              "whySummary": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "whyCodes": {
+                "type": "array",
+                "maxItems": 12,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "host_override",
+                    "mutual_interest",
+                    "one_way_interest",
+                    "questionnaire_match",
+                    "social_fallback",
+                    "fresh_peer",
+                    "repeat_peer",
+                    "pair_slot"
+                  ]
+                }
+              }
+            }
+          },
+          "x-catch-ownership": "callable-owned"
+        },
+        "groupRotationSlots": {
+          "type": "array",
+          "maxItems": 24,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "roundIndex",
+              "label",
+              "unitLabel",
+              "startsAt",
+              "endsAt",
+              "peerUids",
+              "compatibility"
+            ],
+            "properties": {
+              "slotId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "roundIndex": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "unitLabel": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "unitKind": {
+                "type": "string",
+                "enum": [
+                  "wholeGroup",
+                  "pods",
+                  "pairs",
+                  "teams",
+                  "tables"
+                ]
+              },
+              "unitIndex": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "startsAt": {
+                "type": "object",
+                "description": "Serialized Firestore Timestamp fixture shape.",
+                "x-firestore-type": "timestamp",
+                "additionalProperties": false,
+                "required": [
+                  "_seconds",
+                  "_nanoseconds"
+                ],
+                "properties": {
+                  "_seconds": {
+                    "type": "integer"
+                  },
+                  "_nanoseconds": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 999999999
+                  }
+                }
+              },
+              "endsAt": {
+                "type": "object",
+                "description": "Serialized Firestore Timestamp fixture shape.",
+                "x-firestore-type": "timestamp",
+                "additionalProperties": false,
+                "required": [
+                  "_seconds",
+                  "_nanoseconds"
+                ],
+                "properties": {
+                  "_seconds": {
+                    "type": "integer"
+                  },
+                  "_nanoseconds": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 999999999
+                  }
+                }
+              },
+              "peerUids": {
+                "type": "array",
+                "maxItems": 20,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                }
+              },
+              "peerCount": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 20
+              },
+              "compatibility": {
+                "type": "string",
+                "enum": [
+                  "mutual_interest",
+                  "one_way_interest",
+                  "questionnaire_match",
+                  "social",
+                  "mixed",
+                  "host_override"
+                ]
+              },
+              "whySummary": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "whyCodes": {
+                "type": "array",
+                "maxItems": 12,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "host_override",
+                    "mutual_interest",
+                    "questionnaire_match",
+                    "social_fallback",
+                    "balanced_group",
+                    "fresh_peer",
+                    "repeat_peer",
+                    "pair_slot",
+                    "pod_slot",
+                    "table_slot",
+                    "team_slot",
+                    "whole_group_slot"
+                  ]
+                }
+              }
+            }
+          },
+          "x-catch-ownership": "callable-owned"
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "server_v1",
+            "host_override_v1",
+            "server"
+          ],
+          "x-catch-ownership": "callable-owned"
+        },
+        "createdAt": {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          },
+          "x-catch-ownership": "callable-owned"
+        },
+        "updatedAt": {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          },
+          "x-catch-ownership": "callable-owned"
+        },
+        "synthetic": {
+          "type": "boolean",
+          "description": "Internal demo seed marker used for cleanup and diagnostics."
+        },
+        "seedPrefix": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "description": "Internal demo seed prefix used for cleanup and diagnostics."
+        },
+        "scenario": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "description": "Internal demo seed scenario name used for cleanup and diagnostics."
+        },
+        "demoOps": {
+          "type": "boolean",
+          "description": "Internal demo-operations marker used for cleanup and diagnostics."
+        },
+        "demoOpsId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "description": "Internal demo-operations id used for cleanup and diagnostics."
+        },
+        "demoOpsCommand": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "description": "Internal demo-operations command name used for cleanup and diagnostics."
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
     }
   }
 } as const;
@@ -25416,6 +26894,19 @@ export const eventSuccessAssignmentDocumentSchema: Record<string, unknown> = {
       "maxLength": 80,
       "x-catch-ownership": "callable-owned"
     },
+    "layoutUnitId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "confirmedLayoutUnitId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$",
+      "x-catch-ownership": "callable-owned"
+    },
     "whySummary": {
       "type": "string",
       "minLength": 1,
@@ -25648,6 +27139,10 @@ export const eventSuccessAssignmentDocumentSchema: Record<string, unknown> = {
             "type": "integer",
             "minimum": 0,
             "maximum": 100
+          },
+          "resourceUnitId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
           },
           "peerCount": {
             "type": "integer",
@@ -25918,6 +27413,548 @@ export const eventSuccessAssignmentDocumentSchema: Record<string, unknown> = {
       "minLength": 1,
       "maxLength": 80,
       "description": "Internal demo-operations command name used for cleanup and diagnostics."
+    }
+  }
+} as const;
+
+export const eventSuccessUnitOutcomesDocumentSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_success_unit_outcomes.schema.json",
+  "title": "EventSuccessUnitOutcomesDocument",
+  "description": "Server-owned outcome rounds stored at eventSuccessUnitOutcomes/{eventId}. Hosts may read the source; attendees consume the standings projection.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSuccessUnitOutcomes",
+  "x-firestore-path": "eventSuccessUnitOutcomes/{eventId}",
+  "x-document-id-field": "id",
+  "x-owner": "recordEventSuccessUnitOutcomes callable",
+  "required": [
+    "eventId",
+    "clubId",
+    "unitOutcome",
+    "revision",
+    "rounds",
+    "createdAt",
+    "updatedAt"
+  ],
+  "definitions": {
+    "unitIdentity": {
+      "unitId": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+      },
+      "unitLabel": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80
+      }
+    },
+    "outcomeEntry": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "unitId",
+            "unitLabel",
+            "completed"
+          ],
+          "properties": {
+            "unitId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+            },
+            "unitLabel": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "completed": {
+              "type": "boolean"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "unitId",
+            "unitLabel",
+            "score"
+          ],
+          "properties": {
+            "unitId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+            },
+            "unitLabel": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "score": {
+              "type": "number",
+              "minimum": -1000000,
+              "maximum": 1000000
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "unitId",
+            "unitLabel",
+            "rank"
+          ],
+          "properties": {
+            "unitId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+            },
+            "unitLabel": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "rank": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          }
+        }
+      ]
+    }
+  },
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "unitOutcome": {
+      "type": "string",
+      "enum": [
+        "completion",
+        "score",
+        "rank"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647,
+      "x-catch-ownership": "callable-owned"
+    },
+    "rounds": {
+      "type": "array",
+      "maxItems": 101,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "roundIndex",
+          "entries"
+        ],
+        "properties": {
+          "roundIndex": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "entries": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 200,
+            "items": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "unitId",
+                    "unitLabel",
+                    "completed"
+                  ],
+                  "properties": {
+                    "unitId": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+                    },
+                    "unitLabel": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "completed": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "unitId",
+                    "unitLabel",
+                    "score"
+                  ],
+                  "properties": {
+                    "unitId": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+                    },
+                    "unitLabel": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "score": {
+                      "type": "number",
+                      "minimum": -1000000,
+                      "maximum": 1000000
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "unitId",
+                    "unitLabel",
+                    "rank"
+                  ],
+                  "properties": {
+                    "unitId": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+                    },
+                    "unitLabel": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "rank": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 200
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+} as const;
+
+export const eventSuccessStandingsDocumentSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_success_standings.schema.json",
+  "title": "EventSuccessStandingsDocument",
+  "description": "Server-owned attendee-readable standings snapshots stored at eventSuccessStandings/{eventId}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSuccessStandings",
+  "x-firestore-path": "eventSuccessStandings/{eventId}",
+  "x-document-id-field": "id",
+  "x-owner": "recordEventSuccessUnitOutcomes callable",
+  "required": [
+    "eventId",
+    "clubId",
+    "unitOutcome",
+    "revision",
+    "latestRoundIndex",
+    "rounds",
+    "entries",
+    "createdAt",
+    "updatedAt"
+  ],
+  "definitions": {
+    "standingEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "unitId",
+        "unitLabel",
+        "position",
+        "value",
+        "roundsRecorded"
+      ],
+      "properties": {
+        "unitId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+        },
+        "unitLabel": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "position": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "value": {
+          "type": "number",
+          "minimum": -100000000,
+          "maximum": 100000000
+        },
+        "roundsRecorded": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 101
+        }
+      }
+    }
+  },
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "unitOutcome": {
+      "type": "string",
+      "enum": [
+        "score",
+        "rank"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647,
+      "x-catch-ownership": "callable-owned"
+    },
+    "latestRoundIndex": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "x-catch-ownership": "callable-owned"
+    },
+    "rounds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 101,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "roundIndex",
+          "entries"
+        ],
+        "properties": {
+          "roundIndex": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "entries": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 200,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "unitId",
+                "unitLabel",
+                "position",
+                "value",
+                "roundsRecorded"
+              ],
+              "properties": {
+                "unitId": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+                },
+                "unitLabel": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "position": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 200
+                },
+                "value": {
+                  "type": "number",
+                  "minimum": -100000000,
+                  "maximum": 100000000
+                },
+                "roundsRecorded": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 101
+                }
+              }
+            }
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "unitId",
+          "unitLabel",
+          "position",
+          "value",
+          "roundsRecorded"
+        ],
+        "properties": {
+          "unitId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+          },
+          "unitLabel": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "position": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          },
+          "value": {
+            "type": "number",
+            "minimum": -100000000,
+            "maximum": 100000000
+          },
+          "roundsRecorded": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 101
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
     }
   }
 } as const;
@@ -33084,6 +35121,13 @@ export const createClubCallablePayloadSchema: Record<string, unknown> = {
             "enabled": {
               "type": "boolean"
             },
+            "layoutId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+            },
             "playbookId": {
               "type": "string",
               "minLength": 1,
@@ -33141,6 +35185,57 @@ export const createClubCallablePayloadSchema: Record<string, unknown> = {
                   "minimum": 5,
                   "maximum": 180
                 },
+                "topology": {
+                  "type": "string",
+                  "enum": [
+                    "set",
+                    "sequence",
+                    "adjacency"
+                  ]
+                },
+                "resourceCapacity": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "concurrentUnits",
+                        "resourceLabelId",
+                        "seatsPerUnit"
+                      ],
+                      "properties": {
+                        "concurrentUnits": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 200
+                        },
+                        "resourceLabelId": {
+                          "type": "string",
+                          "enum": [
+                            "court",
+                            "table",
+                            "lane",
+                            "board"
+                          ]
+                        },
+                        "seatsPerUnit": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 1000
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
                 "revealCountdownSeconds": {
                   "type": "integer",
                   "minimum": 0,
@@ -33184,7 +35279,39 @@ export const createClubCallablePayloadSchema: Record<string, unknown> = {
                     ]
                   }
                 }
-              }
+              },
+              "allOf": [
+                {
+                  "if": {
+                    "required": [
+                      "resourceCapacity"
+                    ],
+                    "properties": {
+                      "resourceCapacity": {
+                        "type": "object",
+                        "required": [
+                          "seatsPerUnit"
+                        ],
+                        "properties": {
+                          "seatsPerUnit": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "then": {
+                    "required": [
+                      "topology"
+                    ],
+                    "properties": {
+                      "topology": {
+                        "const": "adjacency"
+                      }
+                    }
+                  }
+                }
+              ]
             },
             "hostGoal": {
               "type": "string",
@@ -33289,6 +35416,13 @@ export const createClubCallablePayloadSchema: Record<string, unknown> = {
               "enabled": {
                 "type": "boolean"
               },
+              "layoutId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+              },
               "playbookId": {
                 "type": "string",
                 "minLength": 1,
@@ -33346,6 +35480,57 @@ export const createClubCallablePayloadSchema: Record<string, unknown> = {
                     "minimum": 5,
                     "maximum": 180
                   },
+                  "topology": {
+                    "type": "string",
+                    "enum": [
+                      "set",
+                      "sequence",
+                      "adjacency"
+                    ]
+                  },
+                  "resourceCapacity": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "concurrentUnits",
+                          "resourceLabelId",
+                          "seatsPerUnit"
+                        ],
+                        "properties": {
+                          "concurrentUnits": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "minimum": 1,
+                            "maximum": 200
+                          },
+                          "resourceLabelId": {
+                            "type": "string",
+                            "enum": [
+                              "court",
+                              "table",
+                              "lane",
+                              "board"
+                            ]
+                          },
+                          "seatsPerUnit": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "minimum": 1,
+                            "maximum": 1000
+                          }
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
                   "revealCountdownSeconds": {
                     "type": "integer",
                     "minimum": 0,
@@ -33389,7 +35574,39 @@ export const createClubCallablePayloadSchema: Record<string, unknown> = {
                       ]
                     }
                   }
-                }
+                },
+                "allOf": [
+                  {
+                    "if": {
+                      "required": [
+                        "resourceCapacity"
+                      ],
+                      "properties": {
+                        "resourceCapacity": {
+                          "type": "object",
+                          "required": [
+                            "seatsPerUnit"
+                          ],
+                          "properties": {
+                            "seatsPerUnit": {
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "then": {
+                      "required": [
+                        "topology"
+                      ],
+                      "properties": {
+                        "topology": {
+                          "const": "adjacency"
+                        }
+                      }
+                    }
+                  }
+                ]
               },
               "hostGoal": {
                 "type": "string",
@@ -34048,6 +36265,13 @@ export const createOrganizerCallablePayloadSchema: Record<string, unknown> = {
             "enabled": {
               "type": "boolean"
             },
+            "layoutId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+            },
             "playbookId": {
               "type": "string",
               "minLength": 1,
@@ -34105,6 +36329,57 @@ export const createOrganizerCallablePayloadSchema: Record<string, unknown> = {
                   "minimum": 5,
                   "maximum": 180
                 },
+                "topology": {
+                  "type": "string",
+                  "enum": [
+                    "set",
+                    "sequence",
+                    "adjacency"
+                  ]
+                },
+                "resourceCapacity": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "concurrentUnits",
+                        "resourceLabelId",
+                        "seatsPerUnit"
+                      ],
+                      "properties": {
+                        "concurrentUnits": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 200
+                        },
+                        "resourceLabelId": {
+                          "type": "string",
+                          "enum": [
+                            "court",
+                            "table",
+                            "lane",
+                            "board"
+                          ]
+                        },
+                        "seatsPerUnit": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 1000
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
                 "revealCountdownSeconds": {
                   "type": "integer",
                   "minimum": 0,
@@ -34148,7 +36423,39 @@ export const createOrganizerCallablePayloadSchema: Record<string, unknown> = {
                     ]
                   }
                 }
-              }
+              },
+              "allOf": [
+                {
+                  "if": {
+                    "required": [
+                      "resourceCapacity"
+                    ],
+                    "properties": {
+                      "resourceCapacity": {
+                        "type": "object",
+                        "required": [
+                          "seatsPerUnit"
+                        ],
+                        "properties": {
+                          "seatsPerUnit": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "then": {
+                    "required": [
+                      "topology"
+                    ],
+                    "properties": {
+                      "topology": {
+                        "const": "adjacency"
+                      }
+                    }
+                  }
+                }
+              ]
             },
             "hostGoal": {
               "type": "string",
@@ -34253,6 +36560,13 @@ export const createOrganizerCallablePayloadSchema: Record<string, unknown> = {
               "enabled": {
                 "type": "boolean"
               },
+              "layoutId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+              },
               "playbookId": {
                 "type": "string",
                 "minLength": 1,
@@ -34310,6 +36624,57 @@ export const createOrganizerCallablePayloadSchema: Record<string, unknown> = {
                     "minimum": 5,
                     "maximum": 180
                   },
+                  "topology": {
+                    "type": "string",
+                    "enum": [
+                      "set",
+                      "sequence",
+                      "adjacency"
+                    ]
+                  },
+                  "resourceCapacity": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "concurrentUnits",
+                          "resourceLabelId",
+                          "seatsPerUnit"
+                        ],
+                        "properties": {
+                          "concurrentUnits": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "minimum": 1,
+                            "maximum": 200
+                          },
+                          "resourceLabelId": {
+                            "type": "string",
+                            "enum": [
+                              "court",
+                              "table",
+                              "lane",
+                              "board"
+                            ]
+                          },
+                          "seatsPerUnit": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "minimum": 1,
+                            "maximum": 1000
+                          }
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
                   "revealCountdownSeconds": {
                     "type": "integer",
                     "minimum": 0,
@@ -34353,7 +36718,39 @@ export const createOrganizerCallablePayloadSchema: Record<string, unknown> = {
                       ]
                     }
                   }
-                }
+                },
+                "allOf": [
+                  {
+                    "if": {
+                      "required": [
+                        "resourceCapacity"
+                      ],
+                      "properties": {
+                        "resourceCapacity": {
+                          "type": "object",
+                          "required": [
+                            "seatsPerUnit"
+                          ],
+                          "properties": {
+                            "seatsPerUnit": {
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "then": {
+                      "required": [
+                        "topology"
+                      ],
+                      "properties": {
+                        "topology": {
+                          "const": "adjacency"
+                        }
+                      }
+                    }
+                  }
+                ]
               },
               "hostGoal": {
                 "type": "string",
@@ -35057,6 +37454,13 @@ export const updateOrganizerCallablePayloadSchema: Record<string, unknown> = {
                 "enabled": {
                   "type": "boolean"
                 },
+                "layoutId": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+                },
                 "playbookId": {
                   "type": "string",
                   "minLength": 1,
@@ -35114,6 +37518,57 @@ export const updateOrganizerCallablePayloadSchema: Record<string, unknown> = {
                       "minimum": 5,
                       "maximum": 180
                     },
+                    "topology": {
+                      "type": "string",
+                      "enum": [
+                        "set",
+                        "sequence",
+                        "adjacency"
+                      ]
+                    },
+                    "resourceCapacity": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "concurrentUnits",
+                            "resourceLabelId",
+                            "seatsPerUnit"
+                          ],
+                          "properties": {
+                            "concurrentUnits": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 1,
+                              "maximum": 200
+                            },
+                            "resourceLabelId": {
+                              "type": "string",
+                              "enum": [
+                                "court",
+                                "table",
+                                "lane",
+                                "board"
+                              ]
+                            },
+                            "seatsPerUnit": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 1,
+                              "maximum": 1000
+                            }
+                          }
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
                     "revealCountdownSeconds": {
                       "type": "integer",
                       "minimum": 0,
@@ -35157,7 +37612,39 @@ export const updateOrganizerCallablePayloadSchema: Record<string, unknown> = {
                         ]
                       }
                     }
-                  }
+                  },
+                  "allOf": [
+                    {
+                      "if": {
+                        "required": [
+                          "resourceCapacity"
+                        ],
+                        "properties": {
+                          "resourceCapacity": {
+                            "type": "object",
+                            "required": [
+                              "seatsPerUnit"
+                            ],
+                            "properties": {
+                              "seatsPerUnit": {
+                                "type": "integer"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "then": {
+                        "required": [
+                          "topology"
+                        ],
+                        "properties": {
+                          "topology": {
+                            "const": "adjacency"
+                          }
+                        }
+                      }
+                    }
+                  ]
                 },
                 "hostGoal": {
                   "type": "string",
@@ -35262,6 +37749,13 @@ export const updateOrganizerCallablePayloadSchema: Record<string, unknown> = {
                   "enabled": {
                     "type": "boolean"
                   },
+                  "layoutId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+                  },
                   "playbookId": {
                     "type": "string",
                     "minLength": 1,
@@ -35319,6 +37813,57 @@ export const updateOrganizerCallablePayloadSchema: Record<string, unknown> = {
                         "minimum": 5,
                         "maximum": 180
                       },
+                      "topology": {
+                        "type": "string",
+                        "enum": [
+                          "set",
+                          "sequence",
+                          "adjacency"
+                        ]
+                      },
+                      "resourceCapacity": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "concurrentUnits",
+                              "resourceLabelId",
+                              "seatsPerUnit"
+                            ],
+                            "properties": {
+                              "concurrentUnits": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ],
+                                "minimum": 1,
+                                "maximum": 200
+                              },
+                              "resourceLabelId": {
+                                "type": "string",
+                                "enum": [
+                                  "court",
+                                  "table",
+                                  "lane",
+                                  "board"
+                                ]
+                              },
+                              "seatsPerUnit": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ],
+                                "minimum": 1,
+                                "maximum": 1000
+                              }
+                            }
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
                       "revealCountdownSeconds": {
                         "type": "integer",
                         "minimum": 0,
@@ -35362,7 +37907,39 @@ export const updateOrganizerCallablePayloadSchema: Record<string, unknown> = {
                           ]
                         }
                       }
-                    }
+                    },
+                    "allOf": [
+                      {
+                        "if": {
+                          "required": [
+                            "resourceCapacity"
+                          ],
+                          "properties": {
+                            "resourceCapacity": {
+                              "type": "object",
+                              "required": [
+                                "seatsPerUnit"
+                              ],
+                              "properties": {
+                                "seatsPerUnit": {
+                                  "type": "integer"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "then": {
+                          "required": [
+                            "topology"
+                          ],
+                          "properties": {
+                            "topology": {
+                              "const": "adjacency"
+                            }
+                          }
+                        }
+                      }
+                    ]
                   },
                   "hostGoal": {
                     "type": "string",
@@ -36478,6 +39055,13 @@ export const updateClubCallablePayloadSchema: Record<string, unknown> = {
                 "enabled": {
                   "type": "boolean"
                 },
+                "layoutId": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+                },
                 "playbookId": {
                   "type": "string",
                   "minLength": 1,
@@ -36535,6 +39119,57 @@ export const updateClubCallablePayloadSchema: Record<string, unknown> = {
                       "minimum": 5,
                       "maximum": 180
                     },
+                    "topology": {
+                      "type": "string",
+                      "enum": [
+                        "set",
+                        "sequence",
+                        "adjacency"
+                      ]
+                    },
+                    "resourceCapacity": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "concurrentUnits",
+                            "resourceLabelId",
+                            "seatsPerUnit"
+                          ],
+                          "properties": {
+                            "concurrentUnits": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 1,
+                              "maximum": 200
+                            },
+                            "resourceLabelId": {
+                              "type": "string",
+                              "enum": [
+                                "court",
+                                "table",
+                                "lane",
+                                "board"
+                              ]
+                            },
+                            "seatsPerUnit": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 1,
+                              "maximum": 1000
+                            }
+                          }
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
                     "revealCountdownSeconds": {
                       "type": "integer",
                       "minimum": 0,
@@ -36578,7 +39213,39 @@ export const updateClubCallablePayloadSchema: Record<string, unknown> = {
                         ]
                       }
                     }
-                  }
+                  },
+                  "allOf": [
+                    {
+                      "if": {
+                        "required": [
+                          "resourceCapacity"
+                        ],
+                        "properties": {
+                          "resourceCapacity": {
+                            "type": "object",
+                            "required": [
+                              "seatsPerUnit"
+                            ],
+                            "properties": {
+                              "seatsPerUnit": {
+                                "type": "integer"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "then": {
+                        "required": [
+                          "topology"
+                        ],
+                        "properties": {
+                          "topology": {
+                            "const": "adjacency"
+                          }
+                        }
+                      }
+                    }
+                  ]
                 },
                 "hostGoal": {
                   "type": "string",
@@ -36683,6 +39350,13 @@ export const updateClubCallablePayloadSchema: Record<string, unknown> = {
                   "enabled": {
                     "type": "boolean"
                   },
+                  "layoutId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+                  },
                   "playbookId": {
                     "type": "string",
                     "minLength": 1,
@@ -36740,6 +39414,57 @@ export const updateClubCallablePayloadSchema: Record<string, unknown> = {
                         "minimum": 5,
                         "maximum": 180
                       },
+                      "topology": {
+                        "type": "string",
+                        "enum": [
+                          "set",
+                          "sequence",
+                          "adjacency"
+                        ]
+                      },
+                      "resourceCapacity": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "concurrentUnits",
+                              "resourceLabelId",
+                              "seatsPerUnit"
+                            ],
+                            "properties": {
+                              "concurrentUnits": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ],
+                                "minimum": 1,
+                                "maximum": 200
+                              },
+                              "resourceLabelId": {
+                                "type": "string",
+                                "enum": [
+                                  "court",
+                                  "table",
+                                  "lane",
+                                  "board"
+                                ]
+                              },
+                              "seatsPerUnit": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ],
+                                "minimum": 1,
+                                "maximum": 1000
+                              }
+                            }
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
                       "revealCountdownSeconds": {
                         "type": "integer",
                         "minimum": 0,
@@ -36783,7 +39508,39 @@ export const updateClubCallablePayloadSchema: Record<string, unknown> = {
                           ]
                         }
                       }
-                    }
+                    },
+                    "allOf": [
+                      {
+                        "if": {
+                          "required": [
+                            "resourceCapacity"
+                          ],
+                          "properties": {
+                            "resourceCapacity": {
+                              "type": "object",
+                              "required": [
+                                "seatsPerUnit"
+                              ],
+                              "properties": {
+                                "seatsPerUnit": {
+                                  "type": "integer"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "then": {
+                          "required": [
+                            "topology"
+                          ],
+                          "properties": {
+                            "topology": {
+                              "const": "adjacency"
+                            }
+                          }
+                        }
+                      }
+                    ]
                   },
                   "hostGoal": {
                     "type": "string",
@@ -41130,6 +43887,26 @@ export const adminUpdateEventDetailsCallablePayloadSchema: Record<string, unknow
                     "mutualInterestOnly",
                     "questionnaireClueOnly"
                   ]
+                },
+                "matchingObjective": {
+                  "type": "string",
+                  "enum": [
+                    "coverage",
+                    "romantic",
+                    "affinity",
+                    "novelty",
+                    "balance",
+                    "spread"
+                  ]
+                },
+                "unitOutcome": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "completion",
+                    "score",
+                    "rank"
+                  ]
                 }
               }
             },
@@ -41329,6 +44106,31 @@ export const startOrganizerConversationCallablePayloadSchema: Record<string, unk
       "maxLength": 180
     },
     "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+} as const;
+
+export const startOrganizerContactConversationCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/start_organizer_contact_conversation_payload.schema.json",
+  "title": "StartOrganizerContactConversationCallablePayload",
+  "description": "Manager-only request to start or reuse an organizer-scoped conversation with one verified linked CRM contact.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "contactId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -42166,6 +44968,26 @@ export const createEventCallablePayloadSchema: Record<string, unknown> = {
                 "mutualInterestOnly",
                 "questionnaireClueOnly"
               ]
+            },
+            "matchingObjective": {
+              "type": "string",
+              "enum": [
+                "coverage",
+                "romantic",
+                "affinity",
+                "novelty",
+                "balance",
+                "spread"
+              ]
+            },
+            "unitOutcome": {
+              "type": "string",
+              "enum": [
+                "none",
+                "completion",
+                "score",
+                "rank"
+              ]
             }
           }
         },
@@ -42181,6 +45003,13 @@ export const createEventCallablePayloadSchema: Record<string, unknown> = {
       "properties": {
         "enabled": {
           "type": "boolean"
+        },
+        "layoutId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
         },
         "playbookId": {
           "type": "string",
@@ -42239,6 +45068,57 @@ export const createEventCallablePayloadSchema: Record<string, unknown> = {
               "minimum": 5,
               "maximum": 180
             },
+            "topology": {
+              "type": "string",
+              "enum": [
+                "set",
+                "sequence",
+                "adjacency"
+              ]
+            },
+            "resourceCapacity": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "concurrentUnits",
+                    "resourceLabelId",
+                    "seatsPerUnit"
+                  ],
+                  "properties": {
+                    "concurrentUnits": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ],
+                      "minimum": 1,
+                      "maximum": 200
+                    },
+                    "resourceLabelId": {
+                      "type": "string",
+                      "enum": [
+                        "court",
+                        "table",
+                        "lane",
+                        "board"
+                      ]
+                    },
+                    "seatsPerUnit": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ],
+                      "minimum": 1,
+                      "maximum": 1000
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "revealCountdownSeconds": {
               "type": "integer",
               "minimum": 0,
@@ -42282,7 +45162,39 @@ export const createEventCallablePayloadSchema: Record<string, unknown> = {
                 ]
               }
             }
-          }
+          },
+          "allOf": [
+            {
+              "if": {
+                "required": [
+                  "resourceCapacity"
+                ],
+                "properties": {
+                  "resourceCapacity": {
+                    "type": "object",
+                    "required": [
+                      "seatsPerUnit"
+                    ],
+                    "properties": {
+                      "seatsPerUnit": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "topology"
+                ],
+                "properties": {
+                  "topology": {
+                    "const": "adjacency"
+                  }
+                }
+              }
+            }
+          ]
         },
         "hostGoal": {
           "type": "string",
@@ -45352,6 +48264,13 @@ export const importEventAttendeesCallablePayloadSchema: Record<string, unknown> 
             ],
             "maxLength": 180
           },
+          "arrivalGroup": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
           "ticketType": {
             "type": [
               "string",
@@ -45863,6 +48782,445 @@ export const getEventRuntimeBootstrapCallablePayloadSchema: Record<string, unkno
   }
 } as const;
 
+export const upsertEventSuccessLayoutCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/upsert_event_success_layout_payload.schema.json",
+  "title": "UpsertEventSuccessLayoutCallablePayload",
+  "description": "Creates or updates one reusable organizer-owned parametric layout.",
+  "x-callable-aliases": [
+    "upsertEventSuccessLayout"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "label",
+    "units"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "layoutId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "units": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label",
+          "shape",
+          "capacity",
+          "gridX",
+          "gridY",
+          "order"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "shape": {
+            "type": "string",
+            "enum": [
+              "round",
+              "rect",
+              "row",
+              "court",
+              "zone"
+            ]
+          },
+          "capacity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000
+          },
+          "gridX": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 199
+          },
+          "gridY": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 199
+          },
+          "order": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          }
+        }
+      }
+    }
+  }
+} as const;
+
+export const upsertEventSuccessLayoutCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/upsert_event_success_layout_response.schema.json",
+  "title": "UpsertEventSuccessLayoutCallableResponse",
+  "description": "Canonical saved organizer layout returned after an upsert.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "layout"
+  ],
+  "properties": {
+    "layout": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "layoutId",
+        "label",
+        "units"
+      ],
+      "properties": {
+        "layoutId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "units": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 200,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "label",
+              "shape",
+              "capacity",
+              "gridX",
+              "gridY",
+              "order"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "shape": {
+                "type": "string",
+                "enum": [
+                  "round",
+                  "rect",
+                  "row",
+                  "court",
+                  "zone"
+                ]
+              },
+              "capacity": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 1000
+              },
+              "gridX": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 199
+              },
+              "gridY": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 199
+              },
+              "order": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 200
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+} as const;
+
+export const getEventSuccessSpatialLayoutCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_event_success_spatial_layout_payload.schema.json",
+  "title": "GetEventSuccessSpatialLayoutCallablePayload",
+  "description": "Requests the selected reusable layout for one authorized event participant or manager.",
+  "x-callable-aliases": [
+    "getEventSuccessSpatialLayout"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+} as const;
+
+export const getEventSuccessSpatialLayoutCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_event_success_spatial_layout_response.schema.json",
+  "title": "GetEventSuccessSpatialLayoutCallableResponse",
+  "description": "Selected reusable layout or null when the event has no spatial map.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "layout"
+  ],
+  "properties": {
+    "layout": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "layoutId",
+            "label",
+            "units"
+          ],
+          "properties": {
+            "layoutId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "units": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 200,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "label",
+                  "shape",
+                  "capacity",
+                  "gridX",
+                  "gridY",
+                  "order"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+                  },
+                  "label": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "shape": {
+                    "type": "string",
+                    "enum": [
+                      "round",
+                      "rect",
+                      "row",
+                      "court",
+                      "zone"
+                    ]
+                  },
+                  "capacity": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "gridX": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 199
+                  },
+                  "gridY": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 199
+                  },
+                  "order": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 200
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+} as const;
+
+export const eventSuccessSpatialActionCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/event_success_spatial_action_payload.schema.json",
+  "title": "EventSuccessSpatialActionCallablePayload",
+  "description": "Revision-fenced Host spatial-control action.",
+  "x-callable-aliases": [
+    "controlEventSuccessSpatial"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "expectedRevision",
+    "action",
+    "moduleId",
+    "uid"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "previewReassignment",
+        "reassign",
+        "confirmPosition",
+        "releasePinned"
+      ]
+    },
+    "moduleId": {
+      "type": "string",
+      "enum": [
+        "micro_pods",
+        "guided_rotations"
+      ]
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "destinationUnitId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+    },
+    "scope": {
+      "type": "string",
+      "enum": [
+        "thisRound",
+        "pinned"
+      ]
+    }
+  }
+} as const;
+
+export const eventSuccessSpatialActionCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/event_success_spatial_action_response.schema.json",
+  "title": "EventSuccessSpatialActionCallableResponse",
+  "description": "Current revision and optional destination validation for a Host spatial action.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "revision",
+    "destinations"
+  ],
+  "properties": {
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "destinations": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "unitId",
+          "valid",
+          "reason",
+          "recommendedScope"
+        ],
+        "properties": {
+          "unitId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+          },
+          "valid": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "capacity",
+              "safetyKeepApart",
+              "declaredConstraint",
+              null
+            ]
+          },
+          "recommendedScope": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "thisRound",
+              "pinned",
+              null
+            ]
+          }
+        }
+      }
+    }
+  }
+} as const;
+
 export const getEventRuntimeBootstrapCallableResponseSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/get_event_runtime_bootstrap_response.schema.json",
@@ -45887,6 +49245,7 @@ export const getEventRuntimeBootstrapCallableResponseSchema: Record<string, unkn
         "locationName",
         "runtimeTermsVersion",
         "moduleIds",
+        "layout",
         "requiredFieldIds",
         "optionalFieldIds",
         "questionnaireConfig"
@@ -45931,6 +49290,92 @@ export const getEventRuntimeBootstrapCallableResponseSchema: Record<string, unkn
             "minLength": 1,
             "maxLength": 120
           }
+        },
+        "layout": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "layoutId",
+                "label",
+                "units"
+              ],
+              "properties": {
+                "layoutId": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "units": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 200,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "label",
+                      "shape",
+                      "capacity",
+                      "gridX",
+                      "gridY",
+                      "order"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+                      },
+                      "label": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "shape": {
+                        "type": "string",
+                        "enum": [
+                          "round",
+                          "rect",
+                          "row",
+                          "court",
+                          "zone"
+                        ]
+                      },
+                      "capacity": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 1000
+                      },
+                      "gridX": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 199
+                      },
+                      "gridY": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 199
+                      },
+                      "order": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 200
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
         },
         "requiredFieldIds": {
           "description": "Fields that must be completed before event mode opens. Sensitive preference fields are never required for entry.",
@@ -47160,6 +50605,68 @@ export const listOrganizerContactsCallablePayloadSchema: Record<string, unknown>
   }
 } as const;
 
+export const createOrganizerContactCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/create_organizer_contact_payload.schema.json",
+  "title": "CreateOrganizerContactCallablePayload",
+  "description": "Manager-only creation of a name-only organizer CRM contact. It does not create an attendee, Consumer account, or messaging permission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "displayName"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    }
+  }
+} as const;
+
+export const createOrganizerContactCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/create_organizer_contact_response.schema.json",
+  "title": "CreateOrganizerContactCallableResponse",
+  "description": "Identity of one newly created organizer-only CRM contact.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "contactId",
+    "displayName",
+    "revision"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+} as const;
+
 export const listOrganizerContactsCallableResponseSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/list_organizer_contacts_response.schema.json",
@@ -47534,6 +51041,7 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
     "ambiguousCandidateContactIds",
     "whatsappAdminSuppressed",
     "traits",
+    "revenue",
     "events",
     "eventsTruncated",
     "revision"
@@ -47710,6 +51218,53 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
         }
       }
     },
+    "revenue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "coverage",
+        "amounts"
+      ],
+      "properties": {
+        "coverage": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "partial",
+            "unavailable"
+          ]
+        },
+        "amounts": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "currency",
+              "amountMinor",
+              "paidOrderCount"
+            ],
+            "properties": {
+              "currency": {
+                "type": "string",
+                "pattern": "^[A-Z]{3}$"
+              },
+              "amountMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "paidOrderCount": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1000000
+              }
+            }
+          }
+        }
+      }
+    },
     "events": {
       "type": "array",
       "maxItems": 100,
@@ -47828,6 +51383,78 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
     }
   },
   "definitions": {
+    "revenue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "coverage",
+        "amounts"
+      ],
+      "properties": {
+        "coverage": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "partial",
+            "unavailable"
+          ]
+        },
+        "amounts": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "currency",
+              "amountMinor",
+              "paidOrderCount"
+            ],
+            "properties": {
+              "currency": {
+                "type": "string",
+                "pattern": "^[A-Z]{3}$"
+              },
+              "amountMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "paidOrderCount": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1000000
+              }
+            }
+          }
+        }
+      }
+    },
+    "revenueAmount": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "amountMinor",
+        "paidOrderCount"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "amountMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "paidOrderCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        }
+      }
+    },
     "traits": {
       "type": "object",
       "additionalProperties": false,
@@ -48433,6 +52060,7 @@ export const overrideEventSuccessRotationsCallablePayloadSchema: Record<string, 
   "additionalProperties": false,
   "required": [
     "eventId",
+    "expectedRevision",
     "rounds"
   ],
   "properties": {
@@ -48440,6 +52068,11 @@ export const overrideEventSuccessRotationsCallablePayloadSchema: Record<string, 
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
     },
     "rounds": {
       "type": "array",
@@ -48485,6 +52118,267 @@ export const overrideEventSuccessRotationsCallablePayloadSchema: Record<string, 
           }
         }
       }
+    }
+  }
+} as const;
+
+export const prepareEventSuccessRotationDraftCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/prepare_event_success_rotation_draft_payload.schema.json",
+  "title": "PrepareEventSuccessRotationDraftCallablePayload",
+  "description": "Revision-fenced payload accepted by generateEventSuccessRotations when preparing the next host-only round.",
+  "x-callable-aliases": [
+    "generateEventSuccessRotations"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "expectedRevision"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    }
+  }
+} as const;
+
+export const publishEventSuccessRotationRoundCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/publish_event_success_rotation_round_payload.schema.json",
+  "title": "PublishEventSuccessRotationRoundCallablePayload",
+  "description": "Confirmed revision-fenced publication of one precomputed guided-rotation round.",
+  "x-callable-aliases": [
+    "publishEventSuccessRotationRound"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "expectedRevision",
+    "roundIndex",
+    "confirmed"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "roundIndex": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "confirmed": {
+      "type": "boolean"
+    }
+  }
+} as const;
+
+export const eventSuccessLiveActionCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/event_success_live_action_payload.schema.json",
+  "title": "EventSuccessLiveActionCallablePayload",
+  "description": "Revision-fenced live control action accepted by controlEventSuccessLive.",
+  "x-callable-aliases": [
+    "controlEventSuccessLive"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "expectedRevision",
+    "action"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "setActiveStep",
+        "startRevealCountdown",
+        "cancelRevealCountdown",
+        "publishReveal",
+        "complete"
+      ]
+    },
+    "activeStepIndex": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "roundIndex": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "confirmed": {
+      "type": "boolean"
+    }
+  }
+} as const;
+
+export const recordEventSuccessUnitOutcomesCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/record_event_success_unit_outcomes_payload.schema.json",
+  "title": "RecordEventSuccessUnitOutcomesCallablePayload",
+  "description": "Revision-fenced Host payload that replaces one complete unit-outcome round.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "expectedRevision",
+    "roundIndex",
+    "entries"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "roundIndex": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 200,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "unitId",
+              "unitLabel",
+              "completed"
+            ],
+            "properties": {
+              "unitId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+              },
+              "unitLabel": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "completed": {
+                "type": "boolean"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "unitId",
+              "unitLabel",
+              "score"
+            ],
+            "properties": {
+              "unitId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+              },
+              "unitLabel": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "score": {
+                "type": "number",
+                "minimum": -1000000,
+                "maximum": 1000000
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "unitId",
+              "unitLabel",
+              "rank"
+            ],
+            "properties": {
+              "unitId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+              },
+              "unitLabel": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "rank": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 200
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+} as const;
+
+export const recordEventSuccessUnitOutcomesCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/record_event_success_unit_outcomes_response.schema.json",
+  "title": "RecordEventSuccessUnitOutcomesCallableResponse",
+  "description": "Persisted outcome revision and standings projection state.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "replayed",
+    "revision",
+    "standingCount"
+  ],
+  "properties": {
+    "replayed": {
+      "type": "boolean"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "standingCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 200
     }
   }
 } as const;

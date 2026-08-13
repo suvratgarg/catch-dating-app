@@ -3,6 +3,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_assignment.d
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
@@ -38,6 +39,14 @@ void main() {
         containsAll(plan.playbook.nonConfigurableModuleIds),
       );
       expect(samePlan.createdAt, plan.createdAt);
+      final rawPlan = await firestore
+          .collection('eventSuccessPlans')
+          .doc(event.id)
+          .get();
+      expect(rawPlan.data(), isNot(contains('liveControlRevision')));
+      expect(rawPlan.data(), isNot(contains('assignmentDraftRevision')));
+      expect(rawPlan.data(), isNot(contains('publishedRotationRoundIndex')));
+      expect(rawPlan.data(), isNot(contains('publishedRevealRoundIndex')));
     });
 
     test('fetches a saved plan by event id', () async {
@@ -53,59 +62,157 @@ void main() {
       expect(fetched?.playbookId, plan.playbookId);
     });
 
-    test('saves host setup and live step updates', () async {
-      final event = buildEvent();
-      final plan = await repository.ensurePlanForEvent(event);
-      final draft = plan.hostDraft.withModuleSelection(
-        'wingman_requests',
-        false,
-      );
+    test(
+      'saves host setup and routes live steps through the fenced callable',
+      () async {
+        final event = buildEvent();
+        final plan = await repository.ensurePlanForEvent(event);
+        final draft = plan.hostDraft.withModuleSelection(
+          'wingman_requests',
+          false,
+        );
 
-      await repository.savePlan(
-        plan.copyWithDraft(draft, updatedAt: plan.updatedAt),
-        expectedUpdatedAt: plan.updatedAt,
-      );
-      await repository.updateActiveStep(eventId: event.id, activeStepIndex: 2);
+        await repository.savePlan(
+          plan.copyWithDraft(draft, updatedAt: plan.updatedAt),
+          expectedUpdatedAt: plan.updatedAt,
+        );
+        await repository.updateActiveStep(
+          eventId: event.id,
+          activeStepIndex: 2,
+          expectedRevision: 7,
+        );
 
-      final saved = await repository.watchPlan(event.id).first;
-      expect(saved, isNotNull);
-      expect(saved!.activeStepIndex, 2);
-      expect(saved.status, EventSuccessPlanStatus.live);
-      expect(saved.hasModule('wingman_requests'), isTrue);
-    });
+        final saved = await repository.watchPlan(event.id).first;
+        expect(saved, isNotNull);
+        expect(saved!.activeStepIndex, 0);
+        expect(saved.hasModule('wingman_requests'), isTrue);
+        final callable =
+            functions.httpsCallable('controlEventSuccessLive')
+                as TestHttpsCallable;
+        expect(callable.calls, [
+          {
+            'eventId': event.id,
+            'expectedRevision': 7,
+            'action': 'setActiveStep',
+            'activeStepIndex': 2,
+          },
+        ]);
+      },
+    );
 
-    test('persists host-controlled live reveal state', () async {
-      final event = buildEvent();
-      await repository.ensurePlanForEvent(event);
+    test(
+      'sends confirmed reveal actions through the fenced callable',
+      () async {
+        await repository.startLiveRevealCountdown(
+          eventId: 'event-1',
+          roundIndex: 0,
+          expectedRevision: 3,
+          confirmed: true,
+        );
+        await repository.revealLiveRound(
+          eventId: 'event-1',
+          roundIndex: 0,
+          expectedRevision: 4,
+          confirmed: true,
+        );
+        await repository.cancelLiveRevealCountdown(
+          eventId: 'event-1',
+          expectedRevision: 5,
+        );
 
-      await repository.startLiveRevealCountdown(
-        eventId: event.id,
+        final callable =
+            functions.httpsCallable('controlEventSuccessLive')
+                as TestHttpsCallable;
+        expect(callable.calls, [
+          {
+            'eventId': 'event-1',
+            'expectedRevision': 3,
+            'action': 'startRevealCountdown',
+            'roundIndex': 0,
+            'confirmed': true,
+          },
+          {
+            'eventId': 'event-1',
+            'expectedRevision': 4,
+            'action': 'publishReveal',
+            'roundIndex': 0,
+            'confirmed': true,
+          },
+          {
+            'eventId': 'event-1',
+            'expectedRevision': 5,
+            'action': 'cancelRevealCountdown',
+          },
+        ]);
+      },
+    );
+
+    test('watches standings and records a typed outcome round', () async {
+      final now = DateTime.utc(2026, 8, 13, 12);
+      await firestore.collection('eventSuccessStandings').doc('event-1').set({
+        'eventId': 'event-1',
+        'clubId': 'club-1',
+        'unitOutcome': 'score',
+        'revision': 1,
+        'latestRoundIndex': 0,
+        'rounds': [
+          {
+            'roundIndex': 0,
+            'entries': [
+              {
+                'unitId': 'team-a',
+                'unitLabel': 'Team A',
+                'position': 1,
+                'value': 4,
+                'roundsRecorded': 1,
+              },
+            ],
+          },
+        ],
+        'entries': [
+          {
+            'unitId': 'team-a',
+            'unitLabel': 'Team A',
+            'position': 1,
+            'value': 4,
+            'roundsRecorded': 1,
+          },
+        ],
+        'createdAt': now,
+        'updatedAt': now,
+      });
+
+      final standings = await repository
+          .watchStandingsForEvent('event-1')
+          .first;
+      expect(standings?.entries.single.value, 4);
+
+      await repository.recordUnitOutcomes(
+        eventId: 'event-1',
+        expectedRevision: 1,
         roundIndex: 1,
+        entries: const [
+          EventSuccessScoreOutcomeInput(
+            unitId: 'team-a',
+            unitLabel: 'Team A',
+            score: 7,
+          ),
+        ],
       );
 
-      final countingDown = await repository.watchPlan(event.id).first;
-      expect(countingDown?.status, EventSuccessPlanStatus.live);
-      expect(countingDown?.revealStatus, EventSuccessRevealStatus.countingDown);
-      expect(countingDown?.activeRevealRoundIndex, 1);
-      expect(countingDown?.revealStartedAt, isNotNull);
-      expect(
-        countingDown!.revealEndsAt!.isAfter(countingDown.revealStartedAt!),
-        isTrue,
-      );
-
-      await repository.revealLiveRound(eventId: event.id, roundIndex: 1);
-
-      final revealed = await repository.watchPlan(event.id).first;
-      expect(revealed?.revealStatus, EventSuccessRevealStatus.revealed);
-      expect(revealed?.isRoundRevealed(1, DateTime.now()), isTrue);
-
-      await repository.resetLiveReveal(eventId: event.id);
-
-      final reset = await repository.watchPlan(event.id).first;
-      expect(reset?.revealStatus, EventSuccessRevealStatus.idle);
-      expect(reset?.activeRevealRoundIndex, 0);
-      expect(reset?.revealStartedAt, isNull);
-      expect(reset?.revealEndsAt, isNull);
+      final callable =
+          functions.httpsCallable('recordEventSuccessUnitOutcomes')
+              as TestHttpsCallable;
+      expect(callable.calls, [
+        {
+          'eventId': 'event-1',
+          'expectedRevision': 1,
+          'roundIndex': 1,
+          'entries': [
+            {'unitId': 'team-a', 'unitLabel': 'Team A', 'score': 7},
+          ],
+        },
+      ]);
     });
 
     test('writes attendee feedback under stable event-user id', () async {
@@ -368,6 +475,7 @@ void main() {
       () async {
         await repository.overrideGuidedRotations(
           eventId: 'event-1',
+          expectedRevision: 6,
           rounds: const [
             EventSuccessRotationOverrideRound(
               roundIndex: 0,
@@ -387,6 +495,7 @@ void main() {
         expect(callable.calls, [
           {
             'eventId': 'event-1',
+            'expectedRevision': 6,
             'rounds': [
               {
                 'roundIndex': 0,

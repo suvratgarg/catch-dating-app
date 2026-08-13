@@ -242,6 +242,18 @@ void main() {
       expect(quizDraft.structureConfig.unitCount, isNull);
       expect(quizDraft.structureConfig.estimatedUnitCount(50), 10);
       expect(pickleballDraft.structureConfig.rotationIntervalMinutes, 15);
+      expect(
+        pickleballDraft.structureConfig.topology,
+        EventSuccessTopology.sequence,
+      );
+      expect(
+        pickleballDraft.structureConfig.resourceCapacity,
+        const EventSuccessResourceCapacity(
+          concurrentUnits: null,
+          resourceLabelId: EventSuccessResourceLabelId.court,
+          seatsPerUnit: null,
+        ),
+      );
     });
 
     test(
@@ -297,6 +309,12 @@ void main() {
         unitKind: EventSuccessUnitKind.pairs,
         unitSize: 2,
         rotationIntervalMinutes: 15,
+        topology: EventSuccessTopology.sequence,
+        resourceCapacity: EventSuccessResourceCapacity(
+          concurrentUnits: 3,
+          resourceLabelId: EventSuccessResourceLabelId.court,
+          seatsPerUnit: null,
+        ),
         rotationRepeatStrategy:
             EventSuccessRotationRepeatStrategy.allowWhenExhausted,
         maxPairMeetings: 3,
@@ -312,10 +330,33 @@ void main() {
       final roundTrip = EventSuccessStructureConfig.fromJson(json);
 
       expect(json['rotationRepeatStrategy'], 'allowWhenExhausted');
+      expect(json['topology'], 'sequence');
+      expect(json['resourceCapacity'], {
+        'concurrentUnits': 3,
+        'resourceLabelId': 'court',
+        'seatsPerUnit': null,
+      });
       expect(json['maxPairMeetings'], 3);
       expect(json['balanceActivityAttributes'], ['skillBand']);
       expect(json['clusterActivityAttributes'], ['paceBand']);
       expect(roundTrip, config);
+    });
+
+    test('binds seated tables to honest unsupported adjacency inputs', () {
+      final config = EventSuccessStructureConfig.defaultForInteractionModel(
+        EventInteractionModel.seatedTable,
+        targetAttendeeCount: 18,
+      );
+
+      expect(config.topology, EventSuccessTopology.adjacency);
+      expect(
+        config.resourceCapacity,
+        const EventSuccessResourceCapacity(
+          concurrentUnits: 5,
+          resourceLabelId: EventSuccessResourceLabelId.table,
+          seatsPerUnit: 4,
+        ),
+      );
     });
 
     test('legacy defaults hydrate platform-owned modules as always on', () {
@@ -542,8 +583,8 @@ void main() {
         isFalse,
       );
       expect(
-        quiz.defaultModuleIds,
-        contains(EventSuccessModuleCatalog.microPods.id),
+        quiz.isSelectable(EventSuccessModuleCatalog.microPods.id),
+        isFalse,
       );
       expect(
         yoga.isSelectable(EventSuccessModuleCatalog.guidedRotations.id),
@@ -577,13 +618,15 @@ void main() {
       expect(profile.playbook.id, EventSuccessPlaybookLibrary.pubQuiz.id);
       expect(profile.structureConfig.unitKind, EventSuccessUnitKind.teams);
       expect(
-        profile.defaultModuleIds,
-        contains(EventSuccessModuleCatalog.microPods.id),
+        profile.isSelectable(EventSuccessModuleCatalog.microPods.id),
+        isFalse,
       );
       expect(
-        profile.defaultModuleIds,
-        contains(EventSuccessModuleCatalog.liveReveal.id),
+        profile.isSelectable(EventSuccessModuleCatalog.liveReveal.id),
+        isFalse,
       );
+      expect(profile.assignmentResolution.supported, isFalse);
+      expect(profile.assignmentResolution.reason, contains('not implemented'));
     });
 
     test(
@@ -598,6 +641,8 @@ void main() {
             'rotationSuitability': 'plannedBreaks',
             'assignmentAlgorithm': 'teamBalancer',
             'compatibilityPolicy': 'questionnaireClueOnly',
+            'matchingObjective': 'spread',
+            'unitOutcome': 'score',
           },
         );
 
@@ -624,11 +669,14 @@ void main() {
           profile.compatibilityPolicy,
           EventSuccessCompatibilityPolicy.questionnaireClueOnly,
         );
+        expect(profile.matchingObjective, EventSuccessMatchingObjective.spread);
+        expect(profile.unitOutcome, EventSuccessUnitOutcome.score);
+        expect(profile.assignmentResolution.supported, isFalse);
         expect(profile.playbook.id, EventSuccessPlaybookLibrary.pubQuiz.id);
         expect(profile.structureConfig.unitKind, EventSuccessUnitKind.teams);
         expect(
-          profile.defaultModuleIds,
-          contains(EventSuccessModuleCatalog.microPods.id),
+          profile.isSelectable(EventSuccessModuleCatalog.microPods.id),
+          isFalse,
         );
       },
     );
@@ -651,6 +699,8 @@ void main() {
         profile.compatibilityPolicy,
         EventSuccessCompatibilityPolicy.mutualInterestOnly,
       );
+      expect(profile.matchingObjective, EventSuccessMatchingObjective.romantic);
+      expect(profile.assignmentResolution.supported, isTrue);
       expect(
         profile.playbook.id,
         EventSuccessPlaybookLibrary.algorithmicMixer.id,
@@ -660,6 +710,54 @@ void main() {
         profile.defaultModuleIds,
         contains(EventSuccessModuleCatalog.compatibilityQuestionnaire.id),
       );
+    });
+
+    test('activity profiles bind matching objectives without format forks', () {
+      final profiles = {
+        ActivityKind.socialRun: EventSuccessMatchingObjective.affinity,
+        ActivityKind.pubQuiz: EventSuccessMatchingObjective.spread,
+        ActivityKind.dinner: EventSuccessMatchingObjective.affinity,
+        ActivityKind.pickleball: EventSuccessMatchingObjective.balance,
+        ActivityKind.singlesMixer: EventSuccessMatchingObjective.romantic,
+        ActivityKind.openActivity: EventSuccessMatchingObjective.coverage,
+      };
+
+      for (final entry in profiles.entries) {
+        expect(
+          EventSuccessActivityProfile.forActivity(entry.key).matchingObjective,
+          entry.value,
+        );
+      }
+      expect(
+        EventSuccessActivityProfile.forActivity(
+          ActivityKind.pubQuiz,
+        ).assignmentResolution.supported,
+        isFalse,
+      );
+      expect(
+        EventSuccessActivityProfile.forActivity(
+          ActivityKind.dinner,
+        ).assignmentResolution.supported,
+        isFalse,
+      );
+    });
+
+    test('activity profiles bind all four unit outcome shapes', () {
+      final profiles = {
+        ActivityKind.socialRun: EventSuccessUnitOutcome.completion,
+        ActivityKind.pubQuiz: EventSuccessUnitOutcome.score,
+        ActivityKind.dinner: EventSuccessUnitOutcome.none,
+        ActivityKind.pickleball: EventSuccessUnitOutcome.rank,
+        ActivityKind.singlesMixer: EventSuccessUnitOutcome.none,
+        ActivityKind.openActivity: EventSuccessUnitOutcome.none,
+      };
+
+      for (final entry in profiles.entries) {
+        expect(
+          EventSuccessActivityProfile.forActivity(entry.key).unitOutcome,
+          entry.value,
+        );
+      }
     });
 
     test('event defaults normalize to the selected activity', () {
@@ -720,7 +818,7 @@ void main() {
         expect(plan.structureConfig.estimatedUnitCount(42), 9);
         expect(
           plan.selectedModuleIds,
-          contains(EventSuccessModuleCatalog.microPods.id),
+          isNot(contains(EventSuccessModuleCatalog.microPods.id)),
         );
       }
     });

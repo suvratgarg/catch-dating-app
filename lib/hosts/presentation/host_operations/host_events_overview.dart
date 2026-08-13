@@ -1,179 +1,51 @@
 part of '../host_operations_screen.dart';
 
-class HostTodayDashboardCard extends ConsumerWidget {
-  const HostTodayDashboardCard({
+class HostEventsOverviewSection extends StatelessWidget {
+  const HostEventsOverviewSection({
     super.key,
     required this.club,
-    required this.currentUid,
-    required this.clubs,
-    required this.showClubPicker,
-    required this.onSwitchClubIndex,
-    required this.onViewEvents,
-    required this.onCreateEvent,
-    required this.onManageEvent,
-    required this.onOpenTask,
-    this.now,
-  });
-
-  final Club club;
-  final String currentUid;
-  final List<Club> clubs;
-  final bool showClubPicker;
-  final ValueChanged<int> onSwitchClubIndex;
-  final VoidCallback onViewEvents;
-  final HostHomeCreateEventCallback onCreateEvent;
-  final HostHomeManageEventCallback onManageEvent;
-  final HostHomeOpenTaskCallback onOpenTask;
-  final DateTime? now;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final now = this.now ?? DateTime.now();
-    final eventsAsync = ref.watch(watchEventsForClubProvider(club.id));
-    final dashboardState = buildHostHomeTodayDashboardState(
-      eventsAsync,
-      now: now,
-      l10n: context.l10n,
-    );
-
-    return HostTodayDashboardSection(
-      club: club,
-      currentUid: currentUid,
-      clubs: clubs,
-      showClubPicker: showClubPicker,
-      state: dashboardState,
-      onSwitchClubIndex: onSwitchClubIndex,
-      onRetryEvents: () => ref.invalidate(watchEventsForClubProvider(club.id)),
-      onViewEvents: onViewEvents,
-      onCreateEvent: onCreateEvent,
-      onManageEvent: onManageEvent,
-      onOpenTask: onOpenTask,
-      now: now,
-    );
-  }
-}
-
-class HostTodayDashboardSection extends StatelessWidget {
-  const HostTodayDashboardSection({
-    super.key,
-    required this.club,
-    required this.currentUid,
-    required this.clubs,
-    required this.showClubPicker,
     required this.state,
-    required this.onSwitchClubIndex,
-    required this.onViewEvents,
-    required this.onCreateEvent,
     required this.onManageEvent,
     required this.onOpenTask,
     required this.now,
-    this.onRetryEvents,
   });
 
   final Club club;
-  final String currentUid;
-  final List<Club> clubs;
-  final bool showClubPicker;
-  final HostHomeTodayDashboardState state;
-  final ValueChanged<int> onSwitchClubIndex;
-  final VoidCallback onViewEvents;
-  final HostHomeCreateEventCallback onCreateEvent;
+  final HostEventsOverviewState state;
   final HostHomeManageEventCallback onManageEvent;
   final HostHomeOpenTaskCallback onOpenTask;
-  final VoidCallback? onRetryEvents;
   final DateTime now;
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: [
-        SliverToBoxAdapter(
-          child: HostTodayHeader(
-            club: club,
-            currentUid: currentUid,
-            clubs: clubs,
-            showClubPicker: showClubPicker,
-            onSwitchClubIndex: onSwitchClubIndex,
-            now: now,
-          ),
-        ),
-        switch (state.status) {
-          HostHomeTodayStatus.loading => const SliverPadding(
-            padding: CatchInsets.pageHorizontal,
-            sliver: SliverToBoxAdapter(child: HostTodayLoadingBody()),
-          ),
-          HostHomeTodayStatus.error => SliverPadding(
-            padding: CatchInsets.pageHorizontal,
-            sliver: SliverToBoxAdapter(
-              child: CatchInlineErrorState.fromError(
-                state.error!,
-                context: AppErrorContext.event,
-                onRetry: onRetryEvents,
-              ),
-            ),
-          ),
-          HostHomeTodayStatus.empty => CatchSliverEmptyState(
-            icon: CatchIcons.eventBusy,
-            title: context.l10n.hostsHostTodayTitleNoActiveEventsYet,
-            message: context.l10n.hostsHostTodayBodyCreateAnEventFor(
-              name: club.name,
-            ),
-            action: Wrap(
-              alignment: WrapAlignment.center,
-              spacing: CatchSpacing.s2,
-              runSpacing: CatchSpacing.s2,
-              children: [
-                CatchButton(
-                  label: context.l10n.hostsHostTodayLabelNewEvent,
-                  icon: Icon(CatchIcons.addRounded, size: CatchIcon.sm),
-                  size: CatchButtonSize.sm,
-                  onPressed: () => onCreateEvent(club),
-                ),
-                CatchButton(
-                  label: context.l10n.hostsHostTodayLabelEvents,
-                  variant: CatchButtonVariant.secondary,
-                  size: CatchButtonSize.sm,
-                  onPressed: onViewEvents,
-                ),
-              ],
-            ),
-          ),
-          HostHomeTodayStatus.content => SliverPadding(
-            padding: CatchInsets.pageHorizontal,
-            sliver: SliverToBoxAdapter(
-              child: _HostTodayContent(
-                state: state,
-                club: club,
-                now: now,
-                onManageEvent: onManageEvent,
-                onOpenTask: onOpenTask,
-                onViewEvents: onViewEvents,
-              ),
-            ),
-          ),
-        },
-        const CatchSliverTerminalPadding(),
-      ],
+    if (state.status != HostEventsOverviewStatus.content) {
+      return const SizedBox.shrink();
+    }
+    return HostEventsOverviewContent(
+      state: state,
+      club: club,
+      now: now,
+      onManageEvent: onManageEvent,
+      onOpenTask: onOpenTask,
     );
   }
 }
 
-class _HostTodayContent extends StatelessWidget {
-  const _HostTodayContent({
+class HostEventsOverviewContent extends StatelessWidget {
+  const HostEventsOverviewContent({
+    super.key,
     required this.state,
     required this.club,
     required this.now,
     required this.onManageEvent,
     required this.onOpenTask,
-    required this.onViewEvents,
   });
 
-  final HostHomeTodayDashboardState state;
+  final HostEventsOverviewState state;
   final Club club;
   final DateTime now;
   final void Function(Club club, Event event) onManageEvent;
   final HostHomeOpenTaskCallback onOpenTask;
-  final VoidCallback onViewEvents;
 
   @override
   Widget build(BuildContext context) {
@@ -186,7 +58,7 @@ class _HostTodayContent extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        HostTodayEventHero(
+        HostEventOperationalSpotlight(
           event: event,
           now: now,
           taskCount: heroTaskCount,
@@ -206,7 +78,7 @@ class _HostTodayContent extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     for (final task in tasks) ...[
-                      HostTodayTaskCard(
+                      HostEventAttentionCard(
                         task: task,
                         onPrimary: () => onOpenTask(club, task.event, task),
                       ),
@@ -215,45 +87,20 @@ class _HostTodayContent extends StatelessWidget {
                   ],
                 ),
         ),
-        if (state.laterEvents.isNotEmpty) ...[
-          gapH24,
-          CatchSection.plain(
-            title: context.l10n.hostsHostTodayTitleLaterThisWeek,
-            count: state.laterEvents.length,
-            titleColor: CatchTokens.of(context).ink3,
-            trailing: CatchButton(
-              label: context.l10n.hostsHostTodayLabelAllEvents,
-              variant: CatchButtonVariant.ghost,
-              size: CatchButtonSize.sm,
-              onPressed: onViewEvents,
-            ),
-            child: Column(
-              children: [
-                for (final row in state.laterEvents) ...[
-                  HostEventLifecycleRow(
-                    data: row,
-                    onPressed: () => onManageEvent(club, row.event),
-                  ),
-                  if (row != state.laterEvents.last) gapH10,
-                ],
-              ],
-            ),
-          ),
-        ],
       ],
     );
   }
 }
 
-class HostTodayHeader extends StatelessWidget {
-  const HostTodayHeader({
+class HostOrganizerIdentityPill extends StatelessWidget {
+  const HostOrganizerIdentityPill({
     super.key,
     required this.club,
     required this.currentUid,
     required this.clubs,
     required this.showClubPicker,
     required this.onSwitchClubIndex,
-    required this.now,
+    this.keyPrefix = 'host-events',
   });
 
   final Club club;
@@ -261,58 +108,7 @@ class HostTodayHeader extends StatelessWidget {
   final List<Club> clubs;
   final bool showClubPicker;
   final ValueChanged<int> onSwitchClubIndex;
-  final DateTime now;
-
-  @override
-  Widget build(BuildContext context) {
-    final hostName = _hostFirstName(club, currentUid);
-    final daypart = switch (now.hour) {
-      < 12 => context.l10n.hostsHostTodayVisiblecopyMorning,
-      < 17 => context.l10n.hostsHostTodayVisiblecopyAfternoon,
-      _ => context.l10n.hostsHostTodayVisiblecopyEvening,
-    };
-
-    return CatchScreenHeaderTitle.block(
-      eyebrow: context.l10n
-          .hostsHostTodayTextLongweekdayDaypart(
-            longWeekday: EventFormatters.longWeekday(now),
-            daypart: daypart,
-          )
-          .toUpperCase(),
-      title: context.l10n.hostsHostTodayTextGoodDaypartHostname(
-        daypart: daypart,
-        hostName: hostName,
-      ),
-      titleMaxLines: 2,
-      rowCrossAxisAlignment: CrossAxisAlignment.end,
-      actions: [
-        HostTodayClubPill(
-          club: club,
-          currentUid: currentUid,
-          clubs: clubs,
-          showClubPicker: showClubPicker,
-          onSwitchClubIndex: onSwitchClubIndex,
-        ),
-      ],
-    );
-  }
-}
-
-class HostTodayClubPill extends StatelessWidget {
-  const HostTodayClubPill({
-    super.key,
-    required this.club,
-    required this.currentUid,
-    required this.clubs,
-    required this.showClubPicker,
-    required this.onSwitchClubIndex,
-  });
-
-  final Club club;
-  final String currentUid;
-  final List<Club> clubs;
-  final bool showClubPicker;
-  final ValueChanged<int> onSwitchClubIndex;
+  final String keyPrefix;
 
   @override
   Widget build(BuildContext context) {
@@ -328,7 +124,7 @@ class HostTodayClubPill extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         CatchPersonAvatar(
-          key: const ValueKey('host-today-club-identity-art'),
+          key: ValueKey('$keyPrefix-organizer-identity-art'),
           size: CatchSpacing.s6,
           name: club.name,
           initials: initials,
@@ -353,11 +149,11 @@ class HostTodayClubPill extends StatelessWidget {
     );
 
     CatchSurface trigger({VoidCallback? onTap}) => CatchSurface(
-      key: const ValueKey('host-today-club-switcher'),
+      key: ValueKey('$keyPrefix-organizer-switcher'),
       borderColor: t.line2,
       backgroundColor: t.surface,
       borderRadius: BorderRadius.circular(CatchRadius.pill),
-      padding: CatchInsets.hostTodayClubSwitcher,
+      padding: CatchInsets.hostOrganizerSwitcher,
       onTap: onTap,
       child: triggerContent,
     );
@@ -371,13 +167,13 @@ class HostTodayClubPill extends StatelessWidget {
       menuChildren: [
         for (var index = 0; index < clubs.length; index++)
           Semantics(
-            key: ValueKey('host-today-club-option-${clubs[index].id}'),
+            key: ValueKey('$keyPrefix-organizer-option-${clubs[index].id}'),
             selected: index == selectedClubIndex,
             child: MenuItemButton(
               onPressed: () => onSwitchClubIndex(index),
               style: const ButtonStyle(
                 padding: WidgetStatePropertyAll(
-                  CatchInsets.hostTodayClubMenuItem,
+                  CatchInsets.hostOrganizerMenuItem,
                 ),
               ),
               trailingIcon: index == selectedClubIndex
@@ -436,26 +232,8 @@ class HostTodayClubPill extends StatelessWidget {
   }
 }
 
-class HostTodayLoadingBody extends StatelessWidget {
-  const HostTodayLoadingBody({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Column(
-      children: [
-        HostSummarySkeleton(),
-        gapH14,
-        CatchSkeletonRows(
-          leading: CatchSkeletonRowLeading.mediaTile,
-          divided: true,
-        ),
-      ],
-    );
-  }
-}
-
-class HostTodayEventHero extends StatelessWidget {
-  const HostTodayEventHero({
+class HostEventOperationalSpotlight extends StatelessWidget {
+  const HostEventOperationalSpotlight({
     super.key,
     required this.event,
     required this.now,
@@ -542,21 +320,21 @@ class HostTodayEventHero extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              HostTodayHeroMetric(
+              HostEventOperationalMetric(
                 value: context.l10n.hostsHostTodayVisiblecopySignedupcount(
                   signedUpCount: event.signedUpCount,
                 ),
                 label: context.l10n.hostsHostTodayLabelGoing,
               ),
               gapW20,
-              HostTodayHeroMetric(
+              HostEventOperationalMetric(
                 value: context.l10n.hostsHostTodayVisiblecopyWaitlistcount(
                   waitlistCount: event.waitlistCount,
                 ),
                 label: context.l10n.hostsHostTodayLabelWaiting,
               ),
               gapW20,
-              HostTodayHeroMetric(
+              HostEventOperationalMetric(
                 value: context.l10n.hostsHostTodayVisiblecopyTaskcount(
                   taskCount: taskCount,
                 ),
@@ -583,8 +361,8 @@ class HostTodayEventHero extends StatelessWidget {
   }
 }
 
-class HostTodayHeroMetric extends StatelessWidget {
-  const HostTodayHeroMetric({
+class HostEventOperationalMetric extends StatelessWidget {
+  const HostEventOperationalMetric({
     super.key,
     required this.value,
     required this.label,
@@ -622,86 +400,14 @@ class HostTodayHeroMetric extends StatelessWidget {
   }
 }
 
-class HostTodayAvatarStack extends StatelessWidget {
-  const HostTodayAvatarStack({super.key, required this.activity});
-
-  final CatchActivity activity;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return SizedBox(
-      width: CatchSpacing.s16,
-      height: CatchSpacing.s7,
-      child: Stack(
-        alignment: Alignment.centerRight,
-        children: [
-          HostTodayAvatarDot(
-            left: CatchSpacing.s0,
-            fill: activity.deep,
-            label: '',
-          ),
-          HostTodayAvatarDot(
-            left: CatchSpacing.s5,
-            fill: t.surface,
-            label: context.l10n.hostsHostTodayLabelD,
-          ),
-          HostTodayAvatarDot(
-            left: CatchSpacing.s10,
-            fill: activity.soft,
-            label: context.l10n.hostsHostTodayLabelM,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class HostTodayAvatarDot extends StatelessWidget {
-  const HostTodayAvatarDot({
-    super.key,
-    required this.left,
-    required this.fill,
-    required this.label,
-  });
-
-  final double left;
-  final Color fill;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Positioned(
-      left: left,
-      child: CircleAvatar(
-        radius: CatchSpacing.s3,
-        backgroundColor: CatchTokens.editorialBlack.withValues(
-          alpha: CatchOpacity.avatarStackRing,
-        ),
-        child: CircleAvatar(
-          radius: CatchSpacing.micro10,
-          backgroundColor: fill,
-          child: label.isEmpty
-              ? null
-              : Text(
-                  label,
-                  style: CatchTextStyles.badge(context, color: t.ink2),
-                ),
-        ),
-      ),
-    );
-  }
-}
-
-class HostTodayTaskCard extends StatelessWidget {
-  const HostTodayTaskCard({
+class HostEventAttentionCard extends StatelessWidget {
+  const HostEventAttentionCard({
     super.key,
     required this.task,
     required this.onPrimary,
   });
 
-  final HostHomeTodayTaskData task;
+  final HostEventAttentionData task;
   final VoidCallback onPrimary;
 
   @override
@@ -757,17 +463,6 @@ class HostTodayTaskCard extends StatelessWidget {
   }
 }
 
-String _hostFirstName(Club club, String currentUid) {
-  final hostProfile = club.hostProfiles
-      .where((profile) => profile.uid == currentUid)
-      .firstOrNull;
-  final fallbackName = hostProfile?.displayName.trim().isNotEmpty == true
-      ? hostProfile!.displayName
-      : club.hostName ?? '';
-  final parts = fallbackName.trim().split(RegExp(r'\s+'));
-  return parts.firstWhere((part) => part.isNotEmpty, orElse: () => 'Host');
-}
-
 String _initialsFor(String value) {
   final parts = value.trim().split(RegExp(r'\s+'));
   final initials = parts
@@ -776,6 +471,20 @@ String _initialsFor(String value) {
       .map((part) => part.characters.first.toUpperCase())
       .join();
   return initials.isEmpty ? 'CH' : initials;
+}
+
+String _hostEventsHeaderEyebrow(BuildContext context, DateTime now) {
+  final daypart = switch (now.hour) {
+    < 12 => context.l10n.hostsHostTodayVisiblecopyMorning,
+    < 17 => context.l10n.hostsHostTodayVisiblecopyAfternoon,
+    _ => context.l10n.hostsHostTodayVisiblecopyEvening,
+  };
+  return context.l10n
+      .hostsHostTodayTextLongweekdayDaypart(
+        longWeekday: EventFormatters.longWeekday(now),
+        daypart: daypart,
+      )
+      .toUpperCase();
 }
 
 String _eventDayLabel(Event event) {
@@ -803,7 +512,7 @@ String _eventStartLeadLabel(Event event, DateTime now) {
   }
 
   final lead = event.startTime.difference(now);
-  if (!lead.isNegative && lead < hostTodayImminentEventLeadTime) {
+  if (!lead.isNegative && lead < hostEventsImminentEventLeadTime) {
     final minutes = lead.inMinutes.clamp(1, 59);
     return 'STARTS IN $minutes MIN';
   }

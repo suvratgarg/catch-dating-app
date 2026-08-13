@@ -861,6 +861,249 @@ class VisiblePodAssignment extends StatelessWidget {
   }
 }
 
+class VisibleStandings extends StatelessWidget {
+  const VisibleStandings({
+    super.key,
+    required this.entries,
+    required this.unitOutcome,
+  });
+
+  final List<EventSuccessStandingEntry> entries;
+  final EventSuccessUnitOutcome unitOutcome;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return AssignmentUnlockedShell(
+      title: context
+          .l10n
+          .eventSuccessEventSuccessLiveRevealWidgetsTitleUnlockedTogether,
+      child: Column(
+        children: [
+          for (var index = 0; index < entries.length; index++) ...[
+            if (index > 0) Divider(height: CatchSpacing.s4, color: t.line),
+            Row(
+              children: [
+                SizedBox(
+                  width: CatchSpacing.s9,
+                  child: Text(
+                    '#${entries[index].position}',
+                    style: CatchTextStyles.labelM(context),
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    entries[index].unitLabel,
+                    style: CatchTextStyles.proseM(context),
+                  ),
+                ),
+                gapW12,
+                Text(
+                  unitOutcome == EventSuccessUnitOutcome.score
+                      ? context.l10n.eventSuccessLiveControlPointsValue(
+                          points: entries[index].value,
+                        )
+                      : context.l10n.eventSuccessLiveControlRankValue(
+                          rank: entries[index].value.toInt(),
+                        ),
+                  style: CatchTextStyles.labelM(context, color: t.primary),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class EventSuccessOutcomeRecorder extends StatefulWidget {
+  const EventSuccessOutcomeRecorder({
+    super.key,
+    required this.unitOutcome,
+    required this.units,
+    required this.nextRoundIndex,
+    required this.expectedRevision,
+    required this.actionState,
+    this.onRecord,
+  });
+
+  final EventSuccessUnitOutcome unitOutcome;
+  final List<EventSuccessOutcomeUnit> units;
+  final int nextRoundIndex;
+  final int expectedRevision;
+  final EventSuccessOutcomeActionState actionState;
+  final Future<void> Function({
+    required int expectedRevision,
+    required int roundIndex,
+    required List<EventSuccessUnitOutcomeEntryInput> entries,
+  })?
+  onRecord;
+
+  @override
+  State<EventSuccessOutcomeRecorder> createState() =>
+      _EventSuccessOutcomeRecorderState();
+}
+
+class _EventSuccessOutcomeRecorderState
+    extends State<EventSuccessOutcomeRecorder> {
+  final Map<String, TextEditingController> _controllers = {};
+
+  @override
+  void didUpdateWidget(covariant EventSuccessOutcomeRecorder oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.nextRoundIndex != widget.nextRoundIndex ||
+        oldWidget.unitOutcome != widget.unitOutcome) {
+      _clearControllers();
+    }
+  }
+
+  @override
+  void dispose() {
+    _clearControllers();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final isRank = widget.unitOutcome == EventSuccessUnitOutcome.rank;
+    return Padding(
+      padding: CatchInsets.contentDense,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            context.l10n.eventSuccessLiveControlRecordRoundTitle(
+              roundNumber: widget.nextRoundIndex + 1,
+            ),
+            style: CatchTextStyles.sectionTitle(context, color: t.surface),
+          ),
+          gapH6,
+          Text(
+            isRank
+                ? context.l10n.eventSuccessLiveControlRankEntryInstructions
+                : context.l10n.eventSuccessLiveControlScoreEntryInstructions,
+            style: CatchTextStyles.supporting(
+              context,
+              color: t.surface.withValues(
+                alpha: CatchOpacity.revealMutedForeground,
+              ),
+            ),
+          ),
+          gapH12,
+          if (widget.units.isEmpty)
+            Text(
+              context.l10n.eventSuccessLiveControlEmptyUnitsMessage,
+              style: CatchTextStyles.supporting(context, color: t.surface),
+            )
+          else
+            CatchSection.fieldRows(
+              children: [
+                for (var index = 0; index < widget.units.length; index++)
+                  CatchField.input(
+                    key: ValueKey(
+                      'event_success.outcome.${widget.nextRoundIndex}.${widget.units[index].id}',
+                    ),
+                    title: widget.units[index].label,
+                    contract: isRank
+                        ? CatchContractConstraints
+                              .recordEventSuccessUnitOutcomesCallablePayloadEntriesItemsRank
+                        : CatchContractConstraints
+                              .recordEventSuccessUnitOutcomesCallablePayloadEntriesItemsScore,
+                    placeholder: isRank ? '${index + 1}' : '0',
+                    controller: _controllerFor(widget.units[index].id),
+                    keyboardType: TextInputType.numberWithOptions(
+                      decimal: !isRank,
+                      signed: !isRank,
+                    ),
+                    onChanged: (_) => setState(() {}),
+                  ),
+              ],
+            ),
+          if (widget.actionState.error != null) ...[
+            gapH10,
+            Text(
+              appErrorMessage(
+                widget.actionState.error!,
+                l10n: context.l10n,
+                context: AppErrorContext.event,
+              ),
+              style: CatchTextStyles.supporting(context, color: t.surface),
+            ),
+          ],
+          gapH12,
+          CatchButton(
+            label: context.l10n.eventSuccessLiveControlSaveRoundLabel,
+            isLoading: widget.actionState.isLoading,
+            onPressed:
+                widget.actionState.isLoading ||
+                    widget.onRecord == null ||
+                    _entries() == null
+                ? null
+                : () => unawaited(
+                    widget.onRecord!(
+                      expectedRevision: widget.expectedRevision,
+                      roundIndex: widget.nextRoundIndex,
+                      entries: _entries()!,
+                    ),
+                  ),
+            fullWidth: true,
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<EventSuccessUnitOutcomeEntryInput>? _entries() {
+    if (widget.units.isEmpty) return null;
+    if (widget.unitOutcome == EventSuccessUnitOutcome.score) {
+      final entries = <EventSuccessUnitOutcomeEntryInput>[];
+      for (final unit in widget.units) {
+        final score = num.tryParse(_controllers[unit.id]?.text.trim() ?? '');
+        if (score == null) return null;
+        entries.add(
+          EventSuccessScoreOutcomeInput(
+            unitId: unit.id,
+            unitLabel: unit.label,
+            score: score,
+          ),
+        );
+      }
+      return entries;
+    }
+    if (widget.unitOutcome == EventSuccessUnitOutcome.rank) {
+      final entries = <EventSuccessUnitOutcomeEntryInput>[];
+      final ranks = <int>{};
+      for (final unit in widget.units) {
+        final rank = int.tryParse(_controllers[unit.id]?.text.trim() ?? '');
+        if (rank == null || !ranks.add(rank)) return null;
+        entries.add(
+          EventSuccessRankOutcomeInput(
+            unitId: unit.id,
+            unitLabel: unit.label,
+            rank: rank,
+          ),
+        );
+      }
+      final sorted = ranks.toList()..sort();
+      if (sorted.indexed.any((item) => item.$2 != item.$1 + 1)) return null;
+      return entries;
+    }
+    return null;
+  }
+
+  TextEditingController _controllerFor(String unitId) =>
+      _controllers.putIfAbsent(unitId, TextEditingController.new);
+
+  void _clearControllers() {
+    for (final controller in _controllers.values) {
+      controller.dispose();
+    }
+    _controllers.clear();
+  }
+}
+
 class VisibleRotationSlots extends StatelessWidget {
   const VisibleRotationSlots({
     super.key,

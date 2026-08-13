@@ -51,16 +51,16 @@ class HostRevealActions extends StatelessWidget {
               isLoading: isLoading,
               onPressed: isLoading || onRevealRound == null
                   ? null
-                  : () => unawaited(onRevealRound!(activeRound)),
+                  : () => unawaited(
+                      _confirmReveal(context, activeRound, onRevealRound!),
+                    ),
               fullWidth: true,
             ),
           ),
           gapW10,
           Expanded(
             child: CatchButton(
-              label: context
-                  .l10n
-                  .eventSuccessEventSuccessLiveRevealActionsLabelReset,
+              label: context.l10n.eventSuccessLiveControlCancelCountdownLabel,
               icon: Icon(CatchIcons.restartAltRounded),
               variant: CatchButtonVariant.secondary,
               isLoading: isLoading,
@@ -74,18 +74,7 @@ class HostRevealActions extends StatelessWidget {
       );
     }
     if (allRevealed) {
-      return CatchButton(
-        label: context
-            .l10n
-            .eventSuccessEventSuccessLiveRevealActionsLabelResetReveal,
-        icon: Icon(CatchIcons.restartAltRounded),
-        variant: CatchButtonVariant.secondary,
-        isLoading: isLoading,
-        onPressed: isLoading || onResetReveal == null
-            ? null
-            : () => unawaited(onResetReveal!()),
-        fullWidth: true,
-      );
+      return const SizedBox.shrink();
     }
     final roundIndex = nextRound ?? 0;
     final canUsePrimary = countdownSeconds == 0
@@ -110,10 +99,17 @@ class HostRevealActions extends StatelessWidget {
                 ? null
                 : () {
                     if (countdownSeconds == 0) {
-                      unawaited(onRevealRound!(roundIndex));
+                      unawaited(
+                        _confirmReveal(context, roundIndex, onRevealRound!),
+                      );
                     } else {
                       unawaited(
-                        onStartCountdown!(roundIndex, countdownSeconds),
+                        _confirmCountdown(
+                          context,
+                          roundIndex,
+                          countdownSeconds,
+                          onStartCountdown!,
+                        ),
                       );
                     }
                   },
@@ -131,11 +127,53 @@ class HostRevealActions extends StatelessWidget {
             isLoading: isLoading,
             onPressed: isLoading || onRevealRound == null
                 ? null
-                : () => unawaited(onRevealRound!(roundIndex)),
+                : () => unawaited(
+                    _confirmReveal(context, roundIndex, onRevealRound!),
+                  ),
             fullWidth: true,
           ),
         ),
       ],
     );
+  }
+
+  Future<void> _confirmReveal(
+    BuildContext context,
+    int roundIndex,
+    Future<void> Function(int roundIndex) action,
+  ) async {
+    final confirmed = await showCatchConfirmDialog(
+      context: context,
+      title: context.l10n.eventSuccessLiveControlPublishRevealTitle,
+      message: context.l10n.eventSuccessLiveControlPublishRevealMessage(
+        roundNumber: roundIndex + 1,
+      ),
+      confirmLabel:
+          context.l10n.eventSuccessLiveControlPublishRevealConfirmLabel,
+      danger: true,
+    );
+    if (confirmed == true && context.mounted) await action(roundIndex);
+  }
+
+  Future<void> _confirmCountdown(
+    BuildContext context,
+    int roundIndex,
+    int countdownSeconds,
+    Future<void> Function(int roundIndex, int countdownSeconds) action,
+  ) async {
+    final confirmed = await showCatchConfirmDialog(
+      context: context,
+      title: context.l10n.eventSuccessLiveControlStartCountdownTitle,
+      message: context.l10n.eventSuccessLiveControlStartCountdownMessage(
+        roundNumber: roundIndex + 1,
+        countdownSeconds: countdownSeconds,
+      ),
+      confirmLabel:
+          context.l10n.eventSuccessLiveControlStartCountdownConfirmLabel,
+      danger: true,
+    );
+    if (confirmed == true && context.mounted) {
+      await action(roundIndex, countdownSeconds);
+    }
   }
 }

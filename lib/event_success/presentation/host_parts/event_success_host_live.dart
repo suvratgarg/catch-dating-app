@@ -14,12 +14,15 @@ class LiveTab extends StatelessWidget {
     required this.event,
     required this.plan,
     required this.planIsPersisted,
+    required this.spatialLayout,
     required this.roster,
     required this.assignments,
     required this.assignmentParticipantProfiles,
     required this.rotationAssignments,
+    required this.rotationDraftAssignments,
     required this.rotationParticipantProfiles,
     required this.preferences,
+    this.standings,
     required this.wingmanRequests,
     required this.wingmanProfiles,
     required this.compactLiveControls,
@@ -33,25 +36,37 @@ class LiveTab extends StatelessWidget {
     required this.rotationsGenerationState,
     required this.onGenerateMicroPods,
     required this.onGenerateGuidedRotations,
+    required this.onPublishGuidedRotationRound,
     required this.onOverrideGroupAssignments,
     required this.onOverrideGuidedRotations,
+    required this.onPreviewSpatial,
+    required this.onReassignSpatial,
+    required this.onConfirmSpatial,
+    required this.onReleaseSpatial,
     required this.revealActionState,
     required this.onStartRevealCountdown,
     required this.onRevealRound,
     required this.onResetReveal,
+    required this.outcomeActionState,
+    required this.onRecordOutcomes,
     required this.fixtureActions,
+    required this.exclusionAlertThreshold,
+    this.exclusionReferenceNow,
     required this.embedded,
   });
 
   final Event event;
   final EventSuccessPlan plan;
   final bool planIsPersisted;
+  final EventSuccessLayout? spatialLayout;
   final EventParticipationRoster roster;
   final List<EventSuccessAssignment> assignments;
   final List<PublicProfile> assignmentParticipantProfiles;
   final List<EventSuccessAssignment> rotationAssignments;
+  final List<EventSuccessAssignment> rotationDraftAssignments;
   final List<PublicProfile> rotationParticipantProfiles;
   final List<EventSuccessPreference> preferences;
+  final EventSuccessStandings? standings;
   final List<EventSuccessWingmanRequest> wingmanRequests;
   final List<PublicProfile> wingmanProfiles;
   final bool compactLiveControls;
@@ -65,16 +80,32 @@ class LiveTab extends StatelessWidget {
   final EventSuccessAssignmentGenerationActionState rotationsGenerationState;
   final Future<void> Function()? onGenerateMicroPods;
   final Future<void> Function()? onGenerateGuidedRotations;
+  final Future<void> Function(int roundIndex)? onPublishGuidedRotationRound;
   final Future<void> Function(List<EventSuccessGroupOverrideRound> rounds)?
   onOverrideGroupAssignments;
   final Future<void> Function(List<EventSuccessRotationOverrideRound> rounds)?
   onOverrideGuidedRotations;
+  final EventSuccessSpatialPreview? onPreviewSpatial;
+  final EventSuccessSpatialReassign? onReassignSpatial;
+  final Future<void> Function(EventSuccessAssignment assignment)?
+  onConfirmSpatial;
+  final Future<void> Function(EventSuccessAssignment assignment)?
+  onReleaseSpatial;
   final EventSuccessRevealActionState revealActionState;
   final Future<void> Function(int roundIndex, int countdownSeconds)?
   onStartRevealCountdown;
   final Future<void> Function(int roundIndex)? onRevealRound;
   final Future<void> Function()? onResetReveal;
+  final EventSuccessOutcomeActionState outcomeActionState;
+  final Future<void> Function({
+    required int expectedRevision,
+    required int roundIndex,
+    required List<EventSuccessUnitOutcomeEntryInput> entries,
+  })?
+  onRecordOutcomes;
   final EventSuccessHostFixtureActions? fixtureActions;
+  final Duration exclusionAlertThreshold;
+  final DateTime? exclusionReferenceNow;
   final bool embedded;
 
   @override
@@ -195,11 +226,15 @@ class LiveTab extends StatelessWidget {
       event: event,
       rotationIntervalMinutes:
           plan.structureConfig.rotationIntervalMinutes ?? 15,
-      assignments: rotationAssignments,
+      assignments: rotationDraftAssignments.isNotEmpty
+          ? rotationDraftAssignments
+          : rotationAssignments,
       participantProfiles: rotationParticipantProfiles,
       preferences: preferences,
       actionState: rotationsGenerationState,
       onGenerate: onGenerateGuidedRotations,
+      nextRoundIndex: plan.publishedRotationRoundIndex + 1,
+      onPublish: onPublishGuidedRotationRound,
       onOverride: onOverrideGuidedRotations,
     );
 
@@ -209,6 +244,17 @@ class LiveTab extends StatelessWidget {
       podAssignments: assignments,
       rotationAssignments: rotationAssignments,
       preferences: preferences,
+      standings: standings,
+      outcomeUnits: _eventSuccessOutcomeUnits(
+        event: event,
+        plan: plan,
+        assignments: assignments,
+        rotationAssignments: rotationAssignments,
+        profiles: [
+          ...rotationParticipantProfiles,
+          ...assignmentParticipantProfiles,
+        ],
+      ),
       participantProfiles: [
         ...rotationParticipantProfiles,
         ...assignmentParticipantProfiles,
@@ -217,13 +263,48 @@ class LiveTab extends StatelessWidget {
       onStartCountdown: onStartRevealCountdown,
       onRevealRound: onRevealRound,
       onResetReveal: onResetReveal,
+      outcomeActionState: outcomeActionState,
+      onRecordOutcomes: onRecordOutcomes,
     );
+
+    final spatialAssignments =
+        activeStepHas(EventSuccessModuleCatalog.guidedRotations.id) &&
+            rotationAssignments.isNotEmpty
+        ? rotationAssignments
+        : assignments;
+    final spatialProfiles = identical(spatialAssignments, rotationAssignments)
+        ? rotationParticipantProfiles
+        : assignmentParticipantProfiles;
+    final exclusionSnapshot = buildEventSuccessExclusionLedger(
+      attendeeUids: roster.checkedInIds,
+      assignments: [...assignments, ...rotationAssignments],
+      trackingStartedAt: event.startTime,
+      trackingStartedAtByUid: roster.checkedInAtByUid,
+      trackingEndedAt: event.endTime,
+      now: exclusionReferenceNow ?? DateTime.now(),
+      alertThreshold: exclusionAlertThreshold,
+    );
+    Widget? spatialMapCard() =>
+        spatialLayout == null || spatialAssignments.isEmpty
+        ? null
+        : EventSuccessRoomMap(
+            layout: spatialLayout!,
+            assignments: spatialAssignments,
+            profiles: spatialProfiles,
+            exclusionAlertUids: exclusionSnapshot.alertEntries
+                .map((entry) => entry.uid)
+                .toSet(),
+            onPreview: onPreviewSpatial,
+            onReassign: onReassignSpatial,
+            onConfirmPosition: onConfirmSpatial,
+            onReleasePinned: onReleaseSpatial,
+          );
 
     final liveRevealAvailable =
         runtime.liveRevealEnabled &&
         (runtime.guidedRotationsEnabled || runtime.microPodsEnabled);
     final currentStepCards = compactLiveControls
-        ? <Widget>[]
+        ? <Widget>[?spatialMapCard()]
         : <Widget>[
             if (runtime.wingmanRequestsEnabled &&
                 activeStepHas(EventSuccessModuleCatalog.wingmanRequests.id))
@@ -239,6 +320,7 @@ class LiveTab extends StatelessWidget {
             if (liveRevealAvailable &&
                 activeStepHas(EventSuccessModuleCatalog.liveReveal.id))
               liveRevealCard(),
+            ?spatialMapCard(),
           ];
     final supportingCards = compactLiveControls
         ? <Widget>[]
@@ -263,6 +345,15 @@ class LiveTab extends StatelessWidget {
 
     final actionFailed =
         actionState.stepError != null || actionState.completeError != null;
+    final exclusionAlert = _EventSuccessExclusionAlertCard(
+      attendeeUids: roster.checkedInIds,
+      trackingStartedAtByUid: roster.checkedInAtByUid,
+      assignments: [...assignments, ...rotationAssignments],
+      trackingStartedAt: event.startTime,
+      trackingEndedAt: event.endTime,
+      alertThreshold: exclusionAlertThreshold,
+      referenceNow: exclusionReferenceNow,
+    );
     final console = LiveNowConsole(
       plan: livePlan,
       event: event,
@@ -275,6 +366,7 @@ class LiveTab extends StatelessWidget {
           ? EventSuccessControlRoomSyncState.syncing
           : EventSuccessControlRoomSyncState.synced,
       isPrimaryLoading: actionState.isChangingStep || actionState.isCompleting,
+      exclusionAlert: exclusionAlert,
       onOpenGuests: onOpenGuests,
       onPrevious:
           actionState.isChangingStep ||
@@ -370,6 +462,75 @@ class LiveTab extends StatelessWidget {
   }
 }
 
+List<EventSuccessOutcomeUnit> _eventSuccessOutcomeUnits({
+  required Event event,
+  required EventSuccessPlan plan,
+  required List<EventSuccessAssignment> assignments,
+  required List<EventSuccessAssignment> rotationAssignments,
+  required List<PublicProfile> profiles,
+}) {
+  final outcome = EventSuccessActivityProfile.forFormat(
+    event.eventFormat,
+  ).unitOutcome;
+  if (outcome == EventSuccessUnitOutcome.score) {
+    final units = <String, EventSuccessOutcomeUnit>{};
+    for (final assignment in assignments) {
+      final unitKey = assignment.unitIndex?.toString() ?? assignment.label;
+      units.putIfAbsent(
+        unitKey,
+        () => EventSuccessOutcomeUnit(
+          id: _safeOutcomeUnitId('${assignment.moduleId}_unit_$unitKey'),
+          label: _boundedOutcomeLabel(assignment.unitLabel ?? assignment.label),
+        ),
+      );
+    }
+    final result = units.values.toList()
+      ..sort((a, b) => a.label.compareTo(b.label));
+    return result;
+  }
+  if (outcome == EventSuccessUnitOutcome.rank) {
+    final targetRound = plan.publishedRotationRoundIndex < 0
+        ? 0
+        : plan.publishedRotationRoundIndex;
+    final profilesByUid = {
+      for (final profile in profiles) profile.uid: profile,
+    };
+    final units = <String, EventSuccessOutcomeUnit>{};
+    for (final assignment in rotationAssignments) {
+      for (final slot in assignment.rotationSlots) {
+        if (slot.roundIndex != targetRound) continue;
+        final uids = [assignment.uid, slot.peerUid]..sort();
+        final pairKey = slot.slotId ?? uids.join('_');
+        units.putIfAbsent(
+          pairKey,
+          () => EventSuccessOutcomeUnit(
+            id: _safeOutcomeUnitId('round_${targetRound}_$pairKey'),
+            label: _boundedOutcomeLabel(
+              '${profilesByUid[uids[0]]?.name ?? 'Guest'} + '
+              '${profilesByUid[uids[1]]?.name ?? 'Guest'}',
+            ),
+          ),
+        );
+      }
+    }
+    final result = units.values.toList()
+      ..sort((a, b) => a.label.compareTo(b.label));
+    return result;
+  }
+  return const [];
+}
+
+String _safeOutcomeUnitId(String value) {
+  final normalized = value.replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '_');
+  final safe = normalized.isEmpty ? 'unit' : normalized;
+  return safe.length <= 120 ? safe : safe.substring(0, 120);
+}
+
+String _boundedOutcomeLabel(String value) {
+  final trimmed = value.trim().isEmpty ? 'Unit' : value.trim();
+  return trimmed.length <= 80 ? trimmed : trimmed.substring(0, 80);
+}
+
 class LiveNowConsole extends StatelessWidget {
   const LiveNowConsole({
     super.key,
@@ -384,6 +545,7 @@ class LiveNowConsole extends StatelessWidget {
     this.operationalRosterSummary,
     this.syncState = EventSuccessControlRoomSyncState.synced,
     this.isPrimaryLoading = false,
+    this.exclusionAlert,
   });
 
   final EventSuccessLivePlan plan;
@@ -397,6 +559,7 @@ class LiveNowConsole extends StatelessWidget {
   final EventSuccessOperationalRosterSummary? operationalRosterSummary;
   final EventSuccessControlRoomSyncState syncState;
   final bool isPrimaryLoading;
+  final Widget? exclusionAlert;
 
   @override
   Widget build(BuildContext context) {
@@ -443,6 +606,7 @@ class LiveNowConsole extends StatelessWidget {
           attendeeExperience: compactCopy ? null : attendeeExperience,
           showVenue: showVenue,
         ),
+        ?exclusionAlert,
         DecoratedBox(
           decoration: BoxDecoration(color: t.surface),
           child: CatchSection.fieldRows(
@@ -462,6 +626,15 @@ class LiveNowConsole extends StatelessWidget {
             ],
           ),
         ),
+        if (compactCopy && currentStepControls.isNotEmpty)
+          Padding(
+            padding: CatchInsets.pageBody,
+            child: CatchSectionList(
+              emptyStateOmitted: true,
+              gap: CatchSpacing.s4,
+              children: currentStepControls,
+            ),
+          ),
       ],
     );
 
@@ -541,6 +714,107 @@ class LiveNowConsole extends StatelessWidget {
           ),
         ],
       ],
+    );
+  }
+}
+
+class _EventSuccessExclusionAlertCard extends StatefulWidget {
+  const _EventSuccessExclusionAlertCard({
+    required this.attendeeUids,
+    required this.trackingStartedAtByUid,
+    required this.assignments,
+    required this.trackingStartedAt,
+    required this.trackingEndedAt,
+    required this.alertThreshold,
+    required this.referenceNow,
+  });
+
+  final List<String> attendeeUids;
+  final Map<String, DateTime> trackingStartedAtByUid;
+  final List<EventSuccessAssignment> assignments;
+  final DateTime trackingStartedAt;
+  final DateTime trackingEndedAt;
+  final Duration alertThreshold;
+  final DateTime? referenceNow;
+
+  @override
+  State<_EventSuccessExclusionAlertCard> createState() =>
+      _EventSuccessExclusionAlertCardState();
+}
+
+class _EventSuccessExclusionAlertCardState
+    extends State<_EventSuccessExclusionAlertCard> {
+  Timer? _thresholdTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _scheduleThreshold());
+  }
+
+  @override
+  void didUpdateWidget(covariant _EventSuccessExclusionAlertCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _scheduleThreshold();
+  }
+
+  @override
+  void dispose() {
+    _thresholdTimer?.cancel();
+    super.dispose();
+  }
+
+  DateTime get _now => widget.referenceNow ?? DateTime.now();
+
+  EventSuccessExclusionLedgerSnapshot _snapshot() =>
+      buildEventSuccessExclusionLedger(
+        attendeeUids: widget.attendeeUids,
+        assignments: widget.assignments,
+        trackingStartedAt: widget.trackingStartedAt,
+        trackingStartedAtByUid: widget.trackingStartedAtByUid,
+        trackingEndedAt: widget.trackingEndedAt,
+        now: _now,
+        alertThreshold: widget.alertThreshold,
+      );
+
+  void _scheduleThreshold() {
+    _thresholdTimer?.cancel();
+    if (!mounted || widget.referenceNow != null) return;
+    final delay = _snapshot().nextAlertDelay;
+    if (delay == null) return;
+    _thresholdTimer = Timer(delay + CatchMotion.eventSuccessThresholdTick, () {
+      if (!mounted) return;
+      setState(() {});
+      _scheduleThreshold();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final alertCount = _snapshot().alertEntries.length;
+    if (alertCount == 0) return const SizedBox.shrink();
+    final thresholdMinutes = widget.alertThreshold.inMinutes;
+    return Semantics(
+      liveRegion: true,
+      child: ColoredBox(
+        color: CatchTokens.of(context).surface,
+        child: Padding(
+          padding: CatchInsets.pageHorizontal.copyWith(
+            top: CatchSpacing.s3,
+            bottom: CatchSpacing.s2,
+          ),
+          child: CatchSurface.message(
+            key: const ValueKey('event_success.exclusion_alert'),
+            messageIcon: CatchIcons.personSearchOutlined,
+            messageTone: CatchSurfaceMessageTone.warning,
+            title: context.l10n.eventSuccessControlRoomExclusionAlertTitle,
+            message: context.l10n.eventSuccessControlRoomExclusionAlertBody(
+              count: alertCount,
+              minutes: thresholdMinutes,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

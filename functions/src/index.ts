@@ -87,6 +87,7 @@ export {createOrganizer} from "./organizers/createOrganizer";
 export {createClubPost} from "./clubs/clubPosts";
 export {
   startClubHostConversation,
+  startOrganizerContactConversation,
   startOrganizerConversation,
 } from "./clubs/clubHostConversations";
 export {
@@ -132,6 +133,7 @@ export {createOrganizerPost} from "./organizers/organizerPosts";
 export {getOrganizerCrmSummary} from "./organizers/organizerCrm";
 export {getEventRosterInsights} from "./organizers/eventRosterInsights";
 export {
+  createOrganizerContact,
   exportOrganizerContacts,
   getOrganizerContactDetail,
   listOrganizerContacts,
@@ -197,6 +199,19 @@ export {
   generateEventSuccessRotations,
   overrideEventSuccessRotations,
 } from "./eventSuccess/generateEventSuccessRotations";
+export {
+  controlEventSuccessLive,
+  publishEventSuccessRotationRound,
+} from "./eventSuccess/liveControl";
+export {recordEventSuccessUnitOutcomes} from
+  "./eventSuccess/unitOutcomes";
+export {onEventSuccessPlanLiveControlUpdated} from
+  "./eventSuccess/rotationDraftTrigger";
+export {
+  controlEventSuccessSpatial,
+  getEventSuccessSpatialLayout,
+  upsertEventSuccessLayout,
+} from "./eventSuccess/layoutAssets";
 export {
   fetchEventSuccessWingmanCandidates,
   submitEventSuccessWingmanRequest,

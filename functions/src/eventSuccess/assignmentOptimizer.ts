@@ -2,20 +2,26 @@ import {
   CompatibilitySignal,
   QuestionnaireScoringMode,
   scoreDatingCompatibilityPair,
+  scoreQuestionnaireObjectivePair,
 } from "./compatibilityPolicy";
 import {AssignmentTopology} from "./assignmentTopology";
 import {
   EventSuccessAssignmentAlgorithm,
   EventSuccessCompatibilityPolicy,
+  EventSuccessMatchingObjective,
+  EventSuccessVariableResolution,
+  eventSuccessVariableResolutionFor,
 } from "./formatPrimitives";
 import {
   AssignmentConstraintConfig,
   AssignmentConstraintEvaluation,
   AssignmentConstraintStatus,
   NormalizedAssignmentConstraints,
+  affinityRepeatPairScoreAdjustment,
   activityGroupPlacementCost,
   activityPairScoreAdjustment,
   activityValue,
+  assignmentExclusionMinutes,
   canJoinHostConstrainedGroup,
   evaluateHostConstraints,
   hostConstrainedParticipantRank,
@@ -28,6 +34,7 @@ import {
 
 export interface AssignmentParticipant {
   uid: string;
+  arrivalGroup?: string | null;
   gender?: string;
   interestedInGenders: string[];
   compatibilityAnswerIds?: string[];
@@ -78,6 +85,11 @@ export type AssignmentConstraintRelaxation =
   "unassigned_participants";
 
 export interface AssignmentEngineExplainability {
+  requestedMatchingObjective: EventSuccessMatchingObjective;
+  effectiveMatchingObjective: EventSuccessMatchingObjective;
+  matchingObjectiveFallbackReason: string | null;
+  assignmentResolutionStatus: EventSuccessVariableResolution["status"];
+  assignmentResolutionReason: string;
   participantCount: number;
   assignedParticipantCount: number;
   unassignedParticipantCount: number;
@@ -95,6 +107,9 @@ export interface AssignmentEngineExplainability {
   activityMissingAttributeValueCount: number;
   activityBalanceSkew: number;
   activityClusterMixedGroupCount: number;
+  exclusionAlertThresholdMinutes: number;
+  maximumExclusionMinutes: number;
+  attendeesAtOrAboveExclusionThreshold: number;
   generatedGroupRoundCount: number;
   generatedStaticGroupCount: number;
   blockedPairCount: number;
@@ -120,6 +135,7 @@ export interface AssignmentEngineContext<T extends AssignmentParticipant> {
   topology: AssignmentTopology;
   assignmentAlgorithm?: EventSuccessAssignmentAlgorithm;
   compatibilityPolicy?: EventSuccessCompatibilityPolicy;
+  matchingObjective?: EventSuccessMatchingObjective;
   questionnaireMode?: QuestionnaireScoringMode;
   rotationRoundCount?: number;
   allowOrientationFallback?: boolean;
@@ -144,17 +160,35 @@ interface NormalizedAssignmentRotationPolicy {
 export interface AssignmentEngineResult<T extends AssignmentParticipant> {
   assignmentAlgorithm: EventSuccessAssignmentAlgorithm;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  matchingObjective: EventSuccessMatchingObjective;
+  effectiveMatchingObjective: EventSuccessMatchingObjective;
+  assignmentResolution: EventSuccessVariableResolution;
   groups: Array<OptimizedGroup<T>>;
   groupRounds: Array<OptimizedGroupRound<T>>;
   rotationRounds: Array<OptimizedRotationRound<T>>;
+  exclusionLedger: AssignmentExclusionLedger;
   explainability: AssignmentEngineExplainability;
+}
+
+export interface AssignmentExclusionLedger {
+  cumulativeMinutesByUid: Record<string, number>;
+  maximumMinutes: number;
+  alertThresholdMinutes: number;
+  attendeeUidsAtOrAboveAlertThreshold: string[];
 }
 
 export type OptimizedAssignmentPlan<T extends AssignmentParticipant> =
   AssignmentEngineResult<T>;
 
-type AssignmentPlanCore<T extends AssignmentParticipant> =
-  Omit<AssignmentEngineResult<T>, "explainability">;
+type AssignmentPlanCore<T extends AssignmentParticipant> = Pick<
+  AssignmentEngineResult<T>,
+  "groups" | "groupRounds" | "rotationRounds"
+>;
+
+interface EffectiveMatchingObjective {
+  objective: EventSuccessMatchingObjective;
+  fallbackReason: string | null;
+}
 
 interface GroupCompositionProfile {
   participantCount: number;
@@ -200,22 +234,38 @@ export function runAssignmentEngine<
     assignmentAlgorithmForTopology(params.topology);
   const compatibilityPolicy = params.compatibilityPolicy ??
     "questionnaireClueOnly";
+  const matchingObjective = params.matchingObjective ?? "coverage";
   const questionnaireMode = questionnaireModeForPolicy(
     params.questionnaireMode ?? "icebreaker",
     compatibilityPolicy
   );
-  const constraints = normalizeAssignmentConstraints(params.constraints);
+  const constraints = normalizeAssignmentConstraints(
+    params.constraints,
+    params.topology.rotationIntervalMinutes ?? 0
+  );
   const rotationPolicy = normalizeRotationPolicy(params.rotationPolicy);
+  const assignmentResolution = eventSuccessVariableResolutionFor({
+    assignmentAlgorithm,
+    compatibilityPolicy,
+    matchingObjective,
+    topology: params.topology.topology ?? "set",
+  });
+  const effectiveMatchingObjective = resolveEffectiveMatchingObjective({
+    requested: matchingObjective,
+    participants: params.participants,
+    compatibilityPolicy,
+    constraints,
+  });
   const shouldBuildPairRotations =
     params.topology.rotationsEnabled &&
     params.topology.unitSize === 2 &&
     (params.rotationRoundCount ?? 0) > 0;
 
   let plan: AssignmentPlanCore<T>;
-  if (shouldBuildPairRotations) {
+  if (assignmentResolution.status === "unsupported") {
+    plan = {groups: [], groupRounds: [], rotationRounds: []};
+  } else if (shouldBuildPairRotations) {
     plan = {
-      assignmentAlgorithm,
-      compatibilityPolicy,
       groups: [],
       groupRounds: [],
       rotationRounds: buildRotationRoundsForOptimizer({
@@ -224,6 +274,7 @@ export function runAssignmentEngine<
         roundCount: params.rotationRoundCount ?? 0,
         questionnaireMode,
         compatibilityPolicy,
+        matchingObjective: effectiveMatchingObjective.objective,
         allowOrientationFallback: params.allowOrientationFallback ?? true,
         constraints,
         rotationPolicy,
@@ -234,8 +285,6 @@ export function runAssignmentEngine<
     (params.rotationRoundCount ?? 0) > 0
   ) {
     plan = {
-      assignmentAlgorithm,
-      compatibilityPolicy,
       groups: [],
       groupRounds: buildGroupRoundsForOptimizer({
         participants: params.participants,
@@ -244,6 +293,7 @@ export function runAssignmentEngine<
         maxGroupSize: params.topology.maxGroupSize,
         questionnaireMode,
         compatibilityPolicy,
+        matchingObjective: effectiveMatchingObjective.objective,
         roundCount: params.rotationRoundCount ?? 0,
         constraints,
         rotationPolicy,
@@ -252,8 +302,6 @@ export function runAssignmentEngine<
     };
   } else {
     plan = {
-      assignmentAlgorithm,
-      compatibilityPolicy,
       groups: buildGroupUnitsForOptimizer({
         participants: params.participants,
         blockedPairs: params.blockedPairs,
@@ -261,6 +309,7 @@ export function runAssignmentEngine<
         maxGroupSize: params.topology.maxGroupSize,
         questionnaireMode,
         compatibilityPolicy,
+        matchingObjective: effectiveMatchingObjective.objective,
         constraints,
         rotationPolicy,
       }),
@@ -269,8 +318,20 @@ export function runAssignmentEngine<
     };
   }
 
+  const exclusionLedger = projectAssignmentExclusionLedger({
+    plan,
+    participants: params.participants,
+    constraints,
+  });
+
   return {
     ...plan,
+    assignmentAlgorithm,
+    compatibilityPolicy,
+    matchingObjective,
+    effectiveMatchingObjective: effectiveMatchingObjective.objective,
+    assignmentResolution,
+    exclusionLedger,
     explainability: buildAssignmentEngineExplainability({
       plan,
       participants: params.participants,
@@ -278,7 +339,11 @@ export function runAssignmentEngine<
       topology: params.topology,
       questionnaireMode,
       compatibilityPolicy,
+      matchingObjective,
+      effectiveMatchingObjective,
+      assignmentResolution,
       constraints,
+      exclusionLedger,
       rotationPolicy,
       requestedRotationRoundCount: params.rotationRoundCount ?? 0,
     }),
@@ -330,7 +395,8 @@ export function buildOptimizedRotationRounds<
       rotationsEnabled: true,
     },
     assignmentAlgorithm: "pairRotations",
-    compatibilityPolicy: params.compatibilityPolicy,
+    compatibilityPolicy: params.compatibilityPolicy ?? "mutualInterestOnly",
+    matchingObjective: "romantic",
     questionnaireMode: params.questionnaireMode,
     rotationRoundCount: params.roundCount,
     allowOrientationFallback: params.allowOrientationFallback,
@@ -372,7 +438,8 @@ export function buildOptimizedGroups<
       rotationsEnabled: false,
     },
     assignmentAlgorithm: "socialPods",
-    compatibilityPolicy: params.compatibilityPolicy,
+    compatibilityPolicy: params.compatibilityPolicy ?? "mutualInterestOnly",
+    matchingObjective: "romantic",
     questionnaireMode: params.questionnaireMode,
   }).groups.map((group) => group.participants);
 }
@@ -385,6 +452,95 @@ export function buildOptimizedGroups<
  */
 export function assignmentPairKey(uidA: string, uidB: string): string {
   return [uidA, uidB].sort().join("__");
+}
+
+/**
+ * Projects the cumulative exclusion ledger through the generated assignment
+ * rounds. Assigned attendees retain their current total; every attendee left
+ * out of a round accrues that round's configured duration.
+ * @param {object} params Ledger projection inputs.
+ * @return {AssignmentExclusionLedger} Projected per-attendee totals.
+ */
+function projectAssignmentExclusionLedger<
+  T extends AssignmentParticipant
+>(params: {
+  plan: AssignmentPlanCore<T>;
+  participants: T[];
+  constraints: NormalizedAssignmentConstraints;
+}): AssignmentExclusionLedger {
+  const minutesByUid = new Map<string, number>();
+  for (const participant of params.participants) {
+    minutesByUid.set(
+      participant.uid,
+      assignmentExclusionMinutes(participant.uid, params.constraints)
+    );
+  }
+
+  const assignedUidsByRound: Set<string>[] = [];
+  for (const round of params.plan.rotationRounds) {
+    assignedUidsByRound.push(new Set(round.pairs.flatMap((pair) => [
+      pair.a.uid,
+      pair.b.uid,
+    ])));
+  }
+  for (const round of params.plan.groupRounds) {
+    assignedUidsByRound.push(new Set(round.groups.flatMap((group) =>
+      group.participants.map((participant) => participant.uid)
+    )));
+  }
+  if (
+    assignedUidsByRound.length === 0 &&
+    params.plan.groups.length > 0
+  ) {
+    assignedUidsByRound.push(new Set(params.plan.groups.flatMap((group) =>
+      group.participants.map((participant) => participant.uid)
+    )));
+  }
+
+  for (const assignedUids of assignedUidsByRound) {
+    accrueRoundExclusion({
+      participantUids: params.participants.map((participant) =>
+        participant.uid
+      ),
+      assignedUids,
+      minutesByUid,
+      intervalMinutes: params.constraints.exclusionIntervalMinutes,
+    });
+  }
+
+  const orderedEntries = [...minutesByUid.entries()]
+    .sort(([uidA], [uidB]) => uidA.localeCompare(uidB));
+  const maximumMinutes = orderedEntries.reduce(
+    (maximum, [, minutes]) => Math.max(maximum, minutes),
+    0
+  );
+  const alertThresholdMinutes =
+    params.constraints.exclusionAlertThresholdMinutes;
+  return {
+    cumulativeMinutesByUid: Object.fromEntries(orderedEntries),
+    maximumMinutes,
+    alertThresholdMinutes,
+    attendeeUidsAtOrAboveAlertThreshold: orderedEntries
+      .filter(([, minutes]) => minutes >= alertThresholdMinutes)
+      .map(([uid]) => uid),
+  };
+}
+
+/** Adds one interval to every attendee not assigned in the round. */
+function accrueRoundExclusion(params: {
+  participantUids: string[];
+  assignedUids: Set<string>;
+  minutesByUid: Map<string, number>;
+  intervalMinutes: number;
+}): void {
+  if (params.intervalMinutes <= 0) return;
+  for (const uid of params.participantUids) {
+    if (params.assignedUids.has(uid)) continue;
+    params.minutesByUid.set(
+      uid,
+      (params.minutesByUid.get(uid) ?? 0) + params.intervalMinutes
+    );
+  }
 }
 
 /**
@@ -401,7 +557,11 @@ function buildAssignmentEngineExplainability<
   topology: AssignmentTopology;
   questionnaireMode: QuestionnaireScoringMode;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  matchingObjective: EventSuccessMatchingObjective;
+  effectiveMatchingObjective: EffectiveMatchingObjective;
+  assignmentResolution: EventSuccessVariableResolution;
   constraints: NormalizedAssignmentConstraints;
+  exclusionLedger: AssignmentExclusionLedger;
   rotationPolicy: NormalizedAssignmentRotationPolicy;
   requestedRotationRoundCount: number;
 }): AssignmentEngineExplainability {
@@ -410,6 +570,7 @@ function buildAssignmentEngineExplainability<
     plan: params.plan,
     questionnaireMode: params.questionnaireMode,
     compatibilityPolicy: params.compatibilityPolicy,
+    matchingObjective: params.effectiveMatchingObjective.objective,
   });
   const unassignedParticipantCount = Math.max(
     0,
@@ -422,6 +583,7 @@ function buildAssignmentEngineExplainability<
     plan: params.plan,
     questionnaireMode: params.questionnaireMode,
     compatibilityPolicy: params.compatibilityPolicy,
+    matchingObjective: params.effectiveMatchingObjective.objective,
   });
   const activityStats = activityAttributeStats({
     plan: params.plan,
@@ -433,6 +595,7 @@ function buildAssignmentEngineExplainability<
       blockedPairs: params.blockedPairs,
       topology: params.topology,
       compatibilityPolicy: params.compatibilityPolicy,
+      matchingObjective: params.effectiveMatchingObjective.objective,
       dyadStats,
       groupSizeSkew: groupSizeSkewValue,
       compositionStats,
@@ -476,6 +639,12 @@ function buildAssignmentEngineExplainability<
   }
 
   return {
+    requestedMatchingObjective: params.matchingObjective,
+    effectiveMatchingObjective: params.effectiveMatchingObjective.objective,
+    matchingObjectiveFallbackReason:
+      params.effectiveMatchingObjective.fallbackReason,
+    assignmentResolutionStatus: params.assignmentResolution.status,
+    assignmentResolutionReason: params.assignmentResolution.reason,
     participantCount: params.participants.length,
     assignedParticipantCount: assignedUids.size,
     unassignedParticipantCount,
@@ -496,6 +665,11 @@ function buildAssignmentEngineExplainability<
       activityStats.missingAttributeValueCount,
     activityBalanceSkew: activityStats.balanceSkew,
     activityClusterMixedGroupCount: activityStats.clusterMixedGroupCount,
+    exclusionAlertThresholdMinutes:
+      params.exclusionLedger.alertThresholdMinutes,
+    maximumExclusionMinutes: params.exclusionLedger.maximumMinutes,
+    attendeesAtOrAboveExclusionThreshold:
+      params.exclusionLedger.attendeeUidsAtOrAboveAlertThreshold.length,
     generatedGroupRoundCount: params.plan.groupRounds.length,
     generatedStaticGroupCount: params.plan.groups.length,
     blockedPairCount: params.blockedPairs.size,
@@ -538,6 +712,7 @@ function buildCoreConstraintEvaluations<
   blockedPairs: Set<string>;
   topology: AssignmentTopology;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  matchingObjective: EventSuccessMatchingObjective;
   dyadStats: {
     repeatedPairCount: number;
     orientationFallbackPairCount: number;
@@ -577,7 +752,7 @@ function buildCoreConstraintEvaluations<
     {
       key: "mutual_orientation",
       category: "strongSoft",
-      status: params.compatibilityPolicy === "none" ?
+      status: params.matchingObjective !== "romantic" ?
         "not_applicable" :
         params.dyadStats.orientationFallbackPairCount > 0 ?
           "relaxed" :
@@ -587,7 +762,8 @@ function buildCoreConstraintEvaluations<
     {
       key: "questionnaire_affinity",
       category: "strongSoft",
-      status: params.compatibilityPolicy === "questionnaireClueOnly" ?
+      status: params.matchingObjective === "affinity" &&
+        params.compatibilityPolicy === "questionnaireClueOnly" ?
         "satisfied" :
         "not_applicable",
       subjectUids: [],
@@ -611,7 +787,7 @@ function buildCoreConstraintEvaluations<
     {
       key: "group_opportunity_balance",
       category: "strongSoft",
-      status: params.compatibilityPolicy === "none" ?
+      status: params.matchingObjective !== "romantic" ?
         "not_applicable" :
         allGeneratedGroupUnits(params.plan).length === 0 ?
           "not_applicable" :
@@ -814,6 +990,7 @@ function generatedDyadStats<T extends AssignmentParticipant>(params: {
   plan: AssignmentPlanCore<T>;
   questionnaireMode: QuestionnaireScoringMode;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  matchingObjective: EventSuccessMatchingObjective;
 }): {
   mutualDyadCount: number;
   plausibleDyadCount: number;
@@ -843,7 +1020,7 @@ function generatedDyadStats<T extends AssignmentParticipant>(params: {
     if (plausible) plausibleDyadCount++;
     if (
       directPairAssignment &&
-      params.compatibilityPolicy !== "none" &&
+      params.matchingObjective === "romantic" &&
       plausible &&
       !mutualInterest
     ) {
@@ -857,6 +1034,7 @@ function generatedDyadStats<T extends AssignmentParticipant>(params: {
         const scored = scorePairForOptimizer(group[i], group[j], {
           questionnaireMode: params.questionnaireMode,
           compatibilityPolicy: params.compatibilityPolicy,
+          matchingObjective: params.matchingObjective,
           allowOrientationFallback: true,
         });
         recordPair(
@@ -943,6 +1121,7 @@ function groupCompositionStats<T extends AssignmentParticipant>(params: {
   plan: AssignmentPlanCore<T>;
   questionnaireMode: QuestionnaireScoringMode;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  matchingObjective: EventSuccessMatchingObjective;
 }): GroupCompositionStats {
   const profiles = allGeneratedGroups(params.plan)
     .filter((group) => group.length > 0)
@@ -950,6 +1129,7 @@ function groupCompositionStats<T extends AssignmentParticipant>(params: {
       group,
       questionnaireMode: params.questionnaireMode,
       compatibilityPolicy: params.compatibilityPolicy,
+      matchingObjective: params.matchingObjective,
     }));
   return {
     lowOpportunityGroupCount: profiles.filter((profile) =>
@@ -1106,6 +1286,7 @@ function groupCompositionProfile<T extends AssignmentParticipant>(params: {
   group: T[];
   questionnaireMode: QuestionnaireScoringMode;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  matchingObjective: EventSuccessMatchingObjective;
 }): GroupCompositionProfile {
   let mutualDyadCount = 0;
   let plausibleDyadCount = 0;
@@ -1117,6 +1298,7 @@ function groupCompositionProfile<T extends AssignmentParticipant>(params: {
       const scored = scorePairForOptimizer(params.group[i], params.group[j], {
         questionnaireMode: params.questionnaireMode,
         compatibilityPolicy: params.compatibilityPolicy,
+        matchingObjective: params.matchingObjective,
         allowOrientationFallback: true,
       });
       if (scored.mutualInterest) {
@@ -1130,11 +1312,7 @@ function groupCompositionProfile<T extends AssignmentParticipant>(params: {
           (mutualCountsByUid.get(params.group[j].uid) ?? 0) + 1
         );
       }
-      if (
-        scored.mutualInterest ||
-        scored.oneWayInterest ||
-        scored.compatibility === "social"
-      ) {
+      if (scored.score > 0) {
         plausibleDyadCount++;
       }
     }
@@ -1263,6 +1441,95 @@ function normalizeRotationPolicy(
   };
 }
 
+/** Resolves an objective to coverage when its permitted inputs are absent. */
+function resolveEffectiveMatchingObjective<
+  T extends AssignmentParticipant
+>(params: {
+  requested: EventSuccessMatchingObjective;
+  participants: T[];
+  compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  constraints: NormalizedAssignmentConstraints;
+}): EffectiveMatchingObjective {
+  if (params.requested === "coverage") {
+    return {objective: "coverage", fallbackReason: null};
+  }
+
+  const questionnairePermitted =
+    params.compatibilityPolicy === "questionnaireClueOnly";
+  const hasQuestionnaireData = questionnairePermitted &&
+    params.participants.some((participant) =>
+      (participant.compatibilityAnswerIds?.length ?? 0) > 0
+    );
+  const hasClusterActivityData = hasConfiguredActivityData(
+    params.participants,
+    params.constraints.clusterActivityAttributes
+  );
+  const hasBalanceActivityData = hasConfiguredActivityData(
+    params.participants,
+    params.constraints.balanceActivityAttributes
+  );
+
+  switch (params.requested) {
+  case "romantic":
+    if (
+      params.compatibilityPolicy === "mutualInterestOnly" &&
+      params.participants.filter(hasRomanticProfileSignal).length >= 2
+    ) {
+      return {objective: "romantic", fallbackReason: null};
+    }
+    return coverageFallback(
+      "Mutual-interest inputs are not permitted or are unavailable."
+    );
+  case "affinity":
+    if (hasQuestionnaireData || hasClusterActivityData) {
+      return {objective: "affinity", fallbackReason: null};
+    }
+    return coverageFallback(
+      "Affinity inputs are not permitted or are unavailable."
+    );
+  case "novelty":
+    if (hasQuestionnaireData || hasBalanceActivityData) {
+      return {objective: "novelty", fallbackReason: null};
+    }
+    return coverageFallback(
+      "Novelty inputs are not permitted or are unavailable."
+    );
+  case "balance":
+  case "spread":
+    if (hasBalanceActivityData) {
+      return {objective: params.requested, fallbackReason: null};
+    }
+    return coverageFallback(
+      "Assignment-attribute inputs are unavailable."
+    );
+  }
+}
+
+function coverageFallback(reason: string): EffectiveMatchingObjective {
+  return {
+    objective: "coverage",
+    fallbackReason: `${reason} Coverage was used instead.`,
+  };
+}
+
+function hasRomanticProfileSignal(
+  participant: AssignmentParticipant
+): boolean {
+  return (participant.gender?.trim().length ?? 0) > 0 &&
+    participant.interestedInGenders.length > 0;
+}
+
+function hasConfiguredActivityData<T extends AssignmentParticipant>(
+  participants: T[],
+  attributes: string[]
+): boolean {
+  return attributes.length > 0 && participants.some((participant) =>
+    attributes.some((attribute) =>
+      activityValue(participant, attribute) !== null
+    )
+  );
+}
+
 /**
  * Scores a pair according to the event-success compatibility primitive.
  * @param {AssignmentParticipant} a First participant.
@@ -1276,26 +1543,43 @@ function scorePairForOptimizer(
   options: {
     questionnaireMode: QuestionnaireScoringMode;
     compatibilityPolicy: EventSuccessCompatibilityPolicy;
+    matchingObjective: EventSuccessMatchingObjective;
     allowOrientationFallback: boolean;
   }
 ): ReturnType<typeof scoreDatingCompatibilityPair> {
-  if (options.compatibilityPolicy === "none") {
+  if (options.matchingObjective === "romantic") {
+    return scoreDatingCompatibilityPair(a, b, {
+      questionnaireMode: "off",
+      allowOrientationFallback: options.allowOrientationFallback,
+    });
+  }
+  if (
+    (options.matchingObjective === "affinity" ||
+      options.matchingObjective === "novelty") &&
+    options.compatibilityPolicy === "questionnaireClueOnly"
+  ) {
+    const scored = scoreQuestionnaireObjectivePair(
+      a,
+      b,
+      options.matchingObjective
+    );
     return {
-      score: 1,
-      compatibility: "social",
+      score: scored.score + 1,
+      compatibility: scored.compatibility,
       mutualInterest: false,
       oneWayInterest: false,
       orientationCompatible: false,
-      sharedAnswerCount: 0,
+      sharedAnswerCount: scored.sharedAnswerCount,
     };
   }
-  return scoreDatingCompatibilityPair(a, b, {
-    questionnaireMode: questionnaireModeForPolicy(
-      options.questionnaireMode,
-      options.compatibilityPolicy
-    ),
-    allowOrientationFallback: options.allowOrientationFallback,
-  });
+  return {
+    score: 1,
+    compatibility: "social",
+    mutualInterest: false,
+    oneWayInterest: false,
+    orientationCompatible: false,
+    sharedAnswerCount: 0,
+  };
 }
 
 /**
@@ -1311,6 +1595,7 @@ function buildRotationRoundsForOptimizer<
   roundCount: number;
   questionnaireMode: QuestionnaireScoringMode;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  matchingObjective: EventSuccessMatchingObjective;
   allowOrientationFallback: boolean;
   constraints: NormalizedAssignmentConstraints;
   rotationPolicy: NormalizedAssignmentRotationPolicy;
@@ -1324,6 +1609,15 @@ function buildRotationRoundsForOptimizer<
   const breakCounts = new Map(
     params.participants.map((participant) => [participant.uid, 0])
   );
+  const exclusionMinutesByUid = new Map(
+    params.participants.map((participant) => [
+      participant.uid,
+      assignmentExclusionMinutes(participant.uid, params.constraints),
+    ])
+  );
+  const participantUids = params.participants.map((participant) =>
+    participant.uid
+  );
   const rounds: Array<OptimizedRotationRound<T>> = [];
 
   for (let roundIndex = 0; roundIndex < params.roundCount; roundIndex++) {
@@ -1334,89 +1628,57 @@ function buildRotationRoundsForOptimizer<
       blockedPairs: params.blockedPairs,
       questionnaireMode: params.questionnaireMode,
       compatibilityPolicy: params.compatibilityPolicy,
+      matchingObjective: params.matchingObjective,
       allowOrientationFallback: params.allowOrientationFallback,
       constraints: params.constraints,
       pairMeetingCounts,
       rotationPolicy: params.rotationPolicy,
       candidateMode: "uniqueOnly",
     });
-    selectPairsByCompatibilityTier({
-      candidates: candidatePairs.filter((pair) => pair.mutualInterest),
-      usedUids,
-      roundPairs,
-      seenPairs,
-      pairMeetingCounts,
-      meetingCounts,
-      breakCounts,
-    });
+    const selectCandidates = (candidates: Array<OptimizedPair<T>>) =>
+      selectRotationPairsForRound({
+        candidates,
+        usedUids,
+        roundPairs,
+        seenPairs,
+        pairMeetingCounts,
+        meetingCounts,
+        breakCounts,
+        exclusionMinutesByUid,
+        exclusionIntervalMinutes: params.constraints.exclusionIntervalMinutes,
+        participantUids,
+      });
+    selectCandidates(candidatePairs.filter((pair) => pair.mutualInterest));
     if (params.allowOrientationFallback) {
-      selectPairsByCompatibilityTier({
-        candidates: candidatePairs.filter((pair) =>
-          !pair.mutualInterest && pair.compatibility !== "social"
-        ),
-        usedUids,
-        roundPairs,
-        seenPairs,
-        pairMeetingCounts,
-        meetingCounts,
-        breakCounts,
-      });
-      selectPairsByCompatibilityTier({
-        candidates: candidatePairs.filter((pair) =>
-          pair.compatibility === "social" &&
-          pairNeedsFirstConnection(pair, meetingCounts)
-        ),
-        usedUids,
-        roundPairs,
-        seenPairs,
-        pairMeetingCounts,
-        meetingCounts,
-        breakCounts,
-      });
+      selectCandidates(candidatePairs.filter((pair) =>
+        !pair.mutualInterest && pair.compatibility !== "social"
+      ));
+      selectCandidates(candidatePairs.filter((pair) =>
+        pair.compatibility === "social" &&
+        (params.matchingObjective !== "romantic" ||
+          pairNeedsFirstConnection(pair, meetingCounts))
+      ));
     }
     const repeatCandidates = allCandidatePairs({
       participants: params.participants,
       blockedPairs: params.blockedPairs,
       questionnaireMode: params.questionnaireMode,
       compatibilityPolicy: params.compatibilityPolicy,
+      matchingObjective: params.matchingObjective,
       allowOrientationFallback: params.allowOrientationFallback,
       constraints: params.constraints,
       pairMeetingCounts,
       rotationPolicy: params.rotationPolicy,
       candidateMode: "repeatOnly",
     });
-    selectPairsByCompatibilityTier({
-      candidates: repeatCandidates.filter((pair) => pair.mutualInterest),
-      usedUids,
-      roundPairs,
-      seenPairs,
-      pairMeetingCounts,
-      meetingCounts,
-      breakCounts,
-    });
+    selectCandidates(repeatCandidates.filter((pair) => pair.mutualInterest));
     if (params.allowOrientationFallback) {
-      selectPairsByCompatibilityTier({
-        candidates: repeatCandidates.filter((pair) =>
-          !pair.mutualInterest && pair.compatibility !== "social"
-        ),
-        usedUids,
-        roundPairs,
-        seenPairs,
-        pairMeetingCounts,
-        meetingCounts,
-        breakCounts,
-      });
-      selectPairsByCompatibilityTier({
-        candidates: repeatCandidates.filter((pair) =>
-          pair.compatibility === "social"
-        ),
-        usedUids,
-        roundPairs,
-        seenPairs,
-        pairMeetingCounts,
-        meetingCounts,
-        breakCounts,
-      });
+      selectCandidates(repeatCandidates.filter((pair) =>
+        !pair.mutualInterest && pair.compatibility !== "social"
+      ));
+      selectCandidates(repeatCandidates.filter((pair) =>
+        pair.compatibility === "social"
+      ));
     }
     if (roundPairs.length === 0) break;
     for (const participant of params.participants) {
@@ -1427,6 +1689,12 @@ function buildRotationRoundsForOptimizer<
         );
       }
     }
+    accrueRoundExclusion({
+      participantUids,
+      assignedUids: usedUids,
+      minutesByUid: exclusionMinutesByUid,
+      intervalMinutes: params.constraints.exclusionIntervalMinutes,
+    });
     rounds.push({roundIndex, pairs: roundPairs});
   }
   return rounds;
@@ -1446,10 +1714,12 @@ function buildGroupUnitsForOptimizer<
   maxGroupSize: number;
   questionnaireMode: QuestionnaireScoringMode;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  matchingObjective: EventSuccessMatchingObjective;
   seenPairs?: Set<string>;
   constraints: NormalizedAssignmentConstraints;
   rotationPolicy: NormalizedAssignmentRotationPolicy;
   pairMeetingCounts?: Map<string, number>;
+  exclusionMinutesByUid?: Map<string, number>;
 }): Array<OptimizedGroup<T>> {
   if (params.participants.length === 0) return [];
   const groups = Array.from(
@@ -1461,7 +1731,9 @@ function buildGroupUnitsForOptimizer<
     params.blockedPairs,
     params.questionnaireMode,
     params.compatibilityPolicy,
-    params.constraints
+    params.matchingObjective,
+    params.constraints,
+    params.exclusionMinutesByUid ?? params.constraints.exclusionMinutesByUid
   );
 
   for (const participant of orderedParticipants) {
@@ -1474,6 +1746,7 @@ function buildGroupUnitsForOptimizer<
           blockedPairs: params.blockedPairs,
           questionnaireMode: params.questionnaireMode,
           compatibilityPolicy: params.compatibilityPolicy,
+          matchingObjective: params.matchingObjective,
           seenPairs: params.seenPairs,
           maxGroupSize: params.maxGroupSize,
           constraints: params.constraints,
@@ -1488,6 +1761,7 @@ function buildGroupUnitsForOptimizer<
           blockedPairs: params.blockedPairs,
           questionnaireMode: params.questionnaireMode,
           compatibilityPolicy: params.compatibilityPolicy,
+          matchingObjective: params.matchingObjective,
           seenPairs: params.seenPairs,
           maxGroupSize: params.maxGroupSize,
           constraints: params.constraints,
@@ -1520,6 +1794,7 @@ function buildGroupUnitsForOptimizer<
       index,
       questionnaireMode: params.questionnaireMode,
       compatibilityPolicy: params.compatibilityPolicy,
+      matchingObjective: params.matchingObjective,
     }))
     .filter((group) => group.participants.length > 0);
 }
@@ -1538,6 +1813,7 @@ function buildGroupRoundsForOptimizer<
   maxGroupSize: number;
   questionnaireMode: QuestionnaireScoringMode;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  matchingObjective: EventSuccessMatchingObjective;
   roundCount: number;
   constraints: NormalizedAssignmentConstraints;
   rotationPolicy: NormalizedAssignmentRotationPolicy;
@@ -1545,6 +1821,15 @@ function buildGroupRoundsForOptimizer<
   if (params.participants.length === 0 || params.roundCount <= 0) return [];
   const seenPairs = new Set<string>();
   const pairMeetingCounts = new Map<string, number>();
+  const exclusionMinutesByUid = new Map(
+    params.participants.map((participant) => [
+      participant.uid,
+      assignmentExclusionMinutes(participant.uid, params.constraints),
+    ])
+  );
+  const participantUids = params.participants.map((participant) =>
+    participant.uid
+  );
   const rounds: Array<OptimizedGroupRound<T>> = [];
   for (let roundIndex = 0; roundIndex < params.roundCount; roundIndex++) {
     const groups = buildGroupUnitsForOptimizer({
@@ -1554,10 +1839,12 @@ function buildGroupRoundsForOptimizer<
       maxGroupSize: params.maxGroupSize,
       questionnaireMode: params.questionnaireMode,
       compatibilityPolicy: params.compatibilityPolicy,
+      matchingObjective: params.matchingObjective,
       seenPairs,
       constraints: params.constraints,
       rotationPolicy: params.rotationPolicy,
       pairMeetingCounts,
+      exclusionMinutesByUid,
     });
     if (groups.length === 0) break;
     for (const group of groups) {
@@ -1566,16 +1853,24 @@ function buildGroupRoundsForOptimizer<
         pairMeetingCounts.set(key, (pairMeetingCounts.get(key) ?? 0) + 1);
       }
     }
+    accrueRoundExclusion({
+      participantUids,
+      assignedUids: new Set(groups.flatMap((group) =>
+        group.participants.map((participant) => participant.uid)
+      )),
+      minutesByUid: exclusionMinutesByUid,
+      intervalMinutes: params.constraints.exclusionIntervalMinutes,
+    });
     rounds.push({roundIndex, groups});
   }
   return rounds;
 }
 
 /**
- * Selects compatible candidate pairs for one rotation tier.
+ * Selects candidate pairs for one round under the fairness-first objective.
  * @param {object} params Selection inputs.
  */
-function selectPairsByCompatibilityTier<T extends AssignmentParticipant>(
+function selectRotationPairsForRound<T extends AssignmentParticipant>(
   params: {
   candidates: Array<OptimizedPair<T>>;
   usedUids: Set<string>;
@@ -1584,6 +1879,9 @@ function selectPairsByCompatibilityTier<T extends AssignmentParticipant>(
   pairMeetingCounts: Map<string, number>;
   meetingCounts: Map<string, number>;
   breakCounts: Map<string, number>;
+  exclusionMinutesByUid: Map<string, number>;
+  exclusionIntervalMinutes: number;
+  participantUids: string[];
 }): void {
   let available = params.candidates.filter((pair) =>
     !params.usedUids.has(pair.a.uid) &&
@@ -1598,6 +1896,9 @@ function selectPairsByCompatibilityTier<T extends AssignmentParticipant>(
         usedUids: params.usedUids,
         meetingCounts: params.meetingCounts,
         breakCounts: params.breakCounts,
+        exclusionMinutesByUid: params.exclusionMinutesByUid,
+        exclusionIntervalMinutes: params.exclusionIntervalMinutes,
+        participantUids: params.participantUids,
       })
     )[0];
     params.roundPairs.push(pair);
@@ -1634,6 +1935,7 @@ function allCandidatePairs<T extends AssignmentParticipant>(params: {
   blockedPairs: Set<string>;
   questionnaireMode: QuestionnaireScoringMode;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  matchingObjective: EventSuccessMatchingObjective;
   allowOrientationFallback: boolean;
   constraints: NormalizedAssignmentConstraints;
   pairMeetingCounts: Map<string, number>;
@@ -1663,6 +1965,7 @@ function allCandidatePairs<T extends AssignmentParticipant>(params: {
       const scored = scorePairForOptimizer(a, b, {
         questionnaireMode: params.questionnaireMode,
         compatibilityPolicy: params.compatibilityPolicy,
+        matchingObjective: params.matchingObjective,
         allowOrientationFallback: params.allowOrientationFallback,
       });
       if (scored.score <= 0) continue;
@@ -1729,6 +2032,12 @@ function repeatPairScoreAdjustment(params: {
 }): number {
   if (params.previousMeetingCount === 0) return 0;
   return -140 * params.previousMeetingCount +
+    affinityRepeatPairScoreAdjustment(
+      params.uidA,
+      params.uidB,
+      params.previousMeetingCount,
+      params.constraints
+    ) +
     hostRequestedRepeatPairScoreAdjustment(
       params.uidA,
       params.uidB,
@@ -1755,6 +2064,12 @@ function groupRepeatPairPlacementPenalty(params: {
   return Math.max(
     0,
     basePenalty * params.previousMeetingCount -
+      affinityRepeatPairScoreAdjustment(
+        params.uidA,
+        params.uidB,
+        params.previousMeetingCount,
+        params.constraints
+      ) -
       hostRequestedRepeatPairScoreAdjustment(
         params.uidA,
         params.uidB,
@@ -1775,61 +2090,123 @@ function compareRotationPairsForRound<T extends AssignmentParticipant>(params: {
   usedUids: Set<string>;
   meetingCounts: Map<string, number>;
   breakCounts: Map<string, number>;
+  exclusionMinutesByUid: Map<string, number>;
+  exclusionIntervalMinutes: number;
+  participantUids: string[];
 }): number {
-  const capacityDelta = params.candidates.length <=
-    ROUND_CAPACITY_LOOKAHEAD_LIMIT ?
-    remainingRoundCapacity(params.b, params.candidates, params.usedUids) -
-      remainingRoundCapacity(params.a, params.candidates, params.usedUids) :
-    0;
-  return capacityDelta ||
+  const aProjection = projectRoundExclusionAfterPair({
+    selected: params.a,
+    candidates: params.candidates,
+    usedUids: params.usedUids,
+    participantUids: params.participantUids,
+    exclusionMinutesByUid: params.exclusionMinutesByUid,
+    intervalMinutes: params.exclusionIntervalMinutes,
+  });
+  const bProjection = projectRoundExclusionAfterPair({
+    selected: params.b,
+    candidates: params.candidates,
+    usedUids: params.usedUids,
+    participantUids: params.participantUids,
+    exclusionMinutesByUid: params.exclusionMinutesByUid,
+    intervalMinutes: params.exclusionIntervalMinutes,
+  });
+  return aProjection.maximumMinutes - bProjection.maximumMinutes ||
+    aProjection.unassignedCount - bProjection.unassignedCount ||
+    aProjection.totalMinutes - bProjection.totalMinutes ||
     pairMinMeetings(params.a, params.meetingCounts) -
     pairMinMeetings(params.b, params.meetingCounts) ||
-    params.b.score - params.a.score ||
     pairBreakLoad(params.b, params.breakCounts) -
     pairBreakLoad(params.a, params.breakCounts) ||
     pairLoad(params.a, params.meetingCounts) -
     pairLoad(params.b, params.meetingCounts) ||
+    params.b.score - params.a.score ||
     assignmentPairKey(params.a.a.uid, params.a.b.uid)
       .localeCompare(assignmentPairKey(params.b.a.uid, params.b.b.uid));
 }
 
+interface ProjectedRoundExclusion {
+  maximumMinutes: number;
+  totalMinutes: number;
+  unassignedCount: number;
+}
+
 /**
- * Estimates how many more non-overlapping pairs remain after choosing a pair.
- * @param {OptimizedPair<T>} selected Pair being considered.
- * @param {Array<OptimizedPair<T>>} candidates Same-tier candidate pool.
- * @param {Set<string>} usedUids Uids already used in this round.
- * @return {number} Additional pair capacity.
+ * Projects the end-of-round exclusion tuple after choosing one pair. The
+ * bounded lookahead fills the remaining round using exclusion only, so score
+ * cannot influence the fairness objective it is ordered behind.
  */
-function remainingRoundCapacity<T extends AssignmentParticipant>(
-  selected: OptimizedPair<T>,
-  candidates: Array<OptimizedPair<T>>,
-  usedUids: Set<string>
-): number {
-  const unavailableUids = new Set(usedUids);
-  unavailableUids.add(selected.a.uid);
-  unavailableUids.add(selected.b.uid);
-  let capacity = 0;
-  let available = candidates.filter((pair) =>
-    !unavailableUids.has(pair.a.uid) &&
-    !unavailableUids.has(pair.b.uid)
-  );
-  while (available.length > 0) {
-    const degrees = participantPairDegrees(available);
-    const pair = available.sort((a, b) =>
-      pairDegreeLoad(a, degrees) - pairDegreeLoad(b, degrees) ||
-      b.score - a.score ||
-      assignmentPairKey(a.a.uid, a.b.uid)
-        .localeCompare(assignmentPairKey(b.a.uid, b.b.uid))
-    )[0];
-    unavailableUids.add(pair.a.uid);
-    unavailableUids.add(pair.b.uid);
-    capacity++;
-    available = candidates.filter((candidate) =>
-      !unavailableUids.has(candidate.a.uid) &&
-      !unavailableUids.has(candidate.b.uid)
+function projectRoundExclusionAfterPair<
+  T extends AssignmentParticipant
+>(params: {
+  selected: OptimizedPair<T>;
+  candidates: Array<OptimizedPair<T>>;
+  usedUids: Set<string>;
+  participantUids: string[];
+  exclusionMinutesByUid: Map<string, number>;
+  intervalMinutes: number;
+}): ProjectedRoundExclusion {
+  const assignedUids = new Set(params.usedUids);
+  assignedUids.add(params.selected.a.uid);
+  assignedUids.add(params.selected.b.uid);
+
+  if (params.candidates.length <= ROUND_CAPACITY_LOOKAHEAD_LIMIT) {
+    let available = params.candidates.filter((pair) =>
+      !assignedUids.has(pair.a.uid) &&
+      !assignedUids.has(pair.b.uid)
     );
+    while (available.length > 0) {
+      const degrees = participantPairDegrees(available);
+      const next = available.sort((a, b) =>
+        pairMaximumExclusion(b, params.exclusionMinutesByUid) -
+          pairMaximumExclusion(a, params.exclusionMinutesByUid) ||
+        pairExclusionLoad(b, params.exclusionMinutesByUid) -
+          pairExclusionLoad(a, params.exclusionMinutesByUid) ||
+        pairDegreeLoad(a, degrees) - pairDegreeLoad(b, degrees) ||
+        assignmentPairKey(a.a.uid, a.b.uid)
+          .localeCompare(assignmentPairKey(b.a.uid, b.b.uid))
+      )[0];
+      assignedUids.add(next.a.uid);
+      assignedUids.add(next.b.uid);
+      available = params.candidates.filter((pair) =>
+        !assignedUids.has(pair.a.uid) &&
+        !assignedUids.has(pair.b.uid)
+      );
+    }
   }
-  return capacity;
+
+  let maximumMinutes = 0;
+  let totalMinutes = 0;
+  let unassignedCount = 0;
+  for (const uid of params.participantUids) {
+    const currentMinutes = params.exclusionMinutesByUid.get(uid) ?? 0;
+    const assigned = assignedUids.has(uid);
+    const projectedMinutes = currentMinutes +
+      (assigned ? 0 : params.intervalMinutes);
+    if (!assigned) unassignedCount++;
+    maximumMinutes = Math.max(maximumMinutes, projectedMinutes);
+    totalMinutes += projectedMinutes;
+  }
+  return {maximumMinutes, totalMinutes, unassignedCount};
+}
+
+/** Returns the larger current exclusion total inside a candidate pair. */
+function pairMaximumExclusion<T extends AssignmentParticipant>(
+  pair: OptimizedPair<T>,
+  minutesByUid: Map<string, number>
+): number {
+  return Math.max(
+    minutesByUid.get(pair.a.uid) ?? 0,
+    minutesByUid.get(pair.b.uid) ?? 0
+  );
+}
+
+/** Returns the combined current exclusion total inside a candidate pair. */
+function pairExclusionLoad<T extends AssignmentParticipant>(
+  pair: OptimizedPair<T>,
+  minutesByUid: Map<string, number>
+): number {
+  return (minutesByUid.get(pair.a.uid) ?? 0) +
+    (minutesByUid.get(pair.b.uid) ?? 0);
 }
 
 /**
@@ -1934,17 +2311,22 @@ function constrainedParticipantsFirst<T extends AssignmentParticipant>(
   blockedPairs: Set<string>,
   questionnaireMode: QuestionnaireScoringMode,
   compatibilityPolicy: EventSuccessCompatibilityPolicy,
-  constraints: NormalizedAssignmentConstraints
+  matchingObjective: EventSuccessMatchingObjective,
+  constraints: NormalizedAssignmentConstraints,
+  exclusionMinutesByUid: Map<string, number>
 ): T[] {
   return [...participants].sort((a, b) =>
     hostConstrainedParticipantRank(a.uid, constraints) -
     hostConstrainedParticipantRank(b.uid, constraints) ||
+    (exclusionMinutesByUid.get(b.uid) ?? 0) -
+      (exclusionMinutesByUid.get(a.uid) ?? 0) ||
     mutualPeerCount(
       a,
       participants,
       blockedPairs,
       questionnaireMode,
       compatibilityPolicy,
+      matchingObjective,
       constraints
     ) -
     mutualPeerCount(
@@ -1953,6 +2335,7 @@ function constrainedParticipantsFirst<T extends AssignmentParticipant>(
       blockedPairs,
       questionnaireMode,
       compatibilityPolicy,
+      matchingObjective,
       constraints
     ) ||
     a.uid.localeCompare(b.uid)
@@ -1975,6 +2358,7 @@ function mutualPeerCount<T extends AssignmentParticipant>(
   blockedPairs: Set<string>,
   questionnaireMode: QuestionnaireScoringMode,
   compatibilityPolicy: EventSuccessCompatibilityPolicy,
+  matchingObjective: EventSuccessMatchingObjective,
   constraints: NormalizedAssignmentConstraints
 ): number {
   return participants.filter((peer) => {
@@ -1988,6 +2372,7 @@ function mutualPeerCount<T extends AssignmentParticipant>(
     return scorePairForOptimizer(participant, peer, {
       questionnaireMode,
       compatibilityPolicy,
+      matchingObjective,
       allowOrientationFallback: false,
     }).mutualInterest;
   }).length;
@@ -2004,6 +2389,7 @@ function groupPlacementCost<T extends AssignmentParticipant>(params: {
   blockedPairs: Set<string>;
   questionnaireMode: QuestionnaireScoringMode;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  matchingObjective: EventSuccessMatchingObjective;
   seenPairs?: Set<string>;
   maxGroupSize: number;
   constraints: NormalizedAssignmentConstraints;
@@ -2049,6 +2435,7 @@ function groupPlacementCost<T extends AssignmentParticipant>(params: {
     const scored = scorePairForOptimizer(params.participant, member, {
       questionnaireMode: params.questionnaireMode,
       compatibilityPolicy: params.compatibilityPolicy,
+      matchingObjective: params.matchingObjective,
       allowOrientationFallback: true,
     });
     opportunityScore += scored.score;
@@ -2071,9 +2458,10 @@ function groupPlacementCost<T extends AssignmentParticipant>(params: {
     group: [...params.group, params.participant],
     questionnaireMode: params.questionnaireMode,
     compatibilityPolicy: params.compatibilityPolicy,
+    matchingObjective: params.matchingObjective,
   });
   const noMutualPenalty =
-    params.compatibilityPolicy !== "none" && mutualCount === 0 ?
+    params.matchingObjective === "romantic" && mutualCount === 0 ?
       NO_MUTUAL_GROUP_PENALTY :
       0;
   return params.group.length * GROUP_SIZE_PRESSURE +
@@ -2095,14 +2483,16 @@ function groupCompositionPlacementCost<T extends AssignmentParticipant>(
     group: T[];
     questionnaireMode: QuestionnaireScoringMode;
     compatibilityPolicy: EventSuccessCompatibilityPolicy;
+    matchingObjective: EventSuccessMatchingObjective;
   }
 ): number {
-  if (params.compatibilityPolicy === "none") return 0;
+  if (params.matchingObjective !== "romantic") return 0;
   if (params.group.length < 2) return 0;
   const profile = groupCompositionProfile({
     group: params.group,
     questionnaireMode: params.questionnaireMode,
     compatibilityPolicy: params.compatibilityPolicy,
+    matchingObjective: params.matchingObjective,
   });
   const lowOpportunityPenalty = isLowOpportunityGroup(profile) ?
     LOW_OPPORTUNITY_GROUP_PENALTY :
@@ -2141,6 +2531,7 @@ function groupSummary<T extends AssignmentParticipant>(params: {
   index: number;
   questionnaireMode: QuestionnaireScoringMode;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  matchingObjective: EventSuccessMatchingObjective;
 }): OptimizedGroup<T> {
   let score = 0;
   let mutualDyadCount = 0;
@@ -2150,15 +2541,12 @@ function groupSummary<T extends AssignmentParticipant>(params: {
       const scored = scorePairForOptimizer(params.group[i], params.group[j], {
         questionnaireMode: params.questionnaireMode,
         compatibilityPolicy: params.compatibilityPolicy,
+        matchingObjective: params.matchingObjective,
         allowOrientationFallback: true,
       });
       score += scored.score;
       if (scored.mutualInterest) mutualDyadCount++;
-      if (
-        scored.mutualInterest ||
-        scored.oneWayInterest ||
-        scored.compatibility === "social"
-      ) {
+      if (scored.score > 0) {
         plausibleDyadCount++;
       }
     }

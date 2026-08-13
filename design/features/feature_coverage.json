@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_coverage.schema.json",
   "version": 1,
-  "updated": "2026-08-12",
+  "updated": "2026-08-13",
   "owner": "product_design_parity",
   "sourceOfTruth": "Exhaustive migration ledger for feature orchestration contracts across registered Flutter screens, marketing routes, and admin route components. A planned entry names its intended shared feature identity; grouped entries are secondary route projections, not independent features.",
   "authorities": [
@@ -141,8 +141,16 @@
       "authorityId": "screen.host.home",
       "status": "contracted",
       "priority": "P1",
-      "reason": "Compiled Host Home contract covers authentication recovery, organizer switching, Today and Events projections, event lifecycle filtering, nested recovery, and typed create, repeat, manage, and task navigation.",
+      "reason": "Compiled Host Events contract covers authentication recovery, organizer switching, the consolidated detail-rich operational overview, event lifecycle filtering, nested recovery, and typed create, repeat, manage, and task navigation.",
       "featureContract": "feature.host_home"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.host.customers",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Host Customers contract covers organizer selection, search, explainable lifecycle tags, pagination, manual name-only contacts, customer detail, typed Catch revenue coverage, and verified-account conversations.",
+      "featureContract": "feature.host_customers"
     },
     {
       "authority": "flutter_screens",

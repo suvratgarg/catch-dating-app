@@ -14,6 +14,7 @@ class HostEventsClubCard extends ConsumerWidget {
     required this.onConnectExternalEvent,
     required this.onRepeatEvent,
     required this.onManageEvent,
+    required this.onOpenTask,
     required this.now,
   });
 
@@ -28,15 +29,22 @@ class HostEventsClubCard extends ConsumerWidget {
   final HostHomeCreateEventCallback onConnectExternalEvent;
   final HostHomeRepeatEventCallback onRepeatEvent;
   final HostHomeManageEventCallback onManageEvent;
+  final HostHomeOpenTaskCallback onOpenTask;
   final DateTime now;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final eventsAsync = ref.watch(watchEventsForClubProvider(club.id));
+    final overviewState = buildHostEventsOverviewState(
+      eventsAsync,
+      now: now,
+      l10n: context.l10n,
+    );
     final workspaceState = buildHostEventsWorkspaceState(
       eventsAsync,
       now: now,
       selectedFilter: selectedFilter,
+      featuredEventId: overviewState.event?.id,
     );
 
     return HostEventsClubSection(
@@ -45,6 +53,7 @@ class HostEventsClubCard extends ConsumerWidget {
       clubs: clubs,
       showClubPicker: showClubPicker,
       state: workspaceState,
+      overviewState: overviewState,
       onSwitchClubIndex: onSwitchClubIndex,
       onFilterChanged: onFilterChanged,
       onRetryEvents: () => ref.invalidate(watchEventsForClubProvider(club.id)),
@@ -52,6 +61,8 @@ class HostEventsClubCard extends ConsumerWidget {
       onConnectExternalEvent: onConnectExternalEvent,
       onRepeatEvent: onRepeatEvent,
       onManageEvent: onManageEvent,
+      onOpenTask: onOpenTask,
+      now: now,
     );
   }
 }
@@ -64,12 +75,15 @@ class HostEventsClubSection extends StatelessWidget {
     required this.clubs,
     required this.showClubPicker,
     required this.state,
+    required this.overviewState,
     required this.onSwitchClubIndex,
     required this.onFilterChanged,
     required this.onCreateEvent,
     required this.onConnectExternalEvent,
     required this.onRepeatEvent,
     required this.onManageEvent,
+    required this.onOpenTask,
+    required this.now,
     this.onRetryEvents,
   });
 
@@ -78,6 +92,7 @@ class HostEventsClubSection extends StatelessWidget {
   final List<Club> clubs;
   final bool showClubPicker;
   final HostEventsWorkspaceState state;
+  final HostEventsOverviewState overviewState;
   final ValueChanged<int> onSwitchClubIndex;
   final ValueChanged<HostEventsLifecycleFilter> onFilterChanged;
   final VoidCallback? onRetryEvents;
@@ -85,25 +100,28 @@ class HostEventsClubSection extends StatelessWidget {
   final HostHomeCreateEventCallback onConnectExternalEvent;
   final HostHomeRepeatEventCallback onRepeatEvent;
   final HostHomeManageEventCallback onManageEvent;
+  final HostHomeOpenTaskCallback onOpenTask;
+  final DateTime now;
 
   @override
   Widget build(BuildContext context) {
     final repeatSource = state.repeatSource;
 
     return CustomScrollView(
+      key: const ValueKey<String>('host-events-scroll-view'),
       slivers: [
         SliverToBoxAdapter(
           child: CatchScreenHeaderTitle.block(
+            eyebrow: _hostEventsHeaderEyebrow(context, now),
             title: context.l10n.hostsHostEventsListTextEvents,
             actions: [
-              if (showClubPicker)
-                HostTodayClubPill(
-                  club: club,
-                  currentUid: currentUid,
-                  clubs: clubs,
-                  showClubPicker: true,
-                  onSwitchClubIndex: onSwitchClubIndex,
-                ),
+              HostOrganizerIdentityPill(
+                club: club,
+                currentUid: currentUid,
+                clubs: clubs,
+                showClubPicker: showClubPicker,
+                onSwitchClubIndex: onSwitchClubIndex,
+              ),
             ],
           ),
         ),
@@ -145,6 +163,17 @@ class HostEventsClubSection extends StatelessWidget {
                     variant: CatchButtonVariant.ghost,
                     icon: Icon(CatchIcons.refresh, size: CatchIcon.sm),
                     onPressed: () => onRepeatEvent(club, repeatSource),
+                  ),
+                ],
+                if (overviewState.status ==
+                    HostEventsOverviewStatus.content) ...[
+                  gapH20,
+                  HostEventsOverviewSection(
+                    club: club,
+                    state: overviewState,
+                    onManageEvent: onManageEvent,
+                    onOpenTask: onOpenTask,
+                    now: now,
                   ),
                 ],
                 gapH16,
@@ -247,6 +276,7 @@ class HostEventsClubSection extends StatelessWidget {
                     ),
                     for (final row in state.sections[sectionIndex].rows) ...[
                       HostEventLifecycleRow(
+                        key: ValueKey<String>('host-event-row-${row.event.id}'),
                         data: row,
                         onPressed: () => onManageEvent(club, row.event),
                       ),

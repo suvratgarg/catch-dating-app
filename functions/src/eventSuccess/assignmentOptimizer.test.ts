@@ -7,6 +7,111 @@ import {
   optimizeEventSuccessAssignments,
   runAssignmentEngine,
 } from "./assignmentOptimizer";
+import {
+  EVENT_SUCCESS_ASSIGNMENT_ALGORITHMS,
+  EVENT_SUCCESS_COMPATIBILITY_POLICIES,
+  EVENT_SUCCESS_MATCHING_OBJECTIVES,
+  EVENT_SUCCESS_TOPOLOGIES,
+  EVENT_SUCCESS_UNIT_OUTCOMES,
+  EVENT_SUCCESS_VARIABLE_RESOLUTION_TABLE,
+  EventSuccessMatchingObjective,
+} from "./formatPrimitives";
+import {
+  DEFAULT_EVENT_SUCCESS_EXCLUSION_ALERT_THRESHOLD_MINUTES,
+  affinityConstraintScopeForPair,
+  affinityRepeatPairScoreAdjustment,
+  normalizeAssignmentConstraints,
+} from "./assignmentConstraints";
+
+test("minimizes maximum exclusion time ahead of assignment score", () => {
+  const plan = runAssignmentEngine({
+    participants: [
+      participant("excluded", "person", [], ["common"]),
+      participant("high-score-a", "person", [], ["common", "extra"]),
+      participant("high-score-b", "person", [], ["common", "extra"]),
+    ],
+    blockedPairs: new Set(),
+    topology: pairTopology(1),
+    assignmentAlgorithm: "pairRotations",
+    compatibilityPolicy: "questionnaireClueOnly",
+    matchingObjective: "affinity",
+    rotationRoundCount: 1,
+    constraints: {
+      exclusionLedger: {
+        cumulativeMinutesByUid: {excluded: 35},
+        intervalMinutes: 10,
+      },
+    },
+  });
+
+  const selectedUids = pairUids(plan.rotationRounds[0].pairs[0]);
+  assert.ok(selectedUids.includes("excluded"));
+  assert.notDeepEqual(selectedUids, ["high-score-a", "high-score-b"]);
+  assert.equal(plan.exclusionLedger.maximumMinutes, 35);
+  assert.equal(plan.explainability.maximumExclusionMinutes, 35);
+});
+
+test("exclusion ledger accrues only for attendees omitted from a round", () => {
+  const plan = runAssignmentEngine({
+    participants: ["a", "b", "c"].map(profileFreeParticipant),
+    blockedPairs: new Set(),
+    topology: pairTopology(1),
+    assignmentAlgorithm: "pairRotations",
+    compatibilityPolicy: "none",
+    matchingObjective: "coverage",
+    rotationRoundCount: 2,
+    constraints: {
+      exclusionLedger: {intervalMinutes: 15},
+    },
+  });
+
+  assert.equal(plan.rotationRounds.length, 2);
+  assert.deepEqual(
+    Object.values(plan.exclusionLedger.cumulativeMinutesByUid).sort(
+      (a, b) => a - b
+    ),
+    [0, 15, 15]
+  );
+  assert.equal(plan.exclusionLedger.maximumMinutes, 15);
+});
+
+test("exclusion configuration uses safe defaults", () => {
+  const defaults = normalizeAssignmentConstraints();
+  assert.equal(
+    defaults.exclusionAlertThresholdMinutes,
+    DEFAULT_EVENT_SUCCESS_EXCLUSION_ALERT_THRESHOLD_MINUTES
+  );
+
+  const configured = normalizeAssignmentConstraints({
+    exclusionLedger: {
+      alertThresholdMinutes: 12.5,
+      intervalMinutes: 7.5,
+      cumulativeMinutesByUid: {
+        valid: 9,
+        negative: -4,
+        invalid: Number.NaN,
+      },
+    },
+  }, 15);
+  assert.equal(configured.exclusionAlertThresholdMinutes, 12.5);
+  assert.equal(configured.exclusionIntervalMinutes, 7.5);
+  assert.deepEqual(
+    Object.fromEntries(configured.exclusionMinutesByUid),
+    {valid: 9, negative: 0}
+  );
+
+  const invalid = normalizeAssignmentConstraints({
+    exclusionLedger: {
+      alertThresholdMinutes: 0,
+      intervalMinutes: Number.NaN,
+    },
+  }, 15);
+  assert.equal(
+    invalid.exclusionAlertThresholdMinutes,
+    DEFAULT_EVENT_SUCCESS_EXCLUSION_ALERT_THRESHOLD_MINUTES
+  );
+  assert.equal(invalid.exclusionIntervalMinutes, 15);
+});
 
 test("groups sparse mutual-orientation attendees together", () => {
   const groups = buildOptimizedGroups({
@@ -52,33 +157,37 @@ test("rotation rounds use mutual pairs before fallback pairings", () => {
   assert.equal(rounds[0].pairs[1].mutualInterest, false);
 });
 
-test("questionnaire mode controls whether answers affect ranking", () => {
+test("affinity and novelty optimize opposite questionnaire signals", () => {
   const participants = [
-    participant("man-1", "man", ["woman"], ["shared"]),
-    participant("woman-1", "woman", ["man"], ["different"]),
-    participant("woman-2", "woman", ["man"], ["shared"]),
+    participant("anchor", "person", [], ["shared"]),
+    participant("different", "person", [], ["different"]),
+    participant("shared", "person", [], ["shared"]),
   ];
-  const icebreakerRounds = buildOptimizedRotationRounds({
+  const affinityPlan = runAssignmentEngine({
     participants,
     blockedPairs: new Set(),
-    roundCount: 1,
-    questionnaireMode: "icebreaker",
-    allowOrientationFallback: false,
+    topology: pairTopology(1),
+    assignmentAlgorithm: "pairRotations",
+    compatibilityPolicy: "questionnaireClueOnly",
+    matchingObjective: "affinity",
+    rotationRoundCount: 1,
   });
-  const compatibilityRounds = buildOptimizedRotationRounds({
+  const noveltyPlan = runAssignmentEngine({
     participants,
     blockedPairs: new Set(),
-    roundCount: 1,
-    questionnaireMode: "light",
-    allowOrientationFallback: false,
+    topology: pairTopology(1),
+    assignmentAlgorithm: "pairRotations",
+    compatibilityPolicy: "questionnaireClueOnly",
+    matchingObjective: "novelty",
+    rotationRoundCount: 1,
   });
 
-  assert.equal(icebreakerRounds[0].pairs[0].b.uid, "woman-1");
-  assert.equal(compatibilityRounds[0].pairs[0].b.uid, "woman-2");
-  assert.equal(
-    compatibilityRounds[0].pairs[0].compatibility,
-    "questionnaire_match"
-  );
+  assert.deepEqual(pairUids(affinityPlan.rotationRounds[0].pairs[0]),
+    ["anchor", "shared"]);
+  assert.deepEqual(pairUids(noveltyPlan.rotationRounds[0].pairs[0]),
+    ["anchor", "different"]);
+  assert.equal(affinityPlan.effectiveMatchingObjective, "affinity");
+  assert.equal(noveltyPlan.effectiveMatchingObjective, "novelty");
 });
 
 test("unified optimizer uses topology primitives for pair rotations", () => {
@@ -100,6 +209,7 @@ test("unified optimizer uses topology primitives for pair rotations", () => {
     },
     assignmentAlgorithm: "pairRotations",
     compatibilityPolicy: "mutualInterestOnly",
+    matchingObjective: "romantic",
     rotationRoundCount: 2,
   });
 
@@ -108,7 +218,164 @@ test("unified optimizer uses topology primitives for pair rotations", () => {
   assert.equal(plan.rotationRounds[0].pairs[0].mutualInterest, true);
 });
 
-test("assignment engine is primitive-driven and exposes metrics", () => {
+for (const matchingObjective of EVENT_SUCCESS_MATCHING_OBJECTIVES) {
+  const title =
+    `profile-free ${matchingObjective} corpus falls back to coverage`;
+  test(title, () => {
+    const plan = runAssignmentEngine({
+      participants: ["a", "b", "c", "d"].map(profileFreeParticipant),
+      blockedPairs: new Set(),
+      topology: pairTopology(2),
+      assignmentAlgorithm: "pairRotations",
+      compatibilityPolicy: policyForObjective(matchingObjective),
+      matchingObjective,
+      rotationRoundCount: 3,
+    });
+
+    assert.equal(plan.assignmentResolution.status, "supported");
+    assert.equal(plan.effectiveMatchingObjective, "coverage");
+    assert.equal(plan.rotationRounds.length, 3);
+    assert.ok(plan.rotationRounds.every((round) => round.pairs.length === 2));
+    const pairKeys = plan.rotationRounds.flatMap((round) =>
+      round.pairs.map((pair) => pairUids(pair).join("__"))
+    );
+    assert.equal(new Set(pairKeys).size, 6);
+    assert.equal(
+      plan.explainability.matchingObjectiveFallbackReason === null,
+      matchingObjective === "coverage"
+    );
+  });
+}
+
+test("resolution table covers every legal variable combination", () => {
+  const expectedCount = EVENT_SUCCESS_ASSIGNMENT_ALGORITHMS.length *
+    EVENT_SUCCESS_COMPATIBILITY_POLICIES.length *
+    EVENT_SUCCESS_MATCHING_OBJECTIVES.length *
+    EVENT_SUCCESS_TOPOLOGIES.length *
+    EVENT_SUCCESS_UNIT_OUTCOMES.length;
+  assert.equal(EVENT_SUCCESS_VARIABLE_RESOLUTION_TABLE.length, expectedCount);
+  const keys = EVENT_SUCCESS_VARIABLE_RESOLUTION_TABLE.map((entry) =>
+    [
+      entry.assignmentAlgorithm,
+      entry.compatibilityPolicy,
+      entry.matchingObjective,
+      entry.topology,
+      entry.unitOutcome,
+    ].join("|")
+  );
+  assert.equal(new Set(keys).size, expectedCount);
+  for (const entry of EVENT_SUCCESS_VARIABLE_RESOLUTION_TABLE) {
+    const supported = entry.topology === "set" ?
+      entry.assignmentAlgorithm === "pacePods" ||
+        entry.assignmentAlgorithm === "socialPods" ||
+        entry.assignmentAlgorithm === "pairRotations" :
+      entry.topology === "sequence" &&
+        entry.assignmentAlgorithm === "pairRotations";
+    if (!supported) {
+      assert.equal(entry.status, "unsupported");
+      assert.ok(entry.reason.length > 0);
+    } else {
+      assert.equal(entry.status, "supported");
+    }
+  }
+});
+
+test("sequence and adjacency never fall back to neighbouring engines", () => {
+  const sequenceTeam = runAssignmentEngine({
+    participants: ["a", "b", "c", "d"].map(profileFreeParticipant),
+    blockedPairs: new Set(),
+    topology: {
+      ...pairTopology(2),
+      topology: "sequence",
+    },
+    assignmentAlgorithm: "teamBalancer",
+    compatibilityPolicy: "none",
+    matchingObjective: "coverage",
+    rotationRoundCount: 2,
+  });
+  const adjacencyTable = runAssignmentEngine({
+    participants: ["a", "b", "c", "d"].map(profileFreeParticipant),
+    blockedPairs: new Set(),
+    topology: {
+      unitKind: "tables",
+      unitSize: 4,
+      groupCount: 1,
+      maxGroupSize: 4,
+      rotationIntervalMinutes: null,
+      rotationsEnabled: false,
+      topology: "adjacency",
+    },
+    assignmentAlgorithm: "tableSeating",
+    compatibilityPolicy: "questionnaireClueOnly",
+    matchingObjective: "affinity",
+  });
+
+  assert.equal(sequenceTeam.assignmentResolution.status, "unsupported");
+  assert.match(sequenceTeam.assignmentResolution.reason, /pair rotations/i);
+  assert.deepEqual(sequenceTeam.rotationRounds, []);
+  assert.deepEqual(sequenceTeam.groups, []);
+  assert.equal(adjacencyTable.assignmentResolution.status, "unsupported");
+  assert.match(adjacencyTable.assignmentResolution.reason, /not implemented/i);
+  assert.deepEqual(adjacencyTable.groups, []);
+});
+
+test("matching objectives cannot read signals forbidden by policy", () => {
+  const participants = [
+    participant("a", "man", ["woman"], ["same"]),
+    participant("b", "woman", ["man"], ["same"]),
+    participant("c", "woman", ["man"], ["different"]),
+  ];
+  const affinity = runAssignmentEngine({
+    participants,
+    blockedPairs: new Set(),
+    topology: pairTopology(1),
+    assignmentAlgorithm: "pairRotations",
+    compatibilityPolicy: "mutualInterestOnly",
+    matchingObjective: "affinity",
+    rotationRoundCount: 1,
+  });
+  const romantic = runAssignmentEngine({
+    participants,
+    blockedPairs: new Set(),
+    topology: pairTopology(1),
+    assignmentAlgorithm: "pairRotations",
+    compatibilityPolicy: "questionnaireClueOnly",
+    matchingObjective: "romantic",
+    rotationRoundCount: 1,
+  });
+
+  assert.equal(affinity.effectiveMatchingObjective, "coverage");
+  assert.equal(romantic.effectiveMatchingObjective, "coverage");
+  assert.match(
+    affinity.explainability.matchingObjectiveFallbackReason ?? "",
+    /coverage/i
+  );
+  assert.match(
+    romantic.explainability.matchingObjectiveFallbackReason ?? "",
+    /coverage/i
+  );
+});
+
+test("coverage is the engine default even when profile signals exist", () => {
+  const plan = runAssignmentEngine({
+    participants: [
+      participant("a", "man", ["woman"]),
+      participant("b", "woman", ["man"]),
+    ],
+    blockedPairs: new Set(),
+    topology: pairTopology(1),
+    assignmentAlgorithm: "pairRotations",
+    compatibilityPolicy: "mutualInterestOnly",
+    rotationRoundCount: 1,
+  });
+
+  assert.equal(plan.matchingObjective, "coverage");
+  assert.equal(plan.effectiveMatchingObjective, "coverage");
+  assert.equal(plan.rotationRounds[0].pairs[0].mutualInterest, false);
+  assert.equal(plan.explainability.matchingObjectiveFallbackReason, null);
+});
+
+test("table seating resolves unsupported instead of running micro-pods", () => {
   const plan = runAssignmentEngine({
     participants: [
       participant("man-1", "man", ["woman"]),
@@ -126,22 +393,27 @@ test("assignment engine is primitive-driven and exposes metrics", () => {
       rotationsEnabled: false,
     },
     compatibilityPolicy: "mutualInterestOnly",
+    matchingObjective: "romantic",
   });
 
   assert.equal(plan.assignmentAlgorithm, "tableSeating");
-  assert.equal(plan.groups.length, 1);
+  assert.equal(plan.assignmentResolution.status, "unsupported");
+  assert.match(plan.assignmentResolution.reason, /not implemented/i);
+  assert.equal(plan.groups.length, 0);
   assert.equal(plan.explainability.unitKind, "tables");
   assert.equal(plan.explainability.targetUnitSize, 4);
   assert.equal(plan.explainability.targetGroupCount, 1);
   assert.equal(plan.explainability.participantCount, 4);
-  assert.equal(plan.explainability.assignedParticipantCount, 4);
-  assert.equal(plan.explainability.unassignedParticipantCount, 0);
-  assert.equal(plan.explainability.generatedStaticGroupCount, 1);
-  assert.equal(plan.explainability.mutualDyadCount, 4);
-  assert.deepEqual(plan.explainability.constraintRelaxations, []);
+  assert.equal(plan.explainability.assignedParticipantCount, 0);
+  assert.equal(plan.explainability.unassignedParticipantCount, 4);
+  assert.equal(plan.explainability.generatedStaticGroupCount, 0);
+  assert.equal(plan.explainability.assignmentResolutionStatus, "unsupported");
+  assert.ok(plan.explainability.constraintRelaxations.includes(
+    "unassigned_participants"
+  ));
 });
 
-test("table groups balance straight dyads across equal-sized groups", () => {
+test("micro-pods balance romantic dyads across equal-sized groups", () => {
   const plan = runAssignmentEngine({
     participants: [
       participant("man-1", "man", ["woman"]),
@@ -159,14 +431,16 @@ test("table groups balance straight dyads across equal-sized groups", () => {
     ],
     blockedPairs: new Set(),
     topology: {
-      unitKind: "tables",
+      unitKind: "pods",
       unitSize: 6,
       groupCount: 2,
       maxGroupSize: 6,
       rotationIntervalMinutes: null,
       rotationsEnabled: false,
     },
+    assignmentAlgorithm: "socialPods",
     compatibilityPolicy: "mutualInterestOnly",
+    matchingObjective: "romantic",
   });
 
   assert.equal(plan.groups.length, 2);
@@ -191,14 +465,16 @@ test("group composition distributes imbalanced mutual opportunity", () => {
     ],
     blockedPairs: new Set(),
     topology: {
-      unitKind: "tables",
+      unitKind: "pods",
       unitSize: 3,
       groupCount: 2,
       maxGroupSize: 3,
       rotationIntervalMinutes: null,
       rotationsEnabled: false,
     },
+    assignmentAlgorithm: "socialPods",
     compatibilityPolicy: "mutualInterestOnly",
+    matchingObjective: "romantic",
   });
 
   assert.equal(plan.groups.length, 2);
@@ -229,14 +505,16 @@ test("group composition explainability reports unavoidable imbalance", () => {
     ],
     blockedPairs: new Set(),
     topology: {
-      unitKind: "tables",
+      unitKind: "pods",
       unitSize: 3,
       groupCount: 2,
       maxGroupSize: 3,
       rotationIntervalMinutes: null,
       rotationsEnabled: false,
     },
+    assignmentAlgorithm: "socialPods",
     compatibilityPolicy: "mutualInterestOnly",
+    matchingObjective: "romantic",
   });
 
   assert.equal(plan.groups.length, 2);
@@ -261,14 +539,16 @@ test("host constraints steer group placement and explain satisfaction", () => {
     ],
     blockedPairs: new Set(),
     topology: {
-      unitKind: "tables",
+      unitKind: "pods",
       unitSize: 2,
       groupCount: 2,
       maxGroupSize: 2,
       rotationIntervalMinutes: null,
       rotationsEnabled: false,
     },
+    assignmentAlgorithm: "socialPods",
     compatibilityPolicy: "mutualInterestOnly",
+    matchingObjective: "romantic",
     constraints: {
       host: {
         anchorUidsByGroupIndex: {"1": ["man-1"]},
@@ -307,14 +587,16 @@ test("host constraint relaxations are explicit when impossible", () => {
     ],
     blockedPairs: new Set(),
     topology: {
-      unitKind: "tables",
+      unitKind: "pods",
       unitSize: 1,
       groupCount: 2,
       maxGroupSize: 1,
       rotationIntervalMinutes: null,
       rotationsEnabled: false,
     },
+    assignmentAlgorithm: "socialPods",
     compatibilityPolicy: "mutualInterestOnly",
+    matchingObjective: "romantic",
     constraints: {
       host: {
         keepTogetherPairs: [{aUid: "man-1", bUid: "woman-1"}],
@@ -334,7 +616,149 @@ test("host constraint relaxations are explicit when impossible", () => {
   assert.equal(plan.explainability.relaxedConstraintCount, 1);
 });
 
-test("activity balance attributes distribute skill across teams", () => {
+test("affinity constraints retain value and this-round or pinned scope", () => {
+  const constraints = normalizeAssignmentConstraints({
+    affinityConstraints: [
+      {
+        aUid: "a",
+        bUid: "b",
+        value: "mustPair",
+        scope: "pinned",
+      },
+      {
+        aUid: "c",
+        bUid: "d",
+        value: "avoidRepeat",
+        scope: "thisRound",
+      },
+      {
+        aUid: "e",
+        bUid: "f",
+        value: "neutral",
+        scope: "thisRound",
+      },
+    ],
+  });
+
+  assert.equal(affinityConstraintScopeForPair("b", "a", constraints),
+    "pinned");
+  assert.equal(affinityConstraintScopeForPair("c", "d", constraints),
+    "thisRound");
+  assert.equal(constraints.keepTogetherPairs.has("a__b"), true);
+  assert.equal(constraints.avoidRepeatPairs.has("c__d"), true);
+  assert.equal(constraints.keepTogetherPairs.has("e__f"), false);
+  assert.equal(affinityRepeatPairScoreAdjustment("c", "d", 0, constraints),
+    0);
+  assert.ok(affinityRepeatPairScoreAdjustment("c", "d", 1, constraints) < 0);
+});
+
+test("must-split affinity is enforced as a hard host constraint", () => {
+  const plan = runAssignmentEngine({
+    participants: [
+      participant("a", "person", []),
+      participant("b", "person", []),
+      participant("c", "person", []),
+      participant("d", "person", []),
+    ],
+    blockedPairs: new Set(),
+    topology: {
+      unitKind: "pods",
+      unitSize: 2,
+      groupCount: 2,
+      maxGroupSize: 2,
+      rotationIntervalMinutes: null,
+      rotationsEnabled: false,
+    },
+    assignmentAlgorithm: "socialPods",
+    compatibilityPolicy: "none",
+    matchingObjective: "coverage",
+    constraints: {
+      affinityConstraints: [{
+        aUid: "a",
+        bUid: "b",
+        value: "mustSplit",
+        scope: "pinned",
+      }],
+    },
+  });
+
+  assert.equal(sameGroup(plan.groups, "a", "b"), false);
+  assert.equal(constraintStatus(plan, "host_keep_apart", ["a", "b"]),
+    "satisfied");
+});
+
+test("must-pair affinity keeps a feasible pair in one unit", () => {
+  const plan = runAssignmentEngine({
+    participants: [
+      participant("a", "person", []),
+      participant("b", "person", []),
+      participant("c", "person", []),
+      participant("d", "person", []),
+    ],
+    blockedPairs: new Set(),
+    topology: {
+      unitKind: "pods",
+      unitSize: 2,
+      groupCount: 2,
+      maxGroupSize: 2,
+      rotationIntervalMinutes: null,
+      rotationsEnabled: false,
+    },
+    assignmentAlgorithm: "socialPods",
+    compatibilityPolicy: "none",
+    matchingObjective: "coverage",
+    constraints: {
+      affinityConstraints: [{
+        aUid: "a",
+        bUid: "b",
+        value: "mustPair",
+        scope: "pinned",
+      }],
+    },
+  });
+
+  assert.equal(sameGroup(plan.groups, "a", "b"), true);
+  assert.equal(constraintStatus(plan, "host_keep_together", ["a", "b"]),
+    "satisfied");
+});
+
+test("safety keep-apart wins over must-pair affinity", () => {
+  const plan = runAssignmentEngine({
+    participants: [
+      participant("a", "person", []),
+      participant("b", "person", []),
+      participant("c", "person", []),
+      participant("d", "person", []),
+    ],
+    blockedPairs: new Set(["a__b"]),
+    topology: {
+      unitKind: "pods",
+      unitSize: 2,
+      groupCount: 2,
+      maxGroupSize: 2,
+      rotationIntervalMinutes: null,
+      rotationsEnabled: false,
+    },
+    assignmentAlgorithm: "socialPods",
+    compatibilityPolicy: "none",
+    matchingObjective: "coverage",
+    constraints: {
+      affinityConstraints: [{
+        aUid: "a",
+        bUid: "b",
+        value: "mustPair",
+        scope: "pinned",
+      }],
+    },
+  });
+
+  assert.equal(sameGroup(plan.groups, "a", "b"), false);
+  assert.equal(constraintStatus(plan, "blocked_pair", []), "satisfied");
+  assert.equal(constraintStatus(plan, "host_keep_together", ["a", "b"]),
+    "relaxed");
+});
+
+test("balance objective distributes skill across micro-pods", () => {
   const plan = runAssignmentEngine({
     participants: [
       participant("advanced-1", "person", [], [], {skillBand: "advanced"}),
@@ -344,14 +768,16 @@ test("activity balance attributes distribute skill across teams", () => {
     ],
     blockedPairs: new Set(),
     topology: {
-      unitKind: "teams",
+      unitKind: "pods",
       unitSize: 2,
       groupCount: 2,
       maxGroupSize: 2,
       rotationIntervalMinutes: null,
       rotationsEnabled: false,
     },
+    assignmentAlgorithm: "socialPods",
     compatibilityPolicy: "none",
+    matchingObjective: "balance",
     constraints: {
       activity: {
         balanceAttributes: ["skillBand"],
@@ -379,6 +805,36 @@ test("activity balance attributes distribute skill across teams", () => {
   );
 });
 
+test("spread objective mixes activity attributes within pair units", () => {
+  const plan = runAssignmentEngine({
+    participants: [
+      participant("host-1", "person", [], [], {roleBand: "host"}),
+      participant("host-2", "person", [], [], {roleBand: "host"}),
+      participant("guest-1", "person", [], [], {roleBand: "guest"}),
+      participant("guest-2", "person", [], [], {roleBand: "guest"}),
+    ],
+    blockedPairs: new Set(),
+    topology: pairTopology(1),
+    assignmentAlgorithm: "pairRotations",
+    compatibilityPolicy: "none",
+    matchingObjective: "spread",
+    rotationRoundCount: 1,
+    constraints: {
+      activity: {
+        balanceAttributes: ["roleBand"],
+      },
+    },
+  });
+
+  assert.equal(plan.effectiveMatchingObjective, "spread");
+  for (const pair of plan.rotationRounds[0].pairs) {
+    assert.notEqual(
+      pair.a.activityAttributes?.roleBand,
+      pair.b.activityAttributes?.roleBand
+    );
+  }
+});
+
 test("activity cluster attributes group similar pace bands", () => {
   const plan = runAssignmentEngine({
     participants: [
@@ -396,7 +852,9 @@ test("activity cluster attributes group similar pace bands", () => {
       rotationIntervalMinutes: null,
       rotationsEnabled: false,
     },
+    assignmentAlgorithm: "pacePods",
     compatibilityPolicy: "none",
+    matchingObjective: "affinity",
     constraints: {
       activity: {
         clusterAttributes: ["paceBand"],
@@ -433,7 +891,9 @@ test("activity cluster attributes steer pair rotations", () => {
       rotationIntervalMinutes: 15,
       rotationsEnabled: true,
     },
+    assignmentAlgorithm: "pairRotations",
     compatibilityPolicy: "none",
+    matchingObjective: "affinity",
     rotationRoundCount: 1,
     constraints: {
       activity: {
@@ -459,14 +919,16 @@ test("activity attributes report missing data relaxations", () => {
     ],
     blockedPairs: new Set(),
     topology: {
-      unitKind: "teams",
+      unitKind: "pods",
       unitSize: 2,
       groupCount: 1,
       maxGroupSize: 2,
       rotationIntervalMinutes: null,
       rotationsEnabled: false,
     },
+    assignmentAlgorithm: "socialPods",
     compatibilityPolicy: "none",
+    matchingObjective: "balance",
     constraints: {
       activity: {
         balanceAttributes: ["skillBand"],
@@ -484,7 +946,7 @@ test("activity attributes report missing data relaxations", () => {
   ));
 });
 
-test("unified optimizer uses topology and primitives for teams", () => {
+test("team balancer resolves unsupported instead of running micro-pods", () => {
   const plan = optimizeEventSuccessAssignments({
     participants: [
       participant("gay-man-1", "man", ["man"]),
@@ -505,20 +967,17 @@ test("unified optimizer uses topology and primitives for teams", () => {
     },
     assignmentAlgorithm: "teamBalancer",
     compatibilityPolicy: "mutualInterestOnly",
+    matchingObjective: "balance",
   });
 
+  assert.equal(plan.assignmentResolution.status, "unsupported");
+  assert.match(plan.assignmentResolution.reason, /team balancing/i);
   assert.equal(plan.rotationRounds.length, 0);
-  assert.equal(plan.groups.length, 2);
-  assert.ok(
-    plan.groups.some((group) =>
-      group.participants.map((item) => item.uid).includes("gay-man-1") &&
-      group.participants.map((item) => item.uid).includes("gay-man-2")
-    )
-  );
-  assert.ok(plan.groups.every((group) => group.mutualDyadCount > 0));
+  assert.equal(plan.groups.length, 0);
+  assert.equal(plan.explainability.unassignedParticipantCount, 6);
 });
 
-test("unified optimizer rotates larger topology units", () => {
+test("table seating stays unsupported for rotating table topology", () => {
   const plan = optimizeEventSuccessAssignments({
     participants: [
       participant("man-1", "man", ["woman"]),
@@ -539,16 +998,15 @@ test("unified optimizer rotates larger topology units", () => {
     },
     assignmentAlgorithm: "tableSeating",
     compatibilityPolicy: "mutualInterestOnly",
+    matchingObjective: "affinity",
     rotationRoundCount: 2,
   });
 
+  assert.equal(plan.assignmentResolution.status, "unsupported");
+  assert.match(plan.assignmentResolution.reason, /seat adjacency/i);
   assert.equal(plan.groups.length, 0);
   assert.equal(plan.rotationRounds.length, 0);
-  assert.equal(plan.groupRounds.length, 2);
-  assert.notDeepEqual(
-    roundMembership(plan.groupRounds[0]),
-    roundMembership(plan.groupRounds[1])
-  );
+  assert.equal(plan.groupRounds.length, 0);
 });
 
 test("fallback rotations pair socially when no romantic dyad exists", () => {
@@ -588,6 +1046,7 @@ test("rotation metrics show requested rounds and avoid repeats", () => {
       rotationsEnabled: true,
     },
     compatibilityPolicy: "mutualInterestOnly",
+    matchingObjective: "romantic",
     rotationRoundCount: 3,
   });
 
@@ -618,6 +1077,7 @@ test("rotation metrics explain infeasible extra rounds", () => {
       rotationsEnabled: true,
     },
     compatibilityPolicy: "mutualInterestOnly",
+    matchingObjective: "romantic",
     rotationRoundCount: 5,
   });
 
@@ -650,6 +1110,7 @@ test("rotation policy fills exhausted rounds with bounded repeats", () => {
       rotationsEnabled: true,
     },
     compatibilityPolicy: "mutualInterestOnly",
+    matchingObjective: "romantic",
     rotationRoundCount: 3,
     rotationPolicy: {
       repeatStrategy: "allowWhenExhausted",
@@ -685,6 +1146,7 @@ test("host requested repeat pair overrides default repeat avoidance", () => {
       rotationsEnabled: true,
     },
     compatibilityPolicy: "mutualInterestOnly",
+    matchingObjective: "romantic",
     rotationRoundCount: 2,
     constraints: {
       host: {
@@ -702,12 +1164,43 @@ test("host requested repeat pair overrides default repeat avoidance", () => {
   ));
 });
 
-function roundMembership(round: {
-  groups: Array<{participants: AssignmentParticipant[]}>;
-}) {
-  return round.groups
-    .map((group) => group.participants.map((item) => item.uid).sort())
-    .sort((a, b) => a.join(",").localeCompare(b.join(",")));
+function pairTopology(groupCount: number) {
+  return {
+    unitKind: "pairs" as const,
+    unitSize: 2,
+    groupCount,
+    maxGroupSize: 2,
+    rotationIntervalMinutes: 15,
+    rotationsEnabled: true,
+  };
+}
+
+function pairUids(pair: {
+  a: AssignmentParticipant;
+  b: AssignmentParticipant;
+}): string[] {
+  return [pair.a.uid, pair.b.uid].sort();
+}
+
+function profileFreeParticipant(uid: string): AssignmentParticipant {
+  return {uid, interestedInGenders: []};
+}
+
+function policyForObjective(
+  objective: EventSuccessMatchingObjective
+) {
+  switch (objective) {
+  case "romantic":
+    return "mutualInterestOnly" as const;
+  case "affinity":
+  case "novelty":
+    return "questionnaireClueOnly" as const;
+  case "balance":
+  case "spread":
+    return "socialCohortBalance" as const;
+  case "coverage":
+    return "none" as const;
+  }
 }
 
 function countGender(

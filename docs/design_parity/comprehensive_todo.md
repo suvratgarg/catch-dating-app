@@ -1,7 +1,7 @@
 ---
 doc_id: design_parity_comprehensive_todo
-version: 0.2.324
-updated: 2026-08-12
+version: 0.2.325
+updated: 2026-08-13
 owner: product_design_parity
 status: active
 ---
@@ -21,9 +21,9 @@ ledgers as the source of truth when counts differ:
 
 ## Current Snapshot
 
-- Route inventory: 52 app routes.
-- Route coverage decisions: 44 contracted, 2 alias, 0 planned, 6 excluded.
-- Screen contracts: 32 contracted screens.
+- Route inventory: 53 app routes.
+- Route coverage decisions: 47 contracted, 4 alias, 0 planned, 2 excluded.
+- Screen contracts: 35 contracted screens.
 - Feature orchestration coverage: 57 registered authorities, 41 source
   contracts, 32 contracted Flutter screens, 6 contracted marketing routes, 14
   contracted Admin routes, and 0 planned authorities in any runtime. Four static/fallback marketing
@@ -96,22 +96,22 @@ ledgers as the source of truth when counts differ:
   overview, access-decision, role, safety, and marketing mutation directions
   now have strict request and response schemas; remaining structural callables
   stay explicitly labeled rather than being overclaimed.
-- Screen priority spread: 19 P1, 9 P2, and 5 P3 contracted screens.
-- Contracted screen states: 611.
-- Contracted screen sections: 229.
-- Screen registry migration gaps: 16 open, 24 blocked, and 112 closed. One of
-  the 16 non-blocked gaps is currently marked in progress. These are
+- Screen priority spread: 20 P1, 10 P2, and 5 P3 contracted screens.
+- Contracted screen states: 640.
+- Contracted screen sections: 234.
+- Screen registry migration gaps: 18 open, 25 blocked, and 112 closed. Two of
+  the 18 non-blocked gaps are currently marked in progress. These are
   product migration gaps in `design/screens/catch.screens.json`, not
   validation failures.
 - Contracted section states: 1,088.
 - Open screen-contract validation gaps: 0.
-- Design parity matrix: 12 feature groups, 34 screens, 613 matrix states, and
-  50 open matrix gaps across screen-state, lint-candidate, and preview-plan
+- Design parity matrix: 12 feature groups, 36 screens, 642 matrix states, and
+  52 open matrix gaps across screen-state, lint-candidate, and preview-plan
   queues.
 - Matrix state status spread: 550 captured, 16 implemented, 1 planned, and
   46 tested.
-- Capture coverage registry: 610 capture ids across 36 captured route entries,
-  7 alias route entries, 4 planned route entries, and 6 excluded route entries.
+- Capture coverage registry: 620 capture ids across 37 captured route entries,
+  8 alias route entries, 6 planned route entries, and 2 excluded route entries.
 - Component contracts: 71 reusable primitive/composite contracts with 445
   contract states.
 - Widgetbook registry: 870 generated component entries, 928 generated use-case
@@ -162,12 +162,12 @@ ledgers as the source of truth when counts differ:
   Bandra Social fixture pass. Final metrics are setup `13.35% / 13.30`,
   full/waitlist `14.49% / 15.54`, guests roster `12.68% / 15.43`, live
   `10.05% / 4.69`, and report `12.61% / 15.52`.
-- Host Home now has distinct Today and Events compositions instead of aliasing
-  both references to the same event-list state. The Today branch renders a
-  provider-free `HostTodayDashboardSection` from `HostHomeTodayDashboardState`
-  using the Bandra Social trivia fixture, while Events remains explicit through
-  `HostHomeTab.events`. Final advisory metrics are Today `17.48% / 15.54` and
-  Events `6.76% / 12.26`, both within threshold.
+- Host Events now consolidates the former Today composition with the lifecycle
+  workspace. A provider-free `HostEventsOverviewSection` renders the live-or-next
+  Bandra Social spotlight and truthful attention work above Upcoming/Live/Past;
+  `HostEventsWorkspaceState` suppresses the spotlight event from duplicate rows.
+  The old Today and Events advisory metrics remain historical ingredient evidence
+  until an approved consolidated reference replaces both compositions.
 - The former Host Edit Club visual reference is retained as historical evidence.
   The standalone route and screen are retired; `/host/clubs/:clubId/edit` now
   redirects to the selected organizer Edit tab, which owns identity, contact,
@@ -745,7 +745,8 @@ from those ledgers rather than hand-editing counts.
 | P1 | `screen.host.clubs` | 49 | 18 | 4 | `HOST-STANDALONE-ORGANIZER-WORKSPACE-001` | `DS-HOST-CLUBS-004`, `DS-HOST-CLUBS-005` | `feature.host_organizers` compiles all 49 registered states and 29 actions across Edit, Insights, Preview, settings spokes, payouts, team, host identity, hosted-organizer navigation, and sign out. Captures cover the default Organizer workspace, signed-out, co-host, loading, error/offline, empty, analytics, inline editor, payout, team mutation, and the canonical Host team workspace; 46 focused test/capture/preview obligations remain explicit evidence debt. The standalone-host publication and CRM expansion is bounded at `20.09%` mismatch / `25.94` mean delta under `HOST-STANDALONE-ORGANIZER-WORKSPACE-001` without weakening the canonical threshold. |
 | P1 | `screen.host.event.create` | 31 | 11 | 6 | Blocked: draft/validation/submit reference exports and masks | `DS-HOST-EVENT-CREATE-001` blocked, `DS-HOST-EVENT-CREATE-004` blocked, `DS-HOST-EVENT-CREATE-006` | `feature.host_event_create` compiles all 31 registered states and 33 meaningful actions across authorization, wizard choices and validation, ordered media, Places-backed location selection, local drafts, submission, offline recovery, and success navigation. Ten focused test/preview obligations remain explicit evidence debt. Raw text input stays under form and event-schema validation instead of becoming synthetic action cardinality. All six registered visual references remain within advisory thresholds; success/manage is bounded at `11.40% / 13.70`. |
 | P1 | `screen.host.event.manage` | 58 | 12 | 5 | Blocked: edge-state masks need canonical exports | `DS-HOST-EVENT-MANAGE-001`, `DS-HOST-EVENT-MANAGE-004`, `DS-HOST-EVENT-MANAGE-005` blocked, `DS-HOST-EVENT-MANAGE-006` | Host Manage now has an exact generated feature contract across all registered route/workspace states and primary edit/cancel/delete actions, including typed route, screen-state, and side-effect outcomes. The restored route-and-section Widgetbook use case closes the stale preview reference; 33 focused test gaps remain explicit evidence debt. Route/access, section, participant, invite-link, Event Success, action, report, cancellation, accessibility, and theme captures remain registered, while reference-specific edge masks are still blocked on canonical exports. |
-| P1 | `screen.host.home` | 18 | 7 | 2 | Blocked: state variants need canonical exports | `DS-HOST-HOME-002` blocked, `DS-HOST-HOME-004` blocked, `DS-HOST-HOME-005` | `feature.host_home` compiles all 18 registered states and 12 actions across auth recovery, organizer switching, Today, Events, nested event recovery, lifecycle filtering, and typed create/repeat/manage/task navigation. Fifteen focused test/capture/preview obligations remain explicit evidence debt. After adding Audience to Host navigation, Events is bounded at `14.93% / 19.05` under `HOST-V2-EVENTS-VISUAL-DRIFT-001`; Today remains truthfully bounded at `28.48% / 37.31` under `HOST-V2-TODAY-FUNCTIONAL-PARITY-001` until real task sources exist. |
+| P1 | `screen.host.home` | 18 | 7 | 2 | Blocked: consolidated state variants need canonical exports | `DS-HOST-HOME-002` blocked, `DS-HOST-HOME-004` blocked, `DS-HOST-HOME-005` | `feature.host_home` compiles all 18 registered states and 11 actions across auth recovery, organizer switching, the consolidated detail-rich Events overview, nested event recovery, lifecycle filtering, and typed create/repeat/manage/task navigation. Fifteen focused evidence obligations remain explicit debt. Historical Today and Events references remain ingredient evidence until design supplies one approved consolidated Events source. |
+| P1 | `screen.host.customers` | 21 | 4 | 0 | Planned: canonical directory and detail references | `HOST-CUSTOMERS-001` blocked, `HOST-CUSTOMERS-002`, `HOST-CUSTOMERS-003` | `feature.host_customers` compiles all 21 directory/detail states and nine actions across organizer switching, search, explainable lifecycle tags, pagination, name-only manual contacts, attendance, exact/partial/unavailable Catch revenue, and verified-account direct conversations. The production tab/routes and initial Widgetbook gallery are present; deterministic captures and a payment-maintained indexed High spender trait remain explicit follow-up work. |
 | P1 | `screen.host.inbox` | 25 | 8 | 1 | Blocked: variant references need canonical exports or product-backed data | `DS-HOST-INBOX-001`, `DS-HOST-INBOX-004`, `DS-HOST-INBOX-005` | `feature.host_inbox` compiles all 25 registered states and ten actions across event/general scope, booked/prospective audiences, search, chat routing, and roster-derived event broadcasts. Twelve focused test/capture obligations remain explicit evidence debt. The populated full-shell comparison remains within threshold at `7.34%` mismatch / `7.62` mean delta; external live callable/IAM/delivery proof remains separate release work. |
 | P1 | `screen.matches.chat` | 23 | 8 | 2 | None | None | Shared `ChatRouteState`, `HostChatScreenState`, `ChatThreadLookupState`, `ChatReadMarkerController`, `ChatScrollCoordinator`, `ChatThreadActionController`, and `ChatRetryController` now own provider waves, lookup keys, read effects, scroll behavior, top-bar action execution, retry invalidation, and disabled composer copy for consumer Match Chat. Deterministic captures include keyboard-open multiline, send failure snackbar, report failure snackbar, and block confirmation. Populated-thread and new-match empty references are registered and compare within threshold after fixture and reference-safe-area alignment: populated `7.22%` / `8.50`, new-match empty `5.01%` / `5.46`. Continue only if design exports keyboard/share/report/block/dynamic-time panels. |
 | P1 | `screen.matches.list` | 15 | 6 | 1 | None | None | `HostInboxScreenState` and `ChatsListDisplayState` now live in `chats_list_screen_state.dart` and own visible row derivation, unread filtering, empty-state selection, search affordance, and display-error retry intents. `ChatsListCelebrationController` owns new-match celebration target selection and dialog execution, and `ChatsSearchHeaderController` owns search-open close policy while the route passes query value/callback into the header. No `ChatNewMatchesRail` symbol remains; new matches render through the shared row list with fresh treatment. The populated baseline is within advisory threshold against `matches_list_context` (`6.84%` mismatch, meanDelta `8.21`); continue only if design exports distinct search/filter/loading/empty panels or the interaction state becomes external. |
@@ -1558,10 +1559,10 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
   - implemented: `create_event_action`, `manage_event_navigation`, `host_home_section_widgetbook_previews`
   - tested: `create_event_action`, `manage_event_navigation`
   - captured: `uid_missing`, `host_clubs_loading`, `host_clubs_error`, `host_clubs_offline`, `no_host_clubs`, `one_owned_club`, `multiple_clubs_switcher`, `club_events_loading`, `club_events_error`, `club_events_offline`, `cohost_role`, `empty_events`, `upcoming_events`, `text_scale_2`, `reduced_motion`, `light_dark`
-  - DP-HOST-HOME-002: Blocked/reference-only until a visually distinct owner-only variant or additional pixel-reference source exists. Captured signed-out/access, club loading/error/offline, no clubs, Today dashboard, owner/co-host switching, long club-name pressure, co-host empty events, Events loading/error/offline, text-scale, reduced-motion, and light/dark.
-  - DP-HOST-HOME-003: Closed. `HostHomeRouteState` maps uid plus host-club async state into auth-required, loading, error, empty, or loaded branches before `HostOperationsHomeScreen` composes the shell. `HostHomeScreenState` owns selected club and `HostHomeTab`; `HostHomeTodayDashboardState` maps Today loading/error/empty/content, exact-event tasks, live/run-of-show state, and later-event rows; `HostEventsWorkspaceState` maps Events loading/error/empty/populated lifecycle branches, exact boundaries, grouping, and safe Repeat availability. Provider-free sections render the rows and callbacks while adapters stay narrow.
-  - DP-HOST-HOME-004: Events remains functionally complete but is bounded at `14.93% / 19.05` under `HOST-V2-EVENTS-VISUAL-DRIFT-001` after integrated sliver, option-group, app-shell consolidation, and the first-class Audience navigation destination; remove its regression ceiling only after the canonical mean-delta threshold passes again. Today is a separate known debt at `28.48% / 37.31` under `HOST-V2-TODAY-FUNCTIONAL-PARITY-001`; its ceiling must remain until real approval, offer, draft, and guest-inquiry task sources close the functional gap. Loading, empty, role/cohost, offline/error, text-scale, reduced-motion, light/dark, and additional lifecycle variants still need canonical source exports before strict comparison.
-  - DS-HOST-HOME-005: `feature.host_home` compiles all 18 states and 12 Host Home-owned actions. Add focused state tests for the 12 registered exceptions, standalone captures for create/manage navigation, and one dedicated nested hosted-event offline Widgetbook scenario to retire its 15 evidence exceptions.
+  - DP-HOST-HOME-002: Blocked/reference-only until an approved consolidated Events reference or additional pixel-reference source exists. Captured signed-out/access, organizer loading/error/offline, no organizers, the historical Today composition, owner/co-host switching, long organizer-name pressure, co-host empty events, Events loading/error/offline, text-scale, reduced-motion, and light/dark.
+  - DP-HOST-HOME-003: Closed. `HostHomeRouteState` maps uid plus organizer async state into auth-required, loading, error, empty, or loaded branches before `HostOperationsHomeScreen` composes the shell. `HostHomeScreenState` owns selected organizer; `HostEventsOverviewState` maps the live-or-next operational spotlight and exact-event attention work; `HostEventsWorkspaceState` maps lifecycle loading/error/empty/populated branches, exact boundaries, featured-event de-duplication, grouping, and safe Repeat availability. One narrow provider adapter feeds both provider-free sections.
+  - DP-HOST-HOME-004: The former Today functionality is now integrated into the canonical Events destination, so its old baseline is historical ingredient evidence rather than a separate screen target. Approve a consolidated Events reference before recalculating or removing `HOST-V2-EVENTS-VISUAL-DRIFT-001` or the retired Today comparison debt. Real approval, offer, draft, and guest-inquiry sources can extend the consolidated attention model when their backend owners exist. Loading, empty, role/cohost, offline/error, text-scale, reduced-motion, light/dark, and additional lifecycle variants still need canonical source exports before strict comparison.
+  - DS-HOST-HOME-005: `feature.host_home` compiles all 18 states and 11 Host Events-owned actions. Add focused state tests for the registered exceptions, standalone captures for create/manage navigation, and one dedicated nested hosted-event offline Widgetbook scenario to retire its evidence exceptions.
 - [ ] `host.clubs` (49 registered states, 2 open gaps)
   - planned: `blocked_reference_variants`
   - implemented: `host_clubs_organizer_overview_default`, `host_clubs_compact_reference_alignment`, `host_clubs_reference_mask_calibration`, `inline_choice_edit`, `age_range_edit`, `host_team_add_sheet_widgetbook`, `host_team_confirm_dialog_widgetbook`, `host_club_insights_state`, `host_clubs_preview_route_callback`, `pixel_comparison_advisory_baseline`

@@ -174,6 +174,7 @@ function attendee(
     phoneE164: "+919876543210",
     email: "asha@example.com",
     externalReference: null,
+    arrivalGroup: null,
     ticketType: null,
     importId: "import-1",
     sourceRowId: "row-1",

@@ -1,7 +1,7 @@
 ---
 doc_id: event_success
-version: 1.5.0
-updated: 2026-08-11
+version: 1.11.0
+updated: 2026-08-13
 owner: recursive_audit_loop
 status: active
 ---
@@ -82,10 +82,11 @@ general attendee-id assignment migration is complete.
 Direction 3's Quiet Command Console is the selected live hierarchy: one dark
 current-beat stage, one next beat, flat Guests and recovery destinations,
 honest acknowledged/pending/failed persistence, Previous, and one pinned
-primary action. The primary action is locally pending/debounce guarded. Offline
-queueing, revisioned undo, pause, conflict/lock authority and process-death
-recovery remain explicit promotion gates rather than inactive production
-controls.
+primary action. Live transitions are revision-fenced backend writes, and reveal
+or rotation publication requires an explicit confirmation. The persisted plan
+is the restart source of truth, so process death resumes the current beat and
+published rounds without a local recovery mode. Revisioned undo and pause are
+not part of the shipped control model.
 
 ## Format Mapping And Wiring
 
@@ -109,17 +110,80 @@ The currently wired pieces are:
   the saved full format snapshot;
 - `createEvent` can create the event and initial event-success plan in one
   backend transaction when event-success defaults are enabled;
-- Firestore rules allow host setup while the event is still pre-live, then
-  freeze setup-shaping fields after bookings, waitlist activity, check-ins,
-  event start, or live-plan freezing while still allowing live-control fields;
+- Firestore rules allow direct Host setup writes while the event is still
+  pre-live, then freeze setup-shaping fields after bookings, waitlist activity,
+  check-ins, event start, or live-plan freezing. Live-control fields are
+  callable-owned and cannot be changed directly by clients;
 - attendee companion routing, event-detail entry, and check-in auto-launch use
   the saved plan/runtime rather than raw event type.
 
-Assignment generation is deliberately narrower than the format taxonomy. V1
-supports pair rotations and generic micro-pods with topology guards. True
-table-seating, team-balancing, doubles/court-aware, and dance-partner engines
-remain future backend work unless product narrows them into the existing V1
-assignment shapes.
+Assignment generation is deliberately narrower than the format taxonomy. The
+format primitives now resolve a `matchingObjective` independently from
+`compatibilityPolicy`: the objective selects the product goal (`coverage`,
+`romantic`, `affinity`, `novelty`, `balance`, or `spread`), while the policy is
+the sole authority for which profile, questionnaire, or activity signals may
+be read. `coverage` is the engine default and remains meaningful with no
+profile or questionnaire data. An objective whose permitted inputs are absent
+falls back explicitly to `coverage` and records the reason; it must not widen
+the policy to obtain a score.
+
+Saved format primitives may override the objective. Otherwise pace pods bind
+to `affinity`, pair rotations to `balance`, team rotations to `spread`, seated
+tables to `affinity`, mutual-interest mixers to `romantic`, and other mixers or
+host/open formats to `coverage`. These bindings are resolved from the saved
+interaction model rather than by event-type branches in generators or screens.
+The Functions contract owns an exhaustive resolution table for every
+assignment-algorithm, compatibility-policy, matching-objective, and topology
+combination.
+
+The saved format primitives also resolve `unitOutcome` independently from the
+assignment algorithm. `none` records no result, `completion` records done/not
+done units, `score` accumulates numeric round totals, and `rank` records a
+complete ordering. Pace pods default to `completion`, team rotations to
+`score`, pair rotations to `rank`, and dinner/seated-table formats to `none`;
+an explicit saved value wins. The Functions resolver enumerates this axis with
+the other primitives rather than branching on an event name.
+
+V1 supports set-based pair rotations and generic micro-pods, plus
+capacity-aware `sequence` scheduling for pair rotations. Sequence scheduling
+uses the saved `resourceCapacity.concurrentUnits` value rather than a
+format-specific court constant. Null is unconstrained; a selected organizer
+layout still bounds the usable physical units. Each round stores explicit
+sit-outs and stable resource-unit ids, prioritizes the T3 cumulative exclusion
+ledger when capacity is scarce, and minimizes attendee movement over the T5
+derived unit-proximity graph. Host-authored overrides are rejected when a round
+exceeds the same configured capacity.
+
+Algorithms without a dedicated engine, including `none`, `teamBalancer`, and
+`tableSeating`, resolve to `unsupported` with an honest reason. They never run
+an implemented neighbouring behavior or rewrite existing assignments.
+`topology: adjacency` likewise remains unsupported, including when table
+resource and seat counts are present. True table-seating, team-balancing, and
+dance-partner engines remain future backend work.
+
+Operational roster imports now retain an optional `arrivalGroup` from reviewed
+provider booking, order, group, or ticket-buyer columns. Provider adapters keep
+the attendee-level reference distinct from that shared arrival group, so two
+guests on one booking do not collapse into one import identity. The value stays
+private on `eventAttendees` and is carried into the server-side Event Success
+roster; it is never returned as public roster data.
+
+The assignment engine accepts pairwise `affinityConstraint` values
+`mustPair`, `mustSplit`, `avoidRepeat`, and `neutral`, each scoped to
+`thisRound` or `pinned`. The engine applies the active constraints it is given;
+the live-control owner is responsible for consuming `thisRound` after one
+round and retaining `pinned` until explicit release. Safety block edges are
+evaluated first and always override `mustPair`.
+
+Assignment fairness also carries a format-neutral exclusion ledger. It tracks
+cumulative minutes that each assignment participant is unassigned, starting at
+the later of event start or attendee check-in and subtracting merged assignment
+intervals. The optimizer minimizes the maximum projected exclusion before
+assignment score within the active compatibility and safety tier. The Host
+control room raises only an aggregate intervention prompt at the inclusive
+threshold; it does not reveal attendee names. Forty minutes is the shared
+default, exposed as configuration at both the optimizer input and Host surface
+rather than embedded in event-type logic.
 
 ## Code Map
 
@@ -129,8 +193,10 @@ assignment shapes.
 | Repository/providers | `lib/event_success/data/event_success_repository.dart` |
 | Host setup/live/report UI | `lib/event_success/presentation/event_success_host_screen.dart` and `host_parts/` |
 | Attendee companion UI | `lib/event_success/presentation/event_success_companion_screen.dart` and `companion_parts/` |
+| Shared Host/attendee room map | `lib/event_success/presentation/event_success_room_map.dart` |
 | Live reveal UI | `lib/event_success/presentation/event_success_live_reveal_card.dart` and `live_reveal_parts/` |
 | Backend generators/wingman callables | `functions/src/eventSuccess/` |
+| No-download guest runtime | `website/src/features/eventRuntime/` |
 | Feedback scorecards/safety mirror | `functions/src/marketplace/eventSuccessScorecards.ts` |
 | Tests | `test/event_success/`, `functions/src/eventSuccess/*.test.ts`, `functions/src/marketplace/eventSuccessScorecards.test.ts` |
 
@@ -138,7 +204,7 @@ assignment shapes.
 
 | Collection | Owner and visibility |
 |---|---|
-| `eventSuccessPlans/{eventId}` | Host-owned setup/live state. Setup fields freeze once participant activity/start/live status begins; active participants can read through event-success rules. |
+| `eventSuccessPlans/{eventId}` | Host-owned setup plus backend-owned live state. `liveControlRevision`, draft revision, and published rotation/reveal indexes are callable-owned. Setup fields freeze once participant activity/start/live status begins; active participants can read through event-success rules. |
 | `eventSuccessFeedback/{eventId_uid}` | Attendee-owned decomposed post-event feedback. Raw notes and safety details are private to attendee/backend. |
 | `eventSafetyReports/{feedbackId}` | Backend-owned Catch-private safety mirror for concerning feedback. |
 | `eventSuccessPreferences/{eventId_uid}` | Attendee-owned live-guidance opt-outs. |
@@ -146,6 +212,10 @@ assignment shapes.
 | `eventSuccessWingmanRequests/{eventId_uid}` | Attendee consent document for host-visible introduction help. Target is not notified by this surface. |
 | `eventSuccessArrivalMissions/{eventId_uid}` | Server-owned First Hello mission. Attendee can read only their own mission; clients cannot create, update, list, or delete. |
 | `eventSuccessAssignments/{eventId_moduleId_uid}` | Server-owned assignment docs for micro-pods/guided rotations. |
+| `eventSuccessAssignmentDrafts/{eventId_moduleId_uid}` | Server-owned, Host-readable next-round rotation drafts. Participants cannot read or write this collection. |
+| `eventSuccessUnitOutcomes/{eventId}` | Server-owned complete round facts for completion, score, or rank outcomes. Hosts may get the event document; attendee reads, list access, and every direct write are denied. |
+| `eventSuccessStandings/{eventId}` | Server-owned score/rank snapshots through each recorded round. Authorized Hosts, active participants, and ready external runtime identities may get the event document; list and direct writes are denied. |
+| `organizerEventSuccessLayouts/{organizerId_layoutId}` | Reusable organizer-owned parametric room-layout assets. Organizer managers may read their assets; all writes use the validated callable. Participants receive only the selected layout's timestamp-free projection through an authorized callable/runtime bootstrap. |
 | `eventSuccessScorecards/{eventId}` | Server-owned aggregate coaching scorecard. Host-readable through event-success policy. |
 
 Schemas live under `contracts/firestore/` and generated outputs under
@@ -159,6 +229,81 @@ tighter First Hello venue radius, the module is selected, and a compatible
 checked-in target exists. `completeEventSuccessFirstHelloMission` verifies the
 active mission and answer, rechecks location/block state, records only the
 observer's answer on the mission, and marks attendance.
+
+### Live Control Robustness
+
+`controlEventSuccessLive` owns step, completion, reveal countdown, reveal
+publication, and pre-expiry countdown cancellation. Every non-idempotent write
+compares `expectedRevision` with `liveControlRevision`. Reveal publication is
+monotonic: an expired countdown is already published according to its persisted
+server anchor, and neither cancellation nor a later action can move the
+published reveal index backwards.
+
+Guided rotations use a two-stage boundary. `generateEventSuccessRotations` and
+Host overrides write only `eventSuccessAssignmentDrafts`; the Firestore trigger
+`onEventSuccessPlanLiveControlUpdated` prepares round N+1 asynchronously while
+round N is live. `publishEventSuccessRotationRound` transactionally publishes
+only the requested prepared round to attendee-readable assignments and is
+idempotent for retry. The beat-transition module does not import or invoke the
+assignment generator. Trigger preparation retries are bounded by the validated
+deployment setting `EVENT_SUCCESS_DRAFT_PREPARATION_ATTEMPTS` (1-10, default
+3).
+
+When the plan selects `topology: sequence`, generation runs the deterministic
+round-robin scheduler. Every allowed pair meets once before a configured repeat
+cycle, safety and must-split edges are never scheduled, odd rosters receive
+fair byes, and court/table/lane/board capacity is enforced independently of the
+event type. Legacy plans without `topology` continue to resolve to `set`.
+
+### Unit Outcomes And Live Standings
+
+`recordEventSuccessUnitOutcomes` lets an organizer manager replace one complete
+round under an outcome revision fence. Exact replay is idempotent. New rounds
+must be sequential; score corrections recompute all accumulated snapshots and
+rank corrections replace the affected complete ordering. Duplicate units,
+partial or non-contiguous rank orders, an entry shape inconsistent with the
+saved format, and `unitOutcome: none` fail closed. Completion facts stay in the
+Host-only source collection and intentionally produce no standings document.
+
+For `score` and `rank`, the Host recorder appears inside the existing live
+reveal card. Flutter companions and the no-download runtime read the same
+standings projection and select the latest snapshot no later than
+`publishedRevealRoundIndex`. The existing `idle` / `countingDown` / `revealed`
+state and server anchor mask the table until publication on every runtime.
+There is no second reveal confirmation, countdown, or ceremony implementation;
+the existing assignment-reveal slot switches its payload to standings.
+
+### Spatial Layout And Control Room
+
+An event-success plan may select one reusable organizer layout by `layoutId`.
+The layout remains an organizer asset rather than being copied into the event.
+Its parametric specification is a bounded list of coarse integer-grid units;
+each unit declares one of `round`, `rect`, `row`, `court`, or `zone`, plus a
+capacity and stable order. The app authoring sheet exposes unit count, capacity,
+column count, and all five shapes. It does not provide a to-scale venue editor.
+
+Normalized rendering rectangles and the complete Euclidean unit-proximity
+graph are derived from the parametric grid. Proximity has no hidden cutoff.
+Flutter and the React guest runtime prove their render normalization against
+the same `contracts/catalogs/event_success_layout.json` fixture.
+
+Non-`wholeGroup` assignments carry an assigned `layoutUnitId` and a separate
+nullable `confirmedLayoutUnitId`. An outline means assigned; only explicit Host
+confirmation fills the position. The Host can tap an attendee and then any
+valid destination on every device. Invalid destinations remain visible with a
+capacity, safety, or declared-constraint reason. Drag is an additive large-
+surface affordance selected by
+`ComponentBreakpoints.eventSuccessSpatialDragBreakpoint`; it is never the only
+path. The companion and no-download guest runtime are read-only and receive no
+other attendee positions.
+
+`controlEventSuccessSpatial` previews or writes a placement under the same
+`liveControlRevision` single-writer fence as T4. Every reassignment persists a
+T2 `mustPair` constraint with explicit `thisRound` or `pinned` scope; a pinned
+placement survives regeneration until released, while a this-round placement
+does not. `upsertEventSuccessLayout` owns reusable organizer asset writes and
+`getEventSuccessSpatialLayout` returns only the selected authorized projection.
+`wholeGroup` plans return no spatial projection or map.
 
 ## Product Guardrails
 
@@ -176,9 +321,9 @@ observer's answer on the mission, and marks attendance.
   not raw safety notes or personally identifying safety details.
 - Host reports should teach hosts how to run better events, not expose attendee
   intelligence.
-- Live reveal V1 is synchronized ceremony, not hard secrecy: assigned attendees
-  can read their own assignment docs under current rules. Stronger secrecy would
-  need host-only draft assignments and just-in-time publication.
+- Guided-rotation drafts are Host-only and become attendee-readable only through
+  explicit round publication. Already-published assignment documents remain
+  attendee-readable; publication is not a reversible secrecy control.
 - "Help me meet someone" without a selected attendee is deferred. Launch host
   help is specific-person only.
 
@@ -380,10 +525,12 @@ event-scoped keep-apart/hide/report edges protect OTP-only participants.
 
 ### Dedicated web runtime
 
-The guest surface is a separate React + TypeScript workspace at `runtime/` and
-Firebase Hosting target `runtime`, intended for `live.catchdates.com`. It shares
-generated callable types, Firebase Auth project, App Check, design tokens and
-`@catch/web-ui`; it does not share the Consumer Flutter router.
+The guest surface is the React + TypeScript route owned by
+`website/src/features/eventRuntime/` and shipped in the existing `website/`
+workspace on the `marketing` Firebase Hosting target. There is no `runtime/`
+workspace or `runtime` Hosting target. It shares generated callable types,
+Firebase Auth, App Check, and website primitives; it does not share the
+Consumer Flutter router.
 
 ```text
 /e/:publicRuntimeId -> bootstrap -> phone -> OTP -> claim/approval
@@ -521,7 +668,11 @@ Check:
 - optional First Hello arrival mission from host controls through attendee
   completion and checked-in state;
 - host `Previous`/`Next` run-of-show transitions updating both panes;
-- countdown, reveal now, and reset;
+- countdown, confirmed reveal-now, pre-expiry cancellation, and irreversible
+  post-publication state;
+- confirmed, idempotent publication of the next prepared rotation round with no
+  future-round assignment leakage;
+- process-death restart during a round resumes the persisted current beat;
 - pre-arrival attendee state without live prompt/reveal/partner leakage;
 - checked-in attendee moment sync;
 - questionnaire, opt-out, wingman request, feedback, and report states;
@@ -538,10 +689,13 @@ Use a real dev/staging event for write-path proof:
 
 1. Save event-success setup as host.
 2. Book/check in at least two attendee accounts.
-3. Generate pods or rotations and edit generated rotations.
-4. Drive countdown/reveal/reset from host live mode.
-5. Submit questionnaire, opt-out, wingman request, and feedback as attendee.
-6. Confirm host report aggregate signal quality.
+3. Generate pods or prepare rotations, then edit the Host-only rotation draft.
+4. Confirm publication of one prepared rotation round and verify no later round
+   is attendee-readable.
+5. Drive countdown/reveal from host live mode; cancel only before expiry and
+   confirm a published reveal has no reset path.
+6. Submit questionnaire, opt-out, wingman request, and feedback as attendee.
+7. Confirm host report aggregate signal quality.
 
 ## Participant Metrics And Warehouse
 
@@ -739,8 +893,9 @@ Implemented host-facing proof points:
   `catchRate`. Hosts never see target identities for private catches.
 - The assignment engine is primitive-driven. It accepts group size, rotations,
   gender/orientation fit, questionnaire signal, blocks, opt-outs, host
-  keep-together/keep-apart/anchor constraints, activity attributes, repeat
-  strategy, maximum pair meetings, and richer slot metadata.
+  keep-together/keep-apart/anchor constraints, scoped pairwise affinity
+  constraints, activity attributes, repeat strategy, maximum pair meetings,
+  and richer slot metadata.
 - Assignment docs carry unit kind/index/label, reason summaries, reason codes,
   rotation fairness counts, slot ids, peer counts, and sit-out slots.
 - Host setup persists repeat strategy, max pair meetings, balance/cluster
