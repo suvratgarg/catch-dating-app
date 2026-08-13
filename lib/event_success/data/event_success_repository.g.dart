@@ -135,6 +135,169 @@ final class WatchEventSuccessPlanFamily extends $Family
   String toString() => r'watchEventSuccessPlanProvider';
 }
 
+@ProviderFor(watchOrganizerEventSuccessLayouts)
+final watchOrganizerEventSuccessLayoutsProvider =
+    WatchOrganizerEventSuccessLayoutsFamily._();
+
+final class WatchOrganizerEventSuccessLayoutsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<EventSuccessLayout>>,
+          List<EventSuccessLayout>,
+          Stream<List<EventSuccessLayout>>
+        >
+    with
+        $FutureModifier<List<EventSuccessLayout>>,
+        $StreamProvider<List<EventSuccessLayout>> {
+  WatchOrganizerEventSuccessLayoutsProvider._({
+    required WatchOrganizerEventSuccessLayoutsFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'watchOrganizerEventSuccessLayoutsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() =>
+      _$watchOrganizerEventSuccessLayoutsHash();
+
+  @override
+  String toString() {
+    return r'watchOrganizerEventSuccessLayoutsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<List<EventSuccessLayout>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<EventSuccessLayout>> create(Ref ref) {
+    final argument = this.argument as String;
+    return watchOrganizerEventSuccessLayouts(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WatchOrganizerEventSuccessLayoutsProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$watchOrganizerEventSuccessLayoutsHash() =>
+    r'a9071789dcfec1b4958acca1ff266457190bb608';
+
+final class WatchOrganizerEventSuccessLayoutsFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<List<EventSuccessLayout>>, String> {
+  WatchOrganizerEventSuccessLayoutsFamily._()
+    : super(
+        retry: null,
+        name: r'watchOrganizerEventSuccessLayoutsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  WatchOrganizerEventSuccessLayoutsProvider call(String organizerId) =>
+      WatchOrganizerEventSuccessLayoutsProvider._(
+        argument: organizerId,
+        from: this,
+      );
+
+  @override
+  String toString() => r'watchOrganizerEventSuccessLayoutsProvider';
+}
+
+@ProviderFor(eventSuccessSpatialLayout)
+final eventSuccessSpatialLayoutProvider = EventSuccessSpatialLayoutFamily._();
+
+final class EventSuccessSpatialLayoutProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<EventSuccessLayout?>,
+          EventSuccessLayout?,
+          FutureOr<EventSuccessLayout?>
+        >
+    with
+        $FutureModifier<EventSuccessLayout?>,
+        $FutureProvider<EventSuccessLayout?> {
+  EventSuccessSpatialLayoutProvider._({
+    required EventSuccessSpatialLayoutFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'eventSuccessSpatialLayoutProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$eventSuccessSpatialLayoutHash();
+
+  @override
+  String toString() {
+    return r'eventSuccessSpatialLayoutProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<EventSuccessLayout?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<EventSuccessLayout?> create(Ref ref) {
+    final argument = this.argument as String;
+    return eventSuccessSpatialLayout(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is EventSuccessSpatialLayoutProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$eventSuccessSpatialLayoutHash() =>
+    r'eb7e2c95206f8173823738680fa9821bc8331ae5';
+
+final class EventSuccessSpatialLayoutFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<EventSuccessLayout?>, String> {
+  EventSuccessSpatialLayoutFamily._()
+    : super(
+        retry: null,
+        name: r'eventSuccessSpatialLayoutProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  EventSuccessSpatialLayoutProvider call(String eventId) =>
+      EventSuccessSpatialLayoutProvider._(argument: eventId, from: this);
+
+  @override
+  String toString() => r'eventSuccessSpatialLayoutProvider';
+}
+
 @ProviderFor(watchEventSuccessFeedback)
 final watchEventSuccessFeedbackProvider = WatchEventSuccessFeedbackFamily._();
 

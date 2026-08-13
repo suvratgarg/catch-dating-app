@@ -1,8 +1,11 @@
-import type {EventRuntimeBootstrap} from "../../firebase";
+import type {EventRuntimeBootstrap, EventRuntimeLiveState} from "../../firebase";
 import {eventRuntimeCopy, eventRuntimeQuestionnairePacks} from "../../content/eventRuntime";
 
 export type {EventRuntimeBootstrap};
 export type EventRuntimeParticipant = NonNullable<EventRuntimeBootstrap["participant"]>;
+export type EventRuntimeLayout = NonNullable<EventRuntimeBootstrap["event"]["layout"]>;
+export type EventRuntimeLayoutUnit = EventRuntimeLayout["units"][number];
+export type EventRuntimeAssignment = EventRuntimeLiveState["assignments"][number];
 export type EventRuntimeGender = NonNullable<
   EventRuntimeParticipant["runtimeProfile"]["gender"]
 >;
@@ -16,6 +19,44 @@ export interface EventRuntimeQuestion {
 export interface EventRuntimeQuestionnaire {
   title: string;
   questions: EventRuntimeQuestion[];
+}
+
+export interface NormalizedEventRuntimeLayoutUnit {
+  id: string;
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
+
+export function normalizeEventRuntimeLayoutUnits(
+  units: readonly EventRuntimeLayoutUnit[]
+): NormalizedEventRuntimeLayoutUnit[] {
+  const stableUnits = [...units].sort((left, right) =>
+    left.order - right.order || left.id.localeCompare(right.id)
+  );
+  if (!stableUnits.length) return [];
+  const columns = Math.max(...stableUnits.map((unit) => unit.gridX)) + 1;
+  const rows = Math.max(...stableUnits.map((unit) => unit.gridY)) + 1;
+  return stableUnits.map((unit) => ({
+    id: unit.id,
+    left: rounded(unit.gridX / columns),
+    top: rounded(unit.gridY / rows),
+    width: rounded(1 / columns),
+    height: rounded(1 / rows),
+  }));
+}
+
+export function shouldRenderEventRuntimeRoomMap(
+  layout: EventRuntimeBootstrap["event"]["layout"],
+  assignment: EventRuntimeAssignment
+): layout is EventRuntimeLayout {
+  return Boolean(
+    layout &&
+    assignment.unitKind !== "wholeGroup" &&
+    assignment.layoutUnitId &&
+    layout.units.some((unit) => unit.id === assignment.layoutUnitId)
+  );
 }
 
 export function resolveEventRuntimeQuestionnaire(
@@ -77,4 +118,8 @@ export function eventRuntimeError(error: unknown): string {
 function errorCode(error: unknown): string {
   if (typeof error !== "object" || error === null || !("code" in error)) return "";
   return typeof error.code === "string" ? error.code : "";
+}
+
+function rounded(value: number): number {
+  return Math.round(value * 1_000_000) / 1_000_000;
 }

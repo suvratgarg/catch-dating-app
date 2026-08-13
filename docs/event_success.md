@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.9.0
+version: 1.10.0
 updated: 2026-08-13
 owner: recursive_audit_loop
 status: active
@@ -175,8 +175,10 @@ rather than embedded in event-type logic.
 | Repository/providers | `lib/event_success/data/event_success_repository.dart` |
 | Host setup/live/report UI | `lib/event_success/presentation/event_success_host_screen.dart` and `host_parts/` |
 | Attendee companion UI | `lib/event_success/presentation/event_success_companion_screen.dart` and `companion_parts/` |
+| Shared Host/attendee room map | `lib/event_success/presentation/event_success_room_map.dart` |
 | Live reveal UI | `lib/event_success/presentation/event_success_live_reveal_card.dart` and `live_reveal_parts/` |
 | Backend generators/wingman callables | `functions/src/eventSuccess/` |
+| No-download guest runtime | `website/src/features/eventRuntime/` |
 | Feedback scorecards/safety mirror | `functions/src/marketplace/eventSuccessScorecards.ts` |
 | Tests | `test/event_success/`, `functions/src/eventSuccess/*.test.ts`, `functions/src/marketplace/eventSuccessScorecards.test.ts` |
 
@@ -193,6 +195,7 @@ rather than embedded in event-type logic.
 | `eventSuccessArrivalMissions/{eventId_uid}` | Server-owned First Hello mission. Attendee can read only their own mission; clients cannot create, update, list, or delete. |
 | `eventSuccessAssignments/{eventId_moduleId_uid}` | Server-owned assignment docs for micro-pods/guided rotations. |
 | `eventSuccessAssignmentDrafts/{eventId_moduleId_uid}` | Server-owned, Host-readable next-round rotation drafts. Participants cannot read or write this collection. |
+| `organizerEventSuccessLayouts/{organizerId_layoutId}` | Reusable organizer-owned parametric room-layout assets. Organizer managers may read their assets; all writes use the validated callable. Participants receive only the selected layout's timestamp-free projection through an authorized callable/runtime bootstrap. |
 | `eventSuccessScorecards/{eventId}` | Server-owned aggregate coaching scorecard. Host-readable through event-success policy. |
 
 Schemas live under `contracts/firestore/` and generated outputs under
@@ -225,6 +228,38 @@ idempotent for retry. The beat-transition module does not import or invoke the
 assignment generator. Trigger preparation retries are bounded by the validated
 deployment setting `EVENT_SUCCESS_DRAFT_PREPARATION_ATTEMPTS` (1-10, default
 3).
+
+### Spatial Layout And Control Room
+
+An event-success plan may select one reusable organizer layout by `layoutId`.
+The layout remains an organizer asset rather than being copied into the event.
+Its parametric specification is a bounded list of coarse integer-grid units;
+each unit declares one of `round`, `rect`, `row`, `court`, or `zone`, plus a
+capacity and stable order. The app authoring sheet exposes unit count, capacity,
+column count, and all five shapes. It does not provide a to-scale venue editor.
+
+Normalized rendering rectangles and the complete Euclidean unit-proximity
+graph are derived from the parametric grid. Proximity has no hidden cutoff.
+Flutter and the React guest runtime prove their render normalization against
+the same `contracts/catalogs/event_success_layout.json` fixture.
+
+Non-`wholeGroup` assignments carry an assigned `layoutUnitId` and a separate
+nullable `confirmedLayoutUnitId`. An outline means assigned; only explicit Host
+confirmation fills the position. The Host can tap an attendee and then any
+valid destination on every device. Invalid destinations remain visible with a
+capacity, safety, or declared-constraint reason. Drag is an additive large-
+surface affordance selected by
+`ComponentBreakpoints.eventSuccessSpatialDragBreakpoint`; it is never the only
+path. The companion and no-download guest runtime are read-only and receive no
+other attendee positions.
+
+`controlEventSuccessSpatial` previews or writes a placement under the same
+`liveControlRevision` single-writer fence as T4. Every reassignment persists a
+T2 `mustPair` constraint with explicit `thisRound` or `pinned` scope; a pinned
+placement survives regeneration until released, while a this-round placement
+does not. `upsertEventSuccessLayout` owns reusable organizer asset writes and
+`getEventSuccessSpatialLayout` returns only the selected authorized projection.
+`wholeGroup` plans return no spatial projection or map.
 
 ## Product Guardrails
 
@@ -446,10 +481,12 @@ event-scoped keep-apart/hide/report edges protect OTP-only participants.
 
 ### Dedicated web runtime
 
-The guest surface is a separate React + TypeScript workspace at `runtime/` and
-Firebase Hosting target `runtime`, intended for `live.catchdates.com`. It shares
-generated callable types, Firebase Auth project, App Check, design tokens and
-`@catch/web-ui`; it does not share the Consumer Flutter router.
+The guest surface is the React + TypeScript route owned by
+`website/src/features/eventRuntime/` and shipped in the existing `website/`
+workspace on the `marketing` Firebase Hosting target. There is no `runtime/`
+workspace or `runtime` Hosting target. It shares generated callable types,
+Firebase Auth, App Check, and website primitives; it does not share the
+Consumer Flutter router.
 
 ```text
 /e/:publicRuntimeId -> bootstrap -> phone -> OTP -> claim/approval

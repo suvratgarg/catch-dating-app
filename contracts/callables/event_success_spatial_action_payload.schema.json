@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/event_success_spatial_action_payload.schema.json",
+  "title": "EventSuccessSpatialActionCallablePayload",
+  "description": "Revision-fenced Host spatial-control action.",
+  "x-callable-aliases": ["controlEventSuccessSpatial"],
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "expectedRevision", "action", "moduleId", "uid"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "expectedRevision": {"type": "integer", "minimum": 0, "maximum": 2147483647},
+    "action": {
+      "type": "string",
+      "enum": ["previewReassignment", "reassign", "confirmPosition", "releasePinned"]
+    },
+    "moduleId": {"type": "string", "enum": ["micro_pods", "guided_rotations"]},
+    "uid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "destinationUnitId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+    },
+    "scope": {"type": "string", "enum": ["thisRound", "pinned"]}
+  }
+}

@@ -33,6 +33,10 @@ abstract final class ComponentBreakpoints {
   /// Structure-config editor goes 1 → 2 columns at this width.
   static const double eventSuccessConfigTwoColumnBreakpoint = 560.0;
 
+  /// Spatial Host controls add drag-and-drop at a tablet-sized local width;
+  /// tap selection remains the universal interaction.
+  static const double eventSuccessSpatialDragBreakpoint = 720.0;
+
   /// Host waitlist movement callout stacks its text and action below this local
   /// width so the action label never crowds the summary.
   static const double hostWaitlistBulkOfferStackBreakpoint = 340.0;

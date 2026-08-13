@@ -77,6 +77,7 @@ import {CrossPathsPairHoldDocument} from "./crossPathsPairHoldDocument";
 import {EventBroadcastDocument} from "./eventBroadcastDocument";
 import {EventWaitlistOfferDocument} from "./eventWaitlistOfferDocument";
 import {EventSuccessPlanDocument} from "./eventSuccessPlanDocument";
+import {OrganizerEventSuccessLayoutDocument} from "./organizerEventSuccessLayoutDocument";
 import {EventSuccessAssignmentDraftDocument} from "./eventSuccessAssignmentDraftDocument";
 import {EventSuccessFeedbackDocument} from "./eventSuccessFeedbackDocument";
 import {EventSuccessPreferenceDocument} from "./eventSuccessPreferenceDocument";
@@ -226,6 +227,12 @@ import {EventStaffListCallableResponse} from "./eventStaffListCallableResponse";
 import {RegisterPublicEventCallablePayload} from "./registerPublicEventCallablePayload";
 import {RegisterPublicEventCallableResponse} from "./registerPublicEventCallableResponse";
 import {GetEventRuntimeBootstrapCallablePayload} from "./getEventRuntimeBootstrapCallablePayload";
+import {UpsertEventSuccessLayoutCallablePayload} from "./upsertEventSuccessLayoutCallablePayload";
+import {UpsertEventSuccessLayoutCallableResponse} from "./upsertEventSuccessLayoutCallableResponse";
+import {GetEventSuccessSpatialLayoutCallablePayload} from "./getEventSuccessSpatialLayoutCallablePayload";
+import {GetEventSuccessSpatialLayoutCallableResponse} from "./getEventSuccessSpatialLayoutCallableResponse";
+import {EventSuccessSpatialActionCallablePayload} from "./eventSuccessSpatialActionCallablePayload";
+import {EventSuccessSpatialActionCallableResponse} from "./eventSuccessSpatialActionCallableResponse";
 import {GetEventRuntimeBootstrapCallableResponse} from "./getEventRuntimeBootstrapCallableResponse";
 import {ClaimEventRuntimeAccessCallablePayload} from "./claimEventRuntimeAccessCallablePayload";
 import {ClaimEventRuntimeAccessCallableResponse} from "./claimEventRuntimeAccessCallableResponse";
@@ -403,6 +410,7 @@ import {
   eventBroadcastDocumentSchema,
   eventWaitlistOfferDocumentSchema,
   eventSuccessPlanDocumentSchema,
+  organizerEventSuccessLayoutDocumentSchema,
   eventSuccessAssignmentDraftDocumentSchema,
   eventSuccessFeedbackDocumentSchema,
   eventSuccessPreferenceDocumentSchema,
@@ -552,6 +560,12 @@ import {
   registerPublicEventCallablePayloadSchema,
   registerPublicEventCallableResponseSchema,
   getEventRuntimeBootstrapCallablePayloadSchema,
+  upsertEventSuccessLayoutCallablePayloadSchema,
+  upsertEventSuccessLayoutCallableResponseSchema,
+  getEventSuccessSpatialLayoutCallablePayloadSchema,
+  getEventSuccessSpatialLayoutCallableResponseSchema,
+  eventSuccessSpatialActionCallablePayloadSchema,
+  eventSuccessSpatialActionCallableResponseSchema,
   getEventRuntimeBootstrapCallableResponseSchema,
   claimEventRuntimeAccessCallablePayloadSchema,
   claimEventRuntimeAccessCallableResponseSchema,
@@ -952,6 +966,10 @@ export const validateEventSuccessPlanDocument:
   ValidateFunction<EventSuccessPlanDocument> =
     ajv.compile(eventSuccessPlanDocumentSchema) as
       ValidateFunction<EventSuccessPlanDocument>;
+export const validateOrganizerEventSuccessLayoutDocument:
+  ValidateFunction<OrganizerEventSuccessLayoutDocument> =
+    ajv.compile(organizerEventSuccessLayoutDocumentSchema) as
+      ValidateFunction<OrganizerEventSuccessLayoutDocument>;
 export const validateEventSuccessAssignmentDraftDocument:
   ValidateFunction<EventSuccessAssignmentDraftDocument> =
     ajv.compile(eventSuccessAssignmentDraftDocumentSchema) as
@@ -1548,6 +1566,30 @@ export const validateGetEventRuntimeBootstrapCallablePayload:
   ValidateFunction<GetEventRuntimeBootstrapCallablePayload> =
     ajv.compile(getEventRuntimeBootstrapCallablePayloadSchema) as
       ValidateFunction<GetEventRuntimeBootstrapCallablePayload>;
+export const validateUpsertEventSuccessLayoutCallablePayload:
+  ValidateFunction<UpsertEventSuccessLayoutCallablePayload> =
+    ajv.compile(upsertEventSuccessLayoutCallablePayloadSchema) as
+      ValidateFunction<UpsertEventSuccessLayoutCallablePayload>;
+export const validateUpsertEventSuccessLayoutCallableResponse:
+  ValidateFunction<UpsertEventSuccessLayoutCallableResponse> =
+    ajv.compile(upsertEventSuccessLayoutCallableResponseSchema) as
+      ValidateFunction<UpsertEventSuccessLayoutCallableResponse>;
+export const validateGetEventSuccessSpatialLayoutCallablePayload:
+  ValidateFunction<GetEventSuccessSpatialLayoutCallablePayload> =
+    ajv.compile(getEventSuccessSpatialLayoutCallablePayloadSchema) as
+      ValidateFunction<GetEventSuccessSpatialLayoutCallablePayload>;
+export const validateGetEventSuccessSpatialLayoutCallableResponse:
+  ValidateFunction<GetEventSuccessSpatialLayoutCallableResponse> =
+    ajv.compile(getEventSuccessSpatialLayoutCallableResponseSchema) as
+      ValidateFunction<GetEventSuccessSpatialLayoutCallableResponse>;
+export const validateEventSuccessSpatialActionCallablePayload:
+  ValidateFunction<EventSuccessSpatialActionCallablePayload> =
+    ajv.compile(eventSuccessSpatialActionCallablePayloadSchema) as
+      ValidateFunction<EventSuccessSpatialActionCallablePayload>;
+export const validateEventSuccessSpatialActionCallableResponse:
+  ValidateFunction<EventSuccessSpatialActionCallableResponse> =
+    ajv.compile(eventSuccessSpatialActionCallableResponseSchema) as
+      ValidateFunction<EventSuccessSpatialActionCallableResponse>;
 export const validateGetEventRuntimeBootstrapCallableResponse:
   ValidateFunction<GetEventRuntimeBootstrapCallableResponse> =
     ajv.compile(getEventRuntimeBootstrapCallableResponseSchema) as

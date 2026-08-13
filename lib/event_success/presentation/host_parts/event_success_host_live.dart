@@ -14,6 +14,7 @@ class LiveTab extends StatelessWidget {
     required this.event,
     required this.plan,
     required this.planIsPersisted,
+    required this.spatialLayout,
     required this.roster,
     required this.assignments,
     required this.assignmentParticipantProfiles,
@@ -37,6 +38,10 @@ class LiveTab extends StatelessWidget {
     required this.onPublishGuidedRotationRound,
     required this.onOverrideGroupAssignments,
     required this.onOverrideGuidedRotations,
+    required this.onPreviewSpatial,
+    required this.onReassignSpatial,
+    required this.onConfirmSpatial,
+    required this.onReleaseSpatial,
     required this.revealActionState,
     required this.onStartRevealCountdown,
     required this.onRevealRound,
@@ -50,6 +55,7 @@ class LiveTab extends StatelessWidget {
   final Event event;
   final EventSuccessPlan plan;
   final bool planIsPersisted;
+  final EventSuccessLayout? spatialLayout;
   final EventParticipationRoster roster;
   final List<EventSuccessAssignment> assignments;
   final List<PublicProfile> assignmentParticipantProfiles;
@@ -75,6 +81,12 @@ class LiveTab extends StatelessWidget {
   onOverrideGroupAssignments;
   final Future<void> Function(List<EventSuccessRotationOverrideRound> rounds)?
   onOverrideGuidedRotations;
+  final EventSuccessSpatialPreview? onPreviewSpatial;
+  final EventSuccessSpatialReassign? onReassignSpatial;
+  final Future<void> Function(EventSuccessAssignment assignment)?
+  onConfirmSpatial;
+  final Future<void> Function(EventSuccessAssignment assignment)?
+  onReleaseSpatial;
   final EventSuccessRevealActionState revealActionState;
   final Future<void> Function(int roundIndex, int countdownSeconds)?
   onStartRevealCountdown;
@@ -231,11 +243,44 @@ class LiveTab extends StatelessWidget {
       onResetReveal: onResetReveal,
     );
 
+    final spatialAssignments =
+        activeStepHas(EventSuccessModuleCatalog.guidedRotations.id) &&
+            rotationAssignments.isNotEmpty
+        ? rotationAssignments
+        : assignments;
+    final spatialProfiles = identical(spatialAssignments, rotationAssignments)
+        ? rotationParticipantProfiles
+        : assignmentParticipantProfiles;
+    final exclusionSnapshot = buildEventSuccessExclusionLedger(
+      attendeeUids: roster.checkedInIds,
+      assignments: [...assignments, ...rotationAssignments],
+      trackingStartedAt: event.startTime,
+      trackingStartedAtByUid: roster.checkedInAtByUid,
+      trackingEndedAt: event.endTime,
+      now: exclusionReferenceNow ?? DateTime.now(),
+      alertThreshold: exclusionAlertThreshold,
+    );
+    Widget? spatialMapCard() =>
+        spatialLayout == null || spatialAssignments.isEmpty
+        ? null
+        : EventSuccessRoomMap(
+            layout: spatialLayout!,
+            assignments: spatialAssignments,
+            profiles: spatialProfiles,
+            exclusionAlertUids: exclusionSnapshot.alertEntries
+                .map((entry) => entry.uid)
+                .toSet(),
+            onPreview: onPreviewSpatial,
+            onReassign: onReassignSpatial,
+            onConfirmPosition: onConfirmSpatial,
+            onReleasePinned: onReleaseSpatial,
+          );
+
     final liveRevealAvailable =
         runtime.liveRevealEnabled &&
         (runtime.guidedRotationsEnabled || runtime.microPodsEnabled);
     final currentStepCards = compactLiveControls
-        ? <Widget>[]
+        ? <Widget>[?spatialMapCard()]
         : <Widget>[
             if (runtime.wingmanRequestsEnabled &&
                 activeStepHas(EventSuccessModuleCatalog.wingmanRequests.id))
@@ -251,6 +296,7 @@ class LiveTab extends StatelessWidget {
             if (liveRevealAvailable &&
                 activeStepHas(EventSuccessModuleCatalog.liveReveal.id))
               liveRevealCard(),
+            ?spatialMapCard(),
           ];
     final supportingCards = compactLiveControls
         ? <Widget>[]
@@ -467,7 +513,7 @@ class LiveNowConsole extends StatelessWidget {
           attendeeExperience: compactCopy ? null : attendeeExperience,
           showVenue: showVenue,
         ),
-        if (exclusionAlert case final alert?) alert,
+        ?exclusionAlert,
         DecoratedBox(
           decoration: BoxDecoration(color: t.surface),
           child: CatchSection.fieldRows(
@@ -487,6 +533,15 @@ class LiveNowConsole extends StatelessWidget {
             ],
           ),
         ),
+        if (compactCopy && currentStepControls.isNotEmpty)
+          Padding(
+            padding: CatchInsets.pageBody,
+            child: CatchSectionList(
+              emptyStateOmitted: true,
+              gap: CatchSpacing.s4,
+              children: currentStepControls,
+            ),
+          ),
       ],
     );
 
@@ -634,7 +689,7 @@ class _EventSuccessExclusionAlertCardState
     if (!mounted || widget.referenceNow != null) return;
     final delay = _snapshot().nextAlertDelay;
     if (delay == null) return;
-    _thresholdTimer = Timer(delay + const Duration(milliseconds: 1), () {
+    _thresholdTimer = Timer(delay + CatchMotion.eventSuccessThresholdTick, () {
       if (!mounted) return;
       setState(() {});
       _scheduleThreshold();

@@ -19,6 +19,7 @@
         "locationName",
         "runtimeTermsVersion",
         "moduleIds",
+        "layout",
         "requiredFieldIds",
         "optionalFieldIds",
         "questionnaireConfig"
@@ -36,6 +37,12 @@
           "uniqueItems": true,
           "maxItems": 24,
           "items": {"type": "string", "minLength": 1, "maxLength": 120}
+        },
+        "layout": {
+          "anyOf": [
+            {"type": "null"},
+            {"$ref": "../shared/event_success_layout.schema.json#/definitions/layout"}
+          ]
         },
         "requiredFieldIds": {
           "description": "Fields that must be completed before event mode opens. Sensitive preference fields are never required for entry.",

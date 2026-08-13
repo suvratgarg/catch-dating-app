@@ -23,12 +23,17 @@ import {
   EventRuntimePrivacy,
   EventRuntimeProfileQuestions,
   EventRuntimeQuestionnaire,
+  EventRuntimeRoomMap,
   FormStatus,
   SelectField,
   TextAreaField,
   TextField,
 } from "../../shared/ui/primitives";
 import {useEventRuntimeController} from "./useEventRuntimeController";
+import {
+  normalizeEventRuntimeLayoutUnits,
+  shouldRenderEventRuntimeRoomMap,
+} from "./eventRuntimeModel";
 
 export function EventRuntimePage() {
   const {publicRuntimeId = ""} = useParams<{publicRuntimeId: string}>();
@@ -278,6 +283,19 @@ function LiveEventRuntime({
                 <h3>{assignment.displayTitle}</h3>
                 {assignment.displaySubtitle ? <p>{assignment.displaySubtitle}</p> : null}
                 {assignment.whySummary ? <small>{assignment.whySummary}</small> : null}
+                {shouldRenderEventRuntimeRoomMap(event.layout, assignment) ? (
+                  <EventRuntimeRoomMap
+                    assignedLabel={eventRuntimeCopy.roomMapAssigned}
+                    assignedUnitId={assignment.layoutUnitId!}
+                    confirmedLabel={eventRuntimeCopy.roomMapConfirmed}
+                    confirmedUnitId={assignment.confirmedLayoutUnitId}
+                    positions={normalizeEventRuntimeLayoutUnits(event.layout.units)}
+                    selfLabel={eventRuntimeCopy.roomMapSelf}
+                    subtitle={eventRuntimeCopy.roomMapSubtitle}
+                    title={eventRuntimeCopy.roomMapTitle}
+                    units={event.layout.units}
+                  />
+                ) : null}
               </article>
             ))}
           </EventRuntimeAssignments>

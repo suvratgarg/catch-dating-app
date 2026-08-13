@@ -204,6 +204,11 @@ export {
 export {onEventSuccessPlanLiveControlUpdated} from
   "./eventSuccess/rotationDraftTrigger";
 export {
+  controlEventSuccessSpatial,
+  getEventSuccessSpatialLayout,
+  upsertEventSuccessLayout,
+} from "./eventSuccess/layoutAssets";
+export {
   fetchEventSuccessWingmanCandidates,
   submitEventSuccessWingmanRequest,
   withdrawEventSuccessWingmanRequest,

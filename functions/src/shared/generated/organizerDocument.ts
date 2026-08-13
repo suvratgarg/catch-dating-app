@@ -152,6 +152,7 @@ export interface OrganizerDocument {
     };
     eventSuccess?: {
       enabled?: boolean;
+      layoutId?: string | null;
       playbookId?: string;
       /**
        * @maxItems 24
@@ -203,6 +204,7 @@ export interface OrganizerDocument {
     eventSuccessByActivityKind?: {
       [k: string]: {
         enabled?: boolean;
+        layoutId?: string | null;
         playbookId?: string;
         /**
          * @maxItems 24

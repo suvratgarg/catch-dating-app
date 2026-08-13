@@ -94,6 +94,7 @@ export interface UpdateClubCallablePayload {
       };
       eventSuccess?: {
         enabled?: boolean;
+        layoutId?: string | null;
         playbookId?: string;
         /**
          * @maxItems 24
@@ -145,6 +146,7 @@ export interface UpdateClubCallablePayload {
       eventSuccessByActivityKind?: {
         [k: string]: {
           enabled?: boolean;
+          layoutId?: string | null;
           playbookId?: string;
           /**
            * @maxItems 24

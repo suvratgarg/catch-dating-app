@@ -289,6 +289,8 @@ test("pickleball defaults to profile-free coverage schedules", async () => {
     liveControlRevision: 1,
     assignmentDraftRevision: 1,
     publishedRotationRoundIndex: -1,
+    affinityConstraints: [],
+    spatialOverrides: [],
     structureConfig: {
       unitKind: "pairs",
       unitSize: 2,

@@ -183,6 +183,7 @@ export interface CreateEventCallablePayload {
   };
   eventSuccessDefaults?: {
     enabled?: boolean;
+    layoutId?: string | null;
     playbookId?: string;
     /**
      * @maxItems 24

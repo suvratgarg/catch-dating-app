@@ -287,6 +287,7 @@ export interface EventSuccessQuestionnaireConfig {
 
 export interface EventSuccessDefaults {
   enabled?: boolean;
+  layoutId?: string | null;
   playbookId?: string;
   /**
    * @maxItems 24
@@ -1219,6 +1220,7 @@ export interface OrganizerDocument {
     };
     eventSuccess?: {
       enabled?: boolean;
+      layoutId?: string | null;
       playbookId?: string;
       /**
        * @maxItems 24
@@ -1270,6 +1272,7 @@ export interface OrganizerDocument {
     eventSuccessByActivityKind?: {
       [k: string]: {
         enabled?: boolean;
+        layoutId?: string | null;
         playbookId?: string;
         /**
          * @maxItems 24
@@ -3241,6 +3244,25 @@ export interface EventSuccessPlanDocument {
   eventId: string;
   clubId: string;
   organizerId?: string;
+  layoutId?: string | null;
+  /**
+   * @maxItems 300
+   */
+  affinityConstraints?: {
+    aUid: string;
+    bUid: string;
+    value: "mustPair" | "mustSplit" | "avoidRepeat" | "neutral";
+    scope: "thisRound" | "pinned";
+  }[];
+  /**
+   * @maxItems 300
+   */
+  spatialOverrides?: {
+    uid: string;
+    targetPeerUid: string;
+    layoutUnitId: string;
+    scope: "thisRound" | "pinned";
+  }[];
   playbookId: string;
   /**
    * @maxItems 24
@@ -3301,6 +3323,30 @@ export interface EventSuccessPlanDocument {
   updatedAt: FirebaseFirestore.Timestamp;
   frozenAt?: FirebaseFirestore.Timestamp | null;
   completedAt?: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Reusable organizer-owned parametric room layout stored at organizerEventSuccessLayouts/{organizerId_layoutId}. Derived coordinates and proximity edges are never persisted.
+ */
+export interface OrganizerEventSuccessLayoutDocument {
+  organizerId: string;
+  layoutId: string;
+  label: string;
+  /**
+   * @minItems 1
+   * @maxItems 200
+   */
+  units: {
+    id: string;
+    label: string;
+    shape: "round" | "rect" | "row" | "court" | "zone";
+    capacity: number;
+    gridX: number;
+    gridY: number;
+    order: number;
+  }[];
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
 }
 
 /**
@@ -3429,6 +3475,8 @@ export interface EventSuccessAssignmentDocument {
   unitKind?: "wholeGroup" | "pods" | "pairs" | "teams" | "tables";
   unitIndex?: number;
   unitLabel?: string;
+  layoutUnitId?: string;
+  confirmedLayoutUnitId?: string | null;
   whySummary?: string;
   /**
    * @maxItems 12

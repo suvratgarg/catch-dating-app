@@ -10,6 +10,7 @@ import {
   EventRuntimeClaimRequestDocument,
   EventRuntimeParticipantDocument,
   EventSuccessPlanDocument,
+  OrganizerEventSuccessLayoutDocument,
   OnboardingDraftDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {ApproveEventRuntimeClaimCallablePayload} from
@@ -54,6 +55,10 @@ import {
 } from "../events/eventAttendees";
 import {resolveInviteAttributionToken} from "../events/inviteLinks";
 import {eventSuccessPrimitivesFor} from "./formatPrimitives";
+import {
+  organizerEventSuccessLayoutDocumentId,
+  publicEventSuccessLayout,
+} from "./spatialLayout";
 
 type RuntimeFieldId =
   EventRuntimeParticipantDocument["requiredFieldIds"][number];
@@ -143,12 +148,15 @@ export async function getEventRuntimeBootstrapHandler(
       }
     }
   }
+  const layout = participant?.accessStatus === "ready" ?
+    await runtimeSpatialLayout(db, resolved.event, plan) : null;
   return {
     event: publicRuntimeEventProjection(
       resolved.event,
       resolved.eventId,
       payload.publicRuntimeId,
-      plan
+      plan,
+      layout
     ),
     participant: participant ? {
       accessStatus: participant.accessStatus,
@@ -753,7 +761,8 @@ function publicRuntimeEventProjection(
   event: EventDocument,
   eventId: string,
   publicRuntimeId: string,
-  plan: EventSuccessPlanDocument | null
+  plan: EventSuccessPlanDocument | null,
+  layout: GetEventRuntimeBootstrapCallableResponse["event"]["layout"]
 ): GetEventRuntimeBootstrapCallableResponse["event"] {
   const customLabel = event.eventFormat.customActivityLabel?.trim();
   return {
@@ -765,10 +774,33 @@ function publicRuntimeEventProjection(
     locationName: event.meetingLocation.name || event.meetingPoint,
     runtimeTermsVersion: event.runtimeAccess!.termsVersion,
     moduleIds: plan?.selectedModuleIds ?? [],
+    layout,
     requiredFieldIds: requiredRuntimeFieldIds(plan),
     optionalFieldIds: optionalRuntimeFieldIds(event, plan),
     questionnaireConfig: plan?.questionnaireConfig ?? null,
   };
+}
+
+async function runtimeSpatialLayout(
+  db: FirebaseFirestore.Firestore,
+  event: EventDocument,
+  plan: EventSuccessPlanDocument | null
+): Promise<GetEventRuntimeBootstrapCallableResponse["event"]["layout"]> {
+  if (!plan?.layoutId || plan.structureConfig?.unitKind === "wholeGroup") {
+    return null;
+  }
+  const organizerId = event.organizerId ?? event.clubId;
+  const snap = await db.collection("organizerEventSuccessLayouts").doc(
+    organizerEventSuccessLayoutDocumentId(organizerId, plan.layoutId)
+  ).get();
+  const layout = requireDoc<OrganizerEventSuccessLayoutDocument>(
+    snap,
+    "OrganizerEventSuccessLayoutDocument"
+  );
+  if (layout.organizerId !== organizerId || layout.layoutId !== plan.layoutId) {
+    throw new HttpsError("failed-precondition", "Selected layout mismatch.");
+  }
+  return publicEventSuccessLayout(layout);
 }
 
 async function reconcileRuntimeParticipantRequirements(params: {

@@ -4648,6 +4648,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const clubDocumentHostDefaultsEventSuccessLayoutId = CatchContractFieldConstraints(
+    path: 'clubDocument.hostDefaults.eventSuccess.layoutId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
   static const clubDocumentHostDefaultsEventSuccessModuleSelectionConfigured = CatchContractFieldConstraints(
     path: 'clubDocument.hostDefaults.eventSuccess.moduleSelectionConfigured',
     valueTypes: <String>['boolean'],
@@ -6756,6 +6762,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const createClubCallablePayloadHostDefaultsEventSuccessLayoutId = CatchContractFieldConstraints(
+    path: 'createClubCallablePayload.hostDefaults.eventSuccess.layoutId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
   static const createClubCallablePayloadHostDefaultsEventSuccessModuleSelectionConfigured = CatchContractFieldConstraints(
     path: 'createClubCallablePayload.hostDefaults.eventSuccess.moduleSelectionConfigured',
     valueTypes: <String>['boolean'],
@@ -7690,6 +7702,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const createEventCallablePayloadEventSuccessDefaultsLayoutId = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventSuccessDefaults.layoutId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
   static const createEventCallablePayloadEventSuccessDefaultsModuleSelectionConfigured = CatchContractFieldConstraints(
     path: 'createEventCallablePayload.eventSuccessDefaults.moduleSelectionConfigured',
     valueTypes: <String>['boolean'],
@@ -8321,6 +8339,12 @@ abstract final class CatchContractConstraints {
     path: 'createOrganizerCallablePayload.hostDefaults.eventSuccess.hostGoal',
     maxLength: 300,
     valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerCallablePayloadHostDefaultsEventSuccessLayoutId = CatchContractFieldConstraints(
+    path: 'createOrganizerCallablePayload.hostDefaults.eventSuccess.layoutId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
   );
 
   static const createOrganizerCallablePayloadHostDefaultsEventSuccessModuleSelectionConfigured = CatchContractFieldConstraints(
@@ -14329,6 +14353,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventSuccessAssignmentDocumentConfirmedLayoutUnitId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDocument.confirmedLayoutUnitId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
+  );
+
   static const eventSuccessAssignmentDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'eventSuccessAssignmentDocument.createdAt._nanoseconds',
     required: true,
@@ -14525,6 +14555,12 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDocumentLayoutUnitId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDocument.layoutUnitId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
   );
 
   static const eventSuccessAssignmentDocumentModuleId = CatchContractFieldConstraints(
@@ -14884,6 +14920,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventSuccessAssignmentDraftDocumentAssignmentConfirmedLayoutUnitId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.confirmedLayoutUnitId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
+  );
+
   static const eventSuccessAssignmentDraftDocumentAssignmentCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'eventSuccessAssignmentDraftDocument.assignment.createdAt._nanoseconds',
     required: true,
@@ -15080,6 +15122,12 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentLayoutUnitId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.layoutUnitId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
   );
 
   static const eventSuccessAssignmentDraftDocumentAssignmentModuleId = CatchContractFieldConstraints(
@@ -15828,6 +15876,43 @@ abstract final class CatchContractConstraints {
     maximum: 100,
   );
 
+  static const eventSuccessPlanDocumentAffinityConstraints = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.affinityConstraints',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 300,
+  );
+
+  static const eventSuccessPlanDocumentAffinityConstraintsItemsAUid = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.affinityConstraints.items.aUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessPlanDocumentAffinityConstraintsItemsBUid = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.affinityConstraints.items.bUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessPlanDocumentAffinityConstraintsItemsScope = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.affinityConstraints.items.scope',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['thisRound', 'pinned'],
+  );
+
+  static const eventSuccessPlanDocumentAffinityConstraintsItemsValue = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.affinityConstraints.items.value',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['mustPair', 'mustSplit', 'avoidRepeat', 'neutral'],
+  );
+
   static const eventSuccessPlanDocumentAssignmentDraftRevision = CatchContractFieldConstraints(
     path: 'eventSuccessPlanDocument.assignmentDraftRevision',
     valueTypes: <String>['integer'],
@@ -15936,6 +16021,12 @@ abstract final class CatchContractConstraints {
     maxLength: 300,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessPlanDocumentLayoutId = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.layoutId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
   );
 
   static const eventSuccessPlanDocumentLiveControlRevision = CatchContractFieldConstraints(
@@ -16084,6 +16175,43 @@ abstract final class CatchContractConstraints {
   static const eventSuccessPlanDocumentSelectedModuleIdsItems = CatchContractFieldConstraints(
     path: 'eventSuccessPlanDocument.selectedModuleIds.items',
     maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessPlanDocumentSpatialOverrides = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.spatialOverrides',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 300,
+  );
+
+  static const eventSuccessPlanDocumentSpatialOverridesItemsLayoutUnitId = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.spatialOverrides.items.layoutUnitId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
+  );
+
+  static const eventSuccessPlanDocumentSpatialOverridesItemsScope = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.spatialOverrides.items.scope',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['thisRound', 'pinned'],
+  );
+
+  static const eventSuccessPlanDocumentSpatialOverridesItemsTargetPeerUid = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.spatialOverrides.items.targetPeerUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessPlanDocumentSpatialOverridesItemsUid = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.spatialOverrides.items.uid',
+    maxLength: 180,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
@@ -16686,6 +16814,97 @@ abstract final class CatchContractConstraints {
     path: 'eventSuccessScorecardDocument.updatedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const eventSuccessSpatialActionCallablePayloadAction = CatchContractFieldConstraints(
+    path: 'eventSuccessSpatialActionCallablePayload.action',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['previewReassignment', 'reassign', 'confirmPosition', 'releasePinned'],
+  );
+
+  static const eventSuccessSpatialActionCallablePayloadDestinationUnitId = CatchContractFieldConstraints(
+    path: 'eventSuccessSpatialActionCallablePayload.destinationUnitId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
+  );
+
+  static const eventSuccessSpatialActionCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'eventSuccessSpatialActionCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessSpatialActionCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'eventSuccessSpatialActionCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const eventSuccessSpatialActionCallablePayloadModuleId = CatchContractFieldConstraints(
+    path: 'eventSuccessSpatialActionCallablePayload.moduleId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['micro_pods', 'guided_rotations'],
+  );
+
+  static const eventSuccessSpatialActionCallablePayloadScope = CatchContractFieldConstraints(
+    path: 'eventSuccessSpatialActionCallablePayload.scope',
+    valueTypes: <String>['string'],
+    enumValues: <String>['thisRound', 'pinned'],
+  );
+
+  static const eventSuccessSpatialActionCallablePayloadUid = CatchContractFieldConstraints(
+    path: 'eventSuccessSpatialActionCallablePayload.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessSpatialActionCallableResponseDestinations = CatchContractFieldConstraints(
+    path: 'eventSuccessSpatialActionCallableResponse.destinations',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 200,
+  );
+
+  static const eventSuccessSpatialActionCallableResponseDestinationsItemsReason = CatchContractFieldConstraints(
+    path: 'eventSuccessSpatialActionCallableResponse.destinations.items.reason',
+    valueTypes: <String>['string'],
+    enumValues: <String>['capacity', 'safetyKeepApart', 'declaredConstraint'],
+  );
+
+  static const eventSuccessSpatialActionCallableResponseDestinationsItemsRecommendedScope = CatchContractFieldConstraints(
+    path: 'eventSuccessSpatialActionCallableResponse.destinations.items.recommendedScope',
+    valueTypes: <String>['string'],
+    enumValues: <String>['thisRound', 'pinned'],
+  );
+
+  static const eventSuccessSpatialActionCallableResponseDestinationsItemsUnitId = CatchContractFieldConstraints(
+    path: 'eventSuccessSpatialActionCallableResponse.destinations.items.unitId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
+  );
+
+  static const eventSuccessSpatialActionCallableResponseDestinationsItemsValid = CatchContractFieldConstraints(
+    path: 'eventSuccessSpatialActionCallableResponse.destinations.items.valid',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventSuccessSpatialActionCallableResponseRevision = CatchContractFieldConstraints(
+    path: 'eventSuccessSpatialActionCallableResponse.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
   );
 
   static const eventSuccessWingmanRequestDocumentClubId = CatchContractFieldConstraints(
@@ -18590,6 +18809,84 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const getEventRuntimeBootstrapCallableResponseEventLayoutLabel = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.layout.label',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventLayoutLayoutId = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.layout.layoutId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventLayoutUnits = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.layout.units',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 200,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventLayoutUnitsItemsCapacity = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.layout.units.items.capacity',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventLayoutUnitsItemsGridX = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.layout.units.items.gridX',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 199,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventLayoutUnitsItemsGridY = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.layout.units.items.gridY',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 199,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventLayoutUnitsItemsId = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.layout.units.items.id',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventLayoutUnitsItemsLabel = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.layout.units.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventLayoutUnitsItemsOrder = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.layout.units.items.order',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventLayoutUnitsItemsShape = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.layout.units.items.shape',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['round', 'rect', 'row', 'court', 'zone'],
+  );
+
   static const getEventRuntimeBootstrapCallableResponseEventLocationName = CatchContractFieldConstraints(
     path: 'getEventRuntimeBootstrapCallableResponse.event.locationName',
     maxLength: 240,
@@ -18844,6 +19141,92 @@ abstract final class CatchContractConstraints {
     path: 'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.relationshipGoal',
     valueTypes: <String>['string'],
     enumValues: <String>['relationship', 'casual', 'marriage', 'friendship', 'unsure'],
+  );
+
+  static const getEventSuccessSpatialLayoutCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'getEventSuccessSpatialLayoutCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventSuccessSpatialLayoutCallableResponseLayoutLabel = CatchContractFieldConstraints(
+    path: 'getEventSuccessSpatialLayoutCallableResponse.layout.label',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventSuccessSpatialLayoutCallableResponseLayoutLayoutId = CatchContractFieldConstraints(
+    path: 'getEventSuccessSpatialLayoutCallableResponse.layout.layoutId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const getEventSuccessSpatialLayoutCallableResponseLayoutUnits = CatchContractFieldConstraints(
+    path: 'getEventSuccessSpatialLayoutCallableResponse.layout.units',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 200,
+  );
+
+  static const getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsCapacity = CatchContractFieldConstraints(
+    path: 'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.capacity',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsGridX = CatchContractFieldConstraints(
+    path: 'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.gridX',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 199,
+  );
+
+  static const getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsGridY = CatchContractFieldConstraints(
+    path: 'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.gridY',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 199,
+  );
+
+  static const getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsId = CatchContractFieldConstraints(
+    path: 'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.id',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
+  );
+
+  static const getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsLabel = CatchContractFieldConstraints(
+    path: 'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsOrder = CatchContractFieldConstraints(
+    path: 'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.order',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsShape = CatchContractFieldConstraints(
+    path: 'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.shape',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['round', 'rect', 'row', 'court', 'zone'],
   );
 
   static const getOrganizerContactDetailCallablePayloadContactId = CatchContractFieldConstraints(
@@ -26500,6 +26883,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerDocumentHostDefaultsEventSuccessLayoutId = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostDefaults.eventSuccess.layoutId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
   static const organizerDocumentHostDefaultsEventSuccessModuleSelectionConfigured = CatchContractFieldConstraints(
     path: 'organizerDocument.hostDefaults.eventSuccess.moduleSelectionConfigured',
     valueTypes: <String>['boolean'],
@@ -28092,6 +28481,120 @@ abstract final class CatchContractConstraints {
 
   static const organizerEventLocationResolutionDecisionDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
     path: 'organizerEventLocationResolutionDecisionDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerEventSuccessLayoutDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerEventSuccessLayoutDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerEventSuccessLayoutDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerEventSuccessLayoutDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerEventSuccessLayoutDocumentLabel = CatchContractFieldConstraints(
+    path: 'organizerEventSuccessLayoutDocument.label',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventSuccessLayoutDocumentLayoutId = CatchContractFieldConstraints(
+    path: 'organizerEventSuccessLayoutDocument.layoutId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const organizerEventSuccessLayoutDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerEventSuccessLayoutDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventSuccessLayoutDocumentUnits = CatchContractFieldConstraints(
+    path: 'organizerEventSuccessLayoutDocument.units',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 200,
+  );
+
+  static const organizerEventSuccessLayoutDocumentUnitsItemsCapacity = CatchContractFieldConstraints(
+    path: 'organizerEventSuccessLayoutDocument.units.items.capacity',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const organizerEventSuccessLayoutDocumentUnitsItemsGridX = CatchContractFieldConstraints(
+    path: 'organizerEventSuccessLayoutDocument.units.items.gridX',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 199,
+  );
+
+  static const organizerEventSuccessLayoutDocumentUnitsItemsGridY = CatchContractFieldConstraints(
+    path: 'organizerEventSuccessLayoutDocument.units.items.gridY',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 199,
+  );
+
+  static const organizerEventSuccessLayoutDocumentUnitsItemsId = CatchContractFieldConstraints(
+    path: 'organizerEventSuccessLayoutDocument.units.items.id',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
+  );
+
+  static const organizerEventSuccessLayoutDocumentUnitsItemsLabel = CatchContractFieldConstraints(
+    path: 'organizerEventSuccessLayoutDocument.units.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventSuccessLayoutDocumentUnitsItemsOrder = CatchContractFieldConstraints(
+    path: 'organizerEventSuccessLayoutDocument.units.items.order',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const organizerEventSuccessLayoutDocumentUnitsItemsShape = CatchContractFieldConstraints(
+    path: 'organizerEventSuccessLayoutDocument.units.items.shape',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['round', 'rect', 'row', 'court', 'zone'],
+  );
+
+  static const organizerEventSuccessLayoutDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerEventSuccessLayoutDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerEventSuccessLayoutDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerEventSuccessLayoutDocument.updatedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
   );
@@ -34148,6 +34651,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const updateClubPatchHostDefaultsEventSuccessLayoutId = CatchContractFieldConstraints(
+    path: 'updateClubPatch.hostDefaults.eventSuccess.layoutId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
   static const updateClubPatchHostDefaultsEventSuccessModuleSelectionConfigured = CatchContractFieldConstraints(
     path: 'updateClubPatch.hostDefaults.eventSuccess.moduleSelectionConfigured',
     valueTypes: <String>['boolean'],
@@ -35167,6 +35676,12 @@ abstract final class CatchContractConstraints {
     path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.hostGoal',
     maxLength: 300,
     valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessLayoutId = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.layoutId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
   );
 
   static const updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessModuleSelectionConfigured = CatchContractFieldConstraints(
@@ -36231,6 +36746,169 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     format: 'uri',
+  );
+
+  static const upsertEventSuccessLayoutCallablePayloadLabel = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallablePayload.label',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertEventSuccessLayoutCallablePayloadLayoutId = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallablePayload.layoutId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const upsertEventSuccessLayoutCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertEventSuccessLayoutCallablePayloadUnits = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallablePayload.units',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 200,
+  );
+
+  static const upsertEventSuccessLayoutCallablePayloadUnitsItemsCapacity = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallablePayload.units.items.capacity',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const upsertEventSuccessLayoutCallablePayloadUnitsItemsGridX = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallablePayload.units.items.gridX',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 199,
+  );
+
+  static const upsertEventSuccessLayoutCallablePayloadUnitsItemsGridY = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallablePayload.units.items.gridY',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 199,
+  );
+
+  static const upsertEventSuccessLayoutCallablePayloadUnitsItemsId = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallablePayload.units.items.id',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
+  );
+
+  static const upsertEventSuccessLayoutCallablePayloadUnitsItemsLabel = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallablePayload.units.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertEventSuccessLayoutCallablePayloadUnitsItemsOrder = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallablePayload.units.items.order',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const upsertEventSuccessLayoutCallablePayloadUnitsItemsShape = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallablePayload.units.items.shape',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['round', 'rect', 'row', 'court', 'zone'],
+  );
+
+  static const upsertEventSuccessLayoutCallableResponseLayoutLabel = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallableResponse.layout.label',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertEventSuccessLayoutCallableResponseLayoutLayoutId = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallableResponse.layout.layoutId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const upsertEventSuccessLayoutCallableResponseLayoutUnits = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallableResponse.layout.units',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 200,
+  );
+
+  static const upsertEventSuccessLayoutCallableResponseLayoutUnitsItemsCapacity = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallableResponse.layout.units.items.capacity',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const upsertEventSuccessLayoutCallableResponseLayoutUnitsItemsGridX = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallableResponse.layout.units.items.gridX',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 199,
+  );
+
+  static const upsertEventSuccessLayoutCallableResponseLayoutUnitsItemsGridY = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallableResponse.layout.units.items.gridY',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 199,
+  );
+
+  static const upsertEventSuccessLayoutCallableResponseLayoutUnitsItemsId = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallableResponse.layout.units.items.id',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
+  );
+
+  static const upsertEventSuccessLayoutCallableResponseLayoutUnitsItemsLabel = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallableResponse.layout.units.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertEventSuccessLayoutCallableResponseLayoutUnitsItemsOrder = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallableResponse.layout.units.items.order',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const upsertEventSuccessLayoutCallableResponseLayoutUnitsItemsShape = CatchContractFieldConstraints(
+    path: 'upsertEventSuccessLayoutCallableResponse.layout.units.items.shape',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['round', 'rect', 'row', 'court', 'zone'],
   );
 
   static const upsertOrganizerCampaignCallablePayloadCampaignId = CatchContractFieldConstraints(
@@ -39113,6 +39791,7 @@ abstract final class CatchContractConstraints {
     'clubDocument.hostDefaults.eventSuccess.contextualOpenersEnabled': clubDocumentHostDefaultsEventSuccessContextualOpenersEnabled,
     'clubDocument.hostDefaults.eventSuccess.enabled': clubDocumentHostDefaultsEventSuccessEnabled,
     'clubDocument.hostDefaults.eventSuccess.hostGoal': clubDocumentHostDefaultsEventSuccessHostGoal,
+    'clubDocument.hostDefaults.eventSuccess.layoutId': clubDocumentHostDefaultsEventSuccessLayoutId,
     'clubDocument.hostDefaults.eventSuccess.moduleSelectionConfigured': clubDocumentHostDefaultsEventSuccessModuleSelectionConfigured,
     'clubDocument.hostDefaults.eventSuccess.playbookId': clubDocumentHostDefaultsEventSuccessPlaybookId,
     'clubDocument.hostDefaults.eventSuccess.questionnaireConfig.customQuestions': clubDocumentHostDefaultsEventSuccessQuestionnaireConfigCustomQuestions,
@@ -39403,6 +40082,7 @@ abstract final class CatchContractConstraints {
     'createClubCallablePayload.hostDefaults.eventSuccess.contextualOpenersEnabled': createClubCallablePayloadHostDefaultsEventSuccessContextualOpenersEnabled,
     'createClubCallablePayload.hostDefaults.eventSuccess.enabled': createClubCallablePayloadHostDefaultsEventSuccessEnabled,
     'createClubCallablePayload.hostDefaults.eventSuccess.hostGoal': createClubCallablePayloadHostDefaultsEventSuccessHostGoal,
+    'createClubCallablePayload.hostDefaults.eventSuccess.layoutId': createClubCallablePayloadHostDefaultsEventSuccessLayoutId,
     'createClubCallablePayload.hostDefaults.eventSuccess.moduleSelectionConfigured': createClubCallablePayloadHostDefaultsEventSuccessModuleSelectionConfigured,
     'createClubCallablePayload.hostDefaults.eventSuccess.playbookId': createClubCallablePayloadHostDefaultsEventSuccessPlaybookId,
     'createClubCallablePayload.hostDefaults.eventSuccess.questionnaireConfig.customQuestions': createClubCallablePayloadHostDefaultsEventSuccessQuestionnaireConfigCustomQuestions,
@@ -39534,6 +40214,7 @@ abstract final class CatchContractConstraints {
     'createEventCallablePayload.eventSuccessDefaults.contextualOpenersEnabled': createEventCallablePayloadEventSuccessDefaultsContextualOpenersEnabled,
     'createEventCallablePayload.eventSuccessDefaults.enabled': createEventCallablePayloadEventSuccessDefaultsEnabled,
     'createEventCallablePayload.eventSuccessDefaults.hostGoal': createEventCallablePayloadEventSuccessDefaultsHostGoal,
+    'createEventCallablePayload.eventSuccessDefaults.layoutId': createEventCallablePayloadEventSuccessDefaultsLayoutId,
     'createEventCallablePayload.eventSuccessDefaults.moduleSelectionConfigured': createEventCallablePayloadEventSuccessDefaultsModuleSelectionConfigured,
     'createEventCallablePayload.eventSuccessDefaults.playbookId': createEventCallablePayloadEventSuccessDefaultsPlaybookId,
     'createEventCallablePayload.eventSuccessDefaults.questionnaireConfig.customQuestions': createEventCallablePayloadEventSuccessDefaultsQuestionnaireConfigCustomQuestions,
@@ -39623,6 +40304,7 @@ abstract final class CatchContractConstraints {
     'createOrganizerCallablePayload.hostDefaults.eventSuccess.contextualOpenersEnabled': createOrganizerCallablePayloadHostDefaultsEventSuccessContextualOpenersEnabled,
     'createOrganizerCallablePayload.hostDefaults.eventSuccess.enabled': createOrganizerCallablePayloadHostDefaultsEventSuccessEnabled,
     'createOrganizerCallablePayload.hostDefaults.eventSuccess.hostGoal': createOrganizerCallablePayloadHostDefaultsEventSuccessHostGoal,
+    'createOrganizerCallablePayload.hostDefaults.eventSuccess.layoutId': createOrganizerCallablePayloadHostDefaultsEventSuccessLayoutId,
     'createOrganizerCallablePayload.hostDefaults.eventSuccess.moduleSelectionConfigured': createOrganizerCallablePayloadHostDefaultsEventSuccessModuleSelectionConfigured,
     'createOrganizerCallablePayload.hostDefaults.eventSuccess.playbookId': createOrganizerCallablePayloadHostDefaultsEventSuccessPlaybookId,
     'createOrganizerCallablePayload.hostDefaults.eventSuccess.questionnaireConfig.customQuestions': createOrganizerCallablePayloadHostDefaultsEventSuccessQuestionnaireConfigCustomQuestions,
@@ -40453,6 +41135,7 @@ abstract final class CatchContractConstraints {
     'eventSuccessArrivalMissionDocument.updatedAt._nanoseconds': eventSuccessArrivalMissionDocumentUpdatedAtNanoseconds,
     'eventSuccessArrivalMissionDocument.updatedAt._seconds': eventSuccessArrivalMissionDocumentUpdatedAtSeconds,
     'eventSuccessAssignmentDocument.clubId': eventSuccessAssignmentDocumentClubId,
+    'eventSuccessAssignmentDocument.confirmedLayoutUnitId': eventSuccessAssignmentDocumentConfirmedLayoutUnitId,
     'eventSuccessAssignmentDocument.createdAt._nanoseconds': eventSuccessAssignmentDocumentCreatedAtNanoseconds,
     'eventSuccessAssignmentDocument.createdAt._seconds': eventSuccessAssignmentDocumentCreatedAtSeconds,
     'eventSuccessAssignmentDocument.demoOps': eventSuccessAssignmentDocumentDemoOps,
@@ -40480,6 +41163,7 @@ abstract final class CatchContractConstraints {
     'eventSuccessAssignmentDocument.groupRotationSlots.items.whyCodes.items': eventSuccessAssignmentDocumentGroupRotationSlotsItemsWhyCodesItems,
     'eventSuccessAssignmentDocument.groupRotationSlots.items.whySummary': eventSuccessAssignmentDocumentGroupRotationSlotsItemsWhySummary,
     'eventSuccessAssignmentDocument.label': eventSuccessAssignmentDocumentLabel,
+    'eventSuccessAssignmentDocument.layoutUnitId': eventSuccessAssignmentDocumentLayoutUnitId,
     'eventSuccessAssignmentDocument.moduleId': eventSuccessAssignmentDocumentModuleId,
     'eventSuccessAssignmentDocument.organizerId': eventSuccessAssignmentDocumentOrganizerId,
     'eventSuccessAssignmentDocument.peerUids': eventSuccessAssignmentDocumentPeerUids,
@@ -40528,6 +41212,7 @@ abstract final class CatchContractConstraints {
     'eventSuccessAssignmentDocument.whyCodes.items': eventSuccessAssignmentDocumentWhyCodesItems,
     'eventSuccessAssignmentDocument.whySummary': eventSuccessAssignmentDocumentWhySummary,
     'eventSuccessAssignmentDraftDocument.assignment.clubId': eventSuccessAssignmentDraftDocumentAssignmentClubId,
+    'eventSuccessAssignmentDraftDocument.assignment.confirmedLayoutUnitId': eventSuccessAssignmentDraftDocumentAssignmentConfirmedLayoutUnitId,
     'eventSuccessAssignmentDraftDocument.assignment.createdAt._nanoseconds': eventSuccessAssignmentDraftDocumentAssignmentCreatedAtNanoseconds,
     'eventSuccessAssignmentDraftDocument.assignment.createdAt._seconds': eventSuccessAssignmentDraftDocumentAssignmentCreatedAtSeconds,
     'eventSuccessAssignmentDraftDocument.assignment.demoOps': eventSuccessAssignmentDraftDocumentAssignmentDemoOps,
@@ -40555,6 +41240,7 @@ abstract final class CatchContractConstraints {
     'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.whyCodes.items': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsWhyCodesItems,
     'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.whySummary': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsWhySummary,
     'eventSuccessAssignmentDraftDocument.assignment.label': eventSuccessAssignmentDraftDocumentAssignmentLabel,
+    'eventSuccessAssignmentDraftDocument.assignment.layoutUnitId': eventSuccessAssignmentDraftDocumentAssignmentLayoutUnitId,
     'eventSuccessAssignmentDraftDocument.assignment.moduleId': eventSuccessAssignmentDraftDocumentAssignmentModuleId,
     'eventSuccessAssignmentDraftDocument.assignment.organizerId': eventSuccessAssignmentDraftDocumentAssignmentOrganizerId,
     'eventSuccessAssignmentDraftDocument.assignment.peerUids': eventSuccessAssignmentDraftDocumentAssignmentPeerUids,
@@ -40656,6 +41342,11 @@ abstract final class CatchContractConstraints {
     'eventSuccessLiveActionCallablePayload.roundIndex': eventSuccessLiveActionCallablePayloadRoundIndex,
     'eventSuccessPlanDocument.activeRevealRoundIndex': eventSuccessPlanDocumentActiveRevealRoundIndex,
     'eventSuccessPlanDocument.activeStepIndex': eventSuccessPlanDocumentActiveStepIndex,
+    'eventSuccessPlanDocument.affinityConstraints': eventSuccessPlanDocumentAffinityConstraints,
+    'eventSuccessPlanDocument.affinityConstraints.items.aUid': eventSuccessPlanDocumentAffinityConstraintsItemsAUid,
+    'eventSuccessPlanDocument.affinityConstraints.items.bUid': eventSuccessPlanDocumentAffinityConstraintsItemsBUid,
+    'eventSuccessPlanDocument.affinityConstraints.items.scope': eventSuccessPlanDocumentAffinityConstraintsItemsScope,
+    'eventSuccessPlanDocument.affinityConstraints.items.value': eventSuccessPlanDocumentAffinityConstraintsItemsValue,
     'eventSuccessPlanDocument.assignmentDraftRevision': eventSuccessPlanDocumentAssignmentDraftRevision,
     'eventSuccessPlanDocument.attendeePrompt': eventSuccessPlanDocumentAttendeePrompt,
     'eventSuccessPlanDocument.clubId': eventSuccessPlanDocumentClubId,
@@ -40672,6 +41363,7 @@ abstract final class CatchContractConstraints {
     'eventSuccessPlanDocument.frozenAt._nanoseconds': eventSuccessPlanDocumentFrozenAtNanoseconds,
     'eventSuccessPlanDocument.frozenAt._seconds': eventSuccessPlanDocumentFrozenAtSeconds,
     'eventSuccessPlanDocument.hostGoal': eventSuccessPlanDocumentHostGoal,
+    'eventSuccessPlanDocument.layoutId': eventSuccessPlanDocumentLayoutId,
     'eventSuccessPlanDocument.liveControlRevision': eventSuccessPlanDocumentLiveControlRevision,
     'eventSuccessPlanDocument.organizerId': eventSuccessPlanDocumentOrganizerId,
     'eventSuccessPlanDocument.playbookId': eventSuccessPlanDocumentPlaybookId,
@@ -40692,6 +41384,11 @@ abstract final class CatchContractConstraints {
     'eventSuccessPlanDocument.seedPrefix': eventSuccessPlanDocumentSeedPrefix,
     'eventSuccessPlanDocument.selectedModuleIds': eventSuccessPlanDocumentSelectedModuleIds,
     'eventSuccessPlanDocument.selectedModuleIds.items': eventSuccessPlanDocumentSelectedModuleIdsItems,
+    'eventSuccessPlanDocument.spatialOverrides': eventSuccessPlanDocumentSpatialOverrides,
+    'eventSuccessPlanDocument.spatialOverrides.items.layoutUnitId': eventSuccessPlanDocumentSpatialOverridesItemsLayoutUnitId,
+    'eventSuccessPlanDocument.spatialOverrides.items.scope': eventSuccessPlanDocumentSpatialOverridesItemsScope,
+    'eventSuccessPlanDocument.spatialOverrides.items.targetPeerUid': eventSuccessPlanDocumentSpatialOverridesItemsTargetPeerUid,
+    'eventSuccessPlanDocument.spatialOverrides.items.uid': eventSuccessPlanDocumentSpatialOverridesItemsUid,
     'eventSuccessPlanDocument.status': eventSuccessPlanDocumentStatus,
     'eventSuccessPlanDocument.structureConfig.balanceActivityAttributes': eventSuccessPlanDocumentStructureConfigBalanceActivityAttributes,
     'eventSuccessPlanDocument.structureConfig.balanceActivityAttributes.items': eventSuccessPlanDocumentStructureConfigBalanceActivityAttributesItems,
@@ -40776,6 +41473,19 @@ abstract final class CatchContractConstraints {
     'eventSuccessScorecardDocument.synthetic': eventSuccessScorecardDocumentSynthetic,
     'eventSuccessScorecardDocument.updatedAt._nanoseconds': eventSuccessScorecardDocumentUpdatedAtNanoseconds,
     'eventSuccessScorecardDocument.updatedAt._seconds': eventSuccessScorecardDocumentUpdatedAtSeconds,
+    'eventSuccessSpatialActionCallablePayload.action': eventSuccessSpatialActionCallablePayloadAction,
+    'eventSuccessSpatialActionCallablePayload.destinationUnitId': eventSuccessSpatialActionCallablePayloadDestinationUnitId,
+    'eventSuccessSpatialActionCallablePayload.eventId': eventSuccessSpatialActionCallablePayloadEventId,
+    'eventSuccessSpatialActionCallablePayload.expectedRevision': eventSuccessSpatialActionCallablePayloadExpectedRevision,
+    'eventSuccessSpatialActionCallablePayload.moduleId': eventSuccessSpatialActionCallablePayloadModuleId,
+    'eventSuccessSpatialActionCallablePayload.scope': eventSuccessSpatialActionCallablePayloadScope,
+    'eventSuccessSpatialActionCallablePayload.uid': eventSuccessSpatialActionCallablePayloadUid,
+    'eventSuccessSpatialActionCallableResponse.destinations': eventSuccessSpatialActionCallableResponseDestinations,
+    'eventSuccessSpatialActionCallableResponse.destinations.items.reason': eventSuccessSpatialActionCallableResponseDestinationsItemsReason,
+    'eventSuccessSpatialActionCallableResponse.destinations.items.recommendedScope': eventSuccessSpatialActionCallableResponseDestinationsItemsRecommendedScope,
+    'eventSuccessSpatialActionCallableResponse.destinations.items.unitId': eventSuccessSpatialActionCallableResponseDestinationsItemsUnitId,
+    'eventSuccessSpatialActionCallableResponse.destinations.items.valid': eventSuccessSpatialActionCallableResponseDestinationsItemsValid,
+    'eventSuccessSpatialActionCallableResponse.revision': eventSuccessSpatialActionCallableResponseRevision,
     'eventSuccessWingmanRequestDocument.clubId': eventSuccessWingmanRequestDocumentClubId,
     'eventSuccessWingmanRequestDocument.createdAt._nanoseconds': eventSuccessWingmanRequestDocumentCreatedAtNanoseconds,
     'eventSuccessWingmanRequestDocument.createdAt._seconds': eventSuccessWingmanRequestDocumentCreatedAtSeconds,
@@ -41039,6 +41749,16 @@ abstract final class CatchContractConstraints {
     'getEventRuntimeBootstrapCallablePayload.publicRuntimeId': getEventRuntimeBootstrapCallablePayloadPublicRuntimeId,
     'getEventRuntimeBootstrapCallableResponse.event.endTimeMillis': getEventRuntimeBootstrapCallableResponseEventEndTimeMillis,
     'getEventRuntimeBootstrapCallableResponse.event.eventId': getEventRuntimeBootstrapCallableResponseEventEventId,
+    'getEventRuntimeBootstrapCallableResponse.event.layout.label': getEventRuntimeBootstrapCallableResponseEventLayoutLabel,
+    'getEventRuntimeBootstrapCallableResponse.event.layout.layoutId': getEventRuntimeBootstrapCallableResponseEventLayoutLayoutId,
+    'getEventRuntimeBootstrapCallableResponse.event.layout.units': getEventRuntimeBootstrapCallableResponseEventLayoutUnits,
+    'getEventRuntimeBootstrapCallableResponse.event.layout.units.items.capacity': getEventRuntimeBootstrapCallableResponseEventLayoutUnitsItemsCapacity,
+    'getEventRuntimeBootstrapCallableResponse.event.layout.units.items.gridX': getEventRuntimeBootstrapCallableResponseEventLayoutUnitsItemsGridX,
+    'getEventRuntimeBootstrapCallableResponse.event.layout.units.items.gridY': getEventRuntimeBootstrapCallableResponseEventLayoutUnitsItemsGridY,
+    'getEventRuntimeBootstrapCallableResponse.event.layout.units.items.id': getEventRuntimeBootstrapCallableResponseEventLayoutUnitsItemsId,
+    'getEventRuntimeBootstrapCallableResponse.event.layout.units.items.label': getEventRuntimeBootstrapCallableResponseEventLayoutUnitsItemsLabel,
+    'getEventRuntimeBootstrapCallableResponse.event.layout.units.items.order': getEventRuntimeBootstrapCallableResponseEventLayoutUnitsItemsOrder,
+    'getEventRuntimeBootstrapCallableResponse.event.layout.units.items.shape': getEventRuntimeBootstrapCallableResponseEventLayoutUnitsItemsShape,
     'getEventRuntimeBootstrapCallableResponse.event.locationName': getEventRuntimeBootstrapCallableResponseEventLocationName,
     'getEventRuntimeBootstrapCallableResponse.event.moduleIds': getEventRuntimeBootstrapCallableResponseEventModuleIds,
     'getEventRuntimeBootstrapCallableResponse.event.moduleIds.items': getEventRuntimeBootstrapCallableResponseEventModuleIdsItems,
@@ -41073,6 +41793,17 @@ abstract final class CatchContractConstraints {
     'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.interestedInGenders': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileInterestedInGenders,
     'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.interestedInGenders.items': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileInterestedInGendersItems,
     'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.relationshipGoal': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileRelationshipGoal,
+    'getEventSuccessSpatialLayoutCallablePayload.eventId': getEventSuccessSpatialLayoutCallablePayloadEventId,
+    'getEventSuccessSpatialLayoutCallableResponse.layout.label': getEventSuccessSpatialLayoutCallableResponseLayoutLabel,
+    'getEventSuccessSpatialLayoutCallableResponse.layout.layoutId': getEventSuccessSpatialLayoutCallableResponseLayoutLayoutId,
+    'getEventSuccessSpatialLayoutCallableResponse.layout.units': getEventSuccessSpatialLayoutCallableResponseLayoutUnits,
+    'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.capacity': getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsCapacity,
+    'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.gridX': getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsGridX,
+    'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.gridY': getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsGridY,
+    'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.id': getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsId,
+    'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.label': getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsLabel,
+    'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.order': getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsOrder,
+    'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.shape': getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsShape,
     'getOrganizerContactDetailCallablePayload.contactId': getOrganizerContactDetailCallablePayloadContactId,
     'getOrganizerContactDetailCallablePayload.organizerId': getOrganizerContactDetailCallablePayloadOrganizerId,
     'getOrganizerContactDetailCallableResponse.ambiguousCandidateContactIds': getOrganizerContactDetailCallableResponseAmbiguousCandidateContactIds,
@@ -42143,6 +42874,7 @@ abstract final class CatchContractConstraints {
     'organizerDocument.hostDefaults.eventSuccess.contextualOpenersEnabled': organizerDocumentHostDefaultsEventSuccessContextualOpenersEnabled,
     'organizerDocument.hostDefaults.eventSuccess.enabled': organizerDocumentHostDefaultsEventSuccessEnabled,
     'organizerDocument.hostDefaults.eventSuccess.hostGoal': organizerDocumentHostDefaultsEventSuccessHostGoal,
+    'organizerDocument.hostDefaults.eventSuccess.layoutId': organizerDocumentHostDefaultsEventSuccessLayoutId,
     'organizerDocument.hostDefaults.eventSuccess.moduleSelectionConfigured': organizerDocumentHostDefaultsEventSuccessModuleSelectionConfigured,
     'organizerDocument.hostDefaults.eventSuccess.playbookId': organizerDocumentHostDefaultsEventSuccessPlaybookId,
     'organizerDocument.hostDefaults.eventSuccess.questionnaireConfig.customQuestions': organizerDocumentHostDefaultsEventSuccessQuestionnaireConfigCustomQuestions,
@@ -42365,6 +43097,21 @@ abstract final class CatchContractConstraints {
     'organizerEventLocationResolutionDecisionDocument.schemaVersion': organizerEventLocationResolutionDecisionDocumentSchemaVersion,
     'organizerEventLocationResolutionDecisionDocument.updatedAt._nanoseconds': organizerEventLocationResolutionDecisionDocumentUpdatedAtNanoseconds,
     'organizerEventLocationResolutionDecisionDocument.updatedAt._seconds': organizerEventLocationResolutionDecisionDocumentUpdatedAtSeconds,
+    'organizerEventSuccessLayoutDocument.createdAt._nanoseconds': organizerEventSuccessLayoutDocumentCreatedAtNanoseconds,
+    'organizerEventSuccessLayoutDocument.createdAt._seconds': organizerEventSuccessLayoutDocumentCreatedAtSeconds,
+    'organizerEventSuccessLayoutDocument.label': organizerEventSuccessLayoutDocumentLabel,
+    'organizerEventSuccessLayoutDocument.layoutId': organizerEventSuccessLayoutDocumentLayoutId,
+    'organizerEventSuccessLayoutDocument.organizerId': organizerEventSuccessLayoutDocumentOrganizerId,
+    'organizerEventSuccessLayoutDocument.units': organizerEventSuccessLayoutDocumentUnits,
+    'organizerEventSuccessLayoutDocument.units.items.capacity': organizerEventSuccessLayoutDocumentUnitsItemsCapacity,
+    'organizerEventSuccessLayoutDocument.units.items.gridX': organizerEventSuccessLayoutDocumentUnitsItemsGridX,
+    'organizerEventSuccessLayoutDocument.units.items.gridY': organizerEventSuccessLayoutDocumentUnitsItemsGridY,
+    'organizerEventSuccessLayoutDocument.units.items.id': organizerEventSuccessLayoutDocumentUnitsItemsId,
+    'organizerEventSuccessLayoutDocument.units.items.label': organizerEventSuccessLayoutDocumentUnitsItemsLabel,
+    'organizerEventSuccessLayoutDocument.units.items.order': organizerEventSuccessLayoutDocumentUnitsItemsOrder,
+    'organizerEventSuccessLayoutDocument.units.items.shape': organizerEventSuccessLayoutDocumentUnitsItemsShape,
+    'organizerEventSuccessLayoutDocument.updatedAt._nanoseconds': organizerEventSuccessLayoutDocumentUpdatedAtNanoseconds,
+    'organizerEventSuccessLayoutDocument.updatedAt._seconds': organizerEventSuccessLayoutDocumentUpdatedAtSeconds,
     'organizerFollowCallablePayload.organizerId': organizerFollowCallablePayloadOrganizerId,
     'organizerFollowDocument.followedAt._nanoseconds': organizerFollowDocumentFollowedAtNanoseconds,
     'organizerFollowDocument.followedAt._seconds': organizerFollowDocumentFollowedAtSeconds,
@@ -43215,6 +43962,7 @@ abstract final class CatchContractConstraints {
     'updateClubPatch.hostDefaults.eventSuccess.contextualOpenersEnabled': updateClubPatchHostDefaultsEventSuccessContextualOpenersEnabled,
     'updateClubPatch.hostDefaults.eventSuccess.enabled': updateClubPatchHostDefaultsEventSuccessEnabled,
     'updateClubPatch.hostDefaults.eventSuccess.hostGoal': updateClubPatchHostDefaultsEventSuccessHostGoal,
+    'updateClubPatch.hostDefaults.eventSuccess.layoutId': updateClubPatchHostDefaultsEventSuccessLayoutId,
     'updateClubPatch.hostDefaults.eventSuccess.moduleSelectionConfigured': updateClubPatchHostDefaultsEventSuccessModuleSelectionConfigured,
     'updateClubPatch.hostDefaults.eventSuccess.playbookId': updateClubPatchHostDefaultsEventSuccessPlaybookId,
     'updateClubPatch.hostDefaults.eventSuccess.questionnaireConfig.customQuestions': updateClubPatchHostDefaultsEventSuccessQuestionnaireConfigCustomQuestions,
@@ -43360,6 +44108,7 @@ abstract final class CatchContractConstraints {
     'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.contextualOpenersEnabled': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessContextualOpenersEnabled,
     'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.enabled': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessEnabled,
     'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.hostGoal': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessHostGoal,
+    'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.layoutId': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessLayoutId,
     'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.moduleSelectionConfigured': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessModuleSelectionConfigured,
     'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.playbookId': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessPlaybookId,
     'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.questionnaireConfig.customQuestions': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessQuestionnaireConfigCustomQuestions,
@@ -43509,6 +44258,27 @@ abstract final class CatchContractConstraints {
     'uploadedPhoto.updatedAt._nanoseconds': uploadedPhotoUpdatedAtNanoseconds,
     'uploadedPhoto.updatedAt._seconds': uploadedPhotoUpdatedAtSeconds,
     'uploadedPhoto.url': uploadedPhotoUrl,
+    'upsertEventSuccessLayoutCallablePayload.label': upsertEventSuccessLayoutCallablePayloadLabel,
+    'upsertEventSuccessLayoutCallablePayload.layoutId': upsertEventSuccessLayoutCallablePayloadLayoutId,
+    'upsertEventSuccessLayoutCallablePayload.organizerId': upsertEventSuccessLayoutCallablePayloadOrganizerId,
+    'upsertEventSuccessLayoutCallablePayload.units': upsertEventSuccessLayoutCallablePayloadUnits,
+    'upsertEventSuccessLayoutCallablePayload.units.items.capacity': upsertEventSuccessLayoutCallablePayloadUnitsItemsCapacity,
+    'upsertEventSuccessLayoutCallablePayload.units.items.gridX': upsertEventSuccessLayoutCallablePayloadUnitsItemsGridX,
+    'upsertEventSuccessLayoutCallablePayload.units.items.gridY': upsertEventSuccessLayoutCallablePayloadUnitsItemsGridY,
+    'upsertEventSuccessLayoutCallablePayload.units.items.id': upsertEventSuccessLayoutCallablePayloadUnitsItemsId,
+    'upsertEventSuccessLayoutCallablePayload.units.items.label': upsertEventSuccessLayoutCallablePayloadUnitsItemsLabel,
+    'upsertEventSuccessLayoutCallablePayload.units.items.order': upsertEventSuccessLayoutCallablePayloadUnitsItemsOrder,
+    'upsertEventSuccessLayoutCallablePayload.units.items.shape': upsertEventSuccessLayoutCallablePayloadUnitsItemsShape,
+    'upsertEventSuccessLayoutCallableResponse.layout.label': upsertEventSuccessLayoutCallableResponseLayoutLabel,
+    'upsertEventSuccessLayoutCallableResponse.layout.layoutId': upsertEventSuccessLayoutCallableResponseLayoutLayoutId,
+    'upsertEventSuccessLayoutCallableResponse.layout.units': upsertEventSuccessLayoutCallableResponseLayoutUnits,
+    'upsertEventSuccessLayoutCallableResponse.layout.units.items.capacity': upsertEventSuccessLayoutCallableResponseLayoutUnitsItemsCapacity,
+    'upsertEventSuccessLayoutCallableResponse.layout.units.items.gridX': upsertEventSuccessLayoutCallableResponseLayoutUnitsItemsGridX,
+    'upsertEventSuccessLayoutCallableResponse.layout.units.items.gridY': upsertEventSuccessLayoutCallableResponseLayoutUnitsItemsGridY,
+    'upsertEventSuccessLayoutCallableResponse.layout.units.items.id': upsertEventSuccessLayoutCallableResponseLayoutUnitsItemsId,
+    'upsertEventSuccessLayoutCallableResponse.layout.units.items.label': upsertEventSuccessLayoutCallableResponseLayoutUnitsItemsLabel,
+    'upsertEventSuccessLayoutCallableResponse.layout.units.items.order': upsertEventSuccessLayoutCallableResponseLayoutUnitsItemsOrder,
+    'upsertEventSuccessLayoutCallableResponse.layout.units.items.shape': upsertEventSuccessLayoutCallableResponseLayoutUnitsItemsShape,
     'upsertOrganizerCampaignCallablePayload.campaignId': upsertOrganizerCampaignCallablePayloadCampaignId,
     'upsertOrganizerCampaignCallablePayload.connectionId': upsertOrganizerCampaignCallablePayloadConnectionId,
     'upsertOrganizerCampaignCallablePayload.eventId': upsertOrganizerCampaignCallablePayloadEventId,

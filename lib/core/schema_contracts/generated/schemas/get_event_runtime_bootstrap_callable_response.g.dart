@@ -28,6 +28,7 @@ const schemaGetEventRuntimeBootstrapCallableResponseSchema = <String, Object?>{
         'locationName',
         'runtimeTermsVersion',
         'moduleIds',
+        'layout',
         'requiredFieldIds',
         'optionalFieldIds',
         'questionnaireConfig',
@@ -72,6 +73,92 @@ const schemaGetEventRuntimeBootstrapCallableResponseSchema = <String, Object?>{
             'minLength': 1,
             'maxLength': 120,
           },
+        },
+        'layout': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'null',
+            },
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'layoutId',
+                'label',
+                'units',
+              ],
+              'properties': <String, Object?>{
+                'layoutId': <String, Object?>{
+                  'type': 'string',
+                  'pattern': '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+                },
+                'label': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 120,
+                },
+                'units': <String, Object?>{
+                  'type': 'array',
+                  'minItems': 1,
+                  'maxItems': 200,
+                  'items': <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'id',
+                      'label',
+                      'shape',
+                      'capacity',
+                      'gridX',
+                      'gridY',
+                      'order',
+                    ],
+                    'properties': <String, Object?>{
+                      'id': <String, Object?>{
+                        'type': 'string',
+                        'pattern': '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
+                      },
+                      'label': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 80,
+                      },
+                      'shape': <String, Object?>{
+                        'type': 'string',
+                        'enum': <Object?>[
+                          'round',
+                          'rect',
+                          'row',
+                          'court',
+                          'zone',
+                        ],
+                      },
+                      'capacity': <String, Object?>{
+                        'type': 'integer',
+                        'minimum': 1,
+                        'maximum': 1000,
+                      },
+                      'gridX': <String, Object?>{
+                        'type': 'integer',
+                        'minimum': 0,
+                        'maximum': 199,
+                      },
+                      'gridY': <String, Object?>{
+                        'type': 'integer',
+                        'minimum': 0,
+                        'maximum': 199,
+                      },
+                      'order': <String, Object?>{
+                        'type': 'integer',
+                        'minimum': 1,
+                        'maximum': 200,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          ],
         },
         'requiredFieldIds': <String, Object?>{
           'description': 'Fields that must be completed before event mode opens. Sensitive preference fields are never required for entry.',

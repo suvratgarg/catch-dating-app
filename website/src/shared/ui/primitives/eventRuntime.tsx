@@ -136,6 +136,90 @@ export function EventRuntimeAssignments({children}: {children: ReactNode}) {
   return <div className="event-runtime__assignments">{children}</div>;
 }
 
+export interface EventRuntimeRoomMapUnit {
+  id: string;
+  label: string;
+  shape: "round" | "rect" | "row" | "court" | "zone";
+}
+
+export interface EventRuntimeRoomMapPosition {
+  id: string;
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
+
+export function EventRuntimeRoomMap({
+  assignedLabel,
+  assignedUnitId,
+  confirmedLabel,
+  confirmedUnitId,
+  positions,
+  selfLabel,
+  subtitle,
+  title,
+  units,
+}: {
+  assignedLabel: string;
+  assignedUnitId: string;
+  confirmedLabel: string;
+  confirmedUnitId?: string | null;
+  positions: readonly EventRuntimeRoomMapPosition[];
+  selfLabel: string;
+  subtitle: string;
+  title: string;
+  units: readonly EventRuntimeRoomMapUnit[];
+}) {
+  const unitById = new Map(units.map((unit) => [unit.id, unit]));
+  return (
+    <section className="event-runtime__room-map" aria-label={title}>
+      <header>
+        <div>
+          <h4>{title}</h4>
+          <p>{subtitle}</p>
+        </div>
+        <div className="event-runtime__room-map-legend">
+          <span className="is-assigned">{assignedLabel}</span>
+          <span className="is-confirmed">{confirmedLabel}</span>
+        </div>
+      </header>
+      <div className="event-runtime__room-map-canvas">
+        {positions.map((position) => {
+          const unit = unitById.get(position.id);
+          if (!unit) return null;
+          const assigned = assignedUnitId === unit.id;
+          const confirmed = confirmedUnitId === unit.id;
+          return (
+            <div
+              className={classNames(
+                "event-runtime__room-map-unit",
+                `event-runtime__room-map-unit--${unit.shape}`,
+                assigned && "is-assigned",
+                confirmed && "is-confirmed"
+              )}
+              key={unit.id}
+              style={{
+                height: `${position.height * 100}%`,
+                left: `${position.left * 100}%`,
+                top: `${position.top * 100}%`,
+                width: `${position.width * 100}%`,
+              }}
+            >
+              <span>{unit.label}</span>
+              {assigned ? (
+                <strong aria-label={confirmed ? confirmedLabel : assignedLabel}>
+                  {selfLabel}
+                </strong>
+              ) : null}
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 export function EventRuntimeMission({children}: {children: ReactNode}) {
   return <div className="event-runtime__mission">{children}</div>;
 }

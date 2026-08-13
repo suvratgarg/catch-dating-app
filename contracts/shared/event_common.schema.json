@@ -699,6 +699,10 @@
       "additionalProperties": false,
       "properties": {
         "enabled": {"type": "boolean"},
+        "layoutId": {
+          "type": ["string", "null"],
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+        },
         "playbookId": {"type": "string", "minLength": 1, "maxLength": 120},
         "selectedModuleIds": {
           "type": "array",

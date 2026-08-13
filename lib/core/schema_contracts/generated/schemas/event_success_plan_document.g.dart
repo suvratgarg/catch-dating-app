@@ -56,6 +56,95 @@ const schemaEventSuccessPlanDocumentSchema = <String, Object?>{
       'maxLength': 180,
       'x-catch-ownership': 'callable-owned',
     },
+    'layoutId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'pattern': '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+      'x-catch-ownership': 'callable-owned',
+    },
+    'affinityConstraints': <String, Object?>{
+      'type': 'array',
+      'maxItems': 300,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'aUid',
+          'bUid',
+          'value',
+          'scope',
+        ],
+        'properties': <String, Object?>{
+          'aUid': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'bUid': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'value': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'mustPair',
+              'mustSplit',
+              'avoidRepeat',
+              'neutral',
+            ],
+          },
+          'scope': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'thisRound',
+              'pinned',
+            ],
+          },
+        },
+      },
+      'x-catch-ownership': 'callable-owned',
+    },
+    'spatialOverrides': <String, Object?>{
+      'type': 'array',
+      'maxItems': 300,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'uid',
+          'targetPeerUid',
+          'layoutUnitId',
+          'scope',
+        ],
+        'properties': <String, Object?>{
+          'uid': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'targetPeerUid': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'layoutUnitId': <String, Object?>{
+            'type': 'string',
+            'pattern': '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
+          },
+          'scope': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'thisRound',
+              'pinned',
+            ],
+          },
+        },
+      },
+      'x-catch-ownership': 'callable-owned',
+    },
     'playbookId': <String, Object?>{
       'type': 'string',
       'minLength': 1,

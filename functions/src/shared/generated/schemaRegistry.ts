@@ -7233,6 +7233,13 @@ export const clubDocumentSchema: Record<string, unknown> = {
             "enabled": {
               "type": "boolean"
             },
+            "layoutId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+            },
             "playbookId": {
               "type": "string",
               "minLength": 1,
@@ -7437,6 +7444,13 @@ export const clubDocumentSchema: Record<string, unknown> = {
             "properties": {
               "enabled": {
                 "type": "boolean"
+              },
+              "layoutId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
               },
               "playbookId": {
                 "type": "string",
@@ -9632,6 +9646,13 @@ export const organizerDocumentSchema: Record<string, unknown> = {
             "enabled": {
               "type": "boolean"
             },
+            "layoutId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+            },
             "playbookId": {
               "type": "string",
               "minLength": 1,
@@ -9836,6 +9857,13 @@ export const organizerDocumentSchema: Record<string, unknown> = {
             "properties": {
               "enabled": {
                 "type": "boolean"
+              },
+              "layoutId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
               },
               "playbookId": {
                 "type": "string",
@@ -24106,6 +24134,95 @@ export const eventSuccessPlanDocumentSchema: Record<string, unknown> = {
       "maxLength": 180,
       "x-catch-ownership": "callable-owned"
     },
+    "layoutId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "affinityConstraints": {
+      "type": "array",
+      "maxItems": 300,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "aUid",
+          "bUid",
+          "value",
+          "scope"
+        ],
+        "properties": {
+          "aUid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "bUid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "value": {
+            "type": "string",
+            "enum": [
+              "mustPair",
+              "mustSplit",
+              "avoidRepeat",
+              "neutral"
+            ]
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "thisRound",
+              "pinned"
+            ]
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "spatialOverrides": {
+      "type": "array",
+      "maxItems": 300,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uid",
+          "targetPeerUid",
+          "layoutUnitId",
+          "scope"
+        ],
+        "properties": {
+          "uid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "targetPeerUid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "layoutUnitId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "thisRound",
+              "pinned"
+            ]
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
     "playbookId": {
       "type": "string",
       "minLength": 1,
@@ -24526,6 +24643,148 @@ export const eventSuccessPlanDocumentSchema: Record<string, unknown> = {
   }
 } as const;
 
+export const organizerEventSuccessLayoutDocumentSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_event_success_layouts.schema.json",
+  "title": "OrganizerEventSuccessLayoutDocument",
+  "description": "Reusable organizer-owned parametric room layout stored at organizerEventSuccessLayouts/{organizerId_layoutId}. Derived coordinates and proximity edges are never persisted.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerEventSuccessLayouts",
+  "x-firestore-path": "organizerEventSuccessLayouts/{layoutDocumentId}",
+  "x-document-id-field": "id",
+  "x-owner": "organizer manager through upsertEventSuccessLayout",
+  "required": [
+    "organizerId",
+    "layoutId",
+    "label",
+    "units",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "layoutId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
+    },
+    "units": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label",
+          "shape",
+          "capacity",
+          "gridX",
+          "gridY",
+          "order"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "shape": {
+            "type": "string",
+            "enum": [
+              "round",
+              "rect",
+              "row",
+              "court",
+              "zone"
+            ]
+          },
+          "capacity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000
+          },
+          "gridX": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 199
+          },
+          "gridY": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 199
+          },
+          "order": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+} as const;
+
 export const eventSuccessAssignmentDraftDocumentSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_success_assignment_drafts.schema.json",
@@ -24706,6 +24965,19 @@ export const eventSuccessAssignmentDraftDocumentSchema: Record<string, unknown> 
           "type": "string",
           "minLength": 1,
           "maxLength": 80,
+          "x-catch-ownership": "callable-owned"
+        },
+        "layoutUnitId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$",
+          "x-catch-ownership": "callable-owned"
+        },
+        "confirmedLayoutUnitId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$",
           "x-catch-ownership": "callable-owned"
         },
         "whySummary": {
@@ -26192,6 +26464,19 @@ export const eventSuccessAssignmentDocumentSchema: Record<string, unknown> = {
       "type": "string",
       "minLength": 1,
       "maxLength": 80,
+      "x-catch-ownership": "callable-owned"
+    },
+    "layoutUnitId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "confirmedLayoutUnitId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$",
       "x-catch-ownership": "callable-owned"
     },
     "whySummary": {
@@ -33862,6 +34147,13 @@ export const createClubCallablePayloadSchema: Record<string, unknown> = {
             "enabled": {
               "type": "boolean"
             },
+            "layoutId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+            },
             "playbookId": {
               "type": "string",
               "minLength": 1,
@@ -34066,6 +34358,13 @@ export const createClubCallablePayloadSchema: Record<string, unknown> = {
             "properties": {
               "enabled": {
                 "type": "boolean"
+              },
+              "layoutId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
               },
               "playbookId": {
                 "type": "string",
@@ -34826,6 +35125,13 @@ export const createOrganizerCallablePayloadSchema: Record<string, unknown> = {
             "enabled": {
               "type": "boolean"
             },
+            "layoutId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+            },
             "playbookId": {
               "type": "string",
               "minLength": 1,
@@ -35030,6 +35336,13 @@ export const createOrganizerCallablePayloadSchema: Record<string, unknown> = {
             "properties": {
               "enabled": {
                 "type": "boolean"
+              },
+              "layoutId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
               },
               "playbookId": {
                 "type": "string",
@@ -35835,6 +36148,13 @@ export const updateOrganizerCallablePayloadSchema: Record<string, unknown> = {
                 "enabled": {
                   "type": "boolean"
                 },
+                "layoutId": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+                },
                 "playbookId": {
                   "type": "string",
                   "minLength": 1,
@@ -36039,6 +36359,13 @@ export const updateOrganizerCallablePayloadSchema: Record<string, unknown> = {
                 "properties": {
                   "enabled": {
                     "type": "boolean"
+                  },
+                  "layoutId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
                   },
                   "playbookId": {
                     "type": "string",
@@ -37256,6 +37583,13 @@ export const updateClubCallablePayloadSchema: Record<string, unknown> = {
                 "enabled": {
                   "type": "boolean"
                 },
+                "layoutId": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+                },
                 "playbookId": {
                   "type": "string",
                   "minLength": 1,
@@ -37460,6 +37794,13 @@ export const updateClubCallablePayloadSchema: Record<string, unknown> = {
                 "properties": {
                   "enabled": {
                     "type": "boolean"
+                  },
+                  "layoutId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
                   },
                   "playbookId": {
                     "type": "string",
@@ -42982,6 +43323,13 @@ export const createEventCallablePayloadSchema: Record<string, unknown> = {
         "enabled": {
           "type": "boolean"
         },
+        "layoutId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+        },
         "playbookId": {
           "type": "string",
           "minLength": 1,
@@ -46670,6 +47018,445 @@ export const getEventRuntimeBootstrapCallablePayloadSchema: Record<string, unkno
   }
 } as const;
 
+export const upsertEventSuccessLayoutCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/upsert_event_success_layout_payload.schema.json",
+  "title": "UpsertEventSuccessLayoutCallablePayload",
+  "description": "Creates or updates one reusable organizer-owned parametric layout.",
+  "x-callable-aliases": [
+    "upsertEventSuccessLayout"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "label",
+    "units"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "layoutId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "units": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label",
+          "shape",
+          "capacity",
+          "gridX",
+          "gridY",
+          "order"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "shape": {
+            "type": "string",
+            "enum": [
+              "round",
+              "rect",
+              "row",
+              "court",
+              "zone"
+            ]
+          },
+          "capacity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000
+          },
+          "gridX": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 199
+          },
+          "gridY": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 199
+          },
+          "order": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          }
+        }
+      }
+    }
+  }
+} as const;
+
+export const upsertEventSuccessLayoutCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/upsert_event_success_layout_response.schema.json",
+  "title": "UpsertEventSuccessLayoutCallableResponse",
+  "description": "Canonical saved organizer layout returned after an upsert.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "layout"
+  ],
+  "properties": {
+    "layout": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "layoutId",
+        "label",
+        "units"
+      ],
+      "properties": {
+        "layoutId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "units": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 200,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "label",
+              "shape",
+              "capacity",
+              "gridX",
+              "gridY",
+              "order"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "shape": {
+                "type": "string",
+                "enum": [
+                  "round",
+                  "rect",
+                  "row",
+                  "court",
+                  "zone"
+                ]
+              },
+              "capacity": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 1000
+              },
+              "gridX": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 199
+              },
+              "gridY": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 199
+              },
+              "order": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 200
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+} as const;
+
+export const getEventSuccessSpatialLayoutCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_event_success_spatial_layout_payload.schema.json",
+  "title": "GetEventSuccessSpatialLayoutCallablePayload",
+  "description": "Requests the selected reusable layout for one authorized event participant or manager.",
+  "x-callable-aliases": [
+    "getEventSuccessSpatialLayout"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+} as const;
+
+export const getEventSuccessSpatialLayoutCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_event_success_spatial_layout_response.schema.json",
+  "title": "GetEventSuccessSpatialLayoutCallableResponse",
+  "description": "Selected reusable layout or null when the event has no spatial map.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "layout"
+  ],
+  "properties": {
+    "layout": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "layoutId",
+            "label",
+            "units"
+          ],
+          "properties": {
+            "layoutId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "units": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 200,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "label",
+                  "shape",
+                  "capacity",
+                  "gridX",
+                  "gridY",
+                  "order"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+                  },
+                  "label": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "shape": {
+                    "type": "string",
+                    "enum": [
+                      "round",
+                      "rect",
+                      "row",
+                      "court",
+                      "zone"
+                    ]
+                  },
+                  "capacity": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "gridX": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 199
+                  },
+                  "gridY": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 199
+                  },
+                  "order": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 200
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+} as const;
+
+export const eventSuccessSpatialActionCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/event_success_spatial_action_payload.schema.json",
+  "title": "EventSuccessSpatialActionCallablePayload",
+  "description": "Revision-fenced Host spatial-control action.",
+  "x-callable-aliases": [
+    "controlEventSuccessSpatial"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "expectedRevision",
+    "action",
+    "moduleId",
+    "uid"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "previewReassignment",
+        "reassign",
+        "confirmPosition",
+        "releasePinned"
+      ]
+    },
+    "moduleId": {
+      "type": "string",
+      "enum": [
+        "micro_pods",
+        "guided_rotations"
+      ]
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "destinationUnitId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+    },
+    "scope": {
+      "type": "string",
+      "enum": [
+        "thisRound",
+        "pinned"
+      ]
+    }
+  }
+} as const;
+
+export const eventSuccessSpatialActionCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/event_success_spatial_action_response.schema.json",
+  "title": "EventSuccessSpatialActionCallableResponse",
+  "description": "Current revision and optional destination validation for a Host spatial action.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "revision",
+    "destinations"
+  ],
+  "properties": {
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "destinations": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "unitId",
+          "valid",
+          "reason",
+          "recommendedScope"
+        ],
+        "properties": {
+          "unitId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+          },
+          "valid": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "capacity",
+              "safetyKeepApart",
+              "declaredConstraint",
+              null
+            ]
+          },
+          "recommendedScope": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "thisRound",
+              "pinned",
+              null
+            ]
+          }
+        }
+      }
+    }
+  }
+} as const;
+
 export const getEventRuntimeBootstrapCallableResponseSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/get_event_runtime_bootstrap_response.schema.json",
@@ -46694,6 +47481,7 @@ export const getEventRuntimeBootstrapCallableResponseSchema: Record<string, unkn
         "locationName",
         "runtimeTermsVersion",
         "moduleIds",
+        "layout",
         "requiredFieldIds",
         "optionalFieldIds",
         "questionnaireConfig"
@@ -46738,6 +47526,92 @@ export const getEventRuntimeBootstrapCallableResponseSchema: Record<string, unkn
             "minLength": 1,
             "maxLength": 120
           }
+        },
+        "layout": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "layoutId",
+                "label",
+                "units"
+              ],
+              "properties": {
+                "layoutId": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "units": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 200,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "label",
+                      "shape",
+                      "capacity",
+                      "gridX",
+                      "gridY",
+                      "order"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+                      },
+                      "label": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "shape": {
+                        "type": "string",
+                        "enum": [
+                          "round",
+                          "rect",
+                          "row",
+                          "court",
+                          "zone"
+                        ]
+                      },
+                      "capacity": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 1000
+                      },
+                      "gridX": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 199
+                      },
+                      "gridY": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 199
+                      },
+                      "order": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 200
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
         },
         "requiredFieldIds": {
           "description": "Fields that must be completed before event mode opens. Sensitive preference fields are never required for entry.",

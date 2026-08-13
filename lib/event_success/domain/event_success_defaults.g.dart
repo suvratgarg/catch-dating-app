@@ -10,6 +10,7 @@ _EventSuccessDefaults _$EventSuccessDefaultsFromJson(
   Map<String, dynamic> json,
 ) => _EventSuccessDefaults(
   enabled: json['enabled'] as bool? ?? false,
+  layoutId: json['layoutId'] as String?,
   playbookId: json['playbookId'] as String? ?? 'social_run_light',
   selectedModuleIds:
       (json['selectedModuleIds'] as List<dynamic>?)
@@ -42,6 +43,7 @@ Map<String, dynamic> _$EventSuccessDefaultsToJson(
   _EventSuccessDefaults instance,
 ) => <String, dynamic>{
   'enabled': instance.enabled,
+  'layoutId': instance.layoutId,
   'playbookId': instance.playbookId,
   'selectedModuleIds': instance.selectedModuleIds,
   'moduleSelectionConfigured': instance.moduleSelectionConfigured,

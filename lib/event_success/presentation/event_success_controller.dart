@@ -4,6 +4,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_arrival_miss
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/events/data/event_check_in_location_service.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -34,6 +35,9 @@ class EventSuccessController extends _$EventSuccessController {
   static final overrideGroupAssignmentsMutation = Mutation<void>();
   static final microPodsOptOutMutation = Mutation<void>();
   static final guidedRotationsOptOutMutation = Mutation<void>();
+  static final upsertLayoutMutation = Mutation<EventSuccessLayout>();
+  static final spatialControlMutation =
+      Mutation<EventSuccessSpatialActionResult>();
 
   @override
   void build() {}
@@ -41,6 +45,44 @@ class EventSuccessController extends _$EventSuccessController {
   Future<EventSuccessPlan> ensurePlan(Event event) async {
     requireSignedInUid(ref, action: 'set up the live event guide');
     return ref.read(eventSuccessRepositoryProvider).ensurePlanForEvent(event);
+  }
+
+  Future<EventSuccessLayout> upsertLayout({
+    required String organizerId,
+    required EventSuccessLayout layout,
+    String? layoutId,
+  }) async {
+    requireSignedInUid(ref, action: 'save a reusable event room layout');
+    return ref
+        .read(eventSuccessRepositoryProvider)
+        .upsertOrganizerLayout(
+          organizerId: organizerId,
+          layout: layout,
+          layoutId: layoutId,
+        );
+  }
+
+  Future<EventSuccessSpatialActionResult> controlSpatialPlacement({
+    required String eventId,
+    required int expectedRevision,
+    required EventSuccessSpatialAction action,
+    required String moduleId,
+    required String uid,
+    String? destinationUnitId,
+    EventSuccessSpatialScope? scope,
+  }) async {
+    requireSignedInUid(ref, action: 'control event room placement');
+    return ref
+        .read(eventSuccessRepositoryProvider)
+        .controlSpatialPlacement(
+          eventId: eventId,
+          expectedRevision: expectedRevision,
+          action: action,
+          moduleId: moduleId,
+          uid: uid,
+          destinationUnitId: destinationUnitId,
+          scope: scope,
+        );
   }
 
   Future<void> saveSetup({

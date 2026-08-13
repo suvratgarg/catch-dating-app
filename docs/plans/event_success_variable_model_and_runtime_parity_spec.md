@@ -1,6 +1,6 @@
 ---
 doc_id: event_success_variable_model_and_runtime_parity_spec
-version: 1.3.0
+version: 1.4.0
 updated: 2026-08-13
 owner: event_success
 status: active
@@ -703,7 +703,7 @@ docs are updated. Update this table in the same commit as the tranche.
 - [x] T2 `affinityConstraint` and `arrivalGroup`
 - [x] T3 Exclusion ledger
 - [x] T4 Live control robustness
-- [ ] T5 Spatial layout model and control room
+- [x] T5 Spatial layout model and control room
 - [ ] T6 `resourceCapacity` and `sequence` topology
 - [ ] T7 `unitOutcome` and live standings
 - [ ] T8 Presence and late arrivals
@@ -875,8 +875,8 @@ D.6 and D.7.
    by event size.
 6. Whether `adjacency` and table seating are funded this cycle or remain
    `unsupported` through the next two occurrences of the dinner format.
-7. Whether confirmed position is worth a table-level QR, or whether host
-   confirmation and assigned-only rendering is sufficient for the pilot.
-8. Which layout shapes ship first. `round`, `row`, and `court` cover spin,
-   dinner, quiz, and pickleball; `zone` for free-form mixers is the one whose
-   value is least proven.
+7. Resolved in T5: the pilot uses explicit Host confirmation and visually keeps
+   assigned position distinct from Host-confirmed position; table-level QR is
+   not required.
+8. Resolved in T5: all five contracted shapes ship together: `round`, `rect`,
+   `row`, `court`, and `zone`.

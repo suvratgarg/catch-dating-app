@@ -357,6 +357,7 @@ test("bootstrap returns bounded event and own state", async () => {
     locationName: "The Courtyard",
     runtimeTermsVersion: "event-runtime-v1",
     moduleIds: [],
+    layout: null,
     requiredFieldIds: ["displayName"],
     optionalFieldIds: [],
     questionnaireConfig: null,

@@ -1001,6 +1001,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                     ),
                   ),
                   EventSuccessStep(
+                    organizerId: widget.club.id,
                     activityKind: _selectedActivityKind,
                     eventFormat: _selectedEventFormat,
                     eventSuccessDefaults: _eventSuccessDefaults,

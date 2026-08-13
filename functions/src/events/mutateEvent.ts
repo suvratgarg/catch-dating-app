@@ -17,6 +17,7 @@ import {
   EventFormatSnapshot,
   EventSuccessFormatPrimitives,
   EventMeetingLocation,
+  OrganizerEventSuccessLayoutDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {CancelEventCallablePayload} from
@@ -81,6 +82,8 @@ import {
   isEventSuccessRotationSuitability,
   ResolvedEventSuccessPrimitives,
 } from "../eventSuccess/formatPrimitives";
+import {organizerEventSuccessLayoutDocumentId} from
+  "../eventSuccess/spatialLayout";
 import {
   createRazorpayClient,
   razorpayKeyId,
@@ -216,6 +219,12 @@ export async function createEventHandler(
   const organizerRef = db.collection("organizers").doc(organizerId);
   const legacyOrganizerRef = db.collection("clubs").doc(organizerId);
   const deletedUserRef = db.collection("deletedUsers").doc(hostUserId);
+  const selectedLayoutId = data.eventSuccessDefaults?.enabled === true ?
+    data.eventSuccessDefaults.layoutId ?? null : null;
+  const selectedLayoutRef = selectedLayoutId ?
+    db.collection("organizerEventSuccessLayouts").doc(
+      organizerEventSuccessLayoutDocumentId(organizerId, selectedLayoutId)
+    ) : null;
 
   let createdEvent: EventDocument | null = null;
   let organizerName = "Your organizer";
@@ -227,11 +236,13 @@ export async function createEventHandler(
       organizerSnap,
       legacyOrganizerSnap,
       deletedUserSnap,
+      selectedLayoutSnap,
     ] = await Promise.all([
       tx.get(eventRef),
       tx.get(organizerRef),
       tx.get(legacyOrganizerRef),
       tx.get(deletedUserRef),
+      selectedLayoutRef ? tx.get(selectedLayoutRef) : Promise.resolve(null),
     ]);
 
     if (eventSnap.exists) {
@@ -247,6 +258,27 @@ export async function createEventHandler(
       hostUserId,
       organizerSnap.exists
     );
+    if (selectedLayoutId) {
+      if (!selectedLayoutSnap?.exists) {
+        throw new HttpsError(
+          "failed-precondition",
+          "The selected room layout no longer exists."
+        );
+      }
+      const layout = requireDoc<OrganizerEventSuccessLayoutDocument>(
+        selectedLayoutSnap,
+        "OrganizerEventSuccessLayoutDocument"
+      );
+      if (
+        layout.organizerId !== organizerId ||
+        layout.layoutId !== selectedLayoutId
+      ) {
+        throw new HttpsError(
+          "permission-denied",
+          "The selected room layout belongs to another organizer."
+        );
+      }
+    }
     organizerName = organizer.name;
     const eventBase: EventDocumentBeforeDiscovery = {
       ...buildCreateEventDoc(data, deps, hostUserId),
@@ -923,6 +955,10 @@ function buildCreateEventSuccessPlanDoc(params: {
   return {
     eventId: params.eventId,
     clubId: params.data.clubId,
+    organizerId: params.event.organizerId ?? params.data.clubId,
+    layoutId: defaults.layoutId ?? null,
+    affinityConstraints: [],
+    spatialOverrides: [],
     playbookId,
     selectedModuleIds,
     targetAttendeeCount,
@@ -944,6 +980,10 @@ function buildCreateEventSuccessPlanDoc(params: {
       defaults.questionnaireConfig
     ),
     activeStepIndex: 0,
+    liveControlRevision: 0,
+    assignmentDraftRevision: 0,
+    publishedRotationRoundIndex: -1,
+    publishedRevealRoundIndex: -1,
     status: "setup",
     revealStatus: "idle",
     activeRevealRoundIndex: 0,

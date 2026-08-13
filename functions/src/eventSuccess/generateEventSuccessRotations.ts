@@ -53,6 +53,12 @@ import {
   rotationPolicyForStructureConfig,
 } from "./assignmentPrimitiveControls";
 import {loadEventSuccessRoster} from "./eventSuccessRoster";
+import {
+  applyEventSuccessSpatialLayout,
+  assignmentConstraintsForSpatialPlan,
+  loadSelectedEventSuccessLayout,
+  persistentSpatialPlanFields,
+} from "./spatialLayout";
 
 const GUIDED_ROTATIONS_MODULE_ID = "guided_rotations";
 const COMPATIBILITY_QUESTIONNAIRE_MODULE_ID = "compatibility_questionnaire";
@@ -78,6 +84,19 @@ interface EventSuccessPlanDocument {
   liveControlRevision?: unknown;
   assignmentDraftRevision?: unknown;
   publishedRotationRoundIndex?: unknown;
+  layoutId?: string | null;
+  affinityConstraints?: Array<{
+    aUid: string;
+    bUid: string;
+    value: "mustPair" | "mustSplit" | "avoidRepeat" | "neutral";
+    scope: "thisRound" | "pinned";
+  }>;
+  spatialOverrides?: Array<{
+    uid: string;
+    targetPeerUid: string;
+    layoutUnitId: string;
+    scope: "thisRound" | "pinned";
+  }>;
   structureConfig?: {
     unitKind?: unknown;
     unitSize?: unknown;
@@ -171,6 +190,8 @@ interface GeneratedAssignment {
   peerUids: string[];
   unitKind?: EventSuccessUnitKind;
   unitLabel?: string;
+  layoutUnitId?: string;
+  confirmedLayoutUnitId?: string | null;
   whySummary?: string;
   whyCodes?: AssignmentWhyCode[];
   rotationFairness?: RotationFairnessSummary;
@@ -291,6 +312,17 @@ export async function prepareEventSuccessRotationDraft(
     source: "server_v1",
     now: deps.serverTimestamp(),
   }) : new Map<string, GeneratedAssignment>();
+  const layout = await loadSelectedEventSuccessLayout(
+    db,
+    event.organizerId ?? event.clubId,
+    plan
+  );
+  applyEventSuccessSpatialLayout(
+    assignments,
+    layout,
+    plan,
+    targetRoundIndex
+  );
   await writeAssignmentDrafts({
     db,
     eventId: input.eventId,
@@ -369,6 +401,17 @@ export async function overrideEventSuccessRotationsHandler(
     throw new HttpsError("failed-precondition",
       "The override must include the next unpublished round.");
   }
+  const layout = await loadSelectedEventSuccessLayout(
+    db,
+    event.organizerId ?? event.clubId,
+    plan
+  );
+  applyEventSuccessSpatialLayout(
+    assignments,
+    layout,
+    plan,
+    targetRoundIndex
+  );
   await writeAssignmentDrafts({
     db,
     eventId: payload.eventId,
@@ -475,8 +518,9 @@ async function loadRotationEventContext(
       ) && plan.compatibilityAffectsRanking === true ?
         "light" :
         "icebreaker",
-    constraints: assignmentConstraintsForStructureConfig(
-      plan.structureConfig
+    constraints: assignmentConstraintsForSpatialPlan(
+      assignmentConstraintsForStructureConfig(plan.structureConfig),
+      plan
     ),
     rotationPolicy: rotationPolicyForStructureConfig(plan.structureConfig),
   };
@@ -1136,6 +1180,7 @@ async function writeAssignmentDrafts(params: {
       );
     }
     transaction.update(planRef, {
+      ...persistentSpatialPlanFields(plan),
       liveControlRevision: revision,
       assignmentDraftRevision: assignmentRevision,
       updatedAt: params.now,

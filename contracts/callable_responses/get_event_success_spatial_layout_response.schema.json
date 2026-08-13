@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_event_success_spatial_layout_response.schema.json",
+  "title": "GetEventSuccessSpatialLayoutCallableResponse",
+  "description": "Selected reusable layout or null when the event has no spatial map.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["layout"],
+  "properties": {
+    "layout": {
+      "anyOf": [
+        {"type": "null"},
+        {"$ref": "../shared/event_success_layout.schema.json#/definitions/layout"}
+      ]
+    }
+  }
+}

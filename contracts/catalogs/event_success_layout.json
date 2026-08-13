@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "shapes": ["round", "rect", "row", "court", "zone"],
+  "normalizedCoordinatePolicy": "grid-cell-v1",
+  "unitProximityPolicy": "complete-euclidean-grid-distance-v1",
+  "parityFixture": {
+    "layoutId": "parity-room",
+    "label": "Parity room",
+    "units": [
+      {"id": "round", "label": "1", "shape": "round", "capacity": 4, "gridX": 0, "gridY": 0, "order": 1},
+      {"id": "rect", "label": "2", "shape": "rect", "capacity": 6, "gridX": 1, "gridY": 0, "order": 2},
+      {"id": "row", "label": "3", "shape": "row", "capacity": 8, "gridX": 2, "gridY": 0, "order": 3},
+      {"id": "court", "label": "4", "shape": "court", "capacity": 4, "gridX": 0, "gridY": 1, "order": 4},
+      {"id": "zone", "label": "5", "shape": "zone", "capacity": 12, "gridX": 2, "gridY": 1, "order": 5}
+    ],
+    "normalizedUnits": [
+      {"id": "round", "left": 0, "top": 0, "width": 0.333333, "height": 0.5},
+      {"id": "rect", "left": 0.333333, "top": 0, "width": 0.333333, "height": 0.5},
+      {"id": "row", "left": 0.666667, "top": 0, "width": 0.333333, "height": 0.5},
+      {"id": "court", "left": 0, "top": 0.5, "width": 0.333333, "height": 0.5},
+      {"id": "zone", "left": 0.666667, "top": 0.5, "width": 0.333333, "height": 0.5}
+    ]
+  }
+}

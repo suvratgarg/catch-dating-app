@@ -90,6 +90,7 @@ export interface CreateOrganizerCallablePayload {
     };
     eventSuccess?: {
       enabled?: boolean;
+      layoutId?: string | null;
       playbookId?: string;
       /**
        * @maxItems 24
@@ -141,6 +142,7 @@ export interface CreateOrganizerCallablePayload {
     eventSuccessByActivityKind?: {
       [k: string]: {
         enabled?: boolean;
+        layoutId?: string | null;
         playbookId?: string;
         /**
          * @maxItems 24

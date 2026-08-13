@@ -34,11 +34,13 @@ import 'package:catch_dating_app/event_success/domain/event_success_arrival_miss
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_conversation_cue.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_preference.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_runtime.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/event_success/event_success_companion_clock.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen_state.dart';
@@ -46,6 +48,7 @@ import 'package:catch_dating_app/event_success/presentation/event_success_contro
 import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_room_map.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -445,6 +448,11 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
     final profile = routeState.profile!;
     final participation = routeState.participation!;
     final plan = routeState.plan!;
+    final AsyncValue<EventSuccessLayout?> spatialLayoutAsync =
+        plan.layoutId != null &&
+            plan.structureConfig.unitKind != EventSuccessUnitKind.wholeGroup
+        ? ref.watch(eventSuccessSpatialLayoutProvider(eventId))
+        : const AsyncData<EventSuccessLayout?>(null);
     final AsyncValue<EventSuccessArrivalMission?> arrivalMissionAsync =
         routeState.firstHelloAvailable
         ? ref.watch(
@@ -621,6 +629,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
       child: EventSuccessCompanionScreen(
         event: event,
         plan: plan,
+        spatialLayout: spatialLayoutAsync.asData?.value,
         userProfile: profile,
         participation: participation,
         wingmanRequestCandidates: routeState.wingmanRequestCandidates,

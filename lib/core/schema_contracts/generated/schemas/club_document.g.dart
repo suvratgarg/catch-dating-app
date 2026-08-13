@@ -862,6 +862,13 @@ const schemaClubDocumentSchema = <String, Object?>{
             'enabled': <String, Object?>{
               'type': 'boolean',
             },
+            'layoutId': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'pattern': '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+            },
             'playbookId': <String, Object?>{
               'type': 'string',
               'minLength': 1,
@@ -1066,6 +1073,13 @@ const schemaClubDocumentSchema = <String, Object?>{
             'properties': <String, Object?>{
               'enabled': <String, Object?>{
                 'type': 'boolean',
+              },
+              'layoutId': <String, Object?>{
+                'type': <Object?>[
+                  'string',
+                  'null',
+                ],
+                'pattern': '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
               },
               'playbookId': <String, Object?>{
                 'type': 'string',

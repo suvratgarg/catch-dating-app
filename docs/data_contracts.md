@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.18.0
+version: 1.19.0
 updated: 2026-08-13
 owner: recursive_audit_loop
 status: active
@@ -83,6 +83,31 @@ callable request schemas under `contracts/callables/`. Every mutating request
 carries an expected revision, and reveal or rotation publication also carries
 explicit confirmation. The asynchronous draft trigger's bounded retry count is
 deployment configuration, not a persisted plan constant.
+
+### Event Success Spatial Layout Boundary
+
+`contracts/shared/event_success_layout.schema.json` owns the reusable
+parametric layout shape: coarse integer-grid units with bounded capacity,
+stable order, and the closed `round`, `rect`, `row`, `court`, and `zone` enum.
+`contracts/firestore/organizer_event_success_layouts.schema.json` stores those
+assets at `organizerEventSuccessLayouts/{organizerId_layoutId}`. Layouts are
+organizer-scoped, not event-scoped, and derived coordinates are never stored.
+Organizer managers may query their assets; all direct client writes are denied.
+
+`eventSuccessPlans.layoutId` selects an asset. Assignment documents separately
+store `layoutUnitId` and nullable `confirmedLayoutUnitId`; assigned position is
+not evidence of Host confirmation. `affinityConstraints` and
+`spatialOverrides` retain the explicit T2 `thisRound` / `pinned` consequence.
+The spatial callable request/response schemas own authoring, authorized layout
+fetch, destination preview, reassignment, confirmation, and release. Mutating
+actions carry `expectedRevision` and share `liveControlRevision` with the T4
+control path.
+
+`contracts/catalogs/event_success_layout.json` is the cross-runtime fixture for
+all five shapes and normalized grid-cell rendering. Unit proximity is a
+complete Euclidean graph derived from the stored grid with no cutoff. A
+`wholeGroup` structure suppresses layout projection even if a legacy plan or
+assignment contains stale spatial fields.
 
 ### TypeScript Timestamp Projections
 

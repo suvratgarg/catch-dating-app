@@ -12,6 +12,7 @@ _EventSuccessPlan _$EventSuccessPlanFromJson(
   id: json['id'] as String,
   eventId: json['eventId'] as String,
   clubId: json['clubId'] as String,
+  layoutId: json['layoutId'] as String?,
   playbookId: json['playbookId'] as String,
   selectedModuleIds: (json['selectedModuleIds'] as List<dynamic>)
       .map((e) => e as String)
@@ -65,6 +66,7 @@ Map<String, dynamic> _$EventSuccessPlanToJson(_EventSuccessPlan instance) =>
     <String, dynamic>{
       'eventId': instance.eventId,
       'clubId': instance.clubId,
+      'layoutId': instance.layoutId,
       'playbookId': instance.playbookId,
       'selectedModuleIds': instance.selectedModuleIds,
       'targetAttendeeCount': instance.targetAttendeeCount,

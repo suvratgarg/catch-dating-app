@@ -19714,6 +19714,252 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Publish rotation'**
   String get eventSuccessLiveControlPublishRotationConfirmLabel;
+
+  /// Reusable room layout selection title.
+  ///
+  /// In en, this message translates to:
+  /// **'Room layout'**
+  String get hostsEventSuccessStepRoomLayoutTitle;
+
+  /// Explains reusable coarse layout assets.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a reusable coarse layout for live placement. This is not a to-scale floor plan.'**
+  String get hostsEventSuccessStepRoomLayoutSubtitle;
+
+  /// Layout unit count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 unit} other{{count} units}}'**
+  String hostsEventSuccessStepRoomLayoutUnitCount({required int count});
+
+  /// Selected layout state.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected'**
+  String get hostsEventSuccessStepRoomLayoutSelected;
+
+  /// Opens parametric layout authoring.
+  ///
+  /// In en, this message translates to:
+  /// **'Create reusable layout'**
+  String get hostsEventSuccessStepRoomLayoutCreate;
+
+  /// Whole-group layout omission title.
+  ///
+  /// In en, this message translates to:
+  /// **'No room map for whole-group mode'**
+  String get hostsEventSuccessStepRoomLayoutWholeGroupTitle;
+
+  /// Whole-group layout omission explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to pods, pairs, teams, or tables if this event needs mapped placement.'**
+  String get hostsEventSuccessStepRoomLayoutWholeGroupBody;
+
+  /// Layout author sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'Build a room layout'**
+  String get hostsEventSuccessStepRoomLayoutAuthorTitle;
+
+  /// Layout author sheet subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set the topology once, then reuse it across events.'**
+  String get hostsEventSuccessStepRoomLayoutAuthorSubtitle;
+
+  /// Layout asset name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Layout name'**
+  String get hostsEventSuccessStepRoomLayoutName;
+
+  /// Required layout name error.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a layout name.'**
+  String get hostsEventSuccessStepRoomLayoutNameRequired;
+
+  /// Layout unit shape field.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit shape'**
+  String get hostsEventSuccessStepRoomLayoutShape;
+
+  /// Round layout unit shape.
+  ///
+  /// In en, this message translates to:
+  /// **'Round tables'**
+  String get hostsEventSuccessStepRoomLayoutShapeRound;
+
+  /// Rectangular layout unit shape.
+  ///
+  /// In en, this message translates to:
+  /// **'Rectangular tables'**
+  String get hostsEventSuccessStepRoomLayoutShapeRectangle;
+
+  /// Row layout unit shape.
+  ///
+  /// In en, this message translates to:
+  /// **'Rows'**
+  String get hostsEventSuccessStepRoomLayoutShapeRow;
+
+  /// Court layout unit shape.
+  ///
+  /// In en, this message translates to:
+  /// **'Courts'**
+  String get hostsEventSuccessStepRoomLayoutShapeCourt;
+
+  /// Zone layout unit shape.
+  ///
+  /// In en, this message translates to:
+  /// **'Zones'**
+  String get hostsEventSuccessStepRoomLayoutShapeZone;
+
+  /// Layout unit count parameter.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of units'**
+  String get hostsEventSuccessStepRoomLayoutUnits;
+
+  /// Layout unit capacity parameter.
+  ///
+  /// In en, this message translates to:
+  /// **'People per unit'**
+  String get hostsEventSuccessStepRoomLayoutCapacity;
+
+  /// Layout column parameter.
+  ///
+  /// In en, this message translates to:
+  /// **'Units per row'**
+  String get hostsEventSuccessStepRoomLayoutColumns;
+
+  /// Unit count decrease semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Decrease number of units'**
+  String get hostsEventSuccessStepRoomLayoutDecreaseUnits;
+
+  /// Unit count increase semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Increase number of units'**
+  String get hostsEventSuccessStepRoomLayoutIncreaseUnits;
+
+  /// Capacity decrease semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Decrease unit capacity'**
+  String get hostsEventSuccessStepRoomLayoutDecreaseCapacity;
+
+  /// Capacity increase semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Increase unit capacity'**
+  String get hostsEventSuccessStepRoomLayoutIncreaseCapacity;
+
+  /// Column count decrease semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Decrease units per row'**
+  String get hostsEventSuccessStepRoomLayoutDecreaseColumns;
+
+  /// Column count increase semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Increase units per row'**
+  String get hostsEventSuccessStepRoomLayoutIncreaseColumns;
+
+  /// Saves and selects a reusable layout.
+  ///
+  /// In en, this message translates to:
+  /// **'Save and select layout'**
+  String get hostsEventSuccessStepRoomLayoutSave;
+
+  /// Spatial room map title.
+  ///
+  /// In en, this message translates to:
+  /// **'Room map'**
+  String get eventSuccessRoomMapTitle;
+
+  /// Explains assigned and confirmed placement states.
+  ///
+  /// In en, this message translates to:
+  /// **'Outlined means assigned. Filled means the Host confirmed the attendee is there.'**
+  String get eventSuccessRoomMapSubtitle;
+
+  /// Assigned placement legend.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned'**
+  String get eventSuccessRoomMapAssigned;
+
+  /// Confirmed placement legend.
+  ///
+  /// In en, this message translates to:
+  /// **'Host confirmed'**
+  String get eventSuccessRoomMapConfirmed;
+
+  /// People count for a map unit.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 person} other{{count} people}}'**
+  String eventSuccessRoomMapPeopleCount({required int count});
+
+  /// Tap placement instruction.
+  ///
+  /// In en, this message translates to:
+  /// **'Select an attendee, then choose a destination.'**
+  String get eventSuccessRoomMapSelectAttendee;
+
+  /// Temporary spatial constraint scope.
+  ///
+  /// In en, this message translates to:
+  /// **'This round only'**
+  String get eventSuccessRoomMapScopeThisRound;
+
+  /// Durable spatial constraint scope.
+  ///
+  /// In en, this message translates to:
+  /// **'Pinned until released'**
+  String get eventSuccessRoomMapScopePinned;
+
+  /// Invalid destination capacity reason.
+  ///
+  /// In en, this message translates to:
+  /// **'This unit is at capacity.'**
+  String get eventSuccessRoomMapReasonCapacity;
+
+  /// Invalid destination safety reason.
+  ///
+  /// In en, this message translates to:
+  /// **'A safety separation keeps this destination unavailable.'**
+  String get eventSuccessRoomMapReasonSafety;
+
+  /// Invalid destination constraint reason.
+  ///
+  /// In en, this message translates to:
+  /// **'A declared placement constraint keeps this destination unavailable.'**
+  String get eventSuccessRoomMapReasonConstraint;
+
+  /// Host confirms attendee placement.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm position'**
+  String get eventSuccessRoomMapConfirmPosition;
+
+  /// Releases durable attendee placement.
+  ///
+  /// In en, this message translates to:
+  /// **'Release pinned placement'**
+  String get eventSuccessRoomMapReleasePinned;
+
+  /// Additive drag affordance explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'On larger screens, drag is also available. Tap controls always work.'**
+  String get eventSuccessRoomMapDragHint;
 }
 
 class _AppLocalizationsDelegate

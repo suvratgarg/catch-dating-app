@@ -495,6 +495,31 @@ function eventSuccessAssignment(overrides = {}) {
   };
 }
 
+function organizerEventSuccessLayout(overrides = {}) {
+  const updatedAt = Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z"));
+  return {
+    organizerId: "organizer-1",
+    layoutId: "layout-1",
+    label: "Main room",
+    units: [
+      {
+        id: "round-1",
+        label: "Table 1",
+        shape: "round",
+        capacity: 4,
+        gridX: 0,
+        gridY: 0,
+        gridWidth: 2,
+        gridHeight: 2,
+        order: 0,
+      },
+    ],
+    createdAt: updatedAt,
+    updatedAt,
+    ...overrides,
+  };
+}
+
 function eventSuccessPreference(overrides = {}) {
   return {
     eventId: "event-1",
@@ -817,6 +842,48 @@ describe("firestore.rules", () => {
         "organizerFollows",
         "organizer-1_runner-1",
       ), {status: "inactive"}));
+    });
+
+    it("limits reusable Event Success layouts to organizer managers", async () => {
+      await seed(["organizers", "organizer-1"], {
+        ownerUserId: "owner-1",
+        hostUserId: "owner-1",
+        hostUserIds: ["owner-1", "manager-1"],
+      });
+      await seed(
+        ["organizerEventSuccessLayouts", "organizer-1_layout-1"],
+        organizerEventSuccessLayout(),
+      );
+
+      const managerDb = authedDb("manager-1");
+      await assertSucceeds(getDoc(doc(
+        managerDb,
+        "organizerEventSuccessLayouts",
+        "organizer-1_layout-1",
+      )));
+      await assertSucceeds(getDocs(query(
+        collection(managerDb, "organizerEventSuccessLayouts"),
+        where("organizerId", "==", "organizer-1"),
+      )));
+      await assertFails(getDoc(doc(
+        authedDb("runner-1"),
+        "organizerEventSuccessLayouts",
+        "organizer-1_layout-1",
+      )));
+      await assertFails(getDocs(query(
+        collection(authedDb("runner-1"), "organizerEventSuccessLayouts"),
+        where("organizerId", "==", "organizer-1"),
+      )));
+      await assertFails(updateDoc(doc(
+        managerDb,
+        "organizerEventSuccessLayouts",
+        "organizer-1_layout-1",
+      ), {label: "Client edit"}));
+      await assertFails(setDoc(doc(
+        managerDb,
+        "organizerEventSuccessLayouts",
+        "organizer-1_layout-2",
+      ), organizerEventSuccessLayout({layoutId: "layout-2"})));
     });
 
     it("keeps organizer claims and schedule locks server-only", async () => {

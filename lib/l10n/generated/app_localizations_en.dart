@@ -12644,4 +12644,161 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventSuccessLiveControlPublishRotationConfirmLabel =>
       'Publish rotation';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutTitle => 'Room layout';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutSubtitle =>
+      'Choose a reusable coarse layout for live placement. This is not a to-scale floor plan.';
+
+  @override
+  String hostsEventSuccessStepRoomLayoutUnitCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count units',
+      one: '1 unit',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutSelected => 'Selected';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutCreate => 'Create reusable layout';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutWholeGroupTitle =>
+      'No room map for whole-group mode';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutWholeGroupBody =>
+      'Switch to pods, pairs, teams, or tables if this event needs mapped placement.';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutAuthorTitle =>
+      'Build a room layout';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutAuthorSubtitle =>
+      'Set the topology once, then reuse it across events.';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutName => 'Layout name';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutNameRequired =>
+      'Enter a layout name.';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutShape => 'Unit shape';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutShapeRound => 'Round tables';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutShapeRectangle =>
+      'Rectangular tables';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutShapeRow => 'Rows';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutShapeCourt => 'Courts';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutShapeZone => 'Zones';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutUnits => 'Number of units';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutCapacity => 'People per unit';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutColumns => 'Units per row';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutDecreaseUnits =>
+      'Decrease number of units';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutIncreaseUnits =>
+      'Increase number of units';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutDecreaseCapacity =>
+      'Decrease unit capacity';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutIncreaseCapacity =>
+      'Increase unit capacity';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutDecreaseColumns =>
+      'Decrease units per row';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutIncreaseColumns =>
+      'Increase units per row';
+
+  @override
+  String get hostsEventSuccessStepRoomLayoutSave => 'Save and select layout';
+
+  @override
+  String get eventSuccessRoomMapTitle => 'Room map';
+
+  @override
+  String get eventSuccessRoomMapSubtitle =>
+      'Outlined means assigned. Filled means the Host confirmed the attendee is there.';
+
+  @override
+  String get eventSuccessRoomMapAssigned => 'Assigned';
+
+  @override
+  String get eventSuccessRoomMapConfirmed => 'Host confirmed';
+
+  @override
+  String eventSuccessRoomMapPeopleCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count people',
+      one: '1 person',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get eventSuccessRoomMapSelectAttendee =>
+      'Select an attendee, then choose a destination.';
+
+  @override
+  String get eventSuccessRoomMapScopeThisRound => 'This round only';
+
+  @override
+  String get eventSuccessRoomMapScopePinned => 'Pinned until released';
+
+  @override
+  String get eventSuccessRoomMapReasonCapacity => 'This unit is at capacity.';
+
+  @override
+  String get eventSuccessRoomMapReasonSafety =>
+      'A safety separation keeps this destination unavailable.';
+
+  @override
+  String get eventSuccessRoomMapReasonConstraint =>
+      'A declared placement constraint keeps this destination unavailable.';
+
+  @override
+  String get eventSuccessRoomMapConfirmPosition => 'Confirm position';
+
+  @override
+  String get eventSuccessRoomMapReleasePinned => 'Release pinned placement';
+
+  @override
+  String get eventSuccessRoomMapDragHint =>
+      'On larger screens, drag is also available. Tap controls always work.';
 }

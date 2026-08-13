@@ -24,6 +24,8 @@ final class EventSuccessAssignment {
     this.rotationSlots = const [],
     this.groupRotationSlots = const [],
     this.sitOutSlots = const [],
+    this.layoutUnitId,
+    this.confirmedLayoutUnitId,
   });
 
   factory EventSuccessAssignment.fromJson(Map<String, dynamic> json) {
@@ -76,6 +78,8 @@ final class EventSuccessAssignment {
             ),
           )
           .toList(growable: false),
+      layoutUnitId: json['layoutUnitId'] as String?,
+      confirmedLayoutUnitId: json['confirmedLayoutUnitId'] as String?,
       source: json['source'] as String? ?? 'server',
       createdAt: dateTimeFromFirestoreValue(
         json['createdAt'],
@@ -106,6 +110,8 @@ final class EventSuccessAssignment {
   final List<EventSuccessRotationSlot> rotationSlots;
   final List<EventSuccessGroupRotationSlot> groupRotationSlots;
   final List<EventSuccessSitOutSlot> sitOutSlots;
+  final String? layoutUnitId;
+  final String? confirmedLayoutUnitId;
   final String source;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -139,6 +145,8 @@ final class EventSuccessAssignment {
         .map((slot) => slot.toJson())
         .toList(),
     'sitOutSlots': sitOutSlots.map((slot) => slot.toJson()).toList(),
+    'layoutUnitId': layoutUnitId,
+    'confirmedLayoutUnitId': confirmedLayoutUnitId,
     'source': source,
     'createdAt': firestoreTimestampFromDateTime(createdAt),
     'updatedAt': firestoreTimestampFromDateTime(updatedAt),

@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_event_success_layouts.schema.json",
+  "title": "OrganizerEventSuccessLayoutDocument",
+  "description": "Reusable organizer-owned parametric room layout stored at organizerEventSuccessLayouts/{organizerId_layoutId}. Derived coordinates and proximity edges are never persisted.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerEventSuccessLayouts",
+  "x-firestore-path": "organizerEventSuccessLayouts/{layoutDocumentId}",
+  "x-document-id-field": "id",
+  "x-owner": "organizer manager through upsertEventSuccessLayout",
+  "required": ["organizerId", "layoutId", "label", "units", "createdAt", "updatedAt"],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "layoutId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
+    },
+    "units": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 200,
+      "items": {
+        "$ref": "../shared/event_success_layout.schema.json#/definitions/layoutUnit"
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+}

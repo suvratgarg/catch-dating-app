@@ -76,6 +76,7 @@ import {
   eventBroadcastDocumentSchema,
   eventWaitlistOfferDocumentSchema,
   eventSuccessPlanDocumentSchema,
+  organizerEventSuccessLayoutDocumentSchema,
   eventSuccessAssignmentDraftDocumentSchema,
   eventSuccessFeedbackDocumentSchema,
   eventSuccessPreferenceDocumentSchema,
@@ -225,6 +226,12 @@ import {
   registerPublicEventCallablePayloadSchema,
   registerPublicEventCallableResponseSchema,
   getEventRuntimeBootstrapCallablePayloadSchema,
+  upsertEventSuccessLayoutCallablePayloadSchema,
+  upsertEventSuccessLayoutCallableResponseSchema,
+  getEventSuccessSpatialLayoutCallablePayloadSchema,
+  getEventSuccessSpatialLayoutCallableResponseSchema,
+  eventSuccessSpatialActionCallablePayloadSchema,
+  eventSuccessSpatialActionCallableResponseSchema,
   getEventRuntimeBootstrapCallableResponseSchema,
   claimEventRuntimeAccessCallablePayloadSchema,
   claimEventRuntimeAccessCallableResponseSchema,
@@ -425,6 +432,7 @@ export const validateCrossPathsPairHoldDocument = ajv.compile(crossPathsPairHold
 export const validateEventBroadcastDocument = ajv.compile(eventBroadcastDocumentSchema);
 export const validateEventWaitlistOfferDocument = ajv.compile(eventWaitlistOfferDocumentSchema);
 export const validateEventSuccessPlanDocument = ajv.compile(eventSuccessPlanDocumentSchema);
+export const validateOrganizerEventSuccessLayoutDocument = ajv.compile(organizerEventSuccessLayoutDocumentSchema);
 export const validateEventSuccessAssignmentDraftDocument = ajv.compile(eventSuccessAssignmentDraftDocumentSchema);
 export const validateEventSuccessFeedbackDocument = ajv.compile(eventSuccessFeedbackDocumentSchema);
 export const validateEventSuccessPreferenceDocument = ajv.compile(eventSuccessPreferenceDocumentSchema);
@@ -574,6 +582,12 @@ export const validateEventStaffListCallableResponse = ajv.compile(eventStaffList
 export const validateRegisterPublicEventCallablePayload = ajv.compile(registerPublicEventCallablePayloadSchema);
 export const validateRegisterPublicEventCallableResponse = ajv.compile(registerPublicEventCallableResponseSchema);
 export const validateGetEventRuntimeBootstrapCallablePayload = ajv.compile(getEventRuntimeBootstrapCallablePayloadSchema);
+export const validateUpsertEventSuccessLayoutCallablePayload = ajv.compile(upsertEventSuccessLayoutCallablePayloadSchema);
+export const validateUpsertEventSuccessLayoutCallableResponse = ajv.compile(upsertEventSuccessLayoutCallableResponseSchema);
+export const validateGetEventSuccessSpatialLayoutCallablePayload = ajv.compile(getEventSuccessSpatialLayoutCallablePayloadSchema);
+export const validateGetEventSuccessSpatialLayoutCallableResponse = ajv.compile(getEventSuccessSpatialLayoutCallableResponseSchema);
+export const validateEventSuccessSpatialActionCallablePayload = ajv.compile(eventSuccessSpatialActionCallablePayloadSchema);
+export const validateEventSuccessSpatialActionCallableResponse = ajv.compile(eventSuccessSpatialActionCallableResponseSchema);
 export const validateGetEventRuntimeBootstrapCallableResponse = ajv.compile(getEventRuntimeBootstrapCallableResponseSchema);
 export const validateClaimEventRuntimeAccessCallablePayload = ajv.compile(claimEventRuntimeAccessCallablePayloadSchema);
 export const validateClaimEventRuntimeAccessCallableResponse = ajv.compile(claimEventRuntimeAccessCallableResponseSchema);

@@ -9,6 +9,25 @@ export interface EventSuccessPlanDocument {
   eventId: string;
   clubId: string;
   organizerId?: string;
+  layoutId?: string | null;
+  /**
+   * @maxItems 300
+   */
+  affinityConstraints?: {
+    aUid: string;
+    bUid: string;
+    value: "mustPair" | "mustSplit" | "avoidRepeat" | "neutral";
+    scope: "thisRound" | "pinned";
+  }[];
+  /**
+   * @maxItems 300
+   */
+  spatialOverrides?: {
+    uid: string;
+    targetPeerUid: string;
+    layoutUnitId: string;
+    scope: "thisRound" | "pinned";
+  }[];
   playbookId: string;
   /**
    * @maxItems 24

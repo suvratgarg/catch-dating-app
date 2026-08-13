@@ -430,6 +430,13 @@ const schemaSpecs = [
       "functions/src/shared/generated/eventSuccessPlanDocument.ts",
   },
   {
+    name: "OrganizerEventSuccessLayoutDocument",
+    source: "firestore/organizer_event_success_layouts.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerEventSuccessLayoutDocument.ts",
+  },
+  {
     name: "EventSuccessAssignmentDraftDocument",
     source: "firestore/event_success_assignment_drafts.schema.json",
     typeOutput:
@@ -1369,6 +1376,53 @@ const schemaSpecs = [
     source: "callables/get_event_runtime_bootstrap_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/getEventRuntimeBootstrapCallablePayload.ts",
+  },
+  {
+    name: "UpsertEventSuccessLayoutCallablePayload",
+    source: "callables/upsert_event_success_layout_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "upsertEventSuccessLayoutCallablePayload.ts",
+  },
+  {
+    name: "UpsertEventSuccessLayoutCallableResponse",
+    source:
+      "callable_responses/upsert_event_success_layout_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "upsertEventSuccessLayoutCallableResponse.ts",
+  },
+  {
+    name: "GetEventSuccessSpatialLayoutCallablePayload",
+    source:
+      "callables/get_event_success_spatial_layout_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "getEventSuccessSpatialLayoutCallablePayload.ts",
+  },
+  {
+    name: "GetEventSuccessSpatialLayoutCallableResponse",
+    source:
+      "callable_responses/" +
+      "get_event_success_spatial_layout_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "getEventSuccessSpatialLayoutCallableResponse.ts",
+  },
+  {
+    name: "EventSuccessSpatialActionCallablePayload",
+    source: "callables/event_success_spatial_action_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "eventSuccessSpatialActionCallablePayload.ts",
+  },
+  {
+    name: "EventSuccessSpatialActionCallableResponse",
+    source:
+      "callable_responses/event_success_spatial_action_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "eventSuccessSpatialActionCallableResponse.ts",
   },
   {
     name: "GetEventRuntimeBootstrapCallableResponse",

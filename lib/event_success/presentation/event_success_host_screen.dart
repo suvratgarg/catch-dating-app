@@ -35,11 +35,13 @@ import 'package:catch_dating_app/event_success/domain/event_success_activity_pro
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_exclusion_ledger.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_preference.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_runtime.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
@@ -47,6 +49,7 @@ import 'package:catch_dating_app/event_success/presentation/event_success_featur
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_room_map.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_setup_body.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_skeletons.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
@@ -159,6 +162,13 @@ class _EventSuccessHostSectionState
         hasSavedGuide && (showTabs || initialTab == EventSuccessHostTab.live);
     final shouldLoadPreferences = shouldLoadAssignments;
     final shouldLoadWingmanRequests = shouldLoadAssignments;
+    final AsyncValue<EventSuccessLayout?> spatialLayoutAsync =
+        shouldLoadAssignments &&
+            persistedPlan.layoutId != null &&
+            persistedPlan.structureConfig.unitKind !=
+                EventSuccessUnitKind.wholeGroup
+        ? ref.watch(eventSuccessSpatialLayoutProvider(event.id))
+        : const AsyncData<EventSuccessLayout?>(null);
     final AsyncValue<EventParticipationRoster> rosterAsync = shouldLoadRoster
         ? ref.watch(watchEventParticipationRosterProvider(event.id))
         : AsyncData(EventParticipationRoster.empty());
@@ -303,6 +313,7 @@ class _EventSuccessHostSectionState
       event: event,
       plan: state.plan,
       planIsPersisted: state.planIsPersisted,
+      spatialLayout: spatialLayoutAsync.asData?.value,
       roster: state.roster,
       scorecard: state.scorecard,
       assignments: state.assignments,
@@ -378,6 +389,33 @@ class _EventSuccessHostSectionState
             expectedRevision: state.plan.liveControlRevision,
             rounds: rounds,
           ),
+      onPreviewSpatial: (assignment) => _controlEventSuccessSpatial(
+        eventId: event.id,
+        expectedRevision: state.plan.liveControlRevision,
+        action: EventSuccessSpatialAction.previewReassignment,
+        assignment: assignment,
+      ).then((result) => result.destinations),
+      onReassignSpatial: (assignment, destinationUnitId, scope) =>
+          _controlEventSuccessSpatial(
+            eventId: event.id,
+            expectedRevision: state.plan.liveControlRevision,
+            action: EventSuccessSpatialAction.reassign,
+            assignment: assignment,
+            destinationUnitId: destinationUnitId,
+            scope: scope,
+          ),
+      onConfirmSpatial: (assignment) => _controlEventSuccessSpatial(
+        eventId: event.id,
+        expectedRevision: state.plan.liveControlRevision,
+        action: EventSuccessSpatialAction.confirmPosition,
+        assignment: assignment,
+      ),
+      onReleaseSpatial: (assignment) => _controlEventSuccessSpatial(
+        eventId: event.id,
+        expectedRevision: state.plan.liveControlRevision,
+        action: EventSuccessSpatialAction.releasePinned,
+        assignment: assignment,
+      ),
       revealActionState: EventSuccessRevealActionState.resolve(
         startPending: startRevealCountdownMutation.isPending,
         revealPending: revealRoundMutation.isPending,
@@ -428,6 +466,28 @@ class _EventSuccessHostSectionState
           );
     });
   }
+
+  Future<EventSuccessSpatialActionResult> _controlEventSuccessSpatial({
+    required String eventId,
+    required int expectedRevision,
+    required EventSuccessSpatialAction action,
+    required EventSuccessAssignment assignment,
+    String? destinationUnitId,
+    EventSuccessSpatialScope? scope,
+  }) => EventSuccessController.spatialControlMutation.run(
+    ref,
+    (tx) => tx
+        .get(eventSuccessControllerProvider.notifier)
+        .controlSpatialPlacement(
+          eventId: eventId,
+          expectedRevision: expectedRevision,
+          action: action,
+          moduleId: assignment.moduleId,
+          uid: assignment.uid,
+          destinationUnitId: destinationUnitId,
+          scope: scope,
+        ),
+  );
 
   Future<void> _generateEventSuccessMicroPods({required String eventId}) {
     return EventSuccessController.generateMicroPodsMutation.run(
@@ -841,6 +901,7 @@ class EventSuccessHostPanel extends StatefulWidget {
     required this.event,
     required this.plan,
     required this.planIsPersisted,
+    this.spatialLayout,
     required this.roster,
     this.scorecard,
     this.assignments = const [],
@@ -872,6 +933,10 @@ class EventSuccessHostPanel extends StatefulWidget {
     this.onPublishGuidedRotationRound,
     this.onOverrideGroupAssignments,
     this.onOverrideGuidedRotations,
+    this.onPreviewSpatial,
+    this.onReassignSpatial,
+    this.onConfirmSpatial,
+    this.onReleaseSpatial,
     this.revealActionState = const EventSuccessRevealActionState(),
     this.onStartRevealCountdown,
     this.onRevealRound,
@@ -884,6 +949,7 @@ class EventSuccessHostPanel extends StatefulWidget {
   final Event event;
   final EventSuccessPlan plan;
   final bool planIsPersisted;
+  final EventSuccessLayout? spatialLayout;
   final EventParticipationRoster roster;
   final EventSuccessScorecard? scorecard;
   final List<EventSuccessAssignment> assignments;
@@ -917,6 +983,12 @@ class EventSuccessHostPanel extends StatefulWidget {
   onOverrideGroupAssignments;
   final Future<void> Function(List<EventSuccessRotationOverrideRound> rounds)?
   onOverrideGuidedRotations;
+  final EventSuccessSpatialPreview? onPreviewSpatial;
+  final EventSuccessSpatialReassign? onReassignSpatial;
+  final Future<void> Function(EventSuccessAssignment assignment)?
+  onConfirmSpatial;
+  final Future<void> Function(EventSuccessAssignment assignment)?
+  onReleaseSpatial;
   final EventSuccessRevealActionState revealActionState;
   final Future<void> Function(int roundIndex, int countdownSeconds)?
   onStartRevealCountdown;
@@ -961,6 +1033,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         event: widget.event,
         plan: widget.plan,
         planIsPersisted: widget.planIsPersisted,
+        spatialLayout: widget.spatialLayout,
         roster: widget.roster,
         assignments: widget.assignments,
         assignmentParticipantProfiles: widget.assignmentParticipantProfiles,
@@ -999,6 +1072,10 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         onPublishGuidedRotationRound: widget.onPublishGuidedRotationRound,
         onOverrideGroupAssignments: _groupOverrideCallback(),
         onOverrideGuidedRotations: _rotationOverrideCallback(),
+        onPreviewSpatial: widget.onPreviewSpatial,
+        onReassignSpatial: widget.onReassignSpatial,
+        onConfirmSpatial: widget.onConfirmSpatial,
+        onReleaseSpatial: widget.onReleaseSpatial,
         revealActionState: widget.revealActionState,
         onStartRevealCountdown: _startRevealCountdownCallback(),
         onRevealRound: _revealRoundCallback(),

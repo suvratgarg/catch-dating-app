@@ -55,6 +55,11 @@ import {
   rotationPolicyForStructureConfig,
 } from "./assignmentPrimitiveControls";
 import {loadEventSuccessRoster} from "./eventSuccessRoster";
+import {
+  applyEventSuccessSpatialLayout,
+  assignmentConstraintsForSpatialPlan,
+  loadSelectedEventSuccessLayout,
+} from "./spatialLayout";
 
 const MICRO_PODS_MODULE_ID = "micro_pods";
 const DEFAULT_TARGET_UNIT_SIZE = 5;
@@ -75,6 +80,19 @@ interface EventSuccessPlanDocument {
   eventId?: string;
   clubId?: string;
   selectedModuleIds?: unknown;
+  layoutId?: string | null;
+  affinityConstraints?: Array<{
+    aUid: string;
+    bUid: string;
+    value: "mustPair" | "mustSplit" | "avoidRepeat" | "neutral";
+    scope: "thisRound" | "pinned";
+  }>;
+  spatialOverrides?: Array<{
+    uid: string;
+    targetPeerUid: string;
+    layoutUnitId: string;
+    scope: "thisRound" | "pinned";
+  }>;
   structureConfig?: {
     unitKind?: unknown;
     unitSize?: unknown;
@@ -153,6 +171,8 @@ interface GeneratedAssignment {
   unitKind?: EventSuccessUnitKind;
   unitIndex?: number;
   unitLabel?: string;
+  layoutUnitId?: string;
+  confirmedLayoutUnitId?: string | null;
   whySummary?: string;
   whyCodes?: AssignmentWhyCode[];
   rotationFairness?: RotationFairnessSummary;
@@ -283,8 +303,9 @@ export async function generateEventSuccessPodsHandler(
   const eligibleParticipants = preferCheckedInParticipants(participants);
 
   const blockedPairs = await fetchBlockedPairs(db, eligibleParticipants);
-  const constraints = assignmentConstraintsForStructureConfig(
-    plan.structureConfig
+  const constraints = assignmentConstraintsForSpatialPlan(
+    assignmentConstraintsForStructureConfig(plan.structureConfig),
+    plan
   );
   const rotationPolicy = rotationPolicyForStructureConfig(
     plan.structureConfig
@@ -322,6 +343,12 @@ export async function generateEventSuccessPodsHandler(
     source: "server_v1",
     now: deps.serverTimestamp(),
   });
+  const layout = await loadSelectedEventSuccessLayout(
+    db,
+    event.organizerId ?? event.clubId,
+    plan
+  );
+  applyEventSuccessSpatialLayout(assignments, layout, plan, 0);
   await writeAssignments(db, eventId, assignments);
 
   return {
@@ -1208,8 +1235,7 @@ async function writeAssignments(
   for (const [docId, assignment] of assignments.entries()) {
     batch.set(
       db.collection("eventSuccessAssignments").doc(docId),
-      assignment,
-      {merge: true}
+      assignment
     );
   }
   await batch.commit();

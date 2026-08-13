@@ -18,6 +18,23 @@ export interface GetEventRuntimeBootstrapCallableResponse {
      * @maxItems 24
      */
     moduleIds: string[];
+    layout: null | {
+      layoutId: string;
+      label: string;
+      /**
+       * @minItems 1
+       * @maxItems 200
+       */
+      units: {
+        id: string;
+        label: string;
+        shape: "round" | "rect" | "row" | "court" | "zone";
+        capacity: number;
+        gridX: number;
+        gridY: number;
+        order: number;
+      }[];
+    };
     /**
      * Fields that must be completed before event mode opens. Sensitive preference fields are never required for entry.
      *

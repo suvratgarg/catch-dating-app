@@ -21,6 +21,8 @@ export interface EventSuccessAssignmentDocument {
   unitKind?: "wholeGroup" | "pods" | "pairs" | "teams" | "tables";
   unitIndex?: number;
   unitLabel?: string;
+  layoutUnitId?: string;
+  confirmedLayoutUnitId?: string | null;
   whySummary?: string;
   /**
    * @maxItems 12
