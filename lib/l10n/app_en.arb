@@ -96,14 +96,6 @@
     "x-surface": "consumer.navigation",
     "x-max-chars": 16
   },
-  "hostNavigationToday": "Today",
-  "@hostNavigationToday": {
-    "description": "Host bottom navigation label for the daily operations tab.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "host.navigation",
-    "x-max-chars": 16
-  },
   "hostNavigationEvents": "Events",
   "@hostNavigationEvents": {
     "description": "Host bottom navigation label for the event-management tab.",
@@ -10114,20 +10106,6 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_actions"
   },
-  "eventSuccessEventSuccessLiveRevealActionsLabelReset": "Reset",
-  "@eventSuccessEventSuccessLiveRevealActionsLabelReset": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_actions.dart (label).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_actions"
-  },
-  "eventSuccessEventSuccessLiveRevealActionsLabelResetReveal": "Reset reveal",
-  "@eventSuccessEventSuccessLiveRevealActionsLabelResetReveal": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_actions.dart (label).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_actions"
-  },
   "eventSuccessEventSuccessLiveRevealActionsLabelRevealRoundValue1": "Reveal round {value1}",
   "@eventSuccessEventSuccessLiveRevealActionsLabelRevealRoundValue1": {
     "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_actions.dart (label).",
@@ -11349,37 +11327,6 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_organizer"
   },
-  "hostsHostTodayTitleNoActiveEventsYet": "No active events yet",
-  "@hostsHostTodayTitleNoActiveEventsYet": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
-  },
-  "hostsHostTodayBodyCreateAnEventFor": "Create an event for {name} to start filling the host dashboard.",
-  "@hostsHostTodayBodyCreateAnEventFor": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (body).",
-    "placeholders": {
-      "name": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
-  },
-  "hostsHostTodayLabelNewEvent": "New event",
-  "@hostsHostTodayLabelNewEvent": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
-  },
-  "hostsHostTodayLabelEvents": "Events",
-  "@hostsHostTodayLabelEvents": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
-  },
   "hostsHostTodayTitleNeedsYou": "Needs you",
   "@hostsHostTodayTitleNeedsYou": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (title).",
@@ -11394,37 +11341,12 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_today"
   },
-  "hostsHostTodayTitleLaterThisWeek": "Later this week",
-  "@hostsHostTodayTitleLaterThisWeek": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
-  },
-  "hostsHostTodayLabelAllEvents": "All events",
-  "@hostsHostTodayLabelAllEvents": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
-  },
   "hostsHostTodayTextLongweekdayDaypart": "{longWeekday} {daypart}",
   "@hostsHostTodayTextLongweekdayDaypart": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (Text).",
     "placeholders": {
       "longWeekday": {},
       "daypart": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
-  },
-  "hostsHostTodayTextGoodDaypartHostname": "Good {daypart},\n{hostName}",
-  "@hostsHostTodayTextGoodDaypartHostname": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (Text).",
-    "placeholders": {
-      "daypart": {},
-      "hostName": {}
     },
     "x-audience": "host",
     "x-owner": "product",
@@ -11478,20 +11400,6 @@
   },
   "hostsHostTodayLabelSetUpRun": "Set up & run",
   "@hostsHostTodayLabelSetUpRun": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
-  },
-  "hostsHostTodayLabelD": "D",
-  "@hostsHostTodayLabelD": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
-  },
-  "hostsHostTodayLabelM": "M",
-  "@hostsHostTodayLabelM": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
@@ -20950,6 +20858,22 @@
   "eventSuccessLiveControlPublishRotationMessage": "Round {roundNumber} will become visible to attendees and cannot be withdrawn.",
   "@eventSuccessLiveControlPublishRotationMessage": {"description": "Irreversible rotation publication message.", "placeholders": {"roundNumber": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"},
   "eventSuccessLiveControlPublishRotationConfirmLabel": "Publish rotation",
+  "eventSuccessLiveControlStandingsRevealLabel": "Standings reveal",
+  "@eventSuccessLiveControlStandingsRevealLabel": {"description": "Labels the standings reveal mode in the live event control room.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_live_reveal_card"},
+  "eventSuccessLiveControlPointsValue": "{points} pts",
+  "@eventSuccessLiveControlPointsValue": {"description": "Formats a unit score in the published standings.", "placeholders": {"points": {"type": "num"}}, "x-audience": "shared", "x-owner": "product", "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"},
+  "eventSuccessLiveControlRankValue": "Rank {rank}",
+  "@eventSuccessLiveControlRankValue": {"description": "Formats a unit rank in the published standings.", "placeholders": {"rank": {"type": "int"}}, "x-audience": "shared", "x-owner": "product", "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"},
+  "eventSuccessLiveControlRecordRoundTitle": "Record round {roundNumber}",
+  "@eventSuccessLiveControlRecordRoundTitle": {"description": "Heads the host form for recording a round outcome.", "placeholders": {"roundNumber": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"},
+  "eventSuccessLiveControlRankEntryInstructions": "Enter one unique rank for every unit. The table stays hidden until the existing reveal.",
+  "@eventSuccessLiveControlRankEntryInstructions": {"description": "Explains how the host records ranked unit outcomes before reveal.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"},
+  "eventSuccessLiveControlScoreEntryInstructions": "Enter this round’s score for every unit. Totals stay hidden until the existing reveal.",
+  "@eventSuccessLiveControlScoreEntryInstructions": {"description": "Explains how the host records scored unit outcomes before reveal.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"},
+  "eventSuccessLiveControlEmptyUnitsMessage": "Generate the live units before recording outcomes.",
+  "@eventSuccessLiveControlEmptyUnitsMessage": {"description": "Explains why round outcomes cannot be recorded before units exist.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"},
+  "eventSuccessLiveControlSaveRoundLabel": "Save round for reveal",
+  "@eventSuccessLiveControlSaveRoundLabel": {"description": "Saves the current round outcomes for a later reveal.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"},
   "@eventSuccessLiveControlPublishRotationConfirmLabel": {"description": "Confirms an irreversible prepared rotation publication.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"},
   "hostsEventSuccessStepRoomLayoutTitle": "Room layout",
   "@hostsEventSuccessStepRoomLayoutTitle": {"description": "Reusable room layout selection title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.widgets.event_success_step"},

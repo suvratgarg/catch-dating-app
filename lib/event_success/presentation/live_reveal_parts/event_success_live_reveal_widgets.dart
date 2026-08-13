@@ -875,7 +875,9 @@ class VisibleStandings extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return AssignmentUnlockedShell(
-      title: 'Unlocked together',
+      title: context
+          .l10n
+          .eventSuccessEventSuccessLiveRevealWidgetsTitleUnlockedTogether,
       child: Column(
         children: [
           for (var index = 0; index < entries.length; index++) ...[
@@ -898,8 +900,12 @@ class VisibleStandings extends StatelessWidget {
                 gapW12,
                 Text(
                   unitOutcome == EventSuccessUnitOutcome.score
-                      ? '${entries[index].value} pts'
-                      : 'Rank ${entries[index].value.toInt()}',
+                      ? context.l10n.eventSuccessLiveControlPointsValue(
+                          points: entries[index].value,
+                        )
+                      : context.l10n.eventSuccessLiveControlRankValue(
+                          rank: entries[index].value.toInt(),
+                        ),
                   style: CatchTextStyles.labelM(context, color: t.primary),
                 ),
               ],
@@ -968,14 +974,16 @@ class _EventSuccessOutcomeRecorderState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Record round ${widget.nextRoundIndex + 1}',
+            context.l10n.eventSuccessLiveControlRecordRoundTitle(
+              roundNumber: widget.nextRoundIndex + 1,
+            ),
             style: CatchTextStyles.sectionTitle(context, color: t.surface),
           ),
           gapH6,
           Text(
             isRank
-                ? 'Enter one unique rank for every unit. The table stays hidden until the existing reveal.'
-                : 'Enter this round’s score for every unit. Totals stay hidden until the existing reveal.',
+                ? context.l10n.eventSuccessLiveControlRankEntryInstructions
+                : context.l10n.eventSuccessLiveControlScoreEntryInstructions,
             style: CatchTextStyles.supporting(
               context,
               color: t.surface.withValues(
@@ -986,7 +994,7 @@ class _EventSuccessOutcomeRecorderState
           gapH12,
           if (widget.units.isEmpty)
             Text(
-              'Generate the live units before recording outcomes.',
+              context.l10n.eventSuccessLiveControlEmptyUnitsMessage,
               style: CatchTextStyles.supporting(context, color: t.surface),
             )
           else
@@ -1026,7 +1034,7 @@ class _EventSuccessOutcomeRecorderState
           ],
           gapH12,
           CatchButton(
-            label: 'Save round for reveal',
+            label: context.l10n.eventSuccessLiveControlSaveRoundLabel,
             isLoading: widget.actionState.isLoading,
             onPressed:
                 widget.actionState.isLoading ||

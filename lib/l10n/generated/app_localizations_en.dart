@@ -46,9 +46,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get consumerNavigationProfile => 'You';
 
   @override
-  String get hostNavigationToday => 'Today';
-
-  @override
   String get hostNavigationEvents => 'Events';
 
   @override
@@ -5435,13 +5432,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Reveal now';
 
   @override
-  String get eventSuccessEventSuccessLiveRevealActionsLabelReset => 'Reset';
-
-  @override
-  String get eventSuccessEventSuccessLiveRevealActionsLabelResetReveal =>
-      'Reset reveal';
-
-  @override
   String eventSuccessEventSuccessLiveRevealActionsLabelRevealRoundValue1({
     required Object value1,
   }) {
@@ -6118,20 +6108,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'This preview is capped at 2,500 roster records.';
 
   @override
-  String get hostsHostTodayTitleNoActiveEventsYet => 'No active events yet';
-
-  @override
-  String hostsHostTodayBodyCreateAnEventFor({required Object name}) {
-    return 'Create an event for $name to start filling the host dashboard.';
-  }
-
-  @override
-  String get hostsHostTodayLabelNewEvent => 'New event';
-
-  @override
-  String get hostsHostTodayLabelEvents => 'Events';
-
-  @override
   String get hostsHostTodayTitleNeedsYou => 'Needs you';
 
   @override
@@ -6139,25 +6115,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'Nothing needs you right now.';
 
   @override
-  String get hostsHostTodayTitleLaterThisWeek => 'Later this week';
-
-  @override
-  String get hostsHostTodayLabelAllEvents => 'All events';
-
-  @override
   String hostsHostTodayTextLongweekdayDaypart({
     required Object longWeekday,
     required Object daypart,
   }) {
     return '$longWeekday $daypart';
-  }
-
-  @override
-  String hostsHostTodayTextGoodDaypartHostname({
-    required Object daypart,
-    required Object hostName,
-  }) {
-    return 'Good $daypart,\n$hostName';
   }
 
   @override
@@ -6185,12 +6147,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostTodayLabelSetUpRun => 'Set up & run';
-
-  @override
-  String get hostsHostTodayLabelD => 'D';
-
-  @override
-  String get hostsHostTodayLabelM => 'M';
 
   @override
   String get coreBlockUserDialogMessageYouWillStopSeeing =>
@@ -12647,6 +12603,39 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventSuccessLiveControlPublishRotationConfirmLabel =>
       'Publish rotation';
+
+  @override
+  String get eventSuccessLiveControlStandingsRevealLabel => 'Standings reveal';
+
+  @override
+  String eventSuccessLiveControlPointsValue({required num points}) {
+    return '$points pts';
+  }
+
+  @override
+  String eventSuccessLiveControlRankValue({required int rank}) {
+    return 'Rank $rank';
+  }
+
+  @override
+  String eventSuccessLiveControlRecordRoundTitle({required int roundNumber}) {
+    return 'Record round $roundNumber';
+  }
+
+  @override
+  String get eventSuccessLiveControlRankEntryInstructions =>
+      'Enter one unique rank for every unit. The table stays hidden until the existing reveal.';
+
+  @override
+  String get eventSuccessLiveControlScoreEntryInstructions =>
+      'Enter this round’s score for every unit. Totals stay hidden until the existing reveal.';
+
+  @override
+  String get eventSuccessLiveControlEmptyUnitsMessage =>
+      'Generate the live units before recording outcomes.';
+
+  @override
+  String get eventSuccessLiveControlSaveRoundLabel => 'Save round for reveal';
 
   @override
   String get hostsEventSuccessStepRoomLayoutTitle => 'Room layout';

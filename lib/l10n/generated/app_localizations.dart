@@ -166,12 +166,6 @@ abstract class AppLocalizations {
   /// **'You'**
   String get consumerNavigationProfile;
 
-  /// Host bottom navigation label for the daily operations tab.
-  ///
-  /// In en, this message translates to:
-  /// **'Today'**
-  String get hostNavigationToday;
-
   /// Host bottom navigation label for the event-management tab.
   ///
   /// In en, this message translates to:
@@ -8602,18 +8596,6 @@ abstract class AppLocalizations {
   /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_actions.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Reset'**
-  String get eventSuccessEventSuccessLiveRevealActionsLabelReset;
-
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_actions.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Reset reveal'**
-  String get eventSuccessEventSuccessLiveRevealActionsLabelResetReveal;
-
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_actions.dart (label).
-  ///
-  /// In en, this message translates to:
   /// **'Reveal round {value1}'**
   String eventSuccessEventSuccessLiveRevealActionsLabelRevealRoundValue1({
     required Object value1,
@@ -9703,30 +9685,6 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'No active events yet'**
-  String get hostsHostTodayTitleNoActiveEventsYet;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'Create an event for {name} to start filling the host dashboard.'**
-  String hostsHostTodayBodyCreateAnEventFor({required Object name});
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'New event'**
-  String get hostsHostTodayLabelNewEvent;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Events'**
-  String get hostsHostTodayLabelEvents;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (title).
-  ///
-  /// In en, this message translates to:
   /// **'Needs you'**
   String get hostsHostTodayTitleNeedsYou;
 
@@ -9736,18 +9694,6 @@ abstract class AppLocalizations {
   /// **'Nothing needs you right now.'**
   String get hostsHostTodayTextNothingNeedsYouRight;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Later this week'**
-  String get hostsHostTodayTitleLaterThisWeek;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'All events'**
-  String get hostsHostTodayLabelAllEvents;
-
   /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (Text).
   ///
   /// In en, this message translates to:
@@ -9755,15 +9701,6 @@ abstract class AppLocalizations {
   String hostsHostTodayTextLongweekdayDaypart({
     required Object longWeekday,
     required Object daypart,
-  });
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Good {daypart},\n{hostName}'**
-  String hostsHostTodayTextGoodDaypartHostname({
-    required Object daypart,
-    required Object hostName,
   });
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (tooltip).
@@ -9810,18 +9747,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Set up & run'**
   String get hostsHostTodayLabelSetUpRun;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'D'**
-  String get hostsHostTodayLabelD;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'M'**
-  String get hostsHostTodayLabelM;
 
   /// Product copy used by lib/core/widgets/block_user_dialog.dart (message).
   ///
@@ -19720,6 +19645,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Publish rotation'**
   String get eventSuccessLiveControlPublishRotationConfirmLabel;
+
+  /// Labels the standings reveal mode in the live event control room.
+  ///
+  /// In en, this message translates to:
+  /// **'Standings reveal'**
+  String get eventSuccessLiveControlStandingsRevealLabel;
+
+  /// Formats a unit score in the published standings.
+  ///
+  /// In en, this message translates to:
+  /// **'{points} pts'**
+  String eventSuccessLiveControlPointsValue({required num points});
+
+  /// Formats a unit rank in the published standings.
+  ///
+  /// In en, this message translates to:
+  /// **'Rank {rank}'**
+  String eventSuccessLiveControlRankValue({required int rank});
+
+  /// Heads the host form for recording a round outcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Record round {roundNumber}'**
+  String eventSuccessLiveControlRecordRoundTitle({required int roundNumber});
+
+  /// Explains how the host records ranked unit outcomes before reveal.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter one unique rank for every unit. The table stays hidden until the existing reveal.'**
+  String get eventSuccessLiveControlRankEntryInstructions;
+
+  /// Explains how the host records scored unit outcomes before reveal.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter this round’s score for every unit. Totals stay hidden until the existing reveal.'**
+  String get eventSuccessLiveControlScoreEntryInstructions;
+
+  /// Explains why round outcomes cannot be recorded before units exist.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate the live units before recording outcomes.'**
+  String get eventSuccessLiveControlEmptyUnitsMessage;
+
+  /// Saves the current round outcomes for a later reveal.
+  ///
+  /// In en, this message translates to:
+  /// **'Save round for reveal'**
+  String get eventSuccessLiveControlSaveRoundLabel;
 
   /// Reusable room layout selection title.
   ///

@@ -46,7 +46,8 @@ enum EventSuccessRevealAssignmentKind {
       l10n.eventSuccessEventSuccessLiveRevealCardLabelPodReveal,
     EventSuccessRevealAssignmentKind.rotations =>
       l10n.eventSuccessEventSuccessLiveRevealCardLabelRotationReveal,
-    EventSuccessRevealAssignmentKind.standings => 'Standings reveal',
+    EventSuccessRevealAssignmentKind.standings =>
+      l10n.eventSuccessLiveControlStandingsRevealLabel,
   };
 
   String get assignmentNoun => switch (this) {
