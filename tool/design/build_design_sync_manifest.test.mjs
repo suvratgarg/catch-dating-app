@@ -87,6 +87,43 @@ test("snapshot names generate current mappings without hand-edited URLs", () => 
   assert.match(manifest.mappings[0].figmaUrl, /node-id=1-2/u);
 });
 
+test("current MCP mappings remain distinct from unpublished library components", () => {
+  const liveCapabilities = {
+    figma: {fileKey: "file-key"},
+    codeConnect: {status: "blocked-plan-tier"},
+  };
+  const componentsDocument = {
+    components: [component("catch.badge"), component("catch.field")],
+  };
+  const manifest = buildDesignSyncManifest({
+    componentsDocument,
+    capabilities: liveCapabilities,
+    figmaSnapshot: {
+      status: "captured",
+      source: {fileKey: "file-key", captureMethod: "figma-mcp"},
+      components: [
+        {nodeId: "1:2", name: "catch.badge", publishStatus: "UNPUBLISHED", propertyDefinitions: [], boundVariableCount: 1, boundVariableIds: ["VariableID:brand"]},
+        {nodeId: "1:3", name: "catch.field", publishStatus: "UNPUBLISHED", propertyDefinitions: [], boundVariableCount: 1, boundVariableIds: ["VariableID:surface"]},
+      ],
+      reviewSnapshots: [
+        {nodeId: "1:2", path: "badge.png", sha256: "a".repeat(64)},
+        {nodeId: "1:3", path: "field.png", sha256: "b".repeat(64)},
+      ],
+    },
+  });
+  assert.equal(manifest.metrics.figmaMappingStates.current, 2);
+  assert.equal(manifest.metrics.figmaPublishedMappings, 0);
+  assert.equal(manifest.spike.status, "awaiting-figma-library-publication");
+  assert.equal(
+    manifest.operationalStatus.blockers[0]?.id,
+    "figma-library-publication-incomplete",
+  );
+  assert.match(
+    validateDesignSyncManifest(manifest, {requireLive: true}).join("\n"),
+    /catch\.badge: published Figma component evidence is required/u,
+  );
+});
+
 test("known-bad Figma property drift is deterministic", () => {
   const withProps = component("catch.badge");
   withProps.contract.props = [{
@@ -247,8 +284,8 @@ test("fully evidenced Badge and Field spike passes the live gate", () => {
       status: "captured",
       source: {fileKey: "file-key"},
       components: [
-        {nodeId: "1:2", name: "catch.badge", propertyDefinitions: [], boundVariableCount: 1, boundVariableRefs: [{nodeId: "1:4", field: "fills", variableIds: ["VariableID:brand"]}]},
-        {nodeId: "1:3", name: "catch.field", propertyDefinitions: [], boundVariableCount: 1, boundVariableRefs: [{nodeId: "1:5", field: "fills", variableIds: ["VariableID:surface"]}]},
+        {nodeId: "1:2", name: "catch.badge", publishStatus: "CURRENT", propertyDefinitions: [], boundVariableCount: 1, boundVariableRefs: [{nodeId: "1:4", field: "fills", variableIds: ["VariableID:brand"]}]},
+        {nodeId: "1:3", name: "catch.field", publishStatus: "CURRENT", propertyDefinitions: [], boundVariableCount: 1, boundVariableRefs: [{nodeId: "1:5", field: "fills", variableIds: ["VariableID:surface"]}]},
       ],
       reviewSnapshots: [
         {nodeId: "1:2", path: "badge.png", sha256: "a".repeat(64)},
@@ -282,6 +319,7 @@ test("real Badge and Field contract projection round-trips and fails on one remo
     components: spikeComponents.map((item, index) => ({
       nodeId: `1:${index + 2}`,
       name: item.design.figma.componentName,
+      publishStatus: "CURRENT",
       propertyDefinitions: expectedFigmaProperties(item),
       boundVariableCount: 1,
       boundVariableRefs: [{

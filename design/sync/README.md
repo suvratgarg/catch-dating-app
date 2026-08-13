@@ -1,7 +1,7 @@
 ---
 doc_id: design_sync_pipeline
-version: 1.4.0
-updated: 2026-08-11
+version: 1.5.0
+updated: 2026-08-13
 owner: design_system
 status: active
 ---
@@ -33,10 +33,26 @@ optional icon slots become visibility plus instance-swap controls, and governed
 review states remain gallery evidence rather than public variant axes. A Code
 Connect mapping is valid only when the registry points to a template.
 
-`figma_library_snapshot.json` is generated evidence. A `LIBRARY_PUBLISH`
-webhook contains the trigger and changed library item keys/names; the receiver
-must hydrate it with `GET /v1/files/:key` or `GET /v1/files/:key/nodes` before
-running:
+`figma_library_snapshot.json` is generated evidence. It supports two explicit
+capture paths with different claims:
+
+- A read-only Figma MCP discovery receipt records live component properties,
+  variable identifiers/counts, review frames, and the exact publication status.
+  This can prove a current mapping on Professional, but `UNPUBLISHED` remains a
+  separate live blocker.
+- A `LIBRARY_PUBLISH` webhook records published-library evidence. Its changed
+  item keys/names must be hydrated with `GET /v1/files/:key` or
+  `GET /v1/files/:key/nodes`.
+
+Run the MCP path with an untracked capture input:
+
+```sh
+node tool/design/import_figma_library_snapshot.mjs \
+  --mcp-capture path/to/figma-mcp-capture.json \
+  --review-snapshots path/to/snapshot-index.json
+```
+
+Run the published-library path with:
 
 ```sh
 node tool/design/import_figma_library_snapshot.mjs \
@@ -49,14 +65,15 @@ The optional snapshot index is an object keyed by Figma node id. Each value is
 either a repo-relative image path (the importer computes its SHA-256 digest) or
 an object with `path` and a previously computed lowercase SHA-256 digest.
 
-The importer extracts component and component-set node ids, canonicalizes
-Figma property names (including generated `#...` suffixes), records optional
-review-image paths/digests, captures descendant variable-binding references,
-and stamps a content digest. The sync manifest joins those nodes to contract
-ids by `design.figma.componentName` and generates node URLs. Neither artifact
-is hand-edited. The live Badge + Field gate additionally requires at least one
-captured variable binding, one review snapshot, and a published Code Connect
-template for each component; planned metadata cannot satisfy it.
+The importer canonicalizes Figma property names (including generated `#...`
+suffixes), records optional review-node ids plus image paths/digests, preserves
+publication status, captures variable evidence, and stamps a content digest.
+The sync manifest joins those nodes to contract ids by
+`design.figma.componentName` and generates node URLs. Neither artifact is
+hand-edited. The live Badge + Field gate additionally requires publication
+status `CURRENT`, at least one captured variable binding, one review snapshot,
+a current Claude Design receipt, and a published Code Connect template for each
+component; a current mapping alone cannot satisfy the live gate.
 
 Current live discovery is stored in `live_capabilities.json`. It is operational
 evidence, not a credential file. The current Professional Full seat and approved
@@ -73,9 +90,10 @@ that seam blocked without claiming it is live.
 3. Run that request through Claude Design and store its exact, referenced
    response in `design/sync/claude_design_receipt.json`. The sync gate rejects
    stale source, concept, or supported-state digests.
-4. Update and publish the matching Figma component.
-5. Let the publish receiver hydrate the webhook and regenerate the Figma
-   snapshot artifact on a review branch.
+4. Update the matching Figma component and use the MCP capture path for an
+   honest pre-publication mapping receipt when useful.
+5. Publish the Figma library, then let the publish receiver hydrate the webhook
+   and replace the snapshot with published evidence on a review branch.
 6. Regenerate this sync manifest; it reports mappings as `current`, `stale`, or
    `missing` and verifies both the Claude context and receipt digests.
 7. Publish Code Connect only where the plan supports it.
