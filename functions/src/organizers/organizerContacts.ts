@@ -9,6 +9,10 @@ import {GetOrganizerContactDetailCallablePayload} from
   "../shared/generated/getOrganizerContactDetailCallablePayload";
 import {GetOrganizerContactDetailCallableResponse} from
   "../shared/generated/getOrganizerContactDetailCallableResponse";
+import {CreateOrganizerContactCallablePayload} from
+  "../shared/generated/createOrganizerContactCallablePayload";
+import {CreateOrganizerContactCallableResponse} from
+  "../shared/generated/createOrganizerContactCallableResponse";
 import {ExportOrganizerContactsCallablePayload} from
   "../shared/generated/exportOrganizerContactsCallablePayload";
 import {ExportOrganizerContactsCallableResponse} from
@@ -23,6 +27,7 @@ import {
   OrganizerContactChannelStateDocument,
   OrganizerContactEventEdgeDocument,
   OrganizerContactTraitDocument,
+  PaymentDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {ListOrganizerContactsCallablePayload} from
   "../shared/generated/listOrganizerContactsCallablePayload";
@@ -30,6 +35,7 @@ import {ListOrganizerContactsCallableResponse} from
   "../shared/generated/listOrganizerContactsCallableResponse";
 import {
   validateExportOrganizerContactsCallablePayload,
+  validateCreateOrganizerContactCallablePayload,
   validateGetOrganizerContactDetailCallablePayload,
   validateListOrganizerContactsCallablePayload,
   validateMutateOrganizerContactCallablePayload,
@@ -43,6 +49,7 @@ import {organizerContactChannelStateId} from "./organizerCampaignModel";
 const defaultContactPageSize = 50;
 const maxDetailEvents = 100;
 const maxExportContacts = 2500;
+const maxContactPayments = 500;
 
 interface OrganizerContactsDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -153,6 +160,98 @@ export async function listOrganizerContactsHandler(
   };
 }
 
+/** Creates a name-only organizer CRM contact without inventing identity. */
+export async function createOrganizerContactHandler(
+  request: CallableRequest<unknown>,
+  deps: OrganizerContactsDeps = defaultDeps
+): Promise<CreateOrganizerContactCallableResponse> {
+  const actorUid = requireAuth(request);
+  const data = validateCallableWithAjv<CreateOrganizerContactCallablePayload>(
+    request,
+    validateCreateOrganizerContactCallablePayload,
+    normalizeCreateContactPayload
+  );
+  const db = deps.firestore();
+  await deps.checkRateLimit(db, actorUid, "mutateOrganizerContact");
+  await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
+
+  const now = admin.firestore.Timestamp.now();
+  const contactRef = db.collection("organizerContacts").doc();
+  const traitRef = db.collection("organizerContactTraits").doc(contactRef.id);
+  const summaryRef = db.collection("organizerAudienceSummaries")
+    .doc(data.organizerId);
+  const revision = Math.max(1, now.toMillis());
+  const trait: OrganizerContactTraitDocument = {
+    organizerId: data.organizerId,
+    contactId: contactRef.id,
+    expectedEventCount: 0,
+    attendedEventCount: 0,
+    cancelledEventCount: 0,
+    noShowCount: 0,
+    importedEventCount: 0,
+    referredRegistrationCount: 0,
+    referredCheckedInCount: 0,
+    referredCheckedIn365DayCount: 0,
+    linkedAccount: false,
+    firstSeenAt: now,
+    lastSeenAt: now,
+    firstAttendedAt: null,
+    lastAttendedAt: null,
+    attendanceRate: null,
+    segmentIds: ["new_to_organizer"],
+    definitionVersion: 2,
+    whatsappStatus: "unknown",
+    smsStatus: "unknown",
+    sourceCoverage: "exact",
+    projectionVersion: 1,
+    computedAt: now,
+  };
+  const contact: OrganizerContactDocument = {
+    organizerId: data.organizerId,
+    displayName: data.displayName,
+    displayNameOverride: null,
+    searchName: data.displayName.toLocaleLowerCase("en"),
+    linkedUid: null,
+    phoneE164: null,
+    email: null,
+    identityState: "unlinked",
+    identityConfidence: "eventOnly",
+    primarySource: "hostManual",
+    ambiguousCandidateContactIds: [],
+    firstSeenAt: now,
+    lastSeenAt: now,
+    sourceCount: 1,
+    whatsappStatus: "unknown",
+    smsStatus: "unknown",
+    revision,
+    mergedIntoContactId: null,
+    createdAt: now,
+    updatedAt: now,
+    deletedAt: null,
+    hiddenAt: null,
+    hiddenBy: null,
+    hiddenTraitSnapshot: null,
+  };
+
+  await db.runTransaction(async (tx) => {
+    const summarySnap = await tx.get(summaryRef);
+    tx.create(contactRef, contact);
+    tx.create(traitRef, trait);
+    tx.set(summaryRef, summaryWithTrait(
+      data.organizerId,
+      summarySnap.data() as OrganizerAudienceSummaryDocument | undefined,
+      trait,
+      now
+    ));
+  });
+  return {
+    organizerId: data.organizerId,
+    contactId: contactRef.id,
+    displayName: data.displayName,
+    revision,
+  };
+}
+
 /** Returns one manager-only contact record and its bounded event timeline. */
 export async function getOrganizerContactDetailHandler(
   request: CallableRequest<unknown>,
@@ -196,10 +295,18 @@ export async function getOrganizerContactDetailHandler(
       !traits || traits.organizerId !== data.organizerId) {
     throw new HttpsError("not-found", "Audience contact not found.");
   }
-  const events = eventSnap.docs.slice(0, maxDetailEvents)
+  const eventDocuments = eventSnap.docs.slice(0, maxDetailEvents)
+    .map((doc) => doc.data() as OrganizerContactEventEdgeDocument);
+  const events = eventDocuments
     .map((doc) => eventDetailRow(
-      doc.data() as OrganizerContactEventEdgeDocument
+      doc
     ));
+  const revenue = await contactRevenue({
+    db,
+    contact,
+    eventIds: new Set(eventDocuments.map((edge) => edge.eventId)),
+    eventHistoryTruncated: eventSnap.size > maxDetailEvents,
+  });
   return {
     organizerId: data.organizerId,
     contactId: data.contactId,
@@ -227,9 +334,64 @@ export async function getOrganizerContactDetailHandler(
       smsStatus: traits.smsStatus,
       sourceCoverage: traits.sourceCoverage,
     },
+    revenue,
     events,
     eventsTruncated: eventSnap.size > maxDetailEvents,
     revision: contact.revision,
+  };
+}
+
+async function contactRevenue(params: {
+  db: FirebaseFirestore.Firestore;
+  contact: OrganizerContactDocument;
+  eventIds: Set<string>;
+  eventHistoryTruncated: boolean;
+}): Promise<GetOrganizerContactDetailCallableResponse["revenue"]> {
+  if (params.contact.linkedUid === null ||
+      params.contact.identityState !== "verified") {
+    return {coverage: "unavailable", amounts: []};
+  }
+  const paymentsSnap = await params.db.collection("payments")
+    .where("userId", "==", params.contact.linkedUid)
+    .limit(maxContactPayments + 1)
+    .get();
+  return summarizeContactRevenue(
+    paymentsSnap.docs.slice(0, maxContactPayments)
+      .map((paymentSnap) => paymentSnap.data() as PaymentDocument),
+    params.eventIds,
+    paymentsSnap.size > maxContactPayments || params.eventHistoryTruncated ?
+      "partial" : "exact"
+  );
+}
+
+/** Aggregates only completed, non-refunded Catch payments for known events. */
+export function summarizeContactRevenue(
+  payments: PaymentDocument[],
+  eventIds: Set<string>,
+  coverage: "exact" | "partial"
+): GetOrganizerContactDetailCallableResponse["revenue"] {
+  const totals = new Map<
+    string,
+    {amountMinor: number; paidOrderCount: number}
+  >();
+  for (const payment of payments) {
+    if (!eventIds.has(payment.eventId) ||
+        payment.status !== "completed" || payment.signUpFailed) continue;
+    const amountMinor = payment.amountMinor ?? payment.amount;
+    const currency = payment.currency.trim().toUpperCase();
+    if (!Number.isSafeInteger(amountMinor) || amountMinor <= 0 ||
+        !/^[A-Z]{3}$/.test(currency)) continue;
+    const prior = totals.get(currency);
+    totals.set(currency, {
+      amountMinor: (prior?.amountMinor ?? 0) + amountMinor,
+      paidOrderCount: (prior?.paidOrderCount ?? 0) + 1,
+    });
+  }
+  return {
+    coverage,
+    amounts: [...totals.entries()]
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([currency, value]) => ({currency, ...value})),
   };
 }
 
@@ -601,6 +763,20 @@ function normalizeContactMutationPayload(data: unknown): unknown {
   return normalized;
 }
 
+function normalizeCreateContactPayload(data: unknown): unknown {
+  if (typeof data !== "object" || data === null || Array.isArray(data)) {
+    return data;
+  }
+  const normalized = {...data} as Record<string, unknown>;
+  if (typeof normalized.organizerId === "string") {
+    normalized.organizerId = normalized.organizerId.trim();
+  }
+  if (typeof normalized.displayName === "string") {
+    normalized.displayName = normalized.displayName.trim().replace(/\s+/g, " ");
+  }
+  return normalized;
+}
+
 function normalizeExportPayload(data: unknown): unknown {
   if (typeof data !== "object" || data === null || Array.isArray(data)) {
     return data;
@@ -714,6 +890,11 @@ export function decodeContactCursor(
 export const mutateOrganizerContact = onCall(
   appCheckCallableOptionsWithLimits({timeoutSeconds: 60, maxInstances: 20}),
   (request) => mutateOrganizerContactHandler(request)
+);
+
+export const createOrganizerContact = onCall(
+  appCheckCallableOptionsWithLimits({timeoutSeconds: 60, maxInstances: 20}),
+  (request) => createOrganizerContactHandler(request)
 );
 
 export const exportOrganizerContacts = onCall(

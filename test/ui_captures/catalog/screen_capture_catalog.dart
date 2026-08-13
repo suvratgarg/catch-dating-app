@@ -142,7 +142,6 @@ import 'package:catch_dating_app/hosts/presentation/event_management/widgets/dra
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_profile_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_broadcast_composer_sheet.dart'
@@ -2696,10 +2695,9 @@ class _HostRoutedShellCaptureState extends State<_HostRoutedShellCapture> {
           builder: (context, state, navigationShell) =>
               HostAppShell(navigationShell: navigationShell),
           branches: [
-            _branch('/host', 0),
-            _branch('/host/events', 1),
-            _branch('/host/inbox', 2),
-            _branch('/host/organizer', 3),
+            _branch('/host/events', 0),
+            _branch('/host/inbox', 1),
+            _branch('/host/organizer', 2),
           ],
         ),
       ],
@@ -5878,7 +5876,7 @@ final _hostManageReferenceEvent = _hostEvent.copyWith(
     inviteCodeHint: 'BANDRA',
   ),
 );
-final _hostTodayReferenceClub = _hostManageReferenceClub.copyWith(
+final _hostEventsReferenceClub = _hostManageReferenceClub.copyWith(
   id: 'host-home-reference-bandra-social',
   name: 'Bandra Social',
   area: 'Khar',
@@ -5898,9 +5896,9 @@ final _hostTodayReferenceClub = _hostManageReferenceClub.copyWith(
     supportedActivityKinds: [ActivityKind.pubQuiz],
   ),
 );
-final _hostTodayReferenceEvent = _hostManageReferenceEvent.copyWith(
+final _hostEventsSpotlightEvent = _hostManageReferenceEvent.copyWith(
   id: 'host-home-reference-trivia',
-  clubId: _hostTodayReferenceClub.id,
+  clubId: _hostEventsReferenceClub.id,
   eventFormat: const EventFormatSnapshot(
     activityKind: ActivityKind.pubQuiz,
     interactionModel: EventInteractionModel.teamRotations,
@@ -5909,7 +5907,7 @@ final _hostTodayReferenceEvent = _hostManageReferenceEvent.copyWith(
 );
 final _hostEventsReferenceNow = DateTime(2026, 6, 17, 17);
 final _hostEventsReferenceEvents = <Event>[
-  _hostTodayReferenceEvent.copyWith(
+  _hostEventsSpotlightEvent.copyWith(
     id: 'host-events-reference-trivia',
     startTime: DateTime(2026, 6, 17, 20),
     endTime: DateTime(2026, 6, 17, 22),
@@ -5919,7 +5917,7 @@ final _hostEventsReferenceEvents = <Event>[
   ),
   HostOperationsFixtures.upcomingEvent.copyWith(
     id: 'host-events-reference-run',
-    clubId: _hostTodayReferenceClub.id,
+    clubId: _hostEventsReferenceClub.id,
     startTime: DateTime(2026, 6, 21, 6, 30),
     endTime: DateTime(2026, 6, 21, 8),
     bookedCount: 6,
@@ -5927,7 +5925,7 @@ final _hostEventsReferenceEvents = <Event>[
   ),
   HostOperationsFixtures.fullEvent.copyWith(
     id: 'host-events-reference-dinner',
-    clubId: _hostTodayReferenceClub.id,
+    clubId: _hostEventsReferenceClub.id,
     startTime: DateTime(2026, 6, 27, 20),
     endTime: DateTime(2026, 6, 27, 22),
     bookedCount: 10,
@@ -5937,7 +5935,7 @@ final _hostEventsReferenceEvents = <Event>[
   ),
   HostOperationsFixtures.upcomingEvent.copyWith(
     id: 'host-events-reference-padel',
-    clubId: _hostTodayReferenceClub.id,
+    clubId: _hostEventsReferenceClub.id,
     startTime: DateTime(2026, 7, 6, 9),
     endTime: DateTime(2026, 7, 6, 10, 30),
     eventFormat: EventFormatSnapshot.fromActivityKind(ActivityKind.padel),
@@ -5945,7 +5943,7 @@ final _hostEventsReferenceEvents = <Event>[
     waitlistedCount: 0,
     capacityLimit: 16,
   ),
-  _hostTodayReferenceEvent.copyWith(
+  _hostEventsSpotlightEvent.copyWith(
     id: 'host-events-reference-past-trivia',
     startTime: DateTime(2026, 6, 10, 20),
     endTime: DateTime(2026, 6, 10, 22),
@@ -8776,21 +8774,21 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       ..._hostOperationsProviderOverrides(
-        hostedClubs: [_hostTodayReferenceClub],
-        ownedClubs: [_hostTodayReferenceClub],
+        hostedClubs: [_hostEventsReferenceClub],
+        ownedClubs: [_hostEventsReferenceClub],
         clubEvents: {
-          _hostTodayReferenceClub.id: AsyncData<List<Event>>([
-            _hostTodayReferenceEvent,
+          _hostEventsReferenceClub.id: AsyncData<List<Event>>([
+            _hostEventsSpotlightEvent,
           ]),
         },
       ),
     ],
     builder: (context) => _HostRoutedShellCapture(
-      initialLocation: '/host',
+      initialLocation: '/host/events',
       activeIndex: 0,
       child: HostOperationsHomeScreen(
         initialClubId: 'host-home-reference-bandra-social',
-        now: _hostTodayReferenceEvent.startTime.subtract(
+        now: _hostEventsSpotlightEvent.startTime.subtract(
           const Duration(hours: 2),
         ),
       ),
@@ -8803,10 +8801,10 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       ..._hostOperationsProviderOverrides(
-        hostedClubs: [_hostTodayReferenceClub],
-        ownedClubs: [_hostTodayReferenceClub],
+        hostedClubs: [_hostEventsReferenceClub],
+        ownedClubs: [_hostEventsReferenceClub],
         clubEvents: {
-          _hostTodayReferenceClub.id: AsyncData<List<Event>>(
+          _hostEventsReferenceClub.id: AsyncData<List<Event>>(
             _hostEventsReferenceEvents,
           ),
         },
@@ -8814,10 +8812,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ],
     builder: (context) => _HostRoutedShellCapture(
       initialLocation: '/host/events',
-      activeIndex: 1,
+      activeIndex: 0,
       child: HostOperationsHomeScreen(
-        initialClubId: _hostTodayReferenceClub.id,
-        initialTab: HostHomeTab.events,
+        initialClubId: _hostEventsReferenceClub.id,
         now: _hostEventsReferenceNow,
       ),
     ),
@@ -8835,10 +8832,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
     builder: (context) => const _AppRoleCapture(
       role: AppRole.host,
-      child: HostOperationsHomeScreen(
-        initialClubId: 'design-host-cohost-club',
-        initialTab: HostHomeTab.events,
-      ),
+      child: HostOperationsHomeScreen(initialClubId: 'design-host-cohost-club'),
     ),
   ),
   ScreenCaptureEntry(
@@ -8859,7 +8853,6 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       role: AppRole.host,
       child: HostOperationsHomeScreen(
         initialClubId: _hostHomeLongNameOwnerClub.id,
-        initialTab: HostHomeTab.events,
       ),
     ),
   ),
@@ -8885,7 +8878,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
     builder: (context) => const _AppRoleCapture(
       role: AppRole.host,
-      child: HostOperationsHomeScreen(initialTab: HostHomeTab.events),
+      child: HostOperationsHomeScreen(),
     ),
   ),
   ScreenCaptureEntry(
@@ -8900,7 +8893,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
     builder: (context) => const _AppRoleCapture(
       role: AppRole.host,
-      child: HostOperationsHomeScreen(initialTab: HostHomeTab.events),
+      child: HostOperationsHomeScreen(),
     ),
   ),
   ScreenCaptureEntry(
@@ -8977,10 +8970,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
     builder: (context) => const _AppRoleCapture(
       role: AppRole.host,
-      child: HostOperationsHomeScreen(
-        initialClubId: 'design-host-table-club',
-        initialTab: HostHomeTab.events,
-      ),
+      child: HostOperationsHomeScreen(initialClubId: 'design-host-table-club'),
     ),
   ),
   ScreenCaptureEntry(
@@ -8993,10 +8983,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
     builder: (context) => const _AppRoleCapture(
       role: AppRole.host,
-      child: HostOperationsHomeScreen(
-        initialClubId: 'design-host-cohost-club',
-        initialTab: HostHomeTab.events,
-      ),
+      child: HostOperationsHomeScreen(initialClubId: 'design-host-cohost-club'),
     ),
   ),
   ScreenCaptureEntry(
@@ -9041,7 +9028,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ],
     builder: (context) => const _HostRoutedShellCapture(
       initialLocation: '/host/organizer',
-      activeIndex: 3,
+      activeIndex: 2,
       child: HostClubsScreen(),
     ),
   ),
@@ -13906,7 +13893,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ],
     builder: (context) => _HostRoutedShellCapture(
       initialLocation: '/host/inbox',
-      activeIndex: 2,
+      activeIndex: 1,
       child: HostInboxScreen(
         initialScope: const HostInboxScope.event(
           HostInboxSurfaceFixtures.eventId,

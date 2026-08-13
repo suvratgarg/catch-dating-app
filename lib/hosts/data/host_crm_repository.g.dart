@@ -289,6 +289,94 @@ final class HostAudienceFamily extends $Family
   String toString() => r'hostAudienceProvider';
 }
 
+@ProviderFor(hostAudienceContactDetail)
+final hostAudienceContactDetailProvider = HostAudienceContactDetailFamily._();
+
+final class HostAudienceContactDetailProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<HostAudienceContactDetail>,
+          HostAudienceContactDetail,
+          FutureOr<HostAudienceContactDetail>
+        >
+    with
+        $FutureModifier<HostAudienceContactDetail>,
+        $FutureProvider<HostAudienceContactDetail> {
+  HostAudienceContactDetailProvider._({
+    required HostAudienceContactDetailFamily super.from,
+    required (String, String) super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostAudienceContactDetailProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostAudienceContactDetailHash();
+
+  @override
+  String toString() {
+    return r'hostAudienceContactDetailProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<HostAudienceContactDetail> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<HostAudienceContactDetail> create(Ref ref) {
+    final argument = this.argument as (String, String);
+    return hostAudienceContactDetail(ref, argument.$1, argument.$2);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostAudienceContactDetailProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostAudienceContactDetailHash() =>
+    r'5b65f279a2964fc649a3c0b65291b945e957bde6';
+
+final class HostAudienceContactDetailFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<HostAudienceContactDetail>,
+          (String, String)
+        > {
+  HostAudienceContactDetailFamily._()
+    : super(
+        retry: null,
+        name: r'hostAudienceContactDetailProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  HostAudienceContactDetailProvider call(
+    String organizerId,
+    String contactId,
+  ) => HostAudienceContactDetailProvider._(
+    argument: (organizerId, contactId),
+    from: this,
+  );
+
+  @override
+  String toString() => r'hostAudienceContactDetailProvider';
+}
+
 @ProviderFor(hostMessagingSetup)
 final hostMessagingSetupProvider = HostMessagingSetupFamily._();
 

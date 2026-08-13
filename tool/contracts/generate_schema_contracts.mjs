@@ -1042,6 +1042,14 @@ const schemaSpecs = [
       "startOrganizerConversationCallablePayload.ts",
   },
   {
+    name: "StartOrganizerContactConversationCallablePayload",
+    source:
+      "callables/start_organizer_contact_conversation_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "startOrganizerContactConversationCallablePayload.ts",
+  },
+  {
     name: "ArchiveClubCallablePayload",
     source: "callables/archive_club_payload.schema.json",
     typeOutput:
@@ -1539,6 +1547,19 @@ const schemaSpecs = [
     source: "callables/list_organizer_contacts_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/listOrganizerContactsCallablePayload.ts",
+  },
+  {
+    name: "CreateOrganizerContactCallablePayload",
+    source: "callables/create_organizer_contact_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createOrganizerContactCallablePayload.ts",
+  },
+  {
+    name: "CreateOrganizerContactCallableResponse",
+    source:
+      "callable_responses/create_organizer_contact_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createOrganizerContactCallableResponse.ts",
   },
   {
     name: "ListOrganizerContactsCallableResponse",

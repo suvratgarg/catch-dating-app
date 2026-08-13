@@ -7,13 +7,11 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/crea
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
-enum HostHomeTab { today, events }
-
 typedef HostHomeCreateEventCallback = void Function(Club club);
 typedef HostHomeRepeatEventCallback = void Function(Club club, Event event);
 typedef HostHomeManageEventCallback = void Function(Club club, Event event);
 typedef HostHomeOpenTaskCallback =
-    void Function(Club club, Event event, HostHomeTodayTaskData task);
+    void Function(Club club, Event event, HostEventAttentionData task);
 
 enum HostHomeRouteStatus { authRequired, loading, error, empty, loaded }
 
@@ -42,7 +40,6 @@ class HostHomeScreenState {
     required this.clubs,
     required this.currentUid,
     required this.selectedClubIndex,
-    required this.selectedTab,
   });
 
   factory HostHomeScreenState.resolve({
@@ -50,7 +47,6 @@ class HostHomeScreenState {
     required String currentUid,
     int selectedClubIndex = 0,
     String? selectedClubId,
-    HostHomeTab selectedTab = HostHomeTab.today,
   }) {
     return HostHomeScreenState._(
       clubs: List<Club>.unmodifiable(clubs),
@@ -60,14 +56,12 @@ class HostHomeScreenState {
         selectedClubIndex: selectedClubIndex,
         selectedClubId: selectedClubId,
       ),
-      selectedTab: selectedTab,
     );
   }
 
   final List<Club> clubs;
   final String currentUid;
   final int selectedClubIndex;
-  final HostHomeTab selectedTab;
 
   bool get hasClubs => clubs.isNotEmpty;
   bool get showClubPicker => clubs.length > 1;
@@ -79,16 +73,6 @@ class HostHomeScreenState {
       clubs: clubs,
       currentUid: currentUid,
       selectedClubIndex: index,
-      selectedTab: selectedTab,
-    );
-  }
-
-  HostHomeScreenState selectTab(HostHomeTab tab) {
-    return HostHomeScreenState.resolve(
-      clubs: clubs,
-      currentUid: currentUid,
-      selectedClubIndex: selectedClubIndex,
-      selectedTab: tab,
     );
   }
 }
@@ -120,6 +104,7 @@ class HostEventsWorkspaceState {
     required Iterable<Event> events,
     required DateTime now,
     required HostEventsLifecycleFilter selectedFilter,
+    String? featuredEventId,
   }) {
     final active = events.where((event) => !event.isCancelled).toList();
     final past = active.where((event) => !event.endTime.isAfter(now)).toList()
@@ -139,8 +124,11 @@ class HostEventsWorkspaceState {
           ..sort((a, b) => a.startTime.compareTo(b.startTime)),
       HostEventsLifecycleFilter.past => past,
     };
+    final visibleEvents = featuredEventId == null
+        ? filtered
+        : filtered.where((event) => event.id != featuredEventId);
     final sectionsByMonth = <String, List<HostEventLifecycleRowData>>{};
-    for (final event in filtered) {
+    for (final event in visibleEvents) {
       final key = '${event.startTime.year}-${event.startTime.month}';
       sectionsByMonth
           .putIfAbsent(key, () => <HostEventLifecycleRowData>[])
@@ -156,7 +144,10 @@ class HostEventsWorkspaceState {
     ];
 
     return HostEventsWorkspaceState(
-      status: sections.isEmpty
+      // The operational spotlight is the richer representation of the
+      // featured event, so a filter remains populated when that is its only
+      // event even though the condensed list has no rows.
+      status: filtered.isEmpty
           ? HostEventsWorkspaceStatus.empty
           : HostEventsWorkspaceStatus.populated,
       selectedFilter: selectedFilter,
@@ -272,30 +263,28 @@ class HostEventLifecycleRowData {
   }
 }
 
-enum HostHomeTodayStatus { loading, error, empty, content }
+enum HostEventsOverviewStatus { loading, error, empty, content }
 
 @immutable
-class HostHomeTodayDashboardState {
-  const HostHomeTodayDashboardState({
+class HostEventsOverviewState {
+  const HostEventsOverviewState({
     required this.status,
     this.event,
-    this.laterEvents = const <HostEventLifecycleRowData>[],
-    this.tasks = const <HostHomeTodayTaskData>[],
+    this.tasks = const <HostEventAttentionData>[],
     this.error,
     this.stackTrace,
   });
 
-  final HostHomeTodayStatus status;
+  final HostEventsOverviewStatus status;
   final Event? event;
-  final List<HostEventLifecycleRowData> laterEvents;
-  final List<HostHomeTodayTaskData> tasks;
+  final List<HostEventAttentionData> tasks;
   final Object? error;
   final StackTrace? stackTrace;
 }
 
 @immutable
-class HostHomeTodayTaskData {
-  const HostHomeTodayTaskData({
+class HostEventAttentionData {
+  const HostEventAttentionData({
     required this.id,
     required this.event,
     required this.title,
@@ -305,7 +294,7 @@ class HostHomeTodayTaskData {
     required this.destination,
   });
 
-  factory HostHomeTodayTaskData.reviewWaitlist(
+  factory HostEventAttentionData.reviewWaitlist(
     Event event,
     AppLocalizations l10n,
   ) {
@@ -315,7 +304,7 @@ class HostHomeTodayTaskData {
             spotsRemaining: event.spotsRemaining,
           )
         : l10n.hostsHostHomeScreenStateVisiblecopyEventFull;
-    return HostHomeTodayTaskData(
+    return HostEventAttentionData(
       id: 'waitlist:${event.id}',
       event: event,
       title: l10n.hostsHostHomeScreenStateTitleReviewWaitlist,
@@ -327,27 +316,27 @@ class HostHomeTodayTaskData {
           ),
       primaryActionLabel: l10n.hostsHostHomeScreenStateVisiblecopyReview,
       icon: CatchIcons.personSearchOutlined,
-      destination: HostHomeTodayTaskDestination.guests,
+      destination: HostEventAttentionDestination.guests,
     );
   }
 
-  static List<HostHomeTodayTaskData> forEvent(
+  static List<HostEventAttentionData> forEvent(
     Event event,
     AppLocalizations l10n,
   ) {
     return event.waitlistCount > 0 &&
             !event.effectiveEventPolicy.admissionPolicy.manualApprovalRequired
-        ? <HostHomeTodayTaskData>[
-            HostHomeTodayTaskData.reviewWaitlist(event, l10n),
+        ? <HostEventAttentionData>[
+            HostEventAttentionData.reviewWaitlist(event, l10n),
           ]
-        : const <HostHomeTodayTaskData>[];
+        : const <HostEventAttentionData>[];
   }
 
-  static List<HostHomeTodayTaskData> forEvents(
+  static List<HostEventAttentionData> forEvents(
     Iterable<Event> events,
     AppLocalizations l10n,
-  ) => List<HostHomeTodayTaskData>.unmodifiable(
-    events.expand((event) => HostHomeTodayTaskData.forEvent(event, l10n)),
+  ) => List<HostEventAttentionData>.unmodifiable(
+    events.expand((event) => HostEventAttentionData.forEvent(event, l10n)),
   );
 
   final String id;
@@ -356,10 +345,10 @@ class HostHomeTodayTaskData {
   final String body;
   final String primaryActionLabel;
   final IconData icon;
-  final HostHomeTodayTaskDestination destination;
+  final HostEventAttentionDestination destination;
 }
 
-enum HostHomeTodayTaskDestination { guests, setup }
+enum HostEventAttentionDestination { guests, setup }
 
 bool _canRepeatEvent(Event event) => CreateEventPrefill.canRepeat(event);
 

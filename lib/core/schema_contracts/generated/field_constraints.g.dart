@@ -8944,6 +8944,54 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const createOrganizerContactCallablePayloadDisplayName = CatchContractFieldConstraints(
+    path: 'createOrganizerContactCallablePayload.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerContactCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'createOrganizerContactCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerContactCallableResponseContactId = CatchContractFieldConstraints(
+    path: 'createOrganizerContactCallableResponse.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerContactCallableResponseDisplayName = CatchContractFieldConstraints(
+    path: 'createOrganizerContactCallableResponse.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerContactCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'createOrganizerContactCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerContactCallableResponseRevision = CatchContractFieldConstraints(
+    path: 'createOrganizerContactCallableResponse.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const createOrganizerPostCallablePayloadEventId = CatchContractFieldConstraints(
     path: 'createOrganizerPostCallablePayload.eventId',
     maxLength: 180,
@@ -19912,6 +19960,44 @@ abstract final class CatchContractConstraints {
     path: 'getOrganizerContactDetailCallableResponse.phoneE164',
     valueTypes: <String>['string'],
     pattern: '^\\+[1-9][0-9]{7,14}\$',
+  );
+
+  static const getOrganizerContactDetailCallableResponseRevenueAmounts = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.revenue.amounts',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 8,
+  );
+
+  static const getOrganizerContactDetailCallableResponseRevenueAmountsItemsAmountMinor = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.revenue.amounts.items.amountMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getOrganizerContactDetailCallableResponseRevenueAmountsItemsCurrency = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.revenue.amounts.items.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const getOrganizerContactDetailCallableResponseRevenueAmountsItemsPaidOrderCount = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.revenue.amounts.items.paidOrderCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const getOrganizerContactDetailCallableResponseRevenueCoverage = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.revenue.coverage',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['exact', 'partial', 'unavailable'],
   );
 
   static const getOrganizerContactDetailCallableResponseRevision = CatchContractFieldConstraints(
@@ -34547,6 +34633,22 @@ abstract final class CatchContractConstraints {
     maximum: 180,
   );
 
+  static const startOrganizerContactConversationCallablePayloadContactId = CatchContractFieldConstraints(
+    path: 'startOrganizerContactConversationCallablePayload.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const startOrganizerContactConversationCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'startOrganizerContactConversationCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const startOrganizerConversationCallablePayloadEventId = CatchContractFieldConstraints(
     path: 'startOrganizerConversationCallablePayload.eventId',
     maxLength: 180,
@@ -41047,6 +41149,12 @@ abstract final class CatchContractConstraints {
     'createOrganizerCallablePayload.phoneNumber': createOrganizerCallablePayloadPhoneNumber,
     'createOrganizerCallablePayload.profileImageUrl': createOrganizerCallablePayloadProfileImageUrl,
     'createOrganizerCallableResponse.organizerId': createOrganizerCallableResponseOrganizerId,
+    'createOrganizerContactCallablePayload.displayName': createOrganizerContactCallablePayloadDisplayName,
+    'createOrganizerContactCallablePayload.organizerId': createOrganizerContactCallablePayloadOrganizerId,
+    'createOrganizerContactCallableResponse.contactId': createOrganizerContactCallableResponseContactId,
+    'createOrganizerContactCallableResponse.displayName': createOrganizerContactCallableResponseDisplayName,
+    'createOrganizerContactCallableResponse.organizerId': createOrganizerContactCallableResponseOrganizerId,
+    'createOrganizerContactCallableResponse.revision': createOrganizerContactCallableResponseRevision,
     'createOrganizerPostCallablePayload.eventId': createOrganizerPostCallablePayloadEventId,
     'createOrganizerPostCallablePayload.organizerId': createOrganizerPostCallablePayloadOrganizerId,
     'createOrganizerPostCallablePayload.photoPath': createOrganizerPostCallablePayloadPhotoPath,
@@ -42557,6 +42665,11 @@ abstract final class CatchContractConstraints {
     'getOrganizerContactDetailCallableResponse.linkedAccount': getOrganizerContactDetailCallableResponseLinkedAccount,
     'getOrganizerContactDetailCallableResponse.organizerId': getOrganizerContactDetailCallableResponseOrganizerId,
     'getOrganizerContactDetailCallableResponse.phoneE164': getOrganizerContactDetailCallableResponsePhoneE164,
+    'getOrganizerContactDetailCallableResponse.revenue.amounts': getOrganizerContactDetailCallableResponseRevenueAmounts,
+    'getOrganizerContactDetailCallableResponse.revenue.amounts.items.amountMinor': getOrganizerContactDetailCallableResponseRevenueAmountsItemsAmountMinor,
+    'getOrganizerContactDetailCallableResponse.revenue.amounts.items.currency': getOrganizerContactDetailCallableResponseRevenueAmountsItemsCurrency,
+    'getOrganizerContactDetailCallableResponse.revenue.amounts.items.paidOrderCount': getOrganizerContactDetailCallableResponseRevenueAmountsItemsPaidOrderCount,
+    'getOrganizerContactDetailCallableResponse.revenue.coverage': getOrganizerContactDetailCallableResponseRevenueCoverage,
     'getOrganizerContactDetailCallableResponse.revision': getOrganizerContactDetailCallableResponseRevision,
     'getOrganizerContactDetailCallableResponse.sourceDisplayName': getOrganizerContactDetailCallableResponseSourceDisplayName,
     'getOrganizerContactDetailCallableResponse.traits.attendanceRate': getOrganizerContactDetailCallableResponseTraitsAttendanceRate,
@@ -44603,6 +44716,8 @@ abstract final class CatchContractConstraints {
     'startEventSuccessFirstHelloMissionCallablePayload.eventId': startEventSuccessFirstHelloMissionCallablePayloadEventId,
     'startEventSuccessFirstHelloMissionCallablePayload.latitude': startEventSuccessFirstHelloMissionCallablePayloadLatitude,
     'startEventSuccessFirstHelloMissionCallablePayload.longitude': startEventSuccessFirstHelloMissionCallablePayloadLongitude,
+    'startOrganizerContactConversationCallablePayload.contactId': startOrganizerContactConversationCallablePayloadContactId,
+    'startOrganizerContactConversationCallablePayload.organizerId': startOrganizerContactConversationCallablePayloadOrganizerId,
     'startOrganizerConversationCallablePayload.eventId': startOrganizerConversationCallablePayloadEventId,
     'startOrganizerConversationCallablePayload.hostUid': startOrganizerConversationCallablePayloadHostUid,
     'startOrganizerConversationCallablePayload.organizerId': startOrganizerConversationCallablePayloadOrganizerId,

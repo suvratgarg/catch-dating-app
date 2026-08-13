@@ -900,7 +900,7 @@ abstract final class CatchInsets {
   );
 
   /// Compact selected-club trigger around the avatar, name, and chevron.
-  static const EdgeInsets hostTodayClubSwitcher = EdgeInsets.fromLTRB(
+  static const EdgeInsets hostOrganizerSwitcher = EdgeInsets.fromLTRB(
     CatchSpacing.micro6,
     CatchSpacing.micro6,
     CatchSpacing.s3,
@@ -908,7 +908,7 @@ abstract final class CatchInsets {
   );
 
   /// Popup menu item content in Host Today's club switcher.
-  static const EdgeInsets hostTodayClubMenuItem = EdgeInsets.symmetric(
+  static const EdgeInsets hostOrganizerMenuItem = EdgeInsets.symmetric(
     horizontal: CatchSpacing.micro14,
     vertical: CatchLayout.menuRowVerticalPadding,
   );

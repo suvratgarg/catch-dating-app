@@ -7585,6 +7585,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostEventAttentionCard',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Attention card states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostEventAttentionCardStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostEventManageScreen',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -7592,6 +7603,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
                             .hostStrictCatchRosterActionCellCatalogStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostEventOperationalMetric',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Operational metric states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostEventOperationalMetricStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostEventOperationalSpotlight',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Operational spotlight states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostEventOperationalSpotlightStates,
                   ),
                 ],
               ),
@@ -7607,6 +7640,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostEventsOverviewContent',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Overview content states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostEventsOverviewContentStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostEventsOverviewSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Overview route states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostEventsOverviewSectionStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostEventsScaffold',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -7614,6 +7669,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
                             .hostHomeRouteStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostOrganizerIdentityPill',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Identity switcher states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostOrganizerIdentityPillStates,
                   ),
                 ],
               ),
@@ -7628,14 +7694,140 @@ final directories = <_widgetbook.WidgetbookNode>[
                   ),
                 ],
               ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
+            name: 'Customers',
+            children: [
               _widgetbook.WidgetbookComponent(
-                name: 'HostTodayClubPill',
+                name: 'HostAddCustomerSheet',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'Identity switcher states',
+                    name: 'Manual add state',
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostTodayClubPillStates,
+                            .hostAddCustomerSheetStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerAttendanceCard',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Attendance stats',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostCustomerAttendanceStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerAttendanceHistory',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Event history states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostCustomerAttendanceHistoryStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerConversationCard',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Conversation permission states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostCustomerConversationStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerDetailScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Detail states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostCustomerDetailStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerDirectoryRow',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Row states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostCustomerDirectoryRowStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerIdentityCard',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Identity states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostCustomerIdentityStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerRevenueCard',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Revenue coverage states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostCustomerRevenueStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomersDirectory',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Directory states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostCustomersDirectoryStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomersNoOrganizer',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'No-organizer state',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostCustomersNoOrganizerStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomersScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Route and component states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostCustomersStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomersSummary',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Summary states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostCustomersSummaryStates,
                   ),
                 ],
               ),

@@ -20,6 +20,8 @@ enum HostAudienceIdentityState { unlinked, verified, ambiguous }
 
 enum HostAudiencePermissionStatus { unknown, optedIn, optedOut }
 
+enum HostCustomerRevenueCoverage { exact, partial, unavailable }
+
 enum HostRosterInsightCoverage { exact, partial }
 
 enum HostRosterSpendCoverage { catchPaymentsOnly, insufficientData }
@@ -332,6 +334,86 @@ class HostAudienceEventFact {
   final DateTime? eventStartAt;
 }
 
+class HostCustomerTraits {
+  const HostCustomerTraits({
+    required this.expectedEventCount,
+    required this.attendedEventCount,
+    required this.cancelledEventCount,
+    required this.noShowCount,
+    required this.importedEventCount,
+    required this.attendanceRate,
+    required this.segments,
+    required this.sourceCoverage,
+  });
+
+  factory HostCustomerTraits.fromMap(Map<Object?, Object?> map) =>
+      HostCustomerTraits(
+        expectedEventCount: _requiredInt(map, 'expectedEventCount'),
+        attendedEventCount: _requiredInt(map, 'attendedEventCount'),
+        cancelledEventCount: _requiredInt(map, 'cancelledEventCount'),
+        noShowCount: _requiredInt(map, 'noShowCount'),
+        importedEventCount: _requiredInt(map, 'importedEventCount'),
+        attendanceRate: _nullableDouble(map['attendanceRate']),
+        segments: _stringList(map['segmentIds'])
+            .map(HostAudienceSegment.fromWireValue)
+            .whereType<HostAudienceSegment>()
+            .toSet(),
+        sourceCoverage: _enumByName(
+          HostAudienceSourceCoverage.values,
+          _requiredString(map, 'sourceCoverage'),
+          'sourceCoverage',
+        ),
+      );
+
+  final int expectedEventCount;
+  final int attendedEventCount;
+  final int cancelledEventCount;
+  final int noShowCount;
+  final int importedEventCount;
+  final double? attendanceRate;
+  final Set<HostAudienceSegment> segments;
+  final HostAudienceSourceCoverage sourceCoverage;
+}
+
+class HostCustomerRevenueAmount {
+  const HostCustomerRevenueAmount({
+    required this.currency,
+    required this.amountMinor,
+    required this.paidOrderCount,
+  });
+
+  factory HostCustomerRevenueAmount.fromMap(Map<Object?, Object?> map) =>
+      HostCustomerRevenueAmount(
+        currency: _requiredString(map, 'currency'),
+        amountMinor: _requiredInt(map, 'amountMinor'),
+        paidOrderCount: _requiredInt(map, 'paidOrderCount'),
+      );
+
+  final String currency;
+  final int amountMinor;
+  final int paidOrderCount;
+}
+
+class HostCustomerRevenue {
+  const HostCustomerRevenue({required this.coverage, required this.amounts});
+
+  factory HostCustomerRevenue.fromMap(Map<Object?, Object?> map) =>
+      HostCustomerRevenue(
+        coverage: _enumByName(
+          HostCustomerRevenueCoverage.values,
+          _requiredString(map, 'coverage'),
+          'revenue coverage',
+        ),
+        amounts: _mapList(
+          map['amounts'],
+          'customer revenue amounts',
+        ).map(HostCustomerRevenueAmount.fromMap).toList(growable: false),
+      );
+
+  final HostCustomerRevenueCoverage coverage;
+  final List<HostCustomerRevenueAmount> amounts;
+}
+
 class HostAudienceContactDetail {
   const HostAudienceContactDetail({
     required this.organizerId,
@@ -341,7 +423,13 @@ class HostAudienceContactDetail {
     required this.displayNameOverride,
     required this.phoneE164,
     required this.email,
+    required this.linkedAccount,
+    required this.identityState,
+    required this.identityConfidence,
+    required this.ambiguousCandidateCount,
     required this.whatsappAdminSuppressed,
+    required this.traits,
+    required this.revenue,
     required this.events,
     required this.eventsTruncated,
     required this.revision,
@@ -357,7 +445,23 @@ class HostAudienceContactDetail {
       displayNameOverride: _nullableString(map['displayNameOverride']),
       phoneE164: _nullableString(map['phoneE164']),
       email: _nullableString(map['email']),
+      linkedAccount: _requiredBool(map, 'linkedAccount'),
+      identityState: _enumByName(
+        HostAudienceIdentityState.values,
+        _requiredString(map, 'identityState'),
+        'identityState',
+      ),
+      identityConfidence: _requiredString(map, 'identityConfidence'),
+      ambiguousCandidateCount: _stringList(
+        map['ambiguousCandidateContactIds'],
+      ).length,
       whatsappAdminSuppressed: _requiredBool(map, 'whatsappAdminSuppressed'),
+      traits: HostCustomerTraits.fromMap(
+        _requiredMap(map['traits'], 'customer traits'),
+      ),
+      revenue: HostCustomerRevenue.fromMap(
+        _requiredMap(map['revenue'], 'customer revenue'),
+      ),
       events: _mapList(
         map['events'],
         'contact events',
@@ -374,9 +478,39 @@ class HostAudienceContactDetail {
   final String? displayNameOverride;
   final String? phoneE164;
   final String? email;
+  final bool linkedAccount;
+  final HostAudienceIdentityState identityState;
+  final String identityConfidence;
+  final int ambiguousCandidateCount;
   final bool whatsappAdminSuppressed;
+  final HostCustomerTraits traits;
+  final HostCustomerRevenue revenue;
   final List<HostAudienceEventFact> events;
   final bool eventsTruncated;
+  final int revision;
+}
+
+class HostCreatedCustomer {
+  const HostCreatedCustomer({
+    required this.organizerId,
+    required this.contactId,
+    required this.displayName,
+    required this.revision,
+  });
+
+  factory HostCreatedCustomer.fromCallableData(Object? data) {
+    final map = _requiredMap(data, 'created organizer customer');
+    return HostCreatedCustomer(
+      organizerId: _requiredString(map, 'organizerId'),
+      contactId: _requiredString(map, 'contactId'),
+      displayName: _requiredString(map, 'displayName'),
+      revision: _requiredInt(map, 'revision'),
+    );
+  }
+
+  final String organizerId;
+  final String contactId;
+  final String displayName;
   final int revision;
 }
 
@@ -790,6 +924,33 @@ class HostCrmRepository {
     parse: HostAudienceContactDetail.fromCallableData,
   );
 
+  Future<HostCreatedCustomer> createContact({
+    required String organizerId,
+    required String displayName,
+  }) => _call(
+    name: 'createOrganizerContact',
+    payload: CreateOrganizerContactCallableRequest(
+      organizerId: organizerId,
+      displayName: displayName,
+    ).toJson(),
+    action: 'create organizer customer',
+    parse: HostCreatedCustomer.fromCallableData,
+  );
+
+  Future<String> startContactConversation({
+    required String organizerId,
+    required String contactId,
+  }) => _call(
+    name: 'startOrganizerContactConversation',
+    payload: StartOrganizerContactConversationCallableRequest(
+      organizerId: organizerId,
+      contactId: contactId,
+    ).toJson(),
+    action: 'start organizer customer conversation',
+    parse: (data) =>
+        _requiredString(_requiredMap(data, 'customer conversation'), 'matchId'),
+  );
+
   Future<void> mutateContact({
     required String organizerId,
     required String contactId,
@@ -1020,6 +1181,15 @@ Future<HostAudiencePage> hostAudience(
   HostAudienceQuery query,
 ) =>
     ref.read(hostCrmRepositoryProvider).listContacts(organizerId, query: query);
+
+@riverpod
+Future<HostAudienceContactDetail> hostAudienceContactDetail(
+  Ref ref,
+  String organizerId,
+  String contactId,
+) => ref
+    .read(hostCrmRepositoryProvider)
+    .getContactDetail(organizerId, contactId);
 
 @riverpod
 Future<HostMessagingSetup> hostMessagingSetup(Ref ref, String organizerId) =>

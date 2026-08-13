@@ -182,7 +182,29 @@ void main() {
       'displayNameOverride': 'Asha',
       'phoneE164': '+919876543210',
       'email': null,
+      'linkedAccount': true,
+      'identityState': 'verified',
+      'identityConfidence': 'verified',
+      'ambiguousCandidateContactIds': <String>[],
       'whatsappAdminSuppressed': true,
+      'traits': {
+        'expectedEventCount': 4,
+        'attendedEventCount': 3,
+        'cancelledEventCount': 0,
+        'noShowCount': 1,
+        'importedEventCount': 1,
+        'attendanceRate': 0.75,
+        'segmentIds': ['repeat_attendee'],
+        'whatsappStatus': 'optedIn',
+        'smsStatus': 'unknown',
+        'sourceCoverage': 'exact',
+      },
+      'revenue': {
+        'coverage': 'exact',
+        'amounts': [
+          {'currency': 'INR', 'amountMinor': 450000, 'paidOrderCount': 3},
+        ],
+      },
       'events': [
         {
           'eventId': 'event-1',
@@ -199,6 +221,8 @@ void main() {
 
     expect(detail.displayName, 'Asha');
     expect(detail.whatsappAdminSuppressed, isTrue);
+    expect(detail.traits.attendanceRate, 0.75);
+    expect(detail.revenue.amounts.single.amountMinor, 450000);
     expect(detail.events.single.checkedIn, isTrue);
   });
 

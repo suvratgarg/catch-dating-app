@@ -2,22 +2,22 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/host_home.feature.json",
-  "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:aa0827e53dfe11ef687d28dac39d272f03ad7a31bd77fc8cbb5c130285d01eae",
+  "generatedFor": "2026-08-13",
+  "sourceDigest": "sha256:f85b82a51edde4e5881a9e48c2d1adbedbcc830dca910520af96f40be42c9bc4",
   "resolvedDigest": "sha256:c2572f7164bc4d44570dc0c8b1ff6ee4a6d2836a89741a3e4027326369acccc0",
   "feature": {
     "id": "feature.host_home",
-    "name": "Host Home",
+    "name": "Host Events",
     "owner": "hosts",
     "status": "pilot",
-    "description": "Orchestrates the host Today and Events entry workspace across authentication, organizer selection, hosted-event lifecycle state, recovery, and typed create, repeat, manage, and task navigation."
+    "description": "Orchestrates the consolidated Host Events workspace across authentication, organizer selection, operational spotlight and attention state, hosted-event lifecycle state, recovery, and typed create, repeat, manage, and task navigation."
   },
   "coverage": {
     "surfaces": 1,
     "states": 18,
     "scenarios": 18,
     "actionCases": 18,
-    "actions": 12,
+    "actions": 11,
     "captures": 16,
     "previews": 1,
     "testFiles": 1,
@@ -32,7 +32,7 @@
         "id": "screen.host.home"
       },
       "actionScope": {
-        "included": "Host Home authentication recovery, organizer switching, Today/Events workspace selection, event-list filtering and retry, and typed create, repeat, manage, and Today-task navigation.",
+        "included": "Host Events authentication recovery, organizer switching, operational spotlight and attention work, event lifecycle filtering and retry, and typed create, repeat, manage, and task navigation.",
         "excluded": [
           "Organizer editing, event creation internals, event management mutations, booking policy, analytics, payouts, and host-team administration retain their owning feature contracts or controllers."
         ]
@@ -89,7 +89,7 @@
         "states": 18,
         "scenarios": 18,
         "actionCases": 18,
-        "actions": 12,
+        "actions": 11,
         "captures": 16,
         "previews": 1,
         "testFiles": 1,
@@ -119,13 +119,6 @@
             "one",
             "multiple",
             "none"
-          ]
-        },
-        "workspace": {
-          "default": "today",
-          "values": [
-            "today",
-            "events"
           ]
         },
         "event_supply": {
@@ -263,30 +256,7 @@
               ]
             }
           ],
-          "description": "Switches the Today and Events projections to another organizer the viewer hosts.",
-          "implementationStatus": "implemented"
-        },
-        {
-          "id": "view_events",
-          "owner": "workspace",
-          "codeValue": "selectTab",
-          "cardinality": "unbounded",
-          "scopeKeys": [
-            "viewerUid",
-            "routeInstanceId",
-            "tabSelectionVersion"
-          ],
-          "outcomes": [
-            {
-              "kind": "surface_state",
-              "stateIds": [
-                "club_events_loading",
-                "upcoming_events",
-                "empty_events"
-              ]
-            }
-          ],
-          "description": "Moves from Today to the selected organizer's Events workspace.",
+          "description": "Switches the consolidated Events workspace to another organizer the viewer hosts.",
           "implementationStatus": "implemented"
         },
         {
@@ -359,7 +329,7 @@
         {
           "id": "manage_event",
           "owner": "workspace",
-          "codeValue": "_openManageEvent",
+          "codeValue": "_openEvent",
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
@@ -380,9 +350,9 @@
           "implementationStatus": "implemented"
         },
         {
-          "id": "open_today_event",
+          "id": "open_operational_event",
           "owner": "workspace",
-          "codeValue": "_openTodayEvent",
+          "codeValue": "_openEvent",
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
@@ -399,13 +369,13 @@
               }
             }
           ],
-          "description": "Opens the Today event in its live or setup Host Manage section based on the current event clock.",
+          "description": "Opens the operational spotlight in its live, setup, or report Host Manage section based on the current event clock.",
           "implementationStatus": "implemented"
         },
         {
-          "id": "open_today_task",
+          "id": "open_attention_task",
           "owner": "workspace",
-          "codeValue": "_openTodayTask",
+          "codeValue": "_openAttentionTask",
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
@@ -422,7 +392,7 @@
               }
             }
           ],
-          "description": "Routes a truthful Today task to the matching guests or setup section of Host Event Manage.",
+          "description": "Routes a truthful event-attention task to the matching guests or setup section of Host Event Manage.",
           "implementationStatus": "implemented"
         }
       ],
@@ -480,7 +450,6 @@
             "load": "ready",
             "access": "signed_out",
             "organizer_supply": "one",
-            "workspace": "today",
             "event_supply": "populated",
             "accessibility": "standard",
             "theme": "standard"
@@ -501,7 +470,6 @@
                 "load": "ready",
                 "access": "signed_out",
                 "organizer_supply": "one",
-                "workspace": "today",
                 "event_supply": "populated",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -516,13 +484,12 @@
                   "retry_host_events",
                   "create_organizer",
                   "switch_organizer",
-                  "view_events",
                   "filter_events",
                   "create_event",
                   "repeat_event",
                   "manage_event",
-                  "open_today_event",
-                  "open_today_task"
+                  "open_operational_event",
+                  "open_attention_task"
                 ]
               }
             }
@@ -537,7 +504,6 @@
             "load": "loading",
             "access": "owner",
             "organizer_supply": "one",
-            "workspace": "today",
             "event_supply": "populated",
             "accessibility": "standard",
             "theme": "standard"
@@ -558,7 +524,6 @@
                 "load": "loading",
                 "access": "owner",
                 "organizer_supply": "one",
-                "workspace": "today",
                 "event_supply": "populated",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -572,13 +537,12 @@
                   "retry_host_events",
                   "create_organizer",
                   "switch_organizer",
-                  "view_events",
                   "filter_events",
                   "create_event",
                   "repeat_event",
                   "manage_event",
-                  "open_today_event",
-                  "open_today_task"
+                  "open_operational_event",
+                  "open_attention_task"
                 ]
               }
             }
@@ -593,7 +557,6 @@
             "load": "error",
             "access": "owner",
             "organizer_supply": "one",
-            "workspace": "today",
             "event_supply": "populated",
             "accessibility": "standard",
             "theme": "standard"
@@ -615,7 +578,6 @@
                 "load": "error",
                 "access": "owner",
                 "organizer_supply": "one",
-                "workspace": "today",
                 "event_supply": "populated",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -630,13 +592,12 @@
                   "retry_host_events",
                   "create_organizer",
                   "switch_organizer",
-                  "view_events",
                   "filter_events",
                   "create_event",
                   "repeat_event",
                   "manage_event",
-                  "open_today_event",
-                  "open_today_task"
+                  "open_operational_event",
+                  "open_attention_task"
                 ]
               }
             }
@@ -651,7 +612,6 @@
             "load": "ready",
             "access": "owner",
             "organizer_supply": "none",
-            "workspace": "today",
             "event_supply": "populated",
             "accessibility": "standard",
             "theme": "standard"
@@ -672,7 +632,6 @@
                 "load": "ready",
                 "access": "owner",
                 "organizer_supply": "none",
-                "workspace": "today",
                 "event_supply": "populated",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -687,13 +646,12 @@
                   "retry_host_home",
                   "retry_host_events",
                   "switch_organizer",
-                  "view_events",
                   "filter_events",
                   "create_event",
                   "repeat_event",
                   "manage_event",
-                  "open_today_event",
-                  "open_today_task"
+                  "open_operational_event",
+                  "open_attention_task"
                 ]
               }
             }
@@ -708,7 +666,6 @@
             "load": "ready",
             "access": "owner",
             "organizer_supply": "one",
-            "workspace": "today",
             "event_supply": "populated",
             "accessibility": "standard",
             "theme": "standard"
@@ -726,22 +683,20 @@
           },
           "actionCases": [
             {
-              "id": "today",
+              "id": "events",
               "dimensions": {
                 "load": "ready",
                 "access": "owner",
                 "organizer_supply": "one",
-                "workspace": "today",
                 "event_supply": "populated",
                 "accessibility": "standard",
                 "theme": "standard"
               },
               "actions": {
                 "enabled": [
-                  "view_events",
                   "create_event",
-                  "open_today_event",
-                  "open_today_task"
+                  "open_operational_event",
+                  "open_attention_task"
                 ],
                 "disabled": [],
                 "notAllowed": [
@@ -767,7 +722,6 @@
             "load": "ready",
             "access": "owner",
             "organizer_supply": "multiple",
-            "workspace": "today",
             "event_supply": "populated",
             "accessibility": "standard",
             "theme": "standard"
@@ -791,7 +745,6 @@
                 "load": "ready",
                 "access": "owner",
                 "organizer_supply": "multiple",
-                "workspace": "today",
                 "event_supply": "populated",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -799,7 +752,6 @@
               "actions": {
                 "enabled": [
                   "switch_organizer",
-                  "view_events",
                   "create_event"
                 ],
                 "disabled": [],
@@ -811,8 +763,8 @@
                   "filter_events",
                   "repeat_event",
                   "manage_event",
-                  "open_today_event",
-                  "open_today_task"
+                  "open_operational_event",
+                  "open_attention_task"
                 ]
               }
             }
@@ -827,7 +779,6 @@
             "load": "ready",
             "access": "cohost",
             "organizer_supply": "one",
-            "workspace": "today",
             "event_supply": "populated",
             "accessibility": "standard",
             "theme": "standard"
@@ -850,7 +801,6 @@
                 "load": "ready",
                 "access": "cohost",
                 "organizer_supply": "one",
-                "workspace": "today",
                 "event_supply": "populated",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -858,7 +808,6 @@
               "actions": {
                 "enabled": [
                   "switch_organizer",
-                  "view_events",
                   "create_event"
                 ],
                 "disabled": [],
@@ -870,8 +819,8 @@
                   "filter_events",
                   "repeat_event",
                   "manage_event",
-                  "open_today_event",
-                  "open_today_task"
+                  "open_operational_event",
+                  "open_attention_task"
                 ]
               }
             }
@@ -886,7 +835,6 @@
             "load": "loading",
             "access": "owner",
             "organizer_supply": "one",
-            "workspace": "events",
             "event_supply": "populated",
             "accessibility": "standard",
             "theme": "standard"
@@ -907,7 +855,6 @@
                 "load": "loading",
                 "access": "owner",
                 "organizer_supply": "one",
-                "workspace": "events",
                 "event_supply": "populated",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -921,13 +868,12 @@
                   "retry_host_events",
                   "create_organizer",
                   "switch_organizer",
-                  "view_events",
                   "filter_events",
                   "create_event",
                   "repeat_event",
                   "manage_event",
-                  "open_today_event",
-                  "open_today_task"
+                  "open_operational_event",
+                  "open_attention_task"
                 ]
               }
             }
@@ -942,7 +888,6 @@
             "load": "error",
             "access": "owner",
             "organizer_supply": "one",
-            "workspace": "events",
             "event_supply": "populated",
             "accessibility": "standard",
             "theme": "standard"
@@ -963,7 +908,6 @@
                 "load": "error",
                 "access": "owner",
                 "organizer_supply": "one",
-                "workspace": "events",
                 "event_supply": "populated",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -978,13 +922,12 @@
                   "retry_host_home",
                   "create_organizer",
                   "switch_organizer",
-                  "view_events",
                   "filter_events",
                   "create_event",
                   "repeat_event",
                   "manage_event",
-                  "open_today_event",
-                  "open_today_task"
+                  "open_operational_event",
+                  "open_attention_task"
                 ]
               }
             }
@@ -999,7 +942,6 @@
             "load": "offline",
             "access": "owner",
             "organizer_supply": "one",
-            "workspace": "events",
             "event_supply": "populated",
             "accessibility": "standard",
             "theme": "standard"
@@ -1018,7 +960,6 @@
                 "load": "offline",
                 "access": "owner",
                 "organizer_supply": "one",
-                "workspace": "events",
                 "event_supply": "populated",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -1033,13 +974,12 @@
                   "retry_host_home",
                   "create_organizer",
                   "switch_organizer",
-                  "view_events",
                   "filter_events",
                   "create_event",
                   "repeat_event",
                   "manage_event",
-                  "open_today_event",
-                  "open_today_task"
+                  "open_operational_event",
+                  "open_attention_task"
                 ]
               }
             }
@@ -1054,7 +994,6 @@
             "load": "ready",
             "access": "owner",
             "organizer_supply": "one",
-            "workspace": "events",
             "event_supply": "populated",
             "accessibility": "standard",
             "theme": "standard"
@@ -1078,7 +1017,6 @@
                 "load": "ready",
                 "access": "owner",
                 "organizer_supply": "one",
-                "workspace": "events",
                 "event_supply": "populated",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -1089,17 +1027,16 @@
                   "filter_events",
                   "create_event",
                   "repeat_event",
-                  "manage_event"
+                  "manage_event",
+                  "open_operational_event",
+                  "open_attention_task"
                 ],
                 "disabled": [],
                 "notAllowed": [
                   "sign_in",
                   "retry_host_home",
                   "retry_host_events",
-                  "create_organizer",
-                  "view_events",
-                  "open_today_event",
-                  "open_today_task"
+                  "create_organizer"
                 ]
               }
             }
@@ -1114,7 +1051,6 @@
             "load": "ready",
             "access": "owner",
             "organizer_supply": "one",
-            "workspace": "events",
             "event_supply": "empty",
             "accessibility": "standard",
             "theme": "standard"
@@ -1135,7 +1071,6 @@
                 "load": "ready",
                 "access": "owner",
                 "organizer_supply": "one",
-                "workspace": "events",
                 "event_supply": "empty",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -1152,11 +1087,10 @@
                   "retry_host_home",
                   "retry_host_events",
                   "create_organizer",
-                  "view_events",
                   "repeat_event",
                   "manage_event",
-                  "open_today_event",
-                  "open_today_task"
+                  "open_operational_event",
+                  "open_attention_task"
                 ]
               }
             }
@@ -1171,7 +1105,6 @@
             "load": "ready",
             "access": "owner",
             "organizer_supply": "one",
-            "workspace": "today",
             "event_supply": "populated",
             "accessibility": "standard",
             "theme": "standard"
@@ -1192,7 +1125,6 @@
                 "load": "ready",
                 "access": "owner",
                 "organizer_supply": "one",
-                "workspace": "today",
                 "event_supply": "populated",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -1208,12 +1140,11 @@
                   "retry_host_events",
                   "create_organizer",
                   "switch_organizer",
-                  "view_events",
                   "filter_events",
                   "repeat_event",
                   "manage_event",
-                  "open_today_event",
-                  "open_today_task"
+                  "open_operational_event",
+                  "open_attention_task"
                 ]
               }
             }
@@ -1228,7 +1159,6 @@
             "load": "ready",
             "access": "owner",
             "organizer_supply": "one",
-            "workspace": "today",
             "event_supply": "populated",
             "accessibility": "standard",
             "theme": "standard"
@@ -1249,7 +1179,6 @@
                 "load": "ready",
                 "access": "owner",
                 "organizer_supply": "one",
-                "workspace": "today",
                 "event_supply": "populated",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -1257,8 +1186,8 @@
               "actions": {
                 "enabled": [
                   "manage_event",
-                  "open_today_event",
-                  "open_today_task"
+                  "open_operational_event",
+                  "open_attention_task"
                 ],
                 "disabled": [],
                 "notAllowed": [
@@ -1267,7 +1196,6 @@
                   "retry_host_events",
                   "create_organizer",
                   "switch_organizer",
-                  "view_events",
                   "filter_events",
                   "create_event",
                   "repeat_event"
@@ -1285,7 +1213,6 @@
             "load": "offline",
             "access": "owner",
             "organizer_supply": "one",
-            "workspace": "today",
             "event_supply": "populated",
             "accessibility": "standard",
             "theme": "standard"
@@ -1306,7 +1233,6 @@
                 "load": "offline",
                 "access": "owner",
                 "organizer_supply": "one",
-                "workspace": "today",
                 "event_supply": "populated",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -1321,13 +1247,12 @@
                   "retry_host_events",
                   "create_organizer",
                   "switch_organizer",
-                  "view_events",
                   "filter_events",
                   "create_event",
                   "repeat_event",
                   "manage_event",
-                  "open_today_event",
-                  "open_today_task"
+                  "open_operational_event",
+                  "open_attention_task"
                 ]
               }
             }
@@ -1342,7 +1267,6 @@
             "load": "ready",
             "access": "owner",
             "organizer_supply": "one",
-            "workspace": "today",
             "event_supply": "populated",
             "accessibility": "text_scale_2",
             "theme": "standard"
@@ -1363,7 +1287,6 @@
                 "load": "ready",
                 "access": "owner",
                 "organizer_supply": "one",
-                "workspace": "today",
                 "event_supply": "populated",
                 "accessibility": "text_scale_2",
                 "theme": "standard"
@@ -1377,13 +1300,12 @@
                   "retry_host_events",
                   "create_organizer",
                   "switch_organizer",
-                  "view_events",
                   "filter_events",
                   "create_event",
                   "repeat_event",
                   "manage_event",
-                  "open_today_event",
-                  "open_today_task"
+                  "open_operational_event",
+                  "open_attention_task"
                 ]
               }
             }
@@ -1398,7 +1320,6 @@
             "load": "ready",
             "access": "owner",
             "organizer_supply": "one",
-            "workspace": "today",
             "event_supply": "populated",
             "accessibility": "reduced_motion",
             "theme": "standard"
@@ -1419,7 +1340,6 @@
                 "load": "ready",
                 "access": "owner",
                 "organizer_supply": "one",
-                "workspace": "today",
                 "event_supply": "populated",
                 "accessibility": "reduced_motion",
                 "theme": "standard"
@@ -1433,13 +1353,12 @@
                   "retry_host_events",
                   "create_organizer",
                   "switch_organizer",
-                  "view_events",
                   "filter_events",
                   "create_event",
                   "repeat_event",
                   "manage_event",
-                  "open_today_event",
-                  "open_today_task"
+                  "open_operational_event",
+                  "open_attention_task"
                 ]
               }
             }
@@ -1454,7 +1373,6 @@
             "load": "ready",
             "access": "owner",
             "organizer_supply": "one",
-            "workspace": "today",
             "event_supply": "populated",
             "accessibility": "standard",
             "theme": "light_dark"
@@ -1475,7 +1393,6 @@
                 "load": "ready",
                 "access": "owner",
                 "organizer_supply": "one",
-                "workspace": "today",
                 "event_supply": "populated",
                 "accessibility": "standard",
                 "theme": "light_dark"
@@ -1489,13 +1406,12 @@
                   "retry_host_events",
                   "create_organizer",
                   "switch_organizer",
-                  "view_events",
                   "filter_events",
                   "create_event",
                   "repeat_event",
                   "manage_event",
-                  "open_today_event",
-                  "open_today_task"
+                  "open_operational_event",
+                  "open_attention_task"
                 ]
               }
             }
@@ -1507,11 +1423,6 @@
           "id": "screen.host.home",
           "owner": "hosts",
           "routes": [
-            {
-              "id": "hostHomeScreen",
-              "path": "/host",
-              "role": "primary"
-            },
             {
               "id": "hostEventsScreen",
               "path": "/host/events",

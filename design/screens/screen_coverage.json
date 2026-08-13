@@ -222,17 +222,31 @@
     },
     {
       "routeId": "hostHomeScreen",
-      "status": "contracted",
+      "status": "alias",
       "priority": "P1",
-      "reason": "Covered by screen.host.home as the Host app operations home route.",
-      "screenId": "screen.host.home"
+      "canonicalRouteId": "hostEventsScreen",
+      "reason": "Legacy /host entry redirects to the canonical consolidated Host Events workspace."
     },
     {
       "routeId": "hostEventsScreen",
       "status": "contracted",
       "priority": "P1",
-      "reason": "Covered by screen.host.home as the dedicated Events branch of the Host lifecycle shell.",
+      "reason": "Covered by screen.host.home as the canonical consolidated operational and lifecycle Events workspace.",
       "screenId": "screen.host.home"
+    },
+    {
+      "routeId": "hostCustomersScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Covered by screen.host.customers as the canonical organizer customer directory workspace.",
+      "screenId": "screen.host.customers"
+    },
+    {
+      "routeId": "hostCustomerDetailScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Covered by screen.host.customers as the nested customer identity, attendance, revenue, and conversation detail route.",
+      "screenId": "screen.host.customers"
     },
     {
       "routeId": "hostOperatorEventScreen",

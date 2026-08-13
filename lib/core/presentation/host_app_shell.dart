@@ -97,18 +97,18 @@ class HostAppShell extends ConsumerWidget {
 
 final _hostNavigationItems = [
   AppShellNavigationItem(
-    destination: AppShellNavigationDestination.hostToday,
-    materialIcon: CatchIcons.tabHome,
-    materialSelectedIcon: CatchIcons.tabHomeFilled,
-    cupertinoIcon: CatchIcons.tabHome,
-    cupertinoSelectedIcon: CatchIcons.tabHomeFilled,
-  ),
-  AppShellNavigationItem(
     destination: AppShellNavigationDestination.hostEvents,
     materialIcon: CatchIcons.tabEvents,
     materialSelectedIcon: CatchIcons.tabEventsFilled,
     cupertinoIcon: CatchIcons.tabEvents,
     cupertinoSelectedIcon: CatchIcons.tabEventsFilled,
+  ),
+  AppShellNavigationItem(
+    destination: AppShellNavigationDestination.hostCustomers,
+    materialIcon: CatchIcons.tabCustomers,
+    materialSelectedIcon: CatchIcons.tabCustomersFilled,
+    cupertinoIcon: CatchIcons.tabCustomers,
+    cupertinoSelectedIcon: CatchIcons.tabCustomersFilled,
   ),
   AppShellNavigationItem(
     destination: AppShellNavigationDestination.hostInbox,

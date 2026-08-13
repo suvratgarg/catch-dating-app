@@ -25,6 +25,7 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
     'ambiguousCandidateContactIds',
     'whatsappAdminSuppressed',
     'traits',
+    'revenue',
     'events',
     'eventsTruncated',
     'revision',
@@ -201,6 +202,53 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
         },
       },
     },
+    'revenue': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'coverage',
+        'amounts',
+      ],
+      'properties': <String, Object?>{
+        'coverage': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'exact',
+            'partial',
+            'unavailable',
+          ],
+        },
+        'amounts': <String, Object?>{
+          'type': 'array',
+          'maxItems': 8,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'currency',
+              'amountMinor',
+              'paidOrderCount',
+            ],
+            'properties': <String, Object?>{
+              'currency': <String, Object?>{
+                'type': 'string',
+                'pattern': '^[A-Z]{3}\$',
+              },
+              'amountMinor': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+                'maximum': 9007199254740991,
+              },
+              'paidOrderCount': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+                'maximum': 1000000,
+              },
+            },
+          },
+        },
+      },
+    },
     'events': <String, Object?>{
       'type': 'array',
       'maxItems': 100,
@@ -319,6 +367,78 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
     },
   },
   'definitions': <String, Object?>{
+    'revenue': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'coverage',
+        'amounts',
+      ],
+      'properties': <String, Object?>{
+        'coverage': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'exact',
+            'partial',
+            'unavailable',
+          ],
+        },
+        'amounts': <String, Object?>{
+          'type': 'array',
+          'maxItems': 8,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'currency',
+              'amountMinor',
+              'paidOrderCount',
+            ],
+            'properties': <String, Object?>{
+              'currency': <String, Object?>{
+                'type': 'string',
+                'pattern': '^[A-Z]{3}\$',
+              },
+              'amountMinor': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+                'maximum': 9007199254740991,
+              },
+              'paidOrderCount': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+                'maximum': 1000000,
+              },
+            },
+          },
+        },
+      },
+    },
+    'revenueAmount': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'currency',
+        'amountMinor',
+        'paidOrderCount',
+      ],
+      'properties': <String, Object?>{
+        'currency': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[A-Z]{3}\$',
+        },
+        'amountMinor': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 9007199254740991,
+        },
+        'paidOrderCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 1000000,
+        },
+      },
+    },
     'traits': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,

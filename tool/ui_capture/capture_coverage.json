@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-08-12",
+  "updated": "2026-08-13",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Phase 1 UI capture coverage policy. Every route from go_router.dart must be captured, aliased to a canonical capture surface, planned, or explicitly excluded.",
   "routes": [
@@ -643,6 +643,18 @@
         "host_home_events_list"
       ],
       "reason": "The first-class Host Events branch is captured through the real four-branch Host shell and compared against the pinned full-shell Events source reference."
+    },
+    {
+      "routeId": "hostCustomersScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "The production Customers directory and Widgetbook gallery exist; deterministic full-shell loading, empty, populated, filtering, pagination, manual-add, accessibility, and theme captures remain planned."
+    },
+    {
+      "routeId": "hostCustomerDetailScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "The nested production customer detail and linked exact-revenue Widgetbook fixture exist; deterministic identity, revenue-coverage, conversation-gate, accessibility, and theme captures remain planned."
     },
     {
       "routeId": "hostOperatorEventScreen",

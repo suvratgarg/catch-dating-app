@@ -65,6 +65,7 @@ export 'callables/create_event_review_callable_request.g.dart';
 export 'callables/create_event_roster_handoff_callable_request.g.dart';
 export 'callables/create_event_waitlist_offers_callable_request.g.dart';
 export 'callables/create_organizer_callable_request.g.dart';
+export 'callables/create_organizer_contact_callable_request.g.dart';
 export 'callables/create_organizer_post_callable_request.g.dart';
 export 'callables/create_public_club_review_callable_request.g.dart';
 export 'callables/create_public_organizer_review_callable_request.g.dart';
@@ -135,6 +136,7 @@ export 'callables/set_organizer_notification_preference_callable_request.g.dart'
 export 'callables/set_review_response_callable_request.g.dart';
 export 'callables/start_club_host_conversation_callable_request.g.dart';
 export 'callables/start_event_success_first_hello_mission_callable_request.g.dart';
+export 'callables/start_organizer_contact_conversation_callable_request.g.dart';
 export 'callables/start_organizer_conversation_callable_request.g.dart';
 export 'callables/submit_event_runtime_profile_callable_request.g.dart';
 export 'callables/submit_event_success_wingman_request_callable_request.g.dart';

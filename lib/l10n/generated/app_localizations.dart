@@ -178,6 +178,12 @@ abstract class AppLocalizations {
   /// **'Events'**
   String get hostNavigationEvents;
 
+  /// Host bottom navigation label for the organizer CRM directory.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers'**
+  String get hostNavigationCustomers;
+
   /// Host bottom navigation label for attendee inquiries.
   ///
   /// In en, this message translates to:
@@ -19960,6 +19966,156 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'On larger screens, drag is also available. Tap controls always work.'**
   String get eventSuccessRoomMapDragHint;
+
+  /// Customers directory scope explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone who has attended, registered, been imported, or been added by your team.'**
+  String get hostCustomersIntro;
+
+  /// Adds a name-only organizer CRM contact.
+  ///
+  /// In en, this message translates to:
+  /// **'Add customer'**
+  String get hostCustomersAdd;
+
+  /// Manual CRM contact sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a customer'**
+  String get hostCustomersAddTitle;
+
+  /// Manual CRM contact name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer name'**
+  String get hostCustomersName;
+
+  /// Manual CRM identity boundary.
+  ///
+  /// In en, this message translates to:
+  /// **'This creates an organizer-only contact. It does not create a Catch account or grant messaging permission.'**
+  String get hostCustomersAddHelp;
+
+  /// Customer segment filter heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by tag'**
+  String get hostCustomersFilterByTag;
+
+  /// Customers with at least one check-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Attended'**
+  String get hostCustomersFilterAttended;
+
+  /// Explainable alias for the versioned lapsed-regular segment.
+  ///
+  /// In en, this message translates to:
+  /// **'At risk'**
+  String get hostCustomersFilterAtRisk;
+
+  /// Empty customer directory title.
+  ///
+  /// In en, this message translates to:
+  /// **'No customers yet'**
+  String get hostCustomersEmpty;
+
+  /// Empty customer directory explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers appear after attendance, registration, import, or a manual add.'**
+  String get hostCustomersEmptyBody;
+
+  /// Filtered customer directory empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'No customers match these filters.'**
+  String get hostCustomersNoResults;
+
+  /// Loads the next customer directory page.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more'**
+  String get hostCustomersLoadMore;
+
+  /// Customer attendance stats heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendance'**
+  String get hostCustomersDetailAttendance;
+
+  /// Customer events with a confirmed or checked-in attendance edge.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected'**
+  String get hostCustomersExpected;
+
+  /// Checked-in events divided by expected events for a customer.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendance rate'**
+  String get hostCustomersAttendanceRate;
+
+  /// Authoritative Catch revenue stats heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Revenue'**
+  String get hostCustomersDetailRevenue;
+
+  /// Zero authoritative Catch revenue state.
+  ///
+  /// In en, this message translates to:
+  /// **'No completed Catch payments for this organizer.'**
+  String get hostCustomersDetailNoRevenue;
+
+  /// Revenue identity coverage boundary.
+  ///
+  /// In en, this message translates to:
+  /// **'Revenue is unavailable until this customer has an unambiguous linked Catch account.'**
+  String get hostCustomersDetailRevenueUnavailable;
+
+  /// Partial revenue coverage warning.
+  ///
+  /// In en, this message translates to:
+  /// **'Revenue includes known completed Catch payments only; some history may be outside this bounded result.'**
+  String get hostCustomersDetailRevenuePartial;
+
+  /// Completed order count for one currency.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 paid order} other{{count} paid orders}}'**
+  String hostCustomersDetailPaidOrders({required int count});
+
+  /// Starts or reuses a direct organizer-customer thread.
+  ///
+  /// In en, this message translates to:
+  /// **'New conversation'**
+  String get hostCustomersNewConversation;
+
+  /// Unlinked customer messaging boundary.
+  ///
+  /// In en, this message translates to:
+  /// **'A conversation becomes available after this customer is unambiguously linked to a Catch account.'**
+  String get hostCustomersConversationUnlinked;
+
+  /// Ambiguous customer messaging boundary.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolve this customer’s identity before starting a conversation.'**
+  String get hostCustomersConversationAmbiguous;
+
+  /// Customer event history heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Past attendance'**
+  String get hostCustomersEventHistory;
+
+  /// Customer with no checked-in event history.
+  ///
+  /// In en, this message translates to:
+  /// **'No checked-in events yet.'**
+  String get hostCustomersNoAttendance;
 }
 
 class _AppLocalizationsDelegate

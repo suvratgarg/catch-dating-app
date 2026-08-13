@@ -57,6 +57,7 @@ HostEventsWorkspaceState buildHostEventsWorkspaceState(
   AsyncValue<List<Event>> events, {
   required DateTime now,
   required HostEventsLifecycleFilter selectedFilter,
+  String? featuredEventId,
 }) {
   if (events.isLoading) {
     return HostEventsWorkspaceState(
@@ -77,22 +78,23 @@ HostEventsWorkspaceState buildHostEventsWorkspaceState(
     events: events.asData?.value ?? const <Event>[],
     now: now,
     selectedFilter: selectedFilter,
+    featuredEventId: featuredEventId,
   );
 }
 
-HostHomeTodayDashboardState buildHostHomeTodayDashboardState(
+HostEventsOverviewState buildHostEventsOverviewState(
   AsyncValue<List<Event>> events, {
   required DateTime now,
   required AppLocalizations l10n,
 }) {
   if (events.isLoading) {
-    return const HostHomeTodayDashboardState(
-      status: HostHomeTodayStatus.loading,
+    return const HostEventsOverviewState(
+      status: HostEventsOverviewStatus.loading,
     );
   }
   if (events.hasError) {
-    return HostHomeTodayDashboardState(
-      status: HostHomeTodayStatus.error,
+    return HostEventsOverviewState(
+      status: HostEventsOverviewStatus.error,
       error: events.error,
       stackTrace: events.stackTrace,
     );
@@ -109,36 +111,19 @@ HostHomeTodayDashboardState buildHostHomeTodayDashboardState(
   });
   final event = activeEvents?.firstOrNull;
   if (event == null) {
-    return const HostHomeTodayDashboardState(status: HostHomeTodayStatus.empty);
+    return const HostEventsOverviewState(
+      status: HostEventsOverviewStatus.empty,
+    );
   }
 
-  final laterHorizon = DateTime(
-    now.year,
-    now.month,
-    now.day,
-  ).add(const Duration(days: 7));
-  final laterEvents = activeEvents!
-      .skip(1)
-      .where(
-        (candidate) =>
-            candidate.startTime.isAfter(now) &&
-            candidate.startTime.isBefore(laterHorizon),
-      )
-      .take(3)
-      .map(
-        (candidate) =>
-            HostEventLifecycleRowData.fromEvent(event: candidate, now: now),
-      )
-      .toList(growable: false);
-  final tasks = HostHomeTodayTaskData.forEvents(
-    activeEvents,
+  final tasks = HostEventAttentionData.forEvents(
+    activeEvents!,
     l10n,
   ).toList(growable: false);
 
-  return HostHomeTodayDashboardState(
-    status: HostHomeTodayStatus.content,
+  return HostEventsOverviewState(
+    status: HostEventsOverviewStatus.content,
     event: event,
-    laterEvents: List<HostEventLifecycleRowData>.unmodifiable(laterEvents),
-    tasks: List<HostHomeTodayTaskData>.unmodifiable(tasks),
+    tasks: List<HostEventAttentionData>.unmodifiable(tasks),
   );
 }

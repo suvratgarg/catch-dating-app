@@ -44112,6 +44112,31 @@ export const startOrganizerConversationCallablePayloadSchema = {
   }
 };
 
+export const startOrganizerContactConversationCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/start_organizer_contact_conversation_payload.schema.json",
+  "title": "StartOrganizerContactConversationCallablePayload",
+  "description": "Manager-only request to start or reuse an organizer-scoped conversation with one verified linked CRM contact.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "contactId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
 export const archiveClubCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/archive_club_payload.schema.json",
@@ -50579,6 +50604,68 @@ export const listOrganizerContactsCallablePayloadSchema = {
   }
 };
 
+export const createOrganizerContactCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/create_organizer_contact_payload.schema.json",
+  "title": "CreateOrganizerContactCallablePayload",
+  "description": "Manager-only creation of a name-only organizer CRM contact. It does not create an attendee, Consumer account, or messaging permission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "displayName"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    }
+  }
+};
+
+export const createOrganizerContactCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/create_organizer_contact_response.schema.json",
+  "title": "CreateOrganizerContactCallableResponse",
+  "description": "Identity of one newly created organizer-only CRM contact.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "contactId",
+    "displayName",
+    "revision"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
 export const listOrganizerContactsCallableResponseSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/list_organizer_contacts_response.schema.json",
@@ -50953,6 +51040,7 @@ export const getOrganizerContactDetailCallableResponseSchema = {
     "ambiguousCandidateContactIds",
     "whatsappAdminSuppressed",
     "traits",
+    "revenue",
     "events",
     "eventsTruncated",
     "revision"
@@ -51129,6 +51217,53 @@ export const getOrganizerContactDetailCallableResponseSchema = {
         }
       }
     },
+    "revenue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "coverage",
+        "amounts"
+      ],
+      "properties": {
+        "coverage": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "partial",
+            "unavailable"
+          ]
+        },
+        "amounts": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "currency",
+              "amountMinor",
+              "paidOrderCount"
+            ],
+            "properties": {
+              "currency": {
+                "type": "string",
+                "pattern": "^[A-Z]{3}$"
+              },
+              "amountMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "paidOrderCount": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1000000
+              }
+            }
+          }
+        }
+      }
+    },
     "events": {
       "type": "array",
       "maxItems": 100,
@@ -51247,6 +51382,78 @@ export const getOrganizerContactDetailCallableResponseSchema = {
     }
   },
   "definitions": {
+    "revenue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "coverage",
+        "amounts"
+      ],
+      "properties": {
+        "coverage": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "partial",
+            "unavailable"
+          ]
+        },
+        "amounts": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "currency",
+              "amountMinor",
+              "paidOrderCount"
+            ],
+            "properties": {
+              "currency": {
+                "type": "string",
+                "pattern": "^[A-Z]{3}$"
+              },
+              "amountMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "paidOrderCount": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1000000
+              }
+            }
+          }
+        }
+      }
+    },
+    "revenueAmount": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "amountMinor",
+        "paidOrderCount"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "amountMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "paidOrderCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        }
+      }
+    },
     "traits": {
       "type": "object",
       "additionalProperties": false,

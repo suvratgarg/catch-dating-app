@@ -8,6 +8,7 @@ import {
   ClubDocument,
   EventDocument,
   MatchDocument,
+  OrganizerContactDocument,
   OrganizerDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
@@ -15,6 +16,7 @@ import {StartClubHostConversationCallablePayload} from
   "../shared/generated/startClubHostConversationCallablePayload";
 import {
   validateStartClubHostConversationCallablePayload,
+  validateStartOrganizerContactConversationCallablePayload,
   validateStartOrganizerConversationCallablePayload,
 } from "../shared/generated/schemaValidators";
 import {clubHostUserIds} from "../shared/clubHosts";
@@ -23,8 +25,12 @@ import {assertNoBlockingRelationshipInTransaction} from "../safety/blocking";
 import {normalizeClubHostPayload} from "./clubPayloadNormalization";
 import {StartOrganizerConversationCallablePayload} from
   "../shared/generated/startOrganizerConversationCallablePayload";
+import {StartOrganizerContactConversationCallablePayload} from
+  "../shared/generated/startOrganizerContactConversationCallablePayload";
 import {normalizeOrganizerHostPayload} from
   "../organizers/organizerPayloadNormalization";
+import {requireOrganizerManager} from
+  "../shared/organizerManagerAuthority";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 
 interface ClubHostConversationDeps {
@@ -88,11 +94,57 @@ export async function startOrganizerConversationHandler(
   );
 }
 
+/** Starts or reuses a manager-to-customer conversation for a linked contact. */
+export async function startOrganizerContactConversationHandler(
+  request: CallableRequest<unknown>,
+  deps: ClubHostConversationDeps = defaultDeps
+): Promise<{matchId: string}> {
+  const actorUid = requireAuth(request);
+  const data = validateCallableWithAjv<
+    StartOrganizerContactConversationCallablePayload
+  >(
+    request,
+    validateStartOrganizerContactConversationCallablePayload,
+    normalizeOrganizerContactConversationPayload
+  );
+  const db = deps.firestore();
+  await deps.checkRateLimit?.(db, actorUid, "startOrganizerConversation");
+  await requireOrganizerManager({
+    db,
+    organizerId: data.organizerId,
+    actorUid,
+  });
+  const contactSnap = await db.collection("organizerContacts")
+    .doc(data.contactId).get();
+  const contact = contactSnap.data() as OrganizerContactDocument | undefined;
+  if (!contact || contact.organizerId !== data.organizerId ||
+      contact.deletedAt !== null || contact.hiddenAt != null ||
+      contact.mergedIntoContactId !== null ||
+      contact.identityState !== "verified" || contact.linkedUid === null ||
+      contact.ambiguousCandidateContactIds.length > 0) {
+    throw new HttpsError(
+      "failed-precondition",
+      "This customer does not have an available linked Catch account."
+    );
+  }
+  return startOrganizerConversationCore(
+    actorUid,
+    {organizerId: data.organizerId, hostUid: contact.linkedUid},
+    deps,
+    "startOrganizerConversation",
+    {managerUid: actorUid, rateLimitAlreadyChecked: true}
+  );
+}
+
 async function startOrganizerConversationCore(
   callerUid: string,
   data: StartOrganizerConversationCallablePayload,
   deps: ClubHostConversationDeps,
-  rateLimitAction: "startClubHostConversation" | "startOrganizerConversation"
+  rateLimitAction: "startClubHostConversation" | "startOrganizerConversation",
+  options: {
+    managerUid?: string;
+    rateLimitAlreadyChecked?: boolean;
+  } = {}
 ): Promise<{matchId: string}> {
   if (callerUid === data.hostUid) {
     throw new HttpsError(
@@ -102,7 +154,9 @@ async function startOrganizerConversationCore(
   }
 
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, callerUid, rateLimitAction);
+  if (!options.rateLimitAlreadyChecked) {
+    await deps.checkRateLimit?.(db, callerUid, rateLimitAction);
+  }
   const [user1Id, user2Id] = [callerUid, data.hostUid].sort();
   const legacyPairMatchId = `${user1Id}_${user2Id}`;
   const scopedMatchId = clubHostInquiryMatchId({
@@ -156,7 +210,7 @@ async function startOrganizerConversationCore(
         "OrganizerDocument"
       )) :
       clubHostUserIds(requireDoc<ClubDocument>(clubSnap, "ClubDocument"));
-    if (!hostUserIds.includes(data.hostUid)) {
+    if (!hostUserIds.includes(options.managerUid ?? data.hostUid)) {
       throw new HttpsError(
         "permission-denied",
         "That user is not a manager for this organizer."
@@ -278,3 +332,21 @@ export const startOrganizerConversation = onCall(
   appCheckCallableOptions,
   (request) => startOrganizerConversationHandler(request)
 );
+
+export const startOrganizerContactConversation = onCall(
+  appCheckCallableOptions,
+  (request) => startOrganizerContactConversationHandler(request)
+);
+
+function normalizeOrganizerContactConversationPayload(data: unknown): unknown {
+  if (typeof data !== "object" || data === null || Array.isArray(data)) {
+    return data;
+  }
+  const normalized = {...data} as Record<string, unknown>;
+  for (const field of ["organizerId", "contactId"]) {
+    if (typeof normalized[field] === "string") {
+      normalized[field] = normalized[field].trim();
+    }
+  }
+  return normalized;
+}

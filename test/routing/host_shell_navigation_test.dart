@@ -25,14 +25,14 @@ void main() {
     tester,
   ) async {
     final router = GoRouter(
-      initialLocation: '/host',
+      initialLocation: '/host/events',
       routes: [
         StatefulShellRoute.indexedStack(
           builder: (context, state, navigationShell) =>
               HostAppShell(navigationShell: navigationShell),
           branches: [
-            _branch('/host', 'TODAY BODY'),
             _branch('/host/events', 'EVENTS BODY'),
+            _branch('/host/customers', 'CUSTOMERS BODY'),
             _branch('/host/inbox', 'INBOX BODY'),
             _branch('/host/organizer', 'ORGANIZER BODY'),
           ],
@@ -67,17 +67,17 @@ void main() {
     expect(
       navigationBar.items!.map((item) => item.destination),
       orderedEquals(const [
-        AppShellNavigationDestination.hostToday,
         AppShellNavigationDestination.hostEvents,
+        AppShellNavigationDestination.hostCustomers,
         AppShellNavigationDestination.hostInbox,
         AppShellNavigationDestination.hostOrganizer,
       ]),
     );
-    expect(find.text('TODAY BODY'), findsOneWidget);
-
-    await tester.tap(find.bySemanticsLabel(RegExp('Events')));
-    await pumpFeatureUi(tester);
     expect(find.text('EVENTS BODY'), findsOneWidget);
+
+    await tester.tap(find.bySemanticsLabel(RegExp('Customers')));
+    await pumpFeatureUi(tester);
+    expect(find.text('CUSTOMERS BODY'), findsOneWidget);
 
     await tester.tap(find.bySemanticsLabel(RegExp('Inbox')));
     await pumpFeatureUi(tester);
@@ -99,7 +99,7 @@ void main() {
       addTearDown(tester.view.resetViewInsets);
 
       final router = GoRouter(
-        initialLocation: '/host',
+        initialLocation: '/host/events',
         routes: [
           StatefulShellRoute.indexedStack(
             builder: (context, state, navigationShell) =>
@@ -108,7 +108,7 @@ void main() {
               StatefulShellBranch(
                 routes: [
                   GoRoute(
-                    path: '/host',
+                    path: '/host/events',
                     builder: (context, state) => Scaffold(
                       body: TextField(
                         key: editorKey,
@@ -119,7 +119,7 @@ void main() {
                   ),
                 ],
               ),
-              _branch('/host/events', 'EVENTS BODY'),
+              _branch('/host/customers', 'CUSTOMERS BODY'),
               _branch('/host/inbox', 'INBOX BODY'),
               _branch('/host/organizer', 'ORGANIZER BODY'),
             ],

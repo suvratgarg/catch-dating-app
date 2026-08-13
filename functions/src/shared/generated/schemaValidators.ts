@@ -177,6 +177,7 @@ import {AdminPublishExternalEventCallablePayload} from "./adminPublishExternalEv
 import {AdminTakedownExternalEventCallablePayload} from "./adminTakedownExternalEventCallablePayload";
 import {StartClubHostConversationCallablePayload} from "./startClubHostConversationCallablePayload";
 import {StartOrganizerConversationCallablePayload} from "./startOrganizerConversationCallablePayload";
+import {StartOrganizerContactConversationCallablePayload} from "./startOrganizerContactConversationCallablePayload";
 import {ArchiveClubCallablePayload} from "./archiveClubCallablePayload";
 import {DeleteClubCallablePayload} from "./deleteClubCallablePayload";
 import {ClubMembershipCallablePayload} from "./clubMembershipCallablePayload";
@@ -251,6 +252,8 @@ import {GetEventRosterInsightsCallablePayload} from "./getEventRosterInsightsCal
 import {GetEventRosterInsightsCallableResponse} from "./getEventRosterInsightsCallableResponse";
 import {GetOrganizerCrmSummaryCallableResponse} from "./getOrganizerCrmSummaryCallableResponse";
 import {ListOrganizerContactsCallablePayload} from "./listOrganizerContactsCallablePayload";
+import {CreateOrganizerContactCallablePayload} from "./createOrganizerContactCallablePayload";
+import {CreateOrganizerContactCallableResponse} from "./createOrganizerContactCallableResponse";
 import {ListOrganizerContactsCallableResponse} from "./listOrganizerContactsCallableResponse";
 import {GetOrganizerContactDetailCallablePayload} from "./getOrganizerContactDetailCallablePayload";
 import {GetOrganizerContactDetailCallableResponse} from "./getOrganizerContactDetailCallableResponse";
@@ -514,6 +517,7 @@ import {
   adminTakedownExternalEventCallablePayloadSchema,
   startClubHostConversationCallablePayloadSchema,
   startOrganizerConversationCallablePayloadSchema,
+  startOrganizerContactConversationCallablePayloadSchema,
   archiveClubCallablePayloadSchema,
   deleteClubCallablePayloadSchema,
   clubMembershipCallablePayloadSchema,
@@ -588,6 +592,8 @@ import {
   getEventRosterInsightsCallableResponseSchema,
   getOrganizerCrmSummaryCallableResponseSchema,
   listOrganizerContactsCallablePayloadSchema,
+  createOrganizerContactCallablePayloadSchema,
+  createOrganizerContactCallableResponseSchema,
   listOrganizerContactsCallableResponseSchema,
   getOrganizerContactDetailCallablePayloadSchema,
   getOrganizerContactDetailCallableResponseSchema,
@@ -1374,6 +1380,10 @@ export const validateStartOrganizerConversationCallablePayload:
   ValidateFunction<StartOrganizerConversationCallablePayload> =
     ajv.compile(startOrganizerConversationCallablePayloadSchema) as
       ValidateFunction<StartOrganizerConversationCallablePayload>;
+export const validateStartOrganizerContactConversationCallablePayload:
+  ValidateFunction<StartOrganizerContactConversationCallablePayload> =
+    ajv.compile(startOrganizerContactConversationCallablePayloadSchema) as
+      ValidateFunction<StartOrganizerContactConversationCallablePayload>;
 export const validateArchiveClubCallablePayload:
   ValidateFunction<ArchiveClubCallablePayload> =
     ajv.compile(archiveClubCallablePayloadSchema) as
@@ -1670,6 +1680,14 @@ export const validateListOrganizerContactsCallablePayload:
   ValidateFunction<ListOrganizerContactsCallablePayload> =
     ajv.compile(listOrganizerContactsCallablePayloadSchema) as
       ValidateFunction<ListOrganizerContactsCallablePayload>;
+export const validateCreateOrganizerContactCallablePayload:
+  ValidateFunction<CreateOrganizerContactCallablePayload> =
+    ajv.compile(createOrganizerContactCallablePayloadSchema) as
+      ValidateFunction<CreateOrganizerContactCallablePayload>;
+export const validateCreateOrganizerContactCallableResponse:
+  ValidateFunction<CreateOrganizerContactCallableResponse> =
+    ajv.compile(createOrganizerContactCallableResponseSchema) as
+      ValidateFunction<CreateOrganizerContactCallableResponse>;
 export const validateListOrganizerContactsCallableResponse:
   ValidateFunction<ListOrganizerContactsCallableResponse> =
     ajv.compile(listOrganizerContactsCallableResponseSchema) as

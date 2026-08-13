@@ -138,27 +138,27 @@
       ]
     },
     {
-      "branchKey": "keys.hostToday",
-      "routeName": "Routes.hostHomeScreen.name",
-      "owners": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
-          "requires": [
-            {"text": "bottom: false", "minimumOccurrences": 2},
-            {"text": "CatchSliverTerminalPadding", "minimumOccurrences": 2}
-          ]
-        }
-      ]
-    },
-    {
       "branchKey": "keys.hostEvents",
       "routeName": "Routes.hostEventsScreen.name",
       "owners": [
         {
           "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
           "requires": [
-            {"text": "bottom: false", "minimumOccurrences": 2},
-            {"text": "CatchSliverTerminalPadding", "minimumOccurrences": 2}
+            {"text": "bottom: false", "minimumOccurrences": 1},
+            {"text": "CatchSliverTerminalPadding", "minimumOccurrences": 1}
+          ]
+        }
+      ]
+    },
+    {
+      "branchKey": "keys.hostCustomers",
+      "routeName": "Routes.hostCustomersScreen.name",
+      "owners": [
+        {
+          "path": "lib/hosts/presentation/customers/host_customers_screen.dart",
+          "requires": [
+            {"text": "bottom: false", "minimumOccurrences": 1},
+            {"text": "CatchScrollTerminalPadding", "minimumOccurrences": 1}
           ]
         }
       ]

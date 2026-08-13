@@ -4,13 +4,13 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "4f311b2972c4a24a8842628219fbaadf97a619a770457c6752e35cfa96f46485",
-    "routeContractSha256": "2945219eded5b87c2e7e7fcd28b82c900c43a9ff2e940e5fd5b4cdd4264d0817",
-    "goRouteCount": 52,
+    "normalizedFileSha256": "84db55a4ceb4a7d54a8e64c1d34b2f45ff73fabbcd0cf7f0057050be43c09955",
+    "routeContractSha256": "454300932c3a5ceecfee0542d3b117086841616384892e76bc94fb6d95de77be",
+    "goRouteCount": 54,
     "shellBranchCount": 8,
-    "enumRouteCount": 51,
-    "referencedRouteCount": 51,
-    "runtimeRouteCount": 51,
+    "enumRouteCount": 53,
+    "referencedRouteCount": 53,
+    "runtimeRouteCount": 53,
     "routeHelperCount": 2,
     "routeHelpers": [
       "_hostUtilityRoutes",
@@ -444,6 +444,32 @@
       "referencedByGoRouter": true
     },
     {
+      "id": "hostCustomersScreen",
+      "path": "/host/customers",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "runtimePath": "/host/customers",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostCustomersScreen.path",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostCustomerDetailScreen",
+      "path": "/host/customers/:contactId",
+      "pathParameters": [
+        "contactId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/customers/:contactId",
+      "runtimeParentId": "hostCustomersScreen",
+      "runtimePathExpression": "':contactId'",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
       "id": "hostOperatorEventScreen",
       "path": "/host/operator/:eventId",
       "pathParameters": [
@@ -715,6 +741,8 @@
     "hostClubTeamScreen",
     "hostCreateClubScreen",
     "hostCreateEventScreen",
+    "hostCustomerDetailScreen",
+    "hostCustomersScreen",
     "hostEditClubScreen",
     "hostEventsScreen",
     "hostHomeScreen",

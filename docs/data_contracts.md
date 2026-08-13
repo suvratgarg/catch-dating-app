@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.20.0
+version: 1.21.0
 updated: 2026-08-13
 owner: recursive_audit_loop
 status: active
@@ -636,6 +636,14 @@ identity or contact fields. `listOrganizerContacts` and
 `getOrganizerContactDetail` are separate manager-authorized, server-paginated
 boundaries. They return only organizer-owned endpoints plus explainable
 attendance/reachability facts; no Event Success private input is a CRM field.
+`createOrganizerContact` may add a name-only contact and its zero-history trait,
+but creates no attendee, endpoint evidence, UID, Consumer profile, or messaging
+grant. The Customer detail revenue block joins only a verified linked UID to
+completed, non-refunded Catch payments whose event ids already occur in that
+contact's organizer event edges. It reports partial coverage when either the
+bounded event timeline or linked-UID payment scan truncates, and unavailable
+coverage for unlinked or ambiguous contacts. External-provider revenue remains
+absent until a provider supplies financially complete reconciled facts.
 Hosts currently retain event-scoped roster access through the existing
 authorized roster boundary. The Host Audience client consumes the directory,
 detail, export and contact-mutation callables; it never reads these collections

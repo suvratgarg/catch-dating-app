@@ -87,6 +87,7 @@ export {createOrganizer} from "./organizers/createOrganizer";
 export {createClubPost} from "./clubs/clubPosts";
 export {
   startClubHostConversation,
+  startOrganizerContactConversation,
   startOrganizerConversation,
 } from "./clubs/clubHostConversations";
 export {
@@ -132,6 +133,7 @@ export {createOrganizerPost} from "./organizers/organizerPosts";
 export {getOrganizerCrmSummary} from "./organizers/organizerCrm";
 export {getEventRosterInsights} from "./organizers/eventRosterInsights";
 export {
+  createOrganizerContact,
   exportOrganizerContacts,
   getOrganizerContactDetail,
   listOrganizerContacts,

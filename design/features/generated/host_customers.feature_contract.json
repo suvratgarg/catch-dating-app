@@ -1,0 +1,1704 @@
+{
+  "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
+  "version": 2,
+  "generatedFrom": "design/features/host_customers.feature.json",
+  "generatedFor": "2026-08-13",
+  "sourceDigest": "sha256:f8c9c53084c4d6fdea69858757d59b4efffdf62998e3bc7505f1f5977de71c33",
+  "resolvedDigest": "sha256:e5d08d7f678ce9ab1cc12a99525e488d0f4e10fa4dafddc72b8cec49f6591ee1",
+  "feature": {
+    "id": "feature.host_customers",
+    "name": "Host Customers",
+    "owner": "hosts",
+    "status": "pilot",
+    "description": "Orchestrates the Host customer directory and customer detail workspace across organizer selection, search, explainable lifecycle tags, pagination, manual contact creation, attendance and revenue evidence, and identity-gated direct conversations."
+  },
+  "coverage": {
+    "surfaces": 1,
+    "states": 21,
+    "scenarios": 21,
+    "actionCases": 21,
+    "actions": 9,
+    "captures": 0,
+    "previews": 1,
+    "testFiles": 2,
+    "evidenceExceptions": 30
+  },
+  "surfaces": [
+    {
+      "id": "host_flutter",
+      "runtime": "flutter",
+      "authority": {
+        "registry": "flutter_screens",
+        "id": "screen.host.customers"
+      },
+      "actionScope": {
+        "included": "Customer directory recovery, organizer switching, name search, lifecycle-tag filtering, pagination, organizer-only manual contact creation, detail routing, and verified-account direct conversation creation.",
+        "excluded": [
+          "Campaign composition, provider setup, exports, contact suppression, and merge controls remain in the existing Organizer Audience workspace during the extraction.",
+          "High-spender segmentation remains excluded until completed non-refunded payment totals are projected into indexed organizer-contact traits."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "widgetbook/lib/hosts/host_operations_use_cases.dart"
+        ],
+        "actionOwners": [
+          {
+            "id": "customers_screen",
+            "language": "dart",
+            "file": "lib/hosts/presentation/customers/host_customers_screen.dart",
+            "symbol": "HostCustomersScreen"
+          },
+          {
+            "id": "customers_directory",
+            "language": "dart",
+            "file": "lib/hosts/presentation/customers/host_customers_controller.dart",
+            "symbol": "HostCustomersDirectoryController"
+          },
+          {
+            "id": "customers_mutations",
+            "language": "dart",
+            "file": "lib/hosts/presentation/customers/host_customers_controller.dart",
+            "symbol": "HostCustomersController"
+          },
+          {
+            "id": "customer_detail",
+            "language": "dart",
+            "file": "lib/hosts/presentation/customers/host_customers_screen.dart",
+            "symbol": "HostCustomerDetailScreen"
+          }
+        ],
+        "componentContracts": [
+          "catch.button",
+          "catch.chip",
+          "catch.empty_state",
+          "catch.error_state",
+          "catch.field",
+          "catch.person_row",
+          "catch.search_field",
+          "catch.section",
+          "catch.skeleton",
+          "catch.surface",
+          "catch.top_bar"
+        ],
+        "dataContracts": [
+          "contracts/callable_responses/create_organizer_contact_response.schema.json",
+          "contracts/callable_responses/get_organizer_contact_detail_response.schema.json",
+          "contracts/callable_responses/list_organizer_contacts_response.schema.json",
+          "contracts/callables/create_organizer_contact_payload.schema.json",
+          "contracts/callables/get_organizer_contact_detail_payload.schema.json",
+          "contracts/callables/list_organizer_contacts_payload.schema.json",
+          "contracts/callables/start_organizer_contact_conversation_payload.schema.json",
+          "contracts/firestore/organizer_contact_event_edges.schema.json",
+          "contracts/firestore/organizer_contact_traits.schema.json",
+          "contracts/firestore/organizer_contacts.schema.json",
+          "contracts/firestore/payments.schema.json"
+        ],
+        "testEvidence": {
+          "customers_populated": [
+            "test/hosts/host_customers_screen_state_test.dart",
+            "test/routing/host_shell_navigation_test.dart",
+            "test/routing/router_redirect_test.dart"
+          ],
+          "customers_filtered_empty": [
+            "test/hosts/host_customers_screen_state_test.dart"
+          ],
+          "customer_detail_linked": [
+            "test/hosts/host_crm_repository_test.dart",
+            "test/hosts/host_customers_screen_state_test.dart"
+          ],
+          "customer_detail_unlinked": [
+            "test/hosts/host_customers_screen_state_test.dart"
+          ],
+          "customer_detail_ambiguous": [
+            "test/hosts/host_customers_screen_state_test.dart"
+          ],
+          "customer_revenue_exact": [
+            "test/hosts/host_crm_repository_test.dart"
+          ],
+          "conversation_available": [
+            "test/hosts/host_customers_screen_state_test.dart"
+          ],
+          "conversation_unavailable": [
+            "test/hosts/host_customers_screen_state_test.dart"
+          ]
+        }
+      },
+      "coverage": {
+        "states": 21,
+        "scenarios": 21,
+        "actionCases": 21,
+        "actions": 9,
+        "captures": 0,
+        "previews": 1,
+        "testFiles": 2,
+        "evidenceExceptions": 30
+      },
+      "dimensions": {
+        "load": {
+          "default": "ready",
+          "values": [
+            "ready",
+            "loading",
+            "error",
+            "offline"
+          ]
+        },
+        "directory": {
+          "default": "populated",
+          "values": [
+            "populated",
+            "empty",
+            "filtered_empty",
+            "paginating"
+          ]
+        },
+        "identity": {
+          "default": "linked",
+          "values": [
+            "linked",
+            "unlinked",
+            "ambiguous"
+          ]
+        },
+        "revenue": {
+          "default": "exact",
+          "values": [
+            "exact",
+            "partial",
+            "unavailable"
+          ]
+        },
+        "mutation": {
+          "default": "idle",
+          "values": [
+            "idle",
+            "adding",
+            "starting_conversation"
+          ]
+        },
+        "accessibility": {
+          "default": "standard",
+          "values": [
+            "standard",
+            "text_scale_2",
+            "reduced_motion"
+          ]
+        },
+        "theme": {
+          "default": "standard",
+          "values": [
+            "standard",
+            "light_dark"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "retry_directory",
+          "owner": "customers_screen",
+          "codeValue": "invalidate",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "organizerId",
+            "failureStateVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "customers_loading",
+                "customers_populated",
+                "customers_empty"
+              ]
+            }
+          ],
+          "description": "Invalidates the selected organizer directory request after a failed load.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "switch_organizer",
+          "owner": "customers_screen",
+          "codeValue": "_selectedOrganizerId",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "routeInstanceId",
+            "organizerId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "customers_loading",
+                "customers_populated",
+                "customers_empty"
+              ]
+            }
+          ],
+          "description": "Switches every summary, directory, filter, and detail route input to another hosted organizer.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "search_customers",
+          "owner": "customers_screen",
+          "codeValue": "_search",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "organizerId",
+            "query"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "customers_populated",
+                "customers_filtered_empty"
+              ]
+            }
+          ],
+          "description": "Searches the organizer customer directory by normalized display name.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "filter_customers",
+          "owner": "customers_screen",
+          "codeValue": "HostCustomerFilter",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "organizerId",
+            "filter"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "customers_populated",
+                "customers_filtered_empty"
+              ]
+            }
+          ],
+          "description": "Filters the directory by existing versioned attendance and lifecycle traits, including an explainable At risk alias for lapsed regulars.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "load_more",
+          "owner": "customers_directory",
+          "codeValue": "loadMore",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "organizerId",
+            "query",
+            "filter",
+            "cursor"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "customers_paginating",
+                "customers_populated"
+              ]
+            }
+          ],
+          "description": "Loads and contact-id de-duplicates the next server page for the active query.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "create_customer",
+          "owner": "customers_mutations",
+          "codeValue": "createCustomer",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "organizerId",
+            "submitAttemptId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "manual_add_pending",
+                "customers_populated"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "host_customers.organizer_contact_created"
+            }
+          ],
+          "description": "Creates a name-only organizer CRM contact without creating a Catch identity or granting messaging permission.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_customer",
+          "owner": "customers_screen",
+          "codeValue": "_openCustomer",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "organizerId",
+            "contactId"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.host.customers"
+              }
+            }
+          ],
+          "description": "Opens the nested route-level customer detail surface for the selected contact.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "retry_customer_detail",
+          "owner": "customer_detail",
+          "codeValue": "invalidate",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "organizerId",
+            "contactId",
+            "failureStateVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "customer_detail_loading",
+                "customer_detail_linked",
+                "customer_detail_unlinked"
+              ]
+            }
+          ],
+          "description": "Invalidates only the failed organizer-contact detail request.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "start_conversation",
+          "owner": "customers_mutations",
+          "codeValue": "startConversation",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "organizerId",
+            "contactId",
+            "tapAttemptId"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.host.chat"
+              }
+            },
+            {
+              "kind": "side_effect",
+              "id": "host_customers.direct_conversation_started"
+            }
+          ],
+          "description": "Starts or reuses a manager-authorized direct thread only for an unambiguous verified linked Catch account.",
+          "implementationStatus": "implemented"
+        }
+      ],
+      "evidenceExceptions": [
+        {
+          "stateIds": [
+            "customers_loading",
+            "customers_error",
+            "customers_empty",
+            "customers_paginating",
+            "manual_add_pending",
+            "customer_detail_loading",
+            "customer_detail_error",
+            "customer_revenue_partial",
+            "customer_revenue_unavailable",
+            "offline",
+            "text_scale_2",
+            "reduced_motion",
+            "light_dark"
+          ],
+          "evidence": [
+            "tests"
+          ],
+          "debtId": "HOST-CUSTOMERS-EVIDENCE-001",
+          "reason": "Controller policy, repository mapping, and route tests cover the initial seam; deterministic rendered state tests remain follow-up evidence for the new workspace."
+        },
+        {
+          "stateIds": [
+            "customers_loading",
+            "customers_error",
+            "customers_empty",
+            "customers_filtered_empty",
+            "customers_paginating",
+            "manual_add_pending",
+            "customer_detail_loading",
+            "customer_detail_error",
+            "customer_detail_unlinked",
+            "customer_detail_ambiguous",
+            "customer_revenue_partial",
+            "customer_revenue_unavailable",
+            "conversation_unavailable",
+            "offline",
+            "text_scale_2",
+            "reduced_motion",
+            "light_dark"
+          ],
+          "evidence": [
+            "previews"
+          ],
+          "debtId": "HOST-CUSTOMERS-EVIDENCE-001",
+          "reason": "The initial Widgetbook gallery covers the populated directory and linked exact-revenue detail; remaining recovery, identity, coverage, accessibility, and theme variants are explicit preview debt."
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "customers_loading",
+          "stateId": "customers_loading",
+          "kind": "loading",
+          "status": "implemented",
+          "dimensions": {
+            "load": "loading",
+            "directory": "populated",
+            "identity": "linked",
+            "revenue": "exact",
+            "mutation": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "loading",
+                "directory": "populated",
+                "identity": "linked",
+                "revenue": "exact",
+                "mutation": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "filter_customers",
+                  "load_more",
+                  "create_customer",
+                  "open_customer",
+                  "retry_customer_detail",
+                  "start_conversation"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "customers_error",
+          "stateId": "customers_error",
+          "kind": "error",
+          "status": "implemented",
+          "dimensions": {
+            "load": "error",
+            "directory": "populated",
+            "identity": "linked",
+            "revenue": "exact",
+            "mutation": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "recovery",
+              "dimensions": {
+                "load": "error",
+                "directory": "populated",
+                "identity": "linked",
+                "revenue": "exact",
+                "mutation": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "retry_directory"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "switch_organizer",
+                  "search_customers",
+                  "filter_customers",
+                  "load_more",
+                  "create_customer",
+                  "open_customer",
+                  "retry_customer_detail",
+                  "start_conversation"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "customers_empty",
+          "stateId": "customers_empty",
+          "kind": "empty",
+          "status": "implemented",
+          "dimensions": {
+            "load": "ready",
+            "directory": "empty",
+            "identity": "linked",
+            "revenue": "exact",
+            "mutation": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "first_customer",
+              "dimensions": {
+                "load": "ready",
+                "directory": "empty",
+                "identity": "linked",
+                "revenue": "exact",
+                "mutation": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "switch_organizer",
+                  "create_customer"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_directory",
+                  "search_customers",
+                  "filter_customers",
+                  "load_more",
+                  "open_customer",
+                  "retry_customer_detail",
+                  "start_conversation"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "customers_populated",
+          "stateId": "customers_populated",
+          "kind": "populated",
+          "status": "implemented",
+          "dimensions": {
+            "load": "ready",
+            "directory": "populated",
+            "identity": "linked",
+            "revenue": "exact",
+            "mutation": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "hostCustomersStates"
+            ],
+            "tests": [
+              "test/hosts/host_customers_screen_state_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "directory",
+              "dimensions": {
+                "load": "ready",
+                "directory": "populated",
+                "identity": "linked",
+                "revenue": "exact",
+                "mutation": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "switch_organizer",
+                  "search_customers",
+                  "filter_customers",
+                  "load_more",
+                  "create_customer",
+                  "open_customer"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_directory",
+                  "retry_customer_detail",
+                  "start_conversation"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "customers_filtered_empty",
+          "stateId": "customers_filtered_empty",
+          "kind": "empty",
+          "status": "implemented",
+          "dimensions": {
+            "load": "ready",
+            "directory": "filtered_empty",
+            "identity": "linked",
+            "revenue": "exact",
+            "mutation": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "test/hosts/host_customers_screen_state_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "adjust",
+              "dimensions": {
+                "load": "ready",
+                "directory": "filtered_empty",
+                "identity": "linked",
+                "revenue": "exact",
+                "mutation": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "search_customers",
+                  "filter_customers"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_directory",
+                  "switch_organizer",
+                  "load_more",
+                  "create_customer",
+                  "open_customer",
+                  "retry_customer_detail",
+                  "start_conversation"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "customers_paginating",
+          "stateId": "customers_paginating",
+          "kind": "mutation",
+          "status": "implemented",
+          "dimensions": {
+            "load": "ready",
+            "directory": "paginating",
+            "identity": "linked",
+            "revenue": "exact",
+            "mutation": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "pending",
+              "dimensions": {
+                "load": "ready",
+                "directory": "paginating",
+                "identity": "linked",
+                "revenue": "exact",
+                "mutation": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "load_more"
+                ],
+                "notAllowed": [
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "filter_customers",
+                  "create_customer",
+                  "open_customer",
+                  "retry_customer_detail",
+                  "start_conversation"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "manual_add_pending",
+          "stateId": "manual_add_pending",
+          "kind": "mutation",
+          "status": "implemented",
+          "dimensions": {
+            "load": "ready",
+            "directory": "populated",
+            "identity": "linked",
+            "revenue": "exact",
+            "mutation": "adding",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "pending",
+              "dimensions": {
+                "load": "ready",
+                "directory": "populated",
+                "identity": "linked",
+                "revenue": "exact",
+                "mutation": "adding",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "create_customer"
+                ],
+                "notAllowed": [
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "filter_customers",
+                  "load_more",
+                  "open_customer",
+                  "retry_customer_detail",
+                  "start_conversation"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "customer_detail_loading",
+          "stateId": "customer_detail_loading",
+          "kind": "loading",
+          "status": "implemented",
+          "dimensions": {
+            "load": "loading",
+            "directory": "populated",
+            "identity": "linked",
+            "revenue": "exact",
+            "mutation": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "loading",
+                "directory": "populated",
+                "identity": "linked",
+                "revenue": "exact",
+                "mutation": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "filter_customers",
+                  "load_more",
+                  "create_customer",
+                  "open_customer",
+                  "retry_customer_detail",
+                  "start_conversation"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "customer_detail_error",
+          "stateId": "customer_detail_error",
+          "kind": "error",
+          "status": "implemented",
+          "dimensions": {
+            "load": "error",
+            "directory": "populated",
+            "identity": "linked",
+            "revenue": "exact",
+            "mutation": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "recovery",
+              "dimensions": {
+                "load": "error",
+                "directory": "populated",
+                "identity": "linked",
+                "revenue": "exact",
+                "mutation": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "retry_customer_detail"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "filter_customers",
+                  "load_more",
+                  "create_customer",
+                  "open_customer",
+                  "start_conversation"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "customer_detail_linked",
+          "stateId": "customer_detail_linked",
+          "kind": "populated",
+          "status": "implemented",
+          "dimensions": {
+            "load": "ready",
+            "directory": "populated",
+            "identity": "linked",
+            "revenue": "exact",
+            "mutation": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "hostCustomersStates"
+            ],
+            "tests": [
+              "test/hosts/host_customers_screen_state_test.dart",
+              "test/hosts/host_crm_repository_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "linked",
+              "dimensions": {
+                "load": "ready",
+                "directory": "populated",
+                "identity": "linked",
+                "revenue": "exact",
+                "mutation": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "start_conversation"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "filter_customers",
+                  "load_more",
+                  "create_customer",
+                  "open_customer",
+                  "retry_customer_detail"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "customer_detail_unlinked",
+          "stateId": "customer_detail_unlinked",
+          "kind": "permission",
+          "status": "implemented",
+          "dimensions": {
+            "load": "ready",
+            "directory": "populated",
+            "identity": "unlinked",
+            "revenue": "exact",
+            "mutation": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "test/hosts/host_customers_screen_state_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "unlinked",
+              "dimensions": {
+                "load": "ready",
+                "directory": "populated",
+                "identity": "unlinked",
+                "revenue": "exact",
+                "mutation": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "start_conversation"
+                ],
+                "notAllowed": [
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "filter_customers",
+                  "load_more",
+                  "create_customer",
+                  "open_customer",
+                  "retry_customer_detail"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "customer_detail_ambiguous",
+          "stateId": "customer_detail_ambiguous",
+          "kind": "permission",
+          "status": "implemented",
+          "dimensions": {
+            "load": "ready",
+            "directory": "populated",
+            "identity": "ambiguous",
+            "revenue": "exact",
+            "mutation": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "test/hosts/host_customers_screen_state_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "ambiguous",
+              "dimensions": {
+                "load": "ready",
+                "directory": "populated",
+                "identity": "ambiguous",
+                "revenue": "exact",
+                "mutation": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "start_conversation"
+                ],
+                "notAllowed": [
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "filter_customers",
+                  "load_more",
+                  "create_customer",
+                  "open_customer",
+                  "retry_customer_detail"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "customer_revenue_exact",
+          "stateId": "customer_revenue_exact",
+          "kind": "populated",
+          "status": "implemented",
+          "dimensions": {
+            "load": "ready",
+            "directory": "populated",
+            "identity": "linked",
+            "revenue": "exact",
+            "mutation": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "hostCustomersStates"
+            ],
+            "tests": [
+              "test/hosts/host_crm_repository_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "ready",
+                "directory": "populated",
+                "identity": "linked",
+                "revenue": "exact",
+                "mutation": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "filter_customers",
+                  "load_more",
+                  "create_customer",
+                  "open_customer",
+                  "retry_customer_detail",
+                  "start_conversation"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "customer_revenue_partial",
+          "stateId": "customer_revenue_partial",
+          "kind": "populated",
+          "status": "implemented",
+          "dimensions": {
+            "load": "ready",
+            "directory": "populated",
+            "identity": "linked",
+            "revenue": "partial",
+            "mutation": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "ready",
+                "directory": "populated",
+                "identity": "linked",
+                "revenue": "partial",
+                "mutation": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "filter_customers",
+                  "load_more",
+                  "create_customer",
+                  "open_customer",
+                  "retry_customer_detail",
+                  "start_conversation"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "customer_revenue_unavailable",
+          "stateId": "customer_revenue_unavailable",
+          "kind": "permission",
+          "status": "implemented",
+          "dimensions": {
+            "load": "ready",
+            "directory": "populated",
+            "identity": "linked",
+            "revenue": "unavailable",
+            "mutation": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "ready",
+                "directory": "populated",
+                "identity": "linked",
+                "revenue": "unavailable",
+                "mutation": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "filter_customers",
+                  "load_more",
+                  "create_customer",
+                  "open_customer",
+                  "retry_customer_detail",
+                  "start_conversation"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "conversation_available",
+          "stateId": "conversation_available",
+          "kind": "populated",
+          "status": "tested",
+          "dimensions": {
+            "load": "ready",
+            "directory": "populated",
+            "identity": "linked",
+            "revenue": "exact",
+            "mutation": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "hostCustomersStates"
+            ],
+            "tests": [
+              "test/hosts/host_customers_screen_state_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "start",
+              "dimensions": {
+                "load": "ready",
+                "directory": "populated",
+                "identity": "linked",
+                "revenue": "exact",
+                "mutation": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "start_conversation"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "filter_customers",
+                  "load_more",
+                  "create_customer",
+                  "open_customer",
+                  "retry_customer_detail"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "conversation_unavailable",
+          "stateId": "conversation_unavailable",
+          "kind": "permission",
+          "status": "tested",
+          "dimensions": {
+            "load": "ready",
+            "directory": "populated",
+            "identity": "unlinked",
+            "revenue": "exact",
+            "mutation": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "test/hosts/host_customers_screen_state_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "blocked",
+              "dimensions": {
+                "load": "ready",
+                "directory": "populated",
+                "identity": "unlinked",
+                "revenue": "exact",
+                "mutation": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "start_conversation"
+                ],
+                "notAllowed": [
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "filter_customers",
+                  "load_more",
+                  "create_customer",
+                  "open_customer",
+                  "retry_customer_detail"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "offline",
+          "stateId": "offline",
+          "kind": "offline",
+          "status": "implemented",
+          "dimensions": {
+            "load": "offline",
+            "directory": "populated",
+            "identity": "linked",
+            "revenue": "exact",
+            "mutation": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "retry",
+              "dimensions": {
+                "load": "offline",
+                "directory": "populated",
+                "identity": "linked",
+                "revenue": "exact",
+                "mutation": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "retry_directory",
+                  "retry_customer_detail"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "switch_organizer",
+                  "search_customers",
+                  "filter_customers",
+                  "load_more",
+                  "create_customer",
+                  "open_customer",
+                  "start_conversation"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "text_scale_2",
+          "stateId": "text_scale_2",
+          "kind": "accessibility",
+          "status": "planned",
+          "dimensions": {
+            "load": "ready",
+            "directory": "populated",
+            "identity": "linked",
+            "revenue": "exact",
+            "mutation": "idle",
+            "accessibility": "text_scale_2",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "ready",
+                "directory": "populated",
+                "identity": "linked",
+                "revenue": "exact",
+                "mutation": "idle",
+                "accessibility": "text_scale_2",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "filter_customers",
+                  "load_more",
+                  "create_customer",
+                  "open_customer",
+                  "retry_customer_detail",
+                  "start_conversation"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "reduced_motion",
+          "stateId": "reduced_motion",
+          "kind": "accessibility",
+          "status": "planned",
+          "dimensions": {
+            "load": "ready",
+            "directory": "populated",
+            "identity": "linked",
+            "revenue": "exact",
+            "mutation": "idle",
+            "accessibility": "reduced_motion",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "ready",
+                "directory": "populated",
+                "identity": "linked",
+                "revenue": "exact",
+                "mutation": "idle",
+                "accessibility": "reduced_motion",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "filter_customers",
+                  "load_more",
+                  "create_customer",
+                  "open_customer",
+                  "retry_customer_detail",
+                  "start_conversation"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "light_dark",
+          "stateId": "light_dark",
+          "kind": "theme",
+          "status": "planned",
+          "dimensions": {
+            "load": "ready",
+            "directory": "populated",
+            "identity": "linked",
+            "revenue": "exact",
+            "mutation": "idle",
+            "accessibility": "standard",
+            "theme": "light_dark"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "ready",
+                "directory": "populated",
+                "identity": "linked",
+                "revenue": "exact",
+                "mutation": "idle",
+                "accessibility": "standard",
+                "theme": "light_dark"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "filter_customers",
+                  "load_more",
+                  "create_customer",
+                  "open_customer",
+                  "retry_customer_detail",
+                  "start_conversation"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "resolved": {
+        "authority": {
+          "id": "screen.host.customers",
+          "owner": "hosts",
+          "routes": [
+            {
+              "id": "hostCustomersScreen",
+              "path": "/host/customers",
+              "role": "primary"
+            },
+            {
+              "id": "hostCustomerDetailScreen",
+              "path": "/host/customers/:contactId",
+              "role": "host"
+            }
+          ]
+        },
+        "components": [
+          {
+            "id": "catch.button",
+            "kind": "primitive",
+            "dart": {
+              "symbol": "CatchButton",
+              "file": "lib/core/widgets/catch_button.dart",
+              "constructors": [
+                "CatchButton"
+              ]
+            }
+          },
+          {
+            "id": "catch.chip",
+            "kind": "primitive",
+            "dart": {
+              "symbol": "CatchChip",
+              "file": "lib/core/widgets/catch_chip.dart",
+              "constructors": [
+                "CatchChip.tag",
+                "CatchChip.selectable",
+                "CatchChip.activity",
+                "CatchChip.removable"
+              ]
+            }
+          },
+          {
+            "id": "catch.empty_state",
+            "kind": "composite",
+            "dart": {
+              "symbol": "CatchEmptyState",
+              "file": "lib/core/widgets/catch_empty_state.dart",
+              "constructors": [
+                "CatchEmptyState"
+              ]
+            }
+          },
+          {
+            "id": "catch.error_state",
+            "kind": "composite",
+            "dart": {
+              "symbol": "CatchErrorState",
+              "file": "lib/core/widgets/catch_error_state.dart",
+              "constructors": [
+                "CatchErrorState",
+                "CatchErrorState.fromError"
+              ]
+            }
+          },
+          {
+            "id": "catch.field",
+            "kind": "composite",
+            "dart": {
+              "symbol": "CatchField",
+              "file": "lib/core/widgets/catch_field.dart",
+              "constructors": [
+                "CatchField.read",
+                "CatchField.content",
+                "CatchField.nav",
+                "CatchField.action",
+                "CatchField.toggle",
+                "CatchField.input",
+                "CatchField.inputActions",
+                "CatchField.control",
+                "CatchField.choices",
+                "CatchField.optionCards",
+                "CatchField.stepper",
+                "CatchField.add",
+                "CatchField.select"
+              ]
+            }
+          },
+          {
+            "id": "catch.person_row",
+            "kind": "composite",
+            "dart": {
+              "symbol": "CatchPersonRow",
+              "file": "lib/core/widgets/catch_person_row.dart",
+              "constructors": [
+                "CatchPersonRow"
+              ]
+            }
+          },
+          {
+            "id": "catch.search_field",
+            "kind": "primitive",
+            "dart": {
+              "symbol": "CatchSearchField",
+              "file": "lib/core/widgets/catch_search_field.dart",
+              "constructors": [
+                "CatchSearchField"
+              ]
+            }
+          },
+          {
+            "id": "catch.section",
+            "kind": "composite",
+            "dart": {
+              "symbol": "CatchSection",
+              "file": "lib/core/widgets/catch_section_layout.dart",
+              "constructors": [
+                "CatchSection.divided",
+                "CatchSection.fieldRows",
+                "CatchSection.containedFieldRows",
+                "CatchSection.contained",
+                "CatchSection.plain"
+              ]
+            }
+          },
+          {
+            "id": "catch.skeleton",
+            "kind": "pattern",
+            "dart": {
+              "symbol": "CatchSkeleton",
+              "file": "lib/core/widgets/catch_skeleton.dart",
+              "constructors": [
+                "CatchSkeleton.card",
+                "CatchSkeleton.box",
+                "CatchSkeleton.text",
+                "CatchSkeleton.textBlock",
+                "CatchSkeleton.circle",
+                "CatchSkeleton.custom"
+              ]
+            }
+          },
+          {
+            "id": "catch.surface",
+            "kind": "primitive",
+            "dart": {
+              "symbol": "CatchSurface",
+              "file": "lib/core/widgets/catch_surface.dart",
+              "constructors": [
+                "CatchSurface",
+                "CatchSurface.card",
+                "CatchSurface.tinted",
+                "CatchSurface.message"
+              ]
+            }
+          },
+          {
+            "id": "catch.top_bar",
+            "kind": "composite",
+            "dart": {
+              "symbol": "CatchTopBar",
+              "file": "lib/core/widgets/catch_top_bar.dart",
+              "constructors": [
+                "CatchTopBar"
+              ]
+            }
+          }
+        ],
+        "previews": [
+          "hostCustomersStates"
+        ]
+      }
+    }
+  ]
+}

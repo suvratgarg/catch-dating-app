@@ -176,6 +176,7 @@ import {
   adminTakedownExternalEventCallablePayloadSchema,
   startClubHostConversationCallablePayloadSchema,
   startOrganizerConversationCallablePayloadSchema,
+  startOrganizerContactConversationCallablePayloadSchema,
   archiveClubCallablePayloadSchema,
   deleteClubCallablePayloadSchema,
   clubMembershipCallablePayloadSchema,
@@ -250,6 +251,8 @@ import {
   getEventRosterInsightsCallableResponseSchema,
   getOrganizerCrmSummaryCallableResponseSchema,
   listOrganizerContactsCallablePayloadSchema,
+  createOrganizerContactCallablePayloadSchema,
+  createOrganizerContactCallableResponseSchema,
   listOrganizerContactsCallableResponseSchema,
   getOrganizerContactDetailCallablePayloadSchema,
   getOrganizerContactDetailCallableResponseSchema,
@@ -536,6 +539,7 @@ export const validateAdminPublishExternalEventCallablePayload = ajv.compile(admi
 export const validateAdminTakedownExternalEventCallablePayload = ajv.compile(adminTakedownExternalEventCallablePayloadSchema);
 export const validateStartClubHostConversationCallablePayload = ajv.compile(startClubHostConversationCallablePayloadSchema);
 export const validateStartOrganizerConversationCallablePayload = ajv.compile(startOrganizerConversationCallablePayloadSchema);
+export const validateStartOrganizerContactConversationCallablePayload = ajv.compile(startOrganizerContactConversationCallablePayloadSchema);
 export const validateArchiveClubCallablePayload = ajv.compile(archiveClubCallablePayloadSchema);
 export const validateDeleteClubCallablePayload = ajv.compile(deleteClubCallablePayloadSchema);
 export const validateClubMembershipCallablePayload = ajv.compile(clubMembershipCallablePayloadSchema);
@@ -610,6 +614,8 @@ export const validateGetEventRosterInsightsCallablePayload = ajv.compile(getEven
 export const validateGetEventRosterInsightsCallableResponse = ajv.compile(getEventRosterInsightsCallableResponseSchema);
 export const validateGetOrganizerCrmSummaryCallableResponse = ajv.compile(getOrganizerCrmSummaryCallableResponseSchema);
 export const validateListOrganizerContactsCallablePayload = ajv.compile(listOrganizerContactsCallablePayloadSchema);
+export const validateCreateOrganizerContactCallablePayload = ajv.compile(createOrganizerContactCallablePayloadSchema);
+export const validateCreateOrganizerContactCallableResponse = ajv.compile(createOrganizerContactCallableResponseSchema);
 export const validateListOrganizerContactsCallableResponse = ajv.compile(listOrganizerContactsCallableResponseSchema);
 export const validateGetOrganizerContactDetailCallablePayload = ajv.compile(getOrganizerContactDetailCallablePayloadSchema);
 export const validateGetOrganizerContactDetailCallableResponse = ajv.compile(getOrganizerContactDetailCallableResponseSchema);

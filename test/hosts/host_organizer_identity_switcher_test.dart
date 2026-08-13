@@ -12,8 +12,8 @@ import '../clubs/clubs_test_helpers.dart';
 import '../test_pump_helpers.dart';
 
 const _hostUid = 'host-1';
-const _switcherKey = ValueKey('host-today-club-switcher');
-const _identityArtKey = ValueKey('host-today-club-identity-art');
+const _switcherKey = ValueKey('host-events-organizer-switcher');
+const _identityArtKey = ValueKey('host-events-organizer-identity-art');
 
 void main() {
   testWidgets('single-club identity is explicitly passive', (tester) async {
@@ -64,10 +64,10 @@ void main() {
     await pumpFeatureUi(tester);
 
     final ownerOption = find.byKey(
-      const ValueKey('host-today-club-option-owner-club'),
+      const ValueKey('host-events-organizer-option-owner-club'),
     );
     final teamOption = find.byKey(
-      const ValueKey('host-today-club-option-team-club'),
+      const ValueKey('host-events-organizer-option-team-club'),
     );
     expect(ownerOption, findsOneWidget);
     expect(teamOption, findsOneWidget);
@@ -150,11 +150,11 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(
-      find.byKey(const ValueKey('host-today-club-option-owner-club')),
+      find.byKey(const ValueKey('host-events-organizer-option-owner-club')),
       findsOneWidget,
     );
     expect(
-      find.byKey(const ValueKey('host-today-club-option-team-club')),
+      find.byKey(const ValueKey('host-events-organizer-option-team-club')),
       findsOneWidget,
     );
   });
@@ -176,7 +176,7 @@ Future<void> _pumpSwitcher(
         child: Scaffold(
           body: Align(
             alignment: Alignment.topRight,
-            child: HostTodayClubPill(
+            child: HostOrganizerIdentityPill(
               club: club,
               currentUid: _hostUid,
               clubs: clubs,

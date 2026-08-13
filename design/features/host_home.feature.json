@@ -1,12 +1,12 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-07-23",
+  "updated": "2026-08-13",
   "id": "feature.host_home",
-  "name": "Host Home",
+  "name": "Host Events",
   "owner": "hosts",
   "status": "pilot",
-  "description": "Orchestrates the host Today and Events entry workspace across authentication, organizer selection, hosted-event lifecycle state, recovery, and typed create, repeat, manage, and task navigation.",
+  "description": "Orchestrates the consolidated Host Events workspace across authentication, organizer selection, operational spotlight and attention state, hosted-event lifecycle state, recovery, and typed create, repeat, manage, and task navigation.",
   "surfaces": [
     {
       "id": "host_flutter",
@@ -16,7 +16,7 @@
         "id": "screen.host.home"
       },
       "actionScope": {
-        "included": "Host Home authentication recovery, organizer switching, Today/Events workspace selection, event-list filtering and retry, and typed create, repeat, manage, and Today-task navigation.",
+        "included": "Host Events authentication recovery, organizer switching, operational spotlight and attention work, event lifecycle filtering and retry, and typed create, repeat, manage, and task navigation.",
         "excluded": [
           "Organizer editing, event creation internals, event management mutations, booking policy, analytics, payouts, and host-team administration retain their owning feature contracts or controllers."
         ]
@@ -81,10 +81,6 @@
         "organizer_supply": {
           "default": "one",
           "values": ["one", "multiple", "none"]
-        },
-        "workspace": {
-          "default": "today",
-          "values": ["today", "events"]
         },
         "event_supply": {
           "default": "populated",
@@ -168,21 +164,7 @@
               "stateIds": ["multiple_clubs_switcher", "cohost_role", "upcoming_events", "empty_events"]
             }
           ],
-          "description": "Switches the Today and Events projections to another organizer the viewer hosts."
-        },
-        {
-          "id": "view_events",
-          "owner": "workspace",
-          "codeValue": "selectTab",
-          "cardinality": "unbounded",
-          "scopeKeys": ["viewerUid", "routeInstanceId", "tabSelectionVersion"],
-          "outcomes": [
-            {
-              "kind": "surface_state",
-              "stateIds": ["club_events_loading", "upcoming_events", "empty_events"]
-            }
-          ],
-          "description": "Moves from Today to the selected organizer's Events workspace."
+          "description": "Switches the consolidated Events workspace to another organizer the viewer hosts."
         },
         {
           "id": "filter_events",
@@ -229,7 +211,7 @@
         {
           "id": "manage_event",
           "owner": "workspace",
-          "codeValue": "_openManageEvent",
+          "codeValue": "_openEvent",
           "cardinality": "unbounded",
           "scopeKeys": ["viewerUid", "clubId", "eventId", "tapAttemptId"],
           "outcomes": [
@@ -241,9 +223,9 @@
           "description": "Opens Host Event Manage for a selected lifecycle-list event."
         },
         {
-          "id": "open_today_event",
+          "id": "open_operational_event",
           "owner": "workspace",
-          "codeValue": "_openTodayEvent",
+          "codeValue": "_openEvent",
           "cardinality": "unbounded",
           "scopeKeys": ["viewerUid", "clubId", "eventId", "eventClockState"],
           "outcomes": [
@@ -252,12 +234,12 @@
               "authority": {"registry": "flutter_screens", "id": "screen.host.event.manage"}
             }
           ],
-          "description": "Opens the Today event in its live or setup Host Manage section based on the current event clock."
+          "description": "Opens the operational spotlight in its live, setup, or report Host Manage section based on the current event clock."
         },
         {
-          "id": "open_today_task",
+          "id": "open_attention_task",
           "owner": "workspace",
-          "codeValue": "_openTodayTask",
+          "codeValue": "_openAttentionTask",
           "cardinality": "unbounded",
           "scopeKeys": ["viewerUid", "clubId", "eventId", "taskDestination"],
           "outcomes": [
@@ -266,7 +248,7 @@
               "authority": {"registry": "flutter_screens", "id": "screen.host.event.manage"}
             }
           ],
-          "description": "Routes a truthful Today task to the matching guests or setup section of Host Event Manage."
+          "description": "Routes a truthful event-attention task to the matching guests or setup section of Host Event Manage."
         }
       ],
       "stateIds": [
@@ -308,38 +290,38 @@
           "actionCases": [{"id": "create", "enabledActions": ["create_organizer"]}]
         },
         "one_owned_club": {
-          "actionCases": [{"id": "today", "enabledActions": ["view_events", "create_event", "open_today_event", "open_today_task"]}]
+          "actionCases": [{"id": "events", "enabledActions": ["create_event", "open_operational_event", "open_attention_task"]}]
         },
         "multiple_clubs_switcher": {
           "dimensions": {"organizer_supply": "multiple"},
-          "actionCases": [{"id": "switch", "enabledActions": ["switch_organizer", "view_events", "create_event"]}]
+          "actionCases": [{"id": "switch", "enabledActions": ["switch_organizer", "create_event"]}]
         },
         "cohost_role": {
           "dimensions": {"access": "cohost"},
-          "actionCases": [{"id": "cohost", "enabledActions": ["switch_organizer", "view_events", "create_event"]}]
+          "actionCases": [{"id": "cohost", "enabledActions": ["switch_organizer", "create_event"]}]
         },
-        "club_events_loading": {"dimensions": {"load": "loading", "workspace": "events"}},
+        "club_events_loading": {"dimensions": {"load": "loading"}},
         "club_events_error": {
-          "dimensions": {"load": "error", "workspace": "events"},
+          "dimensions": {"load": "error"},
           "actionCases": [{"id": "recovery", "enabledActions": ["retry_host_events"]}]
         },
         "club_events_offline": {
-          "dimensions": {"load": "offline", "workspace": "events"},
+          "dimensions": {"load": "offline"},
           "actionCases": [{"id": "recovery", "enabledActions": ["retry_host_events"]}]
         },
         "upcoming_events": {
-          "dimensions": {"workspace": "events"},
-          "actionCases": [{"id": "events", "enabledActions": ["switch_organizer", "filter_events", "create_event", "repeat_event", "manage_event"]}]
+          "dimensions": {},
+          "actionCases": [{"id": "events", "enabledActions": ["switch_organizer", "filter_events", "create_event", "repeat_event", "manage_event", "open_operational_event", "open_attention_task"]}]
         },
         "empty_events": {
-          "dimensions": {"workspace": "events", "event_supply": "empty"},
+          "dimensions": {"event_supply": "empty"},
           "actionCases": [{"id": "empty", "enabledActions": ["switch_organizer", "filter_events", "create_event"]}]
         },
         "create_event_action": {
           "actionCases": [{"id": "create", "enabledActions": ["create_event"]}]
         },
         "manage_event_navigation": {
-          "actionCases": [{"id": "manage", "enabledActions": ["manage_event", "open_today_event", "open_today_task"]}]
+          "actionCases": [{"id": "manage", "enabledActions": ["manage_event", "open_operational_event", "open_attention_task"]}]
         },
         "offline": {
           "dimensions": {"load": "offline"},

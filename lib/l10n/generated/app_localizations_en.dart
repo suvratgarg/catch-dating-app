@@ -52,6 +52,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostNavigationEvents => 'Events';
 
   @override
+  String get hostNavigationCustomers => 'Customers';
+
+  @override
   String get hostNavigationInbox => 'Inbox';
 
   @override
@@ -12801,4 +12804,95 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventSuccessRoomMapDragHint =>
       'On larger screens, drag is also available. Tap controls always work.';
+
+  @override
+  String get hostCustomersIntro =>
+      'Everyone who has attended, registered, been imported, or been added by your team.';
+
+  @override
+  String get hostCustomersAdd => 'Add customer';
+
+  @override
+  String get hostCustomersAddTitle => 'Add a customer';
+
+  @override
+  String get hostCustomersName => 'Customer name';
+
+  @override
+  String get hostCustomersAddHelp =>
+      'This creates an organizer-only contact. It does not create a Catch account or grant messaging permission.';
+
+  @override
+  String get hostCustomersFilterByTag => 'Filter by tag';
+
+  @override
+  String get hostCustomersFilterAttended => 'Attended';
+
+  @override
+  String get hostCustomersFilterAtRisk => 'At risk';
+
+  @override
+  String get hostCustomersEmpty => 'No customers yet';
+
+  @override
+  String get hostCustomersEmptyBody =>
+      'Customers appear after attendance, registration, import, or a manual add.';
+
+  @override
+  String get hostCustomersNoResults => 'No customers match these filters.';
+
+  @override
+  String get hostCustomersLoadMore => 'Load more';
+
+  @override
+  String get hostCustomersDetailAttendance => 'Attendance';
+
+  @override
+  String get hostCustomersExpected => 'Expected';
+
+  @override
+  String get hostCustomersAttendanceRate => 'Attendance rate';
+
+  @override
+  String get hostCustomersDetailRevenue => 'Revenue';
+
+  @override
+  String get hostCustomersDetailNoRevenue =>
+      'No completed Catch payments for this organizer.';
+
+  @override
+  String get hostCustomersDetailRevenueUnavailable =>
+      'Revenue is unavailable until this customer has an unambiguous linked Catch account.';
+
+  @override
+  String get hostCustomersDetailRevenuePartial =>
+      'Revenue includes known completed Catch payments only; some history may be outside this bounded result.';
+
+  @override
+  String hostCustomersDetailPaidOrders({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count paid orders',
+      one: '1 paid order',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostCustomersNewConversation => 'New conversation';
+
+  @override
+  String get hostCustomersConversationUnlinked =>
+      'A conversation becomes available after this customer is unambiguously linked to a Catch account.';
+
+  @override
+  String get hostCustomersConversationAmbiguous =>
+      'Resolve this customer’s identity before starting a conversation.';
+
+  @override
+  String get hostCustomersEventHistory => 'Past attendance';
+
+  @override
+  String get hostCustomersNoAttendance => 'No checked-in events yet.';
 }

@@ -26,11 +26,11 @@ import 'package:catch_dating_app/events/shared/event_detail_route_transition.dar
 import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_create_club_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_operator_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
@@ -199,8 +199,8 @@ class _RouterNavigatorKeys {
   final explore = GlobalKey<NavigatorState>();
   final chats = GlobalKey<NavigatorState>();
   final profile = GlobalKey<NavigatorState>();
-  final hostToday = GlobalKey<NavigatorState>();
   final hostEvents = GlobalKey<NavigatorState>();
+  final hostCustomers = GlobalKey<NavigatorState>();
   final hostInbox = GlobalKey<NavigatorState>();
   final hostOrganizer = GlobalKey<NavigatorState>();
 }
@@ -568,6 +568,11 @@ class _RouteLoadingScreen extends StatelessWidget {
 
 List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
   return [
+    GoRoute(
+      path: Routes.hostHomeScreen.path,
+      name: Routes.hostHomeScreen.name,
+      redirect: (context, state) => hostHomeLegacyRedirect(),
+    ),
     ..._legacyHostClubRoutes(),
     GoRoute(
       path: Routes.hostOperatorEventScreen.path,
@@ -757,6 +762,9 @@ String _legacyHostClubRedirect(Uri uri) {
 }
 
 @visibleForTesting
+String hostHomeLegacyRedirect() => Routes.hostEventsScreen.path;
+
+@visibleForTesting
 String? hostClubsLegacyRedirect(Uri uri) {
   if (uri.path == '/host/clubs' || uri.path.startsWith('/host/clubs/')) {
     return _legacyHostClubRedirect(uri);
@@ -789,27 +797,37 @@ StatefulShellRoute _hostShellRoute(
         HostAppShell(navigationShell: navigationShell),
     branches: [
       StatefulShellBranch(
-        navigatorKey: keys.hostToday,
-        observers: [AnalyticsRouteObserver(analytics)],
-        routes: [
-          GoRoute(
-            path: Routes.hostHomeScreen.path,
-            name: Routes.hostHomeScreen.name,
-            builder: (context, state) => HostOperationsHomeScreen(
-              onViewEvents: () => context.goNamed(Routes.hostEventsScreen.name),
-            ),
-          ),
-        ],
-      ),
-      StatefulShellBranch(
         navigatorKey: keys.hostEvents,
         observers: [AnalyticsRouteObserver(analytics)],
         routes: [
           GoRoute(
             path: Routes.hostEventsScreen.path,
             name: Routes.hostEventsScreen.name,
-            builder: (context, state) =>
-                const HostOperationsHomeScreen(initialTab: HostHomeTab.events),
+            builder: (context, state) => const HostOperationsHomeScreen(),
+          ),
+        ],
+      ),
+      StatefulShellBranch(
+        navigatorKey: keys.hostCustomers,
+        observers: [AnalyticsRouteObserver(analytics)],
+        routes: [
+          GoRoute(
+            path: Routes.hostCustomersScreen.path,
+            name: Routes.hostCustomersScreen.name,
+            builder: (context, state) => HostCustomersScreen(
+              initialOrganizerId: state.uri.queryParameters['organizerId'],
+            ),
+            routes: [
+              GoRoute(
+                path: ':contactId',
+                name: Routes.hostCustomerDetailScreen.name,
+                parentNavigatorKey: keys.root,
+                builder: (context, state) => HostCustomerDetailScreen(
+                  organizerId: state.uri.queryParameters['organizerId'] ?? '',
+                  contactId: state.pathParameters['contactId']!,
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -878,12 +896,12 @@ String _initialLocationFromPlatform() {
           routePath == Routes.loadingScreen.path) {
         return defaultRouteName;
       }
-      return Routes.hostHomeScreen.path;
+      return Routes.hostEventsScreen.path;
     }
     return defaultRouteName;
   }
   return AppConfig.appRole.isHost
-      ? Routes.hostHomeScreen.path
+      ? Routes.hostEventsScreen.path
       : Routes.startScreen.path;
 }
 
@@ -1058,7 +1076,7 @@ String? _pendingDestination({
 String _resumeDestination(Uri uri) {
   final from = _sanitizeFrom(uri.queryParameters[_fromQueryParam]);
   final defaultPath = AppConfig.appRole.isHost
-      ? Routes.hostHomeScreen.path
+      ? Routes.hostEventsScreen.path
       : Routes.dashboardScreen.path;
   if (from == null) return defaultPath;
 

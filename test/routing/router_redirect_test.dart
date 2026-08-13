@@ -162,6 +162,17 @@ void main() {
   });
 
   group('legacy Host clubs redirect', () {
+    test('legacy Host root redirects to consolidated Events', () {
+      expect(Routes.hostHomeScreen.path, '/host');
+      expect(Routes.hostEventsScreen.path, '/host/events');
+      expect(Routes.hostCustomersScreen.path, '/host/customers');
+      expect(
+        Routes.hostCustomerDetailScreen.path,
+        '/host/customers/:contactId',
+      );
+      expect(hostHomeLegacyRedirect(), Routes.hostEventsScreen.path);
+    });
+
     test('organizer settings spokes use canonical top-level routes', () {
       expect(
         Routes.hostClubEventDefaultsScreen.path,
@@ -295,7 +306,7 @@ void main() {
 
       expect(
         container.read(initialAppLocationProvider),
-        Routes.hostHomeScreen.path,
+        Routes.hostEventsScreen.path,
       );
     });
 
@@ -333,7 +344,7 @@ void main() {
           location: '/auth?from=%2Fclubs',
           matchedLocation: Routes.authScreen.path,
         ),
-        Routes.hostHomeScreen.path,
+        Routes.hostEventsScreen.path,
       );
     });
 
