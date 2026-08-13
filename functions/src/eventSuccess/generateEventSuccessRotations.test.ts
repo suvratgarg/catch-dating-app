@@ -208,7 +208,7 @@ function harness(overrides: Record<string, FakeData | undefined> = {}) {
   };
 }
 
-test("generates default-cadence mutual-interest schedules", async () => {
+test("pickleball defaults to profile-free coverage schedules", async () => {
   const {firestore, deps, rateLimitCalls} = harness({
     ...participation("man-1"),
     ...participation("man-2"),
@@ -225,25 +225,25 @@ test("generates default-cadence mutual-interest schedules", async () => {
     deps
   );
 
-  assert.deepEqual(result, {assignmentCount: 4, roundCount: 2});
+  assert.deepEqual(result, {assignmentCount: 4, roundCount: 3});
   assert.deepEqual(rateLimitCalls, ["host-1:generateEventSuccessRotations"]);
   const manOne = firestore.get(
     "eventSuccessAssignments/event-1_guided_rotations_man-1"
   );
-  assert.equal(manOne?.displayTitle, "2 guided rotations");
-  assert.deepEqual(manOne?.peerUids, ["woman-1", "woman-2"]);
+  assert.equal(manOne?.displayTitle, "3 guided rotations");
+  assert.deepEqual(manOne?.peerUids, ["man-2", "woman-1", "woman-2"]);
   const slots = manOne?.rotationSlots as Array<Record<string, unknown>>;
-  assert.equal(slots.length, 2);
-  assert.equal(slots[0].compatibility, "mutual_interest");
+  assert.equal(slots.length, 3);
+  assert.equal(slots[0].compatibility, "social");
   assert.equal(slots[0].label, "Round 1");
   assert.equal(slots[0].slotId, "round-0-pair-0");
   assert.equal(slots[0].unitKind, "pairs");
   assert.equal(slots[0].peerCount, 1);
   assert.ok((slots[0].whyCodes as string[]).includes("fresh_peer"));
   assert.deepEqual(manOne?.rotationFairness, {
-    assignedRoundCount: 2,
+    assignedRoundCount: 3,
     sitOutRoundCount: 0,
-    uniquePeerCount: 2,
+    uniquePeerCount: 3,
     repeatPeerCount: 0,
   });
 });
@@ -344,6 +344,11 @@ test(
   "uses questionnaire answers as an opt-in rotation ranking boost",
   async () => {
     const {firestore, deps} = harness({
+      "events/event-1": rotationEvent({
+        assignmentAlgorithm: "pairRotations",
+        compatibilityPolicy: "questionnaireClueOnly",
+        matchingObjective: "affinity",
+      }),
       "eventSuccessPlans/event-1": {
         eventId: "event-1",
         clubId: "club-1",
@@ -388,6 +393,11 @@ test(
   "prioritizes mutual interest before fallback rotation pairings",
   async () => {
     const {firestore, deps} = harness({
+      "events/event-1": rotationEvent({
+        assignmentAlgorithm: "pairRotations",
+        compatibilityPolicy: "mutualInterestOnly",
+        matchingObjective: "romantic",
+      }),
       "eventSuccessPlans/event-1": {
         eventId: "event-1",
         clubId: "club-1",
@@ -429,9 +439,14 @@ test(
 );
 
 test(
-  "ignores questionnaire answers when ranking opt-in is disabled",
+  "falls back to coverage when affinity ranking is disabled",
   async () => {
     const {firestore, deps} = harness({
+      "events/event-1": rotationEvent({
+        assignmentAlgorithm: "pairRotations",
+        compatibilityPolicy: "questionnaireClueOnly",
+        matchingObjective: "affinity",
+      }),
       "eventSuccessPlans/event-1": {
         eventId: "event-1",
         clubId: "club-1",
@@ -464,14 +479,19 @@ test(
     );
     const slots = manOne?.rotationSlots as Array<Record<string, unknown>>;
     assert.equal(slots[0].peerUid, "woman-1");
-    assert.equal(slots[0].compatibility, "mutual_interest");
+    assert.equal(slots[0].compatibility, "social");
   }
 );
 
 test(
-  "ignores questionnaire answers unless the module is selected",
+  "falls back to coverage when the questionnaire module is absent",
   async () => {
     const {firestore, deps} = harness({
+      "events/event-1": rotationEvent({
+        assignmentAlgorithm: "pairRotations",
+        compatibilityPolicy: "questionnaireClueOnly",
+        matchingObjective: "affinity",
+      }),
       "eventSuccessPlans/event-1": {
         eventId: "event-1",
         clubId: "club-1",
@@ -501,7 +521,7 @@ test(
     );
     const slots = manOne?.rotationSlots as Array<Record<string, unknown>>;
     assert.equal(slots[0].peerUid, "woman-1");
-    assert.equal(slots[0].compatibility, "mutual_interest");
+    assert.equal(slots[0].compatibility, "social");
   }
 );
 
@@ -516,6 +536,11 @@ test(
           version: 1,
           activityKind: "pickleball",
           interactionModel: "pairedRotations",
+          eventSuccessPrimitives: {
+            assignmentAlgorithm: "pairRotations",
+            compatibilityPolicy: "mutualInterestOnly",
+            matchingObjective: "romantic",
+          },
         },
         startTime: fakeTimestamp("2026-05-21T08:00:00.000Z"),
         endTime: fakeTimestamp("2026-05-21T08:30:00.000Z"),
@@ -579,17 +604,11 @@ test(
   "exhausts mutual-interest rotations before fallback pairings",
   async () => {
     const {firestore, deps} = harness({
-      "events/event-1": {
-        clubId: "club-1",
-        status: "active",
-        eventFormat: {
-          version: 1,
-          activityKind: "pickleball",
-          interactionModel: "pairedRotations",
-        },
-        startTime: fakeTimestamp("2026-05-21T08:00:00.000Z"),
-        endTime: fakeTimestamp("2026-05-21T08:45:00.000Z"),
-      },
+      "events/event-1": rotationEvent({
+        assignmentAlgorithm: "pairRotations",
+        compatibilityPolicy: "mutualInterestOnly",
+        matchingObjective: "romantic",
+      }, "2026-05-21T08:45:00.000Z"),
       ...participation("man-1"),
       ...participation("man-2"),
       ...participation("woman-1"),
@@ -870,6 +889,24 @@ function user(gender: string, interestedInGenders: string[]): FakeData {
   return {
     gender,
     interestedInGenders,
+  };
+}
+
+function rotationEvent(
+  eventSuccessPrimitives: FakeData,
+  endTime = "2026-05-21T09:00:00.000Z"
+): FakeData {
+  return {
+    clubId: "club-1",
+    status: "active",
+    eventFormat: {
+      version: 1,
+      activityKind: "pickleball",
+      interactionModel: "pairedRotations",
+      eventSuccessPrimitives,
+    },
+    startTime: fakeTimestamp("2026-05-21T08:00:00.000Z"),
+    endTime: fakeTimestamp(endTime),
   };
 }
 

@@ -30,6 +30,14 @@ export interface DatingCompatibilityOptions {
   allowOrientationFallback?: boolean;
 }
 
+export type QuestionnaireMatchingObjective = "affinity" | "novelty";
+
+export interface QuestionnaireObjectiveScore extends CompatibilityScore {
+  sharedAnswerCount: number;
+  differentAnswerCount: number;
+  comparableAnswerCount: number;
+}
+
 const MUTUAL_INTEREST_SCORE = 100;
 const ONE_WAY_INTEREST_SCORE = 15;
 const SOCIAL_FALLBACK_SCORE = 1;
@@ -131,6 +139,45 @@ export function sharedCompatibilityAnswerCount(
   if (aAnswerIds.length === 0 || bAnswerIds.length === 0) return 0;
   const bAnswers = new Set(bAnswerIds);
   return aAnswerIds.filter((answerId) => bAnswers.has(answerId)).length;
+}
+
+/**
+ * Scores only event-scoped questionnaire answers for an explicit objective.
+ * It never reads profile interest fields.
+ * @param {CompatibilityParticipant} a First attendee.
+ * @param {CompatibilityParticipant} b Second attendee.
+ * @param {QuestionnaireMatchingObjective} objective Product objective.
+ * @return {QuestionnaireObjectiveScore} Objective score and signal counts.
+ */
+export function scoreQuestionnaireObjectivePair(
+  a: CompatibilityParticipant,
+  b: CompatibilityParticipant,
+  objective: QuestionnaireMatchingObjective
+): QuestionnaireObjectiveScore {
+  const aAnswers = new Set(a.compatibilityAnswerIds ?? []);
+  const bAnswers = new Set(b.compatibilityAnswerIds ?? []);
+  const allAnswers = new Set([...aAnswers, ...bAnswers]);
+  let sharedAnswerCount = 0;
+  let differentAnswerCount = 0;
+  for (const answerId of allAnswers) {
+    const inA = aAnswers.has(answerId);
+    const inB = bAnswers.has(answerId);
+    if (inA && inB) {
+      sharedAnswerCount++;
+    } else {
+      differentAnswerCount++;
+    }
+  }
+  const signalCount = objective === "affinity" ?
+    sharedAnswerCount :
+    differentAnswerCount;
+  return {
+    score: signalCount * STRONG_QUESTIONNAIRE_BOOST,
+    compatibility: signalCount > 0 ? "questionnaire_match" : "social",
+    sharedAnswerCount,
+    differentAnswerCount,
+    comparableAnswerCount: allAnswers.size,
+  };
 }
 
 /**

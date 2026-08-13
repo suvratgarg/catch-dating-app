@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.15.0
-updated: 2026-08-12
+version: 1.16.0
+updated: 2026-08-13
 owner: recursive_audit_loop
 status: active
 ---
@@ -47,6 +47,17 @@ Read this before changing:
 
 Do not hand-edit generated outputs. Change the contract source, run the schema
 generator, and commit the generated diff.
+
+### Event Success Format Primitives
+
+`contracts/shared/event_common.schema.json` owns the closed
+`eventSuccessMatchingObjective` enum (`coverage`, `romantic`, `affinity`,
+`novelty`, `balance`, and `spread`) and the optional `matchingObjective` format
+primitive. The schema generator projects that contract into Functions, Dart,
+and tool registries. Runtime resolution, including the profile-free `coverage`
+default and explicit unsupported assignment algorithms, is owned by the Event
+Success format resolver documented in `docs/event_success.md`; generated
+contract files must not encode a separate fallback.
 
 ### TypeScript Timestamp Projections
 

@@ -17906,6 +17906,17 @@ export const eventDocumentSchema: Record<string, unknown> = {
                 "mutualInterestOnly",
                 "questionnaireClueOnly"
               ]
+            },
+            "matchingObjective": {
+              "type": "string",
+              "enum": [
+                "coverage",
+                "romantic",
+                "affinity",
+                "novelty",
+                "balance",
+                "spread"
+              ]
             }
           }
         },
@@ -41130,6 +41141,17 @@ export const adminUpdateEventDetailsCallablePayloadSchema: Record<string, unknow
                     "mutualInterestOnly",
                     "questionnaireClueOnly"
                   ]
+                },
+                "matchingObjective": {
+                  "type": "string",
+                  "enum": [
+                    "coverage",
+                    "romantic",
+                    "affinity",
+                    "novelty",
+                    "balance",
+                    "spread"
+                  ]
                 }
               }
             },
@@ -42165,6 +42187,17 @@ export const createEventCallablePayloadSchema: Record<string, unknown> = {
                 "socialCohortBalance",
                 "mutualInterestOnly",
                 "questionnaireClueOnly"
+              ]
+            },
+            "matchingObjective": {
+              "type": "string",
+              "enum": [
+                "coverage",
+                "romantic",
+                "affinity",
+                "novelty",
+                "balance",
+                "spread"
               ]
             }
           }

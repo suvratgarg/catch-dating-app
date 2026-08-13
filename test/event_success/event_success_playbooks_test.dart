@@ -542,8 +542,8 @@ void main() {
         isFalse,
       );
       expect(
-        quiz.defaultModuleIds,
-        contains(EventSuccessModuleCatalog.microPods.id),
+        quiz.isSelectable(EventSuccessModuleCatalog.microPods.id),
+        isFalse,
       );
       expect(
         yoga.isSelectable(EventSuccessModuleCatalog.guidedRotations.id),
@@ -577,13 +577,15 @@ void main() {
       expect(profile.playbook.id, EventSuccessPlaybookLibrary.pubQuiz.id);
       expect(profile.structureConfig.unitKind, EventSuccessUnitKind.teams);
       expect(
-        profile.defaultModuleIds,
-        contains(EventSuccessModuleCatalog.microPods.id),
+        profile.isSelectable(EventSuccessModuleCatalog.microPods.id),
+        isFalse,
       );
       expect(
-        profile.defaultModuleIds,
-        contains(EventSuccessModuleCatalog.liveReveal.id),
+        profile.isSelectable(EventSuccessModuleCatalog.liveReveal.id),
+        isFalse,
       );
+      expect(profile.assignmentResolution.supported, isFalse);
+      expect(profile.assignmentResolution.reason, contains('not implemented'));
     });
 
     test(
@@ -598,6 +600,7 @@ void main() {
             'rotationSuitability': 'plannedBreaks',
             'assignmentAlgorithm': 'teamBalancer',
             'compatibilityPolicy': 'questionnaireClueOnly',
+            'matchingObjective': 'spread',
           },
         );
 
@@ -624,11 +627,13 @@ void main() {
           profile.compatibilityPolicy,
           EventSuccessCompatibilityPolicy.questionnaireClueOnly,
         );
+        expect(profile.matchingObjective, EventSuccessMatchingObjective.spread);
+        expect(profile.assignmentResolution.supported, isFalse);
         expect(profile.playbook.id, EventSuccessPlaybookLibrary.pubQuiz.id);
         expect(profile.structureConfig.unitKind, EventSuccessUnitKind.teams);
         expect(
-          profile.defaultModuleIds,
-          contains(EventSuccessModuleCatalog.microPods.id),
+          profile.isSelectable(EventSuccessModuleCatalog.microPods.id),
+          isFalse,
         );
       },
     );
@@ -651,6 +656,8 @@ void main() {
         profile.compatibilityPolicy,
         EventSuccessCompatibilityPolicy.mutualInterestOnly,
       );
+      expect(profile.matchingObjective, EventSuccessMatchingObjective.romantic);
+      expect(profile.assignmentResolution.supported, isTrue);
       expect(
         profile.playbook.id,
         EventSuccessPlaybookLibrary.algorithmicMixer.id,
@@ -659,6 +666,36 @@ void main() {
       expect(
         profile.defaultModuleIds,
         contains(EventSuccessModuleCatalog.compatibilityQuestionnaire.id),
+      );
+    });
+
+    test('activity profiles bind matching objectives without format forks', () {
+      final profiles = {
+        ActivityKind.socialRun: EventSuccessMatchingObjective.affinity,
+        ActivityKind.pubQuiz: EventSuccessMatchingObjective.spread,
+        ActivityKind.dinner: EventSuccessMatchingObjective.affinity,
+        ActivityKind.pickleball: EventSuccessMatchingObjective.balance,
+        ActivityKind.singlesMixer: EventSuccessMatchingObjective.romantic,
+        ActivityKind.openActivity: EventSuccessMatchingObjective.coverage,
+      };
+
+      for (final entry in profiles.entries) {
+        expect(
+          EventSuccessActivityProfile.forActivity(entry.key).matchingObjective,
+          entry.value,
+        );
+      }
+      expect(
+        EventSuccessActivityProfile.forActivity(
+          ActivityKind.pubQuiz,
+        ).assignmentResolution.supported,
+        isFalse,
+      );
+      expect(
+        EventSuccessActivityProfile.forActivity(
+          ActivityKind.dinner,
+        ).assignmentResolution.supported,
+        isFalse,
       );
     });
 
@@ -720,7 +757,7 @@ void main() {
         expect(plan.structureConfig.estimatedUnitCount(42), 9);
         expect(
           plan.selectedModuleIds,
-          contains(EventSuccessModuleCatalog.microPods.id),
+          isNot(contains(EventSuccessModuleCatalog.microPods.id)),
         );
       }
     });

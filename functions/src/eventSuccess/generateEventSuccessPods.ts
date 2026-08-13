@@ -45,6 +45,7 @@ import {
 import {
   EventSuccessAssignmentAlgorithm,
   EventSuccessCompatibilityPolicy,
+  EventSuccessMatchingObjective,
   eventSuccessPrimitivesFor,
 } from "./formatPrimitives";
 import {
@@ -258,6 +259,14 @@ export async function generateEventSuccessPodsHandler(
       "Micro-pods are not enabled for this event.");
   }
 
+  const primitives = eventSuccessPrimitivesFor(event.eventFormat);
+  if (primitives.assignmentResolution.status === "unsupported") {
+    throw new HttpsError(
+      "failed-precondition",
+      primitives.assignmentResolution.reason
+    );
+  }
+
   const roster = await loadEventSuccessRoster(db, eventId);
   const optedOutUids = await fetchMicroPodsOptOutUids(db, eventId);
   const participants = roster
@@ -273,7 +282,6 @@ export async function generateEventSuccessPodsHandler(
   const eligibleParticipants = preferCheckedInParticipants(participants);
 
   const blockedPairs = await fetchBlockedPairs(db, eligibleParticipants);
-  const primitives = eventSuccessPrimitivesFor(event.eventFormat);
   const constraints = assignmentConstraintsForStructureConfig(
     plan.structureConfig
   );
@@ -295,6 +303,7 @@ export async function generateEventSuccessPodsHandler(
     topology,
     assignmentAlgorithm: primitives.assignmentAlgorithm,
     compatibilityPolicy: primitives.compatibilityPolicy,
+    matchingObjective: primitives.matchingObjective,
     constraints,
     rotationPolicy,
     timing,
@@ -597,6 +606,7 @@ function buildPods(params: {
   topology: AssignmentTopology;
   assignmentAlgorithm: EventSuccessAssignmentAlgorithm;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  matchingObjective: EventSuccessMatchingObjective;
   constraints?: AssignmentConstraintConfig;
   rotationPolicy?: AssignmentRotationPolicy;
   timing?: EventTiming;
@@ -618,6 +628,7 @@ function buildPods(params: {
     topology: params.topology,
     assignmentAlgorithm: params.assignmentAlgorithm,
     compatibilityPolicy: params.compatibilityPolicy,
+    matchingObjective: params.matchingObjective,
     questionnaireMode: "icebreaker",
     rotationRoundCount,
     constraints: params.constraints,

@@ -11,6 +11,8 @@ class EventSuccessActivityProfile {
     required this.rotationSuitability,
     required this.assignmentAlgorithm,
     required this.compatibilityPolicy,
+    required this.matchingObjective,
+    required this.assignmentResolution,
     required this.summary,
     required this.recommendations,
     this.compatibilityAffectsRankingByDefault = false,
@@ -37,6 +39,12 @@ class EventSuccessActivityProfile {
       format,
       interactionModel,
     );
+    final matchingObjective = _matchingObjectiveFor(
+      format,
+      interactionModel,
+      compatibilityPolicy,
+    );
+    final assignmentResolution = _assignmentResolutionFor(assignmentAlgorithm);
     final playbook = _playbookForFormat(
       format,
       interactionModel,
@@ -51,6 +59,7 @@ class EventSuccessActivityProfile {
       format,
       interactionModel,
       compatibilityPolicy,
+      assignmentResolution,
     );
     final reasons = _reasonsFor(interactionModel);
     final recommendations = <EventSuccessModuleRecommendation>[
@@ -72,6 +81,8 @@ class EventSuccessActivityProfile {
       rotationSuitability: _rotationSuitabilityFor(format),
       assignmentAlgorithm: assignmentAlgorithm,
       compatibilityPolicy: compatibilityPolicy,
+      matchingObjective: matchingObjective,
+      assignmentResolution: assignmentResolution,
       summary: _summaryFor(interactionModel),
       recommendations: recommendations,
       compatibilityAffectsRankingByDefault:
@@ -89,6 +100,8 @@ class EventSuccessActivityProfile {
   final EventSuccessRotationSuitability rotationSuitability;
   final EventSuccessAssignmentAlgorithm assignmentAlgorithm;
   final EventSuccessCompatibilityPolicy compatibilityPolicy;
+  final EventSuccessMatchingObjective matchingObjective;
+  final EventSuccessAssignmentResolution assignmentResolution;
   final String summary;
   final List<EventSuccessModuleRecommendation> recommendations;
   final bool compatibilityAffectsRankingByDefault;
@@ -149,4 +162,16 @@ class EventSuccessActivityProfile {
     }
     return grouped;
   }
+}
+
+class EventSuccessAssignmentResolution {
+  const EventSuccessAssignmentResolution({
+    required this.support,
+    required this.reason,
+  });
+
+  final EventSuccessAssignmentSupport support;
+  final String reason;
+
+  bool get supported => support == EventSuccessAssignmentSupport.supported;
 }

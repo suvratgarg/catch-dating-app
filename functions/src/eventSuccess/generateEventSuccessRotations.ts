@@ -43,6 +43,7 @@ import {
 import {
   EventSuccessAssignmentAlgorithm,
   EventSuccessCompatibilityPolicy,
+  EventSuccessMatchingObjective,
   eventSuccessPrimitivesFor,
 } from "./formatPrimitives";
 import {
@@ -211,13 +212,19 @@ export async function generateEventSuccessRotationsHandler(
     rotationPolicy,
   } =
     await loadRotationEventContext(db, eventId, uid);
+  const primitives = eventSuccessPrimitivesFor(event.eventFormat);
+  if (primitives.assignmentResolution.status === "unsupported") {
+    throw new HttpsError(
+      "failed-precondition",
+      primitives.assignmentResolution.reason
+    );
+  }
   const {participants, blockedPairs} =
     await loadEligibleRotationParticipants(
       db,
       eventId,
       questionnaireMode !== "icebreaker"
     );
-  const primitives = eventSuccessPrimitivesFor(event.eventFormat);
   const rounds = buildRotationRounds({
     participants,
     blockedPairs,
@@ -227,6 +234,7 @@ export async function generateEventSuccessRotationsHandler(
     questionnaireMode,
     assignmentAlgorithm: primitives.assignmentAlgorithm,
     compatibilityPolicy: primitives.compatibilityPolicy,
+    matchingObjective: primitives.matchingObjective,
     constraints,
     rotationPolicy,
   });
@@ -590,6 +598,7 @@ function buildRotationRounds(params: {
   questionnaireMode: QuestionnaireScoringMode;
   assignmentAlgorithm: EventSuccessAssignmentAlgorithm;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  matchingObjective: EventSuccessMatchingObjective;
   constraints?: AssignmentConstraintConfig;
   rotationPolicy?: AssignmentRotationPolicy;
 }): RotationRound[] {
@@ -619,6 +628,7 @@ function buildRotationRounds(params: {
     },
     assignmentAlgorithm: params.assignmentAlgorithm,
     compatibilityPolicy: params.compatibilityPolicy,
+    matchingObjective: params.matchingObjective,
     questionnaireMode: params.questionnaireMode,
     rotationRoundCount: roundCount,
     allowOrientationFallback: true,

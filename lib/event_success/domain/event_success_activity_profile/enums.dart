@@ -41,3 +41,14 @@ enum EventSuccessCompatibilityPolicy {
   mutualInterestOnly,
   questionnaireClueOnly,
 }
+
+enum EventSuccessMatchingObjective {
+  coverage,
+  romantic,
+  affinity,
+  novelty,
+  balance,
+  spread,
+}
+
+enum EventSuccessAssignmentSupport { supported, unsupported }

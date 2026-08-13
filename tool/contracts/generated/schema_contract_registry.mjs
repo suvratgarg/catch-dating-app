@@ -17905,6 +17905,17 @@ export const eventDocumentSchema = {
                 "mutualInterestOnly",
                 "questionnaireClueOnly"
               ]
+            },
+            "matchingObjective": {
+              "type": "string",
+              "enum": [
+                "coverage",
+                "romantic",
+                "affinity",
+                "novelty",
+                "balance",
+                "spread"
+              ]
             }
           }
         },
@@ -41129,6 +41140,17 @@ export const adminUpdateEventDetailsCallablePayloadSchema = {
                     "mutualInterestOnly",
                     "questionnaireClueOnly"
                   ]
+                },
+                "matchingObjective": {
+                  "type": "string",
+                  "enum": [
+                    "coverage",
+                    "romantic",
+                    "affinity",
+                    "novelty",
+                    "balance",
+                    "spread"
+                  ]
                 }
               }
             },
@@ -42164,6 +42186,17 @@ export const createEventCallablePayloadSchema = {
                 "socialCohortBalance",
                 "mutualInterestOnly",
                 "questionnaireClueOnly"
+              ]
+            },
+            "matchingObjective": {
+              "type": "string",
+              "enum": [
+                "coverage",
+                "romantic",
+                "affinity",
+                "novelty",
+                "balance",
+                "spread"
               ]
             }
           }

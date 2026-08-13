@@ -717,6 +717,7 @@ test("createEventHandler uses event-success primitives for custom formats",
             rotationSuitability: "plannedBreaks",
             assignmentAlgorithm: "teamBalancer",
             compatibilityPolicy: "questionnaireClueOnly",
+            matchingObjective: "spread",
           },
         },
         eventSuccessDefaults: {
@@ -739,6 +740,7 @@ test("createEventHandler uses event-success primitives for custom formats",
         rotationSuitability: "plannedBreaks",
         assignmentAlgorithm: "teamBalancer",
         compatibilityPolicy: "questionnaireClueOnly",
+        matchingObjective: "spread",
       },
     });
     assert.equal(plan?.playbookId, "pub_quiz_team_mixer");

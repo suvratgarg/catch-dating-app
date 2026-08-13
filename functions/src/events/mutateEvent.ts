@@ -76,6 +76,7 @@ import {
   eventSuccessPrimitivesFor,
   isEventSuccessAssignmentAlgorithm,
   isEventSuccessCompatibilityPolicy,
+  isEventSuccessMatchingObjective,
   isEventSuccessPhoneAvailability,
   isEventSuccessRotationSuitability,
   ResolvedEventSuccessPrimitives,
@@ -1274,6 +1275,9 @@ function normalizeEventSuccessFormatPrimitives(
   }
   if (isEventSuccessCompatibilityPolicy(raw?.compatibilityPolicy)) {
     normalized.compatibilityPolicy = raw.compatibilityPolicy;
+  }
+  if (isEventSuccessMatchingObjective(raw?.matchingObjective)) {
+    normalized.matchingObjective = raw.matchingObjective;
   }
   return Object.keys(normalized).length > 0 ? normalized : null;
 }

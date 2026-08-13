@@ -2,11 +2,15 @@ import {
   CompatibilitySignal,
   QuestionnaireScoringMode,
   scoreDatingCompatibilityPair,
+  scoreQuestionnaireObjectivePair,
 } from "./compatibilityPolicy";
 import {AssignmentTopology} from "./assignmentTopology";
 import {
   EventSuccessAssignmentAlgorithm,
   EventSuccessCompatibilityPolicy,
+  EventSuccessMatchingObjective,
+  EventSuccessVariableResolution,
+  eventSuccessVariableResolutionFor,
 } from "./formatPrimitives";
 import {
   AssignmentConstraintConfig,
@@ -78,6 +82,11 @@ export type AssignmentConstraintRelaxation =
   "unassigned_participants";
 
 export interface AssignmentEngineExplainability {
+  requestedMatchingObjective: EventSuccessMatchingObjective;
+  effectiveMatchingObjective: EventSuccessMatchingObjective;
+  matchingObjectiveFallbackReason: string | null;
+  assignmentResolutionStatus: EventSuccessVariableResolution["status"];
+  assignmentResolutionReason: string;
   participantCount: number;
   assignedParticipantCount: number;
   unassignedParticipantCount: number;
@@ -120,6 +129,7 @@ export interface AssignmentEngineContext<T extends AssignmentParticipant> {
   topology: AssignmentTopology;
   assignmentAlgorithm?: EventSuccessAssignmentAlgorithm;
   compatibilityPolicy?: EventSuccessCompatibilityPolicy;
+  matchingObjective?: EventSuccessMatchingObjective;
   questionnaireMode?: QuestionnaireScoringMode;
   rotationRoundCount?: number;
   allowOrientationFallback?: boolean;
@@ -144,6 +154,9 @@ interface NormalizedAssignmentRotationPolicy {
 export interface AssignmentEngineResult<T extends AssignmentParticipant> {
   assignmentAlgorithm: EventSuccessAssignmentAlgorithm;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  matchingObjective: EventSuccessMatchingObjective;
+  effectiveMatchingObjective: EventSuccessMatchingObjective;
+  assignmentResolution: EventSuccessVariableResolution;
   groups: Array<OptimizedGroup<T>>;
   groupRounds: Array<OptimizedGroupRound<T>>;
   rotationRounds: Array<OptimizedRotationRound<T>>;
@@ -153,8 +166,15 @@ export interface AssignmentEngineResult<T extends AssignmentParticipant> {
 export type OptimizedAssignmentPlan<T extends AssignmentParticipant> =
   AssignmentEngineResult<T>;
 
-type AssignmentPlanCore<T extends AssignmentParticipant> =
-  Omit<AssignmentEngineResult<T>, "explainability">;
+type AssignmentPlanCore<T extends AssignmentParticipant> = Pick<
+  AssignmentEngineResult<T>,
+  "groups" | "groupRounds" | "rotationRounds"
+>;
+
+interface EffectiveMatchingObjective {
+  objective: EventSuccessMatchingObjective;
+  fallbackReason: string | null;
+}
 
 interface GroupCompositionProfile {
   participantCount: number;
@@ -200,22 +220,34 @@ export function runAssignmentEngine<
     assignmentAlgorithmForTopology(params.topology);
   const compatibilityPolicy = params.compatibilityPolicy ??
     "questionnaireClueOnly";
+  const matchingObjective = params.matchingObjective ?? "coverage";
   const questionnaireMode = questionnaireModeForPolicy(
     params.questionnaireMode ?? "icebreaker",
     compatibilityPolicy
   );
   const constraints = normalizeAssignmentConstraints(params.constraints);
   const rotationPolicy = normalizeRotationPolicy(params.rotationPolicy);
+  const assignmentResolution = eventSuccessVariableResolutionFor({
+    assignmentAlgorithm,
+    compatibilityPolicy,
+    matchingObjective,
+  });
+  const effectiveMatchingObjective = resolveEffectiveMatchingObjective({
+    requested: matchingObjective,
+    participants: params.participants,
+    compatibilityPolicy,
+    constraints,
+  });
   const shouldBuildPairRotations =
     params.topology.rotationsEnabled &&
     params.topology.unitSize === 2 &&
     (params.rotationRoundCount ?? 0) > 0;
 
   let plan: AssignmentPlanCore<T>;
-  if (shouldBuildPairRotations) {
+  if (assignmentResolution.status === "unsupported") {
+    plan = {groups: [], groupRounds: [], rotationRounds: []};
+  } else if (shouldBuildPairRotations) {
     plan = {
-      assignmentAlgorithm,
-      compatibilityPolicy,
       groups: [],
       groupRounds: [],
       rotationRounds: buildRotationRoundsForOptimizer({
@@ -224,6 +256,7 @@ export function runAssignmentEngine<
         roundCount: params.rotationRoundCount ?? 0,
         questionnaireMode,
         compatibilityPolicy,
+        matchingObjective: effectiveMatchingObjective.objective,
         allowOrientationFallback: params.allowOrientationFallback ?? true,
         constraints,
         rotationPolicy,
@@ -234,8 +267,6 @@ export function runAssignmentEngine<
     (params.rotationRoundCount ?? 0) > 0
   ) {
     plan = {
-      assignmentAlgorithm,
-      compatibilityPolicy,
       groups: [],
       groupRounds: buildGroupRoundsForOptimizer({
         participants: params.participants,
@@ -244,6 +275,7 @@ export function runAssignmentEngine<
         maxGroupSize: params.topology.maxGroupSize,
         questionnaireMode,
         compatibilityPolicy,
+        matchingObjective: effectiveMatchingObjective.objective,
         roundCount: params.rotationRoundCount ?? 0,
         constraints,
         rotationPolicy,
@@ -252,8 +284,6 @@ export function runAssignmentEngine<
     };
   } else {
     plan = {
-      assignmentAlgorithm,
-      compatibilityPolicy,
       groups: buildGroupUnitsForOptimizer({
         participants: params.participants,
         blockedPairs: params.blockedPairs,
@@ -261,6 +291,7 @@ export function runAssignmentEngine<
         maxGroupSize: params.topology.maxGroupSize,
         questionnaireMode,
         compatibilityPolicy,
+        matchingObjective: effectiveMatchingObjective.objective,
         constraints,
         rotationPolicy,
       }),
@@ -271,6 +302,11 @@ export function runAssignmentEngine<
 
   return {
     ...plan,
+    assignmentAlgorithm,
+    compatibilityPolicy,
+    matchingObjective,
+    effectiveMatchingObjective: effectiveMatchingObjective.objective,
+    assignmentResolution,
     explainability: buildAssignmentEngineExplainability({
       plan,
       participants: params.participants,
@@ -278,6 +314,9 @@ export function runAssignmentEngine<
       topology: params.topology,
       questionnaireMode,
       compatibilityPolicy,
+      matchingObjective,
+      effectiveMatchingObjective,
+      assignmentResolution,
       constraints,
       rotationPolicy,
       requestedRotationRoundCount: params.rotationRoundCount ?? 0,
@@ -330,7 +369,8 @@ export function buildOptimizedRotationRounds<
       rotationsEnabled: true,
     },
     assignmentAlgorithm: "pairRotations",
-    compatibilityPolicy: params.compatibilityPolicy,
+    compatibilityPolicy: params.compatibilityPolicy ?? "mutualInterestOnly",
+    matchingObjective: "romantic",
     questionnaireMode: params.questionnaireMode,
     rotationRoundCount: params.roundCount,
     allowOrientationFallback: params.allowOrientationFallback,
@@ -372,7 +412,8 @@ export function buildOptimizedGroups<
       rotationsEnabled: false,
     },
     assignmentAlgorithm: "socialPods",
-    compatibilityPolicy: params.compatibilityPolicy,
+    compatibilityPolicy: params.compatibilityPolicy ?? "mutualInterestOnly",
+    matchingObjective: "romantic",
     questionnaireMode: params.questionnaireMode,
   }).groups.map((group) => group.participants);
 }
@@ -401,6 +442,9 @@ function buildAssignmentEngineExplainability<
   topology: AssignmentTopology;
   questionnaireMode: QuestionnaireScoringMode;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  matchingObjective: EventSuccessMatchingObjective;
+  effectiveMatchingObjective: EffectiveMatchingObjective;
+  assignmentResolution: EventSuccessVariableResolution;
   constraints: NormalizedAssignmentConstraints;
   rotationPolicy: NormalizedAssignmentRotationPolicy;
   requestedRotationRoundCount: number;
@@ -410,6 +454,7 @@ function buildAssignmentEngineExplainability<
     plan: params.plan,
     questionnaireMode: params.questionnaireMode,
     compatibilityPolicy: params.compatibilityPolicy,
+    matchingObjective: params.effectiveMatchingObjective.objective,
   });
   const unassignedParticipantCount = Math.max(
     0,
@@ -422,6 +467,7 @@ function buildAssignmentEngineExplainability<
     plan: params.plan,
     questionnaireMode: params.questionnaireMode,
     compatibilityPolicy: params.compatibilityPolicy,
+    matchingObjective: params.effectiveMatchingObjective.objective,
   });
   const activityStats = activityAttributeStats({
     plan: params.plan,
@@ -433,6 +479,7 @@ function buildAssignmentEngineExplainability<
       blockedPairs: params.blockedPairs,
       topology: params.topology,
       compatibilityPolicy: params.compatibilityPolicy,
+      matchingObjective: params.effectiveMatchingObjective.objective,
       dyadStats,
       groupSizeSkew: groupSizeSkewValue,
       compositionStats,
@@ -476,6 +523,12 @@ function buildAssignmentEngineExplainability<
   }
 
   return {
+    requestedMatchingObjective: params.matchingObjective,
+    effectiveMatchingObjective: params.effectiveMatchingObjective.objective,
+    matchingObjectiveFallbackReason:
+      params.effectiveMatchingObjective.fallbackReason,
+    assignmentResolutionStatus: params.assignmentResolution.status,
+    assignmentResolutionReason: params.assignmentResolution.reason,
     participantCount: params.participants.length,
     assignedParticipantCount: assignedUids.size,
     unassignedParticipantCount,
@@ -538,6 +591,7 @@ function buildCoreConstraintEvaluations<
   blockedPairs: Set<string>;
   topology: AssignmentTopology;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  matchingObjective: EventSuccessMatchingObjective;
   dyadStats: {
     repeatedPairCount: number;
     orientationFallbackPairCount: number;
@@ -577,7 +631,7 @@ function buildCoreConstraintEvaluations<
     {
       key: "mutual_orientation",
       category: "strongSoft",
-      status: params.compatibilityPolicy === "none" ?
+      status: params.matchingObjective !== "romantic" ?
         "not_applicable" :
         params.dyadStats.orientationFallbackPairCount > 0 ?
           "relaxed" :
@@ -587,7 +641,8 @@ function buildCoreConstraintEvaluations<
     {
       key: "questionnaire_affinity",
       category: "strongSoft",
-      status: params.compatibilityPolicy === "questionnaireClueOnly" ?
+      status: params.matchingObjective === "affinity" &&
+        params.compatibilityPolicy === "questionnaireClueOnly" ?
         "satisfied" :
         "not_applicable",
       subjectUids: [],
@@ -611,7 +666,7 @@ function buildCoreConstraintEvaluations<
     {
       key: "group_opportunity_balance",
       category: "strongSoft",
-      status: params.compatibilityPolicy === "none" ?
+      status: params.matchingObjective !== "romantic" ?
         "not_applicable" :
         allGeneratedGroupUnits(params.plan).length === 0 ?
           "not_applicable" :
@@ -814,6 +869,7 @@ function generatedDyadStats<T extends AssignmentParticipant>(params: {
   plan: AssignmentPlanCore<T>;
   questionnaireMode: QuestionnaireScoringMode;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  matchingObjective: EventSuccessMatchingObjective;
 }): {
   mutualDyadCount: number;
   plausibleDyadCount: number;
@@ -843,7 +899,7 @@ function generatedDyadStats<T extends AssignmentParticipant>(params: {
     if (plausible) plausibleDyadCount++;
     if (
       directPairAssignment &&
-      params.compatibilityPolicy !== "none" &&
+      params.matchingObjective === "romantic" &&
       plausible &&
       !mutualInterest
     ) {
@@ -857,6 +913,7 @@ function generatedDyadStats<T extends AssignmentParticipant>(params: {
         const scored = scorePairForOptimizer(group[i], group[j], {
           questionnaireMode: params.questionnaireMode,
           compatibilityPolicy: params.compatibilityPolicy,
+          matchingObjective: params.matchingObjective,
           allowOrientationFallback: true,
         });
         recordPair(
@@ -943,6 +1000,7 @@ function groupCompositionStats<T extends AssignmentParticipant>(params: {
   plan: AssignmentPlanCore<T>;
   questionnaireMode: QuestionnaireScoringMode;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  matchingObjective: EventSuccessMatchingObjective;
 }): GroupCompositionStats {
   const profiles = allGeneratedGroups(params.plan)
     .filter((group) => group.length > 0)
@@ -950,6 +1008,7 @@ function groupCompositionStats<T extends AssignmentParticipant>(params: {
       group,
       questionnaireMode: params.questionnaireMode,
       compatibilityPolicy: params.compatibilityPolicy,
+      matchingObjective: params.matchingObjective,
     }));
   return {
     lowOpportunityGroupCount: profiles.filter((profile) =>
@@ -1106,6 +1165,7 @@ function groupCompositionProfile<T extends AssignmentParticipant>(params: {
   group: T[];
   questionnaireMode: QuestionnaireScoringMode;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  matchingObjective: EventSuccessMatchingObjective;
 }): GroupCompositionProfile {
   let mutualDyadCount = 0;
   let plausibleDyadCount = 0;
@@ -1117,6 +1177,7 @@ function groupCompositionProfile<T extends AssignmentParticipant>(params: {
       const scored = scorePairForOptimizer(params.group[i], params.group[j], {
         questionnaireMode: params.questionnaireMode,
         compatibilityPolicy: params.compatibilityPolicy,
+        matchingObjective: params.matchingObjective,
         allowOrientationFallback: true,
       });
       if (scored.mutualInterest) {
@@ -1130,11 +1191,7 @@ function groupCompositionProfile<T extends AssignmentParticipant>(params: {
           (mutualCountsByUid.get(params.group[j].uid) ?? 0) + 1
         );
       }
-      if (
-        scored.mutualInterest ||
-        scored.oneWayInterest ||
-        scored.compatibility === "social"
-      ) {
+      if (scored.score > 0) {
         plausibleDyadCount++;
       }
     }
@@ -1263,6 +1320,95 @@ function normalizeRotationPolicy(
   };
 }
 
+/** Resolves an objective to coverage when its permitted inputs are absent. */
+function resolveEffectiveMatchingObjective<
+  T extends AssignmentParticipant
+>(params: {
+  requested: EventSuccessMatchingObjective;
+  participants: T[];
+  compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  constraints: NormalizedAssignmentConstraints;
+}): EffectiveMatchingObjective {
+  if (params.requested === "coverage") {
+    return {objective: "coverage", fallbackReason: null};
+  }
+
+  const questionnairePermitted =
+    params.compatibilityPolicy === "questionnaireClueOnly";
+  const hasQuestionnaireData = questionnairePermitted &&
+    params.participants.some((participant) =>
+      (participant.compatibilityAnswerIds?.length ?? 0) > 0
+    );
+  const hasClusterActivityData = hasConfiguredActivityData(
+    params.participants,
+    params.constraints.clusterActivityAttributes
+  );
+  const hasBalanceActivityData = hasConfiguredActivityData(
+    params.participants,
+    params.constraints.balanceActivityAttributes
+  );
+
+  switch (params.requested) {
+  case "romantic":
+    if (
+      params.compatibilityPolicy === "mutualInterestOnly" &&
+      params.participants.filter(hasRomanticProfileSignal).length >= 2
+    ) {
+      return {objective: "romantic", fallbackReason: null};
+    }
+    return coverageFallback(
+      "Mutual-interest inputs are not permitted or are unavailable."
+    );
+  case "affinity":
+    if (hasQuestionnaireData || hasClusterActivityData) {
+      return {objective: "affinity", fallbackReason: null};
+    }
+    return coverageFallback(
+      "Affinity inputs are not permitted or are unavailable."
+    );
+  case "novelty":
+    if (hasQuestionnaireData || hasBalanceActivityData) {
+      return {objective: "novelty", fallbackReason: null};
+    }
+    return coverageFallback(
+      "Novelty inputs are not permitted or are unavailable."
+    );
+  case "balance":
+  case "spread":
+    if (hasBalanceActivityData) {
+      return {objective: params.requested, fallbackReason: null};
+    }
+    return coverageFallback(
+      "Assignment-attribute inputs are unavailable."
+    );
+  }
+}
+
+function coverageFallback(reason: string): EffectiveMatchingObjective {
+  return {
+    objective: "coverage",
+    fallbackReason: `${reason} Coverage was used instead.`,
+  };
+}
+
+function hasRomanticProfileSignal(
+  participant: AssignmentParticipant
+): boolean {
+  return (participant.gender?.trim().length ?? 0) > 0 &&
+    participant.interestedInGenders.length > 0;
+}
+
+function hasConfiguredActivityData<T extends AssignmentParticipant>(
+  participants: T[],
+  attributes: string[]
+): boolean {
+  return attributes.length > 0 && participants.some((participant) =>
+    attributes.some((attribute) =>
+      activityValue(participant, attribute) !== null
+    )
+  );
+}
+
 /**
  * Scores a pair according to the event-success compatibility primitive.
  * @param {AssignmentParticipant} a First participant.
@@ -1276,26 +1422,43 @@ function scorePairForOptimizer(
   options: {
     questionnaireMode: QuestionnaireScoringMode;
     compatibilityPolicy: EventSuccessCompatibilityPolicy;
+    matchingObjective: EventSuccessMatchingObjective;
     allowOrientationFallback: boolean;
   }
 ): ReturnType<typeof scoreDatingCompatibilityPair> {
-  if (options.compatibilityPolicy === "none") {
+  if (options.matchingObjective === "romantic") {
+    return scoreDatingCompatibilityPair(a, b, {
+      questionnaireMode: "off",
+      allowOrientationFallback: options.allowOrientationFallback,
+    });
+  }
+  if (
+    (options.matchingObjective === "affinity" ||
+      options.matchingObjective === "novelty") &&
+    options.compatibilityPolicy === "questionnaireClueOnly"
+  ) {
+    const scored = scoreQuestionnaireObjectivePair(
+      a,
+      b,
+      options.matchingObjective
+    );
     return {
-      score: 1,
-      compatibility: "social",
+      score: scored.score + 1,
+      compatibility: scored.compatibility,
       mutualInterest: false,
       oneWayInterest: false,
       orientationCompatible: false,
-      sharedAnswerCount: 0,
+      sharedAnswerCount: scored.sharedAnswerCount,
     };
   }
-  return scoreDatingCompatibilityPair(a, b, {
-    questionnaireMode: questionnaireModeForPolicy(
-      options.questionnaireMode,
-      options.compatibilityPolicy
-    ),
-    allowOrientationFallback: options.allowOrientationFallback,
-  });
+  return {
+    score: 1,
+    compatibility: "social",
+    mutualInterest: false,
+    oneWayInterest: false,
+    orientationCompatible: false,
+    sharedAnswerCount: 0,
+  };
 }
 
 /**
@@ -1311,6 +1474,7 @@ function buildRotationRoundsForOptimizer<
   roundCount: number;
   questionnaireMode: QuestionnaireScoringMode;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  matchingObjective: EventSuccessMatchingObjective;
   allowOrientationFallback: boolean;
   constraints: NormalizedAssignmentConstraints;
   rotationPolicy: NormalizedAssignmentRotationPolicy;
@@ -1334,6 +1498,7 @@ function buildRotationRoundsForOptimizer<
       blockedPairs: params.blockedPairs,
       questionnaireMode: params.questionnaireMode,
       compatibilityPolicy: params.compatibilityPolicy,
+      matchingObjective: params.matchingObjective,
       allowOrientationFallback: params.allowOrientationFallback,
       constraints: params.constraints,
       pairMeetingCounts,
@@ -1364,7 +1529,8 @@ function buildRotationRoundsForOptimizer<
       selectPairsByCompatibilityTier({
         candidates: candidatePairs.filter((pair) =>
           pair.compatibility === "social" &&
-          pairNeedsFirstConnection(pair, meetingCounts)
+          (params.matchingObjective !== "romantic" ||
+            pairNeedsFirstConnection(pair, meetingCounts))
         ),
         usedUids,
         roundPairs,
@@ -1379,6 +1545,7 @@ function buildRotationRoundsForOptimizer<
       blockedPairs: params.blockedPairs,
       questionnaireMode: params.questionnaireMode,
       compatibilityPolicy: params.compatibilityPolicy,
+      matchingObjective: params.matchingObjective,
       allowOrientationFallback: params.allowOrientationFallback,
       constraints: params.constraints,
       pairMeetingCounts,
@@ -1446,6 +1613,7 @@ function buildGroupUnitsForOptimizer<
   maxGroupSize: number;
   questionnaireMode: QuestionnaireScoringMode;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  matchingObjective: EventSuccessMatchingObjective;
   seenPairs?: Set<string>;
   constraints: NormalizedAssignmentConstraints;
   rotationPolicy: NormalizedAssignmentRotationPolicy;
@@ -1461,6 +1629,7 @@ function buildGroupUnitsForOptimizer<
     params.blockedPairs,
     params.questionnaireMode,
     params.compatibilityPolicy,
+    params.matchingObjective,
     params.constraints
   );
 
@@ -1474,6 +1643,7 @@ function buildGroupUnitsForOptimizer<
           blockedPairs: params.blockedPairs,
           questionnaireMode: params.questionnaireMode,
           compatibilityPolicy: params.compatibilityPolicy,
+          matchingObjective: params.matchingObjective,
           seenPairs: params.seenPairs,
           maxGroupSize: params.maxGroupSize,
           constraints: params.constraints,
@@ -1488,6 +1658,7 @@ function buildGroupUnitsForOptimizer<
           blockedPairs: params.blockedPairs,
           questionnaireMode: params.questionnaireMode,
           compatibilityPolicy: params.compatibilityPolicy,
+          matchingObjective: params.matchingObjective,
           seenPairs: params.seenPairs,
           maxGroupSize: params.maxGroupSize,
           constraints: params.constraints,
@@ -1520,6 +1691,7 @@ function buildGroupUnitsForOptimizer<
       index,
       questionnaireMode: params.questionnaireMode,
       compatibilityPolicy: params.compatibilityPolicy,
+      matchingObjective: params.matchingObjective,
     }))
     .filter((group) => group.participants.length > 0);
 }
@@ -1538,6 +1710,7 @@ function buildGroupRoundsForOptimizer<
   maxGroupSize: number;
   questionnaireMode: QuestionnaireScoringMode;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  matchingObjective: EventSuccessMatchingObjective;
   roundCount: number;
   constraints: NormalizedAssignmentConstraints;
   rotationPolicy: NormalizedAssignmentRotationPolicy;
@@ -1554,6 +1727,7 @@ function buildGroupRoundsForOptimizer<
       maxGroupSize: params.maxGroupSize,
       questionnaireMode: params.questionnaireMode,
       compatibilityPolicy: params.compatibilityPolicy,
+      matchingObjective: params.matchingObjective,
       seenPairs,
       constraints: params.constraints,
       rotationPolicy: params.rotationPolicy,
@@ -1634,6 +1808,7 @@ function allCandidatePairs<T extends AssignmentParticipant>(params: {
   blockedPairs: Set<string>;
   questionnaireMode: QuestionnaireScoringMode;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  matchingObjective: EventSuccessMatchingObjective;
   allowOrientationFallback: boolean;
   constraints: NormalizedAssignmentConstraints;
   pairMeetingCounts: Map<string, number>;
@@ -1663,6 +1838,7 @@ function allCandidatePairs<T extends AssignmentParticipant>(params: {
       const scored = scorePairForOptimizer(a, b, {
         questionnaireMode: params.questionnaireMode,
         compatibilityPolicy: params.compatibilityPolicy,
+        matchingObjective: params.matchingObjective,
         allowOrientationFallback: params.allowOrientationFallback,
       });
       if (scored.score <= 0) continue;
@@ -1934,6 +2110,7 @@ function constrainedParticipantsFirst<T extends AssignmentParticipant>(
   blockedPairs: Set<string>,
   questionnaireMode: QuestionnaireScoringMode,
   compatibilityPolicy: EventSuccessCompatibilityPolicy,
+  matchingObjective: EventSuccessMatchingObjective,
   constraints: NormalizedAssignmentConstraints
 ): T[] {
   return [...participants].sort((a, b) =>
@@ -1945,6 +2122,7 @@ function constrainedParticipantsFirst<T extends AssignmentParticipant>(
       blockedPairs,
       questionnaireMode,
       compatibilityPolicy,
+      matchingObjective,
       constraints
     ) -
     mutualPeerCount(
@@ -1953,6 +2131,7 @@ function constrainedParticipantsFirst<T extends AssignmentParticipant>(
       blockedPairs,
       questionnaireMode,
       compatibilityPolicy,
+      matchingObjective,
       constraints
     ) ||
     a.uid.localeCompare(b.uid)
@@ -1975,6 +2154,7 @@ function mutualPeerCount<T extends AssignmentParticipant>(
   blockedPairs: Set<string>,
   questionnaireMode: QuestionnaireScoringMode,
   compatibilityPolicy: EventSuccessCompatibilityPolicy,
+  matchingObjective: EventSuccessMatchingObjective,
   constraints: NormalizedAssignmentConstraints
 ): number {
   return participants.filter((peer) => {
@@ -1988,6 +2168,7 @@ function mutualPeerCount<T extends AssignmentParticipant>(
     return scorePairForOptimizer(participant, peer, {
       questionnaireMode,
       compatibilityPolicy,
+      matchingObjective,
       allowOrientationFallback: false,
     }).mutualInterest;
   }).length;
@@ -2004,6 +2185,7 @@ function groupPlacementCost<T extends AssignmentParticipant>(params: {
   blockedPairs: Set<string>;
   questionnaireMode: QuestionnaireScoringMode;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  matchingObjective: EventSuccessMatchingObjective;
   seenPairs?: Set<string>;
   maxGroupSize: number;
   constraints: NormalizedAssignmentConstraints;
@@ -2049,6 +2231,7 @@ function groupPlacementCost<T extends AssignmentParticipant>(params: {
     const scored = scorePairForOptimizer(params.participant, member, {
       questionnaireMode: params.questionnaireMode,
       compatibilityPolicy: params.compatibilityPolicy,
+      matchingObjective: params.matchingObjective,
       allowOrientationFallback: true,
     });
     opportunityScore += scored.score;
@@ -2071,9 +2254,10 @@ function groupPlacementCost<T extends AssignmentParticipant>(params: {
     group: [...params.group, params.participant],
     questionnaireMode: params.questionnaireMode,
     compatibilityPolicy: params.compatibilityPolicy,
+    matchingObjective: params.matchingObjective,
   });
   const noMutualPenalty =
-    params.compatibilityPolicy !== "none" && mutualCount === 0 ?
+    params.matchingObjective === "romantic" && mutualCount === 0 ?
       NO_MUTUAL_GROUP_PENALTY :
       0;
   return params.group.length * GROUP_SIZE_PRESSURE +
@@ -2095,14 +2279,16 @@ function groupCompositionPlacementCost<T extends AssignmentParticipant>(
     group: T[];
     questionnaireMode: QuestionnaireScoringMode;
     compatibilityPolicy: EventSuccessCompatibilityPolicy;
+    matchingObjective: EventSuccessMatchingObjective;
   }
 ): number {
-  if (params.compatibilityPolicy === "none") return 0;
+  if (params.matchingObjective !== "romantic") return 0;
   if (params.group.length < 2) return 0;
   const profile = groupCompositionProfile({
     group: params.group,
     questionnaireMode: params.questionnaireMode,
     compatibilityPolicy: params.compatibilityPolicy,
+    matchingObjective: params.matchingObjective,
   });
   const lowOpportunityPenalty = isLowOpportunityGroup(profile) ?
     LOW_OPPORTUNITY_GROUP_PENALTY :
@@ -2141,6 +2327,7 @@ function groupSummary<T extends AssignmentParticipant>(params: {
   index: number;
   questionnaireMode: QuestionnaireScoringMode;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  matchingObjective: EventSuccessMatchingObjective;
 }): OptimizedGroup<T> {
   let score = 0;
   let mutualDyadCount = 0;
@@ -2150,15 +2337,12 @@ function groupSummary<T extends AssignmentParticipant>(params: {
       const scored = scorePairForOptimizer(params.group[i], params.group[j], {
         questionnaireMode: params.questionnaireMode,
         compatibilityPolicy: params.compatibilityPolicy,
+        matchingObjective: params.matchingObjective,
         allowOrientationFallback: true,
       });
       score += scored.score;
       if (scored.mutualInterest) mutualDyadCount++;
-      if (
-        scored.mutualInterest ||
-        scored.oneWayInterest ||
-        scored.compatibility === "social"
-      ) {
+      if (scored.score > 0) {
         plausibleDyadCount++;
       }
     }

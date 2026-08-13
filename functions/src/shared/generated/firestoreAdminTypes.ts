@@ -238,6 +238,13 @@ export interface EventSuccessFormatPrimitives {
     | "socialCohortBalance"
     | "mutualInterestOnly"
     | "questionnaireClueOnly";
+  matchingObjective?:
+    | "coverage"
+    | "romantic"
+    | "affinity"
+    | "novelty"
+    | "balance"
+    | "spread";
 }
 
 export interface EventSuccessStructureConfig {

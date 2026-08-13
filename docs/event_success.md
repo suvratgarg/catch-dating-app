@@ -1,7 +1,7 @@
 ---
 doc_id: event_success
-version: 1.5.0
-updated: 2026-08-11
+version: 1.6.0
+updated: 2026-08-13
 owner: recursive_audit_loop
 status: active
 ---
@@ -115,11 +115,31 @@ The currently wired pieces are:
 - attendee companion routing, event-detail entry, and check-in auto-launch use
   the saved plan/runtime rather than raw event type.
 
-Assignment generation is deliberately narrower than the format taxonomy. V1
-supports pair rotations and generic micro-pods with topology guards. True
+Assignment generation is deliberately narrower than the format taxonomy. The
+format primitives now resolve a `matchingObjective` independently from
+`compatibilityPolicy`: the objective selects the product goal (`coverage`,
+`romantic`, `affinity`, `novelty`, `balance`, or `spread`), while the policy is
+the sole authority for which profile, questionnaire, or activity signals may
+be read. `coverage` is the engine default and remains meaningful with no
+profile or questionnaire data. An objective whose permitted inputs are absent
+falls back explicitly to `coverage` and records the reason; it must not widen
+the policy to obtain a score.
+
+Saved format primitives may override the objective. Otherwise pace pods bind
+to `affinity`, pair rotations to `balance`, team rotations to `spread`, seated
+tables to `affinity`, mutual-interest mixers to `romantic`, and other mixers or
+host/open formats to `coverage`. These bindings are resolved from the saved
+interaction model rather than by event-type branches in generators or screens.
+The Functions contract owns an exhaustive resolution table for every
+assignment-algorithm, compatibility-policy, and matching-objective
+combination.
+
+V1 supports pair rotations and generic micro-pods with topology guards.
+Algorithms without a dedicated engine, including `none`, `teamBalancer`, and
+`tableSeating`, resolve to `unsupported` with an honest reason. They never run
+an implemented neighbouring behavior or rewrite existing assignments. True
 table-seating, team-balancing, doubles/court-aware, and dance-partner engines
-remain future backend work unless product narrows them into the existing V1
-assignment shapes.
+remain future backend work.
 
 ## Code Map
 

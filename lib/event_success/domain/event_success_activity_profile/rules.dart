@@ -29,6 +29,7 @@ Map<String, EventSuccessRecommendationLevel> _levelsForFormat(
   EventFormatSnapshot format,
   EventInteractionModel interactionModel,
   EventSuccessCompatibilityPolicy compatibilityPolicy,
+  EventSuccessAssignmentResolution assignmentResolution,
 ) {
   final base = <String, EventSuccessRecommendationLevel>{
     EventSuccessModuleCatalog.crowdBalance.id:
@@ -128,6 +129,15 @@ Map<String, EventSuccessRecommendationLevel> _levelsForFormat(
           EventSuccessRecommendationLevel.optional;
       base[EventSuccessModuleCatalog.compatibilityQuestionnaire.id] =
           EventSuccessRecommendationLevel.optional;
+  }
+
+  if (!assignmentResolution.supported) {
+    base[EventSuccessModuleCatalog.microPods.id] =
+        EventSuccessRecommendationLevel.unsupported;
+    base[EventSuccessModuleCatalog.guidedRotations.id] =
+        EventSuccessRecommendationLevel.unsupported;
+    base[EventSuccessModuleCatalog.liveReveal.id] =
+        EventSuccessRecommendationLevel.unsupported;
   }
 
   for (final moduleId in format.defaultModuleIds) {
@@ -237,6 +247,61 @@ EventSuccessCompatibilityPolicy _compatibilityPolicyFor(
       EventSuccessCompatibilityPolicy.socialCohortBalance,
     EventInteractionModel.hostLedProgram ||
     EventInteractionModel.openFormat => EventSuccessCompatibilityPolicy.none,
+  };
+}
+
+EventSuccessMatchingObjective _matchingObjectiveFor(
+  EventFormatSnapshot format,
+  EventInteractionModel interactionModel,
+  EventSuccessCompatibilityPolicy compatibilityPolicy,
+) {
+  final override = _primitiveOverride(
+    format,
+    'matchingObjective',
+    EventSuccessMatchingObjective.values,
+  );
+  if (override != null) return override;
+  return switch (interactionModel) {
+    EventInteractionModel.pacePods => EventSuccessMatchingObjective.affinity,
+    EventInteractionModel.pairedRotations =>
+      EventSuccessMatchingObjective.balance,
+    EventInteractionModel.teamRotations => EventSuccessMatchingObjective.spread,
+    EventInteractionModel.seatedTable => EventSuccessMatchingObjective.affinity,
+    EventInteractionModel.freeFormMixer =>
+      compatibilityPolicy == EventSuccessCompatibilityPolicy.mutualInterestOnly
+          ? EventSuccessMatchingObjective.romantic
+          : EventSuccessMatchingObjective.coverage,
+    EventInteractionModel.hostLedProgram ||
+    EventInteractionModel.openFormat => EventSuccessMatchingObjective.coverage,
+  };
+}
+
+EventSuccessAssignmentResolution _assignmentResolutionFor(
+  EventSuccessAssignmentAlgorithm assignmentAlgorithm,
+) {
+  return switch (assignmentAlgorithm) {
+    EventSuccessAssignmentAlgorithm.pacePods ||
+    EventSuccessAssignmentAlgorithm.socialPods ||
+    EventSuccessAssignmentAlgorithm.pairRotations =>
+      const EventSuccessAssignmentResolution(
+        support: EventSuccessAssignmentSupport.supported,
+        reason: 'This assignment algorithm is implemented.',
+      ),
+    EventSuccessAssignmentAlgorithm.none =>
+      const EventSuccessAssignmentResolution(
+        support: EventSuccessAssignmentSupport.unsupported,
+        reason: 'This format does not select an assignment algorithm.',
+      ),
+    EventSuccessAssignmentAlgorithm.teamBalancer =>
+      const EventSuccessAssignmentResolution(
+        support: EventSuccessAssignmentSupport.unsupported,
+        reason: 'Team balancing is not implemented yet.',
+      ),
+    EventSuccessAssignmentAlgorithm.tableSeating =>
+      const EventSuccessAssignmentResolution(
+        support: EventSuccessAssignmentSupport.unsupported,
+        reason: 'Table seating and seat adjacency are not implemented yet.',
+      ),
   };
 }
 

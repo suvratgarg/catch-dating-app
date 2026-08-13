@@ -203,6 +203,17 @@
         "questionnaireClueOnly"
       ]
     },
+    "eventSuccessMatchingObjective": {
+      "type": "string",
+      "enum": [
+        "coverage",
+        "romantic",
+        "affinity",
+        "novelty",
+        "balance",
+        "spread"
+      ]
+    },
     "eventSuccessFormatPrimitives": {
       "type": "object",
       "additionalProperties": false,
@@ -219,6 +230,9 @@
         },
         "compatibilityPolicy": {
           "$ref": "#/definitions/eventSuccessCompatibilityPolicy"
+        },
+        "matchingObjective": {
+          "$ref": "#/definitions/eventSuccessMatchingObjective"
         }
       }
     },

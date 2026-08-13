@@ -70,6 +70,13 @@ export interface AdminUpdateEventDetailsCallablePayload {
           | "socialCohortBalance"
           | "mutualInterestOnly"
           | "questionnaireClueOnly";
+        matchingObjective?:
+          | "coverage"
+          | "romantic"
+          | "affinity"
+          | "novelty"
+          | "balance"
+          | "spread";
       };
       activityDetails?: {
         [k: string]: unknown;

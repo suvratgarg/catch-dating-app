@@ -3416,6 +3416,12 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['none', 'socialCohortBalance', 'mutualInterestOnly', 'questionnaireClueOnly'],
   );
 
+  static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatEventSuccessPrimitivesMatchingObjective = CatchContractFieldConstraints(
+    path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.eventSuccessPrimitives.matchingObjective',
+    valueTypes: <String>['string'],
+    enumValues: <String>['coverage', 'romantic', 'affinity', 'novelty', 'balance', 'spread'],
+  );
+
   static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatEventSuccessPrimitivesPhoneAvailability = CatchContractFieldConstraints(
     path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.eventSuccessPrimitives.phoneAvailability',
     valueTypes: <String>['string'],
@@ -7283,6 +7289,12 @@ abstract final class CatchContractConstraints {
     path: 'createEventCallablePayload.eventFormat.eventSuccessPrimitives.compatibilityPolicy',
     valueTypes: <String>['string'],
     enumValues: <String>['none', 'socialCohortBalance', 'mutualInterestOnly', 'questionnaireClueOnly'],
+  );
+
+  static const createEventCallablePayloadEventFormatEventSuccessPrimitivesMatchingObjective = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventFormat.eventSuccessPrimitives.matchingObjective',
+    valueTypes: <String>['string'],
+    enumValues: <String>['coverage', 'romantic', 'affinity', 'novelty', 'balance', 'spread'],
   );
 
   static const createEventCallablePayloadEventFormatEventSuccessPrimitivesPhoneAvailability = CatchContractFieldConstraints(
@@ -11325,6 +11337,12 @@ abstract final class CatchContractConstraints {
     path: 'eventDocument.eventFormat.eventSuccessPrimitives.compatibilityPolicy',
     valueTypes: <String>['string'],
     enumValues: <String>['none', 'socialCohortBalance', 'mutualInterestOnly', 'questionnaireClueOnly'],
+  );
+
+  static const eventDocumentEventFormatEventSuccessPrimitivesMatchingObjective = CatchContractFieldConstraints(
+    path: 'eventDocument.eventFormat.eventSuccessPrimitives.matchingObjective',
+    valueTypes: <String>['string'],
+    enumValues: <String>['coverage', 'romantic', 'affinity', 'novelty', 'balance', 'spread'],
   );
 
   static const eventDocumentEventFormatEventSuccessPrimitivesPhoneAvailability = CatchContractFieldConstraints(
@@ -38142,6 +38160,7 @@ abstract final class CatchContractConstraints {
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.defaultPlaybookId': adminUpdateEventDetailsCallablePayloadFieldsEventFormatDefaultPlaybookId,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.eventSuccessPrimitives.assignmentAlgorithm': adminUpdateEventDetailsCallablePayloadFieldsEventFormatEventSuccessPrimitivesAssignmentAlgorithm,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.eventSuccessPrimitives.compatibilityPolicy': adminUpdateEventDetailsCallablePayloadFieldsEventFormatEventSuccessPrimitivesCompatibilityPolicy,
+    'adminUpdateEventDetailsCallablePayload.fields.eventFormat.eventSuccessPrimitives.matchingObjective': adminUpdateEventDetailsCallablePayloadFieldsEventFormatEventSuccessPrimitivesMatchingObjective,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.eventSuccessPrimitives.phoneAvailability': adminUpdateEventDetailsCallablePayloadFieldsEventFormatEventSuccessPrimitivesPhoneAvailability,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.eventSuccessPrimitives.rotationSuitability': adminUpdateEventDetailsCallablePayloadFieldsEventFormatEventSuccessPrimitivesRotationSuitability,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.interactionModel': adminUpdateEventDetailsCallablePayloadFieldsEventFormatInteractionModel,
@@ -38683,6 +38702,7 @@ abstract final class CatchContractConstraints {
     'createEventCallablePayload.eventFormat.defaultPlaybookId': createEventCallablePayloadEventFormatDefaultPlaybookId,
     'createEventCallablePayload.eventFormat.eventSuccessPrimitives.assignmentAlgorithm': createEventCallablePayloadEventFormatEventSuccessPrimitivesAssignmentAlgorithm,
     'createEventCallablePayload.eventFormat.eventSuccessPrimitives.compatibilityPolicy': createEventCallablePayloadEventFormatEventSuccessPrimitivesCompatibilityPolicy,
+    'createEventCallablePayload.eventFormat.eventSuccessPrimitives.matchingObjective': createEventCallablePayloadEventFormatEventSuccessPrimitivesMatchingObjective,
     'createEventCallablePayload.eventFormat.eventSuccessPrimitives.phoneAvailability': createEventCallablePayloadEventFormatEventSuccessPrimitivesPhoneAvailability,
     'createEventCallablePayload.eventFormat.eventSuccessPrimitives.rotationSuitability': createEventCallablePayloadEventFormatEventSuccessPrimitivesRotationSuitability,
     'createEventCallablePayload.eventFormat.interactionModel': createEventCallablePayloadEventFormatInteractionModel,
@@ -39242,6 +39262,7 @@ abstract final class CatchContractConstraints {
     'eventDocument.eventFormat.defaultPlaybookId': eventDocumentEventFormatDefaultPlaybookId,
     'eventDocument.eventFormat.eventSuccessPrimitives.assignmentAlgorithm': eventDocumentEventFormatEventSuccessPrimitivesAssignmentAlgorithm,
     'eventDocument.eventFormat.eventSuccessPrimitives.compatibilityPolicy': eventDocumentEventFormatEventSuccessPrimitivesCompatibilityPolicy,
+    'eventDocument.eventFormat.eventSuccessPrimitives.matchingObjective': eventDocumentEventFormatEventSuccessPrimitivesMatchingObjective,
     'eventDocument.eventFormat.eventSuccessPrimitives.phoneAvailability': eventDocumentEventFormatEventSuccessPrimitivesPhoneAvailability,
     'eventDocument.eventFormat.eventSuccessPrimitives.rotationSuitability': eventDocumentEventFormatEventSuccessPrimitivesRotationSuitability,
     'eventDocument.eventFormat.interactionModel': eventDocumentEventFormatInteractionModel,

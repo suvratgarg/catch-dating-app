@@ -551,7 +551,7 @@ test("uses profile cohorts as pod balancing tie-breakers", async () => {
   );
 });
 
-test("uses format primitives for custom team formats", async () => {
+test("rejects unimplemented custom team formats honestly", async () => {
   const {firestore, deps} = harness({
     "events/event-1": {
       clubId: "club-1",
@@ -595,20 +595,21 @@ test("uses format primitives for custom team formats", async () => {
     "users/straight-woman-2": user("woman", ["man"]),
   });
 
-  const result = await generateEventSuccessPodsHandler(
-    callableRequest("host-1"),
-    deps
+  await assert.rejects(
+    generateEventSuccessPodsHandler(callableRequest("host-1"), deps),
+    (error: unknown) => {
+      isHttpsError(error, "failed-precondition", "Team balancing");
+      return true;
+    }
   );
 
-  assert.deepEqual(result, {assignmentCount: 6, podCount: 2});
-  const gayManOne = firestore.get(
-    "eventSuccessAssignments/event-1_micro_pods_gay-man-1"
+  assert.equal(
+    firestore.get("eventSuccessAssignments/event-1_micro_pods_gay-man-1"),
+    undefined
   );
-  assert.ok((gayManOne?.peerUids as string[]).includes("gay-man-2"));
-  assert.equal(gayManOne?.displayTitle, "Team A");
 });
 
-test("writes group rotation slots for rotating table formats", async () => {
+test("rejects a format with no assignment algorithm", async () => {
   const {firestore, deps} = harness({
     "events/event-1": {
       clubId: "club-1",
@@ -640,31 +641,18 @@ test("writes group rotation slots for rotating table formats", async () => {
     "eventParticipations/event-1_runner-6": participation("runner-6"),
   });
 
-  const result = await generateEventSuccessPodsHandler(
-    callableRequest("host-1"),
-    deps
+  await assert.rejects(
+    generateEventSuccessPodsHandler(callableRequest("host-1"), deps),
+    (error: unknown) => {
+      isHttpsError(error, "failed-precondition", "does not select");
+      return true;
+    }
   );
 
-  assert.deepEqual(result, {assignmentCount: 6, podCount: 2});
-  const assignment = firestore.get(
-    "eventSuccessAssignments/event-1_micro_pods_runner-1"
+  assert.equal(
+    firestore.get("eventSuccessAssignments/event-1_micro_pods_runner-1"),
+    undefined
   );
-  const slots = assignment?.groupRotationSlots as FakeData[];
-  assert.equal(assignment?.displayTitle, "2 table rotations");
-  assert.equal(assignment?.rotationSlots, undefined);
-  assert.equal(slots.length, 2);
-  assert.equal((slots[0].peerUids as string[]).length, 2);
-  assert.match(String(slots[0].unitLabel), /^Table /);
-  assert.match(String(slots[0].slotId), /^round-0-unit-/);
-  assert.equal(slots[0].unitKind, "tables");
-  assert.equal(slots[0].peerCount, 2);
-  assert.ok((slots[0].whyCodes as string[]).includes("table_slot"));
-  assert.deepEqual(assignment?.rotationFairness, {
-    assignedRoundCount: 2,
-    sitOutRoundCount: 0,
-    uniquePeerCount: 3,
-    repeatPeerCount: 1,
-  });
 });
 
 test("lets hosts override rotating table groups", async () => {

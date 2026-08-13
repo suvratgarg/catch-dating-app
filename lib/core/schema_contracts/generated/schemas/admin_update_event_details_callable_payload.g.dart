@@ -176,6 +176,17 @@ const schemaAdminUpdateEventDetailsCallablePayloadSchema = <String, Object?>{
                     'questionnaireClueOnly',
                   ],
                 },
+                'matchingObjective': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'coverage',
+                    'romantic',
+                    'affinity',
+                    'novelty',
+                    'balance',
+                    'spread',
+                  ],
+                },
               },
             },
             'activityDetails': <String, Object?>{
