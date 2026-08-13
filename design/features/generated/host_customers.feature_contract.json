@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/host_customers.feature.json",
   "generatedFor": "2026-08-13",
-  "sourceDigest": "sha256:f8c9c53084c4d6fdea69858757d59b4efffdf62998e3bc7505f1f5977de71c33",
+  "sourceDigest": "sha256:c8cb6977b3e2bb5ff2bf7480acbe60cc68ca674d34586698751874fe1635de6e",
   "resolvedDigest": "sha256:e5d08d7f678ce9ab1cc12a99525e488d0f4e10fa4dafddc72b8cec49f6591ee1",
   "feature": {
     "id": "feature.host_customers",
@@ -64,7 +64,7 @@
           {
             "id": "customer_detail",
             "language": "dart",
-            "file": "lib/hosts/presentation/customers/host_customers_screen.dart",
+            "file": "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
             "symbol": "HostCustomerDetailScreen"
           }
         ],

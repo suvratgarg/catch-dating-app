@@ -12,8 +12,10 @@ import 'package:catch_dating_app/event_success/domain/event_success_defaults.dar
 import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/event_success.dart'
-    show EventSuccessDefaultsPanel;
-import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
+    show
+        EventSuccessController,
+        EventSuccessDefaultsPanel,
+        eventSuccessControllerProvider;
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -46,6 +48,13 @@ class EventSuccessStep extends ConsumerWidget {
     final layoutMutation = ref.watch(
       EventSuccessController.upsertLayoutMutation,
     );
+    Future<EventSuccessLayout> saveLayout(EventSuccessLayout layout) =>
+        EventSuccessController.upsertLayoutMutation.run(
+          ref,
+          (tx) => tx
+              .get(eventSuccessControllerProvider.notifier)
+              .upsertLayout(organizerId: organizerId, layout: layout),
+        );
     final layouts = layoutsAsync.asData?.value ?? const <EventSuccessLayout>[];
     final usesWholeGroup =
         eventSuccessDefaults.structureConfig.unitKind ==
@@ -109,7 +118,7 @@ class EventSuccessStep extends ConsumerWidget {
                     title: context.l10n.hostsEventSuccessStepRoomLayoutCreate,
                     onTap: layoutMutation.isPending
                         ? null
-                        : () => _createLayout(context, ref),
+                        : () => _createLayout(context, saveLayout),
                   ),
                   if (layoutMutation.hasError)
                     CatchErrorBanner.fromError(
@@ -137,18 +146,16 @@ class EventSuccessStep extends ConsumerWidget {
     );
   }
 
-  Future<void> _createLayout(BuildContext context, WidgetRef ref) async {
+  Future<void> _createLayout(
+    BuildContext context,
+    Future<EventSuccessLayout> Function(EventSuccessLayout layout) saveLayout,
+  ) async {
     final draft = await showCatchBottomSheet<EventSuccessLayout>(
       context: context,
       builder: (context) => const _EventSuccessLayoutAuthorSheet(),
     );
     if (draft == null || !context.mounted) return;
-    final saved = await EventSuccessController.upsertLayoutMutation.run(
-      ref,
-      (tx) => tx
-          .get(eventSuccessControllerProvider.notifier)
-          .upsertLayout(organizerId: organizerId, layout: draft),
-    );
+    final saved = await saveLayout(draft);
     if (!context.mounted) return;
     onEventSuccessDefaultsChanged(
       eventSuccessDefaults.copyWith(layoutId: saved.layoutId),

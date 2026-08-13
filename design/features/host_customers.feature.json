@@ -25,7 +25,7 @@
           {"id": "customers_screen", "language": "dart", "file": "lib/hosts/presentation/customers/host_customers_screen.dart", "symbol": "HostCustomersScreen"},
           {"id": "customers_directory", "language": "dart", "file": "lib/hosts/presentation/customers/host_customers_controller.dart", "symbol": "HostCustomersDirectoryController"},
           {"id": "customers_mutations", "language": "dart", "file": "lib/hosts/presentation/customers/host_customers_controller.dart", "symbol": "HostCustomersController"},
-          {"id": "customer_detail", "language": "dart", "file": "lib/hosts/presentation/customers/host_customers_screen.dart", "symbol": "HostCustomerDetailScreen"}
+          {"id": "customer_detail", "language": "dart", "file": "lib/hosts/presentation/customers/host_customer_detail_screen.dart", "symbol": "HostCustomerDetailScreen"}
         ],
         "componentContracts": ["catch.button", "catch.chip", "catch.empty_state", "catch.error_state", "catch.field", "catch.person_row", "catch.search_field", "catch.section", "catch.skeleton", "catch.surface", "catch.top_bar"],
         "dataContracts": [

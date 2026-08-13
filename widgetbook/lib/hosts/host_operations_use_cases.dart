@@ -72,6 +72,7 @@ import 'package:catch_dating_app/hosts/presentation/club_management/host_club_ed
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_team_management_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
@@ -623,9 +624,18 @@ Widget hostCustomersStates(BuildContext context) {
     organizerId: organizerId,
   );
   final directoryState = HostCustomersDirectoryState(
-    contacts: [contact],
+    contacts: [
+      HostCustomerDirectoryContact(
+        contactId: contact.contactId,
+        displayName: contact.displayName,
+        attendedEventCount: contact.attendedEventCount,
+        lastAttendedAt: contact.lastAttendedAt,
+        tags: const {HostCustomerTag.repeat, HostCustomerTag.regular},
+        hasAmbiguousIdentity: false,
+      ),
+    ],
     nextCursor: null,
-    sourceCoverage: HostAudienceSourceCoverage.exact,
+    sourceCoverage: HostCustomerDirectoryCoverage.exact,
     projectionVersion: 1,
   );
   final detail = HostAudienceContactDetail(

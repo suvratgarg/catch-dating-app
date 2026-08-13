@@ -1,5 +1,13 @@
-import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:flutter/foundation.dart';
+
+enum HostCustomerTag {
+  firstTime,
+  repeat,
+  regular,
+  atRisk,
+  needsConfirmation,
+  advocate,
+}
 
 enum HostCustomerFilter {
   all,
@@ -10,14 +18,13 @@ enum HostCustomerFilter {
   needsConfirmation,
   advocate;
 
-  HostAudienceSegment? get segment => switch (this) {
+  HostCustomerTag? get tag => switch (this) {
     HostCustomerFilter.all || HostCustomerFilter.attended => null,
-    HostCustomerFilter.repeat => HostAudienceSegment.repeatAttendee,
-    HostCustomerFilter.regular => HostAudienceSegment.regular,
-    HostCustomerFilter.atRisk => HostAudienceSegment.lapsedRegular,
-    HostCustomerFilter.needsConfirmation =>
-      HostAudienceSegment.needsConfirmation,
-    HostCustomerFilter.advocate => HostAudienceSegment.advocate,
+    HostCustomerFilter.repeat => HostCustomerTag.repeat,
+    HostCustomerFilter.regular => HostCustomerTag.regular,
+    HostCustomerFilter.atRisk => HostCustomerTag.atRisk,
+    HostCustomerFilter.needsConfirmation => HostCustomerTag.needsConfirmation,
+    HostCustomerFilter.advocate => HostCustomerTag.advocate,
   };
 }
 
@@ -32,9 +39,6 @@ class HostCustomersDirectoryRequest {
   final String organizerId;
   final String? search;
   final HostCustomerFilter filter;
-
-  HostAudienceQuery get query =>
-      HostAudienceQuery(search: search, segment: filter.segment);
 
   @override
   bool operator ==(Object other) =>
@@ -58,17 +62,21 @@ class HostCustomersDirectoryState {
     this.loadMoreError,
   });
 
-  factory HostCustomersDirectoryState.fromPage(HostAudiencePage page) =>
-      HostCustomersDirectoryState(
-        contacts: List.unmodifiable(page.contacts),
-        nextCursor: page.nextCursor,
-        sourceCoverage: page.sourceCoverage,
-        projectionVersion: page.projectionVersion,
-      );
+  factory HostCustomersDirectoryState.fromPageData({
+    required Iterable<HostCustomerDirectoryContact> contacts,
+    required String? nextCursor,
+    required HostCustomerDirectoryCoverage sourceCoverage,
+    required int projectionVersion,
+  }) => HostCustomersDirectoryState(
+    contacts: List.unmodifiable(contacts),
+    nextCursor: nextCursor,
+    sourceCoverage: sourceCoverage,
+    projectionVersion: projectionVersion,
+  );
 
-  final List<HostAudienceContact> contacts;
+  final List<HostCustomerDirectoryContact> contacts;
   final String? nextCursor;
-  final HostAudienceSourceCoverage sourceCoverage;
+  final HostCustomerDirectoryCoverage sourceCoverage;
   final int projectionVersion;
   final bool loadingMore;
   final Object? loadMoreError;
@@ -76,7 +84,7 @@ class HostCustomersDirectoryState {
   bool get canLoadMore => nextCursor != null && !loadingMore;
 
   HostCustomersDirectoryState copyWith({
-    List<HostAudienceContact>? contacts,
+    List<HostCustomerDirectoryContact>? contacts,
     String? nextCursor,
     bool clearNextCursor = false,
     bool? loadingMore,
@@ -94,17 +102,38 @@ class HostCustomersDirectoryState {
   );
 }
 
+enum HostCustomerDirectoryCoverage { exact, partial, insufficientData }
+
+@immutable
+class HostCustomerDirectoryContact {
+  const HostCustomerDirectoryContact({
+    required this.contactId,
+    required this.displayName,
+    required this.attendedEventCount,
+    required this.lastAttendedAt,
+    required this.tags,
+    required this.hasAmbiguousIdentity,
+  });
+
+  final String contactId;
+  final String displayName;
+  final int attendedEventCount;
+  final DateTime? lastAttendedAt;
+  final Set<HostCustomerTag> tags;
+  final bool hasAmbiguousIdentity;
+}
+
 enum HostCustomerConversationAvailability { ready, unlinked, ambiguous }
 
-HostCustomerConversationAvailability customerConversationAvailability(
-  HostAudienceContactDetail detail,
-) {
-  if (detail.identityState == HostAudienceIdentityState.ambiguous ||
-      detail.ambiguousCandidateCount > 0) {
+HostCustomerConversationAvailability customerConversationAvailability({
+  required bool linkedAccount,
+  required bool identityVerified,
+  required int ambiguousCandidateCount,
+}) {
+  if (ambiguousCandidateCount > 0) {
     return HostCustomerConversationAvailability.ambiguous;
   }
-  if (!detail.linkedAccount ||
-      detail.identityState != HostAudienceIdentityState.verified) {
+  if (!linkedAccount || !identityVerified) {
     return HostCustomerConversationAvailability.unlinked;
   }
   return HostCustomerConversationAvailability.ready;

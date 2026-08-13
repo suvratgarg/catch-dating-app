@@ -161,7 +161,7 @@
       "leading": "back"
     },
     {
-      "path": "lib/hosts/presentation/customers/host_customers_screen.dart",
+      "path": "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar",
       "owner": "CatchTopBar",

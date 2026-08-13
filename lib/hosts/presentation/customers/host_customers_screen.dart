@@ -19,7 +19,6 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
-import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
@@ -247,7 +246,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     _openCustomerById(club, created.contactId);
   }
 
-  void _openCustomer(Club club, HostAudienceContact contact) =>
+  void _openCustomer(Club club, HostCustomerDirectoryContact contact) =>
       _openCustomerById(club, contact.contactId);
 
   void _openCustomerById(Club club, String contactId) {
@@ -301,7 +300,7 @@ class HostCustomersDirectory extends StatelessWidget {
   final HostCustomersDirectoryState state;
   final HostCustomerFilter filter;
   final bool hasActiveQuery;
-  final ValueChanged<HostAudienceContact> onCustomerSelected;
+  final ValueChanged<HostCustomerDirectoryContact> onCustomerSelected;
   final VoidCallback? onLoadMore;
 
   @override
@@ -314,7 +313,7 @@ class HostCustomersDirectory extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (state.sourceCoverage != HostAudienceSourceCoverage.exact) ...[
+        if (state.sourceCoverage != HostCustomerDirectoryCoverage.exact) ...[
           CatchNotice(
             notice: CatchNoticeData(
               id: 'host.customers.coverage',
@@ -381,7 +380,7 @@ class HostCustomerDirectoryRow extends StatelessWidget {
     required this.onTap,
   });
 
-  final HostAudienceContact contact;
+  final HostCustomerDirectoryContact contact;
   final bool divider;
   final VoidCallback onTap;
 
@@ -399,13 +398,13 @@ class HostCustomerDirectoryRow extends StatelessWidget {
     return CatchField.nav(
       title: contact.displayName,
       body: metadata.join(' · '),
-      valueText: _preferredCustomerTag(context, contact.segments),
+      valueText: _preferredCustomerTag(context, contact.tags),
       leading: CatchPersonAvatar(
         size: CatchSpacing.s7,
         name: contact.displayName,
       ),
       leadingExtent: CatchSpacing.s7,
-      valid: contact.identityState != HostAudienceIdentityState.ambiguous,
+      valid: !contact.hasAmbiguousIdentity,
       divider: divider,
       onTap: onTap,
     );
@@ -482,124 +481,6 @@ class _HostAddCustomerSheetState extends ConsumerState<HostAddCustomerSheet> {
   }
 }
 
-class HostCustomerDetailScreen extends ConsumerStatefulWidget {
-  const HostCustomerDetailScreen({
-    super.key,
-    required this.organizerId,
-    required this.contactId,
-  });
-
-  final String organizerId;
-  final String contactId;
-
-  @override
-  ConsumerState<HostCustomerDetailScreen> createState() =>
-      _HostCustomerDetailScreenState();
-}
-
-class _HostCustomerDetailScreenState
-    extends ConsumerState<HostCustomerDetailScreen> {
-  bool _openingConversation = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final detail = ref.watch(
-      hostAudienceContactDetailProvider(widget.organizerId, widget.contactId),
-    );
-    return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
-        title:
-            detail.asData?.value.displayName ??
-            context.l10n.hostNavigationCustomers,
-        leadingType: CatchTopBarLeading.back,
-        divider: scrolledUnder,
-      ),
-      body: SafeArea(
-        top: false,
-        bottom: false,
-        child: CatchAsyncValueView<HostAudienceContactDetail>(
-          value: detail,
-          onRetry: () => ref.invalidate(
-            hostAudienceContactDetailProvider(
-              widget.organizerId,
-              widget.contactId,
-            ),
-          ),
-          initialLoadTimeout: null,
-          loadingBuilder: (_) =>
-              const CatchPageBody(child: CatchSkeletonRows(count: 6)),
-          errorBuilder: (_, error, _) => CatchPageBody(
-            child: CatchErrorState.fromError(
-              error,
-              context: AppErrorContext.club,
-              onRetry: () => ref.invalidate(
-                hostAudienceContactDetailProvider(
-                  widget.organizerId,
-                  widget.contactId,
-                ),
-              ),
-            ),
-          ),
-          builder: (context, customer) => ListView(
-            padding: CatchInsets.pageBody.copyWith(bottom: 0),
-            children: [
-              HostCustomerIdentityCard(customer: customer),
-              gapH16,
-              HostCustomerConversationCard(
-                customer: customer,
-                loading: _openingConversation,
-                onOpen:
-                    customerConversationAvailability(customer) ==
-                        HostCustomerConversationAvailability.ready
-                    ? () => _startConversation(customer)
-                    : null,
-              ),
-              gapH16,
-              HostCustomerAttendanceCard(customer: customer),
-              gapH16,
-              HostCustomerRevenueCard(revenue: customer.revenue),
-              gapH16,
-              HostCustomerAttendanceHistory(customer: customer),
-              const CatchScrollTerminalPadding(),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _startConversation(HostAudienceContactDetail customer) async {
-    if (_openingConversation) return;
-    setState(() => _openingConversation = true);
-    try {
-      final matchId = await ref
-          .read(hostCustomersControllerProvider)
-          .startConversation(
-            organizerId: widget.organizerId,
-            contactId: widget.contactId,
-          );
-      if (mounted) {
-        unawaited(
-          context.pushNamed(
-            Routes.hostChatScreen.name,
-            pathParameters: {'matchId': matchId},
-          ),
-        );
-      }
-    } on Object catch (error) {
-      if (mounted) {
-        showCatchErrorSnackBar(
-          context,
-          error,
-          errorContext: AppErrorContext.chat,
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _openingConversation = false);
-    }
-  }
-}
-
 class HostCustomerIdentityCard extends StatelessWidget {
   const HostCustomerIdentityCard({super.key, required this.customer});
 
@@ -657,7 +538,12 @@ class HostCustomerConversationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final availability = customerConversationAvailability(customer);
+    final availability = customerConversationAvailability(
+      linkedAccount: customer.linkedAccount,
+      identityVerified:
+          customer.identityState == HostAudienceIdentityState.verified,
+      ambiguousCandidateCount: customer.ambiguousCandidateCount,
+    );
     final message = switch (availability) {
       HostCustomerConversationAvailability.ready => null,
       HostCustomerConversationAvailability.unlinked =>
@@ -879,20 +765,17 @@ String _customerFilterLabel(
   HostCustomerFilter.advocate => context.l10n.hostsHostAudienceSegmentAdvocate,
 };
 
-String? _preferredCustomerTag(
-  BuildContext context,
-  Set<HostAudienceSegment> segments,
-) {
-  if (segments.contains(HostAudienceSegment.lapsedRegular)) {
+String? _preferredCustomerTag(BuildContext context, Set<HostCustomerTag> tags) {
+  if (tags.contains(HostCustomerTag.atRisk)) {
     return context.l10n.hostCustomersFilterAtRisk;
   }
-  if (segments.contains(HostAudienceSegment.regular)) {
+  if (tags.contains(HostCustomerTag.regular)) {
     return context.l10n.hostsHostAudienceSegmentRegular;
   }
-  if (segments.contains(HostAudienceSegment.repeatAttendee)) {
+  if (tags.contains(HostCustomerTag.repeat)) {
     return context.l10n.hostsHostAudienceSegmentRepeat;
   }
-  if (segments.contains(HostAudienceSegment.firstTimeAttendee)) {
+  if (tags.contains(HostCustomerTag.firstTime)) {
     return context.l10n.hostsHostAudienceSegmentFirstTime;
   }
   return null;
