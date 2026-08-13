@@ -108,6 +108,7 @@ class HostEventsClubSection extends StatelessWidget {
     final repeatSource = state.repeatSource;
 
     return CustomScrollView(
+      key: const ValueKey<String>('host-events-scroll-view'),
       slivers: [
         SliverToBoxAdapter(
           child: CatchScreenHeaderTitle.block(

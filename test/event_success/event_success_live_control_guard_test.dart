@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart' show buildEvent;
+import '../test_pump_helpers.dart';
 
 void main() {
   testWidgets(
@@ -40,12 +41,12 @@ void main() {
 
       await pump(plan);
       await tester.tap(find.text('Reveal now'));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
       expect(find.text('Publish this reveal?'), findsOneWidget);
       expect(revealCalls, 0);
       await tester.tap(find.text('Publish reveal'));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       expect(revealCalls, 1);
 
       await pump(
@@ -86,12 +87,12 @@ void main() {
     );
 
     await tester.tap(find.text('Publish round 1'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     expect(find.text('Publish this rotation?'), findsOneWidget);
     expect(publishedRound, -1);
 
     await tester.tap(find.text('Publish rotation'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     expect(publishedRound, 0);
   });
 }

@@ -686,7 +686,7 @@ void main() {
     await tester.scrollUntilVisible(
       find.byKey(const ValueKey<String>('host-event-row-upcoming-event')),
       300,
-      scrollable: find.byType(Scrollable).first,
+      scrollable: _hostEventsScrollable(),
     );
     expect(find.text(upcoming.title), findsOneWidget);
 
@@ -706,7 +706,7 @@ void main() {
     await tester.scrollUntilVisible(
       find.byKey(const ValueKey<String>('host-events-month-2026-6')),
       300,
-      scrollable: find.byType(Scrollable).first,
+      scrollable: _hostEventsScrollable(),
     );
     expect(find.text(past.title), findsOneWidget);
     expect(find.text(olderPast.title), findsOneWidget);

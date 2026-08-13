@@ -137,7 +137,11 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                     style: CatchTextStyles.supporting(context, color: t.ink2),
                   ),
                   gapH16,
-                  HostCustomersSummary(summary: summary),
+                  HostCustomersSummary(
+                    summary: summary,
+                    onRetry: () =>
+                        ref.invalidate(hostCrmSummaryProvider(selectedClub.id)),
+                  ),
                   gapH16,
                   CatchButton(
                     label: context.l10n.hostCustomersAdd,
@@ -146,18 +150,20 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                     onPressed: () => _addCustomer(selectedClub, request),
                   ),
                   gapH20,
-                  CatchField.input(
-                    title: context.l10n.hostsHostAudienceSearch,
-                    contract: CatchContractConstraints
-                        .listOrganizerContactsCallablePayloadQuery,
-                    controller: _searchController,
-                    textInputAction: TextInputAction.search,
-                    prefixIcon: Icon(CatchIcons.searchRounded),
-                    showClearButton: true,
-                    onSubmitted: (value) => setState(() {
-                      final normalized = value.trim();
-                      _search = normalized.isEmpty ? null : normalized;
-                    }),
+                  CatchFieldLanes.single(
+                    child: CatchField.input(
+                      title: context.l10n.hostsHostAudienceSearch,
+                      contract: CatchContractConstraints
+                          .listOrganizerContactsCallablePayloadQuery,
+                      controller: _searchController,
+                      textInputAction: TextInputAction.search,
+                      prefixIcon: Icon(CatchIcons.searchRounded),
+                      showClearButton: true,
+                      onSubmitted: (value) => setState(() {
+                        final normalized = value.trim();
+                        _search = normalized.isEmpty ? null : normalized;
+                      }),
+                    ),
                   ),
                   gapH16,
                   Text(
@@ -395,18 +401,20 @@ class HostCustomerDirectoryRow extends StatelessWidget {
           date: AppTimeFormatters.shortDate(contact.lastAttendedAt!),
         ),
     ];
-    return CatchField.nav(
-      title: contact.displayName,
-      body: metadata.join(' · '),
-      valueText: _preferredCustomerTag(context, contact.tags),
-      leading: CatchPersonAvatar(
-        size: CatchSpacing.s7,
-        name: contact.displayName,
+    return CatchFieldLanes.single(
+      child: CatchField.nav(
+        title: contact.displayName,
+        body: metadata.join(' · '),
+        valueText: _preferredCustomerTag(context, contact.tags),
+        leading: CatchPersonAvatar(
+          size: CatchSpacing.s7,
+          name: contact.displayName,
+        ),
+        leadingExtent: CatchSpacing.s7,
+        valid: !contact.hasAmbiguousIdentity,
+        divider: divider,
+        onTap: onTap,
       ),
-      leadingExtent: CatchSpacing.s7,
-      valid: !contact.hasAmbiguousIdentity,
-      divider: divider,
-      onTap: onTap,
     );
   }
 }
@@ -487,8 +495,7 @@ class HostCustomerIdentityCard extends StatelessWidget {
   final HostAudienceContactDetail customer;
 
   @override
-  Widget build(BuildContext context) => CatchSurface(
-    padding: CatchInsets.cardContent,
+  Widget build(BuildContext context) => CatchSection.divided(
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -507,18 +514,26 @@ class HostCustomerIdentityCard extends StatelessWidget {
             ),
           ],
         ),
-        if (customer.phoneE164 != null) ...[
+        if (customer.phoneE164 != null || customer.email != null) ...[
           gapH12,
-          CatchField.read(
-            title: context.l10n.hostsHostAudienceContactVerifiedPhone,
-            body: customer.phoneE164,
+          CatchFieldLanes.single(
+            child: Column(
+              children: [
+                if (customer.phoneE164 != null)
+                  CatchField.read(
+                    title: context.l10n.hostsHostAudienceContactVerifiedPhone,
+                    body: customer.phoneE164,
+                    divider: customer.email != null,
+                  ),
+                if (customer.email != null)
+                  CatchField.read(
+                    title: context.l10n.hostsHostAudienceContactEmail,
+                    body: customer.email,
+                  ),
+              ],
+            ),
           ),
         ],
-        if (customer.email != null)
-          CatchField.read(
-            title: context.l10n.hostsHostAudienceContactEmail,
-            body: customer.email,
-          ),
       ],
     ),
   );
@@ -706,19 +721,26 @@ class HostCustomerAttendanceHistory extends StatelessWidget {
 }
 
 class HostCustomersSummary extends StatelessWidget {
-  const HostCustomersSummary({super.key, required this.summary});
+  const HostCustomersSummary({
+    super.key,
+    required this.summary,
+    required this.onRetry,
+  });
 
   final AsyncValue<HostCrmSummary> summary;
+  final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) => CatchAsyncValueView<HostCrmSummary>(
     value: summary,
+    onRetry: onRetry,
     initialLoadTimeout: null,
     loadingBuilder: (_) => const CatchSkeletonRows(count: 1),
     errorBuilder: (_, error, _) => CatchErrorState.fromError(
       error,
       context: AppErrorContext.club,
       mode: CatchErrorStateMode.compact,
+      onRetry: onRetry,
     ),
     builder: (context, value) => CatchSurface(
       padding: CatchInsets.cardContent,

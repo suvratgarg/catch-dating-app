@@ -1,5 +1,10 @@
 part of '../host_operations_screen_test.dart';
 
+Finder _hostEventsScrollable() => find.descendant(
+  of: find.byKey(const ValueKey<String>('host-events-scroll-view')),
+  matching: find.byType(Scrollable),
+);
+
 void registerHostWorkspacePagingTest() {
   testWidgets('Host club workspace uses native horizontal tab paging', (
     tester,
