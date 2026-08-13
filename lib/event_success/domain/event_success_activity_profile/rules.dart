@@ -276,6 +276,27 @@ EventSuccessMatchingObjective _matchingObjectiveFor(
   };
 }
 
+EventSuccessUnitOutcome _unitOutcomeFor(
+  EventFormatSnapshot format,
+  EventInteractionModel interactionModel,
+) {
+  final override = _primitiveOverride(
+    format,
+    'unitOutcome',
+    EventSuccessUnitOutcome.values,
+  );
+  if (override != null) return override;
+  return switch (interactionModel) {
+    EventInteractionModel.pacePods => EventSuccessUnitOutcome.completion,
+    EventInteractionModel.teamRotations => EventSuccessUnitOutcome.score,
+    EventInteractionModel.pairedRotations => EventSuccessUnitOutcome.rank,
+    EventInteractionModel.seatedTable ||
+    EventInteractionModel.freeFormMixer ||
+    EventInteractionModel.hostLedProgram ||
+    EventInteractionModel.openFormat => EventSuccessUnitOutcome.none,
+  };
+}
+
 EventSuccessAssignmentResolution _assignmentResolutionFor(
   EventSuccessAssignmentAlgorithm assignmentAlgorithm,
 ) {

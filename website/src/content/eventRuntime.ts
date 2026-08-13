@@ -46,6 +46,7 @@ export const eventRuntimeCopy = {
   shareText: (eventTitle: string) => `Join me at ${eventTitle}.`,
   shareManual: (shareUrl: string) => `Copy your personal event link: ${shareUrl}`,
   assignmentTitle: "Your next move",
+  standingsTitle: "Live standings",
   assignmentEmpty: "The host has not released a table, pod, or rotation yet. Keep this page open—updates arrive live.",
   roomMapTitle: "Where to go",
   roomMapSubtitle: "An outline is your assigned place. A filled marker means the host confirmed you there.",

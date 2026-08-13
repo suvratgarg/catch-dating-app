@@ -3434,6 +3434,12 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['none', 'plannedBreaks', 'continuousRounds'],
   );
 
+  static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatEventSuccessPrimitivesUnitOutcome = CatchContractFieldConstraints(
+    path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.eventSuccessPrimitives.unitOutcome',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'completion', 'score', 'rank'],
+  );
+
   static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatInteractionModel = CatchContractFieldConstraints(
     path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.interactionModel',
     required: true,
@@ -7373,6 +7379,12 @@ abstract final class CatchContractConstraints {
     path: 'createEventCallablePayload.eventFormat.eventSuccessPrimitives.rotationSuitability',
     valueTypes: <String>['string'],
     enumValues: <String>['none', 'plannedBreaks', 'continuousRounds'],
+  );
+
+  static const createEventCallablePayloadEventFormatEventSuccessPrimitivesUnitOutcome = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventFormat.eventSuccessPrimitives.unitOutcome',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'completion', 'score', 'rank'],
   );
 
   static const createEventCallablePayloadEventFormatInteractionModel = CatchContractFieldConstraints(
@@ -11494,6 +11506,12 @@ abstract final class CatchContractConstraints {
     path: 'eventDocument.eventFormat.eventSuccessPrimitives.rotationSuitability',
     valueTypes: <String>['string'],
     enumValues: <String>['none', 'plannedBreaks', 'continuousRounds'],
+  );
+
+  static const eventDocumentEventFormatEventSuccessPrimitivesUnitOutcome = CatchContractFieldConstraints(
+    path: 'eventDocument.eventFormat.eventSuccessPrimitives.unitOutcome',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'completion', 'score', 'rank'],
   );
 
   static const eventDocumentEventFormatInteractionModel = CatchContractFieldConstraints(
@@ -17054,6 +17072,323 @@ abstract final class CatchContractConstraints {
     maximum: 2147483647,
   );
 
+  static const eventSuccessStandingsDocumentClubId = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.clubId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessStandingsDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessStandingsDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventSuccessStandingsDocumentEntries = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.entries',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 200,
+  );
+
+  static const eventSuccessStandingsDocumentEntriesItemsPosition = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.entries.items.position',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const eventSuccessStandingsDocumentEntriesItemsRoundsRecorded = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.entries.items.roundsRecorded',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 101,
+  );
+
+  static const eventSuccessStandingsDocumentEntriesItemsUnitId = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.entries.items.unitId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const eventSuccessStandingsDocumentEntriesItemsUnitLabel = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.entries.items.unitLabel',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessStandingsDocumentEntriesItemsValue = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.entries.items.value',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -100000000,
+    maximum: 100000000,
+  );
+
+  static const eventSuccessStandingsDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessStandingsDocumentLatestRoundIndex = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.latestRoundIndex',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventSuccessStandingsDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessStandingsDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const eventSuccessStandingsDocumentRounds = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.rounds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 101,
+  );
+
+  static const eventSuccessStandingsDocumentRoundsItemsEntries = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.rounds.items.entries',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 200,
+  );
+
+  static const eventSuccessStandingsDocumentRoundsItemsEntriesItemsPosition = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.rounds.items.entries.items.position',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const eventSuccessStandingsDocumentRoundsItemsEntriesItemsRoundsRecorded = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.rounds.items.entries.items.roundsRecorded',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 101,
+  );
+
+  static const eventSuccessStandingsDocumentRoundsItemsEntriesItemsUnitId = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.rounds.items.entries.items.unitId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const eventSuccessStandingsDocumentRoundsItemsEntriesItemsUnitLabel = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.rounds.items.entries.items.unitLabel',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessStandingsDocumentRoundsItemsEntriesItemsValue = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.rounds.items.entries.items.value',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -100000000,
+    maximum: 100000000,
+  );
+
+  static const eventSuccessStandingsDocumentRoundsItemsRoundIndex = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.rounds.items.roundIndex',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventSuccessStandingsDocumentUnitOutcome = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.unitOutcome',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['score', 'rank'],
+  );
+
+  static const eventSuccessStandingsDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessStandingsDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessStandingsDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventSuccessUnitOutcomesDocumentClubId = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.clubId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessUnitOutcomesDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessUnitOutcomesDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventSuccessUnitOutcomesDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessUnitOutcomesDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessUnitOutcomesDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const eventSuccessUnitOutcomesDocumentRounds = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.rounds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 101,
+  );
+
+  static const eventSuccessUnitOutcomesDocumentRoundsItemsEntries = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.rounds.items.entries',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 200,
+  );
+
+  static const eventSuccessUnitOutcomesDocumentRoundsItemsEntriesItemsCompleted = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.rounds.items.entries.items.completed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventSuccessUnitOutcomesDocumentRoundsItemsEntriesItemsRank = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.rounds.items.entries.items.rank',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const eventSuccessUnitOutcomesDocumentRoundsItemsEntriesItemsScore = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.rounds.items.entries.items.score',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -1000000,
+    maximum: 1000000,
+  );
+
+  static const eventSuccessUnitOutcomesDocumentRoundsItemsEntriesItemsUnitId = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.rounds.items.entries.items.unitId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const eventSuccessUnitOutcomesDocumentRoundsItemsEntriesItemsUnitLabel = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.rounds.items.entries.items.unitLabel',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessUnitOutcomesDocumentRoundsItemsRoundIndex = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.rounds.items.roundIndex',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventSuccessUnitOutcomesDocumentUnitOutcome = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.unitOutcome',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['completion', 'score', 'rank'],
+  );
+
+  static const eventSuccessUnitOutcomesDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessUnitOutcomesDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessUnitOutcomesDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const eventSuccessWingmanRequestDocumentClubId = CatchContractFieldConstraints(
     path: 'eventSuccessWingmanRequestDocument.clubId',
     maxLength: 180,
@@ -21960,6 +22295,14 @@ abstract final class CatchContractConstraints {
     path: 'joinWaitlistHTTPResponse.alreadyJoined',
     required: true,
     valueTypes: <String>['boolean'],
+  );
+
+  static const joinWaitlistHTTPResponseError = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPResponse.error',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const joinWaitlistHTTPResponseOk = CatchContractFieldConstraints(
@@ -32693,6 +33036,98 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['hostApp', 'consumerApp', 'runtimeWeb'],
   );
 
+  static const recordEventSuccessUnitOutcomesCallablePayloadEntries = CatchContractFieldConstraints(
+    path: 'recordEventSuccessUnitOutcomesCallablePayload.entries',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 200,
+  );
+
+  static const recordEventSuccessUnitOutcomesCallablePayloadEntriesItemsCompleted = CatchContractFieldConstraints(
+    path: 'recordEventSuccessUnitOutcomesCallablePayload.entries.items.completed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const recordEventSuccessUnitOutcomesCallablePayloadEntriesItemsRank = CatchContractFieldConstraints(
+    path: 'recordEventSuccessUnitOutcomesCallablePayload.entries.items.rank',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const recordEventSuccessUnitOutcomesCallablePayloadEntriesItemsScore = CatchContractFieldConstraints(
+    path: 'recordEventSuccessUnitOutcomesCallablePayload.entries.items.score',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -1000000,
+    maximum: 1000000,
+  );
+
+  static const recordEventSuccessUnitOutcomesCallablePayloadEntriesItemsUnitId = CatchContractFieldConstraints(
+    path: 'recordEventSuccessUnitOutcomesCallablePayload.entries.items.unitId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const recordEventSuccessUnitOutcomesCallablePayloadEntriesItemsUnitLabel = CatchContractFieldConstraints(
+    path: 'recordEventSuccessUnitOutcomesCallablePayload.entries.items.unitLabel',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const recordEventSuccessUnitOutcomesCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'recordEventSuccessUnitOutcomesCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const recordEventSuccessUnitOutcomesCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'recordEventSuccessUnitOutcomesCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const recordEventSuccessUnitOutcomesCallablePayloadRoundIndex = CatchContractFieldConstraints(
+    path: 'recordEventSuccessUnitOutcomesCallablePayload.roundIndex',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const recordEventSuccessUnitOutcomesCallableResponseReplayed = CatchContractFieldConstraints(
+    path: 'recordEventSuccessUnitOutcomesCallableResponse.replayed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const recordEventSuccessUnitOutcomesCallableResponseRevision = CatchContractFieldConstraints(
+    path: 'recordEventSuccessUnitOutcomesCallableResponse.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const recordEventSuccessUnitOutcomesCallableResponseStandingCount = CatchContractFieldConstraints(
+    path: 'recordEventSuccessUnitOutcomesCallableResponse.standingCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 200,
+  );
+
   static const recordOrganizerAnalyticsEventCallablePayloadClubId = CatchContractFieldConstraints(
     path: 'recordOrganizerAnalyticsEventCallablePayload.clubId',
     maxLength: 180,
@@ -38641,11 +39076,6 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
-  static const websiteHostListingProjectionCatchEventsItemsScorecard = CatchContractFieldConstraints(
-    path: 'websiteHostListingProjection.catchEvents.items.scorecard',
-    valueTypes: <String>['object'],
-  );
-
   static const websiteHostListingProjectionCatchEventsItemsStartTime = CatchContractFieldConstraints(
     path: 'websiteHostListingProjection.catchEvents.items.startTime',
     minLength: 1,
@@ -39844,6 +40274,7 @@ abstract final class CatchContractConstraints {
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.eventSuccessPrimitives.matchingObjective': adminUpdateEventDetailsCallablePayloadFieldsEventFormatEventSuccessPrimitivesMatchingObjective,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.eventSuccessPrimitives.phoneAvailability': adminUpdateEventDetailsCallablePayloadFieldsEventFormatEventSuccessPrimitivesPhoneAvailability,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.eventSuccessPrimitives.rotationSuitability': adminUpdateEventDetailsCallablePayloadFieldsEventFormatEventSuccessPrimitivesRotationSuitability,
+    'adminUpdateEventDetailsCallablePayload.fields.eventFormat.eventSuccessPrimitives.unitOutcome': adminUpdateEventDetailsCallablePayloadFieldsEventFormatEventSuccessPrimitivesUnitOutcome,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.interactionModel': adminUpdateEventDetailsCallablePayloadFieldsEventFormatInteractionModel,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.version': adminUpdateEventDetailsCallablePayloadFieldsEventFormatVersion,
     'adminUpdateEventDetailsCallablePayload.fields.pace': adminUpdateEventDetailsCallablePayloadFieldsPace,
@@ -40396,6 +40827,7 @@ abstract final class CatchContractConstraints {
     'createEventCallablePayload.eventFormat.eventSuccessPrimitives.matchingObjective': createEventCallablePayloadEventFormatEventSuccessPrimitivesMatchingObjective,
     'createEventCallablePayload.eventFormat.eventSuccessPrimitives.phoneAvailability': createEventCallablePayloadEventFormatEventSuccessPrimitivesPhoneAvailability,
     'createEventCallablePayload.eventFormat.eventSuccessPrimitives.rotationSuitability': createEventCallablePayloadEventFormatEventSuccessPrimitivesRotationSuitability,
+    'createEventCallablePayload.eventFormat.eventSuccessPrimitives.unitOutcome': createEventCallablePayloadEventFormatEventSuccessPrimitivesUnitOutcome,
     'createEventCallablePayload.eventFormat.interactionModel': createEventCallablePayloadEventFormatInteractionModel,
     'createEventCallablePayload.eventFormat.version': createEventCallablePayloadEventFormatVersion,
     'createEventCallablePayload.eventId': createEventCallablePayloadEventId,
@@ -40967,6 +41399,7 @@ abstract final class CatchContractConstraints {
     'eventDocument.eventFormat.eventSuccessPrimitives.matchingObjective': eventDocumentEventFormatEventSuccessPrimitivesMatchingObjective,
     'eventDocument.eventFormat.eventSuccessPrimitives.phoneAvailability': eventDocumentEventFormatEventSuccessPrimitivesPhoneAvailability,
     'eventDocument.eventFormat.eventSuccessPrimitives.rotationSuitability': eventDocumentEventFormatEventSuccessPrimitivesRotationSuitability,
+    'eventDocument.eventFormat.eventSuccessPrimitives.unitOutcome': eventDocumentEventFormatEventSuccessPrimitivesUnitOutcome,
     'eventDocument.eventFormat.interactionModel': eventDocumentEventFormatInteractionModel,
     'eventDocument.eventFormat.version': eventDocumentEventFormatVersion,
     'eventDocument.eventOrigin.adapterVersion': eventDocumentEventOriginAdapterVersion,
@@ -41736,6 +42169,47 @@ abstract final class CatchContractConstraints {
     'eventSuccessSpatialActionCallableResponse.destinations.items.unitId': eventSuccessSpatialActionCallableResponseDestinationsItemsUnitId,
     'eventSuccessSpatialActionCallableResponse.destinations.items.valid': eventSuccessSpatialActionCallableResponseDestinationsItemsValid,
     'eventSuccessSpatialActionCallableResponse.revision': eventSuccessSpatialActionCallableResponseRevision,
+    'eventSuccessStandingsDocument.clubId': eventSuccessStandingsDocumentClubId,
+    'eventSuccessStandingsDocument.createdAt._nanoseconds': eventSuccessStandingsDocumentCreatedAtNanoseconds,
+    'eventSuccessStandingsDocument.createdAt._seconds': eventSuccessStandingsDocumentCreatedAtSeconds,
+    'eventSuccessStandingsDocument.entries': eventSuccessStandingsDocumentEntries,
+    'eventSuccessStandingsDocument.entries.items.position': eventSuccessStandingsDocumentEntriesItemsPosition,
+    'eventSuccessStandingsDocument.entries.items.roundsRecorded': eventSuccessStandingsDocumentEntriesItemsRoundsRecorded,
+    'eventSuccessStandingsDocument.entries.items.unitId': eventSuccessStandingsDocumentEntriesItemsUnitId,
+    'eventSuccessStandingsDocument.entries.items.unitLabel': eventSuccessStandingsDocumentEntriesItemsUnitLabel,
+    'eventSuccessStandingsDocument.entries.items.value': eventSuccessStandingsDocumentEntriesItemsValue,
+    'eventSuccessStandingsDocument.eventId': eventSuccessStandingsDocumentEventId,
+    'eventSuccessStandingsDocument.latestRoundIndex': eventSuccessStandingsDocumentLatestRoundIndex,
+    'eventSuccessStandingsDocument.organizerId': eventSuccessStandingsDocumentOrganizerId,
+    'eventSuccessStandingsDocument.revision': eventSuccessStandingsDocumentRevision,
+    'eventSuccessStandingsDocument.rounds': eventSuccessStandingsDocumentRounds,
+    'eventSuccessStandingsDocument.rounds.items.entries': eventSuccessStandingsDocumentRoundsItemsEntries,
+    'eventSuccessStandingsDocument.rounds.items.entries.items.position': eventSuccessStandingsDocumentRoundsItemsEntriesItemsPosition,
+    'eventSuccessStandingsDocument.rounds.items.entries.items.roundsRecorded': eventSuccessStandingsDocumentRoundsItemsEntriesItemsRoundsRecorded,
+    'eventSuccessStandingsDocument.rounds.items.entries.items.unitId': eventSuccessStandingsDocumentRoundsItemsEntriesItemsUnitId,
+    'eventSuccessStandingsDocument.rounds.items.entries.items.unitLabel': eventSuccessStandingsDocumentRoundsItemsEntriesItemsUnitLabel,
+    'eventSuccessStandingsDocument.rounds.items.entries.items.value': eventSuccessStandingsDocumentRoundsItemsEntriesItemsValue,
+    'eventSuccessStandingsDocument.rounds.items.roundIndex': eventSuccessStandingsDocumentRoundsItemsRoundIndex,
+    'eventSuccessStandingsDocument.unitOutcome': eventSuccessStandingsDocumentUnitOutcome,
+    'eventSuccessStandingsDocument.updatedAt._nanoseconds': eventSuccessStandingsDocumentUpdatedAtNanoseconds,
+    'eventSuccessStandingsDocument.updatedAt._seconds': eventSuccessStandingsDocumentUpdatedAtSeconds,
+    'eventSuccessUnitOutcomesDocument.clubId': eventSuccessUnitOutcomesDocumentClubId,
+    'eventSuccessUnitOutcomesDocument.createdAt._nanoseconds': eventSuccessUnitOutcomesDocumentCreatedAtNanoseconds,
+    'eventSuccessUnitOutcomesDocument.createdAt._seconds': eventSuccessUnitOutcomesDocumentCreatedAtSeconds,
+    'eventSuccessUnitOutcomesDocument.eventId': eventSuccessUnitOutcomesDocumentEventId,
+    'eventSuccessUnitOutcomesDocument.organizerId': eventSuccessUnitOutcomesDocumentOrganizerId,
+    'eventSuccessUnitOutcomesDocument.revision': eventSuccessUnitOutcomesDocumentRevision,
+    'eventSuccessUnitOutcomesDocument.rounds': eventSuccessUnitOutcomesDocumentRounds,
+    'eventSuccessUnitOutcomesDocument.rounds.items.entries': eventSuccessUnitOutcomesDocumentRoundsItemsEntries,
+    'eventSuccessUnitOutcomesDocument.rounds.items.entries.items.completed': eventSuccessUnitOutcomesDocumentRoundsItemsEntriesItemsCompleted,
+    'eventSuccessUnitOutcomesDocument.rounds.items.entries.items.rank': eventSuccessUnitOutcomesDocumentRoundsItemsEntriesItemsRank,
+    'eventSuccessUnitOutcomesDocument.rounds.items.entries.items.score': eventSuccessUnitOutcomesDocumentRoundsItemsEntriesItemsScore,
+    'eventSuccessUnitOutcomesDocument.rounds.items.entries.items.unitId': eventSuccessUnitOutcomesDocumentRoundsItemsEntriesItemsUnitId,
+    'eventSuccessUnitOutcomesDocument.rounds.items.entries.items.unitLabel': eventSuccessUnitOutcomesDocumentRoundsItemsEntriesItemsUnitLabel,
+    'eventSuccessUnitOutcomesDocument.rounds.items.roundIndex': eventSuccessUnitOutcomesDocumentRoundsItemsRoundIndex,
+    'eventSuccessUnitOutcomesDocument.unitOutcome': eventSuccessUnitOutcomesDocumentUnitOutcome,
+    'eventSuccessUnitOutcomesDocument.updatedAt._nanoseconds': eventSuccessUnitOutcomesDocumentUpdatedAtNanoseconds,
+    'eventSuccessUnitOutcomesDocument.updatedAt._seconds': eventSuccessUnitOutcomesDocumentUpdatedAtSeconds,
     'eventSuccessWingmanRequestDocument.clubId': eventSuccessWingmanRequestDocumentClubId,
     'eventSuccessWingmanRequestDocument.createdAt._nanoseconds': eventSuccessWingmanRequestDocumentCreatedAtNanoseconds,
     'eventSuccessWingmanRequestDocument.createdAt._seconds': eventSuccessWingmanRequestDocumentCreatedAtSeconds,
@@ -42423,6 +42897,7 @@ abstract final class CatchContractConstraints {
     'joinWaitlistHTTPRequest.role': joinWaitlistHTTPRequestRole,
     'joinWaitlistHTTPRequest.website': joinWaitlistHTTPRequestWebsite,
     'joinWaitlistHTTPResponse.alreadyJoined': joinWaitlistHTTPResponseAlreadyJoined,
+    'joinWaitlistHTTPResponse.error': joinWaitlistHTTPResponseError,
     'joinWaitlistHTTPResponse.ok': joinWaitlistHTTPResponseOk,
     'listOrganizerContactsCallablePayload.cursor': listOrganizerContactsCallablePayloadCursor,
     'listOrganizerContactsCallablePayload.limit': listOrganizerContactsCallablePayloadLimit,
@@ -43920,6 +44395,18 @@ abstract final class CatchContractConstraints {
     'recordEventShareIntentCallablePayload.eventId': recordEventShareIntentCallablePayloadEventId,
     'recordEventShareIntentCallablePayload.inviteLinkId': recordEventShareIntentCallablePayloadInviteLinkId,
     'recordEventShareIntentCallablePayload.surface': recordEventShareIntentCallablePayloadSurface,
+    'recordEventSuccessUnitOutcomesCallablePayload.entries': recordEventSuccessUnitOutcomesCallablePayloadEntries,
+    'recordEventSuccessUnitOutcomesCallablePayload.entries.items.completed': recordEventSuccessUnitOutcomesCallablePayloadEntriesItemsCompleted,
+    'recordEventSuccessUnitOutcomesCallablePayload.entries.items.rank': recordEventSuccessUnitOutcomesCallablePayloadEntriesItemsRank,
+    'recordEventSuccessUnitOutcomesCallablePayload.entries.items.score': recordEventSuccessUnitOutcomesCallablePayloadEntriesItemsScore,
+    'recordEventSuccessUnitOutcomesCallablePayload.entries.items.unitId': recordEventSuccessUnitOutcomesCallablePayloadEntriesItemsUnitId,
+    'recordEventSuccessUnitOutcomesCallablePayload.entries.items.unitLabel': recordEventSuccessUnitOutcomesCallablePayloadEntriesItemsUnitLabel,
+    'recordEventSuccessUnitOutcomesCallablePayload.eventId': recordEventSuccessUnitOutcomesCallablePayloadEventId,
+    'recordEventSuccessUnitOutcomesCallablePayload.expectedRevision': recordEventSuccessUnitOutcomesCallablePayloadExpectedRevision,
+    'recordEventSuccessUnitOutcomesCallablePayload.roundIndex': recordEventSuccessUnitOutcomesCallablePayloadRoundIndex,
+    'recordEventSuccessUnitOutcomesCallableResponse.replayed': recordEventSuccessUnitOutcomesCallableResponseReplayed,
+    'recordEventSuccessUnitOutcomesCallableResponse.revision': recordEventSuccessUnitOutcomesCallableResponseRevision,
+    'recordEventSuccessUnitOutcomesCallableResponse.standingCount': recordEventSuccessUnitOutcomesCallableResponseStandingCount,
     'recordOrganizerAnalyticsEventCallablePayload.clubId': recordOrganizerAnalyticsEventCallablePayloadClubId,
     'recordOrganizerAnalyticsEventCallablePayload.eventId': recordOrganizerAnalyticsEventCallablePayloadEventId,
     'recordOrganizerAnalyticsEventCallablePayload.eventName': recordOrganizerAnalyticsEventCallablePayloadEventName,
@@ -44754,7 +45241,6 @@ abstract final class CatchContractConstraints {
     'websiteHostListingProjection.catchEvents.items.publicRegistrationEnabled': websiteHostListingProjectionCatchEventsItemsPublicRegistrationEnabled,
     'websiteHostListingProjection.catchEvents.items.requirements': websiteHostListingProjectionCatchEventsItemsRequirements,
     'websiteHostListingProjection.catchEvents.items.role': websiteHostListingProjectionCatchEventsItemsRole,
-    'websiteHostListingProjection.catchEvents.items.scorecard': websiteHostListingProjectionCatchEventsItemsScorecard,
     'websiteHostListingProjection.catchEvents.items.startTime': websiteHostListingProjectionCatchEventsItemsStartTime,
     'websiteHostListingProjection.catchEvents.items.summary': websiteHostListingProjectionCatchEventsItemsSummary,
     'websiteHostListingProjection.catchEvents.items.timeline': websiteHostListingProjectionCatchEventsItemsTimeline,

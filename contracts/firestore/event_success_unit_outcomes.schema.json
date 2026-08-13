@@ -1,0 +1,132 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_success_unit_outcomes.schema.json",
+  "title": "EventSuccessUnitOutcomesDocument",
+  "description": "Server-owned outcome rounds stored at eventSuccessUnitOutcomes/{eventId}. Hosts may read the source; attendees consume the standings projection.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSuccessUnitOutcomes",
+  "x-firestore-path": "eventSuccessUnitOutcomes/{eventId}",
+  "x-document-id-field": "id",
+  "x-owner": "recordEventSuccessUnitOutcomes callable",
+  "required": [
+    "eventId",
+    "clubId",
+    "unitOutcome",
+    "revision",
+    "rounds",
+    "createdAt",
+    "updatedAt"
+  ],
+  "definitions": {
+    "unitIdentity": {
+      "unitId": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+      },
+      "unitLabel": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80
+      }
+    },
+    "outcomeEntry": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["unitId", "unitLabel", "completed"],
+          "properties": {
+            "unitId": {"$ref": "#/definitions/unitIdentity/unitId"},
+            "unitLabel": {"$ref": "#/definitions/unitIdentity/unitLabel"},
+            "completed": {"type": "boolean"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["unitId", "unitLabel", "score"],
+          "properties": {
+            "unitId": {"$ref": "#/definitions/unitIdentity/unitId"},
+            "unitLabel": {"$ref": "#/definitions/unitIdentity/unitLabel"},
+            "score": {
+              "type": "number",
+              "minimum": -1000000,
+              "maximum": 1000000
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["unitId", "unitLabel", "rank"],
+          "properties": {
+            "unitId": {"$ref": "#/definitions/unitIdentity/unitId"},
+            "unitLabel": {"$ref": "#/definitions/unitIdentity/unitLabel"},
+            "rank": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          }
+        }
+      ]
+    }
+  },
+  "properties": {
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "clubId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "unitOutcome": {
+      "type": "string",
+      "enum": ["completion", "score", "rank"],
+      "x-catch-ownership": "callable-owned"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647,
+      "x-catch-ownership": "callable-owned"
+    },
+    "rounds": {
+      "type": "array",
+      "maxItems": 101,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["roundIndex", "entries"],
+        "properties": {
+          "roundIndex": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "entries": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 200,
+            "items": {"$ref": "#/definitions/outcomeEntry"}
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+}

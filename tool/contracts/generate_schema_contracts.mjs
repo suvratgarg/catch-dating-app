@@ -480,6 +480,18 @@ const schemaSpecs = [
       "functions/src/shared/generated/eventSuccessAssignmentDocument.ts",
   },
   {
+    name: "EventSuccessUnitOutcomesDocument",
+    source: "firestore/event_success_unit_outcomes.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventSuccessUnitOutcomesDocument.ts",
+  },
+  {
+    name: "EventSuccessStandingsDocument",
+    source: "firestore/event_success_standings.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventSuccessStandingsDocument.ts",
+  },
+  {
     name: "EventSuccessScorecardDocument",
     source: "firestore/event_success_scorecards.schema.json",
     typeOutput:
@@ -1628,6 +1640,23 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "eventSuccessLiveActionCallablePayload.ts",
+  },
+  {
+    name: "RecordEventSuccessUnitOutcomesCallablePayload",
+    source:
+      "callables/record_event_success_unit_outcomes_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "recordEventSuccessUnitOutcomesCallablePayload.ts",
+  },
+  {
+    name: "RecordEventSuccessUnitOutcomesCallableResponse",
+    source:
+      "callable_responses/" +
+      "record_event_success_unit_outcomes_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "recordEventSuccessUnitOutcomesCallableResponse.ts",
   },
   {
     name: "OverrideEventSuccessGroupsCallablePayload",
@@ -3458,10 +3487,18 @@ function collectFieldConstraints({schema, rootName, segments, constraints}) {
 function constraintObjectSchema(schema) {
   if (!schema || typeof schema !== "object") return null;
   if (schema.type === "object" || schema.properties) return schema;
-  for (const branch of schema.anyOf ?? schema.oneOf ?? []) {
-    if (branch?.type === "object" || branch?.properties) return branch;
-  }
-  return null;
+  const objectBranches = [...(schema.anyOf ?? []), ...(schema.oneOf ?? [])]
+    .filter((branch) => branch?.type === "object" || branch?.properties);
+  if (objectBranches.length === 0) return null;
+  return {
+    properties: Object.assign(
+      {},
+      ...objectBranches.map((branch) => branch.properties ?? {}),
+    ),
+    required: [...new Set(
+      objectBranches.flatMap((branch) => branch.required ?? []),
+    )],
+  };
 }
 
 function projectFieldConstraint(schema, parentRequired) {

@@ -1821,6 +1821,25 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    match /eventSuccessUnitOutcomes/{eventId} {
+      allow get: if isAuthed()
+        && resource.data.eventId == eventId
+        && isClubHostForEvent(eventId);
+      allow list: if false;
+      allow write: if false;
+    }
+
+    match /eventSuccessStandings/{eventId} {
+      allow get: if isAuthed()
+        && resource.data.eventId == eventId
+        && (
+          isClubHostForEvent(eventId)
+          || hasEventSuccessParticipantAccess(eventId, request.auth.uid)
+        );
+      allow list: if false;
+      allow write: if false;
+    }
+
     match /eventSuccessScorecards/{eventId} {
       allow read: if isAuthed() && isClubHostForEvent(eventId);
       allow write: if false;

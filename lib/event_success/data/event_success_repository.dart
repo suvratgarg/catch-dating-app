@@ -24,6 +24,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_layout.dart'
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_preference.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -43,6 +44,7 @@ part 'event_success_repository/compatibility.dart';
 part 'event_success_repository/wingman.dart';
 part 'event_success_repository/arrival.dart';
 part 'event_success_repository/layout.dart';
+part 'event_success_repository/standings.dart';
 part 'event_success_repository/providers.dart';
 
 const _plansPath = 'eventSuccessPlans';
@@ -54,6 +56,7 @@ const _wingmanRequestsPath = 'eventSuccessWingmanRequests';
 const _arrivalMissionsPath = 'eventSuccessArrivalMissions';
 const _compatibilityResponsesPath = 'eventSuccessCompatibilityResponses';
 const _scorecardsPath = 'eventSuccessScorecards';
+const _standingsPath = 'eventSuccessStandings';
 const _layoutsPath = 'organizerEventSuccessLayouts';
 
 Map<String, dynamic> _eventSuccessPlanToClientJson(EventSuccessPlan plan) {
@@ -77,6 +80,7 @@ abstract class _EventSuccessRepositoryCore {
   CollectionReference<EventSuccessAssignmentDraft> get _assignmentDraftsRef;
   CollectionReference<EventSuccessPreference> get _preferencesRef;
   CollectionReference<EventSuccessWingmanRequest> get _wingmanRequestsRef;
+  CollectionReference<EventSuccessStandings> get _standingsRef;
   CollectionReference<EventSuccessLayout> get _layoutsRef;
 
   DocumentReference<EventSuccessPlan> _planRef(String eventId);
@@ -120,7 +124,8 @@ class EventSuccessRepository extends _EventSuccessRepositoryCore
         _EventSuccessCompatibilityRepository,
         _EventSuccessWingmanRepository,
         _EventSuccessArrivalRepository,
-        _EventSuccessLayoutRepository {
+        _EventSuccessLayoutRepository,
+        _EventSuccessStandingsRepository {
   const EventSuccessRepository(this._db, {FirebaseFunctions? functions})
     // Keep the public named parameter as `functions:` for tests and callers.
     // ignore: prefer_initializing_formals
@@ -168,6 +173,15 @@ class EventSuccessRepository extends _EventSuccessRepositoryCore
             toJson: (_) =>
                 throw UnsupportedError('Assignment drafts are server-owned.'),
           );
+
+  @override
+  CollectionReference<EventSuccessStandings> get _standingsRef => _db
+      .collection(_standingsPath)
+      .withDocumentIdConverter<EventSuccessStandings>(
+        idField: 'id',
+        fromJson: EventSuccessStandings.fromJson,
+        toJson: (standings) => standings.toJson(),
+      );
 
   @override
   CollectionReference<EventSuccessPreference> get _preferencesRef => _db

@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.19.0
+version: 1.20.0
 updated: 2026-08-13
 owner: recursive_audit_loop
 status: active
@@ -53,11 +53,14 @@ generator, and commit the generated diff.
 `contracts/shared/event_common.schema.json` owns the closed
 `eventSuccessMatchingObjective` enum (`coverage`, `romantic`, `affinity`,
 `novelty`, `balance`, and `spread`) and the optional `matchingObjective` format
-primitive. The schema generator projects that contract into Functions, Dart,
+primitive. The same source owns the closed `eventSuccessUnitOutcome` enum
+(`none`, `completion`, `score`, and `rank`) and its optional `unitOutcome`
+primitive. The schema generator projects those contracts into Functions, Dart,
 and tool registries. Runtime resolution, including the profile-free `coverage`
-default and explicit unsupported assignment algorithms, is owned by the Event
-Success format resolver documented in `docs/event_success.md`; generated
-contract files must not encode a separate fallback.
+default, format-bound outcome defaults, and explicit unsupported assignment
+algorithms, is owned by the Event Success format resolver documented in
+`docs/event_success.md`; generated contract files must not encode a separate
+fallback.
 
 ### Event Success Live-Control Boundary
 
@@ -125,6 +128,32 @@ exclusion totals used by T3 and the derived `unitProximity` graph from T5.
 `adjacency`, `tableSeating`, and other sequence-algorithm combinations remain
 explicitly unsupported in the exhaustive resolution table; no neighbouring
 engine fallback is permitted.
+
+### Event Success Unit Outcomes And Standings
+
+`contracts/firestore/event_success_unit_outcomes.schema.json` owns the
+server-written round facts at `eventSuccessUnitOutcomes/{eventId}`. One entry
+contains exactly one of `completed`, `score`, or `rank`; duplicate units,
+partial rank orders, non-sequential new rounds, and values that do not match the
+saved `unitOutcome` fail closed. Outcome facts are Host-readable and never
+direct-client writable.
+
+`recordEventSuccessUnitOutcomes` is the organizer-manager-only,
+App-Check-protected writer. Its generated request carries `expectedRevision`, one round
+index, and a complete unit-entry set. Exact replay is idempotent before revision
+checking. A correction replaces that round: score projections are recomputed
+as accumulated totals, while rank projections use the latest complete ordering.
+`completion` persists source facts without creating a standings projection;
+`none` rejects recording.
+
+`contracts/firestore/event_success_standings.schema.json` owns the derived
+`eventSuccessStandings/{eventId}` snapshots for `score` and `rank`. Authorized
+Hosts, active participants, and ready no-download runtime identities may get
+the event-scoped projection; list and every direct write are denied. The
+projection stores a snapshot for each recorded round so Flutter and the guest
+runtime can select only the latest snapshot at or before the plan's published
+reveal round. It reuses `publishedRevealRoundIndex` and the existing
+server-anchored reveal state; it does not define a second ceremony or cursor.
 
 ### TypeScript Timestamp Projections
 

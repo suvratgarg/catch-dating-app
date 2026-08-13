@@ -1,0 +1,46 @@
+{
+  "eventId": "event-1",
+  "clubId": "club-1",
+  "unitOutcome": "score",
+  "revision": 1,
+  "latestRoundIndex": 0,
+  "rounds": [
+    {
+      "roundIndex": 0,
+      "entries": [
+        {
+          "unitId": "team-a",
+          "unitLabel": "Team A",
+          "position": 1,
+          "value": 12,
+          "roundsRecorded": 1
+        },
+        {
+          "unitId": "team-b",
+          "unitLabel": "Team B",
+          "position": 2,
+          "value": 9,
+          "roundsRecorded": 1
+        }
+      ]
+    }
+  ],
+  "entries": [
+    {
+      "unitId": "team-a",
+      "unitLabel": "Team A",
+      "position": 1,
+      "value": 12,
+      "roundsRecorded": 1
+    },
+    {
+      "unitId": "team-b",
+      "unitLabel": "Team B",
+      "position": 2,
+      "value": 9,
+      "roundsRecorded": 1
+    }
+  ],
+  "createdAt": {"_seconds": 1786620000, "_nanoseconds": 0},
+  "updatedAt": {"_seconds": 1786620000, "_nanoseconds": 0}
+}

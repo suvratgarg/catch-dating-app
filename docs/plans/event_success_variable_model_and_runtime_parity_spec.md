@@ -705,7 +705,7 @@ docs are updated. Update this table in the same commit as the tranche.
 - [x] T4 Live control robustness
 - [x] T5 Spatial layout model and control room
 - [x] T6 `resourceCapacity` and `sequence` topology
-- [ ] T7 `unitOutcome` and live standings
+- [x] T7 `unitOutcome` and live standings
 - [ ] T8 Presence and late arrivals
 - [ ] T9 Signed venue session replaces GPS
 - [ ] T10 Conversation graph

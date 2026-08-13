@@ -19,6 +19,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_preference.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_runtime.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/event_success/event_success_companion_clock.dart';
@@ -683,6 +684,7 @@ void main() {
         null,
       ),
       rotationState: const CatchAsyncState<EventSuccessAssignment?>.data(null),
+      standingsState: const CatchAsyncState<EventSuccessStandings?>.data(null),
     );
     expect(loading.status, EventSuccessCompanionRouteStatus.loading);
 
@@ -699,10 +701,36 @@ void main() {
         null,
       ),
       rotationState: const CatchAsyncState<EventSuccessAssignment?>.data(null),
+      standingsState: const CatchAsyncState<EventSuccessStandings?>.data(null),
     );
     expect(failed.status, EventSuccessCompanionRouteStatus.error);
     expect(failed.error, error);
     expect(failed.retryIntent, EventSuccessCompanionRetryIntent.preference);
+
+    final standingsError = StateError('standings failed');
+    final standingsFailed = ready.withMomentData(
+      feedbackState: const CatchAsyncState<EventSuccessFeedback?>.data(null),
+      preferenceState: const CatchAsyncState<EventSuccessPreference?>.data(
+        null,
+      ),
+      wingmanCandidatesState: const CatchAsyncState<List<PublicProfile>>.data(
+        [],
+      ),
+      wingmanRequestState:
+          const CatchAsyncState<EventSuccessWingmanRequest?>.data(null),
+      assignmentState: const CatchAsyncState<EventSuccessAssignment?>.data(
+        null,
+      ),
+      rotationState: const CatchAsyncState<EventSuccessAssignment?>.data(null),
+      standingsState: CatchAsyncState<EventSuccessStandings?>.error(
+        standingsError,
+      ),
+    );
+    expect(standingsFailed.error, standingsError);
+    expect(
+      standingsFailed.retryIntent,
+      EventSuccessCompanionRetryIntent.standings,
+    );
   });
 
   testWidgets('host report remains available for legacy module selections', (
@@ -3323,7 +3351,14 @@ Event _racketEvent({required DateTime startTime, required DateTime endTime}) {
   return buildEvent(
     startTime: startTime,
     endTime: endTime,
-    eventFormat: EventFormatSnapshot.fromActivityKind(ActivityKind.pickleball),
+    eventFormat: const EventFormatSnapshot(
+      activityKind: ActivityKind.pickleball,
+      interactionModel: EventInteractionModel.pairedRotations,
+      defaultPlaybookId: 'pickleball_rotations',
+      // These tests exercise the assignment-payload ceremony. Rank formats
+      // use the standings-payload ceremony covered by the focused T7 tests.
+      eventSuccessPrimitives: {'unitOutcome': 'none'},
+    ),
     distanceKm: 0,
     meetingPoint: 'Court 2 by the clubhouse',
   );

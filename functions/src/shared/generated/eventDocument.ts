@@ -109,6 +109,7 @@ export interface EventDocument {
         | "novelty"
         | "balance"
         | "spread";
+      unitOutcome?: "none" | "completion" | "score" | "rank";
     };
     activityDetails?: {
       [k: string]: unknown;

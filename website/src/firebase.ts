@@ -11,6 +11,7 @@ import type {CreateEventInviteLinkCallablePayload} from "../../functions/src/sha
 import type {CreatePublicOrganizerReviewCallablePayload} from "../../functions/src/shared/generated/createPublicOrganizerReviewCallablePayload";
 import type {CreatePublicOrganizerReviewCallableResponse} from "../../functions/src/shared/generated/createPublicOrganizerReviewCallableResponse";
 import type {EventSuccessAssignmentDocument} from "../../functions/src/shared/generated/eventSuccessAssignmentDocument";
+import type {EventSuccessStandingsDocument} from "../../functions/src/shared/generated/eventSuccessStandingsDocument";
 import type {EventIdCallablePayload} from "../../functions/src/shared/generated/eventIdCallablePayload";
 import type {FetchEventSuccessWingmanCandidatesCallableResponse} from "../../functions/src/shared/generated/fetchEventSuccessWingmanCandidatesCallableResponse";
 import type {GetEventRuntimeBootstrapCallablePayload} from "../../functions/src/shared/generated/getEventRuntimeBootstrapCallablePayload";
@@ -137,11 +138,14 @@ export interface EventRuntimeLiveState {
   feedback: EventRuntimeFeedback | null;
   mission: EventRuntimeMission | null;
   plan: EventRuntimePlanState | null;
+  standings: EventSuccessStandingsDocument | null;
   wingmanTargetUid: string | null;
 }
 
 export interface EventRuntimePlanState {
   attendeePrompt: string | null;
+  activeRevealRoundIndex: number;
+  publishedRevealRoundIndex: number;
   revealStatus: "idle" | "countingDown" | "revealed";
   status: "setup" | "live" | "complete";
 }
@@ -297,6 +301,7 @@ export async function watchEventRuntimeLiveState(
     feedback: null,
     mission: null,
     plan: null,
+    standings: null,
     wingmanTargetUid: null,
   };
   const assignmentByModule = new Map<string, EventSuccessAssignmentDocument>();
@@ -332,11 +337,24 @@ export async function watchEventRuntimeLiveState(
       state.plan = data ? {
         attendeePrompt: typeof data.attendeePrompt === "string" ?
           data.attendeePrompt : null,
+        activeRevealRoundIndex: Number.isInteger(data.activeRevealRoundIndex) ?
+          Number(data.activeRevealRoundIndex) : 0,
+        publishedRevealRoundIndex: Number.isInteger(data.publishedRevealRoundIndex) ?
+          Number(data.publishedRevealRoundIndex) : -1,
         revealStatus: data.revealStatus === "countingDown" ||
           data.revealStatus === "revealed" ? data.revealStatus : "idle",
         status: data.status === "live" || data.status === "complete" ?
           data.status : "setup",
       } : null;
+      emit();
+    },
+    (error) => onError(error)
+  ));
+  subscriptions.push(onSnapshot(
+    doc(runtime.firestore, "eventSuccessStandings", context.eventId),
+    (snapshot) => {
+      state.standings = snapshot.exists() ?
+        snapshot.data() as EventSuccessStandingsDocument : null;
       emit();
     },
     (error) => onError(error)

@@ -12,6 +12,7 @@ import {
   EVENT_SUCCESS_COMPATIBILITY_POLICIES,
   EVENT_SUCCESS_MATCHING_OBJECTIVES,
   EVENT_SUCCESS_TOPOLOGIES,
+  EVENT_SUCCESS_UNIT_OUTCOMES,
   EVENT_SUCCESS_VARIABLE_RESOLUTION_TABLE,
   EventSuccessMatchingObjective,
 } from "./formatPrimitives";
@@ -246,11 +247,12 @@ for (const matchingObjective of EVENT_SUCCESS_MATCHING_OBJECTIVES) {
   });
 }
 
-test("resolution table covers every legal topology combination", () => {
+test("resolution table covers every legal variable combination", () => {
   const expectedCount = EVENT_SUCCESS_ASSIGNMENT_ALGORITHMS.length *
     EVENT_SUCCESS_COMPATIBILITY_POLICIES.length *
     EVENT_SUCCESS_MATCHING_OBJECTIVES.length *
-    EVENT_SUCCESS_TOPOLOGIES.length;
+    EVENT_SUCCESS_TOPOLOGIES.length *
+    EVENT_SUCCESS_UNIT_OUTCOMES.length;
   assert.equal(EVENT_SUCCESS_VARIABLE_RESOLUTION_TABLE.length, expectedCount);
   const keys = EVENT_SUCCESS_VARIABLE_RESOLUTION_TABLE.map((entry) =>
     [
@@ -258,6 +260,7 @@ test("resolution table covers every legal topology combination", () => {
       entry.compatibilityPolicy,
       entry.matchingObjective,
       entry.topology,
+      entry.unitOutcome,
     ].join("|")
   );
   assert.equal(new Set(keys).size, expectedCount);

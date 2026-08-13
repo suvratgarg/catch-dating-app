@@ -7,6 +7,7 @@ class EventSuccessLiveRevealAttendeeCard extends StatelessWidget {
     required this.plan,
     required this.kind,
     required this.assignment,
+    this.standings,
     required this.peerProfiles,
     required this.peersLoading,
     required this.optedOut,
@@ -19,6 +20,7 @@ class EventSuccessLiveRevealAttendeeCard extends StatelessWidget {
   final EventSuccessPlan plan;
   final EventSuccessRevealAssignmentKind kind;
   final EventSuccessAssignment? assignment;
+  final EventSuccessStandings? standings;
   final List<PublicProfile> peerProfiles;
   final bool peersLoading;
   final bool optedOut;
@@ -34,10 +36,13 @@ class EventSuccessLiveRevealAttendeeCard extends StatelessWidget {
         final referenceNow = now ?? tickNow;
         final t = CatchTokens.of(context);
         final assigned = assignment;
+        final isStandings = kind == EventSuccessRevealAssignmentKind.standings;
         final groupSlots =
             assigned?.groupRotationSlots ??
             const <EventSuccessGroupRotationSlot>[];
-        final roundCount = assigned == null
+        final roundCount = isStandings
+            ? standings?.rounds.length ?? 0
+            : assigned == null
             ? 0
             : kind == EventSuccessRevealAssignmentKind.rotations
             ? assigned.rotationSlots.length
@@ -45,12 +50,14 @@ class EventSuccessLiveRevealAttendeeCard extends StatelessWidget {
             ? groupSlots.length
             : 1;
         final revealedThrough = plan.revealedThroughRoundIndex(referenceNow);
+        final standingRound = standings?.throughRound(revealedThrough);
         final activeRound = _safeRoundIndex(
           plan.activeRevealRoundIndex,
           roundCount,
         );
+        final hasPayload = isStandings ? standings != null : assigned != null;
         final isCountingDown =
-            assigned != null && plan.isRevealCountdownRunning(referenceNow);
+            hasPayload && plan.isRevealCountdownRunning(referenceNow);
         final visibleSlots = assigned == null
             ? const <EventSuccessRotationSlot>[]
             : assigned.rotationSlots
@@ -69,14 +76,16 @@ class EventSuccessLiveRevealAttendeeCard extends StatelessWidget {
             kind == EventSuccessRevealAssignmentKind.microPods &&
             groupSlots.isEmpty &&
             plan.isRoundRevealed(0, referenceNow);
-        final showAssignment =
-            kind == EventSuccessRevealAssignmentKind.rotations
+        final showAssignment = isStandings
+            ? standingRound != null
+            : kind == EventSuccessRevealAssignmentKind.rotations
             ? visibleSlots.isNotEmpty
             : groupSlots.isNotEmpty
             ? visibleGroupSlots.isNotEmpty
             : podVisible;
         final title = _attendeeTitle(
           assigned: assigned,
+          standings: standings,
           showAssignment: showAssignment,
           isCountingDown: isCountingDown,
           remainingSeconds: _remainingSeconds(plan, referenceNow),
@@ -104,7 +113,7 @@ class EventSuccessLiveRevealAttendeeCard extends StatelessWidget {
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   CatchBadge.live(label: kind.label(context.l10n)),
-                  if (assigned != null)
+                  if (hasPayload)
                     CatchBadge(
                       label: isCountingDown
                           ? context
@@ -131,22 +140,30 @@ class EventSuccessLiveRevealAttendeeCard extends StatelessWidget {
               Text(
                 _attendeeSubtitle(
                   assigned: assigned,
+                  standings: standings,
                   showAssignment: showAssignment,
                   isCountingDown: isCountingDown,
                 ),
                 style: CatchTextStyles.supporting(context, color: t.ink2),
               ),
-              if (assigned != null && !optedOut) ...[
+              if (hasPayload && !optedOut) ...[
                 gapH16,
                 if (isCountingDown)
                   AttendeeCountdown(
                     plan: plan,
                     now: referenceNow,
                     kind: kind,
-                    clue: _attendeeClue(assigned, activeRound),
+                    clue: isStandings
+                        ? 'Clue: the table unlocks for everyone together.'
+                        : _attendeeClue(assigned!, activeRound),
                   )
                 else if (!showAssignment)
                   WaitingRevealCue(kind: kind)
+                else if (isStandings)
+                  VisibleStandings(
+                    entries: standingRound!.entries,
+                    unitOutcome: standings!.unitOutcome,
+                  )
                 else if (kind == EventSuccessRevealAssignmentKind.rotations)
                   VisibleRotationSlots(
                     slots: visibleSlots,
@@ -161,7 +178,7 @@ class EventSuccessLiveRevealAttendeeCard extends StatelessWidget {
                   )
                 else
                   VisiblePodAssignment(
-                    assignment: assigned,
+                    assignment: assigned!,
                     peerProfiles: peerProfiles,
                     peersLoading: peersLoading,
                   ),
@@ -175,26 +192,28 @@ class EventSuccessLiveRevealAttendeeCard extends StatelessWidget {
                   ),
                 ],
               ],
-              gapH14,
-              ColoredBox(
-                color: t.ink.withValues(
-                  alpha: CatchOpacity.revealAttendeeActionDock,
-                ),
-                child: Padding(
-                  padding: CatchInsets.iconChipContent,
-                  child: CatchButton(
-                    label: optedOut ? _joinLabel(kind) : _skipLabel(kind),
-                    variant: optedOut
-                        ? CatchButtonVariant.primary
-                        : CatchButtonVariant.secondary,
-                    isLoading: isSavingOptOut,
-                    onPressed: isSavingOptOut || onIncludeChanged == null
-                        ? null
-                        : () => onIncludeChanged!(optedOut),
-                    fullWidth: true,
+              if (!isStandings) ...[
+                gapH14,
+                ColoredBox(
+                  color: t.ink.withValues(
+                    alpha: CatchOpacity.revealAttendeeActionDock,
+                  ),
+                  child: Padding(
+                    padding: CatchInsets.iconChipContent,
+                    child: CatchButton(
+                      label: optedOut ? _joinLabel(kind) : _skipLabel(kind),
+                      variant: optedOut
+                          ? CatchButtonVariant.primary
+                          : CatchButtonVariant.secondary,
+                      isLoading: isSavingOptOut,
+                      onPressed: isSavingOptOut || onIncludeChanged == null
+                          ? null
+                          : () => onIncludeChanged!(optedOut),
+                      fullWidth: true,
+                    ),
                   ),
                 ),
-              ),
+              ],
             ],
           ),
         );
@@ -204,10 +223,17 @@ class EventSuccessLiveRevealAttendeeCard extends StatelessWidget {
 
   String _attendeeTitle({
     required EventSuccessAssignment? assigned,
+    required EventSuccessStandings? standings,
     required bool showAssignment,
     required bool isCountingDown,
     required int remainingSeconds,
   }) {
+    if (kind == EventSuccessRevealAssignmentKind.standings) {
+      if (standings == null) return 'Standings reveal pending';
+      if (isCountingDown) return 'Standings reveal in ${remainingSeconds}s';
+      if (showAssignment) return 'Live standings';
+      return 'Waiting for the host reveal';
+    }
     if (optedOut) {
       return '${kind.assignmentNounPlural.capitalized} paused for you';
     }
@@ -226,9 +252,22 @@ class EventSuccessLiveRevealAttendeeCard extends StatelessWidget {
 
   String _attendeeSubtitle({
     required EventSuccessAssignment? assigned,
+    required EventSuccessStandings? standings,
     required bool showAssignment,
     required bool isCountingDown,
   }) {
+    if (kind == EventSuccessRevealAssignmentKind.standings) {
+      if (assigned == null && standings == null) {
+        return 'The host will publish standings when this round is scored.';
+      }
+      if (isCountingDown) {
+        return 'Everyone sees the same table at the same time.';
+      }
+      if (showAssignment) {
+        return 'The table includes every recorded round through this reveal.';
+      }
+      return 'Scores stay masked until the shared reveal moment.';
+    }
     if (optedOut) {
       return kind == EventSuccessRevealAssignmentKind.rotations
           ? 'You will not be included when the host generates timed rotations.'

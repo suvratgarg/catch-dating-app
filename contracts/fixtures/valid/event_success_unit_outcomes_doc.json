@@ -1,0 +1,17 @@
+{
+  "eventId": "event-1",
+  "clubId": "club-1",
+  "unitOutcome": "score",
+  "revision": 1,
+  "rounds": [
+    {
+      "roundIndex": 0,
+      "entries": [
+        {"unitId": "team-a", "unitLabel": "Team A", "score": 12},
+        {"unitId": "team-b", "unitLabel": "Team B", "score": 9}
+      ]
+    }
+  ],
+  "createdAt": {"_seconds": 1786620000, "_nanoseconds": 0},
+  "updatedAt": {"_seconds": 1786620000, "_nanoseconds": 0}
+}

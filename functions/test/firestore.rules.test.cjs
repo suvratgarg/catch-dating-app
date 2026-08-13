@@ -3564,6 +3564,101 @@ describe("firestore.rules", () => {
       }));
     });
 
+    it("keeps outcome facts Host-only and shares standings with participants", async () => {
+      await seed(["clubs", "club-1"], club());
+      await seed(["events", "event-1"], event());
+      await seed(
+        ["eventParticipations", "event-1_runner-1"],
+        eventParticipation({status: "signedUp"}),
+      );
+      await seed(
+        ["eventRuntimeParticipants", "event-1_runner-2"],
+        eventRuntimeParticipant({uid: "runner-2"}),
+      );
+      const timestamp = Timestamp.fromDate(
+        new Date("2026-05-02T03:00:00.000Z"),
+      );
+      const outcomes = {
+        eventId: "event-1",
+        clubId: "club-1",
+        unitOutcome: "score",
+        revision: 1,
+        rounds: [{
+          roundIndex: 0,
+          entries: [
+            {unitId: "team-a", unitLabel: "Team A", score: 12},
+          ],
+        }],
+        createdAt: timestamp,
+        updatedAt: timestamp,
+      };
+      const standings = {
+        eventId: "event-1",
+        clubId: "club-1",
+        unitOutcome: "score",
+        revision: 1,
+        latestRoundIndex: 0,
+        rounds: [{
+          roundIndex: 0,
+          entries: [{
+            unitId: "team-a",
+            unitLabel: "Team A",
+            position: 1,
+            value: 12,
+            roundsRecorded: 1,
+          }],
+        }],
+        entries: [{
+          unitId: "team-a",
+          unitLabel: "Team A",
+          position: 1,
+          value: 12,
+          roundsRecorded: 1,
+        }],
+        createdAt: timestamp,
+        updatedAt: timestamp,
+      };
+      await seed(["eventSuccessUnitOutcomes", "event-1"], outcomes);
+      await seed(["eventSuccessStandings", "event-1"], standings);
+
+      await assertSucceeds(getDoc(doc(
+        authedDb("host-1"),
+        "eventSuccessUnitOutcomes",
+        "event-1",
+      )));
+      await assertFails(getDoc(doc(
+        authedDb("runner-1"),
+        "eventSuccessUnitOutcomes",
+        "event-1",
+      )));
+      for (const uid of ["host-1", "runner-1", "runner-2"]) {
+        await assertSucceeds(getDoc(doc(
+          authedDb(uid),
+          "eventSuccessStandings",
+          "event-1",
+        )));
+      }
+      await assertFails(getDoc(doc(
+        authedDb("runner-3"),
+        "eventSuccessStandings",
+        "event-1",
+      )));
+      await assertFails(getDocs(collection(
+        authedDb("runner-1"),
+        "eventSuccessStandings",
+      )));
+      await assertFails(setDoc(doc(
+        authedDb("host-1"),
+        "eventSuccessStandings",
+        "event-1",
+      ), standings));
+      await assertFails(setDoc(doc(
+        authedDb("host-1"),
+        "eventSuccessUnitOutcomes",
+        "event-1",
+      ), outcomes));
+    });
+
     it("exposes event scorecards only to the event host", async () => {
       await seed(["clubs", "club-1"], club());
       await seed(["events", "event-1"], event());

@@ -17,6 +17,7 @@ class EventSuccessCompanionScreen extends StatefulWidget {
     this.assignmentPeersLoading = false,
     this.microPodsOptedOut = false,
     this.rotationAssignment,
+    this.standings,
     this.rotationPeerProfiles = const [],
     this.rotationPeersLoading = false,
     this.guidedRotationsOptedOut = false,
@@ -58,6 +59,7 @@ class EventSuccessCompanionScreen extends StatefulWidget {
   final bool assignmentPeersLoading;
   final bool microPodsOptedOut;
   final EventSuccessAssignment? rotationAssignment;
+  final EventSuccessStandings? standings;
   final List<PublicProfile> rotationPeerProfiles;
   final bool rotationPeersLoading;
   final bool guidedRotationsOptedOut;
@@ -367,6 +369,8 @@ class _EventSuccessCompanionScreenState
       }
     }
     if (attendeeMoment.showLiveReveal && screenState.revealKind != null) {
+      final isStandings =
+          screenState.revealKind == EventSuccessRevealAssignmentKind.standings;
       final isRotations =
           screenState.revealKind == EventSuccessRevealAssignmentKind.rotations;
       addMomentContent(
@@ -374,24 +378,31 @@ class _EventSuccessCompanionScreenState
           event: event,
           plan: plan,
           kind: screenState.revealKind!,
-          assignment: isRotations
+          assignment: isStandings
+              ? null
+              : isRotations
               ? (widget.guidedRotationsOptedOut
                     ? null
                     : widget.rotationAssignment)
               : (widget.microPodsOptedOut ? null : widget.assignment),
+          standings: isStandings ? widget.standings : null,
           peerProfiles: isRotations
               ? widget.rotationPeerProfiles
               : widget.assignmentPeerProfiles,
           peersLoading: isRotations
               ? widget.rotationPeersLoading
               : widget.assignmentPeersLoading,
-          optedOut: isRotations
+          optedOut: isStandings
+              ? false
+              : isRotations
               ? widget.guidedRotationsOptedOut
               : widget.microPodsOptedOut,
           isSavingOptOut: isRotations
               ? guidedRotationsActionState.isSaving
               : microPodsActionState.isSaving,
-          onIncludeChanged: isRotations
+          onIncludeChanged: isStandings
+              ? null
+              : isRotations
               ? setGuidedRotationsIncluded
               : setMicroPodsIncluded,
           now: widget.now,
@@ -402,7 +413,9 @@ class _EventSuccessCompanionScreenState
               .eventSuccessEventSuccessCompanionBodyScreenVisiblecopyLiveReveal,
         ),
       );
-      final assignment = isRotations
+      final assignment = isStandings
+          ? null
+          : isRotations
           ? (widget.guidedRotationsOptedOut ? null : widget.rotationAssignment)
           : (widget.microPodsOptedOut ? null : widget.assignment);
       if (widget.spatialLayout != null && assignment?.layoutUnitId != null) {

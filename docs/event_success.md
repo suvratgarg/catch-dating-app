@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.10.0
+version: 1.11.0
 updated: 2026-08-13
 owner: recursive_audit_loop
 status: active
@@ -136,6 +136,14 @@ The Functions contract owns an exhaustive resolution table for every
 assignment-algorithm, compatibility-policy, matching-objective, and topology
 combination.
 
+The saved format primitives also resolve `unitOutcome` independently from the
+assignment algorithm. `none` records no result, `completion` records done/not
+done units, `score` accumulates numeric round totals, and `rank` records a
+complete ordering. Pace pods default to `completion`, team rotations to
+`score`, pair rotations to `rank`, and dinner/seated-table formats to `none`;
+an explicit saved value wins. The Functions resolver enumerates this axis with
+the other primitives rather than branching on an event name.
+
 V1 supports set-based pair rotations and generic micro-pods, plus
 capacity-aware `sequence` scheduling for pair rotations. Sequence scheduling
 uses the saved `resourceCapacity.concurrentUnits` value rather than a
@@ -205,6 +213,8 @@ rather than embedded in event-type logic.
 | `eventSuccessArrivalMissions/{eventId_uid}` | Server-owned First Hello mission. Attendee can read only their own mission; clients cannot create, update, list, or delete. |
 | `eventSuccessAssignments/{eventId_moduleId_uid}` | Server-owned assignment docs for micro-pods/guided rotations. |
 | `eventSuccessAssignmentDrafts/{eventId_moduleId_uid}` | Server-owned, Host-readable next-round rotation drafts. Participants cannot read or write this collection. |
+| `eventSuccessUnitOutcomes/{eventId}` | Server-owned complete round facts for completion, score, or rank outcomes. Hosts may get the event document; attendee reads, list access, and every direct write are denied. |
+| `eventSuccessStandings/{eventId}` | Server-owned score/rank snapshots through each recorded round. Authorized Hosts, active participants, and ready external runtime identities may get the event document; list and direct writes are denied. |
 | `organizerEventSuccessLayouts/{organizerId_layoutId}` | Reusable organizer-owned parametric room-layout assets. Organizer managers may read their assets; all writes use the validated callable. Participants receive only the selected layout's timestamp-free projection through an authorized callable/runtime bootstrap. |
 | `eventSuccessScorecards/{eventId}` | Server-owned aggregate coaching scorecard. Host-readable through event-success policy. |
 
@@ -244,6 +254,24 @@ round-robin scheduler. Every allowed pair meets once before a configured repeat
 cycle, safety and must-split edges are never scheduled, odd rosters receive
 fair byes, and court/table/lane/board capacity is enforced independently of the
 event type. Legacy plans without `topology` continue to resolve to `set`.
+
+### Unit Outcomes And Live Standings
+
+`recordEventSuccessUnitOutcomes` lets an organizer manager replace one complete
+round under an outcome revision fence. Exact replay is idempotent. New rounds
+must be sequential; score corrections recompute all accumulated snapshots and
+rank corrections replace the affected complete ordering. Duplicate units,
+partial or non-contiguous rank orders, an entry shape inconsistent with the
+saved format, and `unitOutcome: none` fail closed. Completion facts stay in the
+Host-only source collection and intentionally produce no standings document.
+
+For `score` and `rank`, the Host recorder appears inside the existing live
+reveal card. Flutter companions and the no-download runtime read the same
+standings projection and select the latest snapshot no later than
+`publishedRevealRoundIndex`. The existing `idle` / `countingDown` / `revealed`
+state and server anchor mask the table until publication on every runtime.
+There is no second reveal confirmation, countdown, or ceremony implementation;
+the existing assignment-reveal slot switches its payload to standings.
 
 ### Spatial Layout And Control Room
 

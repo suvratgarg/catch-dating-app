@@ -18277,6 +18277,15 @@ export const eventDocumentSchema: Record<string, unknown> = {
                 "balance",
                 "spread"
               ]
+            },
+            "unitOutcome": {
+              "type": "string",
+              "enum": [
+                "none",
+                "completion",
+                "score",
+                "rank"
+              ]
             }
           }
         },
@@ -27404,6 +27413,548 @@ export const eventSuccessAssignmentDocumentSchema: Record<string, unknown> = {
       "minLength": 1,
       "maxLength": 80,
       "description": "Internal demo-operations command name used for cleanup and diagnostics."
+    }
+  }
+} as const;
+
+export const eventSuccessUnitOutcomesDocumentSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_success_unit_outcomes.schema.json",
+  "title": "EventSuccessUnitOutcomesDocument",
+  "description": "Server-owned outcome rounds stored at eventSuccessUnitOutcomes/{eventId}. Hosts may read the source; attendees consume the standings projection.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSuccessUnitOutcomes",
+  "x-firestore-path": "eventSuccessUnitOutcomes/{eventId}",
+  "x-document-id-field": "id",
+  "x-owner": "recordEventSuccessUnitOutcomes callable",
+  "required": [
+    "eventId",
+    "clubId",
+    "unitOutcome",
+    "revision",
+    "rounds",
+    "createdAt",
+    "updatedAt"
+  ],
+  "definitions": {
+    "unitIdentity": {
+      "unitId": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+      },
+      "unitLabel": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80
+      }
+    },
+    "outcomeEntry": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "unitId",
+            "unitLabel",
+            "completed"
+          ],
+          "properties": {
+            "unitId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+            },
+            "unitLabel": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "completed": {
+              "type": "boolean"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "unitId",
+            "unitLabel",
+            "score"
+          ],
+          "properties": {
+            "unitId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+            },
+            "unitLabel": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "score": {
+              "type": "number",
+              "minimum": -1000000,
+              "maximum": 1000000
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "unitId",
+            "unitLabel",
+            "rank"
+          ],
+          "properties": {
+            "unitId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+            },
+            "unitLabel": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "rank": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          }
+        }
+      ]
+    }
+  },
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "unitOutcome": {
+      "type": "string",
+      "enum": [
+        "completion",
+        "score",
+        "rank"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647,
+      "x-catch-ownership": "callable-owned"
+    },
+    "rounds": {
+      "type": "array",
+      "maxItems": 101,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "roundIndex",
+          "entries"
+        ],
+        "properties": {
+          "roundIndex": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "entries": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 200,
+            "items": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "unitId",
+                    "unitLabel",
+                    "completed"
+                  ],
+                  "properties": {
+                    "unitId": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+                    },
+                    "unitLabel": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "completed": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "unitId",
+                    "unitLabel",
+                    "score"
+                  ],
+                  "properties": {
+                    "unitId": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+                    },
+                    "unitLabel": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "score": {
+                      "type": "number",
+                      "minimum": -1000000,
+                      "maximum": 1000000
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "unitId",
+                    "unitLabel",
+                    "rank"
+                  ],
+                  "properties": {
+                    "unitId": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+                    },
+                    "unitLabel": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "rank": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 200
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+} as const;
+
+export const eventSuccessStandingsDocumentSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_success_standings.schema.json",
+  "title": "EventSuccessStandingsDocument",
+  "description": "Server-owned attendee-readable standings snapshots stored at eventSuccessStandings/{eventId}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSuccessStandings",
+  "x-firestore-path": "eventSuccessStandings/{eventId}",
+  "x-document-id-field": "id",
+  "x-owner": "recordEventSuccessUnitOutcomes callable",
+  "required": [
+    "eventId",
+    "clubId",
+    "unitOutcome",
+    "revision",
+    "latestRoundIndex",
+    "rounds",
+    "entries",
+    "createdAt",
+    "updatedAt"
+  ],
+  "definitions": {
+    "standingEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "unitId",
+        "unitLabel",
+        "position",
+        "value",
+        "roundsRecorded"
+      ],
+      "properties": {
+        "unitId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+        },
+        "unitLabel": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "position": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "value": {
+          "type": "number",
+          "minimum": -100000000,
+          "maximum": 100000000
+        },
+        "roundsRecorded": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 101
+        }
+      }
+    }
+  },
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "unitOutcome": {
+      "type": "string",
+      "enum": [
+        "score",
+        "rank"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647,
+      "x-catch-ownership": "callable-owned"
+    },
+    "latestRoundIndex": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "x-catch-ownership": "callable-owned"
+    },
+    "rounds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 101,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "roundIndex",
+          "entries"
+        ],
+        "properties": {
+          "roundIndex": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "entries": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 200,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "unitId",
+                "unitLabel",
+                "position",
+                "value",
+                "roundsRecorded"
+              ],
+              "properties": {
+                "unitId": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+                },
+                "unitLabel": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "position": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 200
+                },
+                "value": {
+                  "type": "number",
+                  "minimum": -100000000,
+                  "maximum": 100000000
+                },
+                "roundsRecorded": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 101
+                }
+              }
+            }
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "unitId",
+          "unitLabel",
+          "position",
+          "value",
+          "roundsRecorded"
+        ],
+        "properties": {
+          "unitId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+          },
+          "unitLabel": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "position": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          },
+          "value": {
+            "type": "number",
+            "minimum": -100000000,
+            "maximum": 100000000
+          },
+          "roundsRecorded": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 101
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
     }
   }
 } as const;
@@ -43347,6 +43898,15 @@ export const adminUpdateEventDetailsCallablePayloadSchema: Record<string, unknow
                     "balance",
                     "spread"
                   ]
+                },
+                "unitOutcome": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "completion",
+                    "score",
+                    "rank"
+                  ]
                 }
               }
             },
@@ -44393,6 +44953,15 @@ export const createEventCallablePayloadSchema: Record<string, unknown> = {
                 "novelty",
                 "balance",
                 "spread"
+              ]
+            },
+            "unitOutcome": {
+              "type": "string",
+              "enum": [
+                "none",
+                "completion",
+                "score",
+                "rank"
               ]
             }
           }
@@ -51460,6 +52029,149 @@ export const eventSuccessLiveActionCallablePayloadSchema: Record<string, unknown
     },
     "confirmed": {
       "type": "boolean"
+    }
+  }
+} as const;
+
+export const recordEventSuccessUnitOutcomesCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/record_event_success_unit_outcomes_payload.schema.json",
+  "title": "RecordEventSuccessUnitOutcomesCallablePayload",
+  "description": "Revision-fenced Host payload that replaces one complete unit-outcome round.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "expectedRevision",
+    "roundIndex",
+    "entries"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "roundIndex": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 200,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "unitId",
+              "unitLabel",
+              "completed"
+            ],
+            "properties": {
+              "unitId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+              },
+              "unitLabel": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "completed": {
+                "type": "boolean"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "unitId",
+              "unitLabel",
+              "score"
+            ],
+            "properties": {
+              "unitId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+              },
+              "unitLabel": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "score": {
+                "type": "number",
+                "minimum": -1000000,
+                "maximum": 1000000
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "unitId",
+              "unitLabel",
+              "rank"
+            ],
+            "properties": {
+              "unitId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+              },
+              "unitLabel": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "rank": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 200
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+} as const;
+
+export const recordEventSuccessUnitOutcomesCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/record_event_success_unit_outcomes_response.schema.json",
+  "title": "RecordEventSuccessUnitOutcomesCallableResponse",
+  "description": "Persisted outcome revision and standings projection state.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "replayed",
+    "revision",
+    "standingCount"
+  ],
+  "properties": {
+    "replayed": {
+      "type": "boolean"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "standingCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 200
     }
   }
 } as const;

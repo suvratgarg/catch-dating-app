@@ -755,6 +755,15 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
                 'spread',
               ],
             },
+            'unitOutcome': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'none',
+                'completion',
+                'score',
+                'rank',
+              ],
+            },
           },
         },
         'activityDetails': <String, Object?>{

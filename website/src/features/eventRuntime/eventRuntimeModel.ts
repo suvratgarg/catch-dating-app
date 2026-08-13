@@ -6,6 +6,8 @@ export type EventRuntimeParticipant = NonNullable<EventRuntimeBootstrap["partici
 export type EventRuntimeLayout = NonNullable<EventRuntimeBootstrap["event"]["layout"]>;
 export type EventRuntimeLayoutUnit = EventRuntimeLayout["units"][number];
 export type EventRuntimeAssignment = EventRuntimeLiveState["assignments"][number];
+export type EventRuntimeStandings = NonNullable<EventRuntimeLiveState["standings"]>;
+export type EventRuntimeStandingRound = EventRuntimeStandings["rounds"][number];
 export type EventRuntimeGender = NonNullable<
   EventRuntimeParticipant["runtimeProfile"]["gender"]
 >;
@@ -57,6 +59,17 @@ export function shouldRenderEventRuntimeRoomMap(
     assignment.layoutUnitId &&
     layout.units.some((unit) => unit.id === assignment.layoutUnitId)
   );
+}
+
+export function visibleEventRuntimeStandingRound(
+  plan: EventRuntimeLiveState["plan"],
+  standings: EventRuntimeLiveState["standings"]
+): EventRuntimeStandingRound | null {
+  if (!plan || !standings || plan.revealStatus !== "revealed") return null;
+  const revealedThrough = plan.publishedRevealRoundIndex;
+  return [...standings.rounds]
+    .filter((round) => round.roundIndex <= revealedThrough)
+    .sort((left, right) => right.roundIndex - left.roundIndex)[0] ?? null;
 }
 
 export function resolveEventRuntimeQuestionnaire(

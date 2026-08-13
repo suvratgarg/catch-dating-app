@@ -245,6 +245,7 @@ export interface EventSuccessFormatPrimitives {
     | "novelty"
     | "balance"
     | "spread";
+  unitOutcome?: "none" | "completion" | "score" | "rank";
 }
 
 export type EventSuccessStructureConfig = {
@@ -3562,6 +3563,89 @@ export interface EventSuccessAssignmentDocument {
     )[];
   }[];
   source: "server_v1" | "host_override_v1" | "server";
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Server-owned outcome rounds stored at eventSuccessUnitOutcomes/{eventId}. Hosts may read the source; attendees consume the standings projection.
+ */
+export interface EventSuccessUnitOutcomesDocument {
+  eventId: string;
+  clubId: string;
+  organizerId?: string;
+  unitOutcome: "completion" | "score" | "rank";
+  revision: number;
+  /**
+   * @maxItems 101
+   */
+  rounds: {
+    roundIndex: number;
+    /**
+     * @minItems 1
+     * @maxItems 200
+     */
+    entries: (
+      | {
+          unitId: string;
+          unitLabel: string;
+          completed: boolean;
+        }
+      | {
+          unitId: string;
+          unitLabel: string;
+          score: number;
+        }
+      | {
+          unitId: string;
+          unitLabel: string;
+          rank: number;
+        }
+    )[];
+  }[];
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Server-owned attendee-readable standings snapshots stored at eventSuccessStandings/{eventId}.
+ */
+export interface EventSuccessStandingsDocument {
+  eventId: string;
+  clubId: string;
+  organizerId?: string;
+  unitOutcome: "score" | "rank";
+  revision: number;
+  latestRoundIndex: number;
+  /**
+   * @minItems 1
+   * @maxItems 101
+   */
+  rounds: {
+    roundIndex: number;
+    /**
+     * @minItems 1
+     * @maxItems 200
+     */
+    entries: {
+      unitId: string;
+      unitLabel: string;
+      position: number;
+      value: number;
+      roundsRecorded: number;
+    }[];
+  }[];
+  /**
+   * @minItems 1
+   * @maxItems 200
+   */
+  entries: {
+    unitId: string;
+    unitLabel: string;
+    position: number;
+    value: number;
+    roundsRecorded: number;
+  }[];
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
 }

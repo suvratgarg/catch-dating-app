@@ -41,6 +41,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_preference.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_runtime.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
@@ -149,6 +150,9 @@ class _EventSuccessHostSectionState
     final cancelRevealCountdownMutation = ref.watch(
       EventSuccessController.cancelRevealCountdownMutation,
     );
+    final recordUnitOutcomesMutation = ref.watch(
+      EventSuccessController.recordUnitOutcomesMutation,
+    );
     final publishRotationRoundMutation = ref.watch(
       EventSuccessController.publishRotationRoundMutation,
     );
@@ -162,6 +166,17 @@ class _EventSuccessHostSectionState
         hasSavedGuide && (showTabs || initialTab == EventSuccessHostTab.live);
     final shouldLoadPreferences = shouldLoadAssignments;
     final shouldLoadWingmanRequests = shouldLoadAssignments;
+    final unitOutcome = EventSuccessActivityProfile.forFormat(
+      event.eventFormat,
+    ).unitOutcome;
+    final shouldLoadStandings =
+        shouldLoadAssignments &&
+        (unitOutcome == EventSuccessUnitOutcome.score ||
+            unitOutcome == EventSuccessUnitOutcome.rank);
+    final AsyncValue<EventSuccessStandings?> standingsAsync =
+        shouldLoadStandings
+        ? ref.watch(watchEventSuccessStandingsProvider(event.id))
+        : const AsyncData<EventSuccessStandings?>(null);
     final AsyncValue<EventSuccessLayout?> spatialLayoutAsync =
         shouldLoadAssignments &&
             persistedPlan.layoutId != null &&
@@ -190,6 +205,9 @@ class _EventSuccessHostSectionState
     final generateGuidedRotationsError =
         generateGuidedRotationsMutation.hasError
         ? _mutationError(generateGuidedRotationsMutation)
+        : null;
+    final recordUnitOutcomesError = recordUnitOutcomesMutation.hasError
+        ? _mutationError(recordUnitOutcomesMutation)
         : null;
     final AsyncValue<EventSuccessScorecard?> scorecardAsync =
         shouldLoadScorecard
@@ -322,6 +340,7 @@ class _EventSuccessHostSectionState
       rotationDraftAssignments: state.rotationDraftAssignments,
       rotationParticipantProfiles: state.rotationParticipantProfiles,
       preferences: state.preferences,
+      standings: standingsAsync.asData?.value,
       wingmanRequests: state.wingmanRequests,
       wingmanProfiles: state.wingmanProfiles,
       initialTab: initialTab,
@@ -445,6 +464,24 @@ class _EventSuccessHostSectionState
         eventId: event.id,
         expectedRevision: state.plan.liveControlRevision,
       ),
+      outcomeActionState: EventSuccessOutcomeActionState(
+        isLoading:
+            standingsAsync.isLoading || recordUnitOutcomesMutation.isPending,
+        error: standingsAsync.hasError
+            ? standingsAsync.error
+            : recordUnitOutcomesError,
+      ),
+      onRecordOutcomes:
+          ({
+            required expectedRevision,
+            required roundIndex,
+            required entries,
+          }) => _recordEventSuccessUnitOutcomes(
+            eventId: event.id,
+            expectedRevision: expectedRevision,
+            roundIndex: roundIndex,
+            entries: entries,
+          ),
       fixtureActions: fixtureActions,
       exclusionAlertThreshold: widget.exclusionAlertThreshold,
     );
@@ -560,6 +597,25 @@ class _EventSuccessHostSectionState
           .cancelRevealCountdown(
             eventId: eventId,
             expectedRevision: expectedRevision,
+          ),
+    );
+  }
+
+  Future<void> _recordEventSuccessUnitOutcomes({
+    required String eventId,
+    required int expectedRevision,
+    required int roundIndex,
+    required List<EventSuccessUnitOutcomeEntryInput> entries,
+  }) {
+    return EventSuccessController.recordUnitOutcomesMutation.run(
+      ref,
+      (tx) => tx
+          .get(eventSuccessControllerProvider.notifier)
+          .recordUnitOutcomes(
+            eventId: eventId,
+            expectedRevision: expectedRevision,
+            roundIndex: roundIndex,
+            entries: entries,
           ),
     );
   }
@@ -910,6 +966,7 @@ class EventSuccessHostPanel extends StatefulWidget {
     this.rotationDraftAssignments = const [],
     this.rotationParticipantProfiles = const [],
     this.preferences = const [],
+    this.standings,
     this.wingmanRequests = const [],
     this.wingmanProfiles = const [],
     this.initialTab = EventSuccessHostTab.setup,
@@ -941,6 +998,8 @@ class EventSuccessHostPanel extends StatefulWidget {
     this.onStartRevealCountdown,
     this.onRevealRound,
     this.onResetReveal,
+    this.outcomeActionState = const EventSuccessOutcomeActionState(),
+    this.onRecordOutcomes,
     this.fixtureActions,
     this.exclusionAlertThreshold = defaultEventSuccessExclusionAlertThreshold,
     this.exclusionReferenceNow,
@@ -958,6 +1017,7 @@ class EventSuccessHostPanel extends StatefulWidget {
   final List<EventSuccessAssignment> rotationDraftAssignments;
   final List<PublicProfile> rotationParticipantProfiles;
   final List<EventSuccessPreference> preferences;
+  final EventSuccessStandings? standings;
   final List<EventSuccessWingmanRequest> wingmanRequests;
   final List<PublicProfile> wingmanProfiles;
   final EventSuccessHostTab initialTab;
@@ -994,6 +1054,13 @@ class EventSuccessHostPanel extends StatefulWidget {
   onStartRevealCountdown;
   final Future<void> Function(int roundIndex)? onRevealRound;
   final Future<void> Function()? onResetReveal;
+  final EventSuccessOutcomeActionState outcomeActionState;
+  final Future<void> Function({
+    required int expectedRevision,
+    required int roundIndex,
+    required List<EventSuccessUnitOutcomeEntryInput> entries,
+  })?
+  onRecordOutcomes;
   final EventSuccessHostFixtureActions? fixtureActions;
   final Duration exclusionAlertThreshold;
   final DateTime? exclusionReferenceNow;
@@ -1041,6 +1108,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         rotationDraftAssignments: widget.rotationDraftAssignments,
         rotationParticipantProfiles: widget.rotationParticipantProfiles,
         preferences: widget.preferences,
+        standings: widget.standings,
         wingmanRequests: widget.wingmanRequests,
         wingmanProfiles: widget.wingmanProfiles,
         compactLiveControls: widget.compactLiveControls,
@@ -1080,6 +1148,8 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         onStartRevealCountdown: _startRevealCountdownCallback(),
         onRevealRound: _revealRoundCallback(),
         onResetReveal: _resetRevealCallback(),
+        outcomeActionState: widget.outcomeActionState,
+        onRecordOutcomes: widget.onRecordOutcomes,
         fixtureActions: widget.fixtureActions,
         exclusionAlertThreshold: widget.exclusionAlertThreshold,
         exclusionReferenceNow: widget.exclusionReferenceNow,

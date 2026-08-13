@@ -3,6 +3,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_assignment.d
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
@@ -145,6 +146,74 @@ void main() {
         ]);
       },
     );
+
+    test('watches standings and records a typed outcome round', () async {
+      final now = DateTime.utc(2026, 8, 13, 12);
+      await firestore.collection('eventSuccessStandings').doc('event-1').set({
+        'eventId': 'event-1',
+        'clubId': 'club-1',
+        'unitOutcome': 'score',
+        'revision': 1,
+        'latestRoundIndex': 0,
+        'rounds': [
+          {
+            'roundIndex': 0,
+            'entries': [
+              {
+                'unitId': 'team-a',
+                'unitLabel': 'Team A',
+                'position': 1,
+                'value': 4,
+                'roundsRecorded': 1,
+              },
+            ],
+          },
+        ],
+        'entries': [
+          {
+            'unitId': 'team-a',
+            'unitLabel': 'Team A',
+            'position': 1,
+            'value': 4,
+            'roundsRecorded': 1,
+          },
+        ],
+        'createdAt': now,
+        'updatedAt': now,
+      });
+
+      final standings = await repository
+          .watchStandingsForEvent('event-1')
+          .first;
+      expect(standings?.entries.single.value, 4);
+
+      await repository.recordUnitOutcomes(
+        eventId: 'event-1',
+        expectedRevision: 1,
+        roundIndex: 1,
+        entries: const [
+          EventSuccessScoreOutcomeInput(
+            unitId: 'team-a',
+            unitLabel: 'Team A',
+            score: 7,
+          ),
+        ],
+      );
+
+      final callable =
+          functions.httpsCallable('recordEventSuccessUnitOutcomes')
+              as TestHttpsCallable;
+      expect(callable.calls, [
+        {
+          'eventId': 'event-1',
+          'expectedRevision': 1,
+          'roundIndex': 1,
+          'entries': [
+            {'unitId': 'team-a', 'unitLabel': 'Team A', 'score': 7},
+          ],
+        },
+      ]);
+    });
 
     test('writes attendee feedback under stable event-user id', () async {
       final event = buildEvent();

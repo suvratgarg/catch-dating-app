@@ -1,12 +1,14 @@
 import fs from "node:fs";
 import path from "node:path";
 import {describe, expect, it} from "vitest";
+import type {EventRuntimeLiveState} from "../../firebase";
 import {
   eventRuntimeStageForParticipant,
   normalizeEventRuntimeLayoutUnits,
   normalizeRuntimePhone,
   resolveEventRuntimeQuestionnaire,
   shouldRenderEventRuntimeRoomMap,
+  visibleEventRuntimeStandingRound,
   type EventRuntimeAssignment,
   type EventRuntimeLayout,
   type EventRuntimeParticipant,
@@ -63,5 +65,25 @@ describe("eventRuntimeModel", () => {
       ...spatialAssignment,
       layoutUnitId: undefined,
     })).toBe(false);
+  });
+
+  it("reveals only the standings snapshot released by the shared ceremony", () => {
+    const standings = {
+      unitOutcome: "score",
+      rounds: [
+        {roundIndex: 0, entries: [{unitId: "a", value: 4}]},
+        {roundIndex: 1, entries: [{unitId: "a", value: 9}]},
+      ],
+    } as unknown as NonNullable<EventRuntimeLiveState["standings"]>;
+    const plan = {
+      revealStatus: "revealed",
+      publishedRevealRoundIndex: 0,
+    } as NonNullable<EventRuntimeLiveState["plan"]>;
+
+    expect(visibleEventRuntimeStandingRound(plan, standings)?.roundIndex).toBe(0);
+    expect(visibleEventRuntimeStandingRound({
+      ...plan,
+      revealStatus: "countingDown",
+    }, standings)).toBeNull();
   });
 });

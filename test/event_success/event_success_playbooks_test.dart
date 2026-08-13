@@ -642,6 +642,7 @@ void main() {
             'assignmentAlgorithm': 'teamBalancer',
             'compatibilityPolicy': 'questionnaireClueOnly',
             'matchingObjective': 'spread',
+            'unitOutcome': 'score',
           },
         );
 
@@ -669,6 +670,7 @@ void main() {
           EventSuccessCompatibilityPolicy.questionnaireClueOnly,
         );
         expect(profile.matchingObjective, EventSuccessMatchingObjective.spread);
+        expect(profile.unitOutcome, EventSuccessUnitOutcome.score);
         expect(profile.assignmentResolution.supported, isFalse);
         expect(profile.playbook.id, EventSuccessPlaybookLibrary.pubQuiz.id);
         expect(profile.structureConfig.unitKind, EventSuccessUnitKind.teams);
@@ -738,6 +740,24 @@ void main() {
         ).assignmentResolution.supported,
         isFalse,
       );
+    });
+
+    test('activity profiles bind all four unit outcome shapes', () {
+      final profiles = {
+        ActivityKind.socialRun: EventSuccessUnitOutcome.completion,
+        ActivityKind.pubQuiz: EventSuccessUnitOutcome.score,
+        ActivityKind.dinner: EventSuccessUnitOutcome.none,
+        ActivityKind.pickleball: EventSuccessUnitOutcome.rank,
+        ActivityKind.singlesMixer: EventSuccessUnitOutcome.none,
+        ActivityKind.openActivity: EventSuccessUnitOutcome.none,
+      };
+
+      for (final entry in profiles.entries) {
+        expect(
+          EventSuccessActivityProfile.forActivity(entry.key).unitOutcome,
+          entry.value,
+        );
+      }
     });
 
     test('event defaults normalize to the selected activity', () {

@@ -57,6 +57,7 @@ const emptyLiveState: EventRuntimeLiveState = {
   feedback: null,
   mission: null,
   plan: null,
+  standings: null,
   wingmanTargetUid: null,
 };
 

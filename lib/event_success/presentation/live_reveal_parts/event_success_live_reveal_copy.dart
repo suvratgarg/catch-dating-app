@@ -24,10 +24,16 @@ String _hostBody({
   required bool allRevealed,
 }) {
   if (roundCount == 0) {
+    if (kind == EventSuccessRevealAssignmentKind.standings) {
+      return 'Record a complete outcome round here. It will use this same synchronized reveal when the host is ready.';
+    }
     return 'Generate ${kind.assignmentNounPlural} first, then drop a countdown so everyone gets the assignment together.';
   }
   if (allRevealed) {
     return 'All ${kind.assignmentNounPlural} have been released. Reset only if the host wants to rehearse or restart the live flow.';
+  }
+  if (kind == EventSuccessRevealAssignmentKind.standings) {
+    return 'Round ${roundIndex + 1} standings are ready. The table stays masked until the host releases this shared reveal.';
   }
   if (kind == EventSuccessRevealAssignmentKind.microPods) {
     final groupRotationCount = _uniqueGroupRotationCountForRound(

@@ -176,6 +176,7 @@ export interface CreateEventCallablePayload {
         | "novelty"
         | "balance"
         | "spread";
+      unitOutcome?: "none" | "completion" | "score" | "rank";
     };
     activityDetails?: {
       [k: string]: unknown;

@@ -12,6 +12,7 @@ class EventSuccessActivityProfile {
     required this.assignmentAlgorithm,
     required this.compatibilityPolicy,
     required this.matchingObjective,
+    required this.unitOutcome,
     required this.assignmentResolution,
     required this.summary,
     required this.recommendations,
@@ -44,6 +45,7 @@ class EventSuccessActivityProfile {
       interactionModel,
       compatibilityPolicy,
     );
+    final unitOutcome = _unitOutcomeFor(format, interactionModel);
     final assignmentResolution = _assignmentResolutionFor(assignmentAlgorithm);
     final playbook = _playbookForFormat(
       format,
@@ -82,6 +84,7 @@ class EventSuccessActivityProfile {
       assignmentAlgorithm: assignmentAlgorithm,
       compatibilityPolicy: compatibilityPolicy,
       matchingObjective: matchingObjective,
+      unitOutcome: unitOutcome,
       assignmentResolution: assignmentResolution,
       summary: _summaryFor(interactionModel),
       recommendations: recommendations,
@@ -101,6 +104,7 @@ class EventSuccessActivityProfile {
   final EventSuccessAssignmentAlgorithm assignmentAlgorithm;
   final EventSuccessCompatibilityPolicy compatibilityPolicy;
   final EventSuccessMatchingObjective matchingObjective;
+  final EventSuccessUnitOutcome unitOutcome;
   final EventSuccessAssignmentResolution assignmentResolution;
   final String summary;
   final List<EventSuccessModuleRecommendation> recommendations;

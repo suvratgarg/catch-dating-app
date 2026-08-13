@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_arrival_mission.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
@@ -9,6 +10,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_preference.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_runtime.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart';
@@ -33,6 +35,7 @@ enum EventSuccessCompanionRetryIntent {
   feedback,
   assignment,
   rotationAssignment,
+  standings,
   preference,
   wingmanRequest,
   wingmanCandidates,
@@ -74,11 +77,13 @@ class EventSuccessCompanionRouteState {
     required this.shouldLoadWingmanRequest,
     required this.shouldLoadAssignment,
     required this.shouldLoadRotations,
+    required this.shouldLoadStandings,
     required this.feedback,
     required this.wingmanRequestCandidates,
     required this.wingmanRequest,
     required this.assignment,
     required this.rotationAssignment,
+    required this.standings,
     required this.microPodsOptedOut,
     required this.guidedRotationsOptedOut,
   });
@@ -243,11 +248,13 @@ class EventSuccessCompanionRouteState {
       shouldLoadWingmanRequest: false,
       shouldLoadAssignment: false,
       shouldLoadRotations: false,
+      shouldLoadStandings: false,
       feedback: null,
       wingmanRequestCandidates: const <PublicProfile>[],
       wingmanRequest: null,
       assignment: null,
       rotationAssignment: null,
+      standings: null,
       microPodsOptedOut: false,
       guidedRotationsOptedOut: false,
     );
@@ -333,11 +340,13 @@ class EventSuccessCompanionRouteState {
       shouldLoadWingmanRequest: false,
       shouldLoadAssignment: false,
       shouldLoadRotations: false,
+      shouldLoadStandings: false,
       feedback: null,
       wingmanRequestCandidates: const <PublicProfile>[],
       wingmanRequest: null,
       assignment: null,
       rotationAssignment: null,
+      standings: null,
       microPodsOptedOut: false,
       guidedRotationsOptedOut: false,
     );
@@ -365,11 +374,13 @@ class EventSuccessCompanionRouteState {
   final bool shouldLoadWingmanRequest;
   final bool shouldLoadAssignment;
   final bool shouldLoadRotations;
+  final bool shouldLoadStandings;
   final EventSuccessFeedback? feedback;
   final List<PublicProfile> wingmanRequestCandidates;
   final EventSuccessWingmanRequest? wingmanRequest;
   final EventSuccessAssignment? assignment;
   final EventSuccessAssignment? rotationAssignment;
+  final EventSuccessStandings? standings;
   final bool microPodsOptedOut;
   final bool guidedRotationsOptedOut;
 
@@ -440,6 +451,13 @@ class EventSuccessCompanionRouteState {
           (moment.showLiveReveal &&
               moment.assignmentModuleId ==
                   EventSuccessModuleCatalog.guidedRotations.id),
+      shouldLoadStandings:
+          moment.showLiveReveal &&
+          _unitOutcomeHasStandings(
+            EventSuccessActivityProfile.forFormat(
+              event!.eventFormat,
+            ).unitOutcome,
+          ),
     );
   }
 
@@ -450,13 +468,15 @@ class EventSuccessCompanionRouteState {
     required CatchAsyncState<EventSuccessWingmanRequest?> wingmanRequestState,
     required CatchAsyncState<EventSuccessAssignment?> assignmentState,
     required CatchAsyncState<EventSuccessAssignment?> rotationState,
+    required CatchAsyncState<EventSuccessStandings?> standingsState,
   }) {
     if (!isReady) return this;
     if (feedbackState.status == CatchAsyncStatus.loading ||
         preferenceState.status == CatchAsyncStatus.loading ||
         wingmanRequestState.status == CatchAsyncStatus.loading ||
         assignmentState.status == CatchAsyncStatus.loading ||
-        rotationState.status == CatchAsyncStatus.loading) {
+        rotationState.status == CatchAsyncStatus.loading ||
+        standingsState.status == CatchAsyncStatus.loading) {
       return _withRouteStatus(EventSuccessCompanionRouteStatus.loading);
     }
 
@@ -464,6 +484,7 @@ class EventSuccessCompanionRouteState {
       (feedbackState, EventSuccessCompanionRetryIntent.feedback),
       (assignmentState, EventSuccessCompanionRetryIntent.assignment),
       (rotationState, EventSuccessCompanionRetryIntent.rotationAssignment),
+      (standingsState, EventSuccessCompanionRetryIntent.standings),
       (preferenceState, EventSuccessCompanionRetryIntent.preference),
       (wingmanRequestState, EventSuccessCompanionRetryIntent.wingmanRequest),
       (
@@ -488,6 +509,7 @@ class EventSuccessCompanionRouteState {
       wingmanRequest: wingmanRequestState.value,
       assignment: assignmentState.value,
       rotationAssignment: rotationState.value,
+      standings: standingsState.value,
       microPodsOptedOut: preference?.microPodsOptedOut ?? false,
       guidedRotationsOptedOut: preference?.guidedRotationsOptedOut ?? false,
     );
@@ -522,11 +544,13 @@ class EventSuccessCompanionRouteState {
       shouldLoadWingmanRequest: shouldLoadWingmanRequest,
       shouldLoadAssignment: shouldLoadAssignment,
       shouldLoadRotations: shouldLoadRotations,
+      shouldLoadStandings: shouldLoadStandings,
       feedback: feedback,
       wingmanRequestCandidates: wingmanRequestCandidates,
       wingmanRequest: wingmanRequest,
       assignment: assignment,
       rotationAssignment: rotationAssignment,
+      standings: standings,
       microPodsOptedOut: microPodsOptedOut,
       guidedRotationsOptedOut: guidedRotationsOptedOut,
     );
@@ -540,11 +564,13 @@ class EventSuccessCompanionRouteState {
     bool? shouldLoadWingmanRequest,
     bool? shouldLoadAssignment,
     bool? shouldLoadRotations,
+    bool? shouldLoadStandings,
     EventSuccessFeedback? feedback,
     List<PublicProfile>? wingmanRequestCandidates,
     EventSuccessWingmanRequest? wingmanRequest,
     EventSuccessAssignment? assignment,
     EventSuccessAssignment? rotationAssignment,
+    EventSuccessStandings? standings,
     bool? microPodsOptedOut,
     bool? guidedRotationsOptedOut,
   }) {
@@ -573,12 +599,14 @@ class EventSuccessCompanionRouteState {
           shouldLoadWingmanRequest ?? this.shouldLoadWingmanRequest,
       shouldLoadAssignment: shouldLoadAssignment ?? this.shouldLoadAssignment,
       shouldLoadRotations: shouldLoadRotations ?? this.shouldLoadRotations,
+      shouldLoadStandings: shouldLoadStandings ?? this.shouldLoadStandings,
       feedback: feedback ?? this.feedback,
       wingmanRequestCandidates:
           wingmanRequestCandidates ?? this.wingmanRequestCandidates,
       wingmanRequest: wingmanRequest ?? this.wingmanRequest,
       assignment: assignment ?? this.assignment,
       rotationAssignment: rotationAssignment ?? this.rotationAssignment,
+      standings: standings ?? this.standings,
       microPodsOptedOut: microPodsOptedOut ?? this.microPodsOptedOut,
       guidedRotationsOptedOut:
           guidedRotationsOptedOut ?? this.guidedRotationsOptedOut,
@@ -672,7 +700,10 @@ class EventSuccessCompanionScreenState {
         viewer: userProfile,
         candidates: wingmanRequestCandidates,
       ),
-      revealKind: _revealKindForAttendeeMoment(attendeeMoment),
+      revealKind: _revealKindForAttendeeMoment(
+        attendeeMoment,
+        EventSuccessActivityProfile.forFormat(event.eventFormat).unitOutcome,
+      ),
       effectKey: effectKey,
       usePaperShell: _shouldUsePaperCompanionShell(attendeeMoment.kind),
     );
@@ -931,7 +962,11 @@ List<PublicProfile> _wingmanCandidatesForViewer({
 
 EventSuccessRevealAssignmentKind? _revealKindForAttendeeMoment(
   EventSuccessAttendeeMoment moment,
+  EventSuccessUnitOutcome unitOutcome,
 ) {
+  if (moment.showLiveReveal && _unitOutcomeHasStandings(unitOutcome)) {
+    return EventSuccessRevealAssignmentKind.standings;
+  }
   if (moment.assignmentModuleId ==
       EventSuccessModuleCatalog.guidedRotations.id) {
     return EventSuccessRevealAssignmentKind.rotations;
@@ -941,6 +976,10 @@ EventSuccessRevealAssignmentKind? _revealKindForAttendeeMoment(
   }
   return null;
 }
+
+bool _unitOutcomeHasStandings(EventSuccessUnitOutcome unitOutcome) =>
+    unitOutcome == EventSuccessUnitOutcome.score ||
+    unitOutcome == EventSuccessUnitOutcome.rank;
 
 bool _shouldUsePaperCompanionShell(EventSuccessAttendeeMomentKind kind) {
   return switch (kind) {

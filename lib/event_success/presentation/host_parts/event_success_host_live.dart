@@ -22,6 +22,7 @@ class LiveTab extends StatelessWidget {
     required this.rotationDraftAssignments,
     required this.rotationParticipantProfiles,
     required this.preferences,
+    this.standings,
     required this.wingmanRequests,
     required this.wingmanProfiles,
     required this.compactLiveControls,
@@ -46,6 +47,8 @@ class LiveTab extends StatelessWidget {
     required this.onStartRevealCountdown,
     required this.onRevealRound,
     required this.onResetReveal,
+    required this.outcomeActionState,
+    required this.onRecordOutcomes,
     required this.fixtureActions,
     required this.exclusionAlertThreshold,
     this.exclusionReferenceNow,
@@ -63,6 +66,7 @@ class LiveTab extends StatelessWidget {
   final List<EventSuccessAssignment> rotationDraftAssignments;
   final List<PublicProfile> rotationParticipantProfiles;
   final List<EventSuccessPreference> preferences;
+  final EventSuccessStandings? standings;
   final List<EventSuccessWingmanRequest> wingmanRequests;
   final List<PublicProfile> wingmanProfiles;
   final bool compactLiveControls;
@@ -92,6 +96,13 @@ class LiveTab extends StatelessWidget {
   onStartRevealCountdown;
   final Future<void> Function(int roundIndex)? onRevealRound;
   final Future<void> Function()? onResetReveal;
+  final EventSuccessOutcomeActionState outcomeActionState;
+  final Future<void> Function({
+    required int expectedRevision,
+    required int roundIndex,
+    required List<EventSuccessUnitOutcomeEntryInput> entries,
+  })?
+  onRecordOutcomes;
   final EventSuccessHostFixtureActions? fixtureActions;
   final Duration exclusionAlertThreshold;
   final DateTime? exclusionReferenceNow;
@@ -233,6 +244,17 @@ class LiveTab extends StatelessWidget {
       podAssignments: assignments,
       rotationAssignments: rotationAssignments,
       preferences: preferences,
+      standings: standings,
+      outcomeUnits: _eventSuccessOutcomeUnits(
+        event: event,
+        plan: plan,
+        assignments: assignments,
+        rotationAssignments: rotationAssignments,
+        profiles: [
+          ...rotationParticipantProfiles,
+          ...assignmentParticipantProfiles,
+        ],
+      ),
       participantProfiles: [
         ...rotationParticipantProfiles,
         ...assignmentParticipantProfiles,
@@ -241,6 +263,8 @@ class LiveTab extends StatelessWidget {
       onStartCountdown: onStartRevealCountdown,
       onRevealRound: onRevealRound,
       onResetReveal: onResetReveal,
+      outcomeActionState: outcomeActionState,
+      onRecordOutcomes: onRecordOutcomes,
     );
 
     final spatialAssignments =
@@ -436,6 +460,75 @@ class LiveTab extends StatelessWidget {
       ],
     );
   }
+}
+
+List<EventSuccessOutcomeUnit> _eventSuccessOutcomeUnits({
+  required Event event,
+  required EventSuccessPlan plan,
+  required List<EventSuccessAssignment> assignments,
+  required List<EventSuccessAssignment> rotationAssignments,
+  required List<PublicProfile> profiles,
+}) {
+  final outcome = EventSuccessActivityProfile.forFormat(
+    event.eventFormat,
+  ).unitOutcome;
+  if (outcome == EventSuccessUnitOutcome.score) {
+    final units = <String, EventSuccessOutcomeUnit>{};
+    for (final assignment in assignments) {
+      final unitKey = assignment.unitIndex?.toString() ?? assignment.label;
+      units.putIfAbsent(
+        unitKey,
+        () => EventSuccessOutcomeUnit(
+          id: _safeOutcomeUnitId('${assignment.moduleId}_unit_$unitKey'),
+          label: _boundedOutcomeLabel(assignment.unitLabel ?? assignment.label),
+        ),
+      );
+    }
+    final result = units.values.toList()
+      ..sort((a, b) => a.label.compareTo(b.label));
+    return result;
+  }
+  if (outcome == EventSuccessUnitOutcome.rank) {
+    final targetRound = plan.publishedRotationRoundIndex < 0
+        ? 0
+        : plan.publishedRotationRoundIndex;
+    final profilesByUid = {
+      for (final profile in profiles) profile.uid: profile,
+    };
+    final units = <String, EventSuccessOutcomeUnit>{};
+    for (final assignment in rotationAssignments) {
+      for (final slot in assignment.rotationSlots) {
+        if (slot.roundIndex != targetRound) continue;
+        final uids = [assignment.uid, slot.peerUid]..sort();
+        final pairKey = slot.slotId ?? uids.join('_');
+        units.putIfAbsent(
+          pairKey,
+          () => EventSuccessOutcomeUnit(
+            id: _safeOutcomeUnitId('round_${targetRound}_$pairKey'),
+            label: _boundedOutcomeLabel(
+              '${profilesByUid[uids[0]]?.name ?? 'Guest'} + '
+              '${profilesByUid[uids[1]]?.name ?? 'Guest'}',
+            ),
+          ),
+        );
+      }
+    }
+    final result = units.values.toList()
+      ..sort((a, b) => a.label.compareTo(b.label));
+    return result;
+  }
+  return const [];
+}
+
+String _safeOutcomeUnitId(String value) {
+  final normalized = value.replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '_');
+  final safe = normalized.isEmpty ? 'unit' : normalized;
+  return safe.length <= 120 ? safe : safe.substring(0, 120);
+}
+
+String _boundedOutcomeLabel(String value) {
+  final trimmed = value.trim().isEmpty ? 'Unit' : value.trim();
+  return trimmed.length <= 80 ? trimmed : trimmed.substring(0, 80);
 }
 
 class LiveNowConsole extends StatelessWidget {

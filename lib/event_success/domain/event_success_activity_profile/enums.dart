@@ -51,4 +51,6 @@ enum EventSuccessMatchingObjective {
   spread,
 }
 
+enum EventSuccessUnitOutcome { none, completion, score, rank }
+
 enum EventSuccessAssignmentSupport { supported, unsupported }

@@ -135,6 +135,85 @@ final class WatchEventSuccessPlanFamily extends $Family
   String toString() => r'watchEventSuccessPlanProvider';
 }
 
+@ProviderFor(watchEventSuccessStandings)
+final watchEventSuccessStandingsProvider = WatchEventSuccessStandingsFamily._();
+
+final class WatchEventSuccessStandingsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<EventSuccessStandings?>,
+          EventSuccessStandings?,
+          Stream<EventSuccessStandings?>
+        >
+    with
+        $FutureModifier<EventSuccessStandings?>,
+        $StreamProvider<EventSuccessStandings?> {
+  WatchEventSuccessStandingsProvider._({
+    required WatchEventSuccessStandingsFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'watchEventSuccessStandingsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$watchEventSuccessStandingsHash();
+
+  @override
+  String toString() {
+    return r'watchEventSuccessStandingsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<EventSuccessStandings?> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<EventSuccessStandings?> create(Ref ref) {
+    final argument = this.argument as String;
+    return watchEventSuccessStandings(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WatchEventSuccessStandingsProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$watchEventSuccessStandingsHash() =>
+    r'e4194f21f6c77f9a3b4f17bac6d84941c04ae231';
+
+final class WatchEventSuccessStandingsFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<EventSuccessStandings?>, String> {
+  WatchEventSuccessStandingsFamily._()
+    : super(
+        retry: null,
+        name: r'watchEventSuccessStandingsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  WatchEventSuccessStandingsProvider call(String eventId) =>
+      WatchEventSuccessStandingsProvider._(argument: eventId, from: this);
+
+  @override
+  String toString() => r'watchEventSuccessStandingsProvider';
+}
+
 @ProviderFor(watchOrganizerEventSuccessLayouts)
 final watchOrganizerEventSuccessLayoutsProvider =
     WatchOrganizerEventSuccessLayoutsFamily._();

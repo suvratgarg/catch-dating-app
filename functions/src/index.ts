@@ -201,6 +201,8 @@ export {
   controlEventSuccessLive,
   publishEventSuccessRotationRound,
 } from "./eventSuccess/liveControl";
+export {recordEventSuccessUnitOutcomes} from
+  "./eventSuccess/unitOutcomes";
 export {onEventSuccessPlanLiveControlUpdated} from
   "./eventSuccess/rotationDraftTrigger";
 export {

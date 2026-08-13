@@ -80,6 +80,7 @@ import {
   isEventSuccessMatchingObjective,
   isEventSuccessPhoneAvailability,
   isEventSuccessRotationSuitability,
+  isEventSuccessUnitOutcome,
   ResolvedEventSuccessPrimitives,
 } from "../eventSuccess/formatPrimitives";
 import {organizerEventSuccessLayoutDocumentId} from
@@ -1318,6 +1319,9 @@ function normalizeEventSuccessFormatPrimitives(
   }
   if (isEventSuccessMatchingObjective(raw?.matchingObjective)) {
     normalized.matchingObjective = raw.matchingObjective;
+  }
+  if (isEventSuccessUnitOutcome(raw?.unitOutcome)) {
+    normalized.unitOutcome = raw.unitOutcome;
   }
   return Object.keys(normalized).length > 0 ? normalized : null;
 }

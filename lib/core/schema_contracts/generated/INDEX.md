@@ -93,6 +93,8 @@ Do not edit it by hand.
 | EventSuccessWingmanRequestDocument | `firestore/event_success_wingman_requests.schema.json` | `functions/src/shared/generated/eventSuccessWingmanRequestDocument.ts` |
 | EventSuccessArrivalMissionDocument | `firestore/event_success_arrival_missions.schema.json` | `functions/src/shared/generated/eventSuccessArrivalMissionDocument.ts` |
 | EventSuccessAssignmentDocument | `firestore/event_success_assignments.schema.json` | `functions/src/shared/generated/eventSuccessAssignmentDocument.ts` |
+| EventSuccessUnitOutcomesDocument | `firestore/event_success_unit_outcomes.schema.json` | `functions/src/shared/generated/eventSuccessUnitOutcomesDocument.ts` |
+| EventSuccessStandingsDocument | `firestore/event_success_standings.schema.json` | `functions/src/shared/generated/eventSuccessStandingsDocument.ts` |
 | EventSuccessScorecardDocument | `firestore/event_success_scorecards.schema.json` | `functions/src/shared/generated/eventSuccessScorecardDocument.ts` |
 | EventSafetyReportDocument | `firestore/event_safety_reports.schema.json` | `functions/src/shared/generated/eventSafetyReportDocument.ts` |
 | ClubScheduleLockDocument | `firestore/club_schedule_locks.schema.json` | `functions/src/shared/generated/clubScheduleLockDocument.ts` |
@@ -272,6 +274,8 @@ Do not edit it by hand.
 | PrepareEventSuccessRotationDraftCallablePayload | `callables/prepare_event_success_rotation_draft_payload.schema.json` | `functions/src/shared/generated/prepareEventSuccessRotationDraftCallablePayload.ts` |
 | PublishEventSuccessRotationRoundCallablePayload | `callables/publish_event_success_rotation_round_payload.schema.json` | `functions/src/shared/generated/publishEventSuccessRotationRoundCallablePayload.ts` |
 | EventSuccessLiveActionCallablePayload | `callables/event_success_live_action_payload.schema.json` | `functions/src/shared/generated/eventSuccessLiveActionCallablePayload.ts` |
+| RecordEventSuccessUnitOutcomesCallablePayload | `callables/record_event_success_unit_outcomes_payload.schema.json` | `functions/src/shared/generated/recordEventSuccessUnitOutcomesCallablePayload.ts` |
+| RecordEventSuccessUnitOutcomesCallableResponse | `callable_responses/record_event_success_unit_outcomes_response.schema.json` | `functions/src/shared/generated/recordEventSuccessUnitOutcomesCallableResponse.ts` |
 | OverrideEventSuccessGroupsCallablePayload | `callables/override_event_success_groups_payload.schema.json` | `functions/src/shared/generated/overrideEventSuccessGroupsCallablePayload.ts` |
 | SubmitEventSuccessWingmanRequestCallablePayload | `callables/submit_event_success_wingman_request_payload.schema.json` | `functions/src/shared/generated/submitEventSuccessWingmanRequestCallablePayload.ts` |
 | StartEventSuccessFirstHelloMissionCallablePayload | `callables/start_event_success_first_hello_mission_payload.schema.json` | `functions/src/shared/generated/startEventSuccessFirstHelloMissionCallablePayload.ts` |
@@ -430,6 +434,8 @@ Do not edit it by hand.
 | `schemaEventSuccessWingmanRequestDocumentSchema` | EventSuccessWingmanRequestDocument | `firestore/event_success_wingman_requests.schema.json` | `lib/core/schema_contracts/generated/schemas/event_success_wingman_request_document.g.dart` |
 | `schemaEventSuccessArrivalMissionDocumentSchema` | EventSuccessArrivalMissionDocument | `firestore/event_success_arrival_missions.schema.json` | `lib/core/schema_contracts/generated/schemas/event_success_arrival_mission_document.g.dart` |
 | `schemaEventSuccessAssignmentDocumentSchema` | EventSuccessAssignmentDocument | `firestore/event_success_assignments.schema.json` | `lib/core/schema_contracts/generated/schemas/event_success_assignment_document.g.dart` |
+| `schemaEventSuccessUnitOutcomesDocumentSchema` | EventSuccessUnitOutcomesDocument | `firestore/event_success_unit_outcomes.schema.json` | `lib/core/schema_contracts/generated/schemas/event_success_unit_outcomes_document.g.dart` |
+| `schemaEventSuccessStandingsDocumentSchema` | EventSuccessStandingsDocument | `firestore/event_success_standings.schema.json` | `lib/core/schema_contracts/generated/schemas/event_success_standings_document.g.dart` |
 | `schemaEventSuccessScorecardDocumentSchema` | EventSuccessScorecardDocument | `firestore/event_success_scorecards.schema.json` | `lib/core/schema_contracts/generated/schemas/event_success_scorecard_document.g.dart` |
 | `schemaEventSafetyReportDocumentSchema` | EventSafetyReportDocument | `firestore/event_safety_reports.schema.json` | `lib/core/schema_contracts/generated/schemas/event_safety_report_document.g.dart` |
 | `schemaClubScheduleLockDocumentSchema` | ClubScheduleLockDocument | `firestore/club_schedule_locks.schema.json` | `lib/core/schema_contracts/generated/schemas/club_schedule_lock_document.g.dart` |
@@ -609,6 +615,8 @@ Do not edit it by hand.
 | `schemaPrepareEventSuccessRotationDraftCallablePayloadSchema` | PrepareEventSuccessRotationDraftCallablePayload | `callables/prepare_event_success_rotation_draft_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/prepare_event_success_rotation_draft_callable_payload.g.dart` |
 | `schemaPublishEventSuccessRotationRoundCallablePayloadSchema` | PublishEventSuccessRotationRoundCallablePayload | `callables/publish_event_success_rotation_round_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/publish_event_success_rotation_round_callable_payload.g.dart` |
 | `schemaEventSuccessLiveActionCallablePayloadSchema` | EventSuccessLiveActionCallablePayload | `callables/event_success_live_action_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/event_success_live_action_callable_payload.g.dart` |
+| `schemaRecordEventSuccessUnitOutcomesCallablePayloadSchema` | RecordEventSuccessUnitOutcomesCallablePayload | `callables/record_event_success_unit_outcomes_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/record_event_success_unit_outcomes_callable_payload.g.dart` |
+| `schemaRecordEventSuccessUnitOutcomesCallableResponseSchema` | RecordEventSuccessUnitOutcomesCallableResponse | `callable_responses/record_event_success_unit_outcomes_response.schema.json` | `lib/core/schema_contracts/generated/schemas/record_event_success_unit_outcomes_callable_response.g.dart` |
 | `schemaOverrideEventSuccessGroupsCallablePayloadSchema` | OverrideEventSuccessGroupsCallablePayload | `callables/override_event_success_groups_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/override_event_success_groups_callable_payload.g.dart` |
 | `schemaSubmitEventSuccessWingmanRequestCallablePayloadSchema` | SubmitEventSuccessWingmanRequestCallablePayload | `callables/submit_event_success_wingman_request_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/submit_event_success_wingman_request_callable_payload.g.dart` |
 | `schemaStartEventSuccessFirstHelloMissionCallablePayloadSchema` | StartEventSuccessFirstHelloMissionCallablePayload | `callables/start_event_success_first_hello_mission_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/start_event_success_first_hello_mission_callable_payload.g.dart` |
@@ -834,6 +842,7 @@ Do not edit it by hand.
 | AdminUpdateClubDetailsCallablePayloadPatch | no Dart patch config |
 | AdminUpdateOrganizerDetailsCallablePayloadPatch | no Dart patch config |
 | AdminUpdateEventDetailsCallablePayloadPatch | no Dart patch config |
+| RecordEventSuccessUnitOutcomesCallablePayload | cannot map field "entries" (type=array) |
 | RefreshStripeHostPaymentAccountCallablePayload | no properties |
 | AdminGetOverviewCallablePayload | not an object schema |
 

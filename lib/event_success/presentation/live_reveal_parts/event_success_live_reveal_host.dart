@@ -8,12 +8,16 @@ class EventSuccessLiveRevealHostCard extends StatelessWidget {
     required this.podAssignments,
     required this.rotationAssignments,
     required this.preferences,
+    this.standings,
+    this.outcomeUnits = const [],
     this.participantProfiles = const [],
     this.now,
     this.actionState = const EventSuccessRevealActionState(),
     this.onStartCountdown,
     this.onRevealRound,
     this.onResetReveal,
+    this.outcomeActionState = const EventSuccessOutcomeActionState(),
+    this.onRecordOutcomes,
   });
 
   final Event event;
@@ -21,6 +25,8 @@ class EventSuccessLiveRevealHostCard extends StatelessWidget {
   final List<EventSuccessAssignment> podAssignments;
   final List<EventSuccessAssignment> rotationAssignments;
   final List<EventSuccessPreference> preferences;
+  final EventSuccessStandings? standings;
+  final List<EventSuccessOutcomeUnit> outcomeUnits;
 
   /// Names for the rotation run-of-show list (reveal-gated). Pairings stay
   /// masked as "Hidden until reveal" until the host releases each round.
@@ -31,6 +37,13 @@ class EventSuccessLiveRevealHostCard extends StatelessWidget {
   onStartCountdown;
   final Future<void> Function(int roundIndex)? onRevealRound;
   final Future<void> Function()? onResetReveal;
+  final EventSuccessOutcomeActionState outcomeActionState;
+  final Future<void> Function({
+    required int expectedRevision,
+    required int roundIndex,
+    required List<EventSuccessUnitOutcomeEntryInput> entries,
+  })?
+  onRecordOutcomes;
 
   @override
   Widget build(BuildContext context) {
@@ -158,9 +171,39 @@ class EventSuccessLiveRevealHostCard extends StatelessWidget {
               ),
               gapH14,
               RevealProgressBar(progress: plan.revealProgress(referenceNow)),
+              if (revealSet.kind ==
+                  EventSuccessRevealAssignmentKind.standings) ...[
+                gapH14,
+                EventSuccessOutcomeRecorder(
+                  unitOutcome:
+                      standings?.unitOutcome ??
+                      EventSuccessActivityProfile.forFormat(
+                        event.eventFormat,
+                      ).unitOutcome,
+                  units: outcomeUnits,
+                  nextRoundIndex: standings == null
+                      ? 0
+                      : standings!.latestRoundIndex + 1,
+                  expectedRevision: standings?.revision ?? 0,
+                  actionState: outcomeActionState,
+                  onRecord: onRecordOutcomes,
+                ),
+              ],
               if (roundCount > 0) ...[
                 gapH14,
                 if (revealSet.kind ==
+                    EventSuccessRevealAssignmentKind.standings)
+                  if (standings?.throughRound(
+                        plan.revealedThroughRoundIndex(referenceNow),
+                      )
+                      case final visibleRound?)
+                    VisibleStandings(
+                      entries: visibleRound.entries,
+                      unitOutcome: standings!.unitOutcome,
+                    )
+                  else
+                    WaitingRevealCue(kind: revealSet.kind)
+                else if (revealSet.kind ==
                     EventSuccessRevealAssignmentKind.rotations)
                   RevealRoundList(
                     config: _rotationConfigLine(plan.structureConfig),
@@ -215,6 +258,17 @@ class EventSuccessLiveRevealHostCard extends StatelessWidget {
   }
 
   _HostRevealSet _hostRevealSet() {
+    final unitOutcome = EventSuccessActivityProfile.forFormat(
+      event.eventFormat,
+    ).unitOutcome;
+    if (unitOutcome == EventSuccessUnitOutcome.score ||
+        unitOutcome == EventSuccessUnitOutcome.rank) {
+      return _HostRevealSet(
+        kind: EventSuccessRevealAssignmentKind.standings,
+        assignments: const [],
+        roundCount: standings?.rounds.length ?? 0,
+      );
+    }
     final canUseRotations =
         plan.hasModule(EventSuccessModuleCatalog.guidedRotations.id) &&
         (rotationAssignments.isNotEmpty ||
