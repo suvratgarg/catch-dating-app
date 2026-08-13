@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.0.18
-updated: 2026-08-11
+version: 2.0.19
+updated: 2026-08-12
 owner: recursive_audit_loop
 status: active
 ---
@@ -226,6 +226,7 @@ The current workflows are:
 | `.github/workflows/mobile-internal-promote.yml` | Manual exact-artifact promoter. It verifies one current successful producer attempt and its authority/package ids, digests, provenance, and target before uploading the already-signed IPA to TestFlight or AAB to Play `qa`; it never rebuilds or resigns. |
 | `.github/workflows/observability-evidence.yml` | Manual Crashlytics and Analytics evidence capture. |
 | `.github/workflows/website-production-observability.yml` | Scheduled and manual production website status, canonical-metadata, and launch-content probes. |
+| `.github/workflows/branch-hygiene.yml` | Daily semantic branch audit, supervised integrated-ref candidates, and an issue plus failed run for stale code outside `main` without an open PR. |
 
 The Host Website push filter follows its production byte closure explicitly:
 Host/runtime source, declared assets and fixtures, production Host Firebase
@@ -294,6 +295,29 @@ For reconciliation merges touching more than 50 paths, run
 `node tool/git/audit_merge_drops.mjs` with the base, both sides, and merged result
 and require explicit discard receipts. After a squash merge is verified on
 `origin/main`, delete the single-use branch and prune tracking refs.
+
+## Git Branch Hygiene
+
+GitHub's repository-level delete-after-merge setting is enabled, but it only
+removes the exact PR head. `.github/workflows/branch-hygiene.yml` evaluates the
+remaining gap every day. It fetches all refs, reads current PR state, and uses
+`git:branch-hygiene` to report strong semantic proofs: the tip is an ancestor of
+`main`, its exact tree exists in `main` history, its exact tip belongs to a
+merged PR whose merge is in `main`, or every path changed by the branch has the
+same final Git identity in `main`. Open-PR branches and unique-looking branches
+never become cleanup candidates.
+
+A branch gets seven days to acquire a PR or integration proof. After that, the
+workflow updates one GitHub issue, uploads the complete audit as an expiring
+artifact, and fails. The workflow has read-only repository contents permission;
+candidate deletion remains a supervised operation. This is the deployment-loss
+alarm: routine CI proves code on `main`, while branch hygiene proves that old
+code is not silently living only on a forgotten ref.
+
+```sh
+node tool/git/branch_hygiene.mjs --base origin/main --remote origin --json
+node tool/git/branch_hygiene.mjs --base origin/main --local --json
+```
 
 ## GitHub Environments And Auth
 

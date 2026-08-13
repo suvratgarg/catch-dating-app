@@ -324,6 +324,22 @@ node tool/git/audit_merge_drops.mjs \
 node --test tool/git/audit_merge_drops.test.mjs
 ```
 
+Remote branch hygiene uses a separate read-only classifier. GitHub's native
+delete-after-merge setting handles only the exact pull-request head; it cannot
+recognize source branches integrated through a different branch, squash-era
+tree equivalence, or abandoned code with no pull request. An age-only stale
+branch action was rejected because it could delete the very undeployed work the
+gate is meant to expose. The zero-dependency Git classifier therefore reports
+ancestry, exact main-history trees, exact merged-PR tips, final changed-path
+identity, open PRs, and review age. The daily workflow has read-only contents
+permission; it reports safe candidates for supervised pruning and fails on
+abandoned code.
+
+```sh
+node tool/git/branch_hygiene.mjs --base origin/main --remote origin --json
+node tool/git/branch_hygiene.mjs --base origin/main --local --json
+```
+
 Governed Markdown owns its identity, version, update date, owner, and lifecycle
 in source frontmatter. Versions may increase or remain unchanged but may not
 decrease. Identities must be unique, and reviewed deletions are allowed without

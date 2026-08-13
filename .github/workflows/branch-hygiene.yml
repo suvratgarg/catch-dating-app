@@ -1,0 +1,131 @@
+name: Branch Hygiene
+
+on:
+  schedule:
+    - cron: "41 1 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+
+concurrency:
+  group: branch-hygiene
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    name: Audit undeployed branches
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout full Git history
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+
+      - name: Refresh every remote branch
+        run: git fetch origin --prune "+refs/heads/*:refs/remotes/origin/*"
+
+      - name: Collect current pull-request state
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p build/branch-hygiene
+          gh pr list \
+            --state all \
+            --limit 1000 \
+            --json number,state,mergedAt,headRefName,headRefOid,baseRefName,url,mergeCommit \
+            > build/branch-hygiene/pull-requests.json
+
+      - name: Audit branch integration
+        run: |
+          node tool/git/branch_hygiene.mjs \
+            --base origin/main \
+            --remote origin \
+            --pull-requests build/branch-hygiene/pull-requests.json \
+            --stale-days 7 \
+            --prune-after-days 1 \
+            --json > build/branch-hygiene/report.json
+
+      - name: Publish branch summary
+        run: |
+          {
+            echo "## Branch hygiene"
+            echo
+            jq -r '
+              "- Total remote branches: \(.summary.total)",
+              "- Open-PR branches: \(.summary.active)",
+              "- Within seven-day review window: \(.summary.recent)",
+              "- Proven integrated and ready for supervised pruning: \(.summary.safeToPrune)",
+              "- Abandoned with unique-looking content: \(.summary.abandoned)"
+            ' build/branch-hygiene/report.json
+            echo
+            echo "### Branches requiring review"
+            jq -r '
+              .branches[] |
+              select(.category == "abandoned") |
+              "- `\(.name)` - \(.ageDays)d old, \(.aheadOfBase) commit(s) ahead, \(.changedPathCount) changed path(s)"
+            ' build/branch-hygiene/report.json
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Maintain the abandoned-code issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          title="[Branch hygiene] Code outside main requires review"
+          issue_number="$(
+            gh issue list --state open --limit 100 --json number,title \
+              --jq "map(select(.title == \"$title\"))[0].number // empty"
+          )"
+          abandoned="$(jq -r '.summary.abandoned' build/branch-hygiene/report.json)"
+          if (( abandoned > 0 )); then
+            {
+              echo "The daily branch audit found **$abandoned** branch(es) older than seven days with no open PR and no safe semantic-integration proof."
+              echo
+              echo "These refs are never auto-deleted. Reconcile, intentionally discard, or open a PR for each one. The complete Git evidence is attached to the latest Branch Hygiene workflow run."
+              echo
+              jq -r '
+                .branches[] |
+                select(.category == "abandoned") |
+                "- `\(.name)` - \(.ageDays)d old, \(.aheadOfBase) commit(s) ahead, \(.changedPathCount) changed path(s)"
+              ' build/branch-hygiene/report.json
+              echo
+              echo "Workflow: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            } > build/branch-hygiene/issue.md
+            if [[ -n "$issue_number" ]]; then
+              gh issue edit "$issue_number" --body-file build/branch-hygiene/issue.md
+            else
+              gh issue create --title "$title" --body-file build/branch-hygiene/issue.md
+            fi
+          elif [[ -n "$issue_number" ]]; then
+            gh issue close "$issue_number" \
+              --comment "The daily semantic audit is clear; no stale branch remains without an open PR or integration proof."
+          fi
+
+      - name: Upload branch audit evidence
+        uses: actions/upload-artifact@v7
+        with:
+          name: branch-hygiene-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/branch-hygiene
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Fail when code remains abandoned
+        run: |
+          node tool/git/branch_hygiene.mjs \
+            --base origin/main \
+            --remote origin \
+            --pull-requests build/branch-hygiene/pull-requests.json \
+            --stale-days 7 \
+            --prune-after-days 1 \
+            --fail-on-abandoned
