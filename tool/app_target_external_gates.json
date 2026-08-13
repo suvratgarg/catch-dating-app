@@ -9,8 +9,7 @@
       "issue": 218,
       "scope": "consumer-and-host-testflight-internal-distribution",
       "closureCriteria": [
-        "record the intended Consumer and Host internal TestFlight groups",
-        "assign the exact GitHub-promoted Consumer and Host builds to those groups",
+        "record automatic distribution receipts that bind the exact Consumer and Host builds to every existing internal TestFlight group with testers",
         "install and launch both builds with App Check, Maps, phone auth, push, and role-specific entrypoint proof"
       ]
     },

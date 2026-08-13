@@ -32,7 +32,7 @@
     "promotionWorkflow": ".github/workflows/mobile-internal-promote.yml",
     "trigger": "successful-main-ci-exact-artifact-authority",
     "environment": "prod-mobile",
-    "approvalMode": "build-only-no-store-mutation",
+    "approvalMode": "automatic-ios-exact-artifact-internal-promotion",
     "branchPolicy": "main-only",
     "roles": [
       "consumer",
@@ -42,7 +42,11 @@
       "channel": "testflight",
       "artifactMode": "automatic-role-impacted-main",
       "uploadMode": "separate-promotion-workflow",
-      "automaticRoles": [],
+      "automaticRoles": [
+        "consumer",
+        "host"
+      ],
+      "distributionPolicy": "all-existing-internal-groups-with-testers",
       "signingStyle": "automatic",
       "developmentIdentitySource": "reusable-ci-p12",
       "distributionSigningStage": "export",
@@ -85,7 +89,7 @@
       "storeProduct": {
         "displayName": "Catch",
         "appStoreConnectAppId": "6765646860",
-        "testFlightGroup": null
+        "testFlightDistributionPolicy": "all-existing-internal-groups-with-testers"
       }
     },
     "host": {
@@ -109,7 +113,7 @@
       "storeProduct": {
         "displayName": "Catch Host",
         "appStoreConnectAppId": "6778927317",
-        "testFlightGroup": null
+        "testFlightDistributionPolicy": "all-existing-internal-groups-with-testers"
       }
     }
   },
@@ -391,7 +395,7 @@
         "owner": "github-actions",
         "githubMode": "automatic-exact-artifact",
         "githubWorkflow": ".github/workflows/mobile-internal-release.yml",
-        "automaticTestFlightOnMain": false,
+        "automaticTestFlightOnMain": true,
         "appStoreConnectAppId": "6765646860",
         "googlePlayPackageName": "com.catchdates.app",
         "legacyXcodeCloudWorkflow": "Default"
@@ -452,7 +456,7 @@
         "owner": "github-actions",
         "githubMode": "automatic-exact-artifact",
         "githubWorkflow": ".github/workflows/mobile-internal-release.yml",
-        "automaticTestFlightOnMain": false,
+        "automaticTestFlightOnMain": true,
         "appStoreConnectAppId": "6778927317",
         "googlePlayPackageName": "com.catchdates.host",
         "legacyXcodeCloudWorkflow": "Default"

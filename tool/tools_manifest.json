@@ -586,10 +586,11 @@
         "tool/ci/mobile_promotion_core.mjs",
         "tool/ci/package_mobile_release.mjs",
         "tool/platform/probe_google_play_access.mjs",
+        "tool/platform/distribute_testflight_build.mjs",
         "tool/platform/upload_google_play_bundle.mjs",
         "tool/app_targets.json"
       ],
-      "description": "Guards manual exact mobile promotion: current successful producer attempt, immutable authority/package ids and digests, final fresh re-extraction before credentials, target-scoped queueing, and zero rebuild or resigning work.",
+      "description": "Guards automatic iOS and recovery mobile promotion: current successful producer attempt, immutable authority/package ids and digests, durable upload claim, internal tester-group readback, target-scoped queueing, and zero rebuild or resigning work.",
       "checks": [
         "node --check tool/ci/mobile_promotion_workflow.test.mjs",
         "node --test tool/ci/mobile_promotion_workflow.test.mjs"
@@ -599,14 +600,15 @@
         "type": "test",
         "path": "tool/ci/mobile_promotion_workflow.test.mjs",
         "contains": [
-          "promotion is a confirmed manual-only operation with one queue per exact target",
+          "promotion accepts exact automatic or confirmed recovery dispatches with one queue per target",
           "producer attempt and current promoter implementation are fail-closed",
           "authority selects the package id, name, and digest and metadata cannot be substituted",
           "producer head S2 is separate from authority source S1 and superseded source attempts reject",
           "prior claims are exact, attempt-bound, and ambiguous Apple identity fails closed",
           "fresh source, artifact, and package verification immediately precedes credentials",
-          "promotion uses one exact Play authority and never rebuilds, archives, or signs",
-          "credentials are removed before one immutable 90-day claim is persisted"
+          "promotion uses one exact store authority and never rebuilds, archives, or signs",
+          "iOS promotion assigns exact VALID builds only to existing internal groups with testers",
+          "upload claim is durable before idempotent distribution and credentials are removed"
         ]
       }
     },
@@ -633,7 +635,7 @@
         "tool/platform/check_app_targets.mjs",
         "tool/app_targets.json"
       ],
-      "description": "Guards the producer-only mobile release path: successful main CI authority, exact role/platform target matrices, source-bound 90-day signed packages, post-comparison aggregate authority, and zero App Store or Play mutation.",
+      "description": "Guards the mobile signed-package producer and automatic iOS handoff: successful main CI authority, exact role/platform target matrices, source-bound 90-day packages, post-comparison authority, exact workflow dispatch, and zero direct store mutation.",
       "checks": [
         "node --check tool/ci/mobile_release_workflow.test.mjs",
         "node --test tool/ci/mobile_release_workflow.test.mjs",
@@ -649,6 +651,7 @@
           "mobile producer downloads the CI authority and plan by immutable id and digest",
           "exact releaseTargets select role-platform builds without Cartesian widening",
           "partial producer reruns fail closed with a current-attempt completeness authority",
+          "verified authority automatically dispatches every authorized iOS target",
           "finalizer downloads and re-verifies exact package bytes before authority",
           "Android release jobs use the same checksummed Gradle distribution with bounded recovery",
           "producer performs no App Store, Play, or legacy-owner mutation"
@@ -2992,6 +2995,33 @@
         "contains": [
           "candidate preflight rejects a non-monotonic build",
           "processed-build wait fails closed on invalid processing"
+        ]
+      }
+    },
+    {
+      "id": "platform:distribute-testflight-build",
+      "category": "platform",
+      "path": "tool/platform/distribute_testflight_build.mjs",
+      "command": "node tool/platform/distribute_testflight_build.mjs --help",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "impactPaths": [
+        "tool/platform/distribute_testflight_build.test.mjs"
+      ],
+      "description": "Associates one exact VALID App Store Connect build with every existing internal TestFlight group that already contains testers, without creating groups or changing tester membership.",
+      "checks": [
+        "node --check tool/platform/distribute_testflight_build.mjs",
+        "node --test tool/platform/distribute_testflight_build.test.mjs"
+      ],
+      "role": "generator",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/platform/distribute_testflight_build.test.mjs",
+        "contains": [
+          "assigns a VALID exact build only to existing internal groups with testers",
+          "is idempotent when every eligible internal group already has the build",
+          "dry run reports missing access without mutating App Store Connect",
+          "fails closed when the app has no internal group containing testers"
         ]
       }
     },

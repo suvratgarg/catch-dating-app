@@ -21,13 +21,19 @@ function validManifest() {
       projectRoot: "apps/consumer",
       entrypoint: "apps/consumer/lib/main.dart",
       packageEntrypoint: "lib/main.dart",
-      storeProduct: {appStoreConnectAppId: "consumer-app"},
+      storeProduct: {
+        appStoreConnectAppId: "consumer-app",
+        testFlightDistributionPolicy: "all-existing-internal-groups-with-testers",
+      },
     },
     host: {
       projectRoot: "apps/host",
       entrypoint: "apps/host/lib/main.dart",
       packageEntrypoint: "lib/main.dart",
-      storeProduct: {appStoreConnectAppId: "host-app"},
+      storeProduct: {
+        appStoreConnectAppId: "host-app",
+        testFlightDistributionPolicy: "all-existing-internal-groups-with-testers",
+      },
     },
   };
   const environments = {
@@ -298,13 +304,14 @@ function unifiedReleaseManifest() {
     promotionWorkflow: ".github/workflows/mobile-internal-promote.yml",
     trigger: "successful-main-ci-exact-artifact-authority",
     environment: "prod-mobile",
-    approvalMode: "build-only-no-store-mutation",
+    approvalMode: "automatic-ios-exact-artifact-internal-promotion",
     branchPolicy: "main-only",
     roles: ["consumer", "host"],
     ios: {
       channel: "testflight",
       uploadMode: "separate-promotion-workflow",
-      automaticRoles: [],
+      automaticRoles: ["consumer", "host"],
+      distributionPolicy: "all-existing-internal-groups-with-testers",
       signingStyle: "automatic",
       developmentIdentitySource: "reusable-ci-p12",
       distributionSigningStage: "export",
@@ -325,7 +332,7 @@ function unifiedReleaseManifest() {
       owner: "github-actions",
       githubMode: "automatic-exact-artifact",
       githubWorkflow: ".github/workflows/mobile-internal-release.yml",
-      automaticTestFlightOnMain: false,
+      automaticTestFlightOnMain: true,
       googlePlayPackageName: target.android.applicationId,
       legacyXcodeCloudWorkflow: `${target.role} legacy`,
     };

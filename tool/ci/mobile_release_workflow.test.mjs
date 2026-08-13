@@ -122,6 +122,25 @@ test("cross-role comparison passes before the aggregate build authority is publi
   assert.ok(compareIndex >= 0 && authorityIndex > compareIndex);
 });
 
+test("verified authority automatically dispatches every authorized iOS target", () => {
+  const publish = source.indexOf("Upload post-comparison mobile build authority");
+  const dispatch = source.indexOf("Dispatch one exact promoter for each authorized iOS target");
+  const verify = source.indexOf("Require every authorized iOS target to reach the promoter");
+  assert.ok(publish >= 0 && dispatch > publish && verify > dispatch);
+  const section = source.slice(dispatch, verify);
+  for (const marker of [
+    "permissions:\n      actions: write",
+    "mobile-internal-promote.yml/dispatches",
+    'ref: "main"',
+    "producer_run_id: $producer_run_id",
+    "producer_run_attempt: $producer_run_attempt",
+    "authority_artifact_id: $authority_artifact_id",
+    "authority_artifact_sha256: $authority_artifact_sha256",
+    "confirm: \"true\"",
+  ]) assert.ok(source.includes(marker), `missing automatic promotion binding: ${marker}`);
+  assert.match(section, /if \[\[ "\$release_target" != \*-ios \]\]; then continue; fi/u);
+});
+
 test("finalizer downloads and re-verifies exact package bytes before authority", () => {
   const publish = source.slice(source.indexOf("  publish-authority:"));
   assert.match(publish, /actions\/artifacts\/\$package_id\/zip/u);
@@ -186,8 +205,6 @@ test("producer performs no App Store, Play, or legacy-owner mutation", () => {
     /probe_google_play_access/u,
     /set_xcode_cloud_workflow_state/u,
     /--wait-processed/u,
-    /--apply/u,
-    /--allow-prod/u,
     /google-github-actions\/auth/u,
   ]) {
     assert.doesNotMatch(source, forbidden);

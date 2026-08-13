@@ -1197,6 +1197,9 @@ jobs:
       needs.compare-role-packages.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    outputs:
+      authority_artifact_id: ${{ steps.upload-authority.outputs.artifact-id }}
+      authority_artifact_sha256: ${{ steps.upload-authority.outputs.artifact-digest }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -1519,10 +1522,131 @@ jobs:
             exit 64
           fi
 
-      - name: Upload post-comparison mobile build authority
+      - id: upload-authority
+        name: Upload post-comparison mobile build authority
         uses: actions/upload-artifact@v7
         with:
           name: mobile-build-authority-v1-${{ needs.authorize.outputs.source_ci_workflow_id }}-${{ needs.authorize.outputs.source_ci_run_number }}-${{ needs.authorize.outputs.source_ci_run_id }}-${{ needs.authorize.outputs.source_ci_run_attempt }}-${{ needs.authorize.outputs.source_sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: build/mobile/final/mobile-build-authority.json
           if-no-files-found: error
           retention-days: 90
+
+  dispatch-promotions:
+    name: Dispatch automatic exact iOS promotions
+    needs: [authorize, publish-authority]
+    if: >-
+      needs.authorize.result == 'success' &&
+      needs.publish-authority.result == 'success' &&
+      needs.authorize.outputs.has_ios_targets == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Dispatch one exact promoter for each authorized iOS target
+        env:
+          AUTHORITY_ARTIFACT_ID: ${{ needs.publish-authority.outputs.authority_artifact_id }}
+          AUTHORITY_ARTIFACT_SHA256: ${{ needs.publish-authority.outputs.authority_artifact_sha256 }}
+          GH_TOKEN: ${{ github.token }}
+          PRODUCER_RUN_ATTEMPT: ${{ github.run_attempt }}
+          PRODUCER_RUN_ID: ${{ github.run_id }}
+          RELEASE_TARGETS: ${{ needs.authorize.outputs.release_targets }}
+        run: |
+          set -euo pipefail
+          [[ "$AUTHORITY_ARTIFACT_ID" =~ ^[1-9][0-9]*$ ]]
+          [[ "$AUTHORITY_ARTIFACT_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$PRODUCER_RUN_ID" =~ ^[1-9][0-9]*$ ]]
+          [[ "$PRODUCER_RUN_ATTEMPT" =~ ^[1-9][0-9]*$ ]]
+
+          current_run="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$PRODUCER_RUN_ID")"
+          jq -e \
+            --arg repository "$GITHUB_REPOSITORY" \
+            --arg run_id "$PRODUCER_RUN_ID" \
+            --argjson run_attempt "$PRODUCER_RUN_ATTEMPT" '
+              (.id | tostring) == $run_id and
+              .run_attempt == $run_attempt and
+              .name == "Mobile Internal Release" and
+              (.path | split("@")[0]) ==
+                ".github/workflows/mobile-internal-release.yml" and
+              .event == "workflow_run" and
+              .head_branch == "main" and
+              .head_repository.full_name == $repository and
+              .status == "in_progress"
+            ' <<< "$current_run" > /dev/null
+          authority="$(gh api \
+            -H "X-GitHub-Api-Version: 2026-03-10" \
+            "repos/$GITHUB_REPOSITORY/actions/artifacts/$AUTHORITY_ARTIFACT_ID")"
+          jq -e \
+            --arg digest "sha256:$AUTHORITY_ARTIFACT_SHA256" \
+            --arg run_id "$PRODUCER_RUN_ID" \
+            --argjson artifact_id "$AUTHORITY_ARTIFACT_ID" '
+              .id == $artifact_id and
+              .expired == false and
+              .digest == $digest and
+              (.workflow_run.id | tostring) == $run_id and
+              .workflow_run.head_branch == "main"
+            ' <<< "$authority" > /dev/null
+
+          mkdir -p build/mobile/automatic-promotions
+          dispatch_count=0
+          while IFS= read -r release_target; do
+            [[ "$release_target" =~ ^(consumer|host)-(android|ios)$ ]]
+            if [[ "$release_target" != *-ios ]]; then continue; fi
+            payload_path="build/mobile/automatic-promotions/${release_target}.json"
+            jq -n \
+              --arg authority_artifact_id "$AUTHORITY_ARTIFACT_ID" \
+              --arg authority_artifact_sha256 "$AUTHORITY_ARTIFACT_SHA256" \
+              --arg producer_run_attempt "$PRODUCER_RUN_ATTEMPT" \
+              --arg producer_run_id "$PRODUCER_RUN_ID" \
+              --arg release_target "$release_target" '{
+                ref: "main",
+                inputs: {
+                  release_target: $release_target,
+                  producer_run_id: $producer_run_id,
+                  producer_run_attempt: $producer_run_attempt,
+                  authority_artifact_id: $authority_artifact_id,
+                  authority_artifact_sha256: $authority_artifact_sha256,
+                  reason: ("Automatic exact iOS promotion from verified producer " +
+                    $producer_run_id + " for " + $release_target),
+                  confirm: "true"
+                }
+              }' > "$payload_path"
+            dispatched="$(gh api \
+              --method POST \
+              -H "X-GitHub-Api-Version: 2026-03-10" \
+              "repos/$GITHUB_REPOSITORY/actions/workflows/mobile-internal-promote.yml/dispatches" \
+              --input "$payload_path")"
+            jq -e '
+              (.workflow_run_id | type == "number" and . > 0) and
+              (.html_url | type == "string" and length > 0)
+            ' <<< "$dispatched" > /dev/null
+            dispatch_count=$((dispatch_count + 1))
+            {
+              echo "- \`$release_target\`: $(jq -er '.html_url' <<< "$dispatched")"
+            } >> "$GITHUB_STEP_SUMMARY"
+          done < <(jq -r '.[]' <<< "$RELEASE_TARGETS")
+          echo "Dispatched $dispatch_count exact iOS promotion workflow(s)." >> "$GITHUB_STEP_SUMMARY"
+
+  verify-promotion-dispatches:
+    name: Verify automatic promotion handoff
+    needs: [authorize, publish-authority, dispatch-promotions]
+    if: >-
+      always() &&
+      needs.authorize.result == 'success' &&
+      needs.publish-authority.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Require every authorized iOS target to reach the promoter
+        env:
+          DISPATCH_RESULT: ${{ needs.dispatch-promotions.result }}
+          RELEASE_TARGETS: ${{ needs.authorize.outputs.release_targets }}
+        run: |
+          set -euo pipefail
+          ios_count="$(jq -r '[.[] | select(endswith("-ios"))] | length' <<< "$RELEASE_TARGETS")"
+          if [[ "$ios_count" == "0" ]]; then
+            test "$DISPATCH_RESULT" = "skipped"
+          else
+            test "$DISPATCH_RESULT" = "success"
+          fi
