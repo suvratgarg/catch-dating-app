@@ -2,6 +2,7 @@ import {
   EventFormatSnapshot,
   EventSuccessFormatPrimitives,
 } from "../shared/generated/firestoreAdminTypes";
+import type {EventSuccessTopology} from "./assignmentTopology";
 
 export type EventSuccessAssignmentAlgorithm = NonNullable<
   EventSuccessFormatPrimitives["assignmentAlgorithm"]
@@ -30,6 +31,7 @@ export interface EventSuccessVariableResolution {
   assignmentAlgorithm: EventSuccessAssignmentAlgorithm;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
   matchingObjective: EventSuccessMatchingObjective;
+  topology: EventSuccessTopology;
   status: EventSuccessVariableResolutionStatus;
   reason: string;
 }
@@ -81,6 +83,9 @@ export const EVENT_SUCCESS_MATCHING_OBJECTIVES =
   Object.keys(EVENT_SUCCESS_MATCHING_OBJECTIVE_MEMBERS) as
     EventSuccessMatchingObjective[];
 
+export const EVENT_SUCCESS_TOPOLOGIES: readonly EventSuccessTopology[] =
+  ["set", "sequence", "adjacency"];
+
 /**
  * Closed resolution table for every T1 variable combination.
  * Later tranches extend this table when they add a new variable axis.
@@ -89,12 +94,15 @@ export const EVENT_SUCCESS_VARIABLE_RESOLUTION_TABLE:
   readonly EventSuccessVariableResolution[] =
   EVENT_SUCCESS_ASSIGNMENT_ALGORITHMS.flatMap((assignmentAlgorithm) =>
     EVENT_SUCCESS_COMPATIBILITY_POLICIES.flatMap((compatibilityPolicy) =>
-      EVENT_SUCCESS_MATCHING_OBJECTIVES.map((matchingObjective) => ({
-        assignmentAlgorithm,
-        compatibilityPolicy,
-        matchingObjective,
-        ...assignmentAlgorithmResolution(assignmentAlgorithm),
-      }))
+      EVENT_SUCCESS_MATCHING_OBJECTIVES.flatMap((matchingObjective) =>
+        EVENT_SUCCESS_TOPOLOGIES.map((topology) => ({
+          assignmentAlgorithm,
+          compatibilityPolicy,
+          matchingObjective,
+          topology,
+          ...assignmentAlgorithmResolution(assignmentAlgorithm, topology),
+        }))
+      )
     )
   );
 
@@ -152,11 +160,14 @@ export function eventSuccessVariableResolutionFor(variables: {
   assignmentAlgorithm: EventSuccessAssignmentAlgorithm;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
   matchingObjective: EventSuccessMatchingObjective;
+  topology?: EventSuccessTopology;
 }): EventSuccessVariableResolution {
+  const topology = variables.topology ?? "set";
   const resolution = EVENT_SUCCESS_VARIABLE_RESOLUTION_TABLE.find((entry) =>
     entry.assignmentAlgorithm === variables.assignmentAlgorithm &&
     entry.compatibilityPolicy === variables.compatibilityPolicy &&
-    entry.matchingObjective === variables.matchingObjective
+    entry.matchingObjective === variables.matchingObjective &&
+    entry.topology === topology
   );
   if (resolution === undefined) {
     throw new Error(
@@ -325,8 +336,21 @@ export function isEventSuccessMatchingObjective(
 
 /** Returns the implemented endpoint for an assignment algorithm. */
 function assignmentAlgorithmResolution(
-  assignmentAlgorithm: EventSuccessAssignmentAlgorithm
+  assignmentAlgorithm: EventSuccessAssignmentAlgorithm,
+  topology: EventSuccessTopology
 ): Pick<EventSuccessVariableResolution, "status" | "reason"> {
+  if (topology === "adjacency") {
+    return {
+      status: "unsupported",
+      reason: "Seat adjacency and table seating are not implemented yet.",
+    };
+  }
+  if (topology === "sequence" && assignmentAlgorithm !== "pairRotations") {
+    return {
+      status: "unsupported",
+      reason: "Sequence topology currently requires pair rotations.",
+    };
+  }
   switch (assignmentAlgorithm) {
   case "pacePods":
   case "socialPods":
@@ -337,7 +361,9 @@ function assignmentAlgorithmResolution(
   case "pairRotations":
     return {
       status: "supported",
-      reason: "Assignments use the implemented pair-rotation engine.",
+      reason: topology === "sequence" ?
+        "Assignments use the capacity-aware sequence scheduler." :
+        "Assignments use the implemented pair-rotation engine.",
     };
   case "none":
     return {

@@ -165,6 +165,34 @@
       "type": "string",
       "enum": ["avoid", "allowWhenExhausted"]
     },
+    "eventSuccessTopology": {
+      "type": "string",
+      "enum": ["set", "sequence", "adjacency"]
+    },
+    "eventSuccessResourceLabelId": {
+      "type": "string",
+      "enum": ["court", "table", "lane", "board"]
+    },
+    "eventSuccessResourceCapacity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["concurrentUnits", "resourceLabelId", "seatsPerUnit"],
+      "properties": {
+        "concurrentUnits": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "maximum": 200
+        },
+        "resourceLabelId": {
+          "$ref": "#/definitions/eventSuccessResourceLabelId"
+        },
+        "seatsPerUnit": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "maximum": 1000
+        }
+      }
+    },
     "eventSuccessActivityAssignmentAttribute": {
       "type": "string",
       "enum": ["paceBand", "skillBand", "roleBand"]
@@ -259,6 +287,15 @@
           "minimum": 5,
           "maximum": 180
         },
+        "topology": {
+          "$ref": "#/definitions/eventSuccessTopology"
+        },
+        "resourceCapacity": {
+          "anyOf": [
+            {"$ref": "#/definitions/eventSuccessResourceCapacity"},
+            {"type": "null"}
+          ]
+        },
         "revealCountdownSeconds": {
           "type": "integer",
           "minimum": 0,
@@ -288,7 +325,29 @@
             "$ref": "#/definitions/eventSuccessActivityAssignmentAttribute"
           }
         }
-      }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": ["resourceCapacity"],
+            "properties": {
+              "resourceCapacity": {
+                "type": "object",
+                "required": ["seatsPerUnit"],
+                "properties": {
+                  "seatsPerUnit": {"type": "integer"}
+                }
+              }
+            }
+          },
+          "then": {
+            "required": ["topology"],
+            "properties": {
+              "topology": {"const": "adjacency"}
+            }
+          }
+        }
+      ]
     },
     "eventSuccessQuestionnaireConfig": {
       "type": "object",

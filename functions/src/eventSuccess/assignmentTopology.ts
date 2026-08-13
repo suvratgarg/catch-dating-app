@@ -3,12 +3,25 @@ import {HttpsError} from "firebase-functions/v2/https";
 export type EventSuccessUnitKind =
   "wholeGroup" | "pods" | "pairs" | "teams" | "tables";
 
+export type EventSuccessTopology = "set" | "sequence" | "adjacency";
+
+export type EventSuccessResourceLabelId =
+  "court" | "table" | "lane" | "board";
+
+export interface EventSuccessResourceCapacity {
+  concurrentUnits: number | null;
+  resourceLabelId: EventSuccessResourceLabelId;
+  seatsPerUnit: number | null;
+}
+
 export interface AssignmentTopologyPlan {
   structureConfig?: {
     unitKind?: unknown;
     unitSize?: unknown;
     unitCount?: unknown;
     rotationIntervalMinutes?: unknown;
+    topology?: unknown;
+    resourceCapacity?: unknown;
   };
 }
 
@@ -19,6 +32,8 @@ export interface AssignmentTopology {
   maxGroupSize: number;
   rotationIntervalMinutes: number | null;
   rotationsEnabled: boolean;
+  topology?: EventSuccessTopology;
+  resourceCapacity?: EventSuccessResourceCapacity | null;
 }
 
 /**
@@ -56,6 +71,7 @@ export function resolveAssignmentTopology(
     0 :
     Math.max(1, Math.ceil(safeParticipantCount / groupCount));
   const rotationIntervalMinutes = resolveRotationIntervalMinutes(plan);
+  const topology = normalizedEventSuccessTopology(plan);
 
   return {
     unitKind,
@@ -64,6 +80,8 @@ export function resolveAssignmentTopology(
     maxGroupSize,
     rotationIntervalMinutes,
     rotationsEnabled: rotationIntervalMinutes !== null,
+    topology,
+    resourceCapacity: resolveEventSuccessResourceCapacity(plan),
   };
 }
 
@@ -74,6 +92,13 @@ export function resolveAssignmentTopology(
 export function assertPairRotationTopology(
   plan: AssignmentTopologyPlan
 ): void {
+  const topology = normalizedEventSuccessTopology(plan);
+  if (topology === "adjacency") {
+    throw new HttpsError(
+      "failed-precondition",
+      "Seat adjacency and table seating are not implemented yet."
+    );
+  }
   const unitKind = normalizedUnitKind(plan);
   const configuredSize = boundedInteger(
     plan.structureConfig?.unitSize,
@@ -88,6 +113,64 @@ export function assertPairRotationTopology(
   throw new HttpsError("failed-precondition",
     "Guided rotations currently require two-person units. " +
       "Use group assignments for teams, tables, pods, or whole-group formats.");
+}
+
+/** Returns the saved topology, preserving `set` as the legacy default. */
+export function normalizedEventSuccessTopology(
+  plan: AssignmentTopologyPlan
+): EventSuccessTopology {
+  const topology = plan.structureConfig?.topology;
+  if (
+    topology === "set" ||
+    topology === "sequence" ||
+    topology === "adjacency"
+  ) {
+    return topology;
+  }
+  return "set";
+}
+
+/** Resolves the optional physical-resource capacity contract. */
+export function resolveEventSuccessResourceCapacity(
+  plan: AssignmentTopologyPlan
+): EventSuccessResourceCapacity | null {
+  const raw = plan.structureConfig?.resourceCapacity;
+  if (raw === null || typeof raw !== "object" || Array.isArray(raw)) {
+    return null;
+  }
+  const value = raw as Record<string, unknown>;
+  const resourceLabelId = normalizedResourceLabelId(value.resourceLabelId);
+  if (resourceLabelId === null) return null;
+  return {
+    concurrentUnits: value.concurrentUnits === null ?
+      null :
+      boundedInteger(value.concurrentUnits, 1, 200),
+    resourceLabelId,
+    seatsPerUnit: value.seatsPerUnit === null ?
+      null :
+      boundedInteger(value.seatsPerUnit, 1, 1000),
+  };
+}
+
+/**
+ * Resolves the usable simultaneous sequence resources. Null capacity means
+ * unconstrained, while a selected layout still bounds the physical resources.
+ */
+export function resolveSequenceConcurrentUnits(
+  plan: AssignmentTopologyPlan,
+  participantCount: number,
+  availableResourceUnits: number | null = null
+): number {
+  const maximumUsefulUnits = Math.max(
+    0,
+    Math.floor(Math.max(0, participantCount) / 2)
+  );
+  const configured = resolveEventSuccessResourceCapacity(plan)
+    ?.concurrentUnits ?? maximumUsefulUnits;
+  const physicalLimit = availableResourceUnits === null ?
+    maximumUsefulUnits :
+    Math.max(0, Math.floor(availableResourceUnits));
+  return Math.min(maximumUsefulUnits, configured, physicalLimit);
 }
 
 /**
@@ -220,6 +303,20 @@ export function boundedInteger(
 ): number | null {
   if (typeof value !== "number" || !Number.isFinite(value)) return null;
   return Math.max(min, Math.min(max, Math.floor(value)));
+}
+
+function normalizedResourceLabelId(
+  value: unknown
+): EventSuccessResourceLabelId | null {
+  if (
+    value === "court" ||
+    value === "table" ||
+    value === "lane" ||
+    value === "board"
+  ) {
+    return value;
+  }
+  return null;
 }
 
 /**

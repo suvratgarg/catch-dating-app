@@ -11,6 +11,7 @@ import {
   EVENT_SUCCESS_ASSIGNMENT_ALGORITHMS,
   EVENT_SUCCESS_COMPATIBILITY_POLICIES,
   EVENT_SUCCESS_MATCHING_OBJECTIVES,
+  EVENT_SUCCESS_TOPOLOGIES,
   EVENT_SUCCESS_VARIABLE_RESOLUTION_TABLE,
   EventSuccessMatchingObjective,
 } from "./formatPrimitives";
@@ -245,29 +246,74 @@ for (const matchingObjective of EVENT_SUCCESS_MATCHING_OBJECTIVES) {
   });
 }
 
-test("resolution table covers every T1 variable combination", () => {
+test("resolution table covers every legal topology combination", () => {
   const expectedCount = EVENT_SUCCESS_ASSIGNMENT_ALGORITHMS.length *
     EVENT_SUCCESS_COMPATIBILITY_POLICIES.length *
-    EVENT_SUCCESS_MATCHING_OBJECTIVES.length;
+    EVENT_SUCCESS_MATCHING_OBJECTIVES.length *
+    EVENT_SUCCESS_TOPOLOGIES.length;
   assert.equal(EVENT_SUCCESS_VARIABLE_RESOLUTION_TABLE.length, expectedCount);
   const keys = EVENT_SUCCESS_VARIABLE_RESOLUTION_TABLE.map((entry) =>
     [
       entry.assignmentAlgorithm,
       entry.compatibilityPolicy,
       entry.matchingObjective,
+      entry.topology,
     ].join("|")
   );
   assert.equal(new Set(keys).size, expectedCount);
   for (const entry of EVENT_SUCCESS_VARIABLE_RESOLUTION_TABLE) {
-    if (entry.assignmentAlgorithm === "teamBalancer" ||
-      entry.assignmentAlgorithm === "tableSeating" ||
-      entry.assignmentAlgorithm === "none") {
+    const supported = entry.topology === "set" ?
+      entry.assignmentAlgorithm === "pacePods" ||
+        entry.assignmentAlgorithm === "socialPods" ||
+        entry.assignmentAlgorithm === "pairRotations" :
+      entry.topology === "sequence" &&
+        entry.assignmentAlgorithm === "pairRotations";
+    if (!supported) {
       assert.equal(entry.status, "unsupported");
       assert.ok(entry.reason.length > 0);
     } else {
       assert.equal(entry.status, "supported");
     }
   }
+});
+
+test("sequence and adjacency never fall back to neighbouring engines", () => {
+  const sequenceTeam = runAssignmentEngine({
+    participants: ["a", "b", "c", "d"].map(profileFreeParticipant),
+    blockedPairs: new Set(),
+    topology: {
+      ...pairTopology(2),
+      topology: "sequence",
+    },
+    assignmentAlgorithm: "teamBalancer",
+    compatibilityPolicy: "none",
+    matchingObjective: "coverage",
+    rotationRoundCount: 2,
+  });
+  const adjacencyTable = runAssignmentEngine({
+    participants: ["a", "b", "c", "d"].map(profileFreeParticipant),
+    blockedPairs: new Set(),
+    topology: {
+      unitKind: "tables",
+      unitSize: 4,
+      groupCount: 1,
+      maxGroupSize: 4,
+      rotationIntervalMinutes: null,
+      rotationsEnabled: false,
+      topology: "adjacency",
+    },
+    assignmentAlgorithm: "tableSeating",
+    compatibilityPolicy: "questionnaireClueOnly",
+    matchingObjective: "affinity",
+  });
+
+  assert.equal(sequenceTeam.assignmentResolution.status, "unsupported");
+  assert.match(sequenceTeam.assignmentResolution.reason, /pair rotations/i);
+  assert.deepEqual(sequenceTeam.rotationRounds, []);
+  assert.deepEqual(sequenceTeam.groups, []);
+  assert.equal(adjacencyTable.assignmentResolution.status, "unsupported");
+  assert.match(adjacencyTable.assignmentResolution.reason, /not implemented/i);
+  assert.deepEqual(adjacencyTable.groups, []);
 });
 
 test("matching objectives cannot read signals forbidden by policy", () => {

@@ -109,6 +109,23 @@ complete Euclidean graph derived from the stored grid with no cutoff. A
 `wholeGroup` structure suppresses layout projection even if a legacy plan or
 assignment contains stale spatial fields.
 
+### Event Success Sequence Capacity Boundary
+
+`contracts/shared/event_common.schema.json` owns the closed `topology` values
+(`set`, `sequence`, `adjacency`) and the optional `resourceCapacity` object.
+`concurrentUnits` is a configurable simultaneous-resource limit; null means
+unconstrained. `resourceLabelId` is one of `court`, `table`, `lane`, or `board`.
+`seatsPerUnit` may be non-null only for `adjacency` and does not enable the
+deferred table-seating engine.
+
+`sequence` is implemented only with `pairRotations`. The server scheduler
+produces ordered, capacity-bounded rounds, explicit sit-out slots, and stable
+`resourceUnitId` values on rotation slots. It consumes the same cumulative
+exclusion totals used by T3 and the derived `unitProximity` graph from T5.
+`adjacency`, `tableSeating`, and other sequence-algorithm combinations remain
+explicitly unsupported in the exhaustive resolution table; no neighbouring
+engine fallback is permitted.
+
 ### TypeScript Timestamp Projections
 
 Functions code has two generated TS projections for Firestore documents. Both

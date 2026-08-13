@@ -7296,6 +7296,57 @@ export const clubDocumentSchema = {
                   "minimum": 5,
                   "maximum": 180
                 },
+                "topology": {
+                  "type": "string",
+                  "enum": [
+                    "set",
+                    "sequence",
+                    "adjacency"
+                  ]
+                },
+                "resourceCapacity": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "concurrentUnits",
+                        "resourceLabelId",
+                        "seatsPerUnit"
+                      ],
+                      "properties": {
+                        "concurrentUnits": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 200
+                        },
+                        "resourceLabelId": {
+                          "type": "string",
+                          "enum": [
+                            "court",
+                            "table",
+                            "lane",
+                            "board"
+                          ]
+                        },
+                        "seatsPerUnit": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 1000
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
                 "revealCountdownSeconds": {
                   "type": "integer",
                   "minimum": 0,
@@ -7339,7 +7390,39 @@ export const clubDocumentSchema = {
                     ]
                   }
                 }
-              }
+              },
+              "allOf": [
+                {
+                  "if": {
+                    "required": [
+                      "resourceCapacity"
+                    ],
+                    "properties": {
+                      "resourceCapacity": {
+                        "type": "object",
+                        "required": [
+                          "seatsPerUnit"
+                        ],
+                        "properties": {
+                          "seatsPerUnit": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "then": {
+                    "required": [
+                      "topology"
+                    ],
+                    "properties": {
+                      "topology": {
+                        "const": "adjacency"
+                      }
+                    }
+                  }
+                }
+              ]
             },
             "hostGoal": {
               "type": "string",
@@ -7508,6 +7591,57 @@ export const clubDocumentSchema = {
                     "minimum": 5,
                     "maximum": 180
                   },
+                  "topology": {
+                    "type": "string",
+                    "enum": [
+                      "set",
+                      "sequence",
+                      "adjacency"
+                    ]
+                  },
+                  "resourceCapacity": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "concurrentUnits",
+                          "resourceLabelId",
+                          "seatsPerUnit"
+                        ],
+                        "properties": {
+                          "concurrentUnits": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "minimum": 1,
+                            "maximum": 200
+                          },
+                          "resourceLabelId": {
+                            "type": "string",
+                            "enum": [
+                              "court",
+                              "table",
+                              "lane",
+                              "board"
+                            ]
+                          },
+                          "seatsPerUnit": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "minimum": 1,
+                            "maximum": 1000
+                          }
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
                   "revealCountdownSeconds": {
                     "type": "integer",
                     "minimum": 0,
@@ -7551,7 +7685,39 @@ export const clubDocumentSchema = {
                       ]
                     }
                   }
-                }
+                },
+                "allOf": [
+                  {
+                    "if": {
+                      "required": [
+                        "resourceCapacity"
+                      ],
+                      "properties": {
+                        "resourceCapacity": {
+                          "type": "object",
+                          "required": [
+                            "seatsPerUnit"
+                          ],
+                          "properties": {
+                            "seatsPerUnit": {
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "then": {
+                      "required": [
+                        "topology"
+                      ],
+                      "properties": {
+                        "topology": {
+                          "const": "adjacency"
+                        }
+                      }
+                    }
+                  }
+                ]
               },
               "hostGoal": {
                 "type": "string",
@@ -9709,6 +9875,57 @@ export const organizerDocumentSchema = {
                   "minimum": 5,
                   "maximum": 180
                 },
+                "topology": {
+                  "type": "string",
+                  "enum": [
+                    "set",
+                    "sequence",
+                    "adjacency"
+                  ]
+                },
+                "resourceCapacity": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "concurrentUnits",
+                        "resourceLabelId",
+                        "seatsPerUnit"
+                      ],
+                      "properties": {
+                        "concurrentUnits": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 200
+                        },
+                        "resourceLabelId": {
+                          "type": "string",
+                          "enum": [
+                            "court",
+                            "table",
+                            "lane",
+                            "board"
+                          ]
+                        },
+                        "seatsPerUnit": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 1000
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
                 "revealCountdownSeconds": {
                   "type": "integer",
                   "minimum": 0,
@@ -9752,7 +9969,39 @@ export const organizerDocumentSchema = {
                     ]
                   }
                 }
-              }
+              },
+              "allOf": [
+                {
+                  "if": {
+                    "required": [
+                      "resourceCapacity"
+                    ],
+                    "properties": {
+                      "resourceCapacity": {
+                        "type": "object",
+                        "required": [
+                          "seatsPerUnit"
+                        ],
+                        "properties": {
+                          "seatsPerUnit": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "then": {
+                    "required": [
+                      "topology"
+                    ],
+                    "properties": {
+                      "topology": {
+                        "const": "adjacency"
+                      }
+                    }
+                  }
+                }
+              ]
             },
             "hostGoal": {
               "type": "string",
@@ -9921,6 +10170,57 @@ export const organizerDocumentSchema = {
                     "minimum": 5,
                     "maximum": 180
                   },
+                  "topology": {
+                    "type": "string",
+                    "enum": [
+                      "set",
+                      "sequence",
+                      "adjacency"
+                    ]
+                  },
+                  "resourceCapacity": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "concurrentUnits",
+                          "resourceLabelId",
+                          "seatsPerUnit"
+                        ],
+                        "properties": {
+                          "concurrentUnits": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "minimum": 1,
+                            "maximum": 200
+                          },
+                          "resourceLabelId": {
+                            "type": "string",
+                            "enum": [
+                              "court",
+                              "table",
+                              "lane",
+                              "board"
+                            ]
+                          },
+                          "seatsPerUnit": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "minimum": 1,
+                            "maximum": 1000
+                          }
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
                   "revealCountdownSeconds": {
                     "type": "integer",
                     "minimum": 0,
@@ -9964,7 +10264,39 @@ export const organizerDocumentSchema = {
                       ]
                     }
                   }
-                }
+                },
+                "allOf": [
+                  {
+                    "if": {
+                      "required": [
+                        "resourceCapacity"
+                      ],
+                      "properties": {
+                        "resourceCapacity": {
+                          "type": "object",
+                          "required": [
+                            "seatsPerUnit"
+                          ],
+                          "properties": {
+                            "seatsPerUnit": {
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "then": {
+                      "required": [
+                        "topology"
+                      ],
+                      "properties": {
+                        "topology": {
+                          "const": "adjacency"
+                        }
+                      }
+                    }
+                  }
+                ]
               },
               "hostGoal": {
                 "type": "string",
@@ -24284,6 +24616,57 @@ export const eventSuccessPlanDocumentSchema = {
           "minimum": 5,
           "maximum": 180
         },
+        "topology": {
+          "type": "string",
+          "enum": [
+            "set",
+            "sequence",
+            "adjacency"
+          ]
+        },
+        "resourceCapacity": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "concurrentUnits",
+                "resourceLabelId",
+                "seatsPerUnit"
+              ],
+              "properties": {
+                "concurrentUnits": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 1,
+                  "maximum": 200
+                },
+                "resourceLabelId": {
+                  "type": "string",
+                  "enum": [
+                    "court",
+                    "table",
+                    "lane",
+                    "board"
+                  ]
+                },
+                "seatsPerUnit": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 1,
+                  "maximum": 1000
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "revealCountdownSeconds": {
           "type": "integer",
           "minimum": 0,
@@ -24328,6 +24711,38 @@ export const eventSuccessPlanDocumentSchema = {
           }
         }
       },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "resourceCapacity"
+            ],
+            "properties": {
+              "resourceCapacity": {
+                "type": "object",
+                "required": [
+                  "seatsPerUnit"
+                ],
+                "properties": {
+                  "seatsPerUnit": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "topology"
+            ],
+            "properties": {
+              "topology": {
+                "const": "adjacency"
+              }
+            }
+          }
+        }
+      ],
       "x-catch-ownership": "callable-owned"
     },
     "hostGoal": {
@@ -25211,6 +25626,10 @@ export const eventSuccessAssignmentDraftDocumentSchema = {
                 "type": "integer",
                 "minimum": 0,
                 "maximum": 100
+              },
+              "resourceUnitId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
               },
               "peerCount": {
                 "type": "integer",
@@ -26710,6 +27129,10 @@ export const eventSuccessAssignmentDocumentSchema = {
             "type": "integer",
             "minimum": 0,
             "maximum": 100
+          },
+          "resourceUnitId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
           },
           "peerCount": {
             "type": "integer",
@@ -34210,6 +34633,57 @@ export const createClubCallablePayloadSchema = {
                   "minimum": 5,
                   "maximum": 180
                 },
+                "topology": {
+                  "type": "string",
+                  "enum": [
+                    "set",
+                    "sequence",
+                    "adjacency"
+                  ]
+                },
+                "resourceCapacity": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "concurrentUnits",
+                        "resourceLabelId",
+                        "seatsPerUnit"
+                      ],
+                      "properties": {
+                        "concurrentUnits": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 200
+                        },
+                        "resourceLabelId": {
+                          "type": "string",
+                          "enum": [
+                            "court",
+                            "table",
+                            "lane",
+                            "board"
+                          ]
+                        },
+                        "seatsPerUnit": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 1000
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
                 "revealCountdownSeconds": {
                   "type": "integer",
                   "minimum": 0,
@@ -34253,7 +34727,39 @@ export const createClubCallablePayloadSchema = {
                     ]
                   }
                 }
-              }
+              },
+              "allOf": [
+                {
+                  "if": {
+                    "required": [
+                      "resourceCapacity"
+                    ],
+                    "properties": {
+                      "resourceCapacity": {
+                        "type": "object",
+                        "required": [
+                          "seatsPerUnit"
+                        ],
+                        "properties": {
+                          "seatsPerUnit": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "then": {
+                    "required": [
+                      "topology"
+                    ],
+                    "properties": {
+                      "topology": {
+                        "const": "adjacency"
+                      }
+                    }
+                  }
+                }
+              ]
             },
             "hostGoal": {
               "type": "string",
@@ -34422,6 +34928,57 @@ export const createClubCallablePayloadSchema = {
                     "minimum": 5,
                     "maximum": 180
                   },
+                  "topology": {
+                    "type": "string",
+                    "enum": [
+                      "set",
+                      "sequence",
+                      "adjacency"
+                    ]
+                  },
+                  "resourceCapacity": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "concurrentUnits",
+                          "resourceLabelId",
+                          "seatsPerUnit"
+                        ],
+                        "properties": {
+                          "concurrentUnits": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "minimum": 1,
+                            "maximum": 200
+                          },
+                          "resourceLabelId": {
+                            "type": "string",
+                            "enum": [
+                              "court",
+                              "table",
+                              "lane",
+                              "board"
+                            ]
+                          },
+                          "seatsPerUnit": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "minimum": 1,
+                            "maximum": 1000
+                          }
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
                   "revealCountdownSeconds": {
                     "type": "integer",
                     "minimum": 0,
@@ -34465,7 +35022,39 @@ export const createClubCallablePayloadSchema = {
                       ]
                     }
                   }
-                }
+                },
+                "allOf": [
+                  {
+                    "if": {
+                      "required": [
+                        "resourceCapacity"
+                      ],
+                      "properties": {
+                        "resourceCapacity": {
+                          "type": "object",
+                          "required": [
+                            "seatsPerUnit"
+                          ],
+                          "properties": {
+                            "seatsPerUnit": {
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "then": {
+                      "required": [
+                        "topology"
+                      ],
+                      "properties": {
+                        "topology": {
+                          "const": "adjacency"
+                        }
+                      }
+                    }
+                  }
+                ]
               },
               "hostGoal": {
                 "type": "string",
@@ -35188,6 +35777,57 @@ export const createOrganizerCallablePayloadSchema = {
                   "minimum": 5,
                   "maximum": 180
                 },
+                "topology": {
+                  "type": "string",
+                  "enum": [
+                    "set",
+                    "sequence",
+                    "adjacency"
+                  ]
+                },
+                "resourceCapacity": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "concurrentUnits",
+                        "resourceLabelId",
+                        "seatsPerUnit"
+                      ],
+                      "properties": {
+                        "concurrentUnits": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 200
+                        },
+                        "resourceLabelId": {
+                          "type": "string",
+                          "enum": [
+                            "court",
+                            "table",
+                            "lane",
+                            "board"
+                          ]
+                        },
+                        "seatsPerUnit": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 1000
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
                 "revealCountdownSeconds": {
                   "type": "integer",
                   "minimum": 0,
@@ -35231,7 +35871,39 @@ export const createOrganizerCallablePayloadSchema = {
                     ]
                   }
                 }
-              }
+              },
+              "allOf": [
+                {
+                  "if": {
+                    "required": [
+                      "resourceCapacity"
+                    ],
+                    "properties": {
+                      "resourceCapacity": {
+                        "type": "object",
+                        "required": [
+                          "seatsPerUnit"
+                        ],
+                        "properties": {
+                          "seatsPerUnit": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "then": {
+                    "required": [
+                      "topology"
+                    ],
+                    "properties": {
+                      "topology": {
+                        "const": "adjacency"
+                      }
+                    }
+                  }
+                }
+              ]
             },
             "hostGoal": {
               "type": "string",
@@ -35400,6 +36072,57 @@ export const createOrganizerCallablePayloadSchema = {
                     "minimum": 5,
                     "maximum": 180
                   },
+                  "topology": {
+                    "type": "string",
+                    "enum": [
+                      "set",
+                      "sequence",
+                      "adjacency"
+                    ]
+                  },
+                  "resourceCapacity": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "concurrentUnits",
+                          "resourceLabelId",
+                          "seatsPerUnit"
+                        ],
+                        "properties": {
+                          "concurrentUnits": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "minimum": 1,
+                            "maximum": 200
+                          },
+                          "resourceLabelId": {
+                            "type": "string",
+                            "enum": [
+                              "court",
+                              "table",
+                              "lane",
+                              "board"
+                            ]
+                          },
+                          "seatsPerUnit": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "minimum": 1,
+                            "maximum": 1000
+                          }
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
                   "revealCountdownSeconds": {
                     "type": "integer",
                     "minimum": 0,
@@ -35443,7 +36166,39 @@ export const createOrganizerCallablePayloadSchema = {
                       ]
                     }
                   }
-                }
+                },
+                "allOf": [
+                  {
+                    "if": {
+                      "required": [
+                        "resourceCapacity"
+                      ],
+                      "properties": {
+                        "resourceCapacity": {
+                          "type": "object",
+                          "required": [
+                            "seatsPerUnit"
+                          ],
+                          "properties": {
+                            "seatsPerUnit": {
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "then": {
+                      "required": [
+                        "topology"
+                      ],
+                      "properties": {
+                        "topology": {
+                          "const": "adjacency"
+                        }
+                      }
+                    }
+                  }
+                ]
               },
               "hostGoal": {
                 "type": "string",
@@ -36211,6 +36966,57 @@ export const updateOrganizerCallablePayloadSchema = {
                       "minimum": 5,
                       "maximum": 180
                     },
+                    "topology": {
+                      "type": "string",
+                      "enum": [
+                        "set",
+                        "sequence",
+                        "adjacency"
+                      ]
+                    },
+                    "resourceCapacity": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "concurrentUnits",
+                            "resourceLabelId",
+                            "seatsPerUnit"
+                          ],
+                          "properties": {
+                            "concurrentUnits": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 1,
+                              "maximum": 200
+                            },
+                            "resourceLabelId": {
+                              "type": "string",
+                              "enum": [
+                                "court",
+                                "table",
+                                "lane",
+                                "board"
+                              ]
+                            },
+                            "seatsPerUnit": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 1,
+                              "maximum": 1000
+                            }
+                          }
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
                     "revealCountdownSeconds": {
                       "type": "integer",
                       "minimum": 0,
@@ -36254,7 +37060,39 @@ export const updateOrganizerCallablePayloadSchema = {
                         ]
                       }
                     }
-                  }
+                  },
+                  "allOf": [
+                    {
+                      "if": {
+                        "required": [
+                          "resourceCapacity"
+                        ],
+                        "properties": {
+                          "resourceCapacity": {
+                            "type": "object",
+                            "required": [
+                              "seatsPerUnit"
+                            ],
+                            "properties": {
+                              "seatsPerUnit": {
+                                "type": "integer"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "then": {
+                        "required": [
+                          "topology"
+                        ],
+                        "properties": {
+                          "topology": {
+                            "const": "adjacency"
+                          }
+                        }
+                      }
+                    }
+                  ]
                 },
                 "hostGoal": {
                   "type": "string",
@@ -36423,6 +37261,57 @@ export const updateOrganizerCallablePayloadSchema = {
                         "minimum": 5,
                         "maximum": 180
                       },
+                      "topology": {
+                        "type": "string",
+                        "enum": [
+                          "set",
+                          "sequence",
+                          "adjacency"
+                        ]
+                      },
+                      "resourceCapacity": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "concurrentUnits",
+                              "resourceLabelId",
+                              "seatsPerUnit"
+                            ],
+                            "properties": {
+                              "concurrentUnits": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ],
+                                "minimum": 1,
+                                "maximum": 200
+                              },
+                              "resourceLabelId": {
+                                "type": "string",
+                                "enum": [
+                                  "court",
+                                  "table",
+                                  "lane",
+                                  "board"
+                                ]
+                              },
+                              "seatsPerUnit": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ],
+                                "minimum": 1,
+                                "maximum": 1000
+                              }
+                            }
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
                       "revealCountdownSeconds": {
                         "type": "integer",
                         "minimum": 0,
@@ -36466,7 +37355,39 @@ export const updateOrganizerCallablePayloadSchema = {
                           ]
                         }
                       }
-                    }
+                    },
+                    "allOf": [
+                      {
+                        "if": {
+                          "required": [
+                            "resourceCapacity"
+                          ],
+                          "properties": {
+                            "resourceCapacity": {
+                              "type": "object",
+                              "required": [
+                                "seatsPerUnit"
+                              ],
+                              "properties": {
+                                "seatsPerUnit": {
+                                  "type": "integer"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "then": {
+                          "required": [
+                            "topology"
+                          ],
+                          "properties": {
+                            "topology": {
+                              "const": "adjacency"
+                            }
+                          }
+                        }
+                      }
+                    ]
                   },
                   "hostGoal": {
                     "type": "string",
@@ -37646,6 +38567,57 @@ export const updateClubCallablePayloadSchema = {
                       "minimum": 5,
                       "maximum": 180
                     },
+                    "topology": {
+                      "type": "string",
+                      "enum": [
+                        "set",
+                        "sequence",
+                        "adjacency"
+                      ]
+                    },
+                    "resourceCapacity": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "concurrentUnits",
+                            "resourceLabelId",
+                            "seatsPerUnit"
+                          ],
+                          "properties": {
+                            "concurrentUnits": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 1,
+                              "maximum": 200
+                            },
+                            "resourceLabelId": {
+                              "type": "string",
+                              "enum": [
+                                "court",
+                                "table",
+                                "lane",
+                                "board"
+                              ]
+                            },
+                            "seatsPerUnit": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 1,
+                              "maximum": 1000
+                            }
+                          }
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
                     "revealCountdownSeconds": {
                       "type": "integer",
                       "minimum": 0,
@@ -37689,7 +38661,39 @@ export const updateClubCallablePayloadSchema = {
                         ]
                       }
                     }
-                  }
+                  },
+                  "allOf": [
+                    {
+                      "if": {
+                        "required": [
+                          "resourceCapacity"
+                        ],
+                        "properties": {
+                          "resourceCapacity": {
+                            "type": "object",
+                            "required": [
+                              "seatsPerUnit"
+                            ],
+                            "properties": {
+                              "seatsPerUnit": {
+                                "type": "integer"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "then": {
+                        "required": [
+                          "topology"
+                        ],
+                        "properties": {
+                          "topology": {
+                            "const": "adjacency"
+                          }
+                        }
+                      }
+                    }
+                  ]
                 },
                 "hostGoal": {
                   "type": "string",
@@ -37858,6 +38862,57 @@ export const updateClubCallablePayloadSchema = {
                         "minimum": 5,
                         "maximum": 180
                       },
+                      "topology": {
+                        "type": "string",
+                        "enum": [
+                          "set",
+                          "sequence",
+                          "adjacency"
+                        ]
+                      },
+                      "resourceCapacity": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "concurrentUnits",
+                              "resourceLabelId",
+                              "seatsPerUnit"
+                            ],
+                            "properties": {
+                              "concurrentUnits": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ],
+                                "minimum": 1,
+                                "maximum": 200
+                              },
+                              "resourceLabelId": {
+                                "type": "string",
+                                "enum": [
+                                  "court",
+                                  "table",
+                                  "lane",
+                                  "board"
+                                ]
+                              },
+                              "seatsPerUnit": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ],
+                                "minimum": 1,
+                                "maximum": 1000
+                              }
+                            }
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
                       "revealCountdownSeconds": {
                         "type": "integer",
                         "minimum": 0,
@@ -37901,7 +38956,39 @@ export const updateClubCallablePayloadSchema = {
                           ]
                         }
                       }
-                    }
+                    },
+                    "allOf": [
+                      {
+                        "if": {
+                          "required": [
+                            "resourceCapacity"
+                          ],
+                          "properties": {
+                            "resourceCapacity": {
+                              "type": "object",
+                              "required": [
+                                "seatsPerUnit"
+                              ],
+                              "properties": {
+                                "seatsPerUnit": {
+                                  "type": "integer"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "then": {
+                          "required": [
+                            "topology"
+                          ],
+                          "properties": {
+                            "topology": {
+                              "const": "adjacency"
+                            }
+                          }
+                        }
+                      }
+                    ]
                   },
                   "hostGoal": {
                     "type": "string",
@@ -43386,6 +44473,57 @@ export const createEventCallablePayloadSchema = {
               "minimum": 5,
               "maximum": 180
             },
+            "topology": {
+              "type": "string",
+              "enum": [
+                "set",
+                "sequence",
+                "adjacency"
+              ]
+            },
+            "resourceCapacity": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "concurrentUnits",
+                    "resourceLabelId",
+                    "seatsPerUnit"
+                  ],
+                  "properties": {
+                    "concurrentUnits": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ],
+                      "minimum": 1,
+                      "maximum": 200
+                    },
+                    "resourceLabelId": {
+                      "type": "string",
+                      "enum": [
+                        "court",
+                        "table",
+                        "lane",
+                        "board"
+                      ]
+                    },
+                    "seatsPerUnit": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ],
+                      "minimum": 1,
+                      "maximum": 1000
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "revealCountdownSeconds": {
               "type": "integer",
               "minimum": 0,
@@ -43429,7 +44567,39 @@ export const createEventCallablePayloadSchema = {
                 ]
               }
             }
-          }
+          },
+          "allOf": [
+            {
+              "if": {
+                "required": [
+                  "resourceCapacity"
+                ],
+                "properties": {
+                  "resourceCapacity": {
+                    "type": "object",
+                    "required": [
+                      "seatsPerUnit"
+                    ],
+                    "properties": {
+                      "seatsPerUnit": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "topology"
+                ],
+                "properties": {
+                  "topology": {
+                    "const": "adjacency"
+                  }
+                }
+              }
+            }
+          ]
         },
         "hostGoal": {
           "type": "string",

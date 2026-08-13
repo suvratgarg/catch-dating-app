@@ -1,7 +1,11 @@
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {EventDocument, BlockDocument} from
+import {
+  EventDocument,
+  BlockDocument,
+  OrganizerEventSuccessLayoutDocument,
+} from
   "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
 import {PrepareEventSuccessRotationDraftCallablePayload} from
@@ -29,22 +33,32 @@ import {
   OptimizedPair,
   runAssignmentEngine,
 } from "./assignmentOptimizer";
-import {AssignmentConstraintConfig} from "./assignmentConstraints";
 import {
+  AssignmentConstraintConfig,
+  normalizeAssignmentConstraints,
+} from "./assignmentConstraints";
+import {
+  AssignmentTopology,
+  EventSuccessResourceLabelId,
   EventSuccessUnitKind,
   assertPairRotationTopology,
+  resolveAssignmentTopology,
   resolveRotationIntervalMinutes,
+  resolveSequenceConcurrentUnits,
   rotationRoundCountForDuration,
 } from "./assignmentTopology";
 import {
   CompatibilitySignal,
   QuestionnaireScoringMode,
+  scoreDatingCompatibilityPair,
+  scoreQuestionnaireObjectivePair,
 } from "./compatibilityPolicy";
 import {
   EventSuccessAssignmentAlgorithm,
   EventSuccessCompatibilityPolicy,
   EventSuccessMatchingObjective,
   eventSuccessPrimitivesFor,
+  eventSuccessVariableResolutionFor,
 } from "./formatPrimitives";
 import {
   activityAttributesForProfile,
@@ -56,9 +70,11 @@ import {loadEventSuccessRoster} from "./eventSuccessRoster";
 import {
   applyEventSuccessSpatialLayout,
   assignmentConstraintsForSpatialPlan,
+  deriveEventSuccessUnitProximity,
   loadSelectedEventSuccessLayout,
   persistentSpatialPlanFields,
 } from "./spatialLayout";
+import {buildEventSuccessSequenceSchedule} from "./sequenceScheduler";
 
 const GUIDED_ROTATIONS_MODULE_ID = "guided_rotations";
 const COMPATIBILITY_QUESTIONNAIRE_MODULE_ID = "compatibility_questionnaire";
@@ -102,6 +118,8 @@ interface EventSuccessPlanDocument {
     unitSize?: unknown;
     unitCount?: unknown;
     rotationIntervalMinutes?: unknown;
+    topology?: unknown;
+    resourceCapacity?: unknown;
   } & AssignmentPrimitiveStructureConfig;
 }
 
@@ -129,6 +147,10 @@ interface RotationPair {
   b: RotationParticipant;
   score: number;
   compatibility: CompatibilitySignal | "host_override";
+  unitIndex?: number;
+  resourceUnitId?: string;
+  movementCost?: number;
+  meetingIndex?: number;
 }
 
 interface RotationRound {
@@ -164,6 +186,7 @@ interface GeneratedRotationSlot {
   unitKind?: EventSuccessUnitKind;
   unitIndex?: number;
   peerCount?: number;
+  resourceUnitId?: string;
   compatibility: RotationPair["compatibility"];
   whySummary?: string;
   whyCodes?: AssignmentWhyCode[];
@@ -268,18 +291,34 @@ export async function prepareEventSuccessRotationDraft(
     throw staleLiveControlError();
   }
   const primitives = eventSuccessPrimitivesFor(event.eventFormat);
-  if (primitives.assignmentResolution.status === "unsupported") {
-    throw new HttpsError(
-      "failed-precondition",
-      primitives.assignmentResolution.reason
-    );
-  }
   const {participants, blockedPairs} =
     await loadEligibleRotationParticipants(
       db,
       input.eventId,
       questionnaireMode !== "icebreaker"
     );
+  const topology = {
+    ...resolveAssignmentTopology(plan, participants.length, {
+      defaultUnitKind: "pairs",
+      defaultUnitSize: 2,
+    }),
+    rotationIntervalMinutes,
+    rotationsEnabled: true,
+  };
+  const assignmentResolution = eventSuccessVariableResolutionFor({
+    assignmentAlgorithm: primitives.assignmentAlgorithm,
+    compatibilityPolicy: primitives.compatibilityPolicy,
+    matchingObjective: primitives.matchingObjective,
+    topology: topology.topology ?? "set",
+  });
+  if (assignmentResolution.status === "unsupported") {
+    throw new HttpsError("failed-precondition", assignmentResolution.reason);
+  }
+  const layout = await loadSelectedEventSuccessLayout(
+    db,
+    event.organizerId ?? event.clubId,
+    plan
+  );
   const rounds = buildRotationRounds({
     participants,
     blockedPairs,
@@ -292,6 +331,8 @@ export async function prepareEventSuccessRotationDraft(
     matchingObjective: primitives.matchingObjective,
     constraints,
     rotationPolicy,
+    topology,
+    layout,
   });
   const publishedRoundIndex = integerOr(
     plan.publishedRotationRoundIndex,
@@ -309,14 +350,10 @@ export async function prepareEventSuccessRotationDraft(
     rounds,
     eventStartMillis: event.startTime.toMillis(),
     rotationIntervalMinutes,
+    resourceLabelId: topology.resourceCapacity?.resourceLabelId,
     source: "server_v1",
     now: deps.serverTimestamp(),
   }) : new Map<string, GeneratedAssignment>();
-  const layout = await loadSelectedEventSuccessLayout(
-    db,
-    event.organizerId ?? event.clubId,
-    plan
-  );
   applyEventSuccessSpatialLayout(
     assignments,
     layout,
@@ -372,6 +409,29 @@ export async function overrideEventSuccessRotationsHandler(
   }
   const {participants, blockedPairs} =
     await loadEligibleRotationParticipants(db, payload.eventId, false);
+  const primitives = eventSuccessPrimitivesFor(event.eventFormat);
+  const topology = {
+    ...resolveAssignmentTopology(plan, participants.length, {
+      defaultUnitKind: "pairs",
+      defaultUnitSize: 2,
+    }),
+    rotationIntervalMinutes,
+    rotationsEnabled: true,
+  };
+  const assignmentResolution = eventSuccessVariableResolutionFor({
+    assignmentAlgorithm: primitives.assignmentAlgorithm,
+    compatibilityPolicy: primitives.compatibilityPolicy,
+    matchingObjective: primitives.matchingObjective,
+    topology: topology.topology ?? "set",
+  });
+  if (assignmentResolution.status === "unsupported") {
+    throw new HttpsError("failed-precondition", assignmentResolution.reason);
+  }
+  const layout = await loadSelectedEventSuccessLayout(
+    db,
+    event.organizerId ?? event.clubId,
+    plan
+  );
   const rounds = buildOverrideRounds({
     inputRounds: payload.rounds,
     participants,
@@ -379,6 +439,18 @@ export async function overrideEventSuccessRotationsHandler(
     eventStartMillis: event.startTime.toMillis(),
     eventEndMillis: event.endTime.toMillis(),
     rotationIntervalMinutes,
+    concurrentUnits: topology.topology === "sequence" ?
+      resolveSequenceConcurrentUnits(
+        plan,
+        participants.length,
+        layout?.units.length ?? null
+      ) :
+      null,
+    resourceUnitIds: sequenceResourceUnitIds({
+      topology,
+      layout,
+      participantCount: participants.length,
+    }),
   });
   const assignments = buildAssignments({
     eventId: payload.eventId,
@@ -389,6 +461,7 @@ export async function overrideEventSuccessRotationsHandler(
     rounds,
     eventStartMillis: event.startTime.toMillis(),
     rotationIntervalMinutes,
+    resourceLabelId: topology.resourceCapacity?.resourceLabelId,
     source: "host_override_v1",
     now: deps.serverTimestamp(),
   });
@@ -401,11 +474,6 @@ export async function overrideEventSuccessRotationsHandler(
     throw new HttpsError("failed-precondition",
       "The override must include the next unpublished round.");
   }
-  const layout = await loadSelectedEventSuccessLayout(
-    db,
-    event.organizerId ?? event.clubId,
-    plan
-  );
   applyEventSuccessSpatialLayout(
     assignments,
     layout,
@@ -695,6 +763,64 @@ async function fetchBlockedPairs(
   return pairs;
 }
 
+/** Returns stable physical resource ids in traversal order. */
+function sequenceResourceUnitIds(params: {
+  topology: AssignmentTopology;
+  layout: OrganizerEventSuccessLayoutDocument | null;
+  participantCount: number;
+}): string[] {
+  if (params.topology.topology !== "sequence") return [];
+  const concurrentUnits = resolveSequenceConcurrentUnits({
+    structureConfig: {
+      resourceCapacity: params.topology.resourceCapacity,
+    },
+  }, params.participantCount, params.layout?.units.length ?? null);
+  if (params.layout !== null) {
+    return [...params.layout.units]
+      .sort((a, b) => a.order - b.order || a.id.localeCompare(b.id))
+      .slice(0, concurrentUnits)
+      .map((unit) => unit.id);
+  }
+  const prefix = params.topology.resourceCapacity?.resourceLabelId ??
+    "resource";
+  return Array.from(
+    {length: concurrentUnits},
+    (_, index) => `${prefix}-${index + 1}`
+  );
+}
+
+/** Scores explainability metadata without changing round-robin ordering. */
+function sequencePairCompatibility(params: {
+  a: RotationParticipant;
+  b: RotationParticipant;
+  questionnaireMode: QuestionnaireScoringMode;
+  compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  matchingObjective: EventSuccessMatchingObjective;
+}): Pick<RotationPair, "score" | "compatibility"> {
+  if (params.compatibilityPolicy === "mutualInterestOnly") {
+    const result = scoreDatingCompatibilityPair(params.a, params.b, {
+      questionnaireMode: "off",
+      allowOrientationFallback: true,
+    });
+    return {score: result.score, compatibility: result.compatibility};
+  }
+  if (
+    params.compatibilityPolicy === "questionnaireClueOnly" &&
+    (params.questionnaireMode === "light" ||
+      params.questionnaireMode === "strong") &&
+    (params.matchingObjective === "affinity" ||
+      params.matchingObjective === "novelty")
+  ) {
+    const result = scoreQuestionnaireObjectivePair(
+      params.a,
+      params.b,
+      params.matchingObjective
+    );
+    return {score: result.score, compatibility: result.compatibility};
+  }
+  return {score: 0, compatibility: "social"};
+}
+
 /**
  * Builds scored, non-repeating rotation rounds.
  * @param {object} params Rotation inputs.
@@ -720,6 +846,8 @@ function buildRotationRounds(params: {
   matchingObjective: EventSuccessMatchingObjective;
   constraints?: AssignmentConstraintConfig;
   rotationPolicy?: AssignmentRotationPolicy;
+  topology: AssignmentTopology;
+  layout: OrganizerEventSuccessLayoutDocument | null;
 }): RotationRound[] {
   if (params.participants.length < 2) return [];
   const requestedRounds = rotationRoundCountForDuration({
@@ -727,6 +855,60 @@ function buildRotationRounds(params: {
     eventEndMillis: params.eventEndMillis,
     rotationIntervalMinutes: params.rotationIntervalMinutes,
   });
+  if (params.topology.topology === "sequence") {
+    const constraints = normalizeAssignmentConstraints(
+      params.constraints,
+      params.rotationIntervalMinutes
+    );
+    const resourceUnitIds = sequenceResourceUnitIds({
+      topology: params.topology,
+      layout: params.layout,
+      participantCount: params.participants.length,
+    });
+    const blockedPairKeys = new Set([
+      ...params.blockedPairs,
+      ...constraints.keepApartPairs,
+    ]);
+    const priorityPairKeys = new Set([
+      ...constraints.keepTogetherPairs,
+      ...constraints.requestedRepeatPairs,
+    ]);
+    const schedule = buildEventSuccessSequenceSchedule({
+      participants: params.participants,
+      roundLimit: requestedRounds,
+      concurrentUnits: resourceUnitIds.length,
+      resourceUnitIds,
+      unitProximity: params.layout === null ?
+        [] :
+        deriveEventSuccessUnitProximity(params.layout.units),
+      blockedPairKeys,
+      priorityPairKeys,
+      exclusionMinutesByUid: constraints.exclusionMinutesByUid,
+      exclusionIntervalMinutes: constraints.exclusionIntervalMinutes,
+      maxPairMeetings: params.rotationPolicy?.repeatStrategy ===
+        "allowWhenExhausted" ?
+        params.rotationPolicy.maxPairMeetings :
+        1,
+    });
+    return schedule.rounds.map((round) => ({
+      roundIndex: round.roundIndex,
+      pairs: round.matches.map((match) => ({
+        a: match.a,
+        b: match.b,
+        ...sequencePairCompatibility({
+          a: match.a,
+          b: match.b,
+          questionnaireMode: params.questionnaireMode,
+          compatibilityPolicy: params.compatibilityPolicy,
+          matchingObjective: params.matchingObjective,
+        }),
+        unitIndex: match.unitIndex,
+        resourceUnitId: match.resourceUnitId,
+        movementCost: match.movementCost,
+        meetingIndex: match.meetingIndex,
+      })),
+    }));
+  }
   const maxRounds = params.participants.length % 2 === 0 ?
     params.participants.length - 1 :
     params.participants.length;
@@ -738,12 +920,8 @@ function buildRotationRounds(params: {
     participants: params.participants,
     blockedPairs: params.blockedPairs,
     topology: {
-      unitKind: "pairs",
-      unitSize: 2,
-      groupCount: Math.max(1, Math.floor(params.participants.length / 2)),
-      maxGroupSize: 2,
-      rotationIntervalMinutes: params.rotationIntervalMinutes,
-      rotationsEnabled: true,
+      ...params.topology,
+      topology: params.topology.topology ?? "set",
     },
     assignmentAlgorithm: params.assignmentAlgorithm,
     compatibilityPolicy: params.compatibilityPolicy,
@@ -777,6 +955,8 @@ function buildOverrideRounds(params: {
   eventStartMillis: number;
   eventEndMillis: number;
   rotationIntervalMinutes: number;
+  concurrentUnits: number | null;
+  resourceUnitIds: string[];
 }): RotationRound[] {
   const maxRoundCount = rotationRoundCountForDuration({
     eventStartMillis: params.eventStartMillis,
@@ -823,12 +1003,26 @@ function buildOverrideRounds(params: {
       }
       usedInRound.add(pairing.uidA);
       usedInRound.add(pairing.uidB);
+      const unitIndex = pairs.length;
       pairs.push({
         a: participantA,
         b: participantB,
         score: 0,
         compatibility: "host_override",
+        ...(params.concurrentUnits === null ? {} : {
+          unitIndex,
+          resourceUnitId: params.resourceUnitIds[unitIndex],
+        }),
       });
+    }
+    if (
+      params.concurrentUnits !== null &&
+      pairs.length > params.concurrentUnits
+    ) {
+      throw new HttpsError(
+        "failed-precondition",
+        "This round exceeds the configured simultaneous resource capacity."
+      );
     }
     if (pairs.length > 0) {
       rounds.push({roundIndex: inputRound.roundIndex, pairs});
@@ -880,6 +1074,7 @@ function buildAssignments(params: {
   rounds: RotationRound[];
   eventStartMillis: number;
   rotationIntervalMinutes: number;
+  resourceLabelId?: EventSuccessResourceLabelId;
   source: string;
   now: FirebaseFirestore.FieldValue;
 }): Map<string, GeneratedAssignment> {
@@ -901,13 +1096,18 @@ function buildAssignments(params: {
       startsAt.toMillis() + params.rotationIntervalMinutes * 60000
     );
     const usedUids = new Set<string>();
-    for (const [unitIndex, pair] of round.pairs.entries()) {
-      const label = `Round ${round.roundIndex + 1}`;
+    for (const [pairIndex, pair] of round.pairs.entries()) {
+      const unitIndex = pair.unitIndex ?? pairIndex;
+      const label = rotationSlotLabel(
+        round.roundIndex,
+        params.resourceLabelId,
+        unitIndex
+      );
       const repeatedForA =
         seenPeersByUid.get(pair.a.uid)?.has(pair.b.uid) === true;
       const repeatedForB =
         seenPeersByUid.get(pair.b.uid)?.has(pair.a.uid) === true;
-      const slotA = {
+      const slotA: GeneratedRotationSlot = {
         slotId: `round-${round.roundIndex}-pair-${unitIndex}`,
         roundIndex: round.roundIndex,
         label,
@@ -917,6 +1117,9 @@ function buildAssignments(params: {
         unitKind: "pairs" as const,
         unitIndex,
         peerCount: 1,
+        ...(pair.resourceUnitId === undefined ? {} : {
+          resourceUnitId: pair.resourceUnitId,
+        }),
         compatibility: pair.compatibility,
         whySummary: rotationWhySummary({
           compatibility: pair.compatibility,
@@ -930,7 +1133,7 @@ function buildAssignments(params: {
           repeatedPeer: repeatedForA,
         }),
       };
-      const slotB = {
+      const slotB: GeneratedRotationSlot = {
         slotId: `round-${round.roundIndex}-pair-${unitIndex}`,
         roundIndex: round.roundIndex,
         label,
@@ -940,6 +1143,9 @@ function buildAssignments(params: {
         unitKind: "pairs" as const,
         unitIndex,
         peerCount: 1,
+        ...(pair.resourceUnitId === undefined ? {} : {
+          resourceUnitId: pair.resourceUnitId,
+        }),
         compatibility: pair.compatibility,
         whySummary: rotationWhySummary({
           compatibility: pair.compatibility,
@@ -1015,6 +1221,18 @@ function buildAssignments(params: {
     });
   }
   return assignments;
+}
+
+function rotationSlotLabel(
+  roundIndex: number,
+  resourceLabelId: EventSuccessResourceLabelId | undefined,
+  unitIndex: number
+): string {
+  const round = `Round ${roundIndex + 1}`;
+  if (resourceLabelId === undefined) return round;
+  const resource = resourceLabelId.charAt(0).toUpperCase() +
+    resourceLabelId.slice(1);
+  return `${round} · ${resource} ${unitIndex + 1}`;
 }
 
 /**

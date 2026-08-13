@@ -4783,6 +4783,27 @@ abstract final class CatchContractConstraints {
     maximum: 10,
   );
 
+  static const clubDocumentHostDefaultsEventSuccessStructureConfigResourceCapacityConcurrentUnits = CatchContractFieldConstraints(
+    path: 'clubDocument.hostDefaults.eventSuccess.structureConfig.resourceCapacity.concurrentUnits',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const clubDocumentHostDefaultsEventSuccessStructureConfigResourceCapacityResourceLabelId = CatchContractFieldConstraints(
+    path: 'clubDocument.hostDefaults.eventSuccess.structureConfig.resourceCapacity.resourceLabelId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['court', 'table', 'lane', 'board'],
+  );
+
+  static const clubDocumentHostDefaultsEventSuccessStructureConfigResourceCapacitySeatsPerUnit = CatchContractFieldConstraints(
+    path: 'clubDocument.hostDefaults.eventSuccess.structureConfig.resourceCapacity.seatsPerUnit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
   static const clubDocumentHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds = CatchContractFieldConstraints(
     path: 'clubDocument.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds',
     required: true,
@@ -4802,6 +4823,12 @@ abstract final class CatchContractConstraints {
     path: 'clubDocument.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy',
     valueTypes: <String>['string'],
     enumValues: <String>['avoid', 'allowWhenExhausted'],
+  );
+
+  static const clubDocumentHostDefaultsEventSuccessStructureConfigTopology = CatchContractFieldConstraints(
+    path: 'clubDocument.hostDefaults.eventSuccess.structureConfig.topology',
+    valueTypes: <String>['string'],
+    enumValues: <String>['set', 'sequence', 'adjacency'],
   );
 
   static const clubDocumentHostDefaultsEventSuccessStructureConfigUnitCount = CatchContractFieldConstraints(
@@ -6897,6 +6924,27 @@ abstract final class CatchContractConstraints {
     maximum: 10,
   );
 
+  static const createClubCallablePayloadHostDefaultsEventSuccessStructureConfigResourceCapacityConcurrentUnits = CatchContractFieldConstraints(
+    path: 'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.resourceCapacity.concurrentUnits',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const createClubCallablePayloadHostDefaultsEventSuccessStructureConfigResourceCapacityResourceLabelId = CatchContractFieldConstraints(
+    path: 'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.resourceCapacity.resourceLabelId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['court', 'table', 'lane', 'board'],
+  );
+
+  static const createClubCallablePayloadHostDefaultsEventSuccessStructureConfigResourceCapacitySeatsPerUnit = CatchContractFieldConstraints(
+    path: 'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.resourceCapacity.seatsPerUnit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
   static const createClubCallablePayloadHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds = CatchContractFieldConstraints(
     path: 'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds',
     required: true,
@@ -6916,6 +6964,12 @@ abstract final class CatchContractConstraints {
     path: 'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy',
     valueTypes: <String>['string'],
     enumValues: <String>['avoid', 'allowWhenExhausted'],
+  );
+
+  static const createClubCallablePayloadHostDefaultsEventSuccessStructureConfigTopology = CatchContractFieldConstraints(
+    path: 'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.topology',
+    valueTypes: <String>['string'],
+    enumValues: <String>['set', 'sequence', 'adjacency'],
   );
 
   static const createClubCallablePayloadHostDefaultsEventSuccessStructureConfigUnitCount = CatchContractFieldConstraints(
@@ -7837,6 +7891,27 @@ abstract final class CatchContractConstraints {
     maximum: 10,
   );
 
+  static const createEventCallablePayloadEventSuccessDefaultsStructureConfigResourceCapacityConcurrentUnits = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventSuccessDefaults.structureConfig.resourceCapacity.concurrentUnits',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const createEventCallablePayloadEventSuccessDefaultsStructureConfigResourceCapacityResourceLabelId = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventSuccessDefaults.structureConfig.resourceCapacity.resourceLabelId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['court', 'table', 'lane', 'board'],
+  );
+
+  static const createEventCallablePayloadEventSuccessDefaultsStructureConfigResourceCapacitySeatsPerUnit = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventSuccessDefaults.structureConfig.resourceCapacity.seatsPerUnit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
   static const createEventCallablePayloadEventSuccessDefaultsStructureConfigRevealCountdownSeconds = CatchContractFieldConstraints(
     path: 'createEventCallablePayload.eventSuccessDefaults.structureConfig.revealCountdownSeconds',
     required: true,
@@ -7856,6 +7931,12 @@ abstract final class CatchContractConstraints {
     path: 'createEventCallablePayload.eventSuccessDefaults.structureConfig.rotationRepeatStrategy',
     valueTypes: <String>['string'],
     enumValues: <String>['avoid', 'allowWhenExhausted'],
+  );
+
+  static const createEventCallablePayloadEventSuccessDefaultsStructureConfigTopology = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventSuccessDefaults.structureConfig.topology',
+    valueTypes: <String>['string'],
+    enumValues: <String>['set', 'sequence', 'adjacency'],
   );
 
   static const createEventCallablePayloadEventSuccessDefaultsStructureConfigUnitCount = CatchContractFieldConstraints(
@@ -8476,6 +8557,27 @@ abstract final class CatchContractConstraints {
     maximum: 10,
   );
 
+  static const createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigResourceCapacityConcurrentUnits = CatchContractFieldConstraints(
+    path: 'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.resourceCapacity.concurrentUnits',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigResourceCapacityResourceLabelId = CatchContractFieldConstraints(
+    path: 'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.resourceCapacity.resourceLabelId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['court', 'table', 'lane', 'board'],
+  );
+
+  static const createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigResourceCapacitySeatsPerUnit = CatchContractFieldConstraints(
+    path: 'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.resourceCapacity.seatsPerUnit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
   static const createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds = CatchContractFieldConstraints(
     path: 'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds',
     required: true,
@@ -8495,6 +8597,12 @@ abstract final class CatchContractConstraints {
     path: 'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy',
     valueTypes: <String>['string'],
     enumValues: <String>['avoid', 'allowWhenExhausted'],
+  );
+
+  static const createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigTopology = CatchContractFieldConstraints(
+    path: 'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.topology',
+    valueTypes: <String>['string'],
+    enumValues: <String>['set', 'sequence', 'adjacency'],
   );
 
   static const createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigUnitCount = CatchContractFieldConstraints(
@@ -14677,6 +14785,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventSuccessAssignmentDocumentRotationSlotsItemsResourceUnitId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDocument.rotationSlots.items.resourceUnitId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
+  );
+
   static const eventSuccessAssignmentDocumentRotationSlotsItemsRoundIndex = CatchContractFieldConstraints(
     path: 'eventSuccessAssignmentDocument.rotationSlots.items.roundIndex',
     required: true,
@@ -15242,6 +15356,12 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsResourceUnitId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.resourceUnitId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
   );
 
   static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsRoundIndex = CatchContractFieldConstraints(
@@ -16263,6 +16383,27 @@ abstract final class CatchContractConstraints {
     maximum: 10,
   );
 
+  static const eventSuccessPlanDocumentStructureConfigResourceCapacityConcurrentUnits = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.structureConfig.resourceCapacity.concurrentUnits',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const eventSuccessPlanDocumentStructureConfigResourceCapacityResourceLabelId = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.structureConfig.resourceCapacity.resourceLabelId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['court', 'table', 'lane', 'board'],
+  );
+
+  static const eventSuccessPlanDocumentStructureConfigResourceCapacitySeatsPerUnit = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.structureConfig.resourceCapacity.seatsPerUnit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
   static const eventSuccessPlanDocumentStructureConfigRevealCountdownSeconds = CatchContractFieldConstraints(
     path: 'eventSuccessPlanDocument.structureConfig.revealCountdownSeconds',
     required: true,
@@ -16282,6 +16423,12 @@ abstract final class CatchContractConstraints {
     path: 'eventSuccessPlanDocument.structureConfig.rotationRepeatStrategy',
     valueTypes: <String>['string'],
     enumValues: <String>['avoid', 'allowWhenExhausted'],
+  );
+
+  static const eventSuccessPlanDocumentStructureConfigTopology = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.structureConfig.topology',
+    valueTypes: <String>['string'],
+    enumValues: <String>['set', 'sequence', 'adjacency'],
   );
 
   static const eventSuccessPlanDocumentStructureConfigUnitCount = CatchContractFieldConstraints(
@@ -27018,6 +27165,27 @@ abstract final class CatchContractConstraints {
     maximum: 10,
   );
 
+  static const organizerDocumentHostDefaultsEventSuccessStructureConfigResourceCapacityConcurrentUnits = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostDefaults.eventSuccess.structureConfig.resourceCapacity.concurrentUnits',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const organizerDocumentHostDefaultsEventSuccessStructureConfigResourceCapacityResourceLabelId = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostDefaults.eventSuccess.structureConfig.resourceCapacity.resourceLabelId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['court', 'table', 'lane', 'board'],
+  );
+
+  static const organizerDocumentHostDefaultsEventSuccessStructureConfigResourceCapacitySeatsPerUnit = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostDefaults.eventSuccess.structureConfig.resourceCapacity.seatsPerUnit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
   static const organizerDocumentHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds = CatchContractFieldConstraints(
     path: 'organizerDocument.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds',
     required: true,
@@ -27037,6 +27205,12 @@ abstract final class CatchContractConstraints {
     path: 'organizerDocument.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy',
     valueTypes: <String>['string'],
     enumValues: <String>['avoid', 'allowWhenExhausted'],
+  );
+
+  static const organizerDocumentHostDefaultsEventSuccessStructureConfigTopology = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostDefaults.eventSuccess.structureConfig.topology',
+    valueTypes: <String>['string'],
+    enumValues: <String>['set', 'sequence', 'adjacency'],
   );
 
   static const organizerDocumentHostDefaultsEventSuccessStructureConfigUnitCount = CatchContractFieldConstraints(
@@ -34786,6 +34960,27 @@ abstract final class CatchContractConstraints {
     maximum: 10,
   );
 
+  static const updateClubPatchHostDefaultsEventSuccessStructureConfigResourceCapacityConcurrentUnits = CatchContractFieldConstraints(
+    path: 'updateClubPatch.hostDefaults.eventSuccess.structureConfig.resourceCapacity.concurrentUnits',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const updateClubPatchHostDefaultsEventSuccessStructureConfigResourceCapacityResourceLabelId = CatchContractFieldConstraints(
+    path: 'updateClubPatch.hostDefaults.eventSuccess.structureConfig.resourceCapacity.resourceLabelId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['court', 'table', 'lane', 'board'],
+  );
+
+  static const updateClubPatchHostDefaultsEventSuccessStructureConfigResourceCapacitySeatsPerUnit = CatchContractFieldConstraints(
+    path: 'updateClubPatch.hostDefaults.eventSuccess.structureConfig.resourceCapacity.seatsPerUnit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
   static const updateClubPatchHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds = CatchContractFieldConstraints(
     path: 'updateClubPatch.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds',
     required: true,
@@ -34805,6 +35000,12 @@ abstract final class CatchContractConstraints {
     path: 'updateClubPatch.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy',
     valueTypes: <String>['string'],
     enumValues: <String>['avoid', 'allowWhenExhausted'],
+  );
+
+  static const updateClubPatchHostDefaultsEventSuccessStructureConfigTopology = CatchContractFieldConstraints(
+    path: 'updateClubPatch.hostDefaults.eventSuccess.structureConfig.topology',
+    valueTypes: <String>['string'],
+    enumValues: <String>['set', 'sequence', 'adjacency'],
   );
 
   static const updateClubPatchHostDefaultsEventSuccessStructureConfigUnitCount = CatchContractFieldConstraints(
@@ -35813,6 +36014,27 @@ abstract final class CatchContractConstraints {
     maximum: 10,
   );
 
+  static const updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigResourceCapacityConcurrentUnits = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.resourceCapacity.concurrentUnits',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigResourceCapacityResourceLabelId = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.resourceCapacity.resourceLabelId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['court', 'table', 'lane', 'board'],
+  );
+
+  static const updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigResourceCapacitySeatsPerUnit = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.resourceCapacity.seatsPerUnit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
   static const updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds = CatchContractFieldConstraints(
     path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds',
     required: true,
@@ -35832,6 +36054,12 @@ abstract final class CatchContractConstraints {
     path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy',
     valueTypes: <String>['string'],
     enumValues: <String>['avoid', 'allowWhenExhausted'],
+  );
+
+  static const updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigTopology = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.topology',
+    valueTypes: <String>['string'],
+    enumValues: <String>['set', 'sequence', 'adjacency'],
   );
 
   static const updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigUnitCount = CatchContractFieldConstraints(
@@ -39809,9 +40037,13 @@ abstract final class CatchContractConstraints {
     'clubDocument.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes': clubDocumentHostDefaultsEventSuccessStructureConfigClusterActivityAttributes,
     'clubDocument.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes.items': clubDocumentHostDefaultsEventSuccessStructureConfigClusterActivityAttributesItems,
     'clubDocument.hostDefaults.eventSuccess.structureConfig.maxPairMeetings': clubDocumentHostDefaultsEventSuccessStructureConfigMaxPairMeetings,
+    'clubDocument.hostDefaults.eventSuccess.structureConfig.resourceCapacity.concurrentUnits': clubDocumentHostDefaultsEventSuccessStructureConfigResourceCapacityConcurrentUnits,
+    'clubDocument.hostDefaults.eventSuccess.structureConfig.resourceCapacity.resourceLabelId': clubDocumentHostDefaultsEventSuccessStructureConfigResourceCapacityResourceLabelId,
+    'clubDocument.hostDefaults.eventSuccess.structureConfig.resourceCapacity.seatsPerUnit': clubDocumentHostDefaultsEventSuccessStructureConfigResourceCapacitySeatsPerUnit,
     'clubDocument.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds': clubDocumentHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds,
     'clubDocument.hostDefaults.eventSuccess.structureConfig.rotationIntervalMinutes': clubDocumentHostDefaultsEventSuccessStructureConfigRotationIntervalMinutes,
     'clubDocument.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy': clubDocumentHostDefaultsEventSuccessStructureConfigRotationRepeatStrategy,
+    'clubDocument.hostDefaults.eventSuccess.structureConfig.topology': clubDocumentHostDefaultsEventSuccessStructureConfigTopology,
     'clubDocument.hostDefaults.eventSuccess.structureConfig.unitCount': clubDocumentHostDefaultsEventSuccessStructureConfigUnitCount,
     'clubDocument.hostDefaults.eventSuccess.structureConfig.unitKind': clubDocumentHostDefaultsEventSuccessStructureConfigUnitKind,
     'clubDocument.hostDefaults.eventSuccess.structureConfig.unitSize': clubDocumentHostDefaultsEventSuccessStructureConfigUnitSize,
@@ -40100,9 +40332,13 @@ abstract final class CatchContractConstraints {
     'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigClusterActivityAttributes,
     'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes.items': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigClusterActivityAttributesItems,
     'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.maxPairMeetings': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigMaxPairMeetings,
+    'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.resourceCapacity.concurrentUnits': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigResourceCapacityConcurrentUnits,
+    'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.resourceCapacity.resourceLabelId': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigResourceCapacityResourceLabelId,
+    'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.resourceCapacity.seatsPerUnit': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigResourceCapacitySeatsPerUnit,
     'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds,
     'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.rotationIntervalMinutes': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigRotationIntervalMinutes,
     'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigRotationRepeatStrategy,
+    'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.topology': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigTopology,
     'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.unitCount': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigUnitCount,
     'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.unitKind': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigUnitKind,
     'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.unitSize': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigUnitSize,
@@ -40232,9 +40468,13 @@ abstract final class CatchContractConstraints {
     'createEventCallablePayload.eventSuccessDefaults.structureConfig.clusterActivityAttributes': createEventCallablePayloadEventSuccessDefaultsStructureConfigClusterActivityAttributes,
     'createEventCallablePayload.eventSuccessDefaults.structureConfig.clusterActivityAttributes.items': createEventCallablePayloadEventSuccessDefaultsStructureConfigClusterActivityAttributesItems,
     'createEventCallablePayload.eventSuccessDefaults.structureConfig.maxPairMeetings': createEventCallablePayloadEventSuccessDefaultsStructureConfigMaxPairMeetings,
+    'createEventCallablePayload.eventSuccessDefaults.structureConfig.resourceCapacity.concurrentUnits': createEventCallablePayloadEventSuccessDefaultsStructureConfigResourceCapacityConcurrentUnits,
+    'createEventCallablePayload.eventSuccessDefaults.structureConfig.resourceCapacity.resourceLabelId': createEventCallablePayloadEventSuccessDefaultsStructureConfigResourceCapacityResourceLabelId,
+    'createEventCallablePayload.eventSuccessDefaults.structureConfig.resourceCapacity.seatsPerUnit': createEventCallablePayloadEventSuccessDefaultsStructureConfigResourceCapacitySeatsPerUnit,
     'createEventCallablePayload.eventSuccessDefaults.structureConfig.revealCountdownSeconds': createEventCallablePayloadEventSuccessDefaultsStructureConfigRevealCountdownSeconds,
     'createEventCallablePayload.eventSuccessDefaults.structureConfig.rotationIntervalMinutes': createEventCallablePayloadEventSuccessDefaultsStructureConfigRotationIntervalMinutes,
     'createEventCallablePayload.eventSuccessDefaults.structureConfig.rotationRepeatStrategy': createEventCallablePayloadEventSuccessDefaultsStructureConfigRotationRepeatStrategy,
+    'createEventCallablePayload.eventSuccessDefaults.structureConfig.topology': createEventCallablePayloadEventSuccessDefaultsStructureConfigTopology,
     'createEventCallablePayload.eventSuccessDefaults.structureConfig.unitCount': createEventCallablePayloadEventSuccessDefaultsStructureConfigUnitCount,
     'createEventCallablePayload.eventSuccessDefaults.structureConfig.unitKind': createEventCallablePayloadEventSuccessDefaultsStructureConfigUnitKind,
     'createEventCallablePayload.eventSuccessDefaults.structureConfig.unitSize': createEventCallablePayloadEventSuccessDefaultsStructureConfigUnitSize,
@@ -40322,9 +40562,13 @@ abstract final class CatchContractConstraints {
     'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes': createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigClusterActivityAttributes,
     'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes.items': createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigClusterActivityAttributesItems,
     'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.maxPairMeetings': createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigMaxPairMeetings,
+    'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.resourceCapacity.concurrentUnits': createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigResourceCapacityConcurrentUnits,
+    'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.resourceCapacity.resourceLabelId': createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigResourceCapacityResourceLabelId,
+    'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.resourceCapacity.seatsPerUnit': createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigResourceCapacitySeatsPerUnit,
     'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds': createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds,
     'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.rotationIntervalMinutes': createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigRotationIntervalMinutes,
     'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy': createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigRotationRepeatStrategy,
+    'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.topology': createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigTopology,
     'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.unitCount': createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigUnitCount,
     'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.unitKind': createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigUnitKind,
     'createOrganizerCallablePayload.hostDefaults.eventSuccess.structureConfig.unitSize': createOrganizerCallablePayloadHostDefaultsEventSuccessStructureConfigUnitSize,
@@ -41179,6 +41423,7 @@ abstract final class CatchContractConstraints {
     'eventSuccessAssignmentDocument.rotationSlots.items.label': eventSuccessAssignmentDocumentRotationSlotsItemsLabel,
     'eventSuccessAssignmentDocument.rotationSlots.items.peerCount': eventSuccessAssignmentDocumentRotationSlotsItemsPeerCount,
     'eventSuccessAssignmentDocument.rotationSlots.items.peerUid': eventSuccessAssignmentDocumentRotationSlotsItemsPeerUid,
+    'eventSuccessAssignmentDocument.rotationSlots.items.resourceUnitId': eventSuccessAssignmentDocumentRotationSlotsItemsResourceUnitId,
     'eventSuccessAssignmentDocument.rotationSlots.items.roundIndex': eventSuccessAssignmentDocumentRotationSlotsItemsRoundIndex,
     'eventSuccessAssignmentDocument.rotationSlots.items.slotId': eventSuccessAssignmentDocumentRotationSlotsItemsSlotId,
     'eventSuccessAssignmentDocument.rotationSlots.items.startsAt._nanoseconds': eventSuccessAssignmentDocumentRotationSlotsItemsStartsAtNanoseconds,
@@ -41256,6 +41501,7 @@ abstract final class CatchContractConstraints {
     'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.label': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsLabel,
     'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.peerCount': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsPeerCount,
     'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.peerUid': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsPeerUid,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.resourceUnitId': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsResourceUnitId,
     'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.roundIndex': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsRoundIndex,
     'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.slotId': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsSlotId,
     'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.startsAt._nanoseconds': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsStartsAtNanoseconds,
@@ -41395,9 +41641,13 @@ abstract final class CatchContractConstraints {
     'eventSuccessPlanDocument.structureConfig.clusterActivityAttributes': eventSuccessPlanDocumentStructureConfigClusterActivityAttributes,
     'eventSuccessPlanDocument.structureConfig.clusterActivityAttributes.items': eventSuccessPlanDocumentStructureConfigClusterActivityAttributesItems,
     'eventSuccessPlanDocument.structureConfig.maxPairMeetings': eventSuccessPlanDocumentStructureConfigMaxPairMeetings,
+    'eventSuccessPlanDocument.structureConfig.resourceCapacity.concurrentUnits': eventSuccessPlanDocumentStructureConfigResourceCapacityConcurrentUnits,
+    'eventSuccessPlanDocument.structureConfig.resourceCapacity.resourceLabelId': eventSuccessPlanDocumentStructureConfigResourceCapacityResourceLabelId,
+    'eventSuccessPlanDocument.structureConfig.resourceCapacity.seatsPerUnit': eventSuccessPlanDocumentStructureConfigResourceCapacitySeatsPerUnit,
     'eventSuccessPlanDocument.structureConfig.revealCountdownSeconds': eventSuccessPlanDocumentStructureConfigRevealCountdownSeconds,
     'eventSuccessPlanDocument.structureConfig.rotationIntervalMinutes': eventSuccessPlanDocumentStructureConfigRotationIntervalMinutes,
     'eventSuccessPlanDocument.structureConfig.rotationRepeatStrategy': eventSuccessPlanDocumentStructureConfigRotationRepeatStrategy,
+    'eventSuccessPlanDocument.structureConfig.topology': eventSuccessPlanDocumentStructureConfigTopology,
     'eventSuccessPlanDocument.structureConfig.unitCount': eventSuccessPlanDocumentStructureConfigUnitCount,
     'eventSuccessPlanDocument.structureConfig.unitKind': eventSuccessPlanDocumentStructureConfigUnitKind,
     'eventSuccessPlanDocument.structureConfig.unitSize': eventSuccessPlanDocumentStructureConfigUnitSize,
@@ -42892,9 +43142,13 @@ abstract final class CatchContractConstraints {
     'organizerDocument.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes': organizerDocumentHostDefaultsEventSuccessStructureConfigClusterActivityAttributes,
     'organizerDocument.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes.items': organizerDocumentHostDefaultsEventSuccessStructureConfigClusterActivityAttributesItems,
     'organizerDocument.hostDefaults.eventSuccess.structureConfig.maxPairMeetings': organizerDocumentHostDefaultsEventSuccessStructureConfigMaxPairMeetings,
+    'organizerDocument.hostDefaults.eventSuccess.structureConfig.resourceCapacity.concurrentUnits': organizerDocumentHostDefaultsEventSuccessStructureConfigResourceCapacityConcurrentUnits,
+    'organizerDocument.hostDefaults.eventSuccess.structureConfig.resourceCapacity.resourceLabelId': organizerDocumentHostDefaultsEventSuccessStructureConfigResourceCapacityResourceLabelId,
+    'organizerDocument.hostDefaults.eventSuccess.structureConfig.resourceCapacity.seatsPerUnit': organizerDocumentHostDefaultsEventSuccessStructureConfigResourceCapacitySeatsPerUnit,
     'organizerDocument.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds': organizerDocumentHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds,
     'organizerDocument.hostDefaults.eventSuccess.structureConfig.rotationIntervalMinutes': organizerDocumentHostDefaultsEventSuccessStructureConfigRotationIntervalMinutes,
     'organizerDocument.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy': organizerDocumentHostDefaultsEventSuccessStructureConfigRotationRepeatStrategy,
+    'organizerDocument.hostDefaults.eventSuccess.structureConfig.topology': organizerDocumentHostDefaultsEventSuccessStructureConfigTopology,
     'organizerDocument.hostDefaults.eventSuccess.structureConfig.unitCount': organizerDocumentHostDefaultsEventSuccessStructureConfigUnitCount,
     'organizerDocument.hostDefaults.eventSuccess.structureConfig.unitKind': organizerDocumentHostDefaultsEventSuccessStructureConfigUnitKind,
     'organizerDocument.hostDefaults.eventSuccess.structureConfig.unitSize': organizerDocumentHostDefaultsEventSuccessStructureConfigUnitSize,
@@ -43980,9 +44234,13 @@ abstract final class CatchContractConstraints {
     'updateClubPatch.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes': updateClubPatchHostDefaultsEventSuccessStructureConfigClusterActivityAttributes,
     'updateClubPatch.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes.items': updateClubPatchHostDefaultsEventSuccessStructureConfigClusterActivityAttributesItems,
     'updateClubPatch.hostDefaults.eventSuccess.structureConfig.maxPairMeetings': updateClubPatchHostDefaultsEventSuccessStructureConfigMaxPairMeetings,
+    'updateClubPatch.hostDefaults.eventSuccess.structureConfig.resourceCapacity.concurrentUnits': updateClubPatchHostDefaultsEventSuccessStructureConfigResourceCapacityConcurrentUnits,
+    'updateClubPatch.hostDefaults.eventSuccess.structureConfig.resourceCapacity.resourceLabelId': updateClubPatchHostDefaultsEventSuccessStructureConfigResourceCapacityResourceLabelId,
+    'updateClubPatch.hostDefaults.eventSuccess.structureConfig.resourceCapacity.seatsPerUnit': updateClubPatchHostDefaultsEventSuccessStructureConfigResourceCapacitySeatsPerUnit,
     'updateClubPatch.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds': updateClubPatchHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds,
     'updateClubPatch.hostDefaults.eventSuccess.structureConfig.rotationIntervalMinutes': updateClubPatchHostDefaultsEventSuccessStructureConfigRotationIntervalMinutes,
     'updateClubPatch.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy': updateClubPatchHostDefaultsEventSuccessStructureConfigRotationRepeatStrategy,
+    'updateClubPatch.hostDefaults.eventSuccess.structureConfig.topology': updateClubPatchHostDefaultsEventSuccessStructureConfigTopology,
     'updateClubPatch.hostDefaults.eventSuccess.structureConfig.unitCount': updateClubPatchHostDefaultsEventSuccessStructureConfigUnitCount,
     'updateClubPatch.hostDefaults.eventSuccess.structureConfig.unitKind': updateClubPatchHostDefaultsEventSuccessStructureConfigUnitKind,
     'updateClubPatch.hostDefaults.eventSuccess.structureConfig.unitSize': updateClubPatchHostDefaultsEventSuccessStructureConfigUnitSize,
@@ -44126,9 +44384,13 @@ abstract final class CatchContractConstraints {
     'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigClusterActivityAttributes,
     'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes.items': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigClusterActivityAttributesItems,
     'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.maxPairMeetings': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigMaxPairMeetings,
+    'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.resourceCapacity.concurrentUnits': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigResourceCapacityConcurrentUnits,
+    'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.resourceCapacity.resourceLabelId': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigResourceCapacityResourceLabelId,
+    'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.resourceCapacity.seatsPerUnit': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigResourceCapacitySeatsPerUnit,
     'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds,
     'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.rotationIntervalMinutes': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigRotationIntervalMinutes,
     'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigRotationRepeatStrategy,
+    'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.topology': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigTopology,
     'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.unitCount': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigUnitCount,
     'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.unitKind': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigUnitKind,
     'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.unitSize': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigUnitSize,

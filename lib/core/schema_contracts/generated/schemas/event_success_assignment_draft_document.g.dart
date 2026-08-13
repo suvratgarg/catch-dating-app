@@ -432,6 +432,10 @@ const schemaEventSuccessAssignmentDraftDocumentSchema = <String, Object?>{
                 'minimum': 0,
                 'maximum': 100,
               },
+              'resourceUnitId': <String, Object?>{
+                'type': 'string',
+                'pattern': '^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\$',
+              },
               'peerCount': <String, Object?>{
                 'type': 'integer',
                 'minimum': 1,

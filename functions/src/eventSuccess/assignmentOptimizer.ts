@@ -248,6 +248,7 @@ export function runAssignmentEngine<
     assignmentAlgorithm,
     compatibilityPolicy,
     matchingObjective,
+    topology: params.topology.topology ?? "set",
   });
   const effectiveMatchingObjective = resolveEffectiveMatchingObjective({
     requested: matchingObjective,

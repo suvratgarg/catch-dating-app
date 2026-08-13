@@ -2719,6 +2719,68 @@ describe("firestore.rules", () => {
           updatedAt: serverTimestamp(),
         }),
       );
+      await assertSucceeds(
+        updateDoc(planRef, {
+          structureConfig: {
+            unitKind: "pairs",
+            unitSize: 2,
+            rotationIntervalMinutes: 15,
+            topology: "sequence",
+            resourceCapacity: {
+              concurrentUnits: 3,
+              resourceLabelId: "court",
+              seatsPerUnit: null,
+            },
+            revealCountdownSeconds: 10,
+          },
+          updatedAt: serverTimestamp(),
+        }),
+      );
+      await assertFails(
+        updateDoc(planRef, {
+          structureConfig: {
+            unitKind: "pairs",
+            unitSize: 2,
+            topology: "sequence",
+            resourceCapacity: {
+              concurrentUnits: 3,
+              resourceLabelId: "court",
+              seatsPerUnit: 2,
+            },
+            revealCountdownSeconds: 10,
+          },
+          updatedAt: serverTimestamp(),
+        }),
+      );
+      await assertFails(
+        updateDoc(planRef, {
+          structureConfig: {
+            unitKind: "pairs",
+            unitSize: 2,
+            rotationIntervalMinutes: 15,
+            topology: "sequence",
+            resourceCapacity: {
+              concurrentUnits: 0,
+              resourceLabelId: "court",
+              seatsPerUnit: null,
+            },
+            revealCountdownSeconds: 10,
+          },
+          updatedAt: serverTimestamp(),
+        }),
+      );
+      await assertFails(
+        updateDoc(planRef, {
+          structureConfig: {
+            unitKind: "pairs",
+            unitSize: 2,
+            rotationIntervalMinutes: 15,
+            topology: "neighbour",
+            revealCountdownSeconds: 10,
+          },
+          updatedAt: serverTimestamp(),
+        }),
+      );
       await assertFails(
         updateDoc(planRef, {
           selectedModuleIds: Array.from({length: 25}, (_, index) => `m-${index}`),

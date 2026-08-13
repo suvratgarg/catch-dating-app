@@ -73,6 +73,62 @@ enum EventSuccessUnitKind implements Labelled {
       '$count ${count == 1 ? singularLabel : label.toLowerCase()}';
 }
 
+enum EventSuccessTopology { set, sequence, adjacency }
+
+enum EventSuccessResourceLabelId { court, table, lane, board }
+
+class EventSuccessResourceCapacity {
+  const EventSuccessResourceCapacity({
+    required this.concurrentUnits,
+    required this.resourceLabelId,
+    required this.seatsPerUnit,
+  }) : assert(concurrentUnits == null || concurrentUnits > 0),
+       assert(seatsPerUnit == null || seatsPerUnit > 0);
+
+  factory EventSuccessResourceCapacity.fromJson(Map<String, dynamic> json) {
+    final labelName = json['resourceLabelId'] as String?;
+    final label = EventSuccessResourceLabelId.values.firstWhere(
+      (value) => value.name == labelName,
+      orElse: () => EventSuccessResourceLabelId.court,
+    );
+    return EventSuccessResourceCapacity(
+      concurrentUnits: _nullableIntInRange(
+        json['concurrentUnits'],
+        min: 1,
+        max: 200,
+      ),
+      resourceLabelId: label,
+      seatsPerUnit: _nullableIntInRange(
+        json['seatsPerUnit'],
+        min: 1,
+        max: 1000,
+      ),
+    );
+  }
+
+  final int? concurrentUnits;
+  final EventSuccessResourceLabelId resourceLabelId;
+  final int? seatsPerUnit;
+
+  Map<String, Object?> toJson() => {
+    'concurrentUnits': concurrentUnits,
+    'resourceLabelId': resourceLabelId.name,
+    'seatsPerUnit': seatsPerUnit,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventSuccessResourceCapacity &&
+          other.concurrentUnits == concurrentUnits &&
+          other.resourceLabelId == resourceLabelId &&
+          other.seatsPerUnit == seatsPerUnit;
+
+  @override
+  int get hashCode =>
+      Object.hash(concurrentUnits, resourceLabelId, seatsPerUnit);
+}
+
 enum EventSuccessRotationRepeatStrategy implements Labelled {
   avoid(StructuredDomainCopy.eventSuccessRepeatAvoid),
   allowWhenExhausted(StructuredDomainCopy.eventSuccessRepeatAllowWhenExhausted);
@@ -118,6 +174,8 @@ class EventSuccessStructureConfig {
     required this.unitSize,
     this.unitCount,
     this.rotationIntervalMinutes,
+    this.topology = EventSuccessTopology.set,
+    this.resourceCapacity,
     this.revealCountdownSeconds = 10,
     this.rotationRepeatStrategy = EventSuccessRotationRepeatStrategy.avoid,
     this.maxPairMeetings = 2,
@@ -135,6 +193,8 @@ class EventSuccessStructureConfig {
         unitSize: 4,
         unitCount: null,
         rotationIntervalMinutes: null,
+        topology: EventSuccessTopology.set,
+        resourceCapacity: null,
         revealCountdownSeconds: 10,
         rotationRepeatStrategy: EventSuccessRotationRepeatStrategy.avoid,
         maxPairMeetings: 2,
@@ -174,15 +234,27 @@ class EventSuccessStructureConfig {
           unitKind: EventSuccessUnitKind.pairs,
           unitSize: 2,
           rotationIntervalMinutes: 15,
+          topology: EventSuccessTopology.sequence,
+          resourceCapacity: EventSuccessResourceCapacity(
+            concurrentUnits: null,
+            resourceLabelId: EventSuccessResourceLabelId.court,
+            seatsPerUnit: null,
+          ),
         ),
       EventInteractionModel.teamRotations => const EventSuccessStructureConfig(
         unitKind: EventSuccessUnitKind.teams,
         unitSize: 5,
       ),
-      EventInteractionModel.seatedTable => const EventSuccessStructureConfig(
+      EventInteractionModel.seatedTable => EventSuccessStructureConfig(
         unitKind: EventSuccessUnitKind.tables,
         unitSize: 4,
         rotationIntervalMinutes: 30,
+        topology: EventSuccessTopology.adjacency,
+        resourceCapacity: EventSuccessResourceCapacity(
+          concurrentUnits: (safeTarget / 4).ceil(),
+          resourceLabelId: EventSuccessResourceLabelId.table,
+          seatsPerUnit: 4,
+        ),
       ),
       EventInteractionModel.freeFormMixer => const EventSuccessStructureConfig(
         unitKind: EventSuccessUnitKind.pairs,
@@ -204,6 +276,12 @@ class EventSuccessStructureConfig {
       (value) => value.name == unitKindName,
       orElse: () => EventSuccessUnitKind.pods,
     );
+    final topologyName = json['topology'] as String?;
+    final topology = EventSuccessTopology.values.firstWhere(
+      (value) => value.name == topologyName,
+      orElse: () => EventSuccessTopology.set,
+    );
+    final resourceCapacityJson = json['resourceCapacity'];
     return EventSuccessStructureConfig(
       unitKind: unitKind,
       unitSize: _intInRange(json['unitSize'], fallback: 4, min: 1, max: 1000),
@@ -213,6 +291,12 @@ class EventSuccessStructureConfig {
         min: 5,
         max: 180,
       ),
+      topology: topology,
+      resourceCapacity: resourceCapacityJson is Map
+          ? EventSuccessResourceCapacity.fromJson(
+              Map<String, dynamic>.from(resourceCapacityJson),
+            )
+          : null,
       revealCountdownSeconds: _intInRange(
         json['revealCountdownSeconds'],
         fallback: 10,
@@ -241,6 +325,8 @@ class EventSuccessStructureConfig {
   final int unitSize;
   final int? unitCount;
   final int? rotationIntervalMinutes;
+  final EventSuccessTopology topology;
+  final EventSuccessResourceCapacity? resourceCapacity;
   final int revealCountdownSeconds;
   final EventSuccessRotationRepeatStrategy rotationRepeatStrategy;
   final int maxPairMeetings;
@@ -254,6 +340,8 @@ class EventSuccessStructureConfig {
       unitSize == 4 &&
       unitCount == null &&
       rotationIntervalMinutes == null &&
+      topology == EventSuccessTopology.set &&
+      resourceCapacity == null &&
       revealCountdownSeconds == 10 &&
       rotationRepeatStrategy == EventSuccessRotationRepeatStrategy.avoid &&
       maxPairMeetings == 2 &&
@@ -265,6 +353,8 @@ class EventSuccessStructureConfig {
       unitSize == 5 &&
       unitCount == 3 &&
       rotationIntervalMinutes == null &&
+      topology == EventSuccessTopology.set &&
+      resourceCapacity == null &&
       revealCountdownSeconds == 10 &&
       rotationRepeatStrategy == EventSuccessRotationRepeatStrategy.avoid &&
       maxPairMeetings == 2 &&
@@ -312,6 +402,8 @@ class EventSuccessStructureConfig {
     int? unitSize,
     Object? unitCount = unsetSentinel,
     Object? rotationIntervalMinutes = unsetSentinel,
+    EventSuccessTopology? topology,
+    Object? resourceCapacity = unsetSentinel,
     int? revealCountdownSeconds,
     EventSuccessRotationRepeatStrategy? rotationRepeatStrategy,
     int? maxPairMeetings,
@@ -327,6 +419,10 @@ class EventSuccessStructureConfig {
       rotationIntervalMinutes: identical(rotationIntervalMinutes, unsetSentinel)
           ? this.rotationIntervalMinutes
           : rotationIntervalMinutes as int?,
+      topology: topology ?? this.topology,
+      resourceCapacity: identical(resourceCapacity, unsetSentinel)
+          ? this.resourceCapacity
+          : resourceCapacity as EventSuccessResourceCapacity?,
       revealCountdownSeconds:
           revealCountdownSeconds ?? this.revealCountdownSeconds,
       rotationRepeatStrategy:
@@ -345,6 +441,9 @@ class EventSuccessStructureConfig {
     if (unitCount != null) 'unitCount': unitCount,
     if (rotationIntervalMinutes != null)
       'rotationIntervalMinutes': rotationIntervalMinutes,
+    'topology': topology.name,
+    if (resourceCapacity != null)
+      'resourceCapacity': resourceCapacity!.toJson(),
     'revealCountdownSeconds': revealCountdownSeconds,
     'rotationRepeatStrategy': rotationRepeatStrategy.name,
     'maxPairMeetings': maxPairMeetings,
@@ -366,6 +465,8 @@ class EventSuccessStructureConfig {
             other.unitSize == unitSize &&
             other.unitCount == unitCount &&
             other.rotationIntervalMinutes == rotationIntervalMinutes &&
+            other.topology == topology &&
+            other.resourceCapacity == resourceCapacity &&
             other.revealCountdownSeconds == revealCountdownSeconds &&
             other.rotationRepeatStrategy == rotationRepeatStrategy &&
             other.maxPairMeetings == maxPairMeetings &&
@@ -385,6 +486,8 @@ class EventSuccessStructureConfig {
     unitSize,
     unitCount,
     rotationIntervalMinutes,
+    topology,
+    resourceCapacity,
     revealCountdownSeconds,
     rotationRepeatStrategy,
     maxPairMeetings,

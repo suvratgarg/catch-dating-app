@@ -247,11 +247,19 @@ export interface EventSuccessFormatPrimitives {
     | "spread";
 }
 
-export interface EventSuccessStructureConfig {
+export type EventSuccessStructureConfig = {
+  [k: string]: unknown;
+} & {
   unitKind: "wholeGroup" | "pods" | "pairs" | "teams" | "tables";
   unitSize: number;
   unitCount?: number | null;
   rotationIntervalMinutes?: number | null;
+  topology?: "set" | "sequence" | "adjacency";
+  resourceCapacity?: {
+    concurrentUnits: number | null;
+    resourceLabelId: "court" | "table" | "lane" | "board";
+    seatsPerUnit: number | null;
+  } | null;
   revealCountdownSeconds: number;
   rotationRepeatStrategy?: "avoid" | "allowWhenExhausted";
   maxPairMeetings?: number;
@@ -263,7 +271,7 @@ export interface EventSuccessStructureConfig {
    * @maxItems 8
    */
   clusterActivityAttributes?: ("paceBand" | "skillBand" | "roleBand")[];
-}
+};
 
 export interface EventSuccessQuestionnaireConfig {
   templateId: string;
@@ -1228,21 +1236,7 @@ export interface OrganizerDocument {
       selectedModuleIds?: string[];
       moduleSelectionConfigured?: boolean;
       structureConfig?: {
-        unitKind: "wholeGroup" | "pods" | "pairs" | "teams" | "tables";
-        unitSize: number;
-        unitCount?: number | null;
-        rotationIntervalMinutes?: number | null;
-        revealCountdownSeconds: number;
-        rotationRepeatStrategy?: "avoid" | "allowWhenExhausted";
-        maxPairMeetings?: number;
-        /**
-         * @maxItems 8
-         */
-        balanceActivityAttributes?: ("paceBand" | "skillBand" | "roleBand")[];
-        /**
-         * @maxItems 8
-         */
-        clusterActivityAttributes?: ("paceBand" | "skillBand" | "roleBand")[];
+        [k: string]: unknown;
       };
       hostGoal?: string;
       wingmanRequestsEnabled?: boolean;
@@ -1280,21 +1274,7 @@ export interface OrganizerDocument {
         selectedModuleIds?: string[];
         moduleSelectionConfigured?: boolean;
         structureConfig?: {
-          unitKind: "wholeGroup" | "pods" | "pairs" | "teams" | "tables";
-          unitSize: number;
-          unitCount?: number | null;
-          rotationIntervalMinutes?: number | null;
-          revealCountdownSeconds: number;
-          rotationRepeatStrategy?: "avoid" | "allowWhenExhausted";
-          maxPairMeetings?: number;
-          /**
-           * @maxItems 8
-           */
-          balanceActivityAttributes?: ("paceBand" | "skillBand" | "roleBand")[];
-          /**
-           * @maxItems 8
-           */
-          clusterActivityAttributes?: ("paceBand" | "skillBand" | "roleBand")[];
+          [k: string]: unknown;
         };
         hostGoal?: string;
         wingmanRequestsEnabled?: boolean;
@@ -3270,21 +3250,7 @@ export interface EventSuccessPlanDocument {
   selectedModuleIds: string[];
   targetAttendeeCount: number;
   structureConfig?: {
-    unitKind: "wholeGroup" | "pods" | "pairs" | "teams" | "tables";
-    unitSize: number;
-    unitCount?: number | null;
-    rotationIntervalMinutes?: number | null;
-    revealCountdownSeconds: number;
-    rotationRepeatStrategy?: "avoid" | "allowWhenExhausted";
-    maxPairMeetings?: number;
-    /**
-     * @maxItems 8
-     */
-    balanceActivityAttributes?: ("paceBand" | "skillBand" | "roleBand")[];
-    /**
-     * @maxItems 8
-     */
-    clusterActivityAttributes?: ("paceBand" | "skillBand" | "roleBand")[];
+    [k: string]: unknown;
   };
   hostGoal: string;
   wingmanRequestsEnabled: boolean;
@@ -3529,6 +3495,7 @@ export interface EventSuccessAssignmentDocument {
     peerUid: string;
     unitKind?: "pairs";
     unitIndex?: number;
+    resourceUnitId?: string;
     peerCount?: number;
     compatibility:
       | "mutual_interest"

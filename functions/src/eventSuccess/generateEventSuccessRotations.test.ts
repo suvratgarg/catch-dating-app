@@ -320,6 +320,101 @@ test("pickleball defaults to profile-free coverage schedules", async () => {
   });
 });
 
+test("sequence topology uses configured court capacity", async () => {
+  const {firestore, deps} = harness({
+    "eventSuccessPlans/event-1": {
+      eventId: "event-1",
+      clubId: "club-1",
+      selectedModuleIds: ["guided_rotations"],
+      liveControlRevision: 0,
+      assignmentDraftRevision: 0,
+      publishedRotationRoundIndex: -1,
+      layoutId: "courts",
+      structureConfig: {
+        unitKind: "pairs",
+        unitSize: 2,
+        rotationIntervalMinutes: 15,
+        topology: "sequence",
+        resourceCapacity: {
+          concurrentUnits: 1,
+          resourceLabelId: "court",
+          seatsPerUnit: null,
+        },
+        revealCountdownSeconds: 10,
+      },
+    },
+    "organizerEventSuccessLayouts/club-1_courts": {
+      organizerId: "club-1",
+      layoutId: "courts",
+      label: "One court",
+      units: [{
+        id: "court-a",
+        label: "A",
+        shape: "court",
+        capacity: 2,
+        gridX: 0,
+        gridY: 0,
+        order: 1,
+      }],
+    },
+    ...participation("man-1"),
+    ...participation("man-2"),
+    ...participation("woman-1"),
+    ...participation("woman-2"),
+    "users/man-1": user("man", ["woman"]),
+    "users/man-2": user("man", ["woman"]),
+    "users/woman-1": user("woman", ["man"]),
+    "users/woman-2": user("woman", ["man"]),
+  });
+
+  const result = await generateEventSuccessRotationsHandler(
+    callableRequest("host-1"),
+    deps
+  );
+
+  assert.deepEqual(result, {assignmentCount: 4, roundCount: 4});
+  const assignments = ["man-1", "man-2", "woman-1", "woman-2"].map(
+    (uid) => firestore.get(
+      `eventSuccessAssignments/event-1_guided_rotations_${uid}`
+    ) as FakeData
+  );
+  const sitOutCounts = assignments.map((assignment) =>
+    (assignment.sitOutSlots as unknown[] | undefined)?.length ?? 0
+  );
+  assert.ok(Math.max(...sitOutCounts) - Math.min(...sitOutCounts) <= 1);
+  for (const assignment of assignments) {
+    const slots = assignment.rotationSlots as Array<Record<string, unknown>>;
+    assert.ok(slots.every((slot) => slot.resourceUnitId === "court-a"));
+    assert.ok(slots.every((slot) =>
+      (slot.label as string).includes("Court 1")
+    ));
+  }
+});
+
+test("adjacency topology fails instead of using pair rotations", async () => {
+  const {deps} = harness({
+    "eventSuccessPlans/event-1": {
+      eventId: "event-1",
+      clubId: "club-1",
+      selectedModuleIds: ["guided_rotations"],
+      structureConfig: {
+        unitKind: "tables",
+        unitSize: 4,
+        topology: "adjacency",
+        revealCountdownSeconds: 10,
+      },
+    },
+  });
+
+  await assert.rejects(
+    () => generateEventSuccessRotationsHandler(callableRequest("host-1"), deps),
+    (error) => {
+      isHttpsError(error, "failed-precondition", "not implemented");
+      return true;
+    }
+  );
+});
+
 test("does not prepare a phantom round after the schedule ends", async () => {
   const {firestore, deps} = harness({
     "eventSuccessPlans/event-1": {
@@ -851,6 +946,58 @@ test("lets hosts override rotation pairings", async () => {
   const slots = manOne?.rotationSlots as Array<Record<string, unknown>>;
   assert.equal(slots[0].compatibility, "host_override");
   assert.equal(slots[1].label, "Round 2");
+});
+
+test("host override cannot exceed sequence resource capacity", async () => {
+  const {deps} = harness({
+    "eventSuccessPlans/event-1": {
+      eventId: "event-1",
+      clubId: "club-1",
+      selectedModuleIds: ["guided_rotations"],
+      liveControlRevision: 0,
+      assignmentDraftRevision: 0,
+      publishedRotationRoundIndex: -1,
+      structureConfig: {
+        unitKind: "pairs",
+        unitSize: 2,
+        rotationIntervalMinutes: 15,
+        topology: "sequence",
+        resourceCapacity: {
+          concurrentUnits: 1,
+          resourceLabelId: "court",
+          seatsPerUnit: null,
+        },
+        revealCountdownSeconds: 10,
+      },
+    },
+    ...participation("man-1"),
+    ...participation("man-2"),
+    ...participation("woman-1"),
+    ...participation("woman-2"),
+    "users/man-1": user("man", ["woman"]),
+    "users/man-2": user("man", ["woman"]),
+    "users/woman-1": user("woman", ["man"]),
+    "users/woman-2": user("woman", ["man"]),
+  });
+
+  await assert.rejects(
+    () => overrideEventSuccessRotationsHandler(
+      callableRequest("host-1", {
+        rounds: [{
+          roundIndex: 0,
+          pairings: [
+            {uidA: "man-1", uidB: "woman-1"},
+            {uidA: "man-2", uidB: "woman-2"},
+          ],
+        }],
+      }),
+      deps
+    ),
+    (error) => {
+      isHttpsError(error, "failed-precondition", "resource capacity");
+      return true;
+    }
+  );
 });
 
 test("rejects override pairings that repeat an attendee", async () => {

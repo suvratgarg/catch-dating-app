@@ -278,6 +278,10 @@
             "minimum": 0,
             "maximum": 100
           },
+          "resourceUnitId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+          },
           "peerCount": {
             "type": "integer",
             "minimum": 1,

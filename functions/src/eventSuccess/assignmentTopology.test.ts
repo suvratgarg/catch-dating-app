@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   assertPairRotationTopology,
   resolveAssignmentTopology,
+  resolveSequenceConcurrentUnits,
   unitLabel,
   unitSubtitle,
 } from "./assignmentTopology";
@@ -28,6 +29,8 @@ test("resolves group topology from unit size and clamps group count", () => {
   assert.equal(topology.maxGroupSize, 2);
   assert.equal(topology.rotationsEnabled, true);
   assert.equal(topology.rotationIntervalMinutes, 30);
+  assert.equal(topology.topology, "set");
+  assert.equal(topology.resourceCapacity, null);
 });
 
 test("uses one whole-group unit when requested", () => {
@@ -80,4 +83,56 @@ test("pair rotation wrapper accepts only two-person units", () => {
       return true;
     }
   );
+  assert.throws(
+    () =>
+      assertPairRotationTopology({
+        structureConfig: {
+          unitKind: "tables",
+          unitSize: 4,
+          topology: "adjacency",
+        },
+      }),
+    (error) => {
+      isHttpsError(error, "failed-precondition", "not implemented");
+      return true;
+    }
+  );
+});
+
+test("resolves configurable sequence capacity", () => {
+  assert.equal(resolveSequenceConcurrentUnits({structureConfig: {}}, 12), 6);
+
+  const topology = resolveAssignmentTopology(
+    {
+      structureConfig: {
+        unitKind: "pairs",
+        unitSize: 2,
+        topology: "sequence",
+        resourceCapacity: {
+          concurrentUnits: 3,
+          resourceLabelId: "court",
+          seatsPerUnit: null,
+        },
+      },
+    },
+    12,
+    {defaultUnitKind: "pairs", defaultUnitSize: 2}
+  );
+
+  assert.equal(topology.topology, "sequence");
+  assert.deepEqual(topology.resourceCapacity, {
+    concurrentUnits: 3,
+    resourceLabelId: "court",
+    seatsPerUnit: null,
+  });
+  assert.equal(resolveSequenceConcurrentUnits({
+    structureConfig: {
+      resourceCapacity: topology.resourceCapacity,
+    },
+  }, 12), 3);
+  assert.equal(resolveSequenceConcurrentUnits({
+    structureConfig: {
+      resourceCapacity: topology.resourceCapacity,
+    },
+  }, 12, 2), 2);
 });

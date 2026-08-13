@@ -99,6 +99,7 @@ export interface EventSuccessAssignmentDocument {
     peerUid: string;
     unitKind?: "pairs";
     unitIndex?: number;
+    resourceUnitId?: string;
     peerCount?: number;
     compatibility:
       | "mutual_interest"

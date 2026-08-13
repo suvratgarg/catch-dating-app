@@ -242,6 +242,18 @@ void main() {
       expect(quizDraft.structureConfig.unitCount, isNull);
       expect(quizDraft.structureConfig.estimatedUnitCount(50), 10);
       expect(pickleballDraft.structureConfig.rotationIntervalMinutes, 15);
+      expect(
+        pickleballDraft.structureConfig.topology,
+        EventSuccessTopology.sequence,
+      );
+      expect(
+        pickleballDraft.structureConfig.resourceCapacity,
+        const EventSuccessResourceCapacity(
+          concurrentUnits: null,
+          resourceLabelId: EventSuccessResourceLabelId.court,
+          seatsPerUnit: null,
+        ),
+      );
     });
 
     test(
@@ -297,6 +309,12 @@ void main() {
         unitKind: EventSuccessUnitKind.pairs,
         unitSize: 2,
         rotationIntervalMinutes: 15,
+        topology: EventSuccessTopology.sequence,
+        resourceCapacity: EventSuccessResourceCapacity(
+          concurrentUnits: 3,
+          resourceLabelId: EventSuccessResourceLabelId.court,
+          seatsPerUnit: null,
+        ),
         rotationRepeatStrategy:
             EventSuccessRotationRepeatStrategy.allowWhenExhausted,
         maxPairMeetings: 3,
@@ -312,10 +330,33 @@ void main() {
       final roundTrip = EventSuccessStructureConfig.fromJson(json);
 
       expect(json['rotationRepeatStrategy'], 'allowWhenExhausted');
+      expect(json['topology'], 'sequence');
+      expect(json['resourceCapacity'], {
+        'concurrentUnits': 3,
+        'resourceLabelId': 'court',
+        'seatsPerUnit': null,
+      });
       expect(json['maxPairMeetings'], 3);
       expect(json['balanceActivityAttributes'], ['skillBand']);
       expect(json['clusterActivityAttributes'], ['paceBand']);
       expect(roundTrip, config);
+    });
+
+    test('binds seated tables to honest unsupported adjacency inputs', () {
+      final config = EventSuccessStructureConfig.defaultForInteractionModel(
+        EventInteractionModel.seatedTable,
+        targetAttendeeCount: 18,
+      );
+
+      expect(config.topology, EventSuccessTopology.adjacency);
+      expect(
+        config.resourceCapacity,
+        const EventSuccessResourceCapacity(
+          concurrentUnits: 5,
+          resourceLabelId: EventSuccessResourceLabelId.table,
+          seatsPerUnit: 4,
+        ),
+      );
     });
 
     test('legacy defaults hydrate platform-owned modules as always on', () {

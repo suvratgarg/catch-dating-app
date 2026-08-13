@@ -1105,6 +1105,57 @@ const schemaOrganizerDocumentSchema = <String, Object?>{
                   'minimum': 5,
                   'maximum': 180,
                 },
+                'topology': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'set',
+                    'sequence',
+                    'adjacency',
+                  ],
+                },
+                'resourceCapacity': <String, Object?>{
+                  'anyOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'required': <Object?>[
+                        'concurrentUnits',
+                        'resourceLabelId',
+                        'seatsPerUnit',
+                      ],
+                      'properties': <String, Object?>{
+                        'concurrentUnits': <String, Object?>{
+                          'type': <Object?>[
+                            'integer',
+                            'null',
+                          ],
+                          'minimum': 1,
+                          'maximum': 200,
+                        },
+                        'resourceLabelId': <String, Object?>{
+                          'type': 'string',
+                          'enum': <Object?>[
+                            'court',
+                            'table',
+                            'lane',
+                            'board',
+                          ],
+                        },
+                        'seatsPerUnit': <String, Object?>{
+                          'type': <Object?>[
+                            'integer',
+                            'null',
+                          ],
+                          'minimum': 1,
+                          'maximum': 1000,
+                        },
+                      },
+                    },
+                    <String, Object?>{
+                      'type': 'null',
+                    },
+                  ],
+                },
                 'revealCountdownSeconds': <String, Object?>{
                   'type': 'integer',
                   'minimum': 0,
@@ -1149,6 +1200,38 @@ const schemaOrganizerDocumentSchema = <String, Object?>{
                   },
                 },
               },
+              'allOf': <Object?>[
+                <String, Object?>{
+                  'if': <String, Object?>{
+                    'required': <Object?>[
+                      'resourceCapacity',
+                    ],
+                    'properties': <String, Object?>{
+                      'resourceCapacity': <String, Object?>{
+                        'type': 'object',
+                        'required': <Object?>[
+                          'seatsPerUnit',
+                        ],
+                        'properties': <String, Object?>{
+                          'seatsPerUnit': <String, Object?>{
+                            'type': 'integer',
+                          },
+                        },
+                      },
+                    },
+                  },
+                  'then': <String, Object?>{
+                    'required': <Object?>[
+                      'topology',
+                    ],
+                    'properties': <String, Object?>{
+                      'topology': <String, Object?>{
+                        'const': 'adjacency',
+                      },
+                    },
+                  },
+                },
+              ],
             },
             'hostGoal': <String, Object?>{
               'type': 'string',
@@ -1317,6 +1400,57 @@ const schemaOrganizerDocumentSchema = <String, Object?>{
                     'minimum': 5,
                     'maximum': 180,
                   },
+                  'topology': <String, Object?>{
+                    'type': 'string',
+                    'enum': <Object?>[
+                      'set',
+                      'sequence',
+                      'adjacency',
+                    ],
+                  },
+                  'resourceCapacity': <String, Object?>{
+                    'anyOf': <Object?>[
+                      <String, Object?>{
+                        'type': 'object',
+                        'additionalProperties': false,
+                        'required': <Object?>[
+                          'concurrentUnits',
+                          'resourceLabelId',
+                          'seatsPerUnit',
+                        ],
+                        'properties': <String, Object?>{
+                          'concurrentUnits': <String, Object?>{
+                            'type': <Object?>[
+                              'integer',
+                              'null',
+                            ],
+                            'minimum': 1,
+                            'maximum': 200,
+                          },
+                          'resourceLabelId': <String, Object?>{
+                            'type': 'string',
+                            'enum': <Object?>[
+                              'court',
+                              'table',
+                              'lane',
+                              'board',
+                            ],
+                          },
+                          'seatsPerUnit': <String, Object?>{
+                            'type': <Object?>[
+                              'integer',
+                              'null',
+                            ],
+                            'minimum': 1,
+                            'maximum': 1000,
+                          },
+                        },
+                      },
+                      <String, Object?>{
+                        'type': 'null',
+                      },
+                    ],
+                  },
                   'revealCountdownSeconds': <String, Object?>{
                     'type': 'integer',
                     'minimum': 0,
@@ -1361,6 +1495,38 @@ const schemaOrganizerDocumentSchema = <String, Object?>{
                     },
                   },
                 },
+                'allOf': <Object?>[
+                  <String, Object?>{
+                    'if': <String, Object?>{
+                      'required': <Object?>[
+                        'resourceCapacity',
+                      ],
+                      'properties': <String, Object?>{
+                        'resourceCapacity': <String, Object?>{
+                          'type': 'object',
+                          'required': <Object?>[
+                            'seatsPerUnit',
+                          ],
+                          'properties': <String, Object?>{
+                            'seatsPerUnit': <String, Object?>{
+                              'type': 'integer',
+                            },
+                          },
+                        },
+                      },
+                    },
+                    'then': <String, Object?>{
+                      'required': <Object?>[
+                        'topology',
+                      ],
+                      'properties': <String, Object?>{
+                        'topology': <String, Object?>{
+                          'const': 'adjacency',
+                        },
+                      },
+                    },
+                  },
+                ],
               },
               'hostGoal': <String, Object?>{
                 'type': 'string',

@@ -133,15 +133,25 @@ tables to `affinity`, mutual-interest mixers to `romantic`, and other mixers or
 host/open formats to `coverage`. These bindings are resolved from the saved
 interaction model rather than by event-type branches in generators or screens.
 The Functions contract owns an exhaustive resolution table for every
-assignment-algorithm, compatibility-policy, and matching-objective
+assignment-algorithm, compatibility-policy, matching-objective, and topology
 combination.
 
-V1 supports pair rotations and generic micro-pods with topology guards.
+V1 supports set-based pair rotations and generic micro-pods, plus
+capacity-aware `sequence` scheduling for pair rotations. Sequence scheduling
+uses the saved `resourceCapacity.concurrentUnits` value rather than a
+format-specific court constant. Null is unconstrained; a selected organizer
+layout still bounds the usable physical units. Each round stores explicit
+sit-outs and stable resource-unit ids, prioritizes the T3 cumulative exclusion
+ledger when capacity is scarce, and minimizes attendee movement over the T5
+derived unit-proximity graph. Host-authored overrides are rejected when a round
+exceeds the same configured capacity.
+
 Algorithms without a dedicated engine, including `none`, `teamBalancer`, and
 `tableSeating`, resolve to `unsupported` with an honest reason. They never run
-an implemented neighbouring behavior or rewrite existing assignments. True
-table-seating, team-balancing, doubles/court-aware, and dance-partner engines
-remain future backend work.
+an implemented neighbouring behavior or rewrite existing assignments.
+`topology: adjacency` likewise remains unsupported, including when table
+resource and seat counts are present. True table-seating, team-balancing, and
+dance-partner engines remain future backend work.
 
 Operational roster imports now retain an optional `arrivalGroup` from reviewed
 provider booking, order, group, or ticket-buyer columns. Provider adapters keep
@@ -228,6 +238,12 @@ idempotent for retry. The beat-transition module does not import or invoke the
 assignment generator. Trigger preparation retries are bounded by the validated
 deployment setting `EVENT_SUCCESS_DRAFT_PREPARATION_ATTEMPTS` (1-10, default
 3).
+
+When the plan selects `topology: sequence`, generation runs the deterministic
+round-robin scheduler. Every allowed pair meets once before a configured repeat
+cycle, safety and must-split edges are never scheduled, odd rosters receive
+fair byes, and court/table/lane/board capacity is enforced independently of the
+event type. Legacy plans without `topology` continue to resolve to `set`.
 
 ### Spatial Layout And Control Room
 

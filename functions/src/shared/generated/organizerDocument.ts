@@ -160,21 +160,7 @@ export interface OrganizerDocument {
       selectedModuleIds?: string[];
       moduleSelectionConfigured?: boolean;
       structureConfig?: {
-        unitKind: "wholeGroup" | "pods" | "pairs" | "teams" | "tables";
-        unitSize: number;
-        unitCount?: number | null;
-        rotationIntervalMinutes?: number | null;
-        revealCountdownSeconds: number;
-        rotationRepeatStrategy?: "avoid" | "allowWhenExhausted";
-        maxPairMeetings?: number;
-        /**
-         * @maxItems 8
-         */
-        balanceActivityAttributes?: ("paceBand" | "skillBand" | "roleBand")[];
-        /**
-         * @maxItems 8
-         */
-        clusterActivityAttributes?: ("paceBand" | "skillBand" | "roleBand")[];
+        [k: string]: unknown;
       };
       hostGoal?: string;
       wingmanRequestsEnabled?: boolean;
@@ -212,21 +198,7 @@ export interface OrganizerDocument {
         selectedModuleIds?: string[];
         moduleSelectionConfigured?: boolean;
         structureConfig?: {
-          unitKind: "wholeGroup" | "pods" | "pairs" | "teams" | "tables";
-          unitSize: number;
-          unitCount?: number | null;
-          rotationIntervalMinutes?: number | null;
-          revealCountdownSeconds: number;
-          rotationRepeatStrategy?: "avoid" | "allowWhenExhausted";
-          maxPairMeetings?: number;
-          /**
-           * @maxItems 8
-           */
-          balanceActivityAttributes?: ("paceBand" | "skillBand" | "roleBand")[];
-          /**
-           * @maxItems 8
-           */
-          clusterActivityAttributes?: ("paceBand" | "skillBand" | "roleBand")[];
+          [k: string]: unknown;
         };
         hostGoal?: string;
         wingmanRequestsEnabled?: boolean;
