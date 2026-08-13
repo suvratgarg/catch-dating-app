@@ -40,6 +40,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_models.dart'
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_preference.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_presence.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_runtime.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
@@ -156,6 +157,9 @@ class _EventSuccessHostSectionState
     final publishRotationRoundMutation = ref.watch(
       EventSuccessController.publishRotationRoundMutation,
     );
+    final resolveLateArrivalMutation = ref.watch(
+      EventSuccessController.resolveLateArrivalMutation,
+    );
     final persistedPlan = planAsync.asData?.value;
     final hasSavedGuide = persistedPlan != null;
     final shouldLoadRoster =
@@ -177,6 +181,12 @@ class _EventSuccessHostSectionState
         shouldLoadStandings
         ? ref.watch(watchEventSuccessStandingsProvider(event.id))
         : const AsyncData<EventSuccessStandings?>(null);
+    final AsyncValue<EventSuccessPresenceSummary?> presenceSummaryAsync =
+        shouldLoadAssignments
+        ? ref
+              .watch(watchEventSuccessPresenceSummaryProvider(event.id))
+              .whenData((summary) => summary)
+        : const AsyncData<EventSuccessPresenceSummary?>(null);
     final AsyncValue<EventSuccessLayout?> spatialLayoutAsync =
         shouldLoadAssignments &&
             persistedPlan.layoutId != null &&
@@ -341,6 +351,14 @@ class _EventSuccessHostSectionState
       rotationParticipantProfiles: state.rotationParticipantProfiles,
       preferences: state.preferences,
       standings: standingsAsync.asData?.value,
+      presenceSummary: presenceSummaryAsync.asData?.value,
+      presenceError: presenceSummaryAsync.hasError
+          ? presenceSummaryAsync.error
+          : null,
+      resolvingLateArrival: resolveLateArrivalMutation.isPending,
+      lateArrivalError: resolveLateArrivalMutation.hasError
+          ? _mutationError(resolveLateArrivalMutation)
+          : null,
       wingmanRequests: state.wingmanRequests,
       wingmanProfiles: state.wingmanProfiles,
       initialTab: initialTab,
@@ -391,6 +409,21 @@ class _EventSuccessHostSectionState
         eventId: event.id,
         expectedRevision: state.plan.liveControlRevision,
       ),
+      onResolveLateArrival: (uid) async {
+        await EventSuccessController.resolveLateArrivalMutation.run(
+          ref,
+          (tx) => tx
+              .get(eventSuccessControllerProvider.notifier)
+              .resolveLateArrival(
+                eventId: event.id,
+                uid: uid,
+                expectedRevision:
+                    presenceSummaryAsync.asData?.value?.liveControlRevision ??
+                    state.plan.liveControlRevision,
+              ),
+        );
+        ref.invalidate(watchEventSuccessPresenceSummaryProvider(event.id));
+      },
       onPublishGuidedRotationRound: (roundIndex) =>
           _publishEventSuccessGuidedRotationRound(
             eventId: event.id,
@@ -967,6 +1000,10 @@ class EventSuccessHostPanel extends StatefulWidget {
     this.rotationParticipantProfiles = const [],
     this.preferences = const [],
     this.standings,
+    this.presenceSummary,
+    this.presenceError,
+    this.resolvingLateArrival = false,
+    this.lateArrivalError,
     this.wingmanRequests = const [],
     this.wingmanProfiles = const [],
     this.initialTab = EventSuccessHostTab.setup,
@@ -987,6 +1024,7 @@ class EventSuccessHostPanel extends StatefulWidget {
         const EventSuccessAssignmentGenerationActionState(),
     this.onGenerateMicroPods,
     this.onGenerateGuidedRotations,
+    this.onResolveLateArrival,
     this.onPublishGuidedRotationRound,
     this.onOverrideGroupAssignments,
     this.onOverrideGuidedRotations,
@@ -1018,6 +1056,10 @@ class EventSuccessHostPanel extends StatefulWidget {
   final List<PublicProfile> rotationParticipantProfiles;
   final List<EventSuccessPreference> preferences;
   final EventSuccessStandings? standings;
+  final EventSuccessPresenceSummary? presenceSummary;
+  final Object? presenceError;
+  final bool resolvingLateArrival;
+  final Object? lateArrivalError;
   final List<EventSuccessWingmanRequest> wingmanRequests;
   final List<PublicProfile> wingmanProfiles;
   final EventSuccessHostTab initialTab;
@@ -1038,6 +1080,7 @@ class EventSuccessHostPanel extends StatefulWidget {
   final EventSuccessAssignmentGenerationActionState rotationsGenerationState;
   final Future<void> Function()? onGenerateMicroPods;
   final Future<void> Function()? onGenerateGuidedRotations;
+  final Future<void> Function(String uid)? onResolveLateArrival;
   final Future<void> Function(int roundIndex)? onPublishGuidedRotationRound;
   final Future<void> Function(List<EventSuccessGroupOverrideRound> rounds)?
   onOverrideGroupAssignments;
@@ -1109,6 +1152,10 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         rotationParticipantProfiles: widget.rotationParticipantProfiles,
         preferences: widget.preferences,
         standings: widget.standings,
+        presenceSummary: widget.presenceSummary,
+        presenceError: widget.presenceError,
+        resolvingLateArrival: widget.resolvingLateArrival,
+        lateArrivalError: widget.lateArrivalError,
         wingmanRequests: widget.wingmanRequests,
         wingmanProfiles: widget.wingmanProfiles,
         compactLiveControls: widget.compactLiveControls,
@@ -1137,6 +1184,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
           widget.fixtureActions?.onGenerateGuidedRotations,
           widget.onGenerateGuidedRotations,
         ),
+        onResolveLateArrival: widget.onResolveLateArrival,
         onPublishGuidedRotationRound: widget.onPublishGuidedRotationRound,
         onOverrideGroupAssignments: _groupOverrideCallback(),
         onOverrideGuidedRotations: _rotationOverrideCallback(),

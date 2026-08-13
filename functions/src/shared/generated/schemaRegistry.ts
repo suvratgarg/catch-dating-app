@@ -22744,6 +22744,253 @@ export const eventRuntimeParticipantDocumentSchema: Record<string, unknown> = {
   }
 } as const;
 
+export const eventSuccessPresenceDocumentSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_success_presence.schema.json",
+  "title": "EventSuccessPresenceDocument",
+  "description": "Server-owned liveness heartbeat stored at eventSuccessPresence/{eventId_uid}; presence state is derived from heartbeatAt and deployment policy rather than persisted.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSuccessPresence",
+  "x-firestore-path": "eventSuccessPresence/{presenceId}",
+  "x-document-id-field": "id",
+  "x-owner": "event-success heartbeat callable",
+  "required": [
+    "eventId",
+    "clubId",
+    "organizerId",
+    "uid",
+    "surface",
+    "heartbeatAt",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "surface": {
+      "type": "string",
+      "enum": [
+        "flutter",
+        "web"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "heartbeatAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+} as const;
+
+export const eventSuccessLateArrivalDocumentSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_success_late_arrivals.schema.json",
+  "title": "EventSuccessLateArrivalDocument",
+  "description": "Server-owned Host resolution for a checked-in late attendee stored at eventSuccessLateArrivals/{eventId_uid}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSuccessLateArrivals",
+  "x-firestore-path": "eventSuccessLateArrivals/{resolutionId}",
+  "x-document-id-field": "id",
+  "x-owner": "event-success late-arrival callable",
+  "required": [
+    "eventId",
+    "clubId",
+    "organizerId",
+    "uid",
+    "resolvedByUid",
+    "status",
+    "targetRoundIndex",
+    "assignmentDraftRevision",
+    "reason",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "resolvedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "insertedIntoOpenPair",
+        "extendedUnit",
+        "heldForNextRound"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "targetRoundIndex": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "x-catch-ownership": "callable-owned"
+    },
+    "assignmentDraftRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647,
+      "x-catch-ownership": "callable-owned"
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+} as const;
+
 export const eventRuntimeClaimRequestDocumentSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_runtime_claim_requests.schema.json",
@@ -52379,6 +52626,368 @@ export const recordEventSuccessUnitOutcomesCallableResponseSchema: Record<string
       "type": "integer",
       "minimum": 0,
       "maximum": 200
+    }
+  }
+} as const;
+
+export const heartbeatEventSuccessPresenceCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/heartbeat_event_success_presence_payload.schema.json",
+  "title": "HeartbeatEventSuccessPresenceCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "surface"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "surface": {
+      "type": "string",
+      "enum": [
+        "flutter",
+        "web"
+      ]
+    }
+  }
+} as const;
+
+export const heartbeatEventSuccessPresenceCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/heartbeat_event_success_presence_response.schema.json",
+  "title": "HeartbeatEventSuccessPresenceCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "presenceState",
+    "serverTimeMillis",
+    "heartbeatIntervalSeconds",
+    "presentWindowSeconds",
+    "likelyDepartedAfterSeconds"
+  ],
+  "properties": {
+    "presenceState": {
+      "type": "string",
+      "const": "present"
+    },
+    "serverTimeMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "heartbeatIntervalSeconds": {
+      "type": "integer",
+      "minimum": 10,
+      "maximum": 300
+    },
+    "presentWindowSeconds": {
+      "type": "integer",
+      "minimum": 30,
+      "maximum": 900
+    },
+    "likelyDepartedAfterSeconds": {
+      "type": "integer",
+      "minimum": 60,
+      "maximum": 3600
+    }
+  }
+} as const;
+
+export const getEventSuccessPresenceSummaryCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_event_success_presence_summary_response.schema.json",
+  "title": "GetEventSuccessPresenceSummaryCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "serverTimeMillis",
+    "liveControlRevision",
+    "nextRoundIndex",
+    "policy",
+    "entries",
+    "lateArrivals"
+  ],
+  "properties": {
+    "serverTimeMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "liveControlRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "nextRoundIndex": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "heartbeatIntervalSeconds",
+        "presentWindowSeconds",
+        "likelyDepartedAfterSeconds"
+      ],
+      "properties": {
+        "heartbeatIntervalSeconds": {
+          "type": "integer",
+          "minimum": 10,
+          "maximum": 300
+        },
+        "presentWindowSeconds": {
+          "type": "integer",
+          "minimum": 30,
+          "maximum": 900
+        },
+        "likelyDepartedAfterSeconds": {
+          "type": "integer",
+          "minimum": 60,
+          "maximum": 3600
+        }
+      }
+    },
+    "entries": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uid",
+          "displayName",
+          "presenceState",
+          "heartbeatAtMillis"
+        ],
+        "properties": {
+          "uid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "presenceState": {
+            "type": "string",
+            "enum": [
+              "present",
+              "idle",
+              "likelyDeparted"
+            ]
+          },
+          "heartbeatAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "lateArrivals": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uid",
+          "displayName",
+          "checkedInAtMillis"
+        ],
+        "properties": {
+          "uid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "checkedInAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "presencePolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "heartbeatIntervalSeconds",
+        "presentWindowSeconds",
+        "likelyDepartedAfterSeconds"
+      ],
+      "properties": {
+        "heartbeatIntervalSeconds": {
+          "type": "integer",
+          "minimum": 10,
+          "maximum": 300
+        },
+        "presentWindowSeconds": {
+          "type": "integer",
+          "minimum": 30,
+          "maximum": 900
+        },
+        "likelyDepartedAfterSeconds": {
+          "type": "integer",
+          "minimum": 60,
+          "maximum": 3600
+        }
+      }
+    },
+    "presenceEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "uid",
+        "displayName",
+        "presenceState",
+        "heartbeatAtMillis"
+      ],
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "presenceState": {
+          "type": "string",
+          "enum": [
+            "present",
+            "idle",
+            "likelyDeparted"
+          ]
+        },
+        "heartbeatAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "lateArrivalEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "uid",
+        "displayName",
+        "checkedInAtMillis"
+      ],
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "checkedInAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+} as const;
+
+export const resolveEventSuccessLateArrivalCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/resolve_event_success_late_arrival_payload.schema.json",
+  "title": "ResolveEventSuccessLateArrivalCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "uid",
+    "expectedRevision",
+    "confirmed"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "confirmed": {
+      "type": "boolean",
+      "const": true
+    }
+  }
+} as const;
+
+export const resolveEventSuccessLateArrivalCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/resolve_event_success_late_arrival_response.schema.json",
+  "title": "ResolveEventSuccessLateArrivalCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status",
+    "targetRoundIndex",
+    "revision",
+    "assignmentDraftRevision",
+    "reason",
+    "replayed"
+  ],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "insertedIntoOpenPair",
+        "extendedUnit",
+        "heldForNextRound"
+      ]
+    },
+    "targetRoundIndex": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "assignmentDraftRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "replayed": {
+      "type": "boolean"
     }
   }
 } as const;

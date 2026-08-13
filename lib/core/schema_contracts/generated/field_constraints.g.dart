@@ -16005,6 +16005,105 @@ abstract final class CatchContractConstraints {
     maximum: 5,
   );
 
+  static const eventSuccessLateArrivalDocumentAssignmentDraftRevision = CatchContractFieldConstraints(
+    path: 'eventSuccessLateArrivalDocument.assignmentDraftRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const eventSuccessLateArrivalDocumentClubId = CatchContractFieldConstraints(
+    path: 'eventSuccessLateArrivalDocument.clubId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessLateArrivalDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessLateArrivalDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessLateArrivalDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessLateArrivalDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventSuccessLateArrivalDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventSuccessLateArrivalDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessLateArrivalDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventSuccessLateArrivalDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessLateArrivalDocumentReason = CatchContractFieldConstraints(
+    path: 'eventSuccessLateArrivalDocument.reason',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessLateArrivalDocumentResolvedByUid = CatchContractFieldConstraints(
+    path: 'eventSuccessLateArrivalDocument.resolvedByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessLateArrivalDocumentStatus = CatchContractFieldConstraints(
+    path: 'eventSuccessLateArrivalDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['insertedIntoOpenPair', 'extendedUnit', 'heldForNextRound'],
+  );
+
+  static const eventSuccessLateArrivalDocumentTargetRoundIndex = CatchContractFieldConstraints(
+    path: 'eventSuccessLateArrivalDocument.targetRoundIndex',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventSuccessLateArrivalDocumentUid = CatchContractFieldConstraints(
+    path: 'eventSuccessLateArrivalDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessLateArrivalDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessLateArrivalDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessLateArrivalDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessLateArrivalDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const eventSuccessLiveActionCallablePayloadAction = CatchContractFieldConstraints(
     path: 'eventSuccessLiveActionCallablePayload.action',
     required: true,
@@ -16662,6 +16761,87 @@ abstract final class CatchContractConstraints {
 
   static const eventSuccessPreferenceDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
     path: 'eventSuccessPreferenceDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventSuccessPresenceDocumentClubId = CatchContractFieldConstraints(
+    path: 'eventSuccessPresenceDocument.clubId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessPresenceDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessPresenceDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessPresenceDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessPresenceDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventSuccessPresenceDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventSuccessPresenceDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessPresenceDocumentHeartbeatAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessPresenceDocument.heartbeatAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessPresenceDocumentHeartbeatAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessPresenceDocument.heartbeatAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventSuccessPresenceDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventSuccessPresenceDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessPresenceDocumentSurface = CatchContractFieldConstraints(
+    path: 'eventSuccessPresenceDocument.surface',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['flutter', 'web'],
+  );
+
+  static const eventSuccessPresenceDocumentUid = CatchContractFieldConstraints(
+    path: 'eventSuccessPresenceDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessPresenceDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessPresenceDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessPresenceDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessPresenceDocument.updatedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
   );
@@ -19673,6 +19853,122 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['relationship', 'casual', 'marriage', 'friendship', 'unsure'],
   );
 
+  static const getEventSuccessPresenceSummaryCallableResponseEntries = CatchContractFieldConstraints(
+    path: 'getEventSuccessPresenceSummaryCallableResponse.entries',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 200,
+  );
+
+  static const getEventSuccessPresenceSummaryCallableResponseEntriesItemsDisplayName = CatchContractFieldConstraints(
+    path: 'getEventSuccessPresenceSummaryCallableResponse.entries.items.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventSuccessPresenceSummaryCallableResponseEntriesItemsHeartbeatAtMillis = CatchContractFieldConstraints(
+    path: 'getEventSuccessPresenceSummaryCallableResponse.entries.items.heartbeatAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const getEventSuccessPresenceSummaryCallableResponseEntriesItemsPresenceState = CatchContractFieldConstraints(
+    path: 'getEventSuccessPresenceSummaryCallableResponse.entries.items.presenceState',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['present', 'idle', 'likelyDeparted'],
+  );
+
+  static const getEventSuccessPresenceSummaryCallableResponseEntriesItemsUid = CatchContractFieldConstraints(
+    path: 'getEventSuccessPresenceSummaryCallableResponse.entries.items.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventSuccessPresenceSummaryCallableResponseLateArrivals = CatchContractFieldConstraints(
+    path: 'getEventSuccessPresenceSummaryCallableResponse.lateArrivals',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 200,
+  );
+
+  static const getEventSuccessPresenceSummaryCallableResponseLateArrivalsItemsCheckedInAtMillis = CatchContractFieldConstraints(
+    path: 'getEventSuccessPresenceSummaryCallableResponse.lateArrivals.items.checkedInAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const getEventSuccessPresenceSummaryCallableResponseLateArrivalsItemsDisplayName = CatchContractFieldConstraints(
+    path: 'getEventSuccessPresenceSummaryCallableResponse.lateArrivals.items.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventSuccessPresenceSummaryCallableResponseLateArrivalsItemsUid = CatchContractFieldConstraints(
+    path: 'getEventSuccessPresenceSummaryCallableResponse.lateArrivals.items.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventSuccessPresenceSummaryCallableResponseLiveControlRevision = CatchContractFieldConstraints(
+    path: 'getEventSuccessPresenceSummaryCallableResponse.liveControlRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const getEventSuccessPresenceSummaryCallableResponseNextRoundIndex = CatchContractFieldConstraints(
+    path: 'getEventSuccessPresenceSummaryCallableResponse.nextRoundIndex',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const getEventSuccessPresenceSummaryCallableResponsePolicyHeartbeatIntervalSeconds = CatchContractFieldConstraints(
+    path: 'getEventSuccessPresenceSummaryCallableResponse.policy.heartbeatIntervalSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 10,
+    maximum: 300,
+  );
+
+  static const getEventSuccessPresenceSummaryCallableResponsePolicyLikelyDepartedAfterSeconds = CatchContractFieldConstraints(
+    path: 'getEventSuccessPresenceSummaryCallableResponse.policy.likelyDepartedAfterSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 60,
+    maximum: 3600,
+  );
+
+  static const getEventSuccessPresenceSummaryCallableResponsePolicyPresentWindowSeconds = CatchContractFieldConstraints(
+    path: 'getEventSuccessPresenceSummaryCallableResponse.policy.presentWindowSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 30,
+    maximum: 900,
+  );
+
+  static const getEventSuccessPresenceSummaryCallableResponseServerTimeMillis = CatchContractFieldConstraints(
+    path: 'getEventSuccessPresenceSummaryCallableResponse.serverTimeMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
   static const getEventSuccessSpatialLayoutCallablePayloadEventId = CatchContractFieldConstraints(
     path: 'getEventSuccessSpatialLayoutCallablePayload.eventId',
     maxLength: 180,
@@ -20259,6 +20555,58 @@ abstract final class CatchContractConstraints {
     minLength: 8,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const heartbeatEventSuccessPresenceCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'heartbeatEventSuccessPresenceCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const heartbeatEventSuccessPresenceCallablePayloadSurface = CatchContractFieldConstraints(
+    path: 'heartbeatEventSuccessPresenceCallablePayload.surface',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['flutter', 'web'],
+  );
+
+  static const heartbeatEventSuccessPresenceCallableResponseHeartbeatIntervalSeconds = CatchContractFieldConstraints(
+    path: 'heartbeatEventSuccessPresenceCallableResponse.heartbeatIntervalSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 10,
+    maximum: 300,
+  );
+
+  static const heartbeatEventSuccessPresenceCallableResponseLikelyDepartedAfterSeconds = CatchContractFieldConstraints(
+    path: 'heartbeatEventSuccessPresenceCallableResponse.likelyDepartedAfterSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 60,
+    maximum: 3600,
+  );
+
+  static const heartbeatEventSuccessPresenceCallableResponsePresenceState = CatchContractFieldConstraints(
+    path: 'heartbeatEventSuccessPresenceCallableResponse.presenceState',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const heartbeatEventSuccessPresenceCallableResponsePresentWindowSeconds = CatchContractFieldConstraints(
+    path: 'heartbeatEventSuccessPresenceCallableResponse.presentWindowSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 30,
+    maximum: 900,
+  );
+
+  static const heartbeatEventSuccessPresenceCallableResponseServerTimeMillis = CatchContractFieldConstraints(
+    path: 'heartbeatEventSuccessPresenceCallableResponse.serverTimeMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
   );
 
   static const hostAnalyticsCallableResponseDataQuality = CatchContractFieldConstraints(
@@ -33715,6 +34063,81 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const resolveEventSuccessLateArrivalCallablePayloadConfirmed = CatchContractFieldConstraints(
+    path: 'resolveEventSuccessLateArrivalCallablePayload.confirmed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const resolveEventSuccessLateArrivalCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'resolveEventSuccessLateArrivalCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const resolveEventSuccessLateArrivalCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'resolveEventSuccessLateArrivalCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const resolveEventSuccessLateArrivalCallablePayloadUid = CatchContractFieldConstraints(
+    path: 'resolveEventSuccessLateArrivalCallablePayload.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const resolveEventSuccessLateArrivalCallableResponseAssignmentDraftRevision = CatchContractFieldConstraints(
+    path: 'resolveEventSuccessLateArrivalCallableResponse.assignmentDraftRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const resolveEventSuccessLateArrivalCallableResponseReason = CatchContractFieldConstraints(
+    path: 'resolveEventSuccessLateArrivalCallableResponse.reason',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const resolveEventSuccessLateArrivalCallableResponseReplayed = CatchContractFieldConstraints(
+    path: 'resolveEventSuccessLateArrivalCallableResponse.replayed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const resolveEventSuccessLateArrivalCallableResponseRevision = CatchContractFieldConstraints(
+    path: 'resolveEventSuccessLateArrivalCallableResponse.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const resolveEventSuccessLateArrivalCallableResponseStatus = CatchContractFieldConstraints(
+    path: 'resolveEventSuccessLateArrivalCallableResponse.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['insertedIntoOpenPair', 'extendedUnit', 'heldForNextRound'],
+  );
+
+  static const resolveEventSuccessLateArrivalCallableResponseTargetRoundIndex = CatchContractFieldConstraints(
+    path: 'resolveEventSuccessLateArrivalCallableResponse.targetRoundIndex',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
   static const respondCrossPathsInvitationCallablePayloadDecision = CatchContractFieldConstraints(
     path: 'respondCrossPathsInvitationCallablePayload.decision',
     required: true,
@@ -42121,6 +42544,19 @@ abstract final class CatchContractConstraints {
     'eventSuccessFeedbackDocument.updatedAt._nanoseconds': eventSuccessFeedbackDocumentUpdatedAtNanoseconds,
     'eventSuccessFeedbackDocument.updatedAt._seconds': eventSuccessFeedbackDocumentUpdatedAtSeconds,
     'eventSuccessFeedbackDocument.welcomeRating': eventSuccessFeedbackDocumentWelcomeRating,
+    'eventSuccessLateArrivalDocument.assignmentDraftRevision': eventSuccessLateArrivalDocumentAssignmentDraftRevision,
+    'eventSuccessLateArrivalDocument.clubId': eventSuccessLateArrivalDocumentClubId,
+    'eventSuccessLateArrivalDocument.createdAt._nanoseconds': eventSuccessLateArrivalDocumentCreatedAtNanoseconds,
+    'eventSuccessLateArrivalDocument.createdAt._seconds': eventSuccessLateArrivalDocumentCreatedAtSeconds,
+    'eventSuccessLateArrivalDocument.eventId': eventSuccessLateArrivalDocumentEventId,
+    'eventSuccessLateArrivalDocument.organizerId': eventSuccessLateArrivalDocumentOrganizerId,
+    'eventSuccessLateArrivalDocument.reason': eventSuccessLateArrivalDocumentReason,
+    'eventSuccessLateArrivalDocument.resolvedByUid': eventSuccessLateArrivalDocumentResolvedByUid,
+    'eventSuccessLateArrivalDocument.status': eventSuccessLateArrivalDocumentStatus,
+    'eventSuccessLateArrivalDocument.targetRoundIndex': eventSuccessLateArrivalDocumentTargetRoundIndex,
+    'eventSuccessLateArrivalDocument.uid': eventSuccessLateArrivalDocumentUid,
+    'eventSuccessLateArrivalDocument.updatedAt._nanoseconds': eventSuccessLateArrivalDocumentUpdatedAtNanoseconds,
+    'eventSuccessLateArrivalDocument.updatedAt._seconds': eventSuccessLateArrivalDocumentUpdatedAtSeconds,
     'eventSuccessLiveActionCallablePayload.action': eventSuccessLiveActionCallablePayloadAction,
     'eventSuccessLiveActionCallablePayload.activeStepIndex': eventSuccessLiveActionCallablePayloadActiveStepIndex,
     'eventSuccessLiveActionCallablePayload.confirmed': eventSuccessLiveActionCallablePayloadConfirmed,
@@ -42213,6 +42649,17 @@ abstract final class CatchContractConstraints {
     'eventSuccessPreferenceDocument.uid': eventSuccessPreferenceDocumentUid,
     'eventSuccessPreferenceDocument.updatedAt._nanoseconds': eventSuccessPreferenceDocumentUpdatedAtNanoseconds,
     'eventSuccessPreferenceDocument.updatedAt._seconds': eventSuccessPreferenceDocumentUpdatedAtSeconds,
+    'eventSuccessPresenceDocument.clubId': eventSuccessPresenceDocumentClubId,
+    'eventSuccessPresenceDocument.createdAt._nanoseconds': eventSuccessPresenceDocumentCreatedAtNanoseconds,
+    'eventSuccessPresenceDocument.createdAt._seconds': eventSuccessPresenceDocumentCreatedAtSeconds,
+    'eventSuccessPresenceDocument.eventId': eventSuccessPresenceDocumentEventId,
+    'eventSuccessPresenceDocument.heartbeatAt._nanoseconds': eventSuccessPresenceDocumentHeartbeatAtNanoseconds,
+    'eventSuccessPresenceDocument.heartbeatAt._seconds': eventSuccessPresenceDocumentHeartbeatAtSeconds,
+    'eventSuccessPresenceDocument.organizerId': eventSuccessPresenceDocumentOrganizerId,
+    'eventSuccessPresenceDocument.surface': eventSuccessPresenceDocumentSurface,
+    'eventSuccessPresenceDocument.uid': eventSuccessPresenceDocumentUid,
+    'eventSuccessPresenceDocument.updatedAt._nanoseconds': eventSuccessPresenceDocumentUpdatedAtNanoseconds,
+    'eventSuccessPresenceDocument.updatedAt._seconds': eventSuccessPresenceDocumentUpdatedAtSeconds,
     'eventSuccessScorecardDocument.attendeesWhoCaughtSomeone': eventSuccessScorecardDocumentAttendeesWhoCaughtSomeone,
     'eventSuccessScorecardDocument.attendeesWhoMetTwoPlusPeople': eventSuccessScorecardDocumentAttendeesWhoMetTwoPlusPeople,
     'eventSuccessScorecardDocument.averageStructureRating': eventSuccessScorecardDocumentAverageStructureRating,
@@ -42625,6 +43072,21 @@ abstract final class CatchContractConstraints {
     'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.interestedInGenders': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileInterestedInGenders,
     'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.interestedInGenders.items': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileInterestedInGendersItems,
     'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.relationshipGoal': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileRelationshipGoal,
+    'getEventSuccessPresenceSummaryCallableResponse.entries': getEventSuccessPresenceSummaryCallableResponseEntries,
+    'getEventSuccessPresenceSummaryCallableResponse.entries.items.displayName': getEventSuccessPresenceSummaryCallableResponseEntriesItemsDisplayName,
+    'getEventSuccessPresenceSummaryCallableResponse.entries.items.heartbeatAtMillis': getEventSuccessPresenceSummaryCallableResponseEntriesItemsHeartbeatAtMillis,
+    'getEventSuccessPresenceSummaryCallableResponse.entries.items.presenceState': getEventSuccessPresenceSummaryCallableResponseEntriesItemsPresenceState,
+    'getEventSuccessPresenceSummaryCallableResponse.entries.items.uid': getEventSuccessPresenceSummaryCallableResponseEntriesItemsUid,
+    'getEventSuccessPresenceSummaryCallableResponse.lateArrivals': getEventSuccessPresenceSummaryCallableResponseLateArrivals,
+    'getEventSuccessPresenceSummaryCallableResponse.lateArrivals.items.checkedInAtMillis': getEventSuccessPresenceSummaryCallableResponseLateArrivalsItemsCheckedInAtMillis,
+    'getEventSuccessPresenceSummaryCallableResponse.lateArrivals.items.displayName': getEventSuccessPresenceSummaryCallableResponseLateArrivalsItemsDisplayName,
+    'getEventSuccessPresenceSummaryCallableResponse.lateArrivals.items.uid': getEventSuccessPresenceSummaryCallableResponseLateArrivalsItemsUid,
+    'getEventSuccessPresenceSummaryCallableResponse.liveControlRevision': getEventSuccessPresenceSummaryCallableResponseLiveControlRevision,
+    'getEventSuccessPresenceSummaryCallableResponse.nextRoundIndex': getEventSuccessPresenceSummaryCallableResponseNextRoundIndex,
+    'getEventSuccessPresenceSummaryCallableResponse.policy.heartbeatIntervalSeconds': getEventSuccessPresenceSummaryCallableResponsePolicyHeartbeatIntervalSeconds,
+    'getEventSuccessPresenceSummaryCallableResponse.policy.likelyDepartedAfterSeconds': getEventSuccessPresenceSummaryCallableResponsePolicyLikelyDepartedAfterSeconds,
+    'getEventSuccessPresenceSummaryCallableResponse.policy.presentWindowSeconds': getEventSuccessPresenceSummaryCallableResponsePolicyPresentWindowSeconds,
+    'getEventSuccessPresenceSummaryCallableResponse.serverTimeMillis': getEventSuccessPresenceSummaryCallableResponseServerTimeMillis,
     'getEventSuccessSpatialLayoutCallablePayload.eventId': getEventSuccessSpatialLayoutCallablePayloadEventId,
     'getEventSuccessSpatialLayoutCallableResponse.layout.label': getEventSuccessSpatialLayoutCallableResponseLayoutLabel,
     'getEventSuccessSpatialLayoutCallableResponse.layout.layoutId': getEventSuccessSpatialLayoutCallableResponseLayoutLayoutId,
@@ -42704,6 +43166,13 @@ abstract final class CatchContractConstraints {
     'grantEventStaffCallablePayload.eventId': grantEventStaffCallablePayloadEventId,
     'grantEventStaffCallablePayload.expiresAtMillis': grantEventStaffCallablePayloadExpiresAtMillis,
     'grantEventStaffCallablePayload.phoneNumber': grantEventStaffCallablePayloadPhoneNumber,
+    'heartbeatEventSuccessPresenceCallablePayload.eventId': heartbeatEventSuccessPresenceCallablePayloadEventId,
+    'heartbeatEventSuccessPresenceCallablePayload.surface': heartbeatEventSuccessPresenceCallablePayloadSurface,
+    'heartbeatEventSuccessPresenceCallableResponse.heartbeatIntervalSeconds': heartbeatEventSuccessPresenceCallableResponseHeartbeatIntervalSeconds,
+    'heartbeatEventSuccessPresenceCallableResponse.likelyDepartedAfterSeconds': heartbeatEventSuccessPresenceCallableResponseLikelyDepartedAfterSeconds,
+    'heartbeatEventSuccessPresenceCallableResponse.presenceState': heartbeatEventSuccessPresenceCallableResponsePresenceState,
+    'heartbeatEventSuccessPresenceCallableResponse.presentWindowSeconds': heartbeatEventSuccessPresenceCallableResponsePresentWindowSeconds,
+    'heartbeatEventSuccessPresenceCallableResponse.serverTimeMillis': heartbeatEventSuccessPresenceCallableResponseServerTimeMillis,
     'hostAnalyticsCallableResponse.dataQuality': hostAnalyticsCallableResponseDataQuality,
     'hostAnalyticsCallableResponse.dataQuality.items.detail': hostAnalyticsCallableResponseDataQualityItemsDetail,
     'hostAnalyticsCallableResponse.dataQuality.items.id': hostAnalyticsCallableResponseDataQualityItemsId,
@@ -44590,6 +45059,16 @@ abstract final class CatchContractConstraints {
     'resolveEventInviteLandingCallableResponse.sourceLabel': resolveEventInviteLandingCallableResponseSourceLabel,
     'resolveEventInviteLandingCallableResponse.startTimeMillis': resolveEventInviteLandingCallableResponseStartTimeMillis,
     'resolveEventInviteLandingCallableResponse.title': resolveEventInviteLandingCallableResponseTitle,
+    'resolveEventSuccessLateArrivalCallablePayload.confirmed': resolveEventSuccessLateArrivalCallablePayloadConfirmed,
+    'resolveEventSuccessLateArrivalCallablePayload.eventId': resolveEventSuccessLateArrivalCallablePayloadEventId,
+    'resolveEventSuccessLateArrivalCallablePayload.expectedRevision': resolveEventSuccessLateArrivalCallablePayloadExpectedRevision,
+    'resolveEventSuccessLateArrivalCallablePayload.uid': resolveEventSuccessLateArrivalCallablePayloadUid,
+    'resolveEventSuccessLateArrivalCallableResponse.assignmentDraftRevision': resolveEventSuccessLateArrivalCallableResponseAssignmentDraftRevision,
+    'resolveEventSuccessLateArrivalCallableResponse.reason': resolveEventSuccessLateArrivalCallableResponseReason,
+    'resolveEventSuccessLateArrivalCallableResponse.replayed': resolveEventSuccessLateArrivalCallableResponseReplayed,
+    'resolveEventSuccessLateArrivalCallableResponse.revision': resolveEventSuccessLateArrivalCallableResponseRevision,
+    'resolveEventSuccessLateArrivalCallableResponse.status': resolveEventSuccessLateArrivalCallableResponseStatus,
+    'resolveEventSuccessLateArrivalCallableResponse.targetRoundIndex': resolveEventSuccessLateArrivalCallableResponseTargetRoundIndex,
     'respondCrossPathsInvitationCallablePayload.decision': respondCrossPathsInvitationCallablePayloadDecision,
     'respondCrossPathsInvitationCallablePayload.invitationId': respondCrossPathsInvitationCallablePayloadInvitationId,
     'respondCrossPathsInvitationCallableResponse.conversationId': respondCrossPathsInvitationCallableResponseConversationId,

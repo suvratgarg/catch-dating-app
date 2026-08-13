@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_success_presence.schema.json",
+  "title": "EventSuccessPresenceDocument",
+  "description": "Server-owned liveness heartbeat stored at eventSuccessPresence/{eventId_uid}; presence state is derived from heartbeatAt and deployment policy rather than persisted.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSuccessPresence",
+  "x-firestore-path": "eventSuccessPresence/{presenceId}",
+  "x-document-id-field": "id",
+  "x-owner": "event-success heartbeat callable",
+  "required": [
+    "eventId",
+    "clubId",
+    "organizerId",
+    "uid",
+    "surface",
+    "heartbeatAt",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "callable-owned"},
+    "clubId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "callable-owned"},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "callable-owned"},
+    "uid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "callable-owned"},
+    "surface": {
+      "type": "string",
+      "enum": ["flutter", "web"],
+      "x-catch-ownership": "callable-owned"
+    },
+    "heartbeatAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "callable-owned"},
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "callable-owned"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "callable-owned"}
+  }
+}

@@ -125,6 +125,10 @@ service cloud.firestore {
       return eventId + '_' + moduleId + '_' + uid;
     }
 
+    function eventSuccessLateArrivalDocId(eventId, uid) {
+      return eventId + '_' + uid;
+    }
+
     function hasBlockBetween(uidA, uidB) {
       return exists(/databases/$(database)/documents/blocks/$(blockDocId(uidA, uidB)))
         || exists(/databases/$(database)/documents/blocks/$(blockDocId(uidB, uidA)));
@@ -1819,6 +1823,31 @@ service cloud.firestore {
         && resource.data.moduleId == 'guided_rotations'
         && isClubHostForEvent(resource.data.eventId);
       allow write: if false;
+    }
+
+    match /eventSuccessPresence/{presenceId} {
+      allow read, write: if false;
+    }
+
+    match /eventSuccessLateArrivals/{resolutionId} {
+      allow get: if isAuthed()
+        && resource.data.eventId is string
+        && resource.data.uid is string
+        && resolutionId == eventSuccessLateArrivalDocId(
+          resource.data.eventId,
+          resource.data.uid
+        )
+        && (
+          isClubHostForEvent(resource.data.eventId)
+          || (
+            resource.data.uid == request.auth.uid
+            && hasEventSuccessParticipantAccess(
+              resource.data.eventId,
+              request.auth.uid
+            )
+          )
+        );
+      allow list, write: if false;
     }
 
     match /eventSuccessUnitOutcomes/{eventId} {

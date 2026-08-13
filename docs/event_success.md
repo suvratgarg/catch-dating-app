@@ -1,7 +1,7 @@
 ---
 doc_id: event_success
-version: 1.11.0
-updated: 2026-08-13
+version: 1.12.0
+updated: 2026-08-14
 owner: recursive_audit_loop
 status: active
 ---
@@ -213,6 +213,8 @@ rather than embedded in event-type logic.
 | `eventSuccessArrivalMissions/{eventId_uid}` | Server-owned First Hello mission. Attendee can read only their own mission; clients cannot create, update, list, or delete. |
 | `eventSuccessAssignments/{eventId_moduleId_uid}` | Server-owned assignment docs for micro-pods/guided rotations. |
 | `eventSuccessAssignmentDrafts/{eventId_moduleId_uid}` | Server-owned, Host-readable next-round rotation drafts. Participants cannot read or write this collection. |
+| `eventSuccessPresence/{eventId_uid}` | Server-owned heartbeat timestamps for checked-in Flutter and no-download runtime attendees. Every direct read/write is denied; Host summaries are callable-derived. |
+| `eventSuccessLateArrivals/{eventId_uid}` | Server-owned Host resolution for one checked-in late attendee. The attendee and event Host may get the deterministic document; list and every direct write are denied. |
 | `eventSuccessUnitOutcomes/{eventId}` | Server-owned complete round facts for completion, score, or rank outcomes. Hosts may get the event document; attendee reads, list access, and every direct write are denied. |
 | `eventSuccessStandings/{eventId}` | Server-owned score/rank snapshots through each recorded round. Authorized Hosts, active participants, and ready external runtime identities may get the event document; list and direct writes are denied. |
 | `organizerEventSuccessLayouts/{organizerId_layoutId}` | Reusable organizer-owned parametric room-layout assets. Organizer managers may read their assets; all writes use the validated callable. Participants receive only the selected layout's timestamp-free projection through an authorized callable/runtime bootstrap. |
@@ -221,6 +223,31 @@ rather than embedded in event-type logic.
 Schemas live under `contracts/firestore/` and generated outputs under
 `functions/src/shared/generated/`, `lib/core/schema_contracts/generated/`, and
 `tool/contracts/generated/`.
+
+### Presence and late arrivals
+
+An open checked-in companion sends `heartbeatEventSuccessPresence` from both
+Flutter and `website/src/features/eventRuntime/`. The server stores only the
+latest timestamp and derives `present`, `idle`, or `likelyDeparted` from its own
+clock. Deployment configuration owns the bounded policy:
+
+- `EVENT_SUCCESS_HEARTBEAT_INTERVAL_SECONDS` defaults to 30;
+- `EVENT_SUCCESS_PRESENCE_PRESENT_SECONDS` defaults to 90;
+- `EVENT_SUCCESS_PRESENCE_LIKELY_DEPARTED_SECONDS` defaults to 300.
+
+Invalid, out-of-order configuration fails back to the reviewed defaults.
+Attendees without any monitored heartbeat are not inferred to have departed.
+`getEventSuccessPresenceSummary` is Host-only and supplies the liveness prompt
+and newly checked-in late-arrival candidates. A Host explicitly regenerates the
+next draft after reviewing likely departures; the server never silently edits a
+live round.
+
+`resolveEventSuccessLateArrival` is Host-confirmed and shares the live revision
+fence. It may replace a `likelyDeparted` draft slot, turn a prepared sit-out into
+an open pair, extend an unpublished group up to its declared unit size, or hold
+the attendee for the next round with a visible reason. It writes only
+`eventSuccessAssignmentDrafts` and `eventSuccessLateArrivals`. Published
+`eventSuccessAssignments` are immutable through this operation.
 
 First Hello check-in is modeled as an optional arrival module with server-owned
 mission assignment/completion. `startEventSuccessFirstHelloMission` verifies the
@@ -497,6 +524,7 @@ window, capability, hidden safety state and deterministic ids.
 | `getEventRuntimeBootstrap` | Accept opaque public runtime id; return sanitized event, required fields, auth/claim/readiness state and current moment. Never return roster or raw contacts. |
 | `claimEventRuntimeAccess` | Link/reuse exactly one attendee row, create/update runtime participant, and return `ready`, `needsInput` or `hostApprovalPending`. |
 | `submitEventRuntimeProfile` | Accept only required fields, validate consent/version, recompute completeness and optionally fill missing onboarding draft fields. |
+| `heartbeatEventSuccessPresence` | Accept only a checked-in caller and record a server-timestamped liveness heartbeat. Return the active configurable cadence and thresholds. |
 | `setEventRuntimeModuleOptOut` | Purpose-scoped opt-out that does not cancel attendance or identity. |
 | `checkInEventRuntimeParticipant` | Apply absolute desired attendance after Host approval, valid venue session or allowed self-check-in; never a blind toggle. |
 | `approveEventRuntimeClaim` | Host approves one pending UID-to-attendee claim or rejects it with a bounded reason. |

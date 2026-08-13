@@ -6,6 +6,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_compatibilit
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_presence.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
 import 'package:catch_dating_app/events/data/event_check_in_location_service.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -40,6 +41,8 @@ class EventSuccessController extends _$EventSuccessController {
   static final spatialControlMutation =
       Mutation<EventSuccessSpatialActionResult>();
   static final recordUnitOutcomesMutation = Mutation<void>();
+  static final resolveLateArrivalMutation =
+      Mutation<EventSuccessLateArrivalResolution>();
 
   @override
   void build() {}
@@ -290,6 +293,21 @@ class EventSuccessController extends _$EventSuccessController {
         .read(eventSuccessRepositoryProvider)
         .generateGuidedRotations(
           eventId: eventId,
+          expectedRevision: expectedRevision,
+        );
+  }
+
+  Future<EventSuccessLateArrivalResolution> resolveLateArrival({
+    required String eventId,
+    required String uid,
+    required int expectedRevision,
+  }) async {
+    requireSignedInUid(ref, action: 'place a late event attendee');
+    return ref
+        .read(eventSuccessRepositoryProvider)
+        .resolveLateArrival(
+          eventId: eventId,
+          uid: uid,
           expectedRevision: expectedRevision,
         );
   }

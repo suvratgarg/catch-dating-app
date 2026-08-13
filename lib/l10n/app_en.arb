@@ -9228,6 +9228,49 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
   },
+  "eventSuccessEventSuccessHostLiveTitleGuestPresence": "Guest presence",
+  "@eventSuccessEventSuccessHostLiveTitleGuestPresence": {
+    "description": "Title for the Host presence and late-arrival control.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessEventSuccessHostLiveSubtitlePresenceNeverChangesPublished": "Presence can update the next prepared round. Published rounds stay unchanged.",
+  "@eventSuccessEventSuccessHostLiveSubtitlePresenceNeverChangesPublished": {
+    "description": "Explains the immutable published-round boundary.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessEventSuccessHostLiveTextGuestsMayHaveLeft": "{count} guests may have left. Regenerate the next round before publishing?",
+  "@eventSuccessEventSuccessHostLiveTextGuestsMayHaveLeft": {
+    "description": "Host prompt when monitored guest heartbeats expire.",
+    "placeholders": {"count": {"type": "int"}},
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessEventSuccessHostLiveLabelRegenerateNextRound": "Regenerate next round",
+  "@eventSuccessEventSuccessHostLiveLabelRegenerateNextRound": {
+    "description": "Host action after reviewing likely departed guests.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessEventSuccessHostLiveTitleLateArrivals": "Late arrivals",
+  "@eventSuccessEventSuccessHostLiveTitleLateArrivals": {
+    "description": "Host late-arrival section title.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessEventSuccessHostLiveLabelPlaceNextRound": "Place next round",
+  "@eventSuccessEventSuccessHostLiveLabelPlaceNextRound": {
+    "description": "Host action to place or hold a late attendee.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
   "eventSuccessEventSuccessHostLiveTitleSupportingControls": "Supporting controls",
   "@eventSuccessEventSuccessHostLiveTitleSupportingControls": {
     "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (title).",
@@ -15324,6 +15367,13 @@
   "eventSuccessEventSuccessCompanionBodyScreenVisiblecopySelfCheckIn": "self-check-in",
   "@eventSuccessEventSuccessCompanionBodyScreenVisiblecopySelfCheckIn": {
     "description": "Product copy used by lib/event_success/presentation/event_success_companion_body_screen.dart (visibleCopy).",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_success_companion_body_screen"
+  },
+  "eventSuccessEventSuccessCompanionBodyScreenTitleLateArrival": "Your next round",
+  "@eventSuccessEventSuccessCompanionBodyScreenTitleLateArrival": {
+    "description": "Attendee title for a Host-resolved late-arrival outcome.",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_body_screen"

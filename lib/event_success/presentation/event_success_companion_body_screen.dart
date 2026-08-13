@@ -21,6 +21,7 @@ class EventSuccessCompanionScreen extends StatefulWidget {
     this.rotationPeerProfiles = const [],
     this.rotationPeersLoading = false,
     this.guidedRotationsOptedOut = false,
+    this.lateArrivalResolution,
     this.arrivalMission,
     this.now,
     this.compatibilityActionState =
@@ -63,6 +64,7 @@ class EventSuccessCompanionScreen extends StatefulWidget {
   final List<PublicProfile> rotationPeerProfiles;
   final bool rotationPeersLoading;
   final bool guidedRotationsOptedOut;
+  final EventSuccessLateArrivalResolution? lateArrivalResolution;
   final EventSuccessArrivalMission? arrivalMission;
   final DateTime? now;
   final CompatibilityQuestionnaireActionState compatibilityActionState;
@@ -159,6 +161,22 @@ class _EventSuccessCompanionScreenState
                 momentKey: momentKey,
                 child: content,
               ),
+      );
+    }
+
+    final lateArrivalResolution = widget.lateArrivalResolution;
+    if (lateArrivalResolution != null &&
+        lateArrivalResolution.targetRoundIndex >
+            plan.publishedRotationRoundIndex) {
+      addMomentContent(
+        CatchSurface.message(
+          messageIcon: CatchIcons.scheduleRounded,
+          title: context
+              .l10n
+              .eventSuccessEventSuccessCompanionBodyScreenTitleLateArrival,
+          message: lateArrivalResolution.reason,
+        ),
+        momentKey: screenState.transitionKey('late-arrival'),
       );
     }
 

@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
 version: 1.21.0
-updated: 2026-08-13
+updated: 2026-08-14
 owner: recursive_audit_loop
 status: active
 ---
@@ -86,6 +86,31 @@ callable request schemas under `contracts/callables/`. Every mutating request
 carries an expected revision, and reveal or rotation publication also carries
 explicit confirmation. The asynchronous draft trigger's bounded retry count is
 deployment configuration, not a persisted plan constant.
+
+### Event Success Presence And Late-Arrival Boundary
+
+`contracts/firestore/event_success_presence.schema.json` owns the server-only
+heartbeat record at `eventSuccessPresence/{eventId_uid}`. The document stores
+event/organizer/attendee identity, runtime surface, and server timestamps; it
+does not persist a presence enum. `present`, `idle`, and `likelyDeparted` are
+derived from the Functions server clock and the bounded deployment policy.
+Direct clients cannot read or write presence documents.
+
+The heartbeat request/response schemas and Host summary response under
+`contracts/callables/` and `contracts/callable_responses/` carry the active
+policy into Flutter and web. Defaults are a 30-second heartbeat, a 90-second
+present window, and a 300-second likely-departed threshold. Unmonitored
+attendees remain eligible; absence of a heartbeat is not departure evidence.
+
+`contracts/firestore/event_success_late_arrivals.schema.json` owns the
+deterministic Host resolution at `eventSuccessLateArrivals/{eventId_uid}`.
+`resolveEventSuccessLateArrival` carries explicit confirmation and an expected
+live revision. The transaction can change only the unpublished next-round
+assignment draft, increments its draft revision when changed, and records a
+bounded attendee-visible reason. It never writes
+`eventSuccessAssignments/{eventId_moduleId_uid}`. Rules allow only the subject
+attendee or event Host to get a resolution; collection queries and direct
+writes are denied.
 
 ### Event Success Spatial Layout Boundary
 

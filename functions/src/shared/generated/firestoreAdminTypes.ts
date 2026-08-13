@@ -2994,6 +2994,37 @@ export interface EventRuntimeParticipantDocument {
 }
 
 /**
+ * Server-owned liveness heartbeat stored at eventSuccessPresence/{eventId_uid}; presence state is derived from heartbeatAt and deployment policy rather than persisted.
+ */
+export interface EventSuccessPresenceDocument {
+  eventId: string;
+  clubId: string;
+  organizerId: string;
+  uid: string;
+  surface: "flutter" | "web";
+  heartbeatAt: FirebaseFirestore.Timestamp;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Server-owned Host resolution for a checked-in late attendee stored at eventSuccessLateArrivals/{eventId_uid}.
+ */
+export interface EventSuccessLateArrivalDocument {
+  eventId: string;
+  clubId: string;
+  organizerId: string;
+  uid: string;
+  resolvedByUid: string;
+  status: "insertedIntoOpenPair" | "extendedUnit" | "heldForNextRound";
+  targetRoundIndex: number;
+  assignmentDraftRevision: number;
+  reason: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
  * Host-reviewable pending runtime identity claim stored at eventRuntimeClaimRequests/{eventId_uid}.
  */
 export interface EventRuntimeClaimRequestDocument {

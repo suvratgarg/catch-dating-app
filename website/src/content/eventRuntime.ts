@@ -55,6 +55,7 @@ export const eventRuntimeCopy = {
   roomMapSelf: "You",
   revealWaiting: "The room is getting its next assignment. Keep this page open for the reveal.",
   hostPromptTitle: "From your host",
+  lateArrivalTitle: "Your next round",
   compatibilityTitle: "Tune your introductions",
   compatibilityBody: "Pick one answer per question. These are lightweight event signals, not a dating profile.",
   compatibilitySave: "Save answers",

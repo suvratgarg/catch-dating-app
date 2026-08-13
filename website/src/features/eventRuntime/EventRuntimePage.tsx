@@ -257,6 +257,10 @@ function LiveEventRuntime({
     controller.liveState.plan,
     standings
   );
+  const lateArrival = controller.liveState.lateArrival;
+  const showLateArrival = lateArrival !== null &&
+    lateArrival.targetRoundIndex >
+      (controller.liveState.plan?.publishedRotationRoundIndex ?? -1);
   return (
     <EventRuntimeLive>
       <EventRuntimeLiveHeader badge={eventRuntimeCopy.checkedIn}>
@@ -325,6 +329,12 @@ function LiveEventRuntime({
           </EventRuntimeAssignments>
           ) : <p>{eventRuntimeCopy.assignmentEmpty}</p>}
       </EventRuntimeModule>
+
+      {showLateArrival ? (
+        <EventRuntimeModule title={eventRuntimeCopy.lateArrivalTitle}>
+          <p>{lateArrival.reason}</p>
+        </EventRuntimeModule>
+      ) : null}
 
       {controller.liveState.plan?.attendeePrompt ? (
         <EventRuntimeModule title={eventRuntimeCopy.hostPromptTitle}>

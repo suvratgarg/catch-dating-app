@@ -8,6 +8,80 @@ EventSuccessRepository eventSuccessRepository(Ref ref) =>
     );
 
 @riverpod
+Stream<void> maintainEventSuccessPresence(Ref ref, String eventId) async* {
+  var disposed = false;
+  Timer? timer;
+  Completer<void>? waiting;
+  ref.onDispose(() {
+    disposed = true;
+    timer?.cancel();
+    if (waiting case final completer? when !completer.isCompleted) {
+      completer.complete();
+    }
+  });
+  Future<void> wait(Duration duration) {
+    waiting = Completer<void>();
+    timer = Timer(duration, waiting!.complete);
+    return waiting!.future;
+  }
+
+  while (!disposed) {
+    try {
+      final heartbeat = await ref
+          .read(eventSuccessRepositoryProvider)
+          .heartbeatPresence(eventId: eventId);
+      if (disposed) return;
+      yield null;
+      await wait(Duration(seconds: heartbeat.policy.heartbeatIntervalSeconds));
+    } catch (_) {
+      if (disposed) return;
+      await wait(const Duration(seconds: 10));
+    }
+  }
+}
+
+@riverpod
+Stream<EventSuccessPresenceSummary> watchEventSuccessPresenceSummary(
+  Ref ref,
+  String eventId,
+) async* {
+  var disposed = false;
+  Timer? timer;
+  Completer<void>? waiting;
+  ref.onDispose(() {
+    disposed = true;
+    timer?.cancel();
+    if (waiting case final completer? when !completer.isCompleted) {
+      completer.complete();
+    }
+  });
+  Future<void> wait(Duration duration) {
+    waiting = Completer<void>();
+    timer = Timer(duration, waiting!.complete);
+    return waiting!.future;
+  }
+
+  while (!disposed) {
+    final summary = await ref
+        .read(eventSuccessRepositoryProvider)
+        .fetchPresenceSummary(eventId);
+    if (disposed) return;
+    yield summary;
+    await wait(Duration(seconds: summary.policy.heartbeatIntervalSeconds));
+  }
+}
+
+@riverpod
+Stream<EventSuccessLateArrivalResolution?>
+watchUserEventSuccessLateArrivalResolution(
+  Ref ref, {
+  required String eventId,
+  required String uid,
+}) => ref
+    .watch(eventSuccessRepositoryProvider)
+    .watchLateArrivalResolution(eventId: eventId, uid: uid);
+
+@riverpod
 Stream<EventSuccessPlan?> watchEventSuccessPlan(Ref ref, String eventId) =>
     ref.watch(eventSuccessRepositoryProvider).watchPlan(eventId);
 

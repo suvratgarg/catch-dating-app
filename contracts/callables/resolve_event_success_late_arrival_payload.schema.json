@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/resolve_event_success_late_arrival_payload.schema.json",
+  "title": "ResolveEventSuccessLateArrivalCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "uid", "expectedRevision", "confirmed"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "uid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "expectedRevision": {"type": "integer", "minimum": 0, "maximum": 2147483647},
+    "confirmed": {"type": "boolean", "const": true}
+  }
+}

@@ -68,6 +68,8 @@ import {EventAttendeeAttendanceReceiptDocument} from "./eventAttendeeAttendanceR
 import {EventAttendeeImportDocument} from "./eventAttendeeImportDocument";
 import {EventRosterHandoffDocument} from "./eventRosterHandoffDocument";
 import {EventRuntimeParticipantDocument} from "./eventRuntimeParticipantDocument";
+import {EventSuccessPresenceDocument} from "./eventSuccessPresenceDocument";
+import {EventSuccessLateArrivalDocument} from "./eventSuccessLateArrivalDocument";
 import {EventRuntimeClaimRequestDocument} from "./eventRuntimeClaimRequestDocument";
 import {EventCrossPathsConsentDocument} from "./eventCrossPathsConsentDocument";
 import {CrossPathsShowcaseEligibilityDocument} from "./crossPathsShowcaseEligibilityDocument";
@@ -271,6 +273,11 @@ import {PublishEventSuccessRotationRoundCallablePayload} from "./publishEventSuc
 import {EventSuccessLiveActionCallablePayload} from "./eventSuccessLiveActionCallablePayload";
 import {RecordEventSuccessUnitOutcomesCallablePayload} from "./recordEventSuccessUnitOutcomesCallablePayload";
 import {RecordEventSuccessUnitOutcomesCallableResponse} from "./recordEventSuccessUnitOutcomesCallableResponse";
+import {HeartbeatEventSuccessPresenceCallablePayload} from "./heartbeatEventSuccessPresenceCallablePayload";
+import {HeartbeatEventSuccessPresenceCallableResponse} from "./heartbeatEventSuccessPresenceCallableResponse";
+import {GetEventSuccessPresenceSummaryCallableResponse} from "./getEventSuccessPresenceSummaryCallableResponse";
+import {ResolveEventSuccessLateArrivalCallablePayload} from "./resolveEventSuccessLateArrivalCallablePayload";
+import {ResolveEventSuccessLateArrivalCallableResponse} from "./resolveEventSuccessLateArrivalCallableResponse";
 import {OverrideEventSuccessGroupsCallablePayload} from "./overrideEventSuccessGroupsCallablePayload";
 import {SubmitEventSuccessWingmanRequestCallablePayload} from "./submitEventSuccessWingmanRequestCallablePayload";
 import {StartEventSuccessFirstHelloMissionCallablePayload} from "./startEventSuccessFirstHelloMissionCallablePayload";
@@ -408,6 +415,8 @@ import {
   eventAttendeeImportDocumentSchema,
   eventRosterHandoffDocumentSchema,
   eventRuntimeParticipantDocumentSchema,
+  eventSuccessPresenceDocumentSchema,
+  eventSuccessLateArrivalDocumentSchema,
   eventRuntimeClaimRequestDocumentSchema,
   eventCrossPathsConsentDocumentSchema,
   crossPathsShowcaseEligibilityDocumentSchema,
@@ -611,6 +620,11 @@ import {
   eventSuccessLiveActionCallablePayloadSchema,
   recordEventSuccessUnitOutcomesCallablePayloadSchema,
   recordEventSuccessUnitOutcomesCallableResponseSchema,
+  heartbeatEventSuccessPresenceCallablePayloadSchema,
+  heartbeatEventSuccessPresenceCallableResponseSchema,
+  getEventSuccessPresenceSummaryCallableResponseSchema,
+  resolveEventSuccessLateArrivalCallablePayloadSchema,
+  resolveEventSuccessLateArrivalCallableResponseSchema,
   overrideEventSuccessGroupsCallablePayloadSchema,
   submitEventSuccessWingmanRequestCallablePayloadSchema,
   startEventSuccessFirstHelloMissionCallablePayloadSchema,
@@ -944,6 +958,14 @@ export const validateEventRuntimeParticipantDocument:
   ValidateFunction<EventRuntimeParticipantDocument> =
     ajv.compile(eventRuntimeParticipantDocumentSchema) as
       ValidateFunction<EventRuntimeParticipantDocument>;
+export const validateEventSuccessPresenceDocument:
+  ValidateFunction<EventSuccessPresenceDocument> =
+    ajv.compile(eventSuccessPresenceDocumentSchema) as
+      ValidateFunction<EventSuccessPresenceDocument>;
+export const validateEventSuccessLateArrivalDocument:
+  ValidateFunction<EventSuccessLateArrivalDocument> =
+    ajv.compile(eventSuccessLateArrivalDocumentSchema) as
+      ValidateFunction<EventSuccessLateArrivalDocument>;
 export const validateEventRuntimeClaimRequestDocument:
   ValidateFunction<EventRuntimeClaimRequestDocument> =
     ajv.compile(eventRuntimeClaimRequestDocumentSchema) as
@@ -1756,6 +1778,26 @@ export const validateRecordEventSuccessUnitOutcomesCallableResponse:
   ValidateFunction<RecordEventSuccessUnitOutcomesCallableResponse> =
     ajv.compile(recordEventSuccessUnitOutcomesCallableResponseSchema) as
       ValidateFunction<RecordEventSuccessUnitOutcomesCallableResponse>;
+export const validateHeartbeatEventSuccessPresenceCallablePayload:
+  ValidateFunction<HeartbeatEventSuccessPresenceCallablePayload> =
+    ajv.compile(heartbeatEventSuccessPresenceCallablePayloadSchema) as
+      ValidateFunction<HeartbeatEventSuccessPresenceCallablePayload>;
+export const validateHeartbeatEventSuccessPresenceCallableResponse:
+  ValidateFunction<HeartbeatEventSuccessPresenceCallableResponse> =
+    ajv.compile(heartbeatEventSuccessPresenceCallableResponseSchema) as
+      ValidateFunction<HeartbeatEventSuccessPresenceCallableResponse>;
+export const validateGetEventSuccessPresenceSummaryCallableResponse:
+  ValidateFunction<GetEventSuccessPresenceSummaryCallableResponse> =
+    ajv.compile(getEventSuccessPresenceSummaryCallableResponseSchema) as
+      ValidateFunction<GetEventSuccessPresenceSummaryCallableResponse>;
+export const validateResolveEventSuccessLateArrivalCallablePayload:
+  ValidateFunction<ResolveEventSuccessLateArrivalCallablePayload> =
+    ajv.compile(resolveEventSuccessLateArrivalCallablePayloadSchema) as
+      ValidateFunction<ResolveEventSuccessLateArrivalCallablePayload>;
+export const validateResolveEventSuccessLateArrivalCallableResponse:
+  ValidateFunction<ResolveEventSuccessLateArrivalCallableResponse> =
+    ajv.compile(resolveEventSuccessLateArrivalCallableResponseSchema) as
+      ValidateFunction<ResolveEventSuccessLateArrivalCallableResponse>;
 export const validateOverrideEventSuccessGroupsCallablePayload:
   ValidateFunction<OverrideEventSuccessGroupsCallablePayload> =
     ajv.compile(overrideEventSuccessGroupsCallablePayloadSchema) as

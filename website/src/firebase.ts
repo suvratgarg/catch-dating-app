@@ -11,11 +11,13 @@ import type {CreateEventInviteLinkCallablePayload} from "../../functions/src/sha
 import type {CreatePublicOrganizerReviewCallablePayload} from "../../functions/src/shared/generated/createPublicOrganizerReviewCallablePayload";
 import type {CreatePublicOrganizerReviewCallableResponse} from "../../functions/src/shared/generated/createPublicOrganizerReviewCallableResponse";
 import type {EventSuccessAssignmentDocument} from "../../functions/src/shared/generated/eventSuccessAssignmentDocument";
+import type {EventSuccessLateArrivalDocument} from "../../functions/src/shared/generated/eventSuccessLateArrivalDocument";
 import type {EventSuccessStandingsDocument} from "../../functions/src/shared/generated/eventSuccessStandingsDocument";
 import type {EventIdCallablePayload} from "../../functions/src/shared/generated/eventIdCallablePayload";
 import type {FetchEventSuccessWingmanCandidatesCallableResponse} from "../../functions/src/shared/generated/fetchEventSuccessWingmanCandidatesCallableResponse";
 import type {GetEventRuntimeBootstrapCallablePayload} from "../../functions/src/shared/generated/getEventRuntimeBootstrapCallablePayload";
 import type {GetEventRuntimeBootstrapCallableResponse} from "../../functions/src/shared/generated/getEventRuntimeBootstrapCallableResponse";
+import type {HeartbeatEventSuccessPresenceCallableResponse} from "../../functions/src/shared/generated/heartbeatEventSuccessPresenceCallableResponse";
 import type {ListPublicOrganizerReviewsCallablePayload} from "../../functions/src/shared/generated/listPublicOrganizerReviewsCallablePayload";
 import type {ListPublicOrganizerReviewsCallableResponse} from "../../functions/src/shared/generated/listPublicOrganizerReviewsCallableResponse";
 import type {RecordOrganizerAnalyticsEventCallablePayload} from "../../functions/src/shared/generated/recordOrganizerAnalyticsEventCallablePayload";
@@ -137,6 +139,7 @@ export interface EventRuntimeLiveState {
   compatibilityAnswerIds: string[];
   feedback: EventRuntimeFeedback | null;
   mission: EventRuntimeMission | null;
+  lateArrival: EventSuccessLateArrivalDocument | null;
   plan: EventRuntimePlanState | null;
   standings: EventSuccessStandingsDocument | null;
   wingmanTargetUid: string | null;
@@ -146,6 +149,7 @@ export interface EventRuntimePlanState {
   attendeePrompt: string | null;
   activeRevealRoundIndex: number;
   publishedRevealRoundIndex: number;
+  publishedRotationRoundIndex: number;
   revealStatus: "idle" | "countingDown" | "revealed";
   status: "setup" | "live" | "complete";
 }
@@ -201,6 +205,16 @@ export async function checkInEventRuntime(
   return invokeWebsiteCallable(
     "checkInEventRuntime",
     payload,
+    eventRuntimeFirebaseConfigured
+  );
+}
+
+export async function heartbeatEventRuntimePresence(
+  eventId: string
+): Promise<HeartbeatEventSuccessPresenceCallableResponse> {
+  return invokeWebsiteCallable(
+    "heartbeatEventSuccessPresence",
+    {eventId, surface: "web"},
     eventRuntimeFirebaseConfigured
   );
 }
@@ -300,6 +314,7 @@ export async function watchEventRuntimeLiveState(
     compatibilityAnswerIds: [],
     feedback: null,
     mission: null,
+    lateArrival: null,
     plan: null,
     standings: null,
     wingmanTargetUid: null,
@@ -341,11 +356,27 @@ export async function watchEventRuntimeLiveState(
           Number(data.activeRevealRoundIndex) : 0,
         publishedRevealRoundIndex: Number.isInteger(data.publishedRevealRoundIndex) ?
           Number(data.publishedRevealRoundIndex) : -1,
+        publishedRotationRoundIndex: Number.isInteger(
+          data.publishedRotationRoundIndex
+        ) ? Number(data.publishedRotationRoundIndex) : -1,
         revealStatus: data.revealStatus === "countingDown" ||
           data.revealStatus === "revealed" ? data.revealStatus : "idle",
         status: data.status === "live" || data.status === "complete" ?
           data.status : "setup",
       } : null;
+      emit();
+    },
+    (error) => onError(error)
+  ));
+  subscriptions.push(onSnapshot(
+    doc(
+      runtime.firestore,
+      "eventSuccessLateArrivals",
+      `${context.eventId}_${context.uid}`
+    ),
+    (snapshot) => {
+      state.lateArrival = snapshot.exists() ?
+        snapshot.data() as EventSuccessLateArrivalDocument : null;
       emit();
     },
     (error) => onError(error)
