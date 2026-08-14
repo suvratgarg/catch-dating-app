@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -9,6 +11,34 @@ void main() {
       HostCustomerTag.needsConfirmation,
     );
     expect(HostCustomerFilter.attended.tag, isNull);
+    expect(
+      hostAudienceSegmentForCustomerFilter(HostCustomerFilter.reliable),
+      HostAudienceSegment.reliableAttendee,
+    );
+    expect(
+      hostAudienceSegmentForCustomerFilter(
+        HostCustomerFilter.highImpactAdvocate,
+      ),
+      HostAudienceSegment.highImpactAdvocate,
+    );
+    expect(
+      hostAudienceSegmentForCustomerFilter(
+        HostCustomerFilter.whatsappReachable,
+      ),
+      HostAudienceSegment.whatsappReachable,
+    );
+    expect(
+      HostCustomerFilter.values
+          .where(
+            (filter) =>
+                filter != HostCustomerFilter.all &&
+                filter != HostCustomerFilter.attended,
+          )
+          .every(
+            (filter) => hostAudienceSegmentForCustomerFilter(filter) != null,
+          ),
+      isTrue,
+    );
   });
 
   test('conversation requires an unambiguous linked customer identity', () {

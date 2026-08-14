@@ -207,6 +207,21 @@ void main() {
       expect(screen.initialTab.name, 'insights');
     });
 
+    test('redirects the retired Organizer Audience tab into Customers', () {
+      expect(
+        hostOrganizerAudienceRedirect(
+          Uri.parse('/host/organizer?clubId=club-1&tab=audience'),
+        ),
+        '/host/customers?organizerId=club-1',
+      );
+      expect(
+        hostOrganizerAudienceRedirect(
+          Uri.parse('/host/organizer?clubId=club-1&tab=insights'),
+        ),
+        isNull,
+      );
+    });
+
     test('redirects only the exact legacy clubs location', () {
       expect(
         hostClubsLegacyRedirect(Uri.parse('/host/clubs')),

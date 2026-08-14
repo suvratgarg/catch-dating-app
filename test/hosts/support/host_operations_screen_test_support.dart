@@ -50,11 +50,6 @@ void registerHostWorkspacePagingTest() {
 
     await tester.drag(pager, const Offset(-320, 0));
     await pumpFeatureUi(tester);
-    expect(find.byType(HostAudiencePane), findsOneWidget);
-    expect(find.byType(HostClubEditTab), findsNothing);
-
-    await tester.drag(pager, const Offset(-320, 0));
-    await pumpFeatureUi(tester);
     expect(find.byType(HostClubInsightsPane), findsOneWidget);
     expect(
       find.byKey(const ValueKey('host-club-insights-summary')),
@@ -73,10 +68,6 @@ void registerHostWorkspacePagingTest() {
     await tester.drag(pager, const Offset(320, 0));
     await pumpFeatureUi(tester);
     expect(find.byType(HostClubInsightsPane), findsOneWidget);
-
-    await tester.drag(pager, const Offset(320, 0));
-    await pumpFeatureUi(tester);
-    expect(find.byType(HostAudiencePane), findsOneWidget);
 
     await tester.drag(pager, const Offset(320, 0));
     await pumpFeatureUi(tester);

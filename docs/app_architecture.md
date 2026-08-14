@@ -2007,13 +2007,14 @@ Rules:
   evidence and remaining TestFlight/Play work live in
   `docs/release_operations.md`.
 
-### Host Audience, Provider, Staff, And Offline Boundaries
+### Host Customers CRM, Provider, Staff, And Offline Boundaries
 
 - `HostCrmRepository` is the single Flutter Functions facade for organizer
-  Audience summary, directory/detail, contact controls/export, Meta sender
-  setup and campaign lifecycle. `HostAudienceWorkspace` owns organizer-level
-  navigation and display state; event-manage widgets must not duplicate a
-  second CRM or read restricted audience collections directly.
+  customer summary, directory/detail, contact controls/export, Meta sender
+  setup and campaign lifecycle. The top-level Customers branch owns both the
+  People and Campaigns workspaces; Organizer must not mount a second Audience
+  workspace, and event-manage widgets must not read restricted CRM collections
+  directly.
 - CRM categories are server facts. Flutter may label fixed segment ids but must
   not infer “valuable customer” from ticket price, private feedback, gender,
   compatibility, wingman, dating or safety data.
@@ -2023,7 +2024,7 @@ Rules:
   implies API sync or complete financial coverage.
 - `HostEventStaffRepository` is the event-scoped operator authority facade.
   `/host/operator/:eventId` composes only roster, attendance and runtime-claim
-  actions granted by the backend. It must not mount Audience, campaigns,
+  actions granted by the backend. It must not mount Customers, campaigns,
   providers, imports, event editing or organizer-wide settings.
 - `HostAttendanceOutbox` stores only opaque ids, desired attendance, expected
   revision, client operation id and timing/retry state, partitioned by signed-in
