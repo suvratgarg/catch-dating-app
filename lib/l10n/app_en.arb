@@ -14811,36 +14811,8 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
   },
-  "eventSuccessEventSuccessConversationCueCopyBodyAskWhatKindOf": "Ask what kind of ride they want to do next.",
-  "@eventSuccessEventSuccessConversationCueCopyBodyAskWhatKindOf": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
-  },
-  "eventSuccessEventSuccessConversationCueCopyBodyAskWhatPartOf": "Ask what part of class helped them switch off.",
-  "@eventSuccessEventSuccessConversationCueCopyBodyAskWhatPartOf": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
-  },
-  "eventSuccessEventSuccessConversationCueCopyBodyAskWhatLiftOr": "Ask what lift or movement they are working on right now.",
-  "@eventSuccessEventSuccessConversationCueCopyBodyAskWhatLiftOr": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
-  },
   "eventSuccessEventSuccessConversationCueCopyBodyAskWhichRoundThey": "Ask which round they wanted more questions from.",
   "@eventSuccessEventSuccessConversationCueCopyBodyAskWhichRoundThey": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
-  },
-  "eventSuccessEventSuccessConversationCueCopyBodyAskWhichStopThey": "Ask which stop they would come back to with friends.",
-  "@eventSuccessEventSuccessConversationCueCopyBodyAskWhichStopThey": {
     "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
@@ -14867,13 +14839,6 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
   },
-  "eventSuccessEventSuccessConversationCueCopyTitleFirstLiveCue": "First live cue",
-  "@eventSuccessEventSuccessConversationCueCopyTitleFirstLiveCue": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (title).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
-  },
   "eventSuccessSocialMissionTitleLight": "Easy start",
   "@eventSuccessSocialMissionTitleLight": {"description": "Title for a light-disclosure social mission.", "x-audience": "consumer", "x-owner": "product", "x-surface": "event_success.presentation.social_missions"},
   "eventSuccessSocialMissionTitlePersonal": "A little more personal",
@@ -14890,34 +14855,6 @@
   "@eventSuccessSocialMissionLevelPersonal": {"description": "Label for a personal-disclosure social mission.", "x-audience": "consumer", "x-owner": "product", "x-surface": "event_success.presentation.social_missions"},
   "eventSuccessSocialMissionLevelReflective": "Reflective disclosure",
   "@eventSuccessSocialMissionLevelReflective": {"description": "Label for a reflective-disclosure social mission.", "x-audience": "consumer", "x-owner": "product", "x-surface": "event_success.presentation.social_missions"},
-  "eventSuccessEventSuccessConversationCueCopyBodySwapOnePracticalTip": "Swap one practical tip before the next round or cooldown.",
-  "@eventSuccessEventSuccessConversationCueCopyBodySwapOnePracticalTip": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
-  },
-  "eventSuccessEventSuccessConversationCueCopyBodyFindOnePersonYou": "Find one person you have not spoken to and ask one specific follow-up.",
-  "@eventSuccessEventSuccessConversationCueCopyBodyFindOnePersonYou": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
-  },
-  "eventSuccessEventSuccessConversationCueCopyTitleSecondTouch": "Second touch",
-  "@eventSuccessEventSuccessConversationCueCopyTitleSecondTouch": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (title).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
-  },
-  "eventSuccessEventSuccessConversationCueCopyVisiblecopyOptional": "Optional",
-  "@eventSuccessEventSuccessConversationCueCopyVisiblecopyOptional": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (visibleCopy).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
-  },
   "eventSuccessEventSuccessConversationCueCopyBodyILikedTalkingOn": "I liked talking on the run. Want to compare routes sometime?",
   "@eventSuccessEventSuccessConversationCueCopyBodyILikedTalkingOn": {
     "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
@@ -14932,36 +14869,8 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
   },
-  "eventSuccessEventSuccessConversationCueCopyBodyThatSessionHadReal": "That session had real energy. What kind of ride do you usually like?",
-  "@eventSuccessEventSuccessConversationCueCopyBodyThatSessionHadReal": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
-  },
-  "eventSuccessEventSuccessConversationCueCopyBodyThatClassWasA": "That class was a good reset. Do you usually go for flow or stretch?",
-  "@eventSuccessEventSuccessConversationCueCopyBodyThatClassWasA": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
-  },
-  "eventSuccessEventSuccessConversationCueCopyBodyNiceTrainingWithYou": "Nice training with you today. What are you building toward right now?",
-  "@eventSuccessEventSuccessConversationCueCopyBodyNiceTrainingWithYou": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
-  },
   "eventSuccessEventSuccessConversationCueCopyBodyILikedBeingOn": "I liked being on a quiz night with you. Which round was your favorite?",
   "@eventSuccessEventSuccessConversationCueCopyBodyILikedBeingOn": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
-  },
-  "eventSuccessEventSuccessConversationCueCopyBodyFunMeetingYouTonight": "Fun meeting you tonight. Which stop won for you?",
-  "@eventSuccessEventSuccessConversationCueCopyBodyFunMeetingYouTonight": {
     "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",

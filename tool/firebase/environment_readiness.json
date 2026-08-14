@@ -265,6 +265,34 @@
       ]
     },
     {
+      "id": "functions.secret.event-venue-session-signing-key",
+      "kind": "secret-version",
+      "name": "EVENT_VENUE_SESSION_SIGNING_KEY",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyDeployTarget": [
+          "functions:checkInEventRuntime",
+          "functions:createEventVenueSession",
+          "functions:selfCheckInAttendance",
+          "functions:startEventSuccessFirstHelloMission"
+        ]
+      },
+      "acceptedStates": [
+        "ENABLED"
+      ],
+      "owner": "event-success",
+      "sourcePaths": [
+        "functions/src/events/venueSessions.ts",
+        "functions/src/events/selfCheckInAttendance.ts",
+        "functions/src/eventSuccess/eventRuntime.ts",
+        "functions/src/eventSuccess/firstHelloCheckIn.ts"
+      ]
+    },
+    {
       "id": "functions.secret.cross-paths-suggestion-signing-key",
       "kind": "secret-version",
       "name": "CROSS_PATHS_SUGGESTION_SIGNING_KEY",

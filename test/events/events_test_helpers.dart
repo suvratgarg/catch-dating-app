@@ -391,6 +391,7 @@ class FakeEventRepository extends Fake implements EventRepository {
   String? markedAttendanceEventId;
   String? markedAttendanceUserId;
   String? selfCheckedInEventId;
+  String? selfCheckedInVenueSessionToken;
   Event? fetchedEvent;
   EventSuccessDefaults? createdEventSuccessDefaults;
   ExternalEventOriginInput? createdExternalOrigin;
@@ -651,6 +652,7 @@ class FakeEventRepository extends Fake implements EventRepository {
       throw selfCheckInError!;
     }
     selfCheckedInEventId = eventId;
+    selfCheckedInVenueSessionToken = venueSessionToken;
   }
 }
 

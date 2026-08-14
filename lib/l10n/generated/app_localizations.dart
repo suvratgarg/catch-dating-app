@@ -12650,32 +12650,8 @@ abstract class AppLocalizations {
   /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
   ///
   /// In en, this message translates to:
-  /// **'Ask what kind of ride they want to do next.'**
-  String get eventSuccessEventSuccessConversationCueCopyBodyAskWhatKindOf;
-
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'Ask what part of class helped them switch off.'**
-  String get eventSuccessEventSuccessConversationCueCopyBodyAskWhatPartOf;
-
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'Ask what lift or movement they are working on right now.'**
-  String get eventSuccessEventSuccessConversationCueCopyBodyAskWhatLiftOr;
-
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
-  ///
-  /// In en, this message translates to:
   /// **'Ask which round they wanted more questions from.'**
   String get eventSuccessEventSuccessConversationCueCopyBodyAskWhichRoundThey;
-
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'Ask which stop they would come back to with friends.'**
-  String get eventSuccessEventSuccessConversationCueCopyBodyAskWhichStopThey;
 
   /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
   ///
@@ -12694,12 +12670,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Ask what made them say yes to this event.'**
   String get eventSuccessEventSuccessConversationCueCopyBodyAskWhatMadeThem;
-
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'First live cue'**
-  String get eventSuccessEventSuccessConversationCueCopyTitleFirstLiveCue;
 
   /// Title for a light-disclosure social mission.
   ///
@@ -12752,30 +12722,6 @@ abstract class AppLocalizations {
   /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
   ///
   /// In en, this message translates to:
-  /// **'Swap one practical tip before the next round or cooldown.'**
-  String get eventSuccessEventSuccessConversationCueCopyBodySwapOnePracticalTip;
-
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'Find one person you have not spoken to and ask one specific follow-up.'**
-  String get eventSuccessEventSuccessConversationCueCopyBodyFindOnePersonYou;
-
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Second touch'**
-  String get eventSuccessEventSuccessConversationCueCopyTitleSecondTouch;
-
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Optional'**
-  String get eventSuccessEventSuccessConversationCueCopyVisiblecopyOptional;
-
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
-  ///
-  /// In en, this message translates to:
   /// **'I liked talking on the run. Want to compare routes sometime?'**
   String get eventSuccessEventSuccessConversationCueCopyBodyILikedTalkingOn;
 
@@ -12788,33 +12734,8 @@ abstract class AppLocalizations {
   /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
   ///
   /// In en, this message translates to:
-  /// **'That session had real energy. What kind of ride do you usually like?'**
-  String get eventSuccessEventSuccessConversationCueCopyBodyThatSessionHadReal;
-
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'That class was a good reset. Do you usually go for flow or stretch?'**
-  String get eventSuccessEventSuccessConversationCueCopyBodyThatClassWasA;
-
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'Nice training with you today. What are you building toward right now?'**
-  String get eventSuccessEventSuccessConversationCueCopyBodyNiceTrainingWithYou;
-
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
-  ///
-  /// In en, this message translates to:
   /// **'I liked being on a quiz night with you. Which round was your favorite?'**
   String get eventSuccessEventSuccessConversationCueCopyBodyILikedBeingOn;
-
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'Fun meeting you tonight. Which stop won for you?'**
-  String
-  get eventSuccessEventSuccessConversationCueCopyBodyFunMeetingYouTonight;
 
   /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
   ///

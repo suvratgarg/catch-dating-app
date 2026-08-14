@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_rail.dart';
+import 'package:catch_dating_app/events/shared/event_check_in_qr_scanner.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../test/clubs/clubs_test_helpers.dart' as club_helpers;
@@ -66,10 +67,24 @@ void main() {
 
     expect(find.text('Check-in open'), findsOneWidget);
     await tester.tap(find.byKey(EventFocusRail.actionKey('checkIn')));
+    await tester.pump();
+    final scanner = tester.widget<EventCheckInQrScanner>(
+      find.byType(EventCheckInQrScanner),
+    );
+    scanner.onResult(
+      const EventCheckInQrScan(
+        EventCheckInQrScanResult.matchedVenueSession,
+        venueSessionToken: 'signed-venue-session',
+      ),
+    );
     await flushAppShellCallbacks(tester);
     await pumpAppShellFrames(tester);
 
     expect(eventRepository.selfCheckedInEventId, run.id);
+    expect(
+      eventRepository.selfCheckedInVenueSessionToken,
+      'signed-venue-session',
+    );
     expect(find.text('CHECKED IN'), findsOneWidget);
     expect(find.text('Checked in.'), findsOneWidget);
   });

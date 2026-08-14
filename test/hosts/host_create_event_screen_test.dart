@@ -371,6 +371,15 @@ void main() {
       await _pumpTestAnimation(tester);
 
       expect(
+        find.byKey(const ValueKey('eventSuccessFormatFirst')),
+        findsOneWidget,
+      );
+      await tester.tap(
+        find.byKey(const ValueKey('eventSuccessCustomizeTools')),
+      );
+      await _pumpTestAnimation(tester);
+
+      expect(
         find.textContaining('about 10 teams', skipOffstage: false),
         findsWidgets,
       );

@@ -8036,24 +8036,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'Ask your next partner what shot they are trying to improve.';
 
   @override
-  String get eventSuccessEventSuccessConversationCueCopyBodyAskWhatKindOf =>
-      'Ask what kind of ride they want to do next.';
-
-  @override
-  String get eventSuccessEventSuccessConversationCueCopyBodyAskWhatPartOf =>
-      'Ask what part of class helped them switch off.';
-
-  @override
-  String get eventSuccessEventSuccessConversationCueCopyBodyAskWhatLiftOr =>
-      'Ask what lift or movement they are working on right now.';
-
-  @override
   String get eventSuccessEventSuccessConversationCueCopyBodyAskWhichRoundThey =>
       'Ask which round they wanted more questions from.';
-
-  @override
-  String get eventSuccessEventSuccessConversationCueCopyBodyAskWhichStopThey =>
-      'Ask which stop they would come back to with friends.';
 
   @override
   String get eventSuccessEventSuccessConversationCueCopyBodyAskWhatDishThey =>
@@ -8066,10 +8050,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventSuccessEventSuccessConversationCueCopyBodyAskWhatMadeThem =>
       'Ask what made them say yes to this event.';
-
-  @override
-  String get eventSuccessEventSuccessConversationCueCopyTitleFirstLiveCue =>
-      'First live cue';
 
   @override
   String get eventSuccessSocialMissionTitleLight => 'Easy start';
@@ -8099,23 +8079,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Reflective disclosure';
 
   @override
-  String
-  get eventSuccessEventSuccessConversationCueCopyBodySwapOnePracticalTip =>
-      'Swap one practical tip before the next round or cooldown.';
-
-  @override
-  String get eventSuccessEventSuccessConversationCueCopyBodyFindOnePersonYou =>
-      'Find one person you have not spoken to and ask one specific follow-up.';
-
-  @override
-  String get eventSuccessEventSuccessConversationCueCopyTitleSecondTouch =>
-      'Second touch';
-
-  @override
-  String get eventSuccessEventSuccessConversationCueCopyVisiblecopyOptional =>
-      'Optional';
-
-  @override
   String get eventSuccessEventSuccessConversationCueCopyBodyILikedTalkingOn =>
       'I liked talking on the run. Want to compare routes sometime?';
 
@@ -8124,27 +8087,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'Good game today. I am still thinking about that rally.';
 
   @override
-  String
-  get eventSuccessEventSuccessConversationCueCopyBodyThatSessionHadReal =>
-      'That session had real energy. What kind of ride do you usually like?';
-
-  @override
-  String get eventSuccessEventSuccessConversationCueCopyBodyThatClassWasA =>
-      'That class was a good reset. Do you usually go for flow or stretch?';
-
-  @override
-  String
-  get eventSuccessEventSuccessConversationCueCopyBodyNiceTrainingWithYou =>
-      'Nice training with you today. What are you building toward right now?';
-
-  @override
   String get eventSuccessEventSuccessConversationCueCopyBodyILikedBeingOn =>
       'I liked being on a quiz night with you. Which round was your favorite?';
-
-  @override
-  String
-  get eventSuccessEventSuccessConversationCueCopyBodyFunMeetingYouTonight =>
-      'Fun meeting you tonight. Which stop won for you?';
 
   @override
   String get eventSuccessEventSuccessConversationCueCopyBodyILikedMeetingYou =>

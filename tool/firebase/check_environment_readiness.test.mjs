@@ -48,8 +48,8 @@ test("checked manifest validates offline without invoking gcloud", () => {
   );
 
   assert.equal(execution.exitCode, 0);
-  assert.equal(execution.report.secretCount, 15);
-  assert.equal(execution.report.requirementCount, 16);
+  assert.equal(execution.report.secretCount, 16);
+  assert.equal(execution.report.requirementCount, 17);
   assert.equal(commandCalls, 0);
 });
 
@@ -151,9 +151,20 @@ test("target and capability filtering selects only relevant prerequisites", () =
     selected("dev", ["functions"]).filter(
       (entry) => entry.kind === "secret-version",
     ).length,
-    15,
+    16,
   );
-  assert.equal(selected("dev", ["functions"]).length, 16);
+  assert.equal(selected("dev", ["functions"]).length, 17);
+  for (const target of [
+    "functions:checkInEventRuntime",
+    "functions:createEventVenueSession",
+    "functions:selfCheckInAttendance",
+    "functions:startEventSuccessFirstHelloMission",
+  ]) {
+    assert.deepEqual(
+      selected("prod", [target]).map((entry) => entry.name),
+      ["EVENT_VENUE_SESSION_SIGNING_KEY"],
+    );
+  }
   assert.deepEqual(
     selected("dev", ["functions:getCrossPathsSuggestions"])
       .map((entry) => entry.id),

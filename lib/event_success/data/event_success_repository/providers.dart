@@ -33,8 +33,18 @@ Stream<void> maintainEventSuccessPresence(Ref ref, String eventId) async* {
       if (disposed) return;
       yield null;
       await wait(Duration(seconds: heartbeat.policy.heartbeatIntervalSeconds));
-    } catch (_) {
+    } catch (error, stackTrace) {
       if (disposed) return;
+      logAppError(
+        error,
+        stackTrace: stackTrace,
+        context: const AppErrorContext(
+          operation: AppOperation.runtime,
+          action: 'maintain Event Success presence',
+          resource: 'event success presence heartbeat',
+        ),
+        logError: ref.read(errorLoggerProvider),
+      );
       await wait(const Duration(seconds: 10));
     }
   }
