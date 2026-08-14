@@ -353,6 +353,83 @@ final class WatchEventsForClubFamily extends $Family
   String toString() => r'watchEventsForClubProvider';
 }
 
+@ProviderFor(eventVenueSession)
+final eventVenueSessionProvider = EventVenueSessionFamily._();
+
+final class EventVenueSessionProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<EventVenueSession>,
+          EventVenueSession,
+          Stream<EventVenueSession>
+        >
+    with
+        $FutureModifier<EventVenueSession>,
+        $StreamProvider<EventVenueSession> {
+  EventVenueSessionProvider._({
+    required EventVenueSessionFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'eventVenueSessionProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$eventVenueSessionHash();
+
+  @override
+  String toString() {
+    return r'eventVenueSessionProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<EventVenueSession> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<EventVenueSession> create(Ref ref) {
+    final argument = this.argument as String;
+    return eventVenueSession(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is EventVenueSessionProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$eventVenueSessionHash() => r'e2a627b85465c11d81d9f26ba2e845b0de0736ea';
+
+final class EventVenueSessionFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<EventVenueSession>, String> {
+  EventVenueSessionFamily._()
+    : super(
+        retry: null,
+        name: r'eventVenueSessionProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  EventVenueSessionProvider call(String eventId) =>
+      EventVenueSessionProvider._(argument: eventId, from: this);
+
+  @override
+  String toString() => r'eventVenueSessionProvider';
+}
+
 @ProviderFor(watchEventsForClubs)
 final watchEventsForClubsProvider = WatchEventsForClubsFamily._();
 

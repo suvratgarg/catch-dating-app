@@ -109,7 +109,7 @@ final class MaintainEventSuccessPresenceProvider
 }
 
 String _$maintainEventSuccessPresenceHash() =>
-    r'9c5d12660f7201b1416075a5696c5d9d39428f85';
+    r'5f9abbe798d3bb994f8b48f33c4dd4f6b2bfbaff';
 
 final class MaintainEventSuccessPresenceFamily extends $Family
     with $FunctionalFamilyOverride<Stream<void>, String> {

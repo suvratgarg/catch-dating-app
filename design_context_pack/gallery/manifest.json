@@ -3,7 +3,7 @@
   "source": "test/ui_captures/catalog/screen_capture_catalog.dart",
   "coverage": {
     "routes": 53,
-    "captures": 620,
+    "captures": 621,
     "statusCounts": {
       "excluded": 2,
       "captured": 37,
@@ -8005,6 +8005,23 @@
         "dark": "dark/event_success_companion_live_reveal_countdown.png"
       },
       "whatItIs": "Event Success Companion Live Reveal Countdown",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_motion_parity",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_motion_parity.png",
+        "dark": "dark/event_success_companion_motion_parity.png"
+      },
+      "whatItIs": "Event Success Companion Motion Parity",
       "keepChangeNotes": ""
     },
     {

@@ -31,7 +31,6 @@ import 'package:catch_dating_app/events/domain/event_venue_session.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart' show StreamProvider;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_repository.g.dart';
@@ -771,20 +770,20 @@ Stream<List<EventInviteLink>> watchEventInviteLinks(Ref ref, String eventId) =>
 Stream<List<Event>> watchEventsForClub(Ref ref, String clubId) =>
     ref.watch(eventRepositoryProvider).watchEventsForClub(clubId: clubId);
 
-final eventVenueSessionProvider = StreamProvider.autoDispose
-    .family<EventVenueSession, String>((ref, eventId) async* {
-      while (ref.mounted) {
-        final session = await ref
-            .read(eventRepositoryProvider)
-            .createVenueSession(eventId: eventId);
-        yield session;
-        final nowMillis = DateTime.now().millisecondsSinceEpoch;
-        final waitMillis = (session.refreshAfterMillis - nowMillis)
-            .clamp(1000, 240000)
-            .toInt();
-        await Future<void>.delayed(Duration(milliseconds: waitMillis));
-      }
-    });
+@riverpod
+Stream<EventVenueSession> eventVenueSession(Ref ref, String eventId) async* {
+  while (ref.mounted) {
+    final session = await ref
+        .read(eventRepositoryProvider)
+        .createVenueSession(eventId: eventId);
+    yield session;
+    final nowMillis = DateTime.now().millisecondsSinceEpoch;
+    final waitMillis = (session.refreshAfterMillis - nowMillis)
+        .clamp(1000, 240000)
+        .toInt();
+    await Future<void>.delayed(Duration(milliseconds: waitMillis));
+  }
+}
 
 @riverpod
 Stream<List<Event>> watchEventsForClubs(Ref ref, EventsForClubsQuery query) =>
