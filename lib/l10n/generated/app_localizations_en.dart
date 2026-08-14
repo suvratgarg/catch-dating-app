@@ -11985,16 +11985,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Disable website sign-up';
 
   @override
-  String get hostsHostAudienceTitle => 'Your audience';
-
-  @override
-  String get hostsHostAudienceIntro =>
-      'Build a useful history from Catch bookings, roster imports, manual guests, provider sync, and phone-verified event runtime check-ins. Catch bookings and the Consumer app are not required.';
-
-  @override
-  String get hostsHostAudienceAtAGlance => 'At a glance';
-
-  @override
   String get hostsHostAudienceContacts => 'Contacts';
 
   @override
@@ -12015,9 +12005,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostsHostAudienceDirectory => 'People';
-
-  @override
   String get hostsHostAudienceSearch => 'Search by name';
 
   @override
@@ -12030,10 +12017,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsHostAudienceCoveragePartialBody =>
       'Counts may omit older roster changes. Messaging stays blocked until the projection is exact, so nobody receives an accidental blast.';
-
-  @override
-  String get hostsHostAudienceEmpty =>
-      'No people match this filter yet. Import a roster or use the event runtime to start building your history.';
 
   @override
   String get hostsHostAudienceWhatsappSender => 'WhatsApp Business sender';
@@ -12239,9 +12222,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Pause organizer messages';
 
   @override
-  String get hostsHostAudienceContactEventHistory => 'Event history';
-
-  @override
   String get hostsHostAudienceSegmentNew => 'New to your audience';
 
   @override
@@ -12315,9 +12295,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostAudienceWhatsappOptedIn => 'WhatsApp opted in';
-
-  @override
-  String get hostsHostAudienceIdentityNeedsReview => 'Identity needs review';
 
   @override
   String get hostsHostAudienceWebSignupOnly =>

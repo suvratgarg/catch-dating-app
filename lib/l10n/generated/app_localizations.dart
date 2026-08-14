@@ -18670,24 +18670,6 @@ abstract class AppLocalizations {
   /// **'Disable website sign-up'**
   String get hostsHostPublicRegistrationActionDisable;
 
-  /// Audience workspace title.
-  ///
-  /// In en, this message translates to:
-  /// **'Your audience'**
-  String get hostsHostAudienceTitle;
-
-  /// Explains audience inputs and standalone value.
-  ///
-  /// In en, this message translates to:
-  /// **'Build a useful history from Catch bookings, roster imports, manual guests, provider sync, and phone-verified event runtime check-ins. Catch bookings and the Consumer app are not required.'**
-  String get hostsHostAudienceIntro;
-
-  /// Audience summary heading.
-  ///
-  /// In en, this message translates to:
-  /// **'At a glance'**
-  String get hostsHostAudienceAtAGlance;
-
   /// Contact count label.
   ///
   /// In en, this message translates to:
@@ -18721,12 +18703,6 @@ abstract class AppLocalizations {
     required int linkedCount,
   });
 
-  /// Audience directory heading.
-  ///
-  /// In en, this message translates to:
-  /// **'People'**
-  String get hostsHostAudienceDirectory;
-
   /// Audience search field.
   ///
   /// In en, this message translates to:
@@ -18750,12 +18726,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Counts may omit older roster changes. Messaging stays blocked until the projection is exact, so nobody receives an accidental blast.'**
   String get hostsHostAudienceCoveragePartialBody;
-
-  /// Empty audience state.
-  ///
-  /// In en, this message translates to:
-  /// **'No people match this filter yet. Import a roster or use the event runtime to start building your history.'**
-  String get hostsHostAudienceEmpty;
 
   /// WhatsApp sender section title.
   ///
@@ -19073,12 +19043,6 @@ abstract class AppLocalizations {
   /// **'Pause organizer messages'**
   String get hostsHostAudienceContactPauseMessages;
 
-  /// Audience contact event history heading.
-  ///
-  /// In en, this message translates to:
-  /// **'Event history'**
-  String get hostsHostAudienceContactEventHistory;
-
   /// New-to-organizer audience segment label.
   ///
   /// In en, this message translates to:
@@ -19204,12 +19168,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'WhatsApp opted in'**
   String get hostsHostAudienceWhatsappOptedIn;
-
-  /// Ambiguous contact identity label.
-  ///
-  /// In en, this message translates to:
-  /// **'Identity needs review'**
-  String get hostsHostAudienceIdentityNeedsReview;
 
   /// Embedded signup platform limitation.
   ///
