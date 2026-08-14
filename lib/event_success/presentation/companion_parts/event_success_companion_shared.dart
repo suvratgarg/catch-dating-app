@@ -65,6 +65,8 @@ class CompanionStageScaffold extends StatelessWidget {
                   accent: stageTheme.accent,
                   foreground: stageTheme.foreground,
                   motif: stageTheme.motif,
+                  idlePulsePeriodMs:
+                      presentation.choreography.idlePulsePeriodMs,
                 ),
               ),
             ),
@@ -72,7 +74,9 @@ class CompanionStageScaffold extends StatelessWidget {
             // when not in the reveal moment, so other beats are untouched.
             Positioned.fill(
               child: RevealCinematicOverlay._(
+                eventId: event.id,
                 plan: plan,
+                presentation: presentation.choreography,
                 referenceNow: referenceNow,
                 momentKind: momentKind,
                 stageTheme: stageTheme,
@@ -1353,19 +1357,12 @@ class _CompanionStageTheme {
 
   static _CompanionStageTheme forMoment(
     BuildContext context, {
-    required EventSuccessAttendeeMoment moment,
+    required EventSuccessMomentPresentation presentation,
     required EventSuccessPlan plan,
   }) {
     const d = CatchTokens.editorialDark;
     final activityPalette = ActivityPalette.of(context);
-    final kinds = ActivityKind.values;
-
-    // Pick a distinct pigment per moment kind for visual variety.
-    ActivitySwatch swatchFor(EventSuccessAttendeeMomentKind k) =>
-        activityPalette.forKind(kinds[k.index % kinds.length]);
-    final extraSwatch = activityPalette.forKind(
-      kinds[(moment.kind.index + 5) % kinds.length],
-    );
+    final choreography = presentation.choreography;
 
     Color backgroundFor(ActivitySwatch s) => Color.alphaBlend(
       s.deep.withValues(alpha: CatchOpacity.eventSuccessStageBgBlend),
@@ -1376,107 +1373,106 @@ class _CompanionStageTheme {
       s.deep,
     );
 
-    final palette = switch (moment.kind) {
-      EventSuccessAttendeeMomentKind.preArrival => (
-        bg: backgroundFor(swatchFor(moment.kind)),
-        mid: midFor(swatchFor(moment.kind)),
-        accent: swatchFor(moment.kind).accent,
-        motif: _StageMotif.path,
-      ),
-      EventSuccessAttendeeMomentKind.selfCheckIn => (
-        bg: backgroundFor(swatchFor(moment.kind)),
-        mid: midFor(swatchFor(moment.kind)),
-        accent: swatchFor(moment.kind).accent,
-        motif: _StageMotif.gate,
-      ),
-      EventSuccessAttendeeMomentKind.firstHelloCheckIn => (
-        bg: backgroundFor(swatchFor(moment.kind)),
-        mid: midFor(swatchFor(moment.kind)),
-        accent: swatchFor(moment.kind).accent,
-        motif: _StageMotif.signal,
-      ),
-      EventSuccessAttendeeMomentKind.compatibilityQuestionnaire => (
-        bg: backgroundFor(swatchFor(moment.kind)),
-        mid: midFor(swatchFor(moment.kind)),
-        accent: swatchFor(moment.kind).accent,
-        motif: _StageMotif.spark,
-      ),
-      EventSuccessAttendeeMomentKind.liveStepContext ||
-      EventSuccessAttendeeMomentKind.socialPrompt ||
-      EventSuccessAttendeeMomentKind.conversationCues => (
-        bg: backgroundFor(swatchFor(moment.kind)),
-        mid: midFor(swatchFor(moment.kind)),
-        accent: swatchFor(moment.kind).accent,
-        motif: _StageMotif.rhythm,
-      ),
-      EventSuccessAttendeeMomentKind.assignment => (
-        bg: backgroundFor(swatchFor(moment.kind)),
-        mid: midFor(swatchFor(moment.kind)),
-        accent: extraSwatch.accent,
-        motif: _StageMotif.orbit,
-      ),
-      EventSuccessAttendeeMomentKind.liveReveal => (
-        bg: backgroundFor(swatchFor(moment.kind)),
-        mid: midFor(swatchFor(moment.kind)),
-        accent: plan.revealStatus == EventSuccessRevealStatus.revealed
-            ? swatchFor(moment.kind).accent
-            : extraSwatch.accent,
-        motif: _StageMotif.reveal,
-      ),
-      EventSuccessAttendeeMomentKind.wingmanRequest => (
-        bg: backgroundFor(swatchFor(moment.kind)),
-        mid: midFor(swatchFor(moment.kind)),
-        accent: swatchFor(moment.kind).accent,
-        motif: _StageMotif.signal,
-      ),
-      EventSuccessAttendeeMomentKind.postEvent => (
-        bg: backgroundFor(swatchFor(moment.kind)),
-        mid: midFor(swatchFor(moment.kind)),
-        accent: swatchFor(moment.kind).accent,
-        motif: _StageMotif.afterglow,
-      ),
-      EventSuccessAttendeeMomentKind.none => (
-        bg: d.ink,
-        mid: Color.lerp(d.ink, d.primary, 0.46)!,
+    if (choreography.paletteTokenId == 'editorial.dark') {
+      final mid = Color.lerp(d.ink, d.primary, 0.46)!;
+      return _CompanionStageTheme(
+        background: d.ink,
+        foreground: d.ink,
         accent: d.gold,
-        motif: _StageMotif.path,
+        motif: _stageMotifForId(choreography.motifId),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [d.ink, Color.lerp(d.ink, mid, 0.72)!, mid],
+        ),
+      );
+    }
+
+    final swatch = activityPalette.forKind(
+      _activityKindForPaletteTokenId(choreography.paletteTokenId),
+    );
+    final secondaryTokenId = choreography.accentPaletteTokenId;
+    final secondarySwatch = secondaryTokenId == null
+        ? null
+        : activityPalette.forKind(
+            _activityKindForPaletteTokenId(secondaryTokenId),
+          );
+    final accent = switch (choreography.accentPalettePolicyId) {
+      'primary' => swatch.accent,
+      'secondary' => secondarySwatch!.accent,
+      'secondaryUntilReveal' =>
+        plan.revealStatus == EventSuccessRevealStatus.revealed
+            ? swatch.accent
+            : secondarySwatch!.accent,
+      _ => throw StateError(
+        'Unsupported Event Success accent palette policy: '
+        '${choreography.accentPalettePolicyId}',
       ),
     };
+    final background = backgroundFor(swatch);
+    final mid = midFor(swatch);
 
     return _CompanionStageTheme(
-      background: palette.bg,
+      background: background,
       foreground: d.ink,
-      accent: palette.accent,
-      motif: palette.motif,
+      accent: accent,
+      motif: _stageMotifForId(choreography.motifId),
       gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [
-          palette.bg,
-          Color.lerp(palette.bg, palette.mid, 0.72)!,
-          palette.mid,
-        ],
+        colors: [background, Color.lerp(background, mid, 0.72)!, mid],
       ),
     );
   }
 }
 
+ActivityKind _activityKindForPaletteTokenId(String id) => switch (id) {
+  'activity.running' => ActivityKind.running,
+  'activity.walking' => ActivityKind.walking,
+  'activity.pickleball' => ActivityKind.pickleball,
+  'activity.padel' => ActivityKind.padel,
+  'activity.tennis' => ActivityKind.tennis,
+  'activity.badminton' => ActivityKind.badminton,
+  'activity.cycling' => ActivityKind.cycling,
+  'activity.spinClass' => ActivityKind.spinClass,
+  'activity.yoga' => ActivityKind.yoga,
+  'activity.strengthTraining' => ActivityKind.strengthTraining,
+  'activity.pubQuiz' => ActivityKind.pubQuiz,
+  'activity.dinner' => ActivityKind.dinner,
+  'activity.singlesMixer' => ActivityKind.singlesMixer,
+  _ => throw StateError('Unsupported Event Success palette token id: $id'),
+};
+
+_StageMotif _stageMotifForId(String id) => switch (id) {
+  'path' => _StageMotif.path,
+  'gate' => _StageMotif.gate,
+  'spark' => _StageMotif.spark,
+  'rhythm' => _StageMotif.rhythm,
+  'orbit' => _StageMotif.orbit,
+  'reveal' => _StageMotif.reveal,
+  'signal' => _StageMotif.signal,
+  'afterglow' => _StageMotif.afterglow,
+  _ => throw StateError('Unsupported Event Success stage motif id: $id'),
+};
+
 enum _StageMotif { path, gate, spark, rhythm, orbit, reveal, signal, afterglow }
 
 /// Drives a continuous `phase` (0→1, looping) into [_StageMotifPainter] so the
 /// stage background is perpetually alive — orbits rotate, sparks drift, rhythm
-/// waves breathe, paths scroll. Loop period is intentionally long (16s) so
-/// motion reads as ambient, not busy.
+/// waves breathe, paths scroll. The generated moment contract owns the loop
+/// period so Flutter and web consume the same idle pulse.
 class AnimatedStageMotifBackground extends StatefulWidget {
   const AnimatedStageMotifBackground._({
     required this.accent,
     required this.foreground,
     required this._motif,
+    required this.idlePulsePeriodMs,
   });
 
   final Color accent;
   final Color foreground;
   final _StageMotif _motif;
+  final int idlePulsePeriodMs;
 
   @override
   State<AnimatedStageMotifBackground> createState() =>
@@ -1487,7 +1483,7 @@ class _AnimatedStageMotifBackgroundState
     extends State<AnimatedStageMotifBackground>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
-    duration: CatchMotion.ambientLoop,
+    duration: Duration(milliseconds: widget.idlePulsePeriodMs),
     vsync: this,
   );
 
@@ -1495,6 +1491,14 @@ class _AnimatedStageMotifBackgroundState
   void initState() {
     super.initState();
     if (_kStageAnimationsEnabled) _controller.repeat();
+  }
+
+  @override
+  void didUpdateWidget(covariant AnimatedStageMotifBackground oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.idlePulsePeriodMs != widget.idlePulsePeriodMs) {
+      _controller.duration = Duration(milliseconds: widget.idlePulsePeriodMs);
+    }
   }
 
   @override

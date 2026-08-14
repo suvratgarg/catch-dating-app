@@ -2,27 +2,32 @@ part of '../event_success_companion_screen.dart';
 
 /// Three-phase cinematic for the marquee reveal moment.
 ///
-///  1. Anticipation (3s) — vignette darkens, gold spokes accelerate around a
+///  1. Anticipation — the saved countdown window darkens the vignette, gold
+///     spokes accelerate around a
 ///     central glyph, particle field drifts inward, ambient bed silenced so
 ///     `countdown_rise` audio carries the build.
-///  2. Climax (1.5s) — white flash, particle field bursts outward with
-///     stagger, `reveal_climax` audio fires.
-///  3. Settle (0.7s) — vignette releases, particles fade, sunrise palette
-///     takes over via the moment-keyed vibe pack on the next build.
+///  2. Climax — white flash, particle field bursts outward with stagger,
+///     `reveal_climax` audio fires.
+///  3. Settle — vignette releases, particles fade, sunrise palette takes over
+///     via the moment-keyed vibe pack on the next build.
 ///
 /// The overlay paints above the motif background but below the content
 /// scroll so the hero copy stays legible through the cinematic. It is
 /// pointer-transparent the entire time.
 class RevealCinematicOverlay extends StatefulWidget {
   const RevealCinematicOverlay._({
+    required this.eventId,
     required this.plan,
+    required this.presentation,
     required this.referenceNow,
     required this.momentKind,
     required this._stageTheme,
     required this.checkedInCount,
   });
 
+  final String eventId;
   final EventSuccessPlan plan;
+  final EventSuccessMomentPresentationContract presentation;
   final DateTime referenceNow;
   final EventSuccessAttendeeMomentKind momentKind;
   final _CompanionStageTheme _stageTheme;
@@ -48,7 +53,7 @@ class _RevealCinematicOverlayState extends State<RevealCinematicOverlay>
   AnimationController? _settle;
 
   _RevealCinematicPhase _phase = _RevealCinematicPhase.idle;
-  late final List<_RevealParticle> _particles = _seedParticles();
+  late List<_RevealParticle> _particles;
 
   bool _wasCountingDown = false;
   EventSuccessRevealStatus _lastStatus = EventSuccessRevealStatus.idle;
@@ -56,16 +61,18 @@ class _RevealCinematicOverlayState extends State<RevealCinematicOverlay>
   @override
   void initState() {
     super.initState();
-    _tick = AnimationController(
-      duration: CatchMotion.revealCinematicTick,
-      vsync: this,
-    );
+    _particles = _seedParticles();
+    _tick = AnimationController(duration: _tempoDuration, vsync: this);
     _climax = AnimationController(
-      duration: CatchMotion.revealCinematicClimax,
+      duration: Duration(
+        milliseconds: widget.presentation.phaseDurationsMs.climax,
+      ),
       vsync: this,
     );
     _settle = AnimationController(
-      duration: CatchMotion.revealCinematicSettle,
+      duration: Duration(
+        milliseconds: widget.presentation.phaseDurationsMs.settle,
+      ),
       vsync: this,
     );
     if (_kStageAnimationsEnabled) _tick!.repeat();
@@ -79,6 +86,16 @@ class _RevealCinematicOverlayState extends State<RevealCinematicOverlay>
   @override
   void didUpdateWidget(covariant RevealCinematicOverlay oldWidget) {
     super.didUpdateWidget(oldWidget);
+    _tick?.duration = _tempoDuration;
+    _climax?.duration = Duration(
+      milliseconds: widget.presentation.phaseDurationsMs.climax,
+    );
+    _settle?.duration = Duration(
+      milliseconds: widget.presentation.phaseDurationsMs.settle,
+    );
+    if (_particleSeedInputsChanged(oldWidget)) {
+      _particles = _seedParticles();
+    }
     final nowCounting = _isAnticipationActive();
     final status = widget.plan.revealStatus;
 
@@ -131,20 +148,54 @@ class _RevealCinematicOverlayState extends State<RevealCinematicOverlay>
     if (widget.momentKind != EventSuccessAttendeeMomentKind.liveReveal) {
       return false;
     }
-    return widget.plan.isRevealCountdownRunning(widget.referenceNow);
+    final timeline = _ceremonyTimeline;
+    return widget.plan.revealStatus == EventSuccessRevealStatus.countingDown &&
+        timeline != null &&
+        timeline.climaxStartsAtMillis >
+            widget.referenceNow.millisecondsSinceEpoch;
   }
 
   /// Anticipation progress 0→1 based on the elapsed countdown window. Used
   /// to accelerate spokes, deepen vignette, and tug particles inward.
   double _anticipationProgress() {
-    final started = widget.plan.revealStartedAt;
-    final ends = widget.plan.revealEndsAt;
-    if (started == null || ends == null) return 0;
-    final totalMs = ends.difference(started).inMilliseconds;
+    final timeline = _ceremonyTimeline;
+    if (timeline == null) return 0;
+    final totalMs =
+        timeline.climaxStartsAtMillis - timeline.anticipationStartsAtMillis;
     if (totalMs <= 0) return 0;
-    final elapsedMs = widget.referenceNow.difference(started).inMilliseconds;
+    final elapsedMs =
+        widget.referenceNow.millisecondsSinceEpoch -
+        timeline.anticipationStartsAtMillis;
     return (elapsedMs / totalMs).clamp(0.0, 1.0);
   }
+
+  EventSuccessCeremonyTimeline? get _ceremonyTimeline {
+    final startedAt = widget.plan.revealStartedAt;
+    if (startedAt == null) return null;
+    return resolveEventSuccessCeremonyTimeline(
+      presentation: widget.presentation,
+      serverAnchorMillis: startedAt.millisecondsSinceEpoch,
+      revealCountdownMs: Duration(
+        seconds: widget.plan.structureConfig.revealCountdownSeconds,
+      ).inMilliseconds,
+    );
+  }
+
+  Duration get _tempoDuration => Duration(
+    milliseconds:
+        (Duration.millisecondsPerMinute / widget.presentation.tempoBpm).round(),
+  );
+
+  bool _particleSeedInputsChanged(RevealCinematicOverlay oldWidget) =>
+      oldWidget.eventId != widget.eventId ||
+      oldWidget.plan.activeRevealRoundIndex !=
+          widget.plan.activeRevealRoundIndex ||
+      oldWidget.plan.revealStartedAt != widget.plan.revealStartedAt ||
+      oldWidget.presentation.momentKind != widget.presentation.momentKind ||
+      oldWidget.presentation.particleDensity !=
+          widget.presentation.particleDensity ||
+      oldWidget.presentation.seedDerivationRuleId !=
+          widget.presentation.seedDerivationRuleId;
 
   @override
   void dispose() {
@@ -190,9 +241,16 @@ class _RevealCinematicOverlayState extends State<RevealCinematicOverlay>
   /// Deterministic seed so the field is identical for every viewer of the
   /// same reveal moment — small alignment with co-presence.
   List<_RevealParticle> _seedParticles() {
-    final rng = math.Random(424242);
+    final seed = deriveEventSuccessMomentSeed(
+      presentation: widget.presentation,
+      eventId: widget.eventId,
+      activeRevealRoundIndex: widget.plan.activeRevealRoundIndex,
+      serverAnchorMillis:
+          widget.plan.revealStartedAt?.millisecondsSinceEpoch ?? 0,
+    );
+    final rng = math.Random(seed);
     return List.generate(
-      72,
+      widget.presentation.particleDensity,
       (index) => _RevealParticle(
         angle: rng.nextDouble() * math.pi * 2,
         distance: 0.32 + rng.nextDouble() * 0.68,

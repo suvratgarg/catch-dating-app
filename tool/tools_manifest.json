@@ -1866,7 +1866,7 @@
       "command": "node tool/contracts/generate_schema_contracts.mjs",
       "safety": "local-writes-generated",
       "status": "active",
-      "description": "Generates schema registries, validators, paths, and Dart schema metadata.",
+      "description": "Generates schema registries, validators, paths, Dart schema metadata, and typed cross-runtime catalog contracts.",
       "checks": [
         "node --check tool/contracts/generate_schema_contracts.mjs"
       ]

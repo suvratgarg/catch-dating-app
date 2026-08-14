@@ -1778,14 +1778,10 @@ abstract final class CatchMotion {
   static const Duration authOtpResendCooldown = Duration(seconds: 60);
   static const Duration revealDrop = Duration(milliseconds: 280);
   static const Duration revealSettle = Duration(milliseconds: 170);
-  static const Duration revealCinematicTick = Duration(seconds: 1);
-  static const Duration revealCinematicClimax = Duration(milliseconds: 1500);
-  static const Duration revealCinematicSettle = Duration(milliseconds: 700);
   static const Duration cinematicShort = Duration(seconds: 4);
   static const Duration cinematicMedium = Duration(seconds: 6);
   static const Duration noticeAutoDismiss = Duration(seconds: 6);
   static const Duration liveRevealClockTick = Duration(milliseconds: 250);
-  static const Duration ambientLoop = Duration(seconds: 16);
   static const Duration pulse = Duration(milliseconds: 700);
   static const Duration skeletonShimmer = Duration(milliseconds: 1200);
   static const Duration startupIndicatorDelay = Duration(milliseconds: 600);

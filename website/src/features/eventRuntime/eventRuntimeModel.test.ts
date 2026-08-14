@@ -1,12 +1,18 @@
 import fs from "node:fs";
 import path from "node:path";
 import {describe, expect, it} from "vitest";
-import type {EventRuntimeLiveState} from "../../firebase";
+import {
+  eventRuntimeTimestampMillis,
+  eventSuccessMomentPresentationCatalog,
+  eventSuccessMomentPresentationFor,
+  type EventRuntimeLiveState,
+} from "../../firebase";
 import {
   eventRuntimeStageForParticipant,
   eventVenueSessionTokenFromFragment,
   normalizeEventRuntimeLayoutUnits,
   normalizeRuntimePhone,
+  resolveEventRuntimeCeremony,
   resolveEventRuntimeQuestionnaire,
   shouldRenderEventRuntimeRoomMap,
   visibleEventRuntimeStandingRound,
@@ -25,7 +31,97 @@ const layoutCatalog = JSON.parse(fs.readFileSync(path.resolve(
   };
 };
 
+const momentPresentationCatalog = JSON.parse(fs.readFileSync(path.resolve(
+  process.cwd(),
+  "../contracts/catalogs/event_success_moment_presentations.json"
+), "utf8")) as typeof eventSuccessMomentPresentationCatalog;
+
 describe("eventRuntimeModel", () => {
+  it("round-trips the generated moment presentation contract", () => {
+    expect(eventSuccessMomentPresentationCatalog)
+      .toEqual(momentPresentationCatalog);
+    for (const presentation of eventSuccessMomentPresentationCatalog.moments) {
+      expect(presentation.paletteTokenId.length).toBeGreaterThan(0);
+      expect(presentation.motifId.length).toBeGreaterThan(0);
+      expect(presentation.phaseDurationsMs.anticipation).toBeGreaterThanOrEqual(0);
+      expect(presentation.phaseDurationsMs.climax).toBeGreaterThanOrEqual(0);
+      expect(presentation.phaseDurationsMs.settle).toBeGreaterThanOrEqual(0);
+      expect(presentation.tempoBpm).toBeGreaterThan(0);
+      expect(presentation.idlePulsePeriodMs).toBeGreaterThan(0);
+      expect(presentation.particleDensity).toBeGreaterThanOrEqual(0);
+      expect(presentation.seedDerivationRuleId)
+        .toBe("fnv1a32-utf8-fields-v1");
+      expect(presentation.ambientBedId.length).toBeGreaterThan(0);
+    }
+    const reveal = eventSuccessMomentPresentationFor("liveReveal");
+    expect(reveal.clockReferenceId)
+      .toBe("revealStartedAtPlusStructureRevealCountdown");
+    expect(reveal.particleDensity).toBeGreaterThan(0);
+    expect(eventSuccessMomentPresentationCatalog.moments
+      .filter((presentation) => presentation.momentKind !== "liveReveal")
+      .every((presentation) =>
+        presentation.clockReferenceId === "none" &&
+        presentation.particleDensity === 0
+      )).toBe(true);
+  });
+
+  it("derives the shared server-anchored phase boundaries and seed", () => {
+    const fixture = momentPresentationCatalog.parityFixture;
+    const ceremony = resolveEventRuntimeCeremony(fixture.eventId, {
+      attendeePrompt: null,
+      activeRevealRoundIndex: fixture.activeRevealRoundIndex,
+      publishedRevealRoundIndex: -1,
+      publishedRotationRoundIndex: -1,
+      revealCountdownSeconds: fixture.revealCountdownMs / 1000,
+      revealStartedAtMillis: fixture.serverAnchorMillis,
+      revealStatus: "countingDown",
+      status: "live",
+    });
+
+    expect(ceremony).not.toBeNull();
+    expect({...ceremony!.timeline, seed: ceremony!.seed})
+      .toEqual(fixture.expected);
+  });
+
+  it("retains the Firestore server anchor at millisecond precision", () => {
+    expect(eventRuntimeTimestampMillis({
+      seconds: 1786703400,
+      nanoseconds: 123_000_000,
+    })).toBe(1786703400123);
+    expect(eventRuntimeTimestampMillis({
+      toMillis: () => 1786703400456,
+    })).toBe(1786703400456);
+  });
+
+  it("keeps the reveal countdown configurable with a contract fallback", () => {
+    const configured = resolveEventRuntimeCeremony("event-config", {
+      attendeePrompt: null,
+      activeRevealRoundIndex: 0,
+      publishedRevealRoundIndex: -1,
+      publishedRotationRoundIndex: -1,
+      revealCountdownSeconds: 18,
+      revealStartedAtMillis: 1000,
+      revealStatus: "countingDown",
+      status: "live",
+    });
+    const fallback = resolveEventRuntimeCeremony("event-config", {
+      attendeePrompt: null,
+      activeRevealRoundIndex: 0,
+      publishedRevealRoundIndex: -1,
+      publishedRotationRoundIndex: -1,
+      revealCountdownSeconds: null,
+      revealStartedAtMillis: 1000,
+      revealStatus: "countingDown",
+      status: "live",
+    });
+
+    expect(configured?.timeline.climaxStartsAtMillis).toBe(19000);
+    expect(fallback?.timeline.climaxStartsAtMillis).toBe(
+      1000 + eventSuccessMomentPresentationFor("liveReveal")
+        .phaseDurationsMs.anticipation
+    );
+  });
+
   it("keeps unknown questionnaire templates on the safe balanced pack", () => {
     const questionnaire = resolveEventRuntimeQuestionnaire({
       templateId: "unknown-template",

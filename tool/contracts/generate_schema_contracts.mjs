@@ -2589,6 +2589,12 @@ const generatedFiles = [];
 
 async function main() {
   const profileCatalog = readContractJson("catalogs/profile_prompts.json");
+  const eventSuccessMomentPresentationCatalog = readContractJson(
+    "catalogs/event_success_moment_presentations.json"
+  );
+  assertEventSuccessMomentPresentationCatalog(
+    eventSuccessMomentPresentationCatalog
+  );
   const profilePhotoPolicy = readContractJson(
     "catalogs/profile_photo_policy.json"
   );
@@ -2657,6 +2663,19 @@ async function main() {
       requestSchema: bundledSchemas.get("JoinWaitlistHTTPRequest"),
       responseSchema: bundledSchemas.get("JoinWaitlistHTTPResponse"),
     })
+  );
+  addTextOutput(
+    "functions/src/shared/generated/eventSuccessMomentPresentations.ts",
+    renderTsEventSuccessMomentPresentations(
+      eventSuccessMomentPresentationCatalog
+    )
+  );
+  addTextOutput(
+    "lib/core/schema_contracts/generated/" +
+      "event_success_moment_presentations.g.dart",
+    renderDartEventSuccessMomentPresentations(
+      eventSuccessMomentPresentationCatalog
+    )
   );
   addTextOutput(
     "lib/core/schema_contracts/generated/profile_schema_contracts.g.dart",
@@ -2757,6 +2776,556 @@ async function main() {
       "Generated schema contract outputs are current." :
       `Generated ${generatedFiles.length} schema contract files.`
   );
+}
+
+const EVENT_SUCCESS_MOMENT_KINDS = [
+  "none",
+  "preArrival",
+  "selfCheckIn",
+  "firstHelloCheckIn",
+  "compatibilityQuestionnaire",
+  "liveStepContext",
+  "socialPrompt",
+  "conversationCues",
+  "assignment",
+  "liveReveal",
+  "wingmanRequest",
+  "postEvent",
+];
+const EVENT_SUCCESS_SEED_RULE = "fnv1a32-utf8-fields-v1";
+const EVENT_SUCCESS_REVEAL_CLOCK =
+  "revealStartedAtPlusStructureRevealCountdown";
+
+function assertEventSuccessMomentPresentationCatalog(catalog) {
+  if (catalog?.schemaVersion !== 1 ||
+      catalog?.kind !== "eventSuccessMomentPresentations") {
+    throw new Error(
+      "Event Success moment presentation catalog identity is invalid."
+    );
+  }
+  if (!Array.isArray(catalog.moments) ||
+      catalog.moments.length !== EVENT_SUCCESS_MOMENT_KINDS.length) {
+    throw new Error(
+      "Event Success moment presentation catalog must cover every moment."
+    );
+  }
+  const momentsByKind = new Map();
+  const motifIds = new Set([
+    "path", "gate", "spark", "rhythm", "orbit", "reveal", "signal",
+    "afterglow",
+  ]);
+  const accentPolicies = new Set([
+    "primary", "secondary", "secondaryUntilReveal",
+  ]);
+  const ambientBedIds = new Set([
+    "theatrical", "pulse", "sunrise", "silent",
+  ]);
+  for (const moment of catalog.moments) {
+    if (!EVENT_SUCCESS_MOMENT_KINDS.includes(moment?.momentKind)) {
+      throw new Error(
+        `Unknown Event Success moment presentation: ${moment?.momentKind}`
+      );
+    }
+    if (momentsByKind.has(moment.momentKind)) {
+      throw new Error(
+        `Duplicate Event Success moment presentation: ${moment.momentKind}`
+      );
+    }
+    momentsByKind.set(moment.momentKind, moment);
+    if (typeof moment.paletteTokenId !== "string" ||
+        moment.paletteTokenId.length === 0) {
+      throw new Error(`${moment.momentKind} requires a palette token id.`);
+    }
+    if (moment.accentPaletteTokenId !== null &&
+        (typeof moment.accentPaletteTokenId !== "string" ||
+         moment.accentPaletteTokenId.length === 0)) {
+      throw new Error(
+        `${moment.momentKind} has an invalid accent palette token id.`
+      );
+    }
+    if (!accentPolicies.has(moment.accentPalettePolicyId)) {
+      throw new Error(
+        `${moment.momentKind} has an invalid accent palette policy.`
+      );
+    }
+    if (moment.accentPalettePolicyId !== "primary" &&
+        moment.accentPaletteTokenId === null) {
+      throw new Error(
+        `${moment.momentKind} requires its secondary palette token.`
+      );
+    }
+    if (!motifIds.has(moment.motifId)) {
+      throw new Error(`${moment.momentKind} has an invalid motif id.`);
+    }
+    const durations = moment.phaseDurationsMs;
+    for (const phase of ["anticipation", "climax", "settle"]) {
+      if (!Number.isInteger(durations?.[phase]) || durations[phase] < 0) {
+        throw new Error(
+          `${moment.momentKind} has an invalid ${phase} duration.`
+        );
+      }
+    }
+    if (typeof moment.tempoBpm !== "number" ||
+        !Number.isFinite(moment.tempoBpm) || moment.tempoBpm <= 0) {
+      throw new Error(`${moment.momentKind} has an invalid tempo.`);
+    }
+    if (!Number.isInteger(moment.idlePulsePeriodMs) ||
+        moment.idlePulsePeriodMs <= 0) {
+      throw new Error(
+        `${moment.momentKind} has an invalid idle-pulse period.`
+      );
+    }
+    if (!Number.isInteger(moment.particleDensity) ||
+        moment.particleDensity < 0) {
+      throw new Error(
+        `${moment.momentKind} has an invalid particle density.`
+      );
+    }
+    if (moment.seedDerivationRuleId !== EVENT_SUCCESS_SEED_RULE) {
+      throw new Error(
+        `${moment.momentKind} has an unsupported deterministic seed rule.`
+      );
+    }
+    if (moment.clockReferenceId !== "none" &&
+        moment.clockReferenceId !== EVENT_SUCCESS_REVEAL_CLOCK) {
+      throw new Error(
+        `${moment.momentKind} has an unsupported server clock reference.`
+      );
+    }
+    if (!ambientBedIds.has(moment.ambientBedId) ||
+        (moment.ambientBedWhenEventEndedId !== null &&
+         !ambientBedIds.has(moment.ambientBedWhenEventEndedId))) {
+      throw new Error(`${moment.momentKind} has an invalid ambient bed id.`);
+    }
+  }
+  for (const momentKind of EVENT_SUCCESS_MOMENT_KINDS) {
+    if (!momentsByKind.has(momentKind)) {
+      throw new Error(
+        `Missing Event Success moment presentation: ${momentKind}`
+      );
+    }
+  }
+  const reveal = momentsByKind.get("liveReveal");
+  if (reveal.clockReferenceId !== EVENT_SUCCESS_REVEAL_CLOCK ||
+      reveal.phaseDurationsMs.anticipation <= 0 ||
+      reveal.phaseDurationsMs.climax <= 0 ||
+      reveal.phaseDurationsMs.settle <= 0 ||
+      reveal.particleDensity <= 0) {
+    throw new Error(
+      "Live reveal must own its server clock, phases, and particle density."
+    );
+  }
+  for (const [momentKind, moment] of momentsByKind) {
+    if (momentKind === "liveReveal") continue;
+    if (moment.clockReferenceId !== "none" || moment.particleDensity !== 0) {
+      throw new Error(
+        `${momentKind} cannot inherit the live-reveal ceremony.`
+      );
+    }
+  }
+  assertEventSuccessMomentParityFixture(catalog.parityFixture, reveal);
+}
+
+function assertEventSuccessMomentParityFixture(fixture, presentation) {
+  if (fixture?.momentKind !== presentation.momentKind ||
+      !Number.isInteger(fixture.activeRevealRoundIndex) ||
+      !Number.isSafeInteger(fixture.serverAnchorMillis) ||
+      !Number.isInteger(fixture.revealCountdownMs) ||
+      fixture.revealCountdownMs < 0 || typeof fixture.eventId !== "string" ||
+      fixture.eventId.length === 0) {
+    throw new Error("Event Success moment parity fixture input is invalid.");
+  }
+  const timeline = resolveEventSuccessMomentTimelineFixture({
+    presentation,
+    serverAnchorMillis: fixture.serverAnchorMillis,
+    revealCountdownMs: fixture.revealCountdownMs,
+  });
+  const seed = deriveEventSuccessMomentSeedFixture({
+    presentation,
+    eventId: fixture.eventId,
+    activeRevealRoundIndex: fixture.activeRevealRoundIndex,
+    serverAnchorMillis: fixture.serverAnchorMillis,
+  });
+  const expected = {...timeline, seed};
+  if (JSON.stringify(fixture.expected) !== JSON.stringify(expected)) {
+    throw new Error(
+      "Event Success moment parity fixture expected output is stale."
+    );
+  }
+}
+
+function resolveEventSuccessMomentTimelineFixture({
+  presentation,
+  serverAnchorMillis,
+  revealCountdownMs,
+}) {
+  const anticipationDurationMs =
+    presentation.clockReferenceId === EVENT_SUCCESS_REVEAL_CLOCK ?
+      revealCountdownMs : presentation.phaseDurationsMs.anticipation;
+  const climaxStartsAtMillis = serverAnchorMillis + anticipationDurationMs;
+  const settleStartsAtMillis =
+    climaxStartsAtMillis + presentation.phaseDurationsMs.climax;
+  return {
+    anticipationStartsAtMillis: serverAnchorMillis,
+    climaxStartsAtMillis,
+    settleStartsAtMillis,
+    completesAtMillis:
+      settleStartsAtMillis + presentation.phaseDurationsMs.settle,
+  };
+}
+
+function deriveEventSuccessMomentSeedFixture({
+  presentation,
+  eventId,
+  activeRevealRoundIndex,
+  serverAnchorMillis,
+}) {
+  if (presentation.seedDerivationRuleId !== EVENT_SUCCESS_SEED_RULE) {
+    throw new Error(
+      `Unsupported Event Success seed rule: ${
+        presentation.seedDerivationRuleId
+      }`
+    );
+  }
+  let hash = 0x811c9dc5;
+  const fields = [
+    eventId,
+    presentation.momentKind,
+    String(activeRevealRoundIndex),
+    String(serverAnchorMillis),
+  ];
+  for (const field of fields) {
+    for (const byte of new TextEncoder().encode(field)) {
+      hash = Math.imul(hash ^ byte, 0x01000193) >>> 0;
+    }
+    hash = Math.imul(hash ^ 0xff, 0x01000193) >>> 0;
+  }
+  return hash;
+}
+
+function renderTsEventSuccessMomentPresentations(catalog) {
+  const momentKindType = EVENT_SUCCESS_MOMENT_KINDS
+    .map((value) => JSON.stringify(value))
+    .join(" | ");
+  return `${tsGeneratedHeader()}export type EventSuccessMomentKind =
+  ${momentKindType};
+export type EventSuccessAccentPalettePolicyId =
+  "primary" | "secondary" | "secondaryUntilReveal";
+export type EventSuccessMomentClockReferenceId =
+  "none" | "${EVENT_SUCCESS_REVEAL_CLOCK}";
+export type EventSuccessMomentSeedDerivationRuleId =
+  "${EVENT_SUCCESS_SEED_RULE}";
+export type EventSuccessAmbientBedId =
+  "theatrical" | "pulse" | "sunrise" | "silent";
+
+export interface EventSuccessMomentPhaseDurations {
+  readonly anticipation: number;
+  readonly climax: number;
+  readonly settle: number;
+}
+
+export interface EventSuccessMomentPresentationContract {
+  readonly momentKind: EventSuccessMomentKind;
+  readonly paletteTokenId: string;
+  readonly accentPaletteTokenId: string | null;
+  readonly accentPalettePolicyId: EventSuccessAccentPalettePolicyId;
+  readonly motifId: string;
+  readonly phaseDurationsMs: EventSuccessMomentPhaseDurations;
+  readonly tempoBpm: number;
+  readonly idlePulsePeriodMs: number;
+  readonly particleDensity: number;
+  readonly seedDerivationRuleId: EventSuccessMomentSeedDerivationRuleId;
+  readonly clockReferenceId: EventSuccessMomentClockReferenceId;
+  readonly ambientBedId: EventSuccessAmbientBedId;
+  readonly ambientBedWhenEventEndedId: EventSuccessAmbientBedId | null;
+}
+
+export interface EventSuccessMomentPresentationCatalog {
+  readonly schemaVersion: 1;
+  readonly kind: "eventSuccessMomentPresentations";
+  readonly moments: readonly EventSuccessMomentPresentationContract[];
+  readonly parityFixture: {
+    readonly eventId: string;
+    readonly momentKind: EventSuccessMomentKind;
+    readonly activeRevealRoundIndex: number;
+    readonly serverAnchorMillis: number;
+    readonly revealCountdownMs: number;
+    readonly expected: EventSuccessCeremonyTimeline & {readonly seed: number};
+  };
+}
+
+export interface EventSuccessCeremonyTimeline {
+  readonly anticipationStartsAtMillis: number;
+  readonly climaxStartsAtMillis: number;
+  readonly settleStartsAtMillis: number;
+  readonly completesAtMillis: number;
+}
+
+export const eventSuccessMomentPresentationCatalog:
+  EventSuccessMomentPresentationCatalog =
+  ${jsonForTs(catalog)};
+
+const eventSuccessMomentPresentationsByKind = new Map<
+  EventSuccessMomentKind,
+  EventSuccessMomentPresentationContract
+>(eventSuccessMomentPresentationCatalog.moments.map((presentation) => [
+  presentation.momentKind,
+  presentation,
+]));
+
+export function eventSuccessMomentPresentationFor(
+  momentKind: EventSuccessMomentKind
+): EventSuccessMomentPresentationContract {
+  const presentation = eventSuccessMomentPresentationsByKind.get(momentKind);
+  if (!presentation) {
+    throw new Error("Missing Event Success moment presentation: " + momentKind);
+  }
+  return presentation;
+}
+
+export function resolveEventSuccessCeremonyTimeline(input: {
+  presentation: EventSuccessMomentPresentationContract;
+  serverAnchorMillis: number;
+  revealCountdownMs?: number | null;
+}): EventSuccessCeremonyTimeline {
+  const configuredAnticipationMs =
+    input.presentation.phaseDurationsMs.anticipation;
+  const anticipationDurationMs =
+    input.presentation.clockReferenceId ===
+      "${EVENT_SUCCESS_REVEAL_CLOCK}" ?
+      input.revealCountdownMs ?? configuredAnticipationMs :
+      configuredAnticipationMs;
+  if (!Number.isSafeInteger(input.serverAnchorMillis) ||
+      !Number.isInteger(anticipationDurationMs) ||
+      anticipationDurationMs < 0) {
+    throw new Error("Event Success ceremony timing input is invalid.");
+  }
+  const climaxStartsAtMillis =
+    input.serverAnchorMillis + anticipationDurationMs;
+  const settleStartsAtMillis =
+    climaxStartsAtMillis + input.presentation.phaseDurationsMs.climax;
+  return {
+    anticipationStartsAtMillis: input.serverAnchorMillis,
+    climaxStartsAtMillis,
+    settleStartsAtMillis,
+    completesAtMillis:
+      settleStartsAtMillis + input.presentation.phaseDurationsMs.settle,
+  };
+}
+
+export function deriveEventSuccessMomentSeed(input: {
+  presentation: EventSuccessMomentPresentationContract;
+  eventId: string;
+  activeRevealRoundIndex: number;
+  serverAnchorMillis: number;
+}): number {
+  if (input.presentation.seedDerivationRuleId !==
+      "${EVENT_SUCCESS_SEED_RULE}") {
+    throw new Error(
+      "Unsupported Event Success seed rule: " +
+        input.presentation.seedDerivationRuleId
+    );
+  }
+  let hash = 0x811c9dc5;
+  const fields = [
+    input.eventId,
+    input.presentation.momentKind,
+    String(input.activeRevealRoundIndex),
+    String(input.serverAnchorMillis),
+  ];
+  for (const field of fields) {
+    for (const byte of new TextEncoder().encode(field)) {
+      hash = Math.imul(hash ^ byte, 0x01000193) >>> 0;
+    }
+    hash = Math.imul(hash ^ 0xff, 0x01000193) >>> 0;
+  }
+  return hash;
+}
+`;
+}
+
+function renderDartEventSuccessMomentPresentations(catalog) {
+  const moments = catalog.moments.map((moment) =>
+    `  EventSuccessMomentPresentationContract(\n` +
+    `    momentKind: ${dartString(moment.momentKind)},\n` +
+    `    paletteTokenId: ${dartString(moment.paletteTokenId)},\n` +
+    `    accentPaletteTokenId: ${dartLiteral(moment.accentPaletteTokenId)},\n` +
+    `    accentPalettePolicyId: ${
+      dartString(moment.accentPalettePolicyId)
+    },\n` +
+    `    motifId: ${dartString(moment.motifId)},\n` +
+    `    phaseDurationsMs: EventSuccessMomentPhaseDurations(\n` +
+    `      anticipation: ${moment.phaseDurationsMs.anticipation},\n` +
+    `      climax: ${moment.phaseDurationsMs.climax},\n` +
+    `      settle: ${moment.phaseDurationsMs.settle},\n` +
+    `    ),\n` +
+    `    tempoBpm: ${moment.tempoBpm},\n` +
+    `    idlePulsePeriodMs: ${moment.idlePulsePeriodMs},\n` +
+    `    particleDensity: ${moment.particleDensity},\n` +
+    `    seedDerivationRuleId: ${
+      dartString(moment.seedDerivationRuleId)
+    },\n` +
+    `    clockReferenceId: ${dartString(moment.clockReferenceId)},\n` +
+    `    ambientBedId: ${dartString(moment.ambientBedId)},\n` +
+    `    ambientBedWhenEventEndedId: ${
+      dartLiteral(moment.ambientBedWhenEventEndedId)
+    },\n` +
+    `  ),`
+  ).join("\n");
+  const byKind = catalog.moments.map((moment) =>
+    `  ${dartString(moment.momentKind)}: ` +
+      `eventSuccessMomentPresentations[${
+        EVENT_SUCCESS_MOMENT_KINDS.indexOf(moment.momentKind)
+      }],`
+  ).join("\n");
+  return `${dartGeneratedHeader()}
+import 'dart:convert';
+
+class EventSuccessMomentPhaseDurations {
+  const EventSuccessMomentPhaseDurations({
+    required this.anticipation,
+    required this.climax,
+    required this.settle,
+  });
+
+  final int anticipation;
+  final int climax;
+  final int settle;
+}
+
+class EventSuccessMomentPresentationContract {
+  const EventSuccessMomentPresentationContract({
+    required this.momentKind,
+    required this.paletteTokenId,
+    required this.accentPaletteTokenId,
+    required this.accentPalettePolicyId,
+    required this.motifId,
+    required this.phaseDurationsMs,
+    required this.tempoBpm,
+    required this.idlePulsePeriodMs,
+    required this.particleDensity,
+    required this.seedDerivationRuleId,
+    required this.clockReferenceId,
+    required this.ambientBedId,
+    required this.ambientBedWhenEventEndedId,
+  });
+
+  final String momentKind;
+  final String paletteTokenId;
+  final String? accentPaletteTokenId;
+  final String accentPalettePolicyId;
+  final String motifId;
+  final EventSuccessMomentPhaseDurations phaseDurationsMs;
+  final double tempoBpm;
+  final int idlePulsePeriodMs;
+  final int particleDensity;
+  final String seedDerivationRuleId;
+  final String clockReferenceId;
+  final String ambientBedId;
+  final String? ambientBedWhenEventEndedId;
+}
+
+class EventSuccessCeremonyTimeline {
+  const EventSuccessCeremonyTimeline({
+    required this.anticipationStartsAtMillis,
+    required this.climaxStartsAtMillis,
+    required this.settleStartsAtMillis,
+    required this.completesAtMillis,
+  });
+
+  final int anticipationStartsAtMillis;
+  final int climaxStartsAtMillis;
+  final int settleStartsAtMillis;
+  final int completesAtMillis;
+
+  Map<String, Object?> toJson() => <String, Object?>{
+    'anticipationStartsAtMillis': anticipationStartsAtMillis,
+    'climaxStartsAtMillis': climaxStartsAtMillis,
+    'settleStartsAtMillis': settleStartsAtMillis,
+    'completesAtMillis': completesAtMillis,
+  };
+}
+
+const eventSuccessMomentPresentationCatalogJson =
+    ${dartLiteral(catalog)};
+
+const eventSuccessMomentPresentations =
+    <EventSuccessMomentPresentationContract>[
+${moments}
+];
+
+final eventSuccessMomentPresentationsByKind =
+    <String, EventSuccessMomentPresentationContract>{
+${byKind}
+};
+
+EventSuccessMomentPresentationContract eventSuccessMomentPresentationFor(
+  String momentKind,
+) {
+  final presentation = eventSuccessMomentPresentationsByKind[momentKind];
+  if (presentation == null) {
+    throw StateError('Missing Event Success moment presentation: \$momentKind');
+  }
+  return presentation;
+}
+
+EventSuccessCeremonyTimeline resolveEventSuccessCeremonyTimeline({
+  required EventSuccessMomentPresentationContract presentation,
+  required int serverAnchorMillis,
+  int? revealCountdownMs,
+}) {
+  final configuredAnticipationMs = presentation.phaseDurationsMs.anticipation;
+  final anticipationDurationMs = presentation.clockReferenceId ==
+          '${EVENT_SUCCESS_REVEAL_CLOCK}'
+      ? revealCountdownMs ?? configuredAnticipationMs
+      : configuredAnticipationMs;
+  if (anticipationDurationMs < 0) {
+    throw ArgumentError.value(
+      anticipationDurationMs,
+      'revealCountdownMs',
+      'must not be negative',
+    );
+  }
+  final climaxStartsAtMillis = serverAnchorMillis + anticipationDurationMs;
+  final settleStartsAtMillis =
+      climaxStartsAtMillis + presentation.phaseDurationsMs.climax;
+  return EventSuccessCeremonyTimeline(
+    anticipationStartsAtMillis: serverAnchorMillis,
+    climaxStartsAtMillis: climaxStartsAtMillis,
+    settleStartsAtMillis: settleStartsAtMillis,
+    completesAtMillis:
+        settleStartsAtMillis + presentation.phaseDurationsMs.settle,
+  );
+}
+
+int deriveEventSuccessMomentSeed({
+  required EventSuccessMomentPresentationContract presentation,
+  required String eventId,
+  required int activeRevealRoundIndex,
+  required int serverAnchorMillis,
+}) {
+  if (presentation.seedDerivationRuleId != '${EVENT_SUCCESS_SEED_RULE}') {
+    throw UnsupportedError(
+      'Unsupported Event Success seed rule: '
+      '\${presentation.seedDerivationRuleId}',
+    );
+  }
+  var hash = 0x811c9dc5;
+  final fields = <String>[
+    eventId,
+    presentation.momentKind,
+    activeRevealRoundIndex.toString(),
+    serverAnchorMillis.toString(),
+  ];
+  for (final field in fields) {
+    for (final byte in utf8.encode(field)) {
+      hash = ((hash ^ byte) * 0x01000193) & 0xffffffff;
+    }
+    hash = ((hash ^ 0xff) * 0x01000193) & 0xffffffff;
+  }
+  return hash;
+}
+`;
 }
 
 function withProfilePhotoPolicy(photoCatalog, profilePhotoPolicy) {
@@ -3425,6 +3994,7 @@ ${bySource}
     text: `${dartGeneratedHeader()}
 // Stable barrel for generated Dart JSON Schema contracts.
 
+export 'event_success_moment_presentations.g.dart';
 export 'field_constraints.g.dart';
 export 'schemas/schema_constants.g.dart';
 export 'schemas/schema_registry.g.dart';
