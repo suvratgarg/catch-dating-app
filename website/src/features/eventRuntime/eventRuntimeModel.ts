@@ -1,4 +1,12 @@
-import type {EventRuntimeBootstrap, EventRuntimeLiveState} from "../../firebase";
+import {
+  deriveEventSuccessMomentSeed,
+  eventSuccessMomentPresentationFor,
+  resolveEventSuccessCeremonyTimeline,
+  type EventSuccessCeremonyTimeline,
+  type EventRuntimeBootstrap,
+  type EventRuntimeLiveState,
+  type EventSuccessMomentPresentationContract,
+} from "../../firebase";
 import {eventRuntimeCopy, eventRuntimeQuestionnairePacks} from "../../content/eventRuntime";
 
 export type {EventRuntimeBootstrap};
@@ -29,6 +37,37 @@ export interface NormalizedEventRuntimeLayoutUnit {
   top: number;
   width: number;
   height: number;
+}
+
+export interface EventRuntimeCeremony {
+  presentation: EventSuccessMomentPresentationContract;
+  timeline: EventSuccessCeremonyTimeline;
+  seed: number;
+}
+
+export function resolveEventRuntimeCeremony(
+  eventId: string,
+  plan: EventRuntimeLiveState["plan"]
+): EventRuntimeCeremony | null {
+  if (!plan || plan.revealStartedAtMillis === null) return null;
+  const presentation = eventSuccessMomentPresentationFor("liveReveal");
+  const serverAnchorMillis = plan.revealStartedAtMillis;
+  const timeline = resolveEventSuccessCeremonyTimeline({
+    presentation,
+    serverAnchorMillis,
+    revealCountdownMs: plan.revealCountdownSeconds === null ?
+      null : plan.revealCountdownSeconds * 1000,
+  });
+  return {
+    presentation,
+    timeline,
+    seed: deriveEventSuccessMomentSeed({
+      presentation,
+      eventId,
+      activeRevealRoundIndex: plan.activeRevealRoundIndex,
+      serverAnchorMillis,
+    }),
+  };
 }
 
 export function eventVenueSessionTokenFromFragment(

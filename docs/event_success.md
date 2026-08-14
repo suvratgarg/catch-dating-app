@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.14.0
+version: 1.15.0
 updated: 2026-08-14
 owner: recursive_audit_loop
 status: active
@@ -894,13 +894,25 @@ wizard with a compact shared form. Durable outcomes:
 The 2026-05-24 kinetic pass turned the companion stage from a static gradient
 into a perpetually-moving cinematic surface with audio, co-presence, and a
 marquee reveal moment. The vibe is moment-keyed: theatrical for arrival,
-pulse for live event beats, sunrise for afterglow. Architecturally, the
-existing `_CompanionStageTheme.forMoment` carries the palette + motif per
-beat — Phase 5 added motion, audio, and co-presence layers on top of that
-foundation.
+pulse for live event beats, sunrise for afterglow. The generated presentation
+contract now selects the palette and motif ids per beat, while
+`_CompanionStageTheme.forMoment` maps those ids into Flutter design tokens.
+
+The durable choreography source is now
+`contracts/catalogs/event_success_moment_presentations.json`, generated into
+typed Dart and TypeScript. `EventSuccessMomentPresentation.forMoment` continues
+to own localized copy and icons, but it resolves palette, accent policy, motif,
+phase durations, tempo, idle-pulse period, particle density, deterministic
+seed rule, server-clock reference, and ambient bed from that catalog. Flutter
+and the no-download runtime both resolve the reveal from the same
+`revealStartedAt` server anchor and saved reveal countdown. The shared seed is
+derived from event id, moment kind, reveal round, and that anchor. This is one
+moment model for every event format; there is no event-type presentation fork.
+Web retains the metadata for parity and ships no per-attendee audio.
 
 - **Animated motifs.** `_StageMotifPainter` now takes a `phase` parameter
-  driven by a 16s Ticker (gated on `Platform.environment['FLUTTER_TEST']`
+  driven by the catalog's 16s default idle-pulse period (gated on
+  `Platform.environment['FLUTTER_TEST']`
   so widget tests don't deadlock `pumpAndSettle`). Orbits rotate, sparks
   drift with independent sine phases + alpha shimmer, rhythm waves swell
   and recede, path filaments scroll diagonally, reveal spokes accelerate,
@@ -915,7 +927,7 @@ foundation.
   controller in `event_success_live_effects_controller.dart`. One persistent
   ambient bed player (looped) and one reusable low-latency one-shot player
   (effects). `EventSuccessAmbientBed` enum (theatrical / pulse / sunrise /
-  silent) is mapped per-moment in `EventSuccessMomentPresentation.forMoment`.
+  silent) is selected through the generated per-moment presentation contract.
   Per-kind volume tuning — reveal lands at 0.95, taps at 0.48. Missing
   assets are caught + memoized so the UI never blocks on the sound designer.
   Six curated stock sounds to source are documented in
@@ -925,10 +937,10 @@ foundation.
   anticipation (vignette darkens 0.18→0.6, 14 gold spokes rotate with
   acceleration `pow(anticipation, 1.4) × 2π × 1.8`, 72-particle field
   drifts inward), climax 1.5s (white flash, particle field bursts on a
-  deterministic seed so every viewer sees the same explosion), settle
-  700ms (vignette releases, particles dissipate, sunrise vibe pack takes
-  over). All phases server-anchored to the existing countdown clock so
-  every attendee sees the same beat.
+  generated deterministic seed so every viewer receives the same seed), settle
+  700ms (vignette releases, particles dissipate, sunrise vibe pack takes over).
+  Phase lengths and boundaries come from the generated contract and the saved
+  countdown, server-anchored to the existing reveal clock.
 - **Co-presence layer.** Three surfaces wired off the existing
   `Event.checkedInCount` (denormalized + maintained by Cloud Functions — no
   new Firestore listeners): `_LiveArrivalRing` on arrival moments (140×140

@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.23.0
+version: 1.24.0
 updated: 2026-08-14
 owner: recursive_audit_loop
 status: active
@@ -47,6 +47,28 @@ Read this before changing:
 
 Do not hand-edit generated outputs. Change the contract source, run the schema
 generator, and commit the generated diff.
+
+### Event Success Moment Presentation Contract
+
+`contracts/catalogs/event_success_moment_presentations.json` is the authored
+cross-runtime choreography source. It exhaustively covers every attendee moment
+kind and owns palette and motif ids, phase durations, tempo, idle-pulse period,
+particle density, the deterministic seed rule, server-clock reference, and
+ambient-bed ids. The schema generator rejects missing, duplicate, or unknown
+moments and fails closed when the live-reveal ceremony loses its countdown
+clock, positive phase durations, or particle field.
+
+The generator emits typed Dart into
+`lib/core/schema_contracts/generated/event_success_moment_presentations.g.dart`
+and TypeScript into
+`functions/src/shared/generated/eventSuccessMomentPresentations.ts`. Both
+outputs implement `fnv1a32-utf8-fields-v1` over event id, moment kind, reveal
+round, and server anchor, with an unambiguous byte separator. Both resolve the
+same anticipation, climax, settle, and completion boundaries. Live reveal uses
+the saved `structureConfig.revealCountdownSeconds`; the catalog's anticipation
+duration is only the legacy-document fallback, not a hard-coded client policy.
+The guest runtime may consume the ambient-bed id as choreography metadata but
+must not play per-attendee web audio.
 
 ### Event Success Format Primitives
 

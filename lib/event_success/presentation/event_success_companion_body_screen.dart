@@ -148,7 +148,7 @@ class _EventSuccessCompanionScreenState
 
     final stageTheme = _CompanionStageTheme.forMoment(
       context,
-      moment: attendeeMoment,
+      presentation: momentPresentation,
       plan: plan,
     );
     final momentContents = <Widget>[];

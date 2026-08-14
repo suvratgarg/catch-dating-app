@@ -141,8 +141,6 @@ adoption ledger after the bounded decision is complete.
 - `harness/`: authoritative component graph, safe compile-codegen catalog,
   planner kernel, and fixtures.
 - `lib/`: shared Node helper modules for repo paths, CLI parsing, and Firebase project selection.
-- Completed one-time migration tools are retired after production verification;
-  Git and the owning contract retain the history.
 - `marketing/`: app-derived website media manifests and screenshot sync checks.
 - `platform/`: Apple/platform configuration helpers.
 - `store/`: deterministic App Store and Google Play asset generators.
@@ -150,6 +148,16 @@ adoption ledger after the bounded decision is complete.
 - `ui_capture/`: route inventory, capture coverage, and deterministic screen capture tooling.
 - `remote_ops_manifest.json`: consolidated index for Firebase, App Check, data,
   CI/CD, and App Store/TestFlight operational surfaces.
+- Completed one-time migration tools are retired after production verification;
+  Git and the owning contract retain the history.
+
+The registered `contracts:generate-schemas` generator also projects authored
+catalog contracts when they require typed cross-runtime consumers. Event
+Success moment choreography is authored in
+`contracts/catalogs/event_success_moment_presentations.json` and emitted to
+the existing Dart and Functions TypeScript generated-contract directories.
+Its generator validation owns exhaustive moment coverage and the shared
+timeline/seed fixture; generated outputs are never edited directly.
 
 ## Shared CLI Parsing
 

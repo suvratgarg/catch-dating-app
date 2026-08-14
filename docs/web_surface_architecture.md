@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.14.0
+version: 0.15.0
 updated: 2026-08-14
 owner: web_platform
 status: active
@@ -1112,6 +1112,15 @@ external booking URL and Catch events to Catch registration. Consumer Flutter
 event detail and payment confirmation expose the same personal-link contract.
 Both surfaces can observe only use of the Catch share/copy control and later
 token use; neither can inspect an ordinary WhatsApp send or forward.
+
+The no-download runtime consumes the generated Event Success moment
+presentation catalog from `functions/src/shared/generated/` through its pure
+feature model. Its Firestore plan projection retains `revealStartedAt` in
+milliseconds plus the saved reveal-countdown value, and the generated resolver
+computes the same anticipation, climax, settle, completion, and deterministic
+seed as Flutter. Missing legacy countdown configuration uses the catalog
+fallback. This foundation adds no route or visual fork, and web intentionally
+does not play the catalog's ambient-bed audio.
 
 ## Why Subdomains Instead Of Paths
 

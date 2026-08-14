@@ -4,6 +4,7 @@
 
 // Stable barrel for generated Dart JSON Schema contracts.
 
+export 'event_success_moment_presentations.g.dart';
 export 'field_constraints.g.dart';
 export 'schemas/schema_constants.g.dart';
 export 'schemas/schema_registry.g.dart';

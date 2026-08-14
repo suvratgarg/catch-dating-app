@@ -1,6 +1,6 @@
 ---
 doc_id: event_success_variable_model_and_runtime_parity_spec
-version: 1.7.0
+version: 1.8.0
 updated: 2026-08-14
 owner: event_success
 status: active
@@ -713,7 +713,7 @@ docs are updated. Update this table in the same commit as the tranche.
 - [x] T9 Signed venue session replaces GPS
 - [x] T10 Conversation graph
 - [x] T11 `accountability` sweep
-- [ ] T12 Presentation contract and parity foundation
+- [x] T12 Presentation contract and parity foundation
 - [ ] T13 Marquee visual parity
 - [ ] T14 `durationShape` and format-first setup
 - [ ] T15 Pre-event moment and escalating disclosure

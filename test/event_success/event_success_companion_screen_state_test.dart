@@ -46,6 +46,11 @@ void main() {
       expect(state.attendeeMoment.showPreCheckInPlanning, true);
       expect(state.usePaperShell, true);
       expect(state.eventEnded, false);
+      expect(state.presentation.choreography.momentKind, 'preArrival');
+      expect(
+        state.presentation.choreography.paletteTokenId,
+        'activity.running',
+      );
       expect(state.effectKey, contains('preArrival'));
       expect(state.transitionKey('stage'), contains('preArrival:stage'));
     });
@@ -83,6 +88,7 @@ void main() {
       );
       expect(state.attendeeMoment.showFirstHelloCheckIn, true);
       expect(state.usePaperShell, false);
+      expect(state.presentation.choreography.motifId, 'signal');
       expect(state.effectKey, contains('firstHelloCheckIn'));
     });
 

@@ -13,6 +13,16 @@ import type {CreatePublicOrganizerReviewCallableResponse} from "../../functions/
 import type {EventSuccessAssignmentDocument} from "../../functions/src/shared/generated/eventSuccessAssignmentDocument";
 import type {EventSuccessLateArrivalDocument} from "../../functions/src/shared/generated/eventSuccessLateArrivalDocument";
 import type {EventSuccessStandingsDocument} from "../../functions/src/shared/generated/eventSuccessStandingsDocument";
+export {
+  deriveEventSuccessMomentSeed,
+  eventSuccessMomentPresentationCatalog,
+  eventSuccessMomentPresentationFor,
+  resolveEventSuccessCeremonyTimeline,
+} from "../../functions/src/shared/generated/eventSuccessMomentPresentations";
+export type {
+  EventSuccessCeremonyTimeline,
+  EventSuccessMomentPresentationContract,
+} from "../../functions/src/shared/generated/eventSuccessMomentPresentations";
 import type {EventIdCallablePayload} from "../../functions/src/shared/generated/eventIdCallablePayload";
 import type {FetchEventSuccessWingmanCandidatesCallableResponse} from "../../functions/src/shared/generated/fetchEventSuccessWingmanCandidatesCallableResponse";
 import type {GetEventRuntimeBootstrapCallablePayload} from "../../functions/src/shared/generated/getEventRuntimeBootstrapCallablePayload";
@@ -155,6 +165,8 @@ export interface EventRuntimePlanState {
   activeRevealRoundIndex: number;
   publishedRevealRoundIndex: number;
   publishedRotationRoundIndex: number;
+  revealCountdownSeconds: number | null;
+  revealStartedAtMillis: number | null;
   revealStatus: "idle" | "countingDown" | "revealed";
   status: "setup" | "live" | "complete";
 }
@@ -374,6 +386,8 @@ export async function watchEventRuntimeLiveState(
     doc(runtime.firestore, "eventSuccessPlans", context.eventId),
     (snapshot) => {
       const data = snapshot.data();
+      const structureConfig = isRecord(data?.structureConfig) ?
+        data.structureConfig : null;
       state.plan = data ? {
         attendeePrompt: typeof data.attendeePrompt === "string" ?
           data.attendeePrompt : null,
@@ -384,6 +398,12 @@ export async function watchEventRuntimeLiveState(
         publishedRotationRoundIndex: Number.isInteger(
           data.publishedRotationRoundIndex
         ) ? Number(data.publishedRotationRoundIndex) : -1,
+        revealCountdownSeconds: Number.isInteger(
+          structureConfig?.revealCountdownSeconds
+        ) ? Number(structureConfig?.revealCountdownSeconds) : null,
+        revealStartedAtMillis: eventRuntimeTimestampMillis(
+          data.revealStartedAt
+        ),
         revealStatus: data.revealStatus === "countingDown" ||
           data.revealStatus === "revealed" ? data.revealStatus : "idle",
         status: data.status === "live" || data.status === "complete" ?
@@ -477,6 +497,26 @@ export async function watchEventRuntimeLiveState(
     (error) => onError(error)
   ));
   return () => subscriptions.forEach((unsubscribe) => unsubscribe());
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+export function eventRuntimeTimestampMillis(value: unknown): number | null {
+  if (!isRecord(value)) return null;
+  const toMillis = value.toMillis;
+  if (typeof toMillis === "function") {
+    const millis = Number(toMillis.call(value));
+    return Number.isFinite(millis) ? millis : null;
+  }
+  const seconds = value.seconds ?? value._seconds;
+  const nanoseconds = value.nanoseconds ?? value._nanoseconds ?? 0;
+  if (typeof seconds !== "number" || typeof nanoseconds !== "number") {
+    return null;
+  }
+  const millis = seconds * 1000 + Math.floor(nanoseconds / 1_000_000);
+  return Number.isFinite(millis) ? millis : null;
 }
 
 export async function saveEventRuntimeCompatibilityAnswers(
