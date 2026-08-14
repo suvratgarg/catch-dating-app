@@ -125,6 +125,7 @@ import 'package:catch_dating_app/health_activity/data/health_activity_repository
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
 import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_attendance_outbox.dart';
+import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_profile_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_controller.dart';
@@ -132,6 +133,9 @@ import 'package:catch_dating_app/hosts/presentation/club_management/create/creat
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_club_edit_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_team_management_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
@@ -2696,8 +2700,9 @@ class _HostRoutedShellCaptureState extends State<_HostRoutedShellCapture> {
               HostAppShell(navigationShell: navigationShell),
           branches: [
             _branch('/host/events', 0),
-            _branch('/host/inbox', 1),
-            _branch('/host/organizer', 2),
+            _branch('/host/customers', 1),
+            _branch('/host/inbox', 2),
+            _branch('/host/organizer', 3),
           ],
         ),
       ],
@@ -4699,6 +4704,101 @@ final _hostInquiryImageDayMessages = <ChatMessage>[
   ),
 ];
 
+List<Object> _hostCustomersProviderOverrides() {
+  final club = HostOperationsFixtures.primaryClub;
+  final request = HostCustomersDirectoryRequest(organizerId: club.id);
+  return [
+    uidProvider.overrideWithValue(
+      const AsyncData<String?>(HostOperationsFixtures.hostUid),
+    ),
+    hostOperableClubsProvider(
+      HostOperationsFixtures.hostUid,
+    ).overrideWithValue(AsyncData<List<Club>>([club])),
+    hostCrmSummaryProvider(club.id).overrideWithValue(
+      AsyncData(
+        HostCrmSummary(
+          organizerId: club.id,
+          contactCount: 214,
+          pastAttendeeCount: 148,
+          repeatAttendeeCount: 37,
+          linkedAccountCount: 92,
+          importedContactCount: 61,
+          whatsappOptInCount: 74,
+          smsOptInCount: 29,
+          truncated: false,
+          inAppReadiness: HostCrmChannelReadiness.currentEventOnly,
+          whatsappReadiness: HostCrmChannelReadiness.providerSetupRequired,
+          smsReadiness: HostCrmChannelReadiness.providerAndDltSetupRequired,
+        ),
+      ),
+    ),
+    hostCustomersDirectoryControllerProvider(request).overrideWithBuild(
+      (ref, notifier) async => HostCustomersDirectoryState(
+        contacts: [
+          HostCustomerDirectoryContact(
+            contactId: 'capture-customer-ananya',
+            displayName: 'Ananya Rao',
+            attendedEventCount: 8,
+            lastAttendedAt: DateTime(2026, 6, 18, 18, 30),
+            tags: const {HostCustomerTag.repeat, HostCustomerTag.regular},
+            hasAmbiguousIdentity: false,
+            whatsappOptedIn: true,
+            whatsappAdminSuppressed: false,
+          ),
+          HostCustomerDirectoryContact(
+            contactId: 'capture-customer-kabir',
+            displayName: 'Kabir Mehta',
+            attendedEventCount: 2,
+            lastAttendedAt: DateTime(2026, 5, 30, 19),
+            tags: const {HostCustomerTag.newToOrganizer},
+            hasAmbiguousIdentity: false,
+            whatsappOptedIn: false,
+            whatsappAdminSuppressed: false,
+          ),
+        ],
+        nextCursor: null,
+        sourceCoverage: HostCustomerDirectoryCoverage.exact,
+        projectionVersion: 1,
+      ),
+    ),
+  ];
+}
+
+HostMessagingSetup _hostMessagingCaptureSetup(String organizerId) =>
+    HostMessagingSetup(
+      organizerId: organizerId,
+      providerConfigured: true,
+      embeddedSignup: const HostWhatsappEmbeddedSignupConfig(
+        appId: 'capture-app',
+        configId: 'capture-config',
+        graphVersion: 'v24.0',
+      ),
+      connection: const HostWhatsappConnection(
+        connectionId: 'capture-whatsapp',
+        status: 'active',
+        displayPhoneNumber: '+91 98765 43210',
+        verifiedName: 'Sea Face Social',
+        qualityRating: 'GREEN',
+        messagingLimitTier: 'TIER_1K',
+        templateSyncStatus: 'ready',
+        webhookStatus: 'healthy',
+        testStatus: 'verified',
+        revision: 2,
+      ),
+      templates: const [
+        HostWhatsappTemplate(
+          templateId: 'capture-invitation',
+          name: 'event_invitation',
+          language: 'en_US',
+          category: 'MARKETING',
+          status: 'APPROVED',
+          variableNames: ['first_name', 'invite_url'],
+          hasMediaHeader: false,
+          buttonKinds: ['URL'],
+        ),
+      ],
+    );
+
 List<Object> _hostInboxProviderOverrides({
   AsyncValue<String?> uid = const AsyncData<String?>(
     HostInboxSurfaceFixtures.hostUid,
@@ -4708,8 +4808,6 @@ List<Object> _hostInboxProviderOverrides({
   AsyncValue<List<Event>>? events,
   AsyncValue<List<EventParticipation>>? participations,
 }) {
-  final eventQuery = EventsForClubsQuery([HostInboxSurfaceFixtures.club.id]);
-
   return [
     uidProvider.overrideWithValue(uid),
     hostOperableClubsProvider(
@@ -4717,11 +4815,18 @@ List<Object> _hostInboxProviderOverrides({
     ).overrideWithValue(
       clubs ?? AsyncData<List<Club>>([HostInboxSurfaceFixtures.club]),
     ),
-    watchEventsForClubsProvider(eventQuery).overrideWithValue(
+    watchEventsForClubProvider(
+      HostInboxSurfaceFixtures.club.id,
+    ).overrideWithValue(
       events ?? AsyncData<List<Event>>([HostInboxSurfaceFixtures.event]),
     ),
     chatsListViewModelProvider.overrideWithValue(
       viewModel ?? AsyncData(HostInboxSurfaceFixtures.allThreads),
+    ),
+    hostMessagingSetupProvider(
+      HostInboxSurfaceFixtures.club.id,
+    ).overrideWithValue(
+      AsyncData(_hostMessagingCaptureSetup(HostInboxSurfaceFixtures.club.id)),
     ),
     watchEventParticipationsForEventProvider(
       HostInboxSurfaceFixtures.eventId,
@@ -5117,6 +5222,7 @@ Widget _hostInboxCapture({
     HostInboxSurfaceFixtures.eventId,
   ),
   HostInboxAudienceSegment initialSegment = HostInboxAudienceSegment.booked,
+  HostMessagingWorkspace initialWorkspace = HostMessagingWorkspace.inbox,
   String searchQuery = '',
   bool broadcastEnabled = true,
 }) {
@@ -5127,6 +5233,7 @@ Widget _hostInboxCapture({
       child: HostInboxScreen(
         initialScope: initialScope,
         initialSegment: initialSegment,
+        initialWorkspace: initialWorkspace,
         broadcastEnabled: broadcastEnabled,
         syncSelectionToRoute: false,
         now: HostInboxSurfaceFixtures.now,
@@ -9049,7 +9156,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ],
     builder: (context) => const _HostRoutedShellCapture(
       initialLocation: '/host/organizer',
-      activeIndex: 2,
+      activeIndex: 3,
       child: HostClubsScreen(),
     ),
   ),
@@ -13916,6 +14023,22 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => const ChatsListScreen(),
   ),
   ScreenCaptureEntry(
+    id: 'host_customers_populated',
+    routeIds: const <String>['hostCustomersScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: [
+      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ..._hostCustomersProviderOverrides(),
+    ],
+    builder: (context) => _HostRoutedShellCapture(
+      initialLocation: '/host/customers',
+      activeIndex: 1,
+      child: HostCustomersScreen(
+        initialOrganizerId: HostOperationsFixtures.primaryClub.id,
+      ),
+    ),
+  ),
+  ScreenCaptureEntry(
     id: 'host_inbox_queries',
     routeIds: const <String>['hostInboxScreen'],
     device: CaptureDevice.claudePhone390,
@@ -13928,12 +14051,33 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ],
     builder: (context) => _HostRoutedShellCapture(
       initialLocation: '/host/inbox',
-      activeIndex: 1,
+      activeIndex: 2,
       child: HostInboxScreen(
         initialScope: const HostInboxScope.event(
           HostInboxSurfaceFixtures.eventId,
         ),
         broadcastEnabled: true,
+        syncSelectionToRoute: false,
+        now: HostInboxSurfaceFixtures.now,
+      ),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_messaging_campaigns',
+    routeIds: const <String>['hostInboxScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: [
+      ..._hostShellCaptureOverrides(HostInboxSurfaceFixtures.hostUid),
+      ..._hostInboxProviderOverrides(),
+    ],
+    builder: (context) => _HostRoutedShellCapture(
+      initialLocation: '/host/inbox',
+      activeIndex: 2,
+      child: HostInboxScreen(
+        initialScope: const HostInboxScope.event(
+          HostInboxSurfaceFixtures.eventId,
+        ),
+        initialWorkspace: HostMessagingWorkspace.campaigns,
         syncSelectionToRoute: false,
         now: HostInboxSurfaceFixtures.now,
       ),

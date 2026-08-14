@@ -3,12 +3,12 @@
   "source": "test/ui_captures/catalog/screen_capture_catalog.dart",
   "coverage": {
     "routes": 53,
-    "captures": 621,
+    "captures": 623,
     "statusCounts": {
       "excluded": 2,
-      "captured": 37,
+      "captured": 38,
       "alias": 8,
-      "planned": 6
+      "planned": 5
     }
   },
   "profile": {
@@ -8691,6 +8691,23 @@
       "keepChangeNotes": ""
     },
     {
+      "id": "host_customers_populated",
+      "routes": [
+        "hostCustomersScreen"
+      ],
+      "device": "claude-phone-390x812",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_customers_populated.png",
+        "dark": "dark/host_customers_populated.png"
+      },
+      "whatItIs": "Host Customers Populated",
+      "keepChangeNotes": ""
+    },
+    {
       "id": "host_inbox_queries",
       "routes": [
         "hostInboxScreen"
@@ -8705,6 +8722,23 @@
         "dark": "dark/host_inbox_queries.png"
       },
       "whatItIs": "Host Inbox Queries",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_messaging_campaigns",
+      "routes": [
+        "hostInboxScreen"
+      ],
+      "device": "claude-phone-390x812",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_messaging_campaigns.png",
+        "dark": "dark/host_messaging_campaigns.png"
+      },
+      "whatItIs": "Host Messaging Campaigns",
       "keepChangeNotes": ""
     },
     {

@@ -49,7 +49,7 @@ void _registerHostOperationsTeamFailuresTests() {
     expect(find.text('Sunday sea-face crew'), findsWidgets);
     expect(find.text('Edit'), findsOneWidget);
     expect(find.text('Preview'), findsWidgets);
-    expect(find.byTooltip('Switch organizer'), findsOneWidget);
+    expect(find.byTooltip('Switch organizer'), findsNothing);
     expect(find.byTooltip('Create organizer'), findsNothing);
     expect(find.text('IDENTITY'), findsOneWidget);
     expect(find.text('Organizer name'), findsOneWidget);
@@ -94,9 +94,12 @@ void _registerHostOperationsTeamFailuresTests() {
     expect(find.text('View club'), findsNothing);
     expect(find.text('Owned club'), findsNothing);
 
-    await tester.tap(find.byTooltip('Switch organizer'));
-    await pumpFeatureUi(tester);
-    await tester.tap(find.text('Co-hosted Club · Host team'));
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(HostClubsScaffold)),
+    );
+    container
+        .read(hostOrganizerSelectionProvider(_hostUid).notifier)
+        .select(cohostClub.id);
     await pumpFeatureUi(tester);
 
     expect(find.text('Co-hosted Club'), findsWidgets);

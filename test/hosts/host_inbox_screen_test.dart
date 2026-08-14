@@ -12,6 +12,8 @@ import 'package:catch_dating_app/events/data/event_participation_repository.dart
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
@@ -65,7 +67,9 @@ void main() {
     );
     await pumpFeatureUi(tester);
 
+    expect(find.text('Messaging'), findsOneWidget);
     expect(find.text('Inbox'), findsOneWidget);
+    expect(find.text('Campaigns'), findsOneWidget);
     expect(find.byType(HostInboxScopeSelector), findsOneWidget);
     expect(find.text('BOOKED · 1'), findsOneWidget);
     expect(find.text('PROSPECTIVE · 1'), findsOneWidget);
@@ -116,6 +120,35 @@ void main() {
       ),
       findsOneWidget,
     );
+  });
+
+  testWidgets('moves campaigns and sender setup into Messaging', (
+    tester,
+  ) async {
+    final event = event_test.buildEvent(
+      startTime: now.add(const Duration(hours: 1)),
+      endTime: now.add(const Duration(hours: 2)),
+    );
+
+    await tester.pumpWidget(
+      _app(
+        event: event,
+        previews: const [],
+        participations: const [],
+        now: now,
+      ),
+    );
+    await pumpFeatureUi(tester);
+
+    await tester.tap(find.text('Campaigns'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Messaging'), findsOneWidget);
+    expect(find.byType(HostCustomerMessagingPane), findsOneWidget);
+    expect(find.text('WHATSAPP BUSINESS SENDER'), findsOneWidget);
+    expect(find.text('MESSAGE PAST ATTENDEES'), findsOneWidget);
+    expect(find.byType(HostInboxScopeSelector), findsNothing);
+    expect(find.byType(HostInboxAudienceRail), findsNothing);
   });
 
   testWidgets('compact scope label opens the shared event menu', (
@@ -242,15 +275,17 @@ Widget _app({
     conversations: previews,
     totalThreadCount: previews.length,
   );
-  final eventsQuery = EventsForClubsQuery([club.id]);
   return ProviderScope(
     overrides: [
       uidProvider.overrideWith((ref) => Stream.value('host-1')),
       hostOperableClubsProvider('host-1').overrideWithValue(AsyncData([club])),
-      watchEventsForClubsProvider(
-        eventsQuery,
+      watchEventsForClubProvider(
+        club.id,
       ).overrideWith((ref) => Stream.value([?event])),
       chatsListViewModelProvider.overrideWithValue(AsyncData(inbox)),
+      hostMessagingSetupProvider(
+        club.id,
+      ).overrideWithValue(AsyncData(_messagingSetup(club.id))),
       if (event != null)
         watchEventParticipationsForEventProvider(
           event.id,
@@ -266,6 +301,40 @@ Widget _app({
     ),
   );
 }
+
+HostMessagingSetup _messagingSetup(String organizerId) => HostMessagingSetup(
+  organizerId: organizerId,
+  providerConfigured: true,
+  embeddedSignup: const HostWhatsappEmbeddedSignupConfig(
+    appId: 'test-app',
+    configId: 'test-config',
+    graphVersion: 'v24.0',
+  ),
+  connection: const HostWhatsappConnection(
+    connectionId: 'test-whatsapp',
+    status: 'active',
+    displayPhoneNumber: '+91 98765 43210',
+    verifiedName: 'Test organizer',
+    qualityRating: 'GREEN',
+    messagingLimitTier: 'TIER_1K',
+    templateSyncStatus: 'ready',
+    webhookStatus: 'healthy',
+    testStatus: 'verified',
+    revision: 1,
+  ),
+  templates: const [
+    HostWhatsappTemplate(
+      templateId: 'test-invitation',
+      name: 'event_invitation',
+      language: 'en_US',
+      category: 'MARKETING',
+      status: 'APPROVED',
+      variableNames: ['first_name', 'invite_url'],
+      hasMediaHeader: false,
+      buttonKinds: ['URL'],
+    ),
+  ],
+);
 
 ChatThreadPreview _preview({
   required String uid,

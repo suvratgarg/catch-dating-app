@@ -462,7 +462,7 @@ void main() {
     expect(find.text('HOME'), findsNothing);
     expect(find.text('Today'), findsNothing);
     expect(find.text('Events'), findsNothing);
-    expect(find.text('Inbox'), findsOneWidget);
+    expect(find.text('Messaging'), findsOneWidget);
     expect(find.text('Organizer'), findsNothing);
     expect(find.text('4'), findsOneWidget);
 

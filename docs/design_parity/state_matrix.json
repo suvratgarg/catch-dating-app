@@ -5044,7 +5044,9 @@
             "catch.surface",
             "catch.top_bar"
           ],
-          "captureIds": [],
+          "captureIds": [
+            "host_customers_populated"
+          ],
           "designRefs": [
             {
               "id": "host-customers-feature-contract",
@@ -5083,11 +5085,14 @@
             {
               "id": "customers_populated",
               "kind": "populated",
-              "status": "tested",
+              "status": "captured",
               "previewIds": ["hostCustomersStates"],
               "tests": [
                 "test/hosts/host_customers_screen_state_test.dart",
                 "test/routing/host_shell_navigation_test.dart"
+              ],
+              "captureIds": [
+                "host_customers_populated"
               ],
               "notes": "Populated directory reuses organizer identity, summary, search, chips, and person-row primitives."
             },
@@ -5200,55 +5205,6 @@
               "kind": "mutation",
               "status": "implemented",
               "notes": "Customer-management mutations own a pending state while optimistic revision checks complete."
-            },
-            {
-              "id": "customer_messaging_provider_unavailable",
-              "kind": "permission",
-              "status": "implemented",
-              "previewIds": ["hostCustomerMessagingStates"],
-              "notes": "Campaigns explains when the configured messaging provider is unavailable instead of presenting unusable sender controls."
-            },
-            {
-              "id": "customer_messaging_disconnected",
-              "kind": "empty",
-              "status": "implemented",
-              "previewIds": ["hostCustomerMessagingStates"],
-              "notes": "Campaigns provides the sender-connection handoff when the organizer has no active messaging connection."
-            },
-            {
-              "id": "customer_messaging_connecting",
-              "kind": "mutation",
-              "status": "implemented",
-              "notes": "Sender connection and configuration mutations expose a deterministic pending state."
-            },
-            {
-              "id": "customer_messaging_ready",
-              "kind": "populated",
-              "status": "tested",
-              "previewIds": ["hostCustomerMessagingStates"],
-              "tests": ["test/hosts/host_crm_repository_test.dart"],
-              "notes": "A ready provider exposes the organizer sender, approved templates, and campaign composition controls."
-            },
-            {
-              "id": "customer_campaign_draft",
-              "kind": "mutation",
-              "status": "implemented",
-              "previewIds": ["hostCustomerMessagingStates"],
-              "notes": "The campaign composer preserves draft audience, template, variable, and schedule input before preview."
-            },
-            {
-              "id": "customer_campaign_previewed",
-              "kind": "mutation",
-              "status": "implemented",
-              "notes": "Campaign preview resolves the selected segment and message variables before dispatch becomes available."
-            },
-            {
-              "id": "customer_campaign_active",
-              "kind": "mutation",
-              "status": "tested",
-              "previewIds": ["hostCustomerMessagingStates"],
-              "tests": ["test/hosts/host_crm_repository_test.dart"],
-              "notes": "Active campaigns expose authoritative dispatch status and cancellation through the Customers workspace."
             },
             {
               "id": "offline",
@@ -8102,6 +8058,9 @@
             "lib/hosts/presentation/inbox/host_inbox_view_model.dart",
             "lib/hosts/presentation/inbox/host_inbox_broadcast_controller.dart",
             "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart",
+            "lib/hosts/presentation/host_operations_screen.dart",
+            "lib/hosts/presentation/host_operations/host_audience.dart",
+            "lib/hosts/data/host_crm_repository.dart",
             "lib/chats/presentation/inbox/chats_list_view_model.dart",
             "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
             "lib/chats/presentation/inbox/widgets/chats_list_body.dart",
@@ -8125,6 +8084,7 @@
             "host_inbox_offline",
             "host_inbox_empty",
             "host_inbox_queries",
+            "host_messaging_campaigns",
             "host_inbox_prospective",
             "host_inbox_general",
             "host_inbox_roster_no_threads",
@@ -8316,6 +8276,58 @@
                 "host_inbox_broadcast_pending",
                 "host_inbox_broadcast_error"
               ]
+            },
+            {
+              "id": "customer_messaging_provider_unavailable",
+              "kind": "permission",
+              "status": "implemented",
+              "previewIds": ["hostCustomerMessagingStates"],
+              "notes": "Messaging Campaigns explains when the configured provider is unavailable instead of presenting unusable sender controls."
+            },
+            {
+              "id": "customer_messaging_disconnected",
+              "kind": "empty",
+              "status": "implemented",
+              "previewIds": ["hostCustomerMessagingStates"],
+              "notes": "Messaging Campaigns provides the sender-connection handoff when the organizer has no active messaging connection."
+            },
+            {
+              "id": "customer_messaging_connecting",
+              "kind": "mutation",
+              "status": "implemented",
+              "notes": "Sender connection and configuration mutations expose a deterministic pending state in Messaging."
+            },
+            {
+              "id": "customer_messaging_ready",
+              "kind": "populated",
+              "status": "captured",
+              "previewIds": ["hostCustomerMessagingStates"],
+              "tests": ["test/hosts/host_crm_repository_test.dart"],
+              "captureIds": [
+                "host_messaging_campaigns"
+              ],
+              "notes": "A ready provider exposes the organizer sender, approved templates, and campaign composition controls in the Messaging Campaigns workspace."
+            },
+            {
+              "id": "customer_campaign_draft",
+              "kind": "mutation",
+              "status": "implemented",
+              "previewIds": ["hostCustomerMessagingStates"],
+              "notes": "The campaign composer preserves draft audience, template, variable, and schedule input before preview."
+            },
+            {
+              "id": "customer_campaign_previewed",
+              "kind": "mutation",
+              "status": "implemented",
+              "notes": "Campaign preview resolves the selected segment and message variables before dispatch becomes available."
+            },
+            {
+              "id": "customer_campaign_active",
+              "kind": "mutation",
+              "status": "tested",
+              "previewIds": ["hostCustomerMessagingStates"],
+              "tests": ["test/hosts/host_crm_repository_test.dart"],
+              "notes": "Active campaigns expose authoritative dispatch status and cancellation through the Messaging workspace."
             },
             {
               "id": "search_collapsed",

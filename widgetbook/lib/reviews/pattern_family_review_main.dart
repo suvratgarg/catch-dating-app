@@ -20,8 +20,8 @@ import 'package:catch_dating_app/event_success/presentation/event_success_featur
     show EventSuccessMetricPill, LiveStepRow;
 import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart'
     show CountdownBeatRail;
-import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart'
-    show HostOrganizerIdentityPill;
+import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher.dart'
+    show HostOrganizerAvatar, HostOrganizerSwitcherSheet;
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:flutter/material.dart';
@@ -500,41 +500,33 @@ class _IdentitySwitcherFamily extends StatelessWidget {
       id: 'identity-switchers · I1–I3',
       title: 'Compact identity switchers',
       description:
-          'Compare passive identity, switchable identity, and constrained names. '
-          'The semantic question is whether the whole surface becomes one control.',
+          'Compare the navigation avatar, its selected state, and the long-press '
+          'organizer sheet used to change the global Host context.',
       cards: [
         _PreviewCard(
-          title: 'Single context',
-          note: 'Real club art in a stable, intentionally passive surface.',
-          child: HostOrganizerIdentityPill(
+          title: 'Navigation identity',
+          note: 'Real organizer art in the stable bottom-navigation footprint.',
+          child: HostOrganizerAvatar(
             club: logoClub,
-            currentUid: HostOperationsFixtures.hostUid,
-            clubs: clubs,
-            showClubPicker: false,
-            onSwitchClubIndex: (_) {},
+            size: CatchLayout.appShellNavigationIdentityExtent,
           ),
         ),
         _PreviewCard(
-          title: 'Switchable context',
-          note: 'The whole bounded identity surface opens the club menu.',
-          child: HostOrganizerIdentityPill(
-            club: logoClub,
-            currentUid: HostOperationsFixtures.hostUid,
-            clubs: clubs,
-            showClubPicker: true,
-            onSwitchClubIndex: (_) {},
-          ),
-        ),
-        _PreviewCard(
-          title: 'Long identity',
+          title: 'Selected identity',
           note:
-              'Tests whether the 104px label constraint loses too much context.',
-          child: HostOrganizerIdentityPill(
-            club: longClub,
-            currentUid: HostOperationsFixtures.hostUid,
+              'Selection stays legible without adding a second top-bar control.',
+          child: HostOrganizerAvatar(
+            club: logoClub,
+            size: CatchLayout.appShellNavigationIdentityExtent,
+            selected: true,
+          ),
+        ),
+        _PreviewCard(
+          title: 'Long-press switcher',
+          note: 'The sheet retains full organizer names and selected state.',
+          child: HostOrganizerSwitcherSheet(
             clubs: [longClub, ...clubs.skip(1)],
-            showClubPicker: true,
-            onSwitchClubIndex: (_) {},
+            selectedOrganizerId: longClub.id,
           ),
         ),
       ],

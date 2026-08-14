@@ -37,7 +37,6 @@ import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
-import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
@@ -75,6 +74,7 @@ import 'package:catch_dating_app/hosts/presentation/host_event_entry_state.dart'
 import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_home_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_profile_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_team_workspace_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_team_workspace_view_model.dart';

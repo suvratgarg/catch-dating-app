@@ -20,7 +20,6 @@ import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
-import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
@@ -31,14 +30,13 @@ import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-
-enum _HostCustomersWorkspace { people, campaigns }
 
 class HostCustomersScreen extends ConsumerStatefulWidget {
   const HostCustomersScreen({super.key, this.initialOrganizerId});
@@ -52,18 +50,9 @@ class HostCustomersScreen extends ConsumerStatefulWidget {
 
 class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
   final _searchController = TextEditingController();
-  String? _selectedOrganizerId;
   String? _search;
   HostCustomerFilter _filter = HostCustomerFilter.all;
-  _HostCustomersWorkspace _workspace = _HostCustomersWorkspace.people;
   bool _exporting = false;
-  bool _messagingBusy = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedOrganizerId = widget.initialOrganizerId;
-  }
 
   @override
   void dispose() {
@@ -100,7 +89,14 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     }
     final clubs = clubsAsync.asData?.value ?? const <Club>[];
     if (clubs.isEmpty) return const HostCustomersNoOrganizer();
-    final selectedClub = _selectedClub(clubs);
+    final selectedOrganizerId = ref.watch(hostOrganizerSelectionProvider(uid));
+    final selectedClub = resolveSelectedHostOrganizer(
+      clubs,
+      selectedOrganizerId: selectedOrganizerId,
+      preferredOrganizerId: selectedOrganizerId == null
+          ? widget.initialOrganizerId
+          : null,
+    )!;
     final request = HostCustomersDirectoryRequest(
       organizerId: selectedClub.id,
       search: _search,
@@ -120,18 +116,17 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
           slivers: [
             SliverToBoxAdapter(
               child: CatchScreenHeaderTitle.block(
-                eyebrow: selectedClub.name,
                 title: context.l10n.hostNavigationCustomers,
                 actions: [
-                  HostOrganizerIdentityPill(
-                    club: selectedClub,
-                    currentUid: uid,
-                    clubs: clubs,
-                    showClubPicker: clubs.length > 1,
-                    keyPrefix: 'host-customers',
-                    onSwitchClubIndex: (index) => setState(() {
-                      _selectedOrganizerId = clubs[index].id;
-                    }),
+                  CatchButton(
+                    key: const ValueKey<String>('host-customers-add-customer'),
+                    label: context.l10n.hostCustomersAdd,
+                    icon: Icon(
+                      CatchIcons.personAddAlt1Rounded,
+                      size: CatchIcon.sm,
+                    ),
+                    size: CatchButtonSize.sm,
+                    onPressed: () => _addCustomer(selectedClub, request),
                   ),
                 ],
               ),
@@ -145,136 +140,101 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                     style: CatchTextStyles.supporting(context, color: t.ink2),
                   ),
                   gapH16,
-                  CatchOptionGroup<_HostCustomersWorkspace>(
-                    contractExemption:
-                        'Local Customers presentation lens; it is not persisted.',
-                    selected: _workspace,
-                    options: [
-                      CatchOption(
-                        value: _HostCustomersWorkspace.people,
-                        label: context.l10n.hostCustomersWorkspacePeople,
-                      ),
-                      CatchOption(
-                        value: _HostCustomersWorkspace.campaigns,
-                        label: context.l10n.hostCustomersWorkspaceCampaigns,
-                      ),
-                    ],
-                    onChanged: _messagingBusy
-                        ? null
-                        : (value) => setState(() => _workspace = value),
+                  HostCustomersSummary(
+                    summary: summary,
+                    onRetry: () =>
+                        ref.invalidate(hostCrmSummaryProvider(selectedClub.id)),
                   ),
                   gapH16,
-                  if (_workspace == _HostCustomersWorkspace.people) ...[
-                    HostCustomersSummary(
-                      summary: summary,
-                      onRetry: () => ref.invalidate(
-                        hostCrmSummaryProvider(selectedClub.id),
+                  Wrap(
+                    spacing: CatchSpacing.s2,
+                    runSpacing: CatchSpacing.s2,
+                    children: [
+                      CatchButton(
+                        label: context.l10n.hostsHostAudienceExport,
+                        icon: Icon(CatchIcons.downloadRounded),
+                        variant: CatchButtonVariant.secondary,
+                        size: CatchButtonSize.sm,
+                        isLoading: _exporting,
+                        onPressed: _exporting
+                            ? null
+                            : () => _exportCustomers(selectedClub),
                       ),
+                    ],
+                  ),
+                  gapH20,
+                  CatchFieldLanes.single(
+                    child: CatchField.input(
+                      title: context.l10n.hostsHostAudienceSearch,
+                      contract: CatchContractConstraints
+                          .listOrganizerContactsCallablePayloadQuery,
+                      controller: _searchController,
+                      textInputAction: TextInputAction.search,
+                      prefixIcon: Icon(CatchIcons.searchRounded),
+                      showClearButton: true,
+                      onSubmitted: (value) => setState(() {
+                        final normalized = value.trim();
+                        _search = normalized.isEmpty ? null : normalized;
+                      }),
                     ),
-                    gapH16,
-                    Wrap(
-                      spacing: CatchSpacing.s2,
-                      runSpacing: CatchSpacing.s2,
+                  ),
+                  gapH16,
+                  Text(
+                    context.l10n.hostCustomersFilterByTag,
+                    style: CatchTextStyles.fieldRowTitle(context),
+                  ),
+                  gapH8,
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
                       children: [
-                        CatchButton(
-                          label: context.l10n.hostCustomersAdd,
-                          icon: Icon(CatchIcons.personAddAlt1Rounded),
-                          size: CatchButtonSize.sm,
-                          onPressed: () => _addCustomer(selectedClub, request),
-                        ),
-                        CatchButton(
-                          label: context.l10n.hostsHostAudienceExport,
-                          icon: Icon(CatchIcons.downloadRounded),
-                          variant: CatchButtonVariant.secondary,
-                          size: CatchButtonSize.sm,
-                          isLoading: _exporting,
-                          onPressed: _exporting
-                              ? null
-                              : () => _exportCustomers(selectedClub),
-                        ),
+                        for (final filter in HostCustomerFilter.values) ...[
+                          if (filter != HostCustomerFilter.values.first) gapW8,
+                          CatchChip.selectable(
+                            label: _customerFilterLabel(context, filter),
+                            selected: _filter == filter,
+                            contractExemption:
+                                'Customer filters map to reviewed CRM segments.',
+                            onChanged: (_) => setState(() => _filter = filter),
+                          ),
+                        ],
                       ],
                     ),
-                    gapH20,
-                    CatchFieldLanes.single(
-                      child: CatchField.input(
-                        title: context.l10n.hostsHostAudienceSearch,
-                        contract: CatchContractConstraints
-                            .listOrganizerContactsCallablePayloadQuery,
-                        controller: _searchController,
-                        textInputAction: TextInputAction.search,
-                        prefixIcon: Icon(CatchIcons.searchRounded),
-                        showClearButton: true,
-                        onSubmitted: (value) => setState(() {
-                          final normalized = value.trim();
-                          _search = normalized.isEmpty ? null : normalized;
-                        }),
-                      ),
+                  ),
+                  gapH16,
+                  CatchAsyncValueView<HostCustomersDirectoryState>(
+                    value: directory,
+                    onRetry: () => ref.invalidate(
+                      hostCustomersDirectoryControllerProvider(request),
                     ),
-                    gapH16,
-                    Text(
-                      context.l10n.hostCustomersFilterByTag,
-                      style: CatchTextStyles.fieldRowTitle(context),
-                    ),
-                    gapH8,
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          for (final filter in HostCustomerFilter.values) ...[
-                            if (filter != HostCustomerFilter.values.first)
-                              gapW8,
-                            CatchChip.selectable(
-                              label: _customerFilterLabel(context, filter),
-                              selected: _filter == filter,
-                              contractExemption:
-                                  'Customer filters map to reviewed CRM segments.',
-                              onChanged: (_) =>
-                                  setState(() => _filter = filter),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                    gapH16,
-                    CatchAsyncValueView<HostCustomersDirectoryState>(
-                      value: directory,
+                    initialLoadTimeout: null,
+                    loadingBuilder: (_) => const CatchSkeletonRows(count: 5),
+                    errorBuilder: (_, error, _) => CatchErrorState.fromError(
+                      error,
+                      context: AppErrorContext.club,
+                      mode: CatchErrorStateMode.compact,
                       onRetry: () => ref.invalidate(
                         hostCustomersDirectoryControllerProvider(request),
                       ),
-                      initialLoadTimeout: null,
-                      loadingBuilder: (_) => const CatchSkeletonRows(count: 5),
-                      errorBuilder: (_, error, _) => CatchErrorState.fromError(
-                        error,
-                        context: AppErrorContext.club,
-                        mode: CatchErrorStateMode.compact,
-                        onRetry: () => ref.invalidate(
-                          hostCustomersDirectoryControllerProvider(request),
-                        ),
-                      ),
-                      builder: (context, state) => HostCustomersDirectory(
-                        state: state,
-                        filter: _filter,
-                        hasActiveQuery:
-                            _search != null ||
-                            _filter != HostCustomerFilter.all,
-                        onCustomerSelected: (contact) =>
-                            _openCustomer(selectedClub, contact),
-                        onLoadMore: state.canLoadMore
-                            ? () => ref
-                                  .read(
-                                    hostCustomersDirectoryControllerProvider(
-                                      request,
-                                    ).notifier,
-                                  )
-                                  .loadMore()
-                            : null,
-                      ),
                     ),
-                  ] else
-                    HostCustomerMessagingPane(
-                      club: selectedClub,
-                      onBusyChanged: _setMessagingBusy,
+                    builder: (context, state) => HostCustomersDirectory(
+                      state: state,
+                      filter: _filter,
+                      hasActiveQuery:
+                          _search != null || _filter != HostCustomerFilter.all,
+                      onCustomerSelected: (contact) =>
+                          _openCustomer(selectedClub, contact),
+                      onLoadMore: state.canLoadMore
+                          ? () => ref
+                                .read(
+                                  hostCustomersDirectoryControllerProvider(
+                                    request,
+                                  ).notifier,
+                                )
+                                .loadMore()
+                          : null,
                     ),
+                  ),
                   const CatchScrollTerminalPadding(),
                 ],
               ),
@@ -283,17 +243,6 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
         ),
       ),
     );
-  }
-
-  Club _selectedClub(List<Club> clubs) {
-    final selectedId = _selectedOrganizerId;
-    return clubs.where((club) => club.id == selectedId).firstOrNull ??
-        clubs.first;
-  }
-
-  void _setMessagingBusy(bool value) {
-    if (!mounted || _messagingBusy == value) return;
-    setState(() => _messagingBusy = value);
   }
 
   Future<void> _addCustomer(

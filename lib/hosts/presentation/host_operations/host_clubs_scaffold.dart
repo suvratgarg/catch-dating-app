@@ -24,7 +24,7 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
     with SingleTickerProviderStateMixin {
   static const _editorRevealAlignment = 0.08;
 
-  late HostClubsScreenState _state;
+  late HostClubTab _selectedTab;
   late final TabController _tabController;
   final GlobalKey _profileSectionsKey = GlobalKey();
   final Map<HostClubTab, CatchTabbedPageScrollController>
@@ -40,15 +40,10 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
   @override
   void initState() {
     super.initState();
-    _state = HostClubsScreenState.resolve(
-      clubs: widget.clubs,
-      currentUid: widget.currentUid,
-      selectedClubId: widget.initialClubId,
-      selectedTab: _effectiveInitialTab,
-    );
+    _selectedTab = _effectiveInitialTab;
     _tabController = TabController(
       length: HostClubTab.values.length,
-      initialIndex: HostClubTab.values.indexOf(_state.selectedTab),
+      initialIndex: HostClubTab.values.indexOf(_selectedTab),
       vsync: this,
     )..addListener(_handleTabControllerChanged);
   }
@@ -60,14 +55,7 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
         oldWidget.initialClubId != widget.initialClubId) {
       _didRevealInitialEditor = false;
     }
-    _state = HostClubsScreenState.resolve(
-      clubs: widget.clubs,
-      currentUid: widget.currentUid,
-      selectedClubIndex: _state.selectedClubIndex,
-      selectedClubId: _state.selectedClub?.id,
-      selectedTab: _state.selectedTab,
-    );
-    final selectedIndex = HostClubTab.values.indexOf(_state.selectedTab);
+    final selectedIndex = HostClubTab.values.indexOf(_selectedTab);
     if (_tabController.index != selectedIndex) {
       _tabController.index = selectedIndex;
     }
@@ -84,14 +72,23 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final selectedClub = _state.selectedClub;
+    final selectedOrganizerId = ref.watch(
+      hostOrganizerSelectionProvider(widget.currentUid),
+    );
+    final state = HostClubsScreenState.resolve(
+      clubs: widget.clubs,
+      currentUid: widget.currentUid,
+      selectedClubId: selectedOrganizerId ?? widget.initialClubId,
+      selectedTab: _selectedTab,
+    );
+    final selectedClub = state.selectedClub;
     if (selectedClub == null) {
       return Scaffold(
         backgroundColor: t.bg,
         appBar: CatchScreenTopBar(
           context: context,
           eyebrow: context.l10n.hostsHostClubsScaffoldKickerHostClubs,
-          title: _state.title(context.l10n),
+          title: state.title(context.l10n),
           border: true,
         ),
         body: SafeArea(
@@ -122,15 +119,6 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
 
     return CatchTabbedScreenScaffold(
       title: selectedClub.name,
-      actions: [
-        if (_state.showClubPicker)
-          CatchTopBarMenuAction<int>(
-            tooltip: context.l10n.hostsHostClubsScaffoldTooltipSwitchClub,
-            icon: CatchIcons.expandMoreRounded,
-            items: _hostClubSwitcherItems(_state, context.l10n),
-            onSelected: _selectClubIndex,
-          ),
-      ],
       tabRail: CatchTabControllerRail<HostClubTab>(
         controller: _tabController,
         groupKey: _hostClubTabRailKey,
@@ -171,8 +159,8 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
                       child: HostClubEditTab(
                         key: ValueKey('host-club-${selectedClub.id}-edit'),
                         club: selectedClub,
-                        currentUid: _state.currentUid,
-                        isOwner: _state.selectedClubIsOwner,
+                        currentUid: state.currentUid,
+                        isOwner: state.selectedClubIsOwner,
                         initialExpandedField: widget.initialExpandedEditField,
                       ),
                     ),
@@ -215,7 +203,7 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
               slivers: [
                 ClubDetailReadOnlyPreviewSliver(
                   initialClub: selectedClub,
-                  currentUid: _state.currentUid,
+                  currentUid: state.currentUid,
                 ),
               ],
             ),
@@ -230,24 +218,17 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
       ? widget.initialTab
       : HostClubTab.edit;
 
-  void _selectClubIndex(int index) {
-    setState(() {
-      _state = _state.selectClubIndex(index);
-      _didRevealInitialEditor = false;
-    });
-  }
-
   void _handleTabControllerChanged() {
     final tab = HostClubTab.values[_tabController.index];
     if (!mounted) return;
-    if (tab != _state.selectedTab) {
-      final previousTab = _state.selectedTab;
+    if (tab != _selectedTab) {
+      final previousTab = _selectedTab;
       final previousOffset = _pageScrollControllers[previousTab]
           ?.captureOffset();
       if (previousOffset != null) {
         _pageScrollOffsets[previousTab] = previousOffset;
       }
-      setState(() => _state = _state.selectTab(tab));
+      setState(() => _selectedTab = tab);
     }
     if (!_tabController.indexIsChanging && _tabController.offset == 0) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -277,27 +258,4 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
       );
     });
   }
-}
-
-List<CatchActionMenuItem<int>> _hostClubSwitcherItems(
-  HostClubsScreenState state,
-  AppLocalizations l10n,
-) {
-  final items = <CatchActionMenuItem<int>>[];
-  for (var index = 0; index < state.clubs.length; index++) {
-    final club = state.clubs[index];
-    final roleLabel = club.isOwnedBy(state.currentUid)
-        ? l10n.hostsHostClubsScaffoldVisiblecopyOwner
-        : l10n.hostsHostClubsScaffoldVisiblecopyHostTeam;
-    items.add(
-      CatchActionMenuItem(
-        value: index,
-        label: l10n.hostsHostClubsScaffoldLabelNameRolelabel(
-          name: club.name,
-          roleLabel: roleLabel,
-        ),
-      ),
-    );
-  }
-  return items;
 }

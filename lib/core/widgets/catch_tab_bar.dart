@@ -13,14 +13,24 @@ class CatchTabBarItem<T> {
     required this.icon,
     required this.label,
     this.activeIcon,
+    this.iconWidget,
+    this.activeIconWidget,
     this.badgeCount = 0,
+    this.onLongPress,
+    this.semanticValue,
+    this.semanticHint,
   });
 
   final T id;
   final IconData icon;
   final IconData? activeIcon;
+  final Widget? iconWidget;
+  final Widget? activeIconWidget;
   final String label;
   final int badgeCount;
+  final VoidCallback? onLongPress;
+  final String? semanticValue;
+  final String? semanticHint;
 }
 
 /// Bottom navigation with shared Catch selection behavior and platform-adaptive
@@ -155,6 +165,9 @@ class CatchTabBarButton<T> extends StatelessWidget {
       icon: selected ? item.activeIcon ?? item.icon : item.icon,
       color: color,
       badgeCount: item.badgeCount,
+      child: selected
+          ? item.activeIconWidget ?? item.iconWidget
+          : item.iconWidget,
     );
     final content = AnimatedSize(
       duration: duration,
@@ -236,6 +249,9 @@ class CatchTabBarButton<T> extends StatelessWidget {
       button: true,
       selected: selected,
       label: item.label,
+      value: item.semanticValue,
+      hint: item.semanticHint,
+      onLongPress: item.onLongPress,
       child: SizedBox(
         height: CatchLayout.tabBarExtent,
         child: Center(
@@ -248,6 +264,7 @@ class CatchTabBarButton<T> extends StatelessWidget {
                       catchSelectionHaptic();
                       onTap!();
                     },
+              onLongPress: item.onLongPress,
               customBorder: const StadiumBorder(),
               splashFactory: materialInk
                   ? InkRipple.splashFactory
@@ -270,15 +287,18 @@ class CatchTabBarIcon extends StatelessWidget {
     required this.icon,
     required this.color,
     this.badgeCount = 0,
+    this.child,
   });
 
   final IconData icon;
   final Color color;
   final int badgeCount;
+  final Widget? child;
 
   @override
   Widget build(BuildContext context) {
-    final glyph = Icon(icon, size: CatchLayout.tabBarIconSize, color: color);
+    final glyph =
+        child ?? Icon(icon, size: CatchLayout.tabBarIconSize, color: color);
     return SizedBox(
       width: CatchLayout.appShellNavigationBadgeWidth,
       height: CatchLayout.appShellNavigationBadgeHeight,

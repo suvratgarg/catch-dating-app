@@ -149,7 +149,7 @@
       "authorityId": "screen.host.customers",
       "status": "contracted",
       "priority": "P1",
-      "reason": "Compiled Host Customers contract covers the consolidated People and Campaigns workspaces: organizer selection, all supported CRM segments, pagination, export, manual and managed contacts, complete customer detail, typed Catch revenue coverage, verified-account conversations, WhatsApp sender setup, and campaign lifecycle controls.",
+      "reason": "Compiled Host Customers contract covers the direct organizer-scoped CRM directory: all supported segments, pagination, export, manual and managed contacts, complete customer detail, typed Catch revenue coverage, and verified-account conversations.",
       "featureContract": "feature.host_customers"
     },
     {
@@ -189,7 +189,7 @@
       "authorityId": "screen.host.inbox",
       "status": "contracted",
       "priority": "P1",
-      "reason": "Compiled Host Inbox contract covers event/general scopes, booked/prospective audiences, search, conversation routing, roster-derived broadcasts, and recovery.",
+      "reason": "Compiled Host Messaging contract covers organizer-scoped Inbox and Campaigns workspaces: event/general scopes, booked/prospective audiences, search, conversation routing, roster-derived broadcasts, WhatsApp sender setup, campaign lifecycle, and recovery.",
       "featureContract": "feature.host_inbox"
     },
     {

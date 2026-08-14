@@ -178,10 +178,10 @@ abstract class AppLocalizations {
   /// **'Customers'**
   String get hostNavigationCustomers;
 
-  /// Host bottom navigation label for attendee inquiries.
+  /// Host bottom navigation label for conversations, broadcasts, and campaigns.
   ///
   /// In en, this message translates to:
-  /// **'Inbox'**
+  /// **'Messaging'**
   String get hostNavigationInbox;
 
   /// Host bottom navigation label for organizer identity and settings.
@@ -295,10 +295,10 @@ abstract class AppLocalizations {
   /// **'Chats'**
   String get consumerChatsTitle;
 
-  /// Host attendee inbox screen heading.
+  /// Host messaging screen heading.
   ///
   /// In en, this message translates to:
-  /// **'Inbox'**
+  /// **'Messaging'**
   String get hostInboxTitle;
 
   /// Host inbox subtitle describing attendee conversations.
@@ -9589,12 +9589,6 @@ abstract class AppLocalizations {
   /// **'Preview'**
   String get hostsHostClubsScaffoldLabelPreview;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (tooltip).
-  ///
-  /// In en, this message translates to:
-  /// **'Switch organizer'**
-  String get hostsHostClubsScaffoldTooltipSwitchClub;
-
   /// Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (title).
   ///
   /// In en, this message translates to:
@@ -9860,15 +9854,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Nothing needs you right now.'**
   String get hostsHostTodayTextNothingNeedsYouRight;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'{longWeekday} {daypart}'**
-  String hostsHostTodayTextLongweekdayDaypart({
-    required Object longWeekday,
-    required Object daypart,
-  });
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (tooltip).
   ///
@@ -12039,21 +12024,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Owner'**
   String get hostsHostClubsScaffoldVisiblecopyOwner;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Host team'**
-  String get hostsHostClubsScaffoldVisiblecopyHostTeam;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{name} · {roleLabel}'**
-  String hostsHostClubsScaffoldLabelNameRolelabel({
-    required Object name,
-    required Object roleLabel,
-  });
 
   /// Product copy used by lib/event_success/presentation/event_success_questionnaire_config_editor.dart (prompt).
   ///
@@ -14870,36 +14840,6 @@ abstract class AppLocalizations {
     required Object minAge,
     required Object maxAge,
   });
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'morning'**
-  String get hostsHostTodayVisiblecopyMorning;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'afternoon'**
-  String get hostsHostTodayVisiblecopyAfternoon;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'evening'**
-  String get hostsHostTodayVisiblecopyEvening;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Owner'**
-  String get hostsHostTodayLabelOwner;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Host team'**
-  String get hostsHostTodayLabelHostTeam;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (visibleCopy).
   ///
@@ -20080,17 +20020,17 @@ abstract class AppLocalizations {
   /// **'Everyone who has attended, registered, been imported, or been added by your team.'**
   String get hostCustomersIntro;
 
-  /// Customers people workspace label.
+  /// Messaging workspace label for direct inquiries and event broadcasts.
   ///
   /// In en, this message translates to:
-  /// **'People'**
-  String get hostCustomersWorkspacePeople;
+  /// **'Inbox'**
+  String get hostMessagingWorkspaceInbox;
 
-  /// Customers campaigns workspace label.
+  /// Messaging workspace label for cross-event outbound campaigns.
   ///
   /// In en, this message translates to:
   /// **'Campaigns'**
-  String get hostCustomersWorkspaceCampaigns;
+  String get hostMessagingWorkspaceCampaigns;
 
   /// Opens organizer-owned customer identity and delivery controls.
   ///

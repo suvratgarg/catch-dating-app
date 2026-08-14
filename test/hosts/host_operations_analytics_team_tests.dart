@@ -49,10 +49,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
     Finder tab(String label) =>
         find.descendant(of: tabRail, matching: find.text(label));
 
-    void expectSharedChrome({
-      bool switcherVisible = true,
-      bool constrainToContentWidth = true,
-    }) {
+    void expectSharedChrome({bool constrainToContentWidth = true}) {
       expect(find.byType(CatchTabbedScreenScaffold), findsOneWidget);
       expect(find.byType(NestedScrollView), findsOneWidget);
       expect(find.byType(SliverOverlapAbsorber), findsOneWidget);
@@ -63,10 +60,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
       expect(tab('Audience'), findsNothing);
       expect(tab('Insights'), findsOneWidget);
       expect(tab('Preview'), findsOneWidget);
-      expect(
-        find.byTooltip('Switch organizer'),
-        switcherVisible ? findsOneWidget : findsNothing,
-      );
+      expect(find.byTooltip('Switch organizer'), findsNothing);
       final workspaceSemantics = tester.widget<Semantics>(
         find.byWidgetPredicate(
           (widget) =>
@@ -129,7 +123,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
     );
     await pumpFeatureUi(tester);
 
-    expectSharedChrome(switcherVisible: false);
+    expectSharedChrome();
     expect(find.text('IDENTITY'), findsOneWidget);
     expect(find.text('SAKET · INDORE'), findsNothing);
     final editScroll = tester
@@ -144,7 +138,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
       findsOneWidget,
     );
 
-    expectSharedChrome(switcherVisible: false);
+    expectSharedChrome();
     expect(find.byType(HostClubInsightsPane), findsOneWidget);
     final insightsBodyPadding = tester
         .widgetList<SliverPadding>(
@@ -187,7 +181,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
     await tester.tap(tab('Preview'));
     await pumpFeatureUi(tester);
 
-    expectSharedChrome(switcherVisible: false, constrainToContentWidth: false);
+    expectSharedChrome(constrainToContentWidth: false);
     expect(
       find.byKey(const ValueKey('club-detail-hero-module')),
       findsOneWidget,
@@ -232,7 +226,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
     await tester.tap(tab('Edit'));
     await pumpFeatureUi(tester);
 
-    expectSharedChrome(switcherVisible: false);
+    expectSharedChrome();
     expect(
       find.byKey(const ValueKey('host-club-insights-summary')),
       findsNothing,

@@ -19,7 +19,6 @@ class HostEventsScaffold extends ConsumerStatefulWidget {
 }
 
 class _HostEventsScaffoldState extends ConsumerState<HostEventsScaffold> {
-  late HostHomeScreenState _state;
   HostEventsLifecycleFilter _eventFilter = HostEventsLifecycleFilter.upcoming;
   late DateTime _clockNow;
   Timer? _clockTimer;
@@ -27,23 +26,12 @@ class _HostEventsScaffoldState extends ConsumerState<HostEventsScaffold> {
   @override
   void initState() {
     super.initState();
-    _state = HostHomeScreenState.resolve(
-      clubs: widget.clubs,
-      currentUid: widget.currentUid,
-      selectedClubId: widget.initialClubId,
-    );
     _resetClock();
   }
 
   @override
   void didUpdateWidget(HostEventsScaffold oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _state = HostHomeScreenState.resolve(
-      clubs: widget.clubs,
-      currentUid: widget.currentUid,
-      selectedClubIndex: _state.selectedClubIndex,
-      selectedClubId: _state.selectedClub?.id,
-    );
     if (oldWidget.now != widget.now) _resetClock();
   }
 
@@ -79,7 +67,16 @@ class _HostEventsScaffoldState extends ConsumerState<HostEventsScaffold> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final selectedClub = _state.selectedClub;
+    final selectedOrganizerId = ref.watch(
+      hostOrganizerSelectionProvider(widget.currentUid),
+    );
+    final selectedClub = resolveSelectedHostOrganizer(
+      widget.clubs,
+      selectedOrganizerId: selectedOrganizerId,
+      preferredOrganizerId: selectedOrganizerId == null
+          ? widget.initialClubId
+          : null,
+    );
 
     return Scaffold(
       backgroundColor: t.bg,
@@ -114,12 +111,7 @@ class _HostEventsScaffoldState extends ConsumerState<HostEventsScaffold> {
               )
             : HostEventsClubCard(
                 club: selectedClub,
-                currentUid: _state.currentUid,
-                clubs: _state.clubs,
-                showClubPicker: _state.showClubPicker,
                 selectedFilter: _eventFilter,
-                onSwitchClubIndex: (index) =>
-                    setState(() => _state = _state.selectClubIndex(index)),
                 onFilterChanged: (filter) =>
                     setState(() => _eventFilter = filter),
                 onEventEntrySelected: _handleEventEntrySelected,

@@ -2,26 +2,26 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/host_customers.feature.json",
-  "generatedFor": "2026-08-14",
-  "sourceDigest": "sha256:c0692b61b940e7a0468cc7f72d11dd07034750dc24e0b122d0719f9d7efd00f1",
-  "resolvedDigest": "sha256:9d65090e1187b75470bb1d2ceb3b095595b71da70d4378fc27dc473793e5699d",
+  "generatedFor": "2026-08-15",
+  "sourceDigest": "sha256:73a717f281fd58fdfb6957e16f29e277555d7f54d324bb3fe816fd73724c305a",
+  "resolvedDigest": "sha256:a5e422e44a323c1b8f0dee225c59d9ee0e22cbf7b356346061bc0cde308dd09d",
   "feature": {
     "id": "feature.host_customers",
     "name": "Host Customers",
     "owner": "hosts",
     "status": "active",
-    "description": "Makes Customers the sole Host CRM destination, with People and Campaigns workspaces spanning the complete audience segment set, pagination, export, contact administration, customer detail, identity-gated conversations, WhatsApp sender setup, and campaign lifecycle controls."
+    "description": "Makes Customers the sole Host CRM destination for the complete audience segment set, pagination, export, contact administration, customer detail, and identity-gated conversations."
   },
   "coverage": {
     "surfaces": 1,
-    "states": 31,
-    "scenarios": 31,
-    "actionCases": 31,
-    "actions": 14,
-    "captures": 0,
-    "previews": 2,
+    "states": 24,
+    "scenarios": 24,
+    "actionCases": 24,
+    "actions": 11,
+    "captures": 1,
+    "previews": 1,
     "testFiles": 2,
-    "evidenceExceptions": 42
+    "evidenceExceptions": 35
   },
   "surfaces": [
     {
@@ -32,7 +32,7 @@
         "id": "screen.host.customers"
       },
       "actionScope": {
-        "included": "People and Campaigns workspace switching, customer directory recovery, organizer switching, name search, every supported CRM segment, pagination, export, organizer-only manual contact creation, rename/suppression/removal controls, complete event evidence, detail routing, verified-account direct conversation creation, WhatsApp sender setup, and campaign create/preview/approve/dispatch/cancel/report controls.",
+        "included": "Customer directory recovery, organizer switching, name search, every supported CRM segment, pagination, export, organizer-only manual contact creation, rename/suppression/removal controls, complete event evidence, detail routing, and verified-account direct conversation creation.",
         "excluded": [
           "Merge and unmerge controls remain backend-only until a reviewed conflict-resolution UI exists; the deprecated Audience tab did not expose them.",
           "High-spender segmentation remains excluded until completed non-refunded payment totals are projected into indexed organizer-contact traits."
@@ -66,18 +66,6 @@
             "language": "dart",
             "file": "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
             "symbol": "HostCustomerDetailScreen"
-          },
-          {
-            "id": "customer_messaging",
-            "language": "dart",
-            "file": "lib/hosts/presentation/host_operations/host_audience.dart",
-            "symbol": "HostCustomerMessagingPane"
-          },
-          {
-            "id": "customer_campaigns",
-            "language": "dart",
-            "file": "lib/hosts/presentation/host_audience_controller.dart",
-            "symbol": "HostAudienceController"
           }
         ],
         "componentContracts": [
@@ -101,20 +89,12 @@
           "contracts/callable_responses/get_organizer_contact_detail_response.schema.json",
           "contracts/callable_responses/list_organizer_contacts_response.schema.json",
           "contracts/callable_responses/mutate_organizer_contact_response.schema.json",
-          "contracts/callable_responses/organizer_campaign_response.schema.json",
-          "contracts/callables/complete_organizer_whatsapp_connection_payload.schema.json",
           "contracts/callables/create_organizer_contact_payload.schema.json",
           "contracts/callables/export_organizer_contacts_payload.schema.json",
           "contracts/callables/get_organizer_contact_detail_payload.schema.json",
           "contracts/callables/list_organizer_contacts_payload.schema.json",
           "contracts/callables/mutate_organizer_contact_payload.schema.json",
-          "contracts/callables/organizer_campaign_action_payload.schema.json",
-          "contracts/callables/send_organizer_whatsapp_test_payload.schema.json",
           "contracts/callables/start_organizer_contact_conversation_payload.schema.json",
-          "contracts/callables/upsert_organizer_campaign_payload.schema.json",
-          "contracts/firestore/organizer_campaign_recipients.schema.json",
-          "contracts/firestore/organizer_campaign_webhook_receipts.schema.json",
-          "contracts/firestore/organizer_campaigns.schema.json",
           "contracts/firestore/organizer_contact_channel_states.schema.json",
           "contracts/firestore/organizer_contact_event_edges.schema.json",
           "contracts/firestore/organizer_contact_traits.schema.json",
@@ -151,33 +131,20 @@
           ],
           "customer_manage": [
             "test/hosts/host_customers_screen_state_test.dart"
-          ],
-          "customer_messaging_ready": [
-            "test/hosts/host_crm_repository_test.dart"
-          ],
-          "customer_campaign_active": [
-            "test/hosts/host_crm_repository_test.dart"
           ]
         }
       },
       "coverage": {
-        "states": 31,
-        "scenarios": 31,
-        "actionCases": 31,
-        "actions": 14,
-        "captures": 0,
-        "previews": 2,
+        "states": 24,
+        "scenarios": 24,
+        "actionCases": 24,
+        "actions": 11,
+        "captures": 1,
+        "previews": 1,
         "testFiles": 2,
-        "evidenceExceptions": 42
+        "evidenceExceptions": 35
       },
       "dimensions": {
-        "workspace": {
-          "default": "people",
-          "values": [
-            "people",
-            "campaigns"
-          ]
-        },
         "load": {
           "default": "ready",
           "values": [
@@ -210,28 +177,6 @@
             "exact",
             "partial",
             "unavailable"
-          ]
-        },
-        "messaging": {
-          "default": "ready",
-          "values": [
-            "provider_unavailable",
-            "disconnected",
-            "connecting",
-            "ready",
-            "syncing",
-            "testing"
-          ]
-        },
-        "campaign": {
-          "default": "draft",
-          "values": [
-            "draft",
-            "previewed",
-            "approved",
-            "dispatching",
-            "sent",
-            "cancelled"
           ]
         },
         "mutation": {
@@ -287,7 +232,7 @@
         {
           "id": "switch_organizer",
           "owner": "customers_screen",
-          "codeValue": "_selectedOrganizerId",
+          "codeValue": "hostOrganizerSelectionProvider",
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
@@ -305,28 +250,6 @@
             }
           ],
           "description": "Switches every summary, directory, filter, and detail route input to another hosted organizer.",
-          "implementationStatus": "implemented"
-        },
-        {
-          "id": "switch_workspace",
-          "owner": "customers_screen",
-          "codeValue": "_HostCustomersWorkspace",
-          "cardinality": "unbounded",
-          "scopeKeys": [
-            "viewerUid",
-            "organizerId",
-            "workspace"
-          ],
-          "outcomes": [
-            {
-              "kind": "surface_state",
-              "stateIds": [
-                "customers_populated",
-                "customer_messaging_ready"
-              ]
-            }
-          ],
-          "description": "Switches between the People directory and Campaigns without leaving the Customers branch.",
           "implementationStatus": "implemented"
         },
         {
@@ -550,62 +473,6 @@
           ],
           "description": "Starts or reuses a manager-authorized direct thread only for an unambiguous verified linked Catch account.",
           "implementationStatus": "implemented"
-        },
-        {
-          "id": "manage_whatsapp_sender",
-          "owner": "customer_messaging",
-          "codeValue": "HostCustomerMessagingPane",
-          "cardinality": "singleton",
-          "scopeKeys": [
-            "viewerUid",
-            "organizerId",
-            "connectionId",
-            "mutation"
-          ],
-          "outcomes": [
-            {
-              "kind": "surface_state",
-              "stateIds": [
-                "customer_messaging_connecting",
-                "customer_messaging_ready"
-              ]
-            },
-            {
-              "kind": "side_effect",
-              "id": "host_customers.whatsapp_sender_updated"
-            }
-          ],
-          "description": "Connects, completes, syncs, tests, or disconnects the organizer-owned WhatsApp sender while freezing request-defining controls.",
-          "implementationStatus": "implemented"
-        },
-        {
-          "id": "manage_campaign",
-          "owner": "customer_campaigns",
-          "codeValue": "HostAudienceController",
-          "cardinality": "singleton",
-          "scopeKeys": [
-            "viewerUid",
-            "organizerId",
-            "campaignId",
-            "expectedRevision",
-            "mutation"
-          ],
-          "outcomes": [
-            {
-              "kind": "surface_state",
-              "stateIds": [
-                "customer_campaign_draft",
-                "customer_campaign_previewed",
-                "customer_campaign_active"
-              ]
-            },
-            {
-              "kind": "side_effect",
-              "id": "host_customers.campaign_updated"
-            }
-          ],
-          "description": "Creates, previews, approves, dispatches, cancels, and reports campaigns using explicit segment, template, event, destination, and variable inputs.",
-          "implementationStatus": "implemented"
         }
       ],
       "evidenceExceptions": [
@@ -622,11 +489,6 @@
             "customer_detail_error",
             "customer_revenue_partial",
             "customer_revenue_unavailable",
-            "customer_messaging_provider_unavailable",
-            "customer_messaging_disconnected",
-            "customer_messaging_connecting",
-            "customer_campaign_draft",
-            "customer_campaign_previewed",
             "offline",
             "text_scale_2",
             "reduced_motion",
@@ -636,7 +498,7 @@
             "tests"
           ],
           "debtId": "HOST-CUSTOMERS-EVIDENCE-001",
-          "reason": "Controller policy, repository mapping, and route tests cover the initial seam; deterministic rendered state tests remain follow-up evidence for the new workspace."
+          "reason": "Controller policy, repository mapping, and route tests cover the initial seam; deterministic rendered state tests remain follow-up evidence for the customer directory."
         },
         {
           "stateIds": [
@@ -656,8 +518,6 @@
             "customer_revenue_partial",
             "customer_revenue_unavailable",
             "conversation_unavailable",
-            "customer_messaging_connecting",
-            "customer_campaign_previewed",
             "offline",
             "text_scale_2",
             "reduced_motion",
@@ -677,13 +537,10 @@
           "kind": "loading",
           "status": "implemented",
           "dimensions": {
-            "workspace": "people",
             "load": "loading",
             "directory": "populated",
             "identity": "linked",
             "revenue": "exact",
-            "messaging": "ready",
-            "campaign": "draft",
             "mutation": "idle",
             "accessibility": "standard",
             "theme": "standard"
@@ -697,13 +554,10 @@
             {
               "id": "default",
               "dimensions": {
-                "workspace": "people",
                 "load": "loading",
                 "directory": "populated",
                 "identity": "linked",
                 "revenue": "exact",
-                "messaging": "ready",
-                "campaign": "draft",
                 "mutation": "idle",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -714,7 +568,6 @@
                 "notAllowed": [
                   "retry_directory",
                   "switch_organizer",
-                  "switch_workspace",
                   "search_customers",
                   "filter_customers",
                   "load_more",
@@ -723,9 +576,7 @@
                   "open_customer",
                   "manage_customer",
                   "retry_customer_detail",
-                  "start_conversation",
-                  "manage_whatsapp_sender",
-                  "manage_campaign"
+                  "start_conversation"
                 ]
               }
             }
@@ -737,13 +588,10 @@
           "kind": "error",
           "status": "implemented",
           "dimensions": {
-            "workspace": "people",
             "load": "error",
             "directory": "populated",
             "identity": "linked",
             "revenue": "exact",
-            "messaging": "ready",
-            "campaign": "draft",
             "mutation": "idle",
             "accessibility": "standard",
             "theme": "standard"
@@ -757,13 +605,10 @@
             {
               "id": "recovery",
               "dimensions": {
-                "workspace": "people",
                 "load": "error",
                 "directory": "populated",
                 "identity": "linked",
                 "revenue": "exact",
-                "messaging": "ready",
-                "campaign": "draft",
                 "mutation": "idle",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -775,7 +620,6 @@
                 "disabled": [],
                 "notAllowed": [
                   "switch_organizer",
-                  "switch_workspace",
                   "search_customers",
                   "filter_customers",
                   "load_more",
@@ -784,9 +628,7 @@
                   "open_customer",
                   "manage_customer",
                   "retry_customer_detail",
-                  "start_conversation",
-                  "manage_whatsapp_sender",
-                  "manage_campaign"
+                  "start_conversation"
                 ]
               }
             }
@@ -798,13 +640,10 @@
           "kind": "empty",
           "status": "implemented",
           "dimensions": {
-            "workspace": "people",
             "load": "ready",
             "directory": "empty",
             "identity": "linked",
             "revenue": "exact",
-            "messaging": "ready",
-            "campaign": "draft",
             "mutation": "idle",
             "accessibility": "standard",
             "theme": "standard"
@@ -818,13 +657,10 @@
             {
               "id": "first_customer",
               "dimensions": {
-                "workspace": "people",
                 "load": "ready",
                 "directory": "empty",
                 "identity": "linked",
                 "revenue": "exact",
-                "messaging": "ready",
-                "campaign": "draft",
                 "mutation": "idle",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -837,7 +673,6 @@
                 "disabled": [],
                 "notAllowed": [
                   "retry_directory",
-                  "switch_workspace",
                   "search_customers",
                   "filter_customers",
                   "load_more",
@@ -845,9 +680,7 @@
                   "open_customer",
                   "manage_customer",
                   "retry_customer_detail",
-                  "start_conversation",
-                  "manage_whatsapp_sender",
-                  "manage_campaign"
+                  "start_conversation"
                 ]
               }
             }
@@ -857,21 +690,20 @@
           "id": "customers_populated",
           "stateId": "customers_populated",
           "kind": "populated",
-          "status": "implemented",
+          "status": "captured",
           "dimensions": {
-            "workspace": "people",
             "load": "ready",
             "directory": "populated",
             "identity": "linked",
             "revenue": "exact",
-            "messaging": "ready",
-            "campaign": "draft",
             "mutation": "idle",
             "accessibility": "standard",
             "theme": "standard"
           },
           "evidence": {
-            "captureIds": [],
+            "captureIds": [
+              "host_customers_populated"
+            ],
             "previewIds": [
               "hostCustomersStates"
             ],
@@ -883,13 +715,10 @@
             {
               "id": "directory",
               "dimensions": {
-                "workspace": "people",
                 "load": "ready",
                 "directory": "populated",
                 "identity": "linked",
                 "revenue": "exact",
-                "messaging": "ready",
-                "campaign": "draft",
                 "mutation": "idle",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -897,7 +726,6 @@
               "actions": {
                 "enabled": [
                   "switch_organizer",
-                  "switch_workspace",
                   "search_customers",
                   "filter_customers",
                   "load_more",
@@ -910,9 +738,7 @@
                 "notAllowed": [
                   "retry_directory",
                   "retry_customer_detail",
-                  "start_conversation",
-                  "manage_whatsapp_sender",
-                  "manage_campaign"
+                  "start_conversation"
                 ]
               }
             }
@@ -924,13 +750,10 @@
           "kind": "empty",
           "status": "implemented",
           "dimensions": {
-            "workspace": "people",
             "load": "ready",
             "directory": "filtered_empty",
             "identity": "linked",
             "revenue": "exact",
-            "messaging": "ready",
-            "campaign": "draft",
             "mutation": "idle",
             "accessibility": "standard",
             "theme": "standard"
@@ -946,13 +769,10 @@
             {
               "id": "adjust",
               "dimensions": {
-                "workspace": "people",
                 "load": "ready",
                 "directory": "filtered_empty",
                 "identity": "linked",
                 "revenue": "exact",
-                "messaging": "ready",
-                "campaign": "draft",
                 "mutation": "idle",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -966,16 +786,13 @@
                 "notAllowed": [
                   "retry_directory",
                   "switch_organizer",
-                  "switch_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
                   "open_customer",
                   "manage_customer",
                   "retry_customer_detail",
-                  "start_conversation",
-                  "manage_whatsapp_sender",
-                  "manage_campaign"
+                  "start_conversation"
                 ]
               }
             }
@@ -987,13 +804,10 @@
           "kind": "mutation",
           "status": "implemented",
           "dimensions": {
-            "workspace": "people",
             "load": "ready",
             "directory": "paginating",
             "identity": "linked",
             "revenue": "exact",
-            "messaging": "ready",
-            "campaign": "draft",
             "mutation": "idle",
             "accessibility": "standard",
             "theme": "standard"
@@ -1007,13 +821,10 @@
             {
               "id": "pending",
               "dimensions": {
-                "workspace": "people",
                 "load": "ready",
                 "directory": "paginating",
                 "identity": "linked",
                 "revenue": "exact",
-                "messaging": "ready",
-                "campaign": "draft",
                 "mutation": "idle",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -1026,7 +837,6 @@
                 "notAllowed": [
                   "retry_directory",
                   "switch_organizer",
-                  "switch_workspace",
                   "search_customers",
                   "filter_customers",
                   "export_customers",
@@ -1034,9 +844,7 @@
                   "open_customer",
                   "manage_customer",
                   "retry_customer_detail",
-                  "start_conversation",
-                  "manage_whatsapp_sender",
-                  "manage_campaign"
+                  "start_conversation"
                 ]
               }
             }
@@ -1048,13 +856,10 @@
           "kind": "mutation",
           "status": "implemented",
           "dimensions": {
-            "workspace": "people",
             "load": "ready",
             "directory": "populated",
             "identity": "linked",
             "revenue": "exact",
-            "messaging": "ready",
-            "campaign": "draft",
             "mutation": "adding",
             "accessibility": "standard",
             "theme": "standard"
@@ -1068,13 +873,10 @@
             {
               "id": "pending",
               "dimensions": {
-                "workspace": "people",
                 "load": "ready",
                 "directory": "populated",
                 "identity": "linked",
                 "revenue": "exact",
-                "messaging": "ready",
-                "campaign": "draft",
                 "mutation": "adding",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -1087,7 +889,6 @@
                 "notAllowed": [
                   "retry_directory",
                   "switch_organizer",
-                  "switch_workspace",
                   "search_customers",
                   "filter_customers",
                   "load_more",
@@ -1095,9 +896,7 @@
                   "open_customer",
                   "manage_customer",
                   "retry_customer_detail",
-                  "start_conversation",
-                  "manage_whatsapp_sender",
-                  "manage_campaign"
+                  "start_conversation"
                 ]
               }
             }
@@ -1109,13 +908,10 @@
           "kind": "mutation",
           "status": "implemented",
           "dimensions": {
-            "workspace": "people",
             "load": "ready",
             "directory": "populated",
             "identity": "linked",
             "revenue": "exact",
-            "messaging": "ready",
-            "campaign": "draft",
             "mutation": "exporting",
             "accessibility": "standard",
             "theme": "standard"
@@ -1129,13 +925,10 @@
             {
               "id": "pending",
               "dimensions": {
-                "workspace": "people",
                 "load": "ready",
                 "directory": "populated",
                 "identity": "linked",
                 "revenue": "exact",
-                "messaging": "ready",
-                "campaign": "draft",
                 "mutation": "exporting",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -1148,7 +941,6 @@
                 "notAllowed": [
                   "retry_directory",
                   "switch_organizer",
-                  "switch_workspace",
                   "search_customers",
                   "filter_customers",
                   "load_more",
@@ -1156,9 +948,7 @@
                   "open_customer",
                   "manage_customer",
                   "retry_customer_detail",
-                  "start_conversation",
-                  "manage_whatsapp_sender",
-                  "manage_campaign"
+                  "start_conversation"
                 ]
               }
             }
@@ -1170,13 +960,10 @@
           "kind": "mutation",
           "status": "implemented",
           "dimensions": {
-            "workspace": "people",
             "load": "ready",
             "directory": "populated",
             "identity": "linked",
             "revenue": "exact",
-            "messaging": "ready",
-            "campaign": "draft",
             "mutation": "idle",
             "accessibility": "standard",
             "theme": "standard"
@@ -1192,13 +979,10 @@
             {
               "id": "manage",
               "dimensions": {
-                "workspace": "people",
                 "load": "ready",
                 "directory": "populated",
                 "identity": "linked",
                 "revenue": "exact",
-                "messaging": "ready",
-                "campaign": "draft",
                 "mutation": "idle",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -1211,7 +995,6 @@
                 "notAllowed": [
                   "retry_directory",
                   "switch_organizer",
-                  "switch_workspace",
                   "search_customers",
                   "filter_customers",
                   "load_more",
@@ -1219,9 +1002,7 @@
                   "create_customer",
                   "open_customer",
                   "retry_customer_detail",
-                  "start_conversation",
-                  "manage_whatsapp_sender",
-                  "manage_campaign"
+                  "start_conversation"
                 ]
               }
             }
@@ -1233,13 +1014,10 @@
           "kind": "mutation",
           "status": "implemented",
           "dimensions": {
-            "workspace": "people",
             "load": "ready",
             "directory": "populated",
             "identity": "linked",
             "revenue": "exact",
-            "messaging": "ready",
-            "campaign": "draft",
             "mutation": "managing_contact",
             "accessibility": "standard",
             "theme": "standard"
@@ -1253,13 +1031,10 @@
             {
               "id": "pending",
               "dimensions": {
-                "workspace": "people",
                 "load": "ready",
                 "directory": "populated",
                 "identity": "linked",
                 "revenue": "exact",
-                "messaging": "ready",
-                "campaign": "draft",
                 "mutation": "managing_contact",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -1272,7 +1047,6 @@
                 "notAllowed": [
                   "retry_directory",
                   "switch_organizer",
-                  "switch_workspace",
                   "search_customers",
                   "filter_customers",
                   "load_more",
@@ -1280,9 +1054,7 @@
                   "create_customer",
                   "open_customer",
                   "retry_customer_detail",
-                  "start_conversation",
-                  "manage_whatsapp_sender",
-                  "manage_campaign"
+                  "start_conversation"
                 ]
               }
             }
@@ -1294,13 +1066,10 @@
           "kind": "loading",
           "status": "implemented",
           "dimensions": {
-            "workspace": "people",
             "load": "loading",
             "directory": "populated",
             "identity": "linked",
             "revenue": "exact",
-            "messaging": "ready",
-            "campaign": "draft",
             "mutation": "idle",
             "accessibility": "standard",
             "theme": "standard"
@@ -1314,13 +1083,10 @@
             {
               "id": "default",
               "dimensions": {
-                "workspace": "people",
                 "load": "loading",
                 "directory": "populated",
                 "identity": "linked",
                 "revenue": "exact",
-                "messaging": "ready",
-                "campaign": "draft",
                 "mutation": "idle",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -1331,7 +1097,6 @@
                 "notAllowed": [
                   "retry_directory",
                   "switch_organizer",
-                  "switch_workspace",
                   "search_customers",
                   "filter_customers",
                   "load_more",
@@ -1340,9 +1105,7 @@
                   "open_customer",
                   "manage_customer",
                   "retry_customer_detail",
-                  "start_conversation",
-                  "manage_whatsapp_sender",
-                  "manage_campaign"
+                  "start_conversation"
                 ]
               }
             }
@@ -1354,13 +1117,10 @@
           "kind": "error",
           "status": "implemented",
           "dimensions": {
-            "workspace": "people",
             "load": "error",
             "directory": "populated",
             "identity": "linked",
             "revenue": "exact",
-            "messaging": "ready",
-            "campaign": "draft",
             "mutation": "idle",
             "accessibility": "standard",
             "theme": "standard"
@@ -1374,13 +1134,10 @@
             {
               "id": "recovery",
               "dimensions": {
-                "workspace": "people",
                 "load": "error",
                 "directory": "populated",
                 "identity": "linked",
                 "revenue": "exact",
-                "messaging": "ready",
-                "campaign": "draft",
                 "mutation": "idle",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -1393,7 +1150,6 @@
                 "notAllowed": [
                   "retry_directory",
                   "switch_organizer",
-                  "switch_workspace",
                   "search_customers",
                   "filter_customers",
                   "load_more",
@@ -1401,9 +1157,7 @@
                   "create_customer",
                   "open_customer",
                   "manage_customer",
-                  "start_conversation",
-                  "manage_whatsapp_sender",
-                  "manage_campaign"
+                  "start_conversation"
                 ]
               }
             }
@@ -1415,13 +1169,10 @@
           "kind": "populated",
           "status": "implemented",
           "dimensions": {
-            "workspace": "people",
             "load": "ready",
             "directory": "populated",
             "identity": "linked",
             "revenue": "exact",
-            "messaging": "ready",
-            "campaign": "draft",
             "mutation": "idle",
             "accessibility": "standard",
             "theme": "standard"
@@ -1440,13 +1191,10 @@
             {
               "id": "linked",
               "dimensions": {
-                "workspace": "people",
                 "load": "ready",
                 "directory": "populated",
                 "identity": "linked",
                 "revenue": "exact",
-                "messaging": "ready",
-                "campaign": "draft",
                 "mutation": "idle",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -1459,7 +1207,6 @@
                 "notAllowed": [
                   "retry_directory",
                   "switch_organizer",
-                  "switch_workspace",
                   "search_customers",
                   "filter_customers",
                   "load_more",
@@ -1467,9 +1214,7 @@
                   "create_customer",
                   "open_customer",
                   "manage_customer",
-                  "retry_customer_detail",
-                  "manage_whatsapp_sender",
-                  "manage_campaign"
+                  "retry_customer_detail"
                 ]
               }
             }
@@ -1481,13 +1226,10 @@
           "kind": "permission",
           "status": "implemented",
           "dimensions": {
-            "workspace": "people",
             "load": "ready",
             "directory": "populated",
             "identity": "unlinked",
             "revenue": "exact",
-            "messaging": "ready",
-            "campaign": "draft",
             "mutation": "idle",
             "accessibility": "standard",
             "theme": "standard"
@@ -1503,13 +1245,10 @@
             {
               "id": "unlinked",
               "dimensions": {
-                "workspace": "people",
                 "load": "ready",
                 "directory": "populated",
                 "identity": "unlinked",
                 "revenue": "exact",
-                "messaging": "ready",
-                "campaign": "draft",
                 "mutation": "idle",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -1522,7 +1261,6 @@
                 "notAllowed": [
                   "retry_directory",
                   "switch_organizer",
-                  "switch_workspace",
                   "search_customers",
                   "filter_customers",
                   "load_more",
@@ -1530,9 +1268,7 @@
                   "create_customer",
                   "open_customer",
                   "manage_customer",
-                  "retry_customer_detail",
-                  "manage_whatsapp_sender",
-                  "manage_campaign"
+                  "retry_customer_detail"
                 ]
               }
             }
@@ -1544,13 +1280,10 @@
           "kind": "permission",
           "status": "implemented",
           "dimensions": {
-            "workspace": "people",
             "load": "ready",
             "directory": "populated",
             "identity": "ambiguous",
             "revenue": "exact",
-            "messaging": "ready",
-            "campaign": "draft",
             "mutation": "idle",
             "accessibility": "standard",
             "theme": "standard"
@@ -1566,13 +1299,10 @@
             {
               "id": "ambiguous",
               "dimensions": {
-                "workspace": "people",
                 "load": "ready",
                 "directory": "populated",
                 "identity": "ambiguous",
                 "revenue": "exact",
-                "messaging": "ready",
-                "campaign": "draft",
                 "mutation": "idle",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -1585,7 +1315,6 @@
                 "notAllowed": [
                   "retry_directory",
                   "switch_organizer",
-                  "switch_workspace",
                   "search_customers",
                   "filter_customers",
                   "load_more",
@@ -1593,9 +1322,7 @@
                   "create_customer",
                   "open_customer",
                   "manage_customer",
-                  "retry_customer_detail",
-                  "manage_whatsapp_sender",
-                  "manage_campaign"
+                  "retry_customer_detail"
                 ]
               }
             }
@@ -1607,13 +1334,10 @@
           "kind": "populated",
           "status": "implemented",
           "dimensions": {
-            "workspace": "people",
             "load": "ready",
             "directory": "populated",
             "identity": "linked",
             "revenue": "exact",
-            "messaging": "ready",
-            "campaign": "draft",
             "mutation": "idle",
             "accessibility": "standard",
             "theme": "standard"
@@ -1631,13 +1355,10 @@
             {
               "id": "default",
               "dimensions": {
-                "workspace": "people",
                 "load": "ready",
                 "directory": "populated",
                 "identity": "linked",
                 "revenue": "exact",
-                "messaging": "ready",
-                "campaign": "draft",
                 "mutation": "idle",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -1648,7 +1369,6 @@
                 "notAllowed": [
                   "retry_directory",
                   "switch_organizer",
-                  "switch_workspace",
                   "search_customers",
                   "filter_customers",
                   "load_more",
@@ -1657,9 +1377,7 @@
                   "open_customer",
                   "manage_customer",
                   "retry_customer_detail",
-                  "start_conversation",
-                  "manage_whatsapp_sender",
-                  "manage_campaign"
+                  "start_conversation"
                 ]
               }
             }
@@ -1671,13 +1389,10 @@
           "kind": "populated",
           "status": "implemented",
           "dimensions": {
-            "workspace": "people",
             "load": "ready",
             "directory": "populated",
             "identity": "linked",
             "revenue": "partial",
-            "messaging": "ready",
-            "campaign": "draft",
             "mutation": "idle",
             "accessibility": "standard",
             "theme": "standard"
@@ -1691,13 +1406,10 @@
             {
               "id": "default",
               "dimensions": {
-                "workspace": "people",
                 "load": "ready",
                 "directory": "populated",
                 "identity": "linked",
                 "revenue": "partial",
-                "messaging": "ready",
-                "campaign": "draft",
                 "mutation": "idle",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -1708,7 +1420,6 @@
                 "notAllowed": [
                   "retry_directory",
                   "switch_organizer",
-                  "switch_workspace",
                   "search_customers",
                   "filter_customers",
                   "load_more",
@@ -1717,9 +1428,7 @@
                   "open_customer",
                   "manage_customer",
                   "retry_customer_detail",
-                  "start_conversation",
-                  "manage_whatsapp_sender",
-                  "manage_campaign"
+                  "start_conversation"
                 ]
               }
             }
@@ -1731,13 +1440,10 @@
           "kind": "permission",
           "status": "implemented",
           "dimensions": {
-            "workspace": "people",
             "load": "ready",
             "directory": "populated",
             "identity": "linked",
             "revenue": "unavailable",
-            "messaging": "ready",
-            "campaign": "draft",
             "mutation": "idle",
             "accessibility": "standard",
             "theme": "standard"
@@ -1751,13 +1457,10 @@
             {
               "id": "default",
               "dimensions": {
-                "workspace": "people",
                 "load": "ready",
                 "directory": "populated",
                 "identity": "linked",
                 "revenue": "unavailable",
-                "messaging": "ready",
-                "campaign": "draft",
                 "mutation": "idle",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -1768,7 +1471,6 @@
                 "notAllowed": [
                   "retry_directory",
                   "switch_organizer",
-                  "switch_workspace",
                   "search_customers",
                   "filter_customers",
                   "load_more",
@@ -1777,9 +1479,7 @@
                   "open_customer",
                   "manage_customer",
                   "retry_customer_detail",
-                  "start_conversation",
-                  "manage_whatsapp_sender",
-                  "manage_campaign"
+                  "start_conversation"
                 ]
               }
             }
@@ -1791,13 +1491,10 @@
           "kind": "populated",
           "status": "tested",
           "dimensions": {
-            "workspace": "people",
             "load": "ready",
             "directory": "populated",
             "identity": "linked",
             "revenue": "exact",
-            "messaging": "ready",
-            "campaign": "draft",
             "mutation": "idle",
             "accessibility": "standard",
             "theme": "standard"
@@ -1815,13 +1512,10 @@
             {
               "id": "start",
               "dimensions": {
-                "workspace": "people",
                 "load": "ready",
                 "directory": "populated",
                 "identity": "linked",
                 "revenue": "exact",
-                "messaging": "ready",
-                "campaign": "draft",
                 "mutation": "idle",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -1834,7 +1528,6 @@
                 "notAllowed": [
                   "retry_directory",
                   "switch_organizer",
-                  "switch_workspace",
                   "search_customers",
                   "filter_customers",
                   "load_more",
@@ -1842,9 +1535,7 @@
                   "create_customer",
                   "open_customer",
                   "manage_customer",
-                  "retry_customer_detail",
-                  "manage_whatsapp_sender",
-                  "manage_campaign"
+                  "retry_customer_detail"
                 ]
               }
             }
@@ -1856,13 +1547,10 @@
           "kind": "permission",
           "status": "tested",
           "dimensions": {
-            "workspace": "people",
             "load": "ready",
             "directory": "populated",
             "identity": "unlinked",
             "revenue": "exact",
-            "messaging": "ready",
-            "campaign": "draft",
             "mutation": "idle",
             "accessibility": "standard",
             "theme": "standard"
@@ -1878,13 +1566,10 @@
             {
               "id": "blocked",
               "dimensions": {
-                "workspace": "people",
                 "load": "ready",
                 "directory": "populated",
                 "identity": "unlinked",
                 "revenue": "exact",
-                "messaging": "ready",
-                "campaign": "draft",
                 "mutation": "idle",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -1897,7 +1582,6 @@
                 "notAllowed": [
                   "retry_directory",
                   "switch_organizer",
-                  "switch_workspace",
                   "search_customers",
                   "filter_customers",
                   "load_more",
@@ -1905,450 +1589,7 @@
                   "create_customer",
                   "open_customer",
                   "manage_customer",
-                  "retry_customer_detail",
-                  "manage_whatsapp_sender",
-                  "manage_campaign"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "id": "customer_messaging_provider_unavailable",
-          "stateId": "customer_messaging_provider_unavailable",
-          "kind": "permission",
-          "status": "implemented",
-          "dimensions": {
-            "workspace": "campaigns",
-            "load": "ready",
-            "directory": "populated",
-            "identity": "linked",
-            "revenue": "exact",
-            "messaging": "provider_unavailable",
-            "campaign": "draft",
-            "mutation": "idle",
-            "accessibility": "standard",
-            "theme": "standard"
-          },
-          "evidence": {
-            "captureIds": [],
-            "previewIds": [
-              "hostCustomerMessagingStates"
-            ],
-            "tests": []
-          },
-          "actionCases": [
-            {
-              "id": "blocked",
-              "dimensions": {
-                "workspace": "campaigns",
-                "load": "ready",
-                "directory": "populated",
-                "identity": "linked",
-                "revenue": "exact",
-                "messaging": "provider_unavailable",
-                "campaign": "draft",
-                "mutation": "idle",
-                "accessibility": "standard",
-                "theme": "standard"
-              },
-              "actions": {
-                "enabled": [],
-                "disabled": [
-                  "manage_whatsapp_sender",
-                  "manage_campaign"
-                ],
-                "notAllowed": [
-                  "retry_directory",
-                  "switch_organizer",
-                  "switch_workspace",
-                  "search_customers",
-                  "filter_customers",
-                  "load_more",
-                  "export_customers",
-                  "create_customer",
-                  "open_customer",
-                  "manage_customer",
-                  "retry_customer_detail",
-                  "start_conversation"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "id": "customer_messaging_disconnected",
-          "stateId": "customer_messaging_disconnected",
-          "kind": "empty",
-          "status": "implemented",
-          "dimensions": {
-            "workspace": "campaigns",
-            "load": "ready",
-            "directory": "populated",
-            "identity": "linked",
-            "revenue": "exact",
-            "messaging": "disconnected",
-            "campaign": "draft",
-            "mutation": "idle",
-            "accessibility": "standard",
-            "theme": "standard"
-          },
-          "evidence": {
-            "captureIds": [],
-            "previewIds": [
-              "hostCustomerMessagingStates"
-            ],
-            "tests": []
-          },
-          "actionCases": [
-            {
-              "id": "connect",
-              "dimensions": {
-                "workspace": "campaigns",
-                "load": "ready",
-                "directory": "populated",
-                "identity": "linked",
-                "revenue": "exact",
-                "messaging": "disconnected",
-                "campaign": "draft",
-                "mutation": "idle",
-                "accessibility": "standard",
-                "theme": "standard"
-              },
-              "actions": {
-                "enabled": [
-                  "manage_whatsapp_sender"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "retry_directory",
-                  "switch_organizer",
-                  "switch_workspace",
-                  "search_customers",
-                  "filter_customers",
-                  "load_more",
-                  "export_customers",
-                  "create_customer",
-                  "open_customer",
-                  "manage_customer",
-                  "retry_customer_detail",
-                  "start_conversation",
-                  "manage_campaign"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "id": "customer_messaging_connecting",
-          "stateId": "customer_messaging_connecting",
-          "kind": "mutation",
-          "status": "implemented",
-          "dimensions": {
-            "workspace": "campaigns",
-            "load": "ready",
-            "directory": "populated",
-            "identity": "linked",
-            "revenue": "exact",
-            "messaging": "connecting",
-            "campaign": "draft",
-            "mutation": "idle",
-            "accessibility": "standard",
-            "theme": "standard"
-          },
-          "evidence": {
-            "captureIds": [],
-            "previewIds": [],
-            "tests": []
-          },
-          "actionCases": [
-            {
-              "id": "pending",
-              "dimensions": {
-                "workspace": "campaigns",
-                "load": "ready",
-                "directory": "populated",
-                "identity": "linked",
-                "revenue": "exact",
-                "messaging": "connecting",
-                "campaign": "draft",
-                "mutation": "idle",
-                "accessibility": "standard",
-                "theme": "standard"
-              },
-              "actions": {
-                "enabled": [],
-                "disabled": [
-                  "manage_whatsapp_sender",
-                  "manage_campaign",
-                  "switch_workspace"
-                ],
-                "notAllowed": [
-                  "retry_directory",
-                  "switch_organizer",
-                  "search_customers",
-                  "filter_customers",
-                  "load_more",
-                  "export_customers",
-                  "create_customer",
-                  "open_customer",
-                  "manage_customer",
-                  "retry_customer_detail",
-                  "start_conversation"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "id": "customer_messaging_ready",
-          "stateId": "customer_messaging_ready",
-          "kind": "populated",
-          "status": "implemented",
-          "dimensions": {
-            "workspace": "campaigns",
-            "load": "ready",
-            "directory": "populated",
-            "identity": "linked",
-            "revenue": "exact",
-            "messaging": "ready",
-            "campaign": "draft",
-            "mutation": "idle",
-            "accessibility": "standard",
-            "theme": "standard"
-          },
-          "evidence": {
-            "captureIds": [],
-            "previewIds": [
-              "hostCustomerMessagingStates"
-            ],
-            "tests": [
-              "test/hosts/host_crm_repository_test.dart"
-            ]
-          },
-          "actionCases": [
-            {
-              "id": "ready",
-              "dimensions": {
-                "workspace": "campaigns",
-                "load": "ready",
-                "directory": "populated",
-                "identity": "linked",
-                "revenue": "exact",
-                "messaging": "ready",
-                "campaign": "draft",
-                "mutation": "idle",
-                "accessibility": "standard",
-                "theme": "standard"
-              },
-              "actions": {
-                "enabled": [
-                  "switch_workspace",
-                  "manage_whatsapp_sender",
-                  "manage_campaign"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "retry_directory",
-                  "switch_organizer",
-                  "search_customers",
-                  "filter_customers",
-                  "load_more",
-                  "export_customers",
-                  "create_customer",
-                  "open_customer",
-                  "manage_customer",
-                  "retry_customer_detail",
-                  "start_conversation"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "id": "customer_campaign_draft",
-          "stateId": "customer_campaign_draft",
-          "kind": "mutation",
-          "status": "implemented",
-          "dimensions": {
-            "workspace": "campaigns",
-            "load": "ready",
-            "directory": "populated",
-            "identity": "linked",
-            "revenue": "exact",
-            "messaging": "ready",
-            "campaign": "draft",
-            "mutation": "idle",
-            "accessibility": "standard",
-            "theme": "standard"
-          },
-          "evidence": {
-            "captureIds": [],
-            "previewIds": [
-              "hostCustomerMessagingStates"
-            ],
-            "tests": []
-          },
-          "actionCases": [
-            {
-              "id": "compose",
-              "dimensions": {
-                "workspace": "campaigns",
-                "load": "ready",
-                "directory": "populated",
-                "identity": "linked",
-                "revenue": "exact",
-                "messaging": "ready",
-                "campaign": "draft",
-                "mutation": "idle",
-                "accessibility": "standard",
-                "theme": "standard"
-              },
-              "actions": {
-                "enabled": [
-                  "manage_campaign"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "retry_directory",
-                  "switch_organizer",
-                  "switch_workspace",
-                  "search_customers",
-                  "filter_customers",
-                  "load_more",
-                  "export_customers",
-                  "create_customer",
-                  "open_customer",
-                  "manage_customer",
-                  "retry_customer_detail",
-                  "start_conversation",
-                  "manage_whatsapp_sender"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "id": "customer_campaign_previewed",
-          "stateId": "customer_campaign_previewed",
-          "kind": "mutation",
-          "status": "implemented",
-          "dimensions": {
-            "workspace": "campaigns",
-            "load": "ready",
-            "directory": "populated",
-            "identity": "linked",
-            "revenue": "exact",
-            "messaging": "ready",
-            "campaign": "previewed",
-            "mutation": "idle",
-            "accessibility": "standard",
-            "theme": "standard"
-          },
-          "evidence": {
-            "captureIds": [],
-            "previewIds": [],
-            "tests": []
-          },
-          "actionCases": [
-            {
-              "id": "approve",
-              "dimensions": {
-                "workspace": "campaigns",
-                "load": "ready",
-                "directory": "populated",
-                "identity": "linked",
-                "revenue": "exact",
-                "messaging": "ready",
-                "campaign": "previewed",
-                "mutation": "idle",
-                "accessibility": "standard",
-                "theme": "standard"
-              },
-              "actions": {
-                "enabled": [
-                  "manage_campaign"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "retry_directory",
-                  "switch_organizer",
-                  "switch_workspace",
-                  "search_customers",
-                  "filter_customers",
-                  "load_more",
-                  "export_customers",
-                  "create_customer",
-                  "open_customer",
-                  "manage_customer",
-                  "retry_customer_detail",
-                  "start_conversation",
-                  "manage_whatsapp_sender"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "id": "customer_campaign_active",
-          "stateId": "customer_campaign_active",
-          "kind": "mutation",
-          "status": "implemented",
-          "dimensions": {
-            "workspace": "campaigns",
-            "load": "ready",
-            "directory": "populated",
-            "identity": "linked",
-            "revenue": "exact",
-            "messaging": "ready",
-            "campaign": "dispatching",
-            "mutation": "idle",
-            "accessibility": "standard",
-            "theme": "standard"
-          },
-          "evidence": {
-            "captureIds": [],
-            "previewIds": [
-              "hostCustomerMessagingStates"
-            ],
-            "tests": [
-              "test/hosts/host_crm_repository_test.dart"
-            ]
-          },
-          "actionCases": [
-            {
-              "id": "dispatch",
-              "dimensions": {
-                "workspace": "campaigns",
-                "load": "ready",
-                "directory": "populated",
-                "identity": "linked",
-                "revenue": "exact",
-                "messaging": "ready",
-                "campaign": "dispatching",
-                "mutation": "idle",
-                "accessibility": "standard",
-                "theme": "standard"
-              },
-              "actions": {
-                "enabled": [],
-                "disabled": [
-                  "manage_campaign",
-                  "switch_workspace"
-                ],
-                "notAllowed": [
-                  "retry_directory",
-                  "switch_organizer",
-                  "search_customers",
-                  "filter_customers",
-                  "load_more",
-                  "export_customers",
-                  "create_customer",
-                  "open_customer",
-                  "manage_customer",
-                  "retry_customer_detail",
-                  "start_conversation",
-                  "manage_whatsapp_sender"
+                  "retry_customer_detail"
                 ]
               }
             }
@@ -2360,13 +1601,10 @@
           "kind": "offline",
           "status": "implemented",
           "dimensions": {
-            "workspace": "people",
             "load": "offline",
             "directory": "populated",
             "identity": "linked",
             "revenue": "exact",
-            "messaging": "ready",
-            "campaign": "draft",
             "mutation": "idle",
             "accessibility": "standard",
             "theme": "standard"
@@ -2380,13 +1618,10 @@
             {
               "id": "retry",
               "dimensions": {
-                "workspace": "people",
                 "load": "offline",
                 "directory": "populated",
                 "identity": "linked",
                 "revenue": "exact",
-                "messaging": "ready",
-                "campaign": "draft",
                 "mutation": "idle",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -2399,7 +1634,6 @@
                 "disabled": [],
                 "notAllowed": [
                   "switch_organizer",
-                  "switch_workspace",
                   "search_customers",
                   "filter_customers",
                   "load_more",
@@ -2407,9 +1641,7 @@
                   "create_customer",
                   "open_customer",
                   "manage_customer",
-                  "start_conversation",
-                  "manage_whatsapp_sender",
-                  "manage_campaign"
+                  "start_conversation"
                 ]
               }
             }
@@ -2421,13 +1653,10 @@
           "kind": "accessibility",
           "status": "planned",
           "dimensions": {
-            "workspace": "people",
             "load": "ready",
             "directory": "populated",
             "identity": "linked",
             "revenue": "exact",
-            "messaging": "ready",
-            "campaign": "draft",
             "mutation": "idle",
             "accessibility": "text_scale_2",
             "theme": "standard"
@@ -2441,13 +1670,10 @@
             {
               "id": "default",
               "dimensions": {
-                "workspace": "people",
                 "load": "ready",
                 "directory": "populated",
                 "identity": "linked",
                 "revenue": "exact",
-                "messaging": "ready",
-                "campaign": "draft",
                 "mutation": "idle",
                 "accessibility": "text_scale_2",
                 "theme": "standard"
@@ -2458,7 +1684,6 @@
                 "notAllowed": [
                   "retry_directory",
                   "switch_organizer",
-                  "switch_workspace",
                   "search_customers",
                   "filter_customers",
                   "load_more",
@@ -2467,9 +1692,7 @@
                   "open_customer",
                   "manage_customer",
                   "retry_customer_detail",
-                  "start_conversation",
-                  "manage_whatsapp_sender",
-                  "manage_campaign"
+                  "start_conversation"
                 ]
               }
             }
@@ -2481,13 +1704,10 @@
           "kind": "accessibility",
           "status": "planned",
           "dimensions": {
-            "workspace": "people",
             "load": "ready",
             "directory": "populated",
             "identity": "linked",
             "revenue": "exact",
-            "messaging": "ready",
-            "campaign": "draft",
             "mutation": "idle",
             "accessibility": "reduced_motion",
             "theme": "standard"
@@ -2501,13 +1721,10 @@
             {
               "id": "default",
               "dimensions": {
-                "workspace": "people",
                 "load": "ready",
                 "directory": "populated",
                 "identity": "linked",
                 "revenue": "exact",
-                "messaging": "ready",
-                "campaign": "draft",
                 "mutation": "idle",
                 "accessibility": "reduced_motion",
                 "theme": "standard"
@@ -2518,7 +1735,6 @@
                 "notAllowed": [
                   "retry_directory",
                   "switch_organizer",
-                  "switch_workspace",
                   "search_customers",
                   "filter_customers",
                   "load_more",
@@ -2527,9 +1743,7 @@
                   "open_customer",
                   "manage_customer",
                   "retry_customer_detail",
-                  "start_conversation",
-                  "manage_whatsapp_sender",
-                  "manage_campaign"
+                  "start_conversation"
                 ]
               }
             }
@@ -2541,13 +1755,10 @@
           "kind": "theme",
           "status": "planned",
           "dimensions": {
-            "workspace": "people",
             "load": "ready",
             "directory": "populated",
             "identity": "linked",
             "revenue": "exact",
-            "messaging": "ready",
-            "campaign": "draft",
             "mutation": "idle",
             "accessibility": "standard",
             "theme": "light_dark"
@@ -2561,13 +1772,10 @@
             {
               "id": "default",
               "dimensions": {
-                "workspace": "people",
                 "load": "ready",
                 "directory": "populated",
                 "identity": "linked",
                 "revenue": "exact",
-                "messaging": "ready",
-                "campaign": "draft",
                 "mutation": "idle",
                 "accessibility": "standard",
                 "theme": "light_dark"
@@ -2578,7 +1786,6 @@
                 "notAllowed": [
                   "retry_directory",
                   "switch_organizer",
-                  "switch_workspace",
                   "search_customers",
                   "filter_customers",
                   "load_more",
@@ -2587,9 +1794,7 @@
                   "open_customer",
                   "manage_customer",
                   "retry_customer_detail",
-                  "start_conversation",
-                  "manage_whatsapp_sender",
-                  "manage_campaign"
+                  "start_conversation"
                 ]
               }
             }
@@ -2787,7 +1992,6 @@
           }
         ],
         "previews": [
-          "hostCustomerMessagingStates",
           "hostCustomersStates"
         ]
       }

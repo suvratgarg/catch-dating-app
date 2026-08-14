@@ -28,6 +28,9 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_broadcast_composer_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_broadcast_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
@@ -37,11 +40,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+enum HostMessagingWorkspace { inbox, campaigns }
+
 class HostInboxScreen extends ConsumerStatefulWidget {
   const HostInboxScreen({
     super.key,
     this.initialScope,
     this.initialSegment = HostInboxAudienceSegment.booked,
+    this.initialWorkspace = HostMessagingWorkspace.inbox,
     this.broadcastEnabled,
     this.syncSelectionToRoute = true,
     this.now,
@@ -49,6 +55,7 @@ class HostInboxScreen extends ConsumerStatefulWidget {
 
   final HostInboxScope? initialScope;
   final HostInboxAudienceSegment initialSegment;
+  final HostMessagingWorkspace initialWorkspace;
   final bool? broadcastEnabled;
   final bool syncSelectionToRoute;
   final DateTime? now;
@@ -60,12 +67,15 @@ class HostInboxScreen extends ConsumerStatefulWidget {
 class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
   HostInboxScope? _requestedScope;
   late HostInboxAudienceSegment _segment;
+  late HostMessagingWorkspace _workspace;
+  bool _campaignBusy = false;
 
   @override
   void initState() {
     super.initState();
     _requestedScope = widget.initialScope;
     _segment = widget.initialSegment;
+    _workspace = widget.initialWorkspace;
   }
 
   @override
@@ -77,6 +87,9 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
     }
     if (oldWidget.initialSegment != widget.initialSegment) {
       _segment = widget.initialSegment;
+    }
+    if (oldWidget.initialWorkspace != widget.initialWorkspace) {
+      _workspace = widget.initialWorkspace;
     }
   }
 
@@ -90,57 +103,53 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
         ? const AsyncLoading<List<Club>>()
         : ref.watch(hostOperableClubsProvider(uid));
     final clubs = clubsAsync.asData?.value;
-    final eventsAsync = clubs == null
-        ? clubsAsync.when(
-            data: (_) => const AsyncLoading<List<Event>>(),
-            loading: () => const AsyncLoading<List<Event>>(),
-            error: AsyncError<List<Event>>.new,
-          )
-        : ref.watch(
-            watchEventsForClubsProvider(
-              EventsForClubsQuery(clubs.map((club) => club.id)),
-            ),
-          );
-    final inboxAsync = ref.watch(chatsListViewModelProvider);
-    final query = ref.watch(chatSearchQueryProvider);
-    final events = eventsAsync.asData?.value;
-    final scope = events == null
-        ? const HostInboxScope.general()
-        : resolveHostInboxScope(
-            events: events,
-            now: now,
-            requestedScope: _requestedScope,
-          );
-    final eventId = scope.eventId;
-    final participationsAsync = eventId == null
-        ? const AsyncData<List<EventParticipation>>([])
-        : ref.watch(watchEventParticipationsForEventProvider(eventId));
-    final asyncValues = <AsyncValue<dynamic>>[
-      uidAsync,
-      clubsAsync,
-      eventsAsync,
-      inboxAsync,
-      participationsAsync,
-    ];
-    final failed = asyncValues.where((value) => value.hasError).firstOrNull;
-    final loading =
-        uid == null ||
-        asyncValues.any((value) => value.isLoading || !value.hasValue);
-    final inbox = inboxAsync.asData?.value;
-    final participations = participationsAsync.asData?.value;
-    final workspace = events == null || inbox == null || participations == null
+    final selectedOrganizerId = uid == null
         ? null
-        : HostInboxViewModel.compose(
-            events: events,
-            inbox: inbox,
-            participations: participations,
-            selectedScope: scope,
-            selectedSegment: _segment,
+        : ref.watch(hostOrganizerSelectionProvider(uid));
+    final selectedClub = clubs == null || clubs.isEmpty
+        ? null
+        : resolveSelectedHostOrganizer(
+            clubs,
+            selectedOrganizerId: selectedOrganizerId,
+          );
+    final query = ref.watch(chatSearchQueryProvider);
+    final isInbox = _workspace == HostMessagingWorkspace.inbox;
+    final workspaceSliver = isInbox
+        ? _HostInboxWorkspaceGroup(
+            uidAsync: uidAsync,
+            uid: uid,
+            clubsAsync: clubsAsync,
+            selectedClub: selectedClub,
             query: query,
             now: now,
+            requestedScope: _requestedScope,
+            selectedSegment: _segment,
+            broadcastEnabled: _broadcastEnabled,
+            onRetry: _retry,
+            onScopeChanged: _selectScope,
+            onSegmentChanged: (segment) => setState(() => _segment = segment),
+            onThreadSelected: _openThread,
+            onBroadcastSelected: _openBroadcast,
+          )
+        : _HostCampaignWorkspaceSliver(
+            uidAsync: uidAsync,
+            uid: uid,
+            clubsAsync: clubsAsync,
+            selectedClub: selectedClub,
+            onRetry: _retry,
+            onBusyChanged: _setCampaignBusy,
           );
+    final inbox = isInbox
+        ? ref.watch(chatsListViewModelProvider).asData?.value
+        : null;
+    final selectedThreadCount = selectedClub == null || inbox == null
+        ? 0
+        : [
+            ...inbox.newMatches,
+            ...inbox.conversations,
+          ].where((preview) => preview.match.clubId == selectedClub.id).length;
     final showSearch =
-        (inbox?.totalThreadCount ?? 0) > 0 || query.trim().isNotEmpty;
+        isInbox && (selectedThreadCount > 0 || query.trim().isNotEmpty);
 
     return Scaffold(
       backgroundColor: t.bg,
@@ -151,44 +160,21 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
             SliverToBoxAdapter(
               child: ChatsBrowseHeader(
                 showSearchAction: showSearch,
-                searchValue: query,
-                onSearchChanged: ref
-                    .read(chatSearchQueryProvider.notifier)
-                    .setQuery,
+                searchValue: isInbox ? query : '',
+                onSearchChanged: isInbox
+                    ? ref.read(chatSearchQueryProvider.notifier).setQuery
+                    : null,
                 hostFilter: null,
                 hostUnreadCount: 0,
                 onHostFilterChanged: null,
                 showHostSubtitle: false,
               ),
             ),
-            if (failed != null)
-              CatchSliverErrorState.fromError(
-                failed.error!,
-                context: AppErrorContext.chat,
-                onRetry: _retry,
-              )
-            else if (loading || workspace == null)
-              const ChatsListSkeleton()
-            else ...[
-              if (workspace.scopeOptions.length > 1)
-                HostInboxScopeSelector(
-                  workspace: workspace,
-                  now: now,
-                  onChanged: _selectScope,
-                ),
-              if (!workspace.isGeneral)
-                HostInboxAudienceRail(
-                  workspace: workspace,
-                  onChanged: (segment) => setState(() => _segment = segment),
-                ),
-              HostInboxWorkspaceSliver(
-                workspace: workspace,
-                now: now,
-                broadcastEnabled: _broadcastEnabled,
-                onThreadSelected: _openThread,
-                onBroadcastSelected: _openBroadcast,
-              ),
-            ],
+            HostMessagingWorkspaceRail(
+              selected: _workspace,
+              onChanged: _campaignBusy ? null : _selectWorkspace,
+            ),
+            workspaceSliver,
             const CatchSliverTerminalPadding(),
           ],
         ),
@@ -196,11 +182,28 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
     );
   }
 
-  void _retry() {
+  void _selectWorkspace(HostMessagingWorkspace workspace) {
+    if (_campaignBusy || workspace == _workspace) return;
+    if (workspace == HostMessagingWorkspace.campaigns) {
+      ref.read(chatSearchQueryProvider.notifier).clear();
+    }
+    setState(() => _workspace = workspace);
+  }
+
+  void _setCampaignBusy(bool value) {
+    if (!mounted || _campaignBusy == value) return;
+    setState(() => _campaignBusy = value);
+  }
+
+  void _retry(String? organizerId) {
     ref.invalidate(uidProvider);
     ref.invalidate(chatsListViewModelProvider);
     final uid = ref.read(uidProvider).asData?.value;
     if (uid != null) ref.invalidate(hostOperableClubsProvider(uid));
+    if (organizerId != null) {
+      ref.invalidate(watchEventsForClubProvider(organizerId));
+      ref.invalidate(hostMessagingSetupProvider(organizerId));
+    }
     setState(() {});
   }
 
@@ -257,6 +260,216 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
   }
 
   bool get _broadcastEnabled => widget.broadcastEnabled ?? true;
+}
+
+class _HostInboxWorkspaceGroup extends ConsumerWidget {
+  const _HostInboxWorkspaceGroup({
+    required this.uidAsync,
+    required this.uid,
+    required this.clubsAsync,
+    required this.selectedClub,
+    required this.query,
+    required this.now,
+    required this.requestedScope,
+    required this.selectedSegment,
+    required this.broadcastEnabled,
+    required this.onRetry,
+    required this.onScopeChanged,
+    required this.onSegmentChanged,
+    required this.onThreadSelected,
+    required this.onBroadcastSelected,
+  });
+
+  final AsyncValue<String?> uidAsync;
+  final String? uid;
+  final AsyncValue<List<Club>> clubsAsync;
+  final Club? selectedClub;
+  final String query;
+  final DateTime now;
+  final HostInboxScope? requestedScope;
+  final HostInboxAudienceSegment selectedSegment;
+  final bool broadcastEnabled;
+  final ValueChanged<String?> onRetry;
+  final ValueChanged<HostInboxScope> onScopeChanged;
+  final ValueChanged<HostInboxAudienceSegment> onSegmentChanged;
+  final ChatThreadSelectedCallback onThreadSelected;
+  final ValueChanged<HostInboxViewModel> onBroadcastSelected;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (uidAsync.hasError || clubsAsync.hasError) {
+      final failed = uidAsync.hasError ? uidAsync : clubsAsync;
+      return CatchSliverErrorState.fromError(
+        failed.error!,
+        context: AppErrorContext.chat,
+        onRetry: () => onRetry(selectedClub?.id),
+      );
+    }
+    if (uid == null || clubsAsync.isLoading || !clubsAsync.hasValue) {
+      return const ChatsListSkeleton();
+    }
+    final club = selectedClub;
+    if (club == null) return const _HostNoOrganizerSliver();
+
+    final eventsAsync = ref.watch(watchEventsForClubProvider(club.id));
+    final inboxAsync = ref.watch(chatsListViewModelProvider);
+    final events = eventsAsync.asData?.value;
+    final scope = events == null
+        ? const HostInboxScope.general()
+        : resolveHostInboxScope(
+            events: events,
+            now: now,
+            requestedScope: requestedScope,
+          );
+    final eventId = scope.eventId;
+    final participationsAsync = eventId == null
+        ? const AsyncData<List<EventParticipation>>([])
+        : ref.watch(watchEventParticipationsForEventProvider(eventId));
+    final asyncValues = <AsyncValue<dynamic>>[
+      eventsAsync,
+      inboxAsync,
+      participationsAsync,
+    ];
+    final failed = asyncValues.where((value) => value.hasError).firstOrNull;
+    if (failed != null) {
+      return CatchSliverErrorState.fromError(
+        failed.error!,
+        context: AppErrorContext.chat,
+        onRetry: () => onRetry(club.id),
+      );
+    }
+    final loading = asyncValues.any(
+      (value) => value.isLoading || !value.hasValue,
+    );
+    final inbox = inboxAsync.asData?.value;
+    final participations = participationsAsync.asData?.value;
+    final workspace = events == null || inbox == null || participations == null
+        ? null
+        : HostInboxViewModel.compose(
+            events: events,
+            inbox: inbox,
+            participations: participations,
+            selectedOrganizerId: club.id,
+            selectedScope: scope,
+            selectedSegment: selectedSegment,
+            query: query,
+            now: now,
+          );
+    if (loading || workspace == null) return const ChatsListSkeleton();
+    return SliverMainAxisGroup(
+      slivers: [
+        if (workspace.scopeOptions.length > 1)
+          HostInboxScopeSelector(
+            workspace: workspace,
+            now: now,
+            onChanged: onScopeChanged,
+          ),
+        if (!workspace.isGeneral)
+          HostInboxAudienceRail(
+            workspace: workspace,
+            onChanged: onSegmentChanged,
+          ),
+        HostInboxWorkspaceSliver(
+          workspace: workspace,
+          now: now,
+          broadcastEnabled: broadcastEnabled,
+          onThreadSelected: onThreadSelected,
+          onBroadcastSelected: onBroadcastSelected,
+        ),
+      ],
+    );
+  }
+}
+
+class _HostCampaignWorkspaceSliver extends StatelessWidget {
+  const _HostCampaignWorkspaceSliver({
+    required this.uidAsync,
+    required this.uid,
+    required this.clubsAsync,
+    required this.selectedClub,
+    required this.onRetry,
+    required this.onBusyChanged,
+  });
+
+  final AsyncValue<String?> uidAsync;
+  final String? uid;
+  final AsyncValue<List<Club>> clubsAsync;
+  final Club? selectedClub;
+  final ValueChanged<String?> onRetry;
+  final ValueChanged<bool> onBusyChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    if (uidAsync.hasError || clubsAsync.hasError) {
+      final failed = uidAsync.hasError ? uidAsync : clubsAsync;
+      return CatchSliverErrorState.fromError(
+        failed.error!,
+        context: AppErrorContext.club,
+        onRetry: () => onRetry(selectedClub?.id),
+      );
+    }
+    if (uid == null || clubsAsync.isLoading || !clubsAsync.hasValue) {
+      return const ChatsListSkeleton();
+    }
+    final club = selectedClub;
+    if (club == null) return const _HostNoOrganizerSliver();
+    return SliverPadding(
+      padding: CatchInsets.pageBody.copyWith(top: CatchSpacing.s3),
+      sliver: SliverList.list(
+        children: [
+          HostCustomerMessagingPane(club: club, onBusyChanged: onBusyChanged),
+        ],
+      ),
+    );
+  }
+}
+
+class _HostNoOrganizerSliver extends StatelessWidget {
+  const _HostNoOrganizerSliver();
+
+  @override
+  Widget build(BuildContext context) => CatchSliverStateViewport(
+    child: CatchEmptyState(
+      icon: CatchIcons.groupsOutlined,
+      title: context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstClub,
+      message: context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
+    ),
+  );
+}
+
+class HostMessagingWorkspaceRail extends StatelessWidget {
+  const HostMessagingWorkspaceRail({
+    super.key,
+    required this.selected,
+    required this.onChanged,
+  });
+
+  final HostMessagingWorkspace selected;
+  final ValueChanged<HostMessagingWorkspace>? onChanged;
+
+  @override
+  Widget build(BuildContext context) => SliverToBoxAdapter(
+    child: Padding(
+      padding: CatchInsets.pageHorizontal.copyWith(bottom: CatchSpacing.s2),
+      child: CatchOptionGroup<HostMessagingWorkspace>(
+        key: const ValueKey<String>('host-messaging-workspace-rail'),
+        contractExemption:
+            'Host Messaging workspaces are local presentation state.',
+        selected: selected,
+        options: [
+          CatchOption(
+            value: HostMessagingWorkspace.inbox,
+            label: context.l10n.hostMessagingWorkspaceInbox,
+          ),
+          CatchOption(
+            value: HostMessagingWorkspace.campaigns,
+            label: context.l10n.hostMessagingWorkspaceCampaigns,
+          ),
+        ],
+        onChanged: onChanged,
+      ),
+    ),
+  );
 }
 
 class HostInboxScopeSelector extends StatefulWidget {

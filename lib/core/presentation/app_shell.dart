@@ -245,8 +245,15 @@ class AppShellNavigationBar extends StatelessWidget {
           activeIcon: prefersCupertinoControls()
               ? item.cupertinoSelectedIcon
               : item.materialSelectedIcon,
+          iconWidget: item.iconBuilder?.call(context),
+          activeIconWidget:
+              item.selectedIconBuilder?.call(context) ??
+              item.iconBuilder?.call(context),
           label: item.destination.localizedLabel(l10n),
           badgeCount: item.showsUnreadBadge ? unreadCount : 0,
+          onLongPress: item.onLongPress,
+          semanticValue: item.semanticValue,
+          semanticHint: item.semanticHint,
         ),
     ];
 
@@ -387,6 +394,9 @@ class AppShellSideNavigationButton extends StatelessWidget {
       icon: selected ? item.activeIcon ?? item.icon : item.icon,
       color: color,
       badgeCount: item.badgeCount,
+      child: selected
+          ? item.activeIconWidget ?? item.iconWidget
+          : item.iconWidget,
     );
     final label = Text(
       item.label,
@@ -417,6 +427,9 @@ class AppShellSideNavigationButton extends StatelessWidget {
       button: true,
       selected: selected,
       label: item.label,
+      value: item.semanticValue,
+      hint: item.semanticHint,
+      onLongPress: item.onLongPress,
       child: ExcludeSemantics(
         child: ConstrainedBox(
           constraints: BoxConstraints(
@@ -434,6 +447,7 @@ class AppShellSideNavigationButton extends StatelessWidget {
                 catchSelectionHaptic();
                 onTap();
               },
+              onLongPress: item.onLongPress,
               borderRadius: BorderRadius.circular(CatchRadius.md),
               child: Padding(
                 padding: EdgeInsets.symmetric(
@@ -467,6 +481,11 @@ class AppShellNavigationItem {
     required this.cupertinoSelectedIcon,
     this.branchIndex,
     this.showsUnreadBadge = false,
+    this.iconBuilder,
+    this.selectedIconBuilder,
+    this.onLongPress,
+    this.semanticValue,
+    this.semanticHint,
   });
 
   final AppShellNavigationDestination destination;
@@ -476,6 +495,11 @@ class AppShellNavigationItem {
   final IconData cupertinoIcon;
   final IconData cupertinoSelectedIcon;
   final bool showsUnreadBadge;
+  final WidgetBuilder? iconBuilder;
+  final WidgetBuilder? selectedIconBuilder;
+  final VoidCallback? onLongPress;
+  final String? semanticValue;
+  final String? semanticHint;
 }
 
 enum AppShellNavigationDestination {

@@ -913,6 +913,11 @@ abstract final class CatchInsets {
     vertical: CatchLayout.menuRowVerticalPadding,
   );
 
+  /// Horizontal row inset inside the Host organizer switcher sheet.
+  static const EdgeInsets hostOrganizerSwitcherList = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.s4,
+  );
+
   /// Standard row content for the Host roster board.
   static const EdgeInsets rosterRowContent = EdgeInsets.symmetric(
     horizontal: CatchSpacing.micro14,
@@ -2404,6 +2409,7 @@ abstract final class CatchLayout {
   static const double tabBarPillHorizontalPadding = CatchSpacing.s3;
   static const double tabBarLabelGap = CatchSpacing.s1;
   static const double tabBarIconSize = 22.0;
+  static const double appShellNavigationIdentityExtent = CatchSpacing.s7;
   static const double appShellRailWidth = 96.0;
   static const double appShellSidebarWidth = 240.0;
   static const double appShellRailItemMinHeight = 64.0;
@@ -2565,6 +2571,7 @@ abstract final class CatchLayout {
   static const double appShellCupertinoNavHeight = 50.0;
   static const double appShellNavigationBadgeWidth = 38.0;
   static const double appShellNavigationBadgeHeight = 30.0;
+  static const double organizerSwitcherAvatarExtent = CatchSpacing.s10;
   static const double eventSuccessResetButtonMinWidth = 40.0;
   static const double eventSuccessResetButtonMinHeight = 32.0;
   static const double hostPayoutSetupButtonWidth = 120.0;

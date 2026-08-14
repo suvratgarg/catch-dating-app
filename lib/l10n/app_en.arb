@@ -112,9 +112,9 @@
     "x-surface": "host.navigation",
     "x-max-chars": 16
   },
-  "hostNavigationInbox": "Inbox",
+  "hostNavigationInbox": "Messaging",
   "@hostNavigationInbox": {
-    "description": "Host bottom navigation label for attendee inquiries.",
+    "description": "Host bottom navigation label for conversations, broadcasts, and campaigns.",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "host.navigation",
@@ -286,9 +286,9 @@
     "x-surface": "consumer.chats",
     "x-max-chars": 20
   },
-  "hostInboxTitle": "Inbox",
+  "hostInboxTitle": "Messaging",
   "@hostInboxTitle": {
-    "description": "Host attendee inbox screen heading.",
+    "description": "Host messaging screen heading.",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "host.inbox",
@@ -11210,13 +11210,6 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_clubs_scaffold"
   },
-  "hostsHostClubsScaffoldTooltipSwitchClub": "Switch organizer",
-  "@hostsHostClubsScaffoldTooltipSwitchClub": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (tooltip).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_clubs_scaffold"
-  },
   "hostsHostClubsScaffoldTitleNoHostClubsYet": "No hosted organizers yet",
   "@hostsHostClubsScaffoldTitleNoHostClubsYet": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (title).",
@@ -11536,17 +11529,6 @@
   "hostsHostTodayTextNothingNeedsYouRight": "Nothing needs you right now.",
   "@hostsHostTodayTextNothingNeedsYouRight": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
-  },
-  "hostsHostTodayTextLongweekdayDaypart": "{longWeekday} {daypart}",
-  "@hostsHostTodayTextLongweekdayDaypart": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (Text).",
-    "placeholders": {
-      "longWeekday": {},
-      "daypart": {}
-    },
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_today"
@@ -14094,24 +14076,6 @@
   "hostsHostClubsScaffoldVisiblecopyOwner": "Owner",
   "@hostsHostClubsScaffoldVisiblecopyOwner": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_clubs_scaffold"
-  },
-  "hostsHostClubsScaffoldVisiblecopyHostTeam": "Host team",
-  "@hostsHostClubsScaffoldVisiblecopyHostTeam": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_clubs_scaffold"
-  },
-  "hostsHostClubsScaffoldLabelNameRolelabel": "{name} · {roleLabel}",
-  "@hostsHostClubsScaffoldLabelNameRolelabel": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (label).",
-    "placeholders": {
-      "name": {},
-      "roleLabel": {}
-    },
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_clubs_scaffold"
@@ -17335,41 +17299,6 @@
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_club_profile"
-  },
-  "hostsHostTodayVisiblecopyMorning": "morning",
-  "@hostsHostTodayVisiblecopyMorning": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
-  },
-  "hostsHostTodayVisiblecopyAfternoon": "afternoon",
-  "@hostsHostTodayVisiblecopyAfternoon": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
-  },
-  "hostsHostTodayVisiblecopyEvening": "evening",
-  "@hostsHostTodayVisiblecopyEvening": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
-  },
-  "hostsHostTodayLabelOwner": "Owner",
-  "@hostsHostTodayLabelOwner": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
-  },
-  "hostsHostTodayLabelHostTeam": "Host team",
-  "@hostsHostTodayLabelHostTeam": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
   },
   "hostsHostTodayVisiblecopySignedupcount": "{signedUpCount}",
   "@hostsHostTodayVisiblecopySignedupcount": {
@@ -21130,10 +21059,10 @@
   "@eventSuccessRoomMapDragHint": {"description": "Additive drag affordance explanation.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_room_map"},
   "hostCustomersIntro": "Everyone who has attended, registered, been imported, or been added by your team.",
   "@hostCustomersIntro": {"description": "Customers directory scope explanation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostCustomersWorkspacePeople": "People",
-  "@hostCustomersWorkspacePeople": {"description": "Customers people workspace label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostCustomersWorkspaceCampaigns": "Campaigns",
-  "@hostCustomersWorkspaceCampaigns": {"description": "Customers campaigns workspace label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostMessagingWorkspaceInbox": "Inbox",
+  "@hostMessagingWorkspaceInbox": {"description": "Messaging workspace label for direct inquiries and event broadcasts.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
+  "hostMessagingWorkspaceCampaigns": "Campaigns",
+  "@hostMessagingWorkspaceCampaigns": {"description": "Messaging workspace label for cross-event outbound campaigns.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
   "hostCustomersManage": "Manage customer",
   "@hostCustomersManage": {"description": "Opens organizer-owned customer identity and delivery controls.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersCheckedIn": "Checked in",

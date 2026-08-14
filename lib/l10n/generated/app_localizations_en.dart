@@ -52,7 +52,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostNavigationCustomers => 'Customers';
 
   @override
-  String get hostNavigationInbox => 'Inbox';
+  String get hostNavigationInbox => 'Messaging';
 
   @override
   String get hostNavigationOrganizer => 'Organizer';
@@ -125,7 +125,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get consumerChatsTitle => 'Chats';
 
   @override
-  String get hostInboxTitle => 'Inbox';
+  String get hostInboxTitle => 'Messaging';
 
   @override
   String get hostInboxSubtitle => 'Attendee queries';
@@ -6061,9 +6061,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostClubsScaffoldLabelPreview => 'Preview';
 
   @override
-  String get hostsHostClubsScaffoldTooltipSwitchClub => 'Switch organizer';
-
-  @override
   String get hostsHostClubsScaffoldTitleNoHostClubsYet =>
       'No hosted organizers yet';
 
@@ -6233,14 +6230,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsHostTodayTextNothingNeedsYouRight =>
       'Nothing needs you right now.';
-
-  @override
-  String hostsHostTodayTextLongweekdayDaypart({
-    required Object longWeekday,
-    required Object daypart,
-  }) {
-    return '$longWeekday $daypart';
-  }
 
   @override
   String get hostsHostTodayTooltipSwitchClub => 'Switch organizer';
@@ -7637,17 +7626,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostClubsScaffoldVisiblecopyOwner => 'Owner';
-
-  @override
-  String get hostsHostClubsScaffoldVisiblecopyHostTeam => 'Host team';
-
-  @override
-  String hostsHostClubsScaffoldLabelNameRolelabel({
-    required Object name,
-    required Object roleLabel,
-  }) {
-    return '$name · $roleLabel';
-  }
 
   @override
   String
@@ -9534,21 +9512,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }) {
     return '$minAge–$maxAge';
   }
-
-  @override
-  String get hostsHostTodayVisiblecopyMorning => 'morning';
-
-  @override
-  String get hostsHostTodayVisiblecopyAfternoon => 'afternoon';
-
-  @override
-  String get hostsHostTodayVisiblecopyEvening => 'evening';
-
-  @override
-  String get hostsHostTodayLabelOwner => 'Owner';
-
-  @override
-  String get hostsHostTodayLabelHostTeam => 'Host team';
 
   @override
   String hostsHostTodayVisiblecopySignedupcount({
@@ -12902,10 +12865,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Everyone who has attended, registered, been imported, or been added by your team.';
 
   @override
-  String get hostCustomersWorkspacePeople => 'People';
+  String get hostMessagingWorkspaceInbox => 'Inbox';
 
   @override
-  String get hostCustomersWorkspaceCampaigns => 'Campaigns';
+  String get hostMessagingWorkspaceCampaigns => 'Campaigns';
 
   @override
   String get hostCustomersManage => 'Manage customer';
