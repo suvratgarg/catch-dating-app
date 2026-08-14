@@ -425,6 +425,15 @@ const schemaEventSuccessPlanDocumentSchema = <String, Object?>{
       },
       'x-catch-ownership': 'callable-owned',
     },
+    'conversationGraphConsentMode': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'optIn',
+        'optOut',
+      ],
+      'description': 'Whether assigned attendees begin unselected or preselected in the end-of-event conversation graph. Missing legacy values resolve to optIn.',
+      'x-catch-ownership': 'callable-owned',
+    },
     'activeStepIndex': <String, Object?>{
       'type': 'integer',
       'minimum': 0,

@@ -1288,6 +1288,38 @@ abstract class AppLocalizations {
   /// **'Message to attendees'**
   String get eventSuccessEventSuccessSetupBodyTitleMessageToAttendees;
 
+  /// Host setting for the end-of-event conversation graph consent default.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation check defaults'**
+  String get eventSuccessEventSuccessSetupBodyTitleConversationCheckDefaults;
+
+  /// Opt-in conversation graph mode label.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask everyone to choose'**
+  String get eventSuccessEventSuccessSetupBodyLabelAskEveryoneToChoose;
+
+  /// Opt-in conversation graph mode explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned people appear first as suggestions, but nobody is selected.'**
+  String
+  get eventSuccessEventSuccessSetupBodyTextAssignedPeopleAppearFirstButNobodyIsSelected;
+
+  /// Opt-out conversation graph mode label.
+  ///
+  /// In en, this message translates to:
+  /// **'Preselect assigned people'**
+  String get eventSuccessEventSuccessSetupBodyLabelPreselectAssignedPeople;
+
+  /// Opt-out conversation graph mode explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned people start selected; attendees can remove anyone before saving.'**
+  String
+  get eventSuccessEventSuccessSetupBodyTextAssignedPeopleStartSelectedAndCanBeRemoved;
+
   /// Product copy used by lib/event_success/presentation/event_success_setup_body.dart (placeholder).
   ///
   /// In en, this message translates to:
@@ -8271,6 +8303,22 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Feedback'**
   String get eventSuccessEventSuccessHostReportLabelFeedback;
+
+  /// Aggregate count of respondents who confirmed no conversations; no attendee edges are shown.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation exclusions'**
+  String get eventSuccessEventSuccessHostReportLabelConversationExclusions;
+
+  /// Aggregate conversation graph response coverage for the host recap.
+  ///
+  /// In en, this message translates to:
+  /// **'{conversationGraphResponseCount}/{checkedInCount} responses'**
+  String
+  eventSuccessEventSuccessHostReportLabelConversationgraphresponsecountCheckedincountResponses({
+    required Object conversationGraphResponseCount,
+    required Object checkedInCount,
+  });
 
   /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).
   ///

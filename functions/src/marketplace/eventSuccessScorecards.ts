@@ -5,6 +5,7 @@ import {
   EventDocument,
   EventInviteLinkDocument,
   EventParticipationDocument,
+  EventSuccessConversationGraphDocument,
   EventWaitlistOfferDocument,
   MatchDocument,
   PaymentDocument,
@@ -20,6 +21,8 @@ import {
 } from "./participantSignals";
 
 const eventSuccessFeedbackCollection = "eventSuccessFeedback";
+const eventSuccessConversationGraphsCollection =
+  "eventSuccessConversationGraphs";
 const eventSuccessScorecardsCollection = "eventSuccessScorecards";
 const eventSafetyReportsCollection = "eventSafetyReports";
 const MIN_FEEDBACK_FOR_HOST_SAFETY_COUNT = 5;
@@ -56,8 +59,19 @@ export interface EventSuccessScorecardDocument {
   averageWelcomeRating: number;
   averageStructureRating: number;
   safetyIncidentCount: number;
+  conversationGraph: EventSuccessConversationGraphAggregate;
   funnel: EventHostFunnelMetrics;
   updatedAt: FirebaseFirestore.FieldValue | FirebaseFirestore.Timestamp;
+}
+
+export interface EventSuccessConversationGraphAggregate {
+  responseCount: number;
+  skippedCount: number;
+  conversationCount: number;
+  attendeesWithTwoPlusConversations: number;
+  excludedAttendeeCount: number;
+  assignedConversationCount: number;
+  assignedOpportunityCount: number;
 }
 
 export interface EventSuccessCatchAggregates {
@@ -125,6 +139,7 @@ export async function refreshEventSuccessScorecard(
   const event = eventSnap.data() as EventDocument;
   const [
     feedbackSnap,
+    conversationGraphsSnap,
     matchesSnap,
     participationsSnap,
     waitlistOffersSnap,
@@ -133,6 +148,10 @@ export async function refreshEventSuccessScorecard(
   ] = await Promise.all([
     db
       .collection(eventSuccessFeedbackCollection)
+      .where("eventId", "==", eventId)
+      .get(),
+    db
+      .collection(eventSuccessConversationGraphsCollection)
       .where("eventId", "==", eventId)
       .get(),
     db.collection("matches").where("eventIds", "array-contains", eventId).get(),
@@ -150,6 +169,9 @@ export async function refreshEventSuccessScorecard(
 
   const feedback = feedbackSnap.docs.map(
     (doc) => doc.data() as EventSuccessFeedbackDocument
+  );
+  const conversationGraphs = conversationGraphsSnap.docs.map(
+    (doc) => doc.data() as EventSuccessConversationGraphDocument
   );
   // Host inquiries may carry event provenance, but they are support threads,
   // not attendee-to-attendee connections. Keep legacy dating matches whose
@@ -201,6 +223,9 @@ export async function refreshEventSuccessScorecard(
     eventId,
     event,
     feedback,
+    conversationGraph: buildEventSuccessConversationGraphAggregate(
+      conversationGraphs
+    ),
     matches,
     catchAggregates,
     funnel,
@@ -230,6 +255,7 @@ export function buildEventSuccessScorecard(params: {
   eventId: string;
   event: EventDocument;
   feedback: EventSuccessFeedbackDocument[];
+  conversationGraph?: EventSuccessConversationGraphAggregate;
   matches: MatchDocument[];
   catchAggregates?: EventSuccessCatchAggregates;
   funnel?: EventHostFunnelMetrics;
@@ -241,6 +267,8 @@ export function buildEventSuccessScorecard(params: {
     .length;
   const checkedInCount = event.checkedInCount ?? 0;
   const catchAggregates = params.catchAggregates ?? emptyCatchAggregates();
+  const conversationGraph = params.conversationGraph ??
+    buildEventSuccessConversationGraphAggregate([]);
   const activeMatches = matches.filter(
     (match) => isDatingMatch(match) && match.status === "active"
   );
@@ -281,8 +309,46 @@ export function buildEventSuccessScorecard(params: {
     safetyIncidentCount: feedbackCount >= MIN_FEEDBACK_FOR_HOST_SAFETY_COUNT ?
       safetyIncidentCount :
       0,
+    conversationGraph,
     funnel,
     updatedAt,
+  };
+}
+
+/**
+ * Builds the host projection without carrying attendee-to-attendee edges.
+ */
+export function buildEventSuccessConversationGraphAggregate(
+  graphs: Array<Pick<
+    EventSuccessConversationGraphDocument,
+    | "status"
+    | "selectedUids"
+    | "assignedSelectedCount"
+    | "assignedCandidateCount"
+  >>
+): EventSuccessConversationGraphAggregate {
+  const submitted = graphs.filter((graph) => graph.status === "submitted");
+  return {
+    responseCount: graphs.length,
+    skippedCount: graphs.filter((graph) => graph.status === "skipped").length,
+    conversationCount: submitted.reduce(
+      (sum, graph) => sum + graph.selectedUids.length,
+      0
+    ),
+    attendeesWithTwoPlusConversations: submitted.filter(
+      (graph) => graph.selectedUids.length >= 2
+    ).length,
+    excludedAttendeeCount: submitted.filter(
+      (graph) => graph.selectedUids.length === 0
+    ).length,
+    assignedConversationCount: submitted.reduce(
+      (sum, graph) => sum + graph.assignedSelectedCount,
+      0
+    ),
+    assignedOpportunityCount: submitted.reduce(
+      (sum, graph) => sum + graph.assignedCandidateCount,
+      0
+    ),
   };
 }
 
@@ -479,6 +545,28 @@ export const onEventSuccessFeedbackWritten = onDocumentWritten(
       | EventSuccessFeedbackDocument
       | undefined;
     await onEventSuccessFeedbackWrittenHandler(feedbackId, before, after);
+  }
+);
+
+/** Refreshes the aggregate-only host scorecard after a private graph write. */
+export async function onEventSuccessConversationGraphWrittenHandler(
+  before: EventSuccessConversationGraphDocument | undefined,
+  after: EventSuccessConversationGraphDocument | undefined,
+  deps: EventSuccessScorecardDeps = defaultDeps
+): Promise<void> {
+  await refreshScorecardsForEventIds(eventIdsFromDocs(before, after), deps);
+}
+
+export const onEventSuccessConversationGraphWritten = onDocumentWritten(
+  "eventSuccessConversationGraphs/{graphId}",
+  async (event) => {
+    const before = event.data?.before.data() as
+      | EventSuccessConversationGraphDocument
+      | undefined;
+    const after = event.data?.after.data() as
+      | EventSuccessConversationGraphDocument
+      | undefined;
+    await onEventSuccessConversationGraphWrittenHandler(before, after);
   }
 );
 

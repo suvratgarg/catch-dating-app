@@ -55,6 +55,7 @@ export const fixtureSchemaCases = Object.freeze([
   ["valid/event_safety_report_doc.json", "eventSafetyReportDocumentSchema"],
   ["valid/event_success_assignment_doc.json", "eventSuccessAssignmentDocumentSchema"],
   ["valid/event_success_compatibility_response_doc.json", "eventSuccessCompatibilityResponseDocumentSchema"],
+  ["valid/event_success_conversation_graph_doc.json", "eventSuccessConversationGraphDocumentSchema"],
   ["valid/event_success_feedback_doc.json", "eventSuccessFeedbackDocumentSchema"],
   ["valid/event_success_late_arrival_doc.json", "eventSuccessLateArrivalDocumentSchema"],
   ["valid/event_success_plan_doc.json", "eventSuccessPlanDocumentSchema"],

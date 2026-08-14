@@ -1,6 +1,6 @@
 ---
 doc_id: event_success_variable_model_and_runtime_parity_spec
-version: 1.5.0
+version: 1.6.0
 updated: 2026-08-14
 owner: event_success
 status: active
@@ -708,7 +708,7 @@ docs are updated. Update this table in the same commit as the tranche.
 - [x] T7 `unitOutcome` and live standings
 - [x] T8 Presence and late arrivals
 - [x] T9 Signed venue session replaces GPS
-- [ ] T10 Conversation graph
+- [x] T10 Conversation graph
 - [ ] T11 `accountability` sweep
 - [ ] T12 Presentation contract and parity foundation
 - [ ] T13 Marquee visual parity
@@ -869,7 +869,9 @@ D.6 and D.7.
 2. Whether `sweep` should hard-block event completion or warn loudly.
 3. Resolved in T3: the exclusion ledger is time-based for every format, with a
    configurable threshold and a 40-minute default.
-4. Whether the conversation graph is opt-in or opt-out for attendees.
+4. Resolved in T10: explicit opt-in is the default, with assigned attendees
+   suggested but unselected. Hosts may configure opt-out before setup freezes;
+   assigned attendees are then preselected and remain removable or skippable.
 5. Host analytics anonymity threshold (carried over from
    [docs/event_success.md](../event_success.md), still open): 3, 5, or dynamic
    by event size.

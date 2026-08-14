@@ -454,6 +454,13 @@ const schemaSpecs = [
       "functions/src/shared/generated/eventSuccessPlanDocument.ts",
   },
   {
+    name: "EventSuccessConversationGraphDocument",
+    source: "firestore/event_success_conversation_graphs.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "eventSuccessConversationGraphDocument.ts",
+  },
+  {
     name: "OrganizerEventSuccessLayoutDocument",
     source: "firestore/organizer_event_success_layouts.schema.json",
     typeOutput:
@@ -1474,6 +1481,32 @@ const schemaSpecs = [
       "callable_responses/get_event_runtime_bootstrap_response.schema.json",
     typeOutput:
       "functions/src/shared/generated/getEventRuntimeBootstrapCallableResponse.ts",
+  },
+  {
+    name: "GetEventSuccessConversationGraphCallableResponse",
+    source:
+      "callable_responses/" +
+      "get_event_success_conversation_graph_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "getEventSuccessConversationGraphCallableResponse.ts",
+  },
+  {
+    name: "SubmitEventSuccessConversationGraphCallablePayload",
+    source:
+      "callables/submit_event_success_conversation_graph_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "submitEventSuccessConversationGraphCallablePayload.ts",
+  },
+  {
+    name: "SubmitEventSuccessConversationGraphCallableResponse",
+    source:
+      "callable_responses/" +
+      "submit_event_success_conversation_graph_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "submitEventSuccessConversationGraphCallableResponse.ts",
   },
   {
     name: "ClaimEventRuntimeAccessCallablePayload",

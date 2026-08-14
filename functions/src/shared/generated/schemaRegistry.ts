@@ -25280,6 +25280,15 @@ export const eventSuccessPlanDocumentSchema: Record<string, unknown> = {
       },
       "x-catch-ownership": "callable-owned"
     },
+    "conversationGraphConsentMode": {
+      "type": "string",
+      "enum": [
+        "optIn",
+        "optOut"
+      ],
+      "description": "Whether assigned attendees begin unselected or preselected in the end-of-event conversation graph. Missing legacy values resolve to optIn.",
+      "x-catch-ownership": "callable-owned"
+    },
     "activeStepIndex": {
       "type": "integer",
       "minimum": 0,
@@ -25499,6 +25508,140 @@ export const eventSuccessPlanDocumentSchema: Record<string, unknown> = {
       "minLength": 1,
       "maxLength": 80,
       "description": "Internal demo-operations command name used for cleanup and diagnostics."
+    }
+  }
+} as const;
+
+export const eventSuccessConversationGraphDocumentSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_success_conversation_graphs.schema.json",
+  "title": "EventSuccessConversationGraphDocument",
+  "description": "Attendee-private end-of-event conversation edges stored at eventSuccessConversationGraphs/{eventId_uid}. Hosts consume aggregate scorecard counts only.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSuccessConversationGraphs",
+  "x-firestore-path": "eventSuccessConversationGraphs/{graphId}",
+  "x-document-id-field": "id",
+  "x-owner": "subject attendee read; conversation graph callable write",
+  "required": [
+    "eventId",
+    "clubId",
+    "organizerId",
+    "uid",
+    "status",
+    "selectedUids",
+    "assignedSelectedCount",
+    "assignedCandidateCount",
+    "consentMode",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "submitted",
+        "skipped"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "selectedUids": {
+      "type": "array",
+      "uniqueItems": true,
+      "maxItems": 1000,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "assignedSelectedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000,
+      "x-catch-ownership": "callable-owned"
+    },
+    "assignedCandidateCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000,
+      "x-catch-ownership": "callable-owned"
+    },
+    "consentMode": {
+      "type": "string",
+      "enum": [
+        "optIn",
+        "optOut"
+      ],
+      "description": "Snapshot of the event plan mode shown for this response.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
     }
   }
 } as const;
@@ -28530,6 +28673,51 @@ export const eventSuccessScorecardDocumentSchema: Record<string, unknown> = {
     "safetyIncidentCount": {
       "type": "integer",
       "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "conversationGraph": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Host-visible aggregate conversation outcomes. Person-to-person edges remain in attendee-private documents.",
+      "required": [
+        "responseCount",
+        "skippedCount",
+        "conversationCount",
+        "attendeesWithTwoPlusConversations",
+        "excludedAttendeeCount",
+        "assignedConversationCount",
+        "assignedOpportunityCount"
+      ],
+      "properties": {
+        "responseCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "skippedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "conversationCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "attendeesWithTwoPlusConversations": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "excludedAttendeeCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "assignedConversationCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "assignedOpportunityCount": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
       "x-catch-ownership": "trigger-owned"
     },
     "funnel": {
@@ -50077,6 +50265,153 @@ export const getEventRuntimeBootstrapCallableResponseSchema: Record<string, unkn
           }
         }
       ]
+    }
+  }
+} as const;
+
+export const getEventSuccessConversationGraphCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_event_success_conversation_graph_response.schema.json",
+  "title": "GetEventSuccessConversationGraphCallableResponse",
+  "description": "Attendee-only end-of-event conversation graph form projection.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "consentMode",
+    "prompt",
+    "candidates",
+    "selectedUids",
+    "submissionStatus"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "consentMode": {
+      "type": "string",
+      "enum": [
+        "optIn",
+        "optOut"
+      ]
+    },
+    "prompt": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "candidates": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uid",
+          "displayName",
+          "assigned"
+        ],
+        "properties": {
+          "uid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "assigned": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "selectedUids": {
+      "type": "array",
+      "uniqueItems": true,
+      "maxItems": 1000,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
+    "submissionStatus": {
+      "type": "string",
+      "enum": [
+        "unsubmitted",
+        "submitted",
+        "skipped"
+      ]
+    }
+  }
+} as const;
+
+export const submitEventSuccessConversationGraphCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/submit_event_success_conversation_graph_payload.schema.json",
+  "title": "SubmitEventSuccessConversationGraphCallablePayload",
+  "description": "Authenticated attendee submission for the end-of-event conversation graph.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "selectedUids",
+    "skipped"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "selectedUids": {
+      "type": "array",
+      "uniqueItems": true,
+      "maxItems": 1000,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
+    "skipped": {
+      "type": "boolean"
+    }
+  }
+} as const;
+
+export const submitEventSuccessConversationGraphCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/submit_event_success_conversation_graph_response.schema.json",
+  "title": "SubmitEventSuccessConversationGraphCallableResponse",
+  "description": "Receipt for an attendee conversation graph submission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "saved",
+    "status",
+    "conversationCount"
+  ],
+  "properties": {
+    "saved": {
+      "type": "boolean"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "submitted",
+        "skipped"
+      ]
+    },
+    "conversationCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000
     }
   }
 } as const;

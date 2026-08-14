@@ -5,6 +5,8 @@ import {beforeEach, describe, expect, it, vi} from "vitest";
 
 const runtime = vi.hoisted(() => ({user: null as null | {uid: string}}));
 const getEventRuntimeBootstrap = vi.hoisted(() => vi.fn());
+const getEventSuccessConversationGraph = vi.hoisted(() => vi.fn());
+const submitEventSuccessConversationGraph = vi.hoisted(() => vi.fn());
 const checkInEventRuntime = vi.hoisted(() => vi.fn());
 const heartbeatEventRuntimePresence = vi.hoisted(() => vi.fn());
 const createEventRuntimeAttendeeInviteLink = vi.hoisted(() => vi.fn());
@@ -25,6 +27,7 @@ vi.mock("../../firebase", () => ({
   createEventRuntimeAttendeeInviteLink,
   fetchEventRuntimeWingmanCandidates: vi.fn(),
   getEventRuntimeBootstrap,
+  getEventSuccessConversationGraph,
   heartbeatEventRuntimePresence,
   recordEventInviteLinkOpen: vi.fn(),
   recordEventRuntimeShareIntent,
@@ -32,6 +35,7 @@ vi.mock("../../firebase", () => ({
   saveEventRuntimeFeedback: vi.fn(),
   startEventRuntimeFirstHello: vi.fn(),
   submitEventRuntimeProfile: vi.fn(),
+  submitEventSuccessConversationGraph,
   submitEventRuntimeWingmanRequest: vi.fn(),
   watchEventRuntimeAuthState,
   watchEventRuntimeLiveState,
@@ -89,6 +93,22 @@ describe("useEventRuntimeController", () => {
       heartbeatIntervalSeconds: 30,
       presentWindowSeconds: 90,
       likelyDepartedAfterSeconds: 300,
+    });
+    getEventSuccessConversationGraph.mockResolvedValue({
+      eventId: "event-1",
+      consentMode: "optIn",
+      prompt: "Who were your teammates?",
+      candidates: [
+        {uid: "guest-2", displayName: "Rhea", assigned: true},
+        {uid: "guest-3", displayName: "Mina", assigned: false},
+      ],
+      selectedUids: [],
+      submissionStatus: "unsubmitted",
+    });
+    submitEventSuccessConversationGraph.mockResolvedValue({
+      saved: true,
+      status: "submitted",
+      conversationCount: 1,
     });
   });
 
@@ -243,5 +263,89 @@ describe("useEventRuntimeController", () => {
       inviteLinkId: "invite-1",
       channelHint: "systemShare",
     });
+  });
+
+  it("keeps assigned suggestions unselected in the default opt-in mode", async () => {
+    runtime.user = {uid: "guest-1"};
+    const ended = bootstrap({
+      accessStatus: "ready",
+      attendanceStatus: "checkedIn",
+      eventId: "event-1",
+      clubId: "club-1",
+      organizerId: "club-1",
+      requiredFieldIds: ["displayName"],
+      completedFieldIds: ["displayName"],
+      runtimeProfile: {
+        displayName: "Ari",
+        gender: null,
+        interestedInGenders: [],
+        relationshipGoal: null,
+        dateOfBirthMillis: null,
+      },
+    });
+    ended.event.endTimeMillis = Date.now() - 1_000;
+    getEventRuntimeBootstrap.mockResolvedValue(ended);
+
+    const {result} = renderHook(
+      () => useEventRuntimeController("runtime_123456789012345678901234"),
+      {wrapper: wrapper()}
+    );
+
+    await waitFor(() => expect(result.current.conversationGraph).not.toBeNull());
+    expect(result.current.selectedConversationUids).toEqual([]);
+    expect(result.current.conversationGraph?.candidates[0]).toEqual({
+      uid: "guest-2",
+      displayName: "Rhea",
+      assigned: true,
+    });
+
+    act(() => result.current.toggleConversationUid("guest-2"));
+    await act(async () => result.current.submitConversationGraph());
+
+    expect(submitEventSuccessConversationGraph).toHaveBeenCalledWith({
+      eventId: "event-1",
+      selectedUids: ["guest-2"],
+      skipped: false,
+    });
+  });
+
+  it("honors configured opt-out preselection returned by the server", async () => {
+    runtime.user = {uid: "guest-1"};
+    const ended = bootstrap({
+      accessStatus: "ready",
+      attendanceStatus: "checkedIn",
+      eventId: "event-1",
+      clubId: "club-1",
+      organizerId: "club-1",
+      requiredFieldIds: ["displayName"],
+      completedFieldIds: ["displayName"],
+      runtimeProfile: {
+        displayName: "Ari",
+        gender: null,
+        interestedInGenders: [],
+        relationshipGoal: null,
+        dateOfBirthMillis: null,
+      },
+    });
+    ended.event.endTimeMillis = Date.now() - 1_000;
+    getEventRuntimeBootstrap.mockResolvedValue(ended);
+    getEventSuccessConversationGraph.mockResolvedValue({
+      eventId: "event-1",
+      consentMode: "optOut",
+      prompt: "Who were your teammates?",
+      candidates: [
+        {uid: "guest-2", displayName: "Rhea", assigned: true},
+      ],
+      selectedUids: ["guest-2"],
+      submissionStatus: "unsubmitted",
+    });
+
+    const {result} = renderHook(
+      () => useEventRuntimeController("runtime_123456789012345678901234"),
+      {wrapper: wrapper()}
+    );
+
+    await waitFor(() => expect(result.current.conversationGraph).not.toBeNull());
+    expect(result.current.selectedConversationUids).toEqual(["guest-2"]);
   });
 });

@@ -14,6 +14,15 @@
   "averageWelcomeRating": 4.5,
   "averageStructureRating": 4,
   "safetyIncidentCount": 0,
+  "conversationGraph": {
+    "responseCount": 7,
+    "skippedCount": 1,
+    "conversationCount": 18,
+    "attendeesWithTwoPlusConversations": 5,
+    "excludedAttendeeCount": 1,
+    "assignedConversationCount": 12,
+    "assignedOpportunityCount": 16
+  },
   "funnel": {
     "inviteLinkCount": 2,
     "inviteOpenCount": 42,

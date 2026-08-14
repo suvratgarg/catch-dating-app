@@ -1,4 +1,4 @@
-import {useMutation} from "@tanstack/react-query";
+import {useMutation, useQuery} from "@tanstack/react-query";
 import {type FormEvent, useCallback, useEffect, useId, useMemo, useRef, useState} from "react";
 import type {User} from "../../firebase";
 import {
@@ -9,6 +9,7 @@ import {
   createEventRuntimeAttendeeInviteLink,
   fetchEventRuntimeWingmanCandidates,
   getEventRuntimeBootstrap,
+  getEventSuccessConversationGraph,
   heartbeatEventRuntimePresence,
   recordEventInviteLinkOpen,
   recordEventRuntimeShareIntent,
@@ -16,16 +17,19 @@ import {
   saveEventRuntimeFeedback,
   startEventRuntimeFirstHello,
   submitEventRuntimeProfile,
+  submitEventSuccessConversationGraph,
   submitEventRuntimeWingmanRequest,
   watchEventRuntimeAuthState,
   watchEventRuntimeLiveState,
   withdrawEventRuntimeWingmanRequest,
   type EventRuntimeLiveState,
   type EventRuntimeAttendeeInviteLink,
+  type EventSuccessConversationGraph,
   type PublicEventPhoneVerification,
 } from "../../firebase";
 import {eventRuntimeCopy} from "../../content/eventRuntime";
 import type {FormStatus} from "../../shared/forms/types";
+import {websiteQueryKeys} from "../../shared/query/queryKeys";
 import {
   eventRuntimeError,
   eventRuntimeStageForParticipant,
@@ -95,6 +99,9 @@ export function useEventRuntimeController(
   const [metNewPeopleCount, setMetNewPeopleCount] = useState(2);
   const [safetyConcern, setSafetyConcern] = useState(false);
   const [privateNote, setPrivateNote] = useState("");
+  const [eventEnded, setEventEnded] = useState(false);
+  const [selectedConversationUids, setSelectedConversationUids] =
+    useState<string[]>([]);
   const actionMutation = useMutation<void, unknown, () => Promise<void>>({
     mutationFn: (action) => action(),
     onError: (error) => {
@@ -118,6 +125,18 @@ export function useEventRuntimeController(
   const attendeeInviteLink = attendeeLinkMutation.data ?? null;
   const inviteToken = useMemo(eventInviteTokenFromLocation, []);
   const recordedInviteOpenRef = useRef(false);
+  const conversationGraphEventId = bootstrap?.participant?.eventId ?? "";
+  const conversationGraphQuery = useQuery<EventSuccessConversationGraph>({
+    enabled: stage === "runtime" &&
+      eventEnded &&
+      bootstrap?.participant?.attendanceStatus === "checkedIn",
+    queryFn: () => getEventSuccessConversationGraph(conversationGraphEventId),
+    queryKey: websiteQueryKeys.eventRuntime.conversationGraph(
+      conversationGraphEventId || null
+    ),
+  });
+  const conversationGraph = conversationGraphQuery.data ?? null;
+  const conversationGraphLoading = conversationGraphQuery.isLoading;
 
   const questionnaire = useMemo(
     () => resolveEventRuntimeQuestionnaire(bootstrap?.event.questionnaireConfig ?? null),
@@ -205,6 +224,28 @@ export function useEventRuntimeController(
   }, [inviteToken, loadAuthenticatedRuntime, publicRuntimeId]);
 
   useEffect(() => {
+    const endTimeMillis = bootstrap?.event.endTimeMillis;
+    if (endTimeMillis === undefined) return undefined;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const refreshEndedState = () => {
+      const remaining = endTimeMillis - Date.now();
+      if (remaining <= 0) {
+        setEventEnded(true);
+        return;
+      }
+      setEventEnded(false);
+      timer = setTimeout(
+        refreshEndedState,
+        Math.min(remaining, 2_147_000_000)
+      );
+    };
+    refreshEndedState();
+    return () => {
+      if (timer !== undefined) clearTimeout(timer);
+    };
+  }, [bootstrap?.event.endTimeMillis]);
+
+  useEffect(() => {
     const participant = bootstrap?.participant;
     if (stage !== "runtime" || !participant || !user) return undefined;
     let disposed = false;
@@ -252,12 +293,27 @@ export function useEventRuntimeController(
   }, [bootstrap, questionnaire.questions, stage, user]);
 
   useEffect(() => {
+    if (conversationGraphQuery.data) {
+      setSelectedConversationUids(conversationGraphQuery.data.selectedUids);
+    }
+  }, [conversationGraphQuery.data]);
+
+  useEffect(() => {
+    if (conversationGraphQuery.error) {
+      setStatus({
+        message: eventRuntimeError(conversationGraphQuery.error),
+        tone: "is-error",
+      });
+    }
+  }, [conversationGraphQuery.error]);
+
+  useEffect(() => {
     const participant = bootstrap?.participant;
     if (
       stage !== "runtime" ||
       participant?.attendanceStatus !== "checkedIn" ||
       !bootstrap ||
-      Date.now() > bootstrap.event.endTimeMillis
+      eventEnded
     ) return undefined;
     let disposed = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
@@ -282,7 +338,7 @@ export function useEventRuntimeController(
       disposed = true;
       if (timer !== undefined) clearTimeout(timer);
     };
-  }, [bootstrap, stage]);
+  }, [bootstrap, eventEnded, stage]);
 
   useEffect(() => {
     const participant = bootstrap?.participant;
@@ -550,6 +606,34 @@ export function useEventRuntimeController(
     }).catch(() => undefined);
   }
 
+  function toggleConversationUid(uid: string) {
+    if (pending) return;
+    setSelectedConversationUids((current) => current.includes(uid) ?
+      current.filter((value) => value !== uid) :
+      [...current, uid]);
+  }
+
+  async function submitConversationGraph(skipped = false) {
+    const participant = bootstrap?.participant;
+    if (!participant || !conversationGraph || pending) return;
+    await actionMutation.mutateAsync(async () => {
+      const selectedUids = skipped ? [] : [...selectedConversationUids].sort();
+      await submitEventSuccessConversationGraph({
+        eventId: participant.eventId,
+        selectedUids,
+        skipped,
+      });
+      setSelectedConversationUids(selectedUids);
+      const refreshedGraph = await conversationGraphQuery.refetch();
+      if (refreshedGraph.error) throw refreshedGraph.error;
+      setStatus({
+        message: skipped ? eventRuntimeCopy.conversationSkipped :
+          eventRuntimeCopy.conversationSaved,
+        tone: "is-success",
+      });
+    }).catch(() => undefined);
+  }
+
   function hydrateProfile(next: EventRuntimeBootstrap) {
     const profile = next.participant?.runtimeProfile;
     if (!profile) return;
@@ -567,7 +651,10 @@ export function useEventRuntimeController(
     attendeeInviteLinkLoading: attendeeLinkMutation.isPending,
     code,
     completeFirstHello,
+    conversationGraph,
+    conversationGraphLoading,
     displayName,
+    eventEnded,
     gender,
     handleCodeSubmit,
     handlePhoneSubmit,
@@ -588,6 +675,7 @@ export function useEventRuntimeController(
     preferenceProfileEnabled,
     saveAsCatchPrefill,
     saveCompatibilityAnswers,
+    selectedConversationUids,
     shareEvent,
     selectQuestionAnswer,
     sensitiveConsent,
@@ -609,7 +697,9 @@ export function useEventRuntimeController(
     status,
     structureRating,
     submitFeedback,
+    submitConversationGraph,
     submitWingmanRequest,
+    toggleConversationUid,
     toggleInterest,
     safetyConcern,
     welcomeRating,

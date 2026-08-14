@@ -117,6 +117,30 @@
       "minimum": 0,
       "x-catch-ownership": "trigger-owned"
     },
+    "conversationGraph": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Host-visible aggregate conversation outcomes. Person-to-person edges remain in attendee-private documents.",
+      "required": [
+        "responseCount",
+        "skippedCount",
+        "conversationCount",
+        "attendeesWithTwoPlusConversations",
+        "excludedAttendeeCount",
+        "assignedConversationCount",
+        "assignedOpportunityCount"
+      ],
+      "properties": {
+        "responseCount": {"type": "integer", "minimum": 0},
+        "skippedCount": {"type": "integer", "minimum": 0},
+        "conversationCount": {"type": "integer", "minimum": 0},
+        "attendeesWithTwoPlusConversations": {"type": "integer", "minimum": 0},
+        "excludedAttendeeCount": {"type": "integer", "minimum": 0},
+        "assignedConversationCount": {"type": "integer", "minimum": 0},
+        "assignedOpportunityCount": {"type": "integer", "minimum": 0}
+      },
+      "x-catch-ownership": "trigger-owned"
+    },
     "funnel": {
       "type": "object",
       "additionalProperties": false,

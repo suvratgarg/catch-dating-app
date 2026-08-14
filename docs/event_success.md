@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.12.0
+version: 1.13.0
 updated: 2026-08-14
 owner: recursive_audit_loop
 status: active
@@ -206,6 +206,7 @@ rather than embedded in event-type logic.
 |---|---|
 | `eventSuccessPlans/{eventId}` | Host-owned setup plus backend-owned live state. `liveControlRevision`, draft revision, and published rotation/reveal indexes are callable-owned. Setup fields freeze once participant activity/start/live status begins; active participants can read through event-success rules. |
 | `eventSuccessFeedback/{eventId_uid}` | Attendee-owned decomposed post-event feedback. Raw notes and safety details are private to attendee/backend. |
+| `eventSuccessConversationGraphs/{eventId_uid}` | Server-written post-event conversation edges. Only the subject attendee may get the deterministic document; Hosts, other attendees, lists, and every direct client write are denied. |
 | `eventSafetyReports/{feedbackId}` | Backend-owned Catch-private safety mirror for concerning feedback. |
 | `eventSuccessPreferences/{eventId_uid}` | Attendee-owned live-guidance opt-outs. |
 | `eventSuccessCompatibilityResponses/{eventId_uid}` | Attendee-owned compatibility answers. Hosts cannot read individual answers. |
@@ -259,6 +260,28 @@ exists. The mission persists that venue proof. `completeEventSuccessFirstHelloMi
 verifies the active mission, unconsumed proof, answer, and block state, records
 only the observer's answer on the mission, consumes the proof, and marks
 attendance without a second location or QR claim.
+
+### Conversation graph
+
+After the event ends, a checked-in attendee sees one roster-chip prompt in the
+no-download runtime. Assigned attendees are shown first and the label is
+derived from the saved interaction primitive (running partners, teammates,
+tablemates, or opponents/partners); the screen and submission mechanism do not
+fork by activity kind. The server excludes the caller and every blocked
+relationship before returning candidates.
+
+The per-event `conversationGraphConsentMode` is configurable during Host setup.
+The reviewed default is `optIn`: assigned attendees are suggested but no chip
+is selected. `optOut` preselects only visible assigned attendees, and the
+attendee can remove selections or skip. Missing legacy configuration resolves
+to `optIn`.
+
+`getEventSuccessConversationGraph` and
+`submitEventSuccessConversationGraph` require an attended unified-roster edge
+and an ended event. Submission is idempotent and stores the raw UID edges only
+in the attendee-private conversation-graph document. The Host scorecard
+receives numeric response, conversation, assignment-opportunity, and exclusion
+counts. It never receives who named whom.
 
 ### Live Control Robustness
 

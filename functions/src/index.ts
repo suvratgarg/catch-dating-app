@@ -188,10 +188,15 @@ export {onMessageCreated} from "./matching/onMessageCreated";
 export {
   onEventInviteLinkWritten,
   onEventParticipationWritten,
+  onEventSuccessConversationGraphWritten,
   onEventSuccessFeedbackWritten,
   onEventWaitlistOfferWritten,
   onPaymentWritten,
 } from "./marketplace/eventSuccessScorecards";
+export {
+  getEventSuccessConversationGraph,
+  submitEventSuccessConversationGraph,
+} from "./eventSuccess/conversationGraph";
 export {
   generateEventSuccessPods,
   overrideEventSuccessGroups,

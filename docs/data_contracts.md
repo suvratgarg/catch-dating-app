@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.21.0
+version: 1.22.0
 updated: 2026-08-14
 owner: recursive_audit_loop
 status: active
@@ -111,6 +111,28 @@ bounded attendee-visible reason. It never writes
 `eventSuccessAssignments/{eventId_moduleId_uid}`. Rules allow only the subject
 attendee or event Host to get a resolution; collection queries and direct
 writes are denied.
+
+### Event Success Conversation Graph Boundary
+
+`contracts/firestore/event_success_conversation_graphs.schema.json` owns the
+attendee-private post-event response at
+`eventSuccessConversationGraphs/{eventId_uid}`. The server accepts a response
+only from a checked-in attendee after the event ends, filters the unified roster
+through the block boundary, and stores UID edges only in this private source.
+Rules allow only the subject attendee to get the deterministic document; Hosts,
+other attendees, collection queries, and every direct client write are denied.
+
+`eventSuccessPlans.conversationGraphConsentMode` is a closed `optIn` / `optOut`
+setup field. Missing and legacy values resolve to the reviewed `optIn` default,
+which suggests assigned attendees without selecting them. A Host may configure
+`optOut` before setup freezes; it preselects visible assigned attendees and
+still lets the attendee remove any or all selections or skip the response.
+
+The generated get/submit callable contracts expose the same roster-chip
+mechanism for every format while the backend derives only the prompt from
+interaction primitives. Raw edges never enter the Host projection.
+`eventSuccessScorecards.conversationGraph` contains numeric counts and
+exclusion totals only; no attendee identifier or name-to-name edge is present.
 
 ### Event Success Spatial Layout Boundary
 

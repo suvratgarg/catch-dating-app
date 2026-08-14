@@ -112,6 +112,15 @@
       "$ref": "../shared/event_common.schema.json#/definitions/eventSuccessQuestionnaireConfig",
       "x-catch-ownership": "callable-owned"
     },
+    "conversationGraphConsentMode": {
+      "type": "string",
+      "enum": [
+        "optIn",
+        "optOut"
+      ],
+      "description": "Whether assigned attendees begin unselected or preselected in the end-of-event conversation graph. Missing legacy values resolve to optIn.",
+      "x-catch-ownership": "callable-owned"
+    },
     "activeStepIndex": {
       "type": "integer",
       "minimum": 0,

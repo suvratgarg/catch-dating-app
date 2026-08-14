@@ -1468,6 +1468,41 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_setup_body"
   },
+  "eventSuccessEventSuccessSetupBodyTitleConversationCheckDefaults": "Conversation check defaults",
+  "@eventSuccessEventSuccessSetupBodyTitleConversationCheckDefaults": {
+    "description": "Host setting for the end-of-event conversation graph consent default.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_success_setup_body"
+  },
+  "eventSuccessEventSuccessSetupBodyLabelAskEveryoneToChoose": "Ask everyone to choose",
+  "@eventSuccessEventSuccessSetupBodyLabelAskEveryoneToChoose": {
+    "description": "Opt-in conversation graph mode label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_success_setup_body"
+  },
+  "eventSuccessEventSuccessSetupBodyTextAssignedPeopleAppearFirstButNobodyIsSelected": "Assigned people appear first as suggestions, but nobody is selected.",
+  "@eventSuccessEventSuccessSetupBodyTextAssignedPeopleAppearFirstButNobodyIsSelected": {
+    "description": "Opt-in conversation graph mode explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_success_setup_body"
+  },
+  "eventSuccessEventSuccessSetupBodyLabelPreselectAssignedPeople": "Preselect assigned people",
+  "@eventSuccessEventSuccessSetupBodyLabelPreselectAssignedPeople": {
+    "description": "Opt-out conversation graph mode label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_success_setup_body"
+  },
+  "eventSuccessEventSuccessSetupBodyTextAssignedPeopleStartSelectedAndCanBeRemoved": "Assigned people start selected; attendees can remove anyone before saving.",
+  "@eventSuccessEventSuccessSetupBodyTextAssignedPeopleStartSelectedAndCanBeRemoved": {
+    "description": "Opt-out conversation graph mode explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_success_setup_body"
+  },
   "eventSuccessEventSuccessSetupBodyPlaceholderSomethingAttendeesSeeBeforeTheEventKicksOff": "Something attendees see before the event kicks off.",
   "@eventSuccessEventSuccessSetupBodyPlaceholderSomethingAttendeesSeeBeforeTheEventKicksOff": {
     "description": "Product copy used by lib/event_success/presentation/event_success_setup_body.dart (placeholder).",
@@ -9726,6 +9761,24 @@
   "eventSuccessEventSuccessHostReportLabelFeedback": "Feedback",
   "@eventSuccessEventSuccessHostReportLabelFeedback": {
     "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
+  },
+  "eventSuccessEventSuccessHostReportLabelConversationExclusions": "Conversation exclusions",
+  "@eventSuccessEventSuccessHostReportLabelConversationExclusions": {
+    "description": "Aggregate count of respondents who confirmed no conversations; no attendee edges are shown.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
+  },
+  "eventSuccessEventSuccessHostReportLabelConversationgraphresponsecountCheckedincountResponses": "{conversationGraphResponseCount}/{checkedInCount} responses",
+  "@eventSuccessEventSuccessHostReportLabelConversationgraphresponsecountCheckedincountResponses": {
+    "description": "Aggregate conversation graph response coverage for the host recap.",
+    "placeholders": {
+      "conversationGraphResponseCount": {},
+      "checkedInCount": {}
+    },
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"

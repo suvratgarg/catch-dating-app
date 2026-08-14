@@ -33,6 +33,12 @@ _EventSuccessPlan _$EventSuccessPlanFromJson(
       : EventSuccessQuestionnaireConfig.fromJson(
           json['questionnaireConfig'] as Map<String, dynamic>?,
         ),
+  conversationGraphConsentMode:
+      $enumDecodeNullable(
+        _$EventSuccessConversationGraphConsentModeEnumMap,
+        json['conversationGraphConsentMode'],
+      ) ??
+      EventSuccessConversationGraphConsentMode.optIn,
   activeStepIndex: (json['activeStepIndex'] as num?)?.toInt() ?? 0,
   liveControlRevision: (json['liveControlRevision'] as num?)?.toInt() ?? 0,
   assignmentDraftRevision:
@@ -76,6 +82,9 @@ Map<String, dynamic> _$EventSuccessPlanToJson(_EventSuccessPlan instance) =>
       'contextualOpenersEnabled': instance.contextualOpenersEnabled,
       'compatibilityAffectsRanking': instance.compatibilityAffectsRanking,
       'questionnaireConfig': instance.questionnaireConfig.toJson(),
+      'conversationGraphConsentMode':
+          _$EventSuccessConversationGraphConsentModeEnumMap[instance
+              .conversationGraphConsentMode]!,
       'activeStepIndex': instance.activeStepIndex,
       'liveControlRevision': instance.liveControlRevision,
       'assignmentDraftRevision': instance.assignmentDraftRevision,
@@ -95,6 +104,11 @@ Map<String, dynamic> _$EventSuccessPlanToJson(_EventSuccessPlan instance) =>
         instance.completedAt,
       ),
     };
+
+const _$EventSuccessConversationGraphConsentModeEnumMap = {
+  EventSuccessConversationGraphConsentMode.optIn: 'optIn',
+  EventSuccessConversationGraphConsentMode.optOut: 'optOut',
+};
 
 const _$EventSuccessPlanStatusEnumMap = {
   EventSuccessPlanStatus.setup: 'setup',

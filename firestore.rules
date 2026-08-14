@@ -105,6 +105,10 @@ service cloud.firestore {
       return eventId + '_' + uid;
     }
 
+    function eventSuccessConversationGraphDocId(eventId, uid) {
+      return eventId + '_' + uid;
+    }
+
     function eventSuccessPreferenceDocId(eventId, uid) {
       return eventId + '_' + uid;
     }
@@ -1338,7 +1342,7 @@ service cloud.firestore {
           'eventId', 'clubId', 'playbookId', 'selectedModuleIds',
           'targetAttendeeCount', 'structureConfig', 'hostGoal', 'wingmanRequestsEnabled',
           'contextualOpenersEnabled', 'compatibilityAffectsRanking',
-          'questionnaireConfig',
+          'questionnaireConfig', 'conversationGraphConsentMode',
           'activeStepIndex', 'liveControlRevision',
           'assignmentDraftRevision', 'publishedRotationRoundIndex',
           'publishedRevealRoundIndex', 'status',
@@ -1372,6 +1376,10 @@ service cloud.firestore {
         && data.wingmanRequestsEnabled is bool
         && data.contextualOpenersEnabled is bool
         && optionalBool(data, 'compatibilityAffectsRanking')
+        && (
+          !hasField(data, 'conversationGraphConsentMode')
+          || data.conversationGraphConsentMode in ['optIn', 'optOut']
+        )
         && (
           !hasField(data, 'questionnaireConfig')
           || isValidEventSuccessQuestionnaireConfig(data.questionnaireConfig)
@@ -1583,7 +1591,8 @@ service cloud.firestore {
         'playbookId', 'selectedModuleIds', 'targetAttendeeCount',
         'structureConfig', 'hostGoal', 'wingmanRequestsEnabled',
         'contextualOpenersEnabled', 'compatibilityAffectsRanking',
-        'questionnaireConfig', 'attendeePrompt', 'updatedAt'
+        'questionnaireConfig', 'conversationGraphConsentMode',
+        'attendeePrompt', 'updatedAt'
       ]);
     }
 
@@ -1718,6 +1727,23 @@ service cloud.firestore {
       allow create, update: if isAuthed()
         && isValidEventSuccessFeedback(feedbackId, request.resource.data);
       allow delete: if false;
+    }
+
+    match /eventSuccessConversationGraphs/{graphId} {
+      allow get: if isAuthed()
+        && resource.data.keys().hasAll(['eventId', 'uid'])
+        && resource.data.eventId is string
+        && resource.data.uid == request.auth.uid
+        && graphId == eventSuccessConversationGraphDocId(
+          resource.data.eventId,
+          request.auth.uid
+        )
+        && hasCheckedInEventSuccessAccess(
+          resource.data.eventId,
+          request.auth.uid
+        );
+      allow list: if false;
+      allow create, update, delete: if false;
     }
 
     match /eventSafetyReports/{reportId} {

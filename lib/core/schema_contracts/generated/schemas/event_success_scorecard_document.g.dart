@@ -129,6 +129,51 @@ const schemaEventSuccessScorecardDocumentSchema = <String, Object?>{
       'minimum': 0,
       'x-catch-ownership': 'trigger-owned',
     },
+    'conversationGraph': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'description': 'Host-visible aggregate conversation outcomes. Person-to-person edges remain in attendee-private documents.',
+      'required': <Object?>[
+        'responseCount',
+        'skippedCount',
+        'conversationCount',
+        'attendeesWithTwoPlusConversations',
+        'excludedAttendeeCount',
+        'assignedConversationCount',
+        'assignedOpportunityCount',
+      ],
+      'properties': <String, Object?>{
+        'responseCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+        'skippedCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+        'conversationCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+        'attendeesWithTwoPlusConversations': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+        'excludedAttendeeCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+        'assignedConversationCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+        'assignedOpportunityCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+      },
+      'x-catch-ownership': 'trigger-owned',
+    },
     'funnel': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,

@@ -60,6 +60,10 @@ export interface EventSuccessPlanDocument {
       }[];
     }[];
   };
+  /**
+   * Whether assigned attendees begin unselected or preselected in the end-of-event conversation graph. Missing legacy values resolve to optIn.
+   */
+  conversationGraphConsentMode?: "optIn" | "optOut";
   activeStepIndex: number;
   liveControlRevision?: number;
   assignmentDraftRevision?: number;

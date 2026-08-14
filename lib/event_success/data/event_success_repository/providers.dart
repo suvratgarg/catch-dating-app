@@ -250,6 +250,9 @@ String eventSuccessPeerUidsKey(List<String> uids) {
 EventSuccessScorecard _eventSuccessScorecardFromJson(
   Map<String, dynamic> json,
 ) {
+  final conversationGraph = json['conversationGraph'] is Map
+      ? Map<String, dynamic>.from(json['conversationGraph'] as Map)
+      : const <String, dynamic>{};
   return EventSuccessScorecard(
     bookedCount: _nonNegativeInt(json['bookedCount']),
     checkedInCount: _nonNegativeInt(json['checkedInCount']),
@@ -268,6 +271,25 @@ EventSuccessScorecard _eventSuccessScorecardFromJson(
     averageStructureRating: _rating(json['averageStructureRating']),
     safetyIncidentCount: _nonNegativeInt(json['safetyIncidentCount']),
     feedbackResponseCount: _nonNegativeInt(json['feedbackCount']),
+    conversationGraphResponseCount: _nonNegativeInt(
+      conversationGraph['responseCount'],
+    ),
+    conversationGraphSkippedCount: _nonNegativeInt(
+      conversationGraph['skippedCount'],
+    ),
+    conversationCount: _nonNegativeInt(conversationGraph['conversationCount']),
+    attendeesWithTwoPlusConversations: _nonNegativeInt(
+      conversationGraph['attendeesWithTwoPlusConversations'],
+    ),
+    conversationExcludedAttendeeCount: _nonNegativeInt(
+      conversationGraph['excludedAttendeeCount'],
+    ),
+    assignedConversationCount: _nonNegativeInt(
+      conversationGraph['assignedConversationCount'],
+    ),
+    assignedConversationOpportunityCount: _nonNegativeInt(
+      conversationGraph['assignedOpportunityCount'],
+    ),
     funnel: _eventSuccessHostFunnelFromJson(json['funnel']),
   );
 }

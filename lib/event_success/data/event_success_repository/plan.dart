@@ -75,6 +75,8 @@ mixin _EventSuccessPlanRepository on _EventSuccessRepositoryCore {
           'contextualOpenersEnabled': plan.contextualOpenersEnabled,
           'compatibilityAffectsRanking': plan.compatibilityAffectsRanking,
           'questionnaireConfig': plan.questionnaireConfig.toJson(),
+          'conversationGraphConsentMode':
+              plan.conversationGraphConsentMode.name,
           'attendeePrompt': plan.attendeePrompt,
           'updatedAt': FieldValue.serverTimestamp(),
         });

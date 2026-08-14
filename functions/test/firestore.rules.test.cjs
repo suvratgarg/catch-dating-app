@@ -478,6 +478,23 @@ function eventSuccessFeedback(overrides = {}) {
   };
 }
 
+function eventSuccessConversationGraph(overrides = {}) {
+  return {
+    eventId: "event-1",
+    clubId: "club-1",
+    organizerId: "organizer-1",
+    uid: "runner-1",
+    status: "submitted",
+    selectedUids: ["runner-2"],
+    assignedSelectedCount: 1,
+    assignedCandidateCount: 2,
+    consentMode: "optIn",
+    createdAt: Timestamp.fromDate(new Date("2026-05-02T04:00:00.000Z")),
+    updatedAt: Timestamp.fromDate(new Date("2026-05-02T04:00:00.000Z")),
+    ...overrides,
+  };
+}
+
 function eventSuccessAssignment(overrides = {}) {
   return {
     eventId: "event-1",
@@ -2693,6 +2710,14 @@ describe("firestore.rules", () => {
         hostGoal: "Keep the event welcoming.",
         updatedAt: serverTimestamp(),
       }));
+      await assertSucceeds(updateDoc(planRef, {
+        conversationGraphConsentMode: "optOut",
+        updatedAt: serverTimestamp(),
+      }));
+      await assertFails(updateDoc(planRef, {
+        conversationGraphConsentMode: "preselectedForever",
+        updatedAt: serverTimestamp(),
+      }));
       await assertFails(updateDoc(planRef, {
         activeStepIndex: 1,
         status: "live",
@@ -3030,6 +3055,47 @@ describe("firestore.rules", () => {
       await assertFails(
         getDoc(doc(authedDb("runner-2"), "eventSuccessFeedback", "event-1_runner-1")),
       );
+    });
+
+    it("keeps conversation graph edges attendee-private and server-written", async () => {
+      await seed(["clubs", "club-1"], club());
+      await seed(["events", "event-1"], event());
+      await seed(
+        ["eventParticipations", "event-1_runner-1"],
+        eventParticipation({
+          status: "attended",
+          attendedAt: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
+        }),
+      );
+      await seed(
+        ["eventSuccessConversationGraphs", "event-1_runner-1"],
+        eventSuccessConversationGraph(),
+      );
+
+      await assertSucceeds(getDoc(doc(
+        authedDb("runner-1"),
+        "eventSuccessConversationGraphs",
+        "event-1_runner-1",
+      )));
+      await assertFails(getDoc(doc(
+        authedDb("runner-2"),
+        "eventSuccessConversationGraphs",
+        "event-1_runner-1",
+      )));
+      await assertFails(getDoc(doc(
+        authedDb("host-1"),
+        "eventSuccessConversationGraphs",
+        "event-1_runner-1",
+      )));
+      await assertFails(getDocs(query(
+        collection(authedDb("host-1"), "eventSuccessConversationGraphs"),
+        where("eventId", "==", "event-1"),
+      )));
+      await assertFails(setDoc(doc(
+        authedDb("runner-1"),
+        "eventSuccessConversationGraphs",
+        "event-1_runner-1",
+      ), eventSuccessConversationGraph()));
     });
 
     it("keeps event safety reports server-owned", async () => {
