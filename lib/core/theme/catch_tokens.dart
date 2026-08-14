@@ -2282,6 +2282,8 @@ abstract final class CatchLayout {
   static const double eventSuccessStageGlyphExtent = 88.0;
   static const double eventSuccessStageGlyphIconSize = CatchSpacing.s10;
   static const double eventSuccessArrivalRingExtent = 140.0;
+  static const double eventSuccessVenueQrExtent = 168.0;
+  static const double eventSuccessVenueQrErrorMaxWidth = 320.0;
   static const double eventSuccessCountdownDialWidthFactor = 0.68;
   static const double eventSuccessCountdownDialMinExtent = 168.0;
   static const double eventSuccessCountdownDialMaxExtent = 228.0;
