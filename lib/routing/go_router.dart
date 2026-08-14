@@ -665,10 +665,20 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
                       arguments.initialPrefill,
                     _ => null,
                   },
+                  initialDraft: switch (extra) {
+                    final HostCreateEventRouteArguments arguments =>
+                      arguments.initialDraft,
+                    _ => null,
+                  },
                   externalBookingMode: switch (extra) {
                     final HostCreateEventRouteArguments arguments =>
                       arguments.externalBookingMode,
                     _ => false,
+                  },
+                  promptForDrafts: switch (extra) {
+                    final HostCreateEventRouteArguments arguments =>
+                      arguments.promptForDrafts,
+                    _ => true,
                   },
                 );
               },

@@ -98,6 +98,7 @@ class CreateEventScreen extends ConsumerStatefulWidget {
     this.now = _systemNow,
     this.initialDraft,
     this.initialPrefill,
+    this.promptForDraftsOnStart = true,
     this.initialStep = 0,
     this.formAutovalidateMode = AutovalidateMode.disabled,
     this.initialPickedEventPhotos = const <PickedEventPhoto>[],
@@ -110,6 +111,7 @@ class CreateEventScreen extends ConsumerStatefulWidget {
   final Club club;
   final EventDraft? initialDraft;
   final CreateEventPrefill? initialPrefill;
+  final bool promptForDraftsOnStart;
   final int initialStep;
   final AutovalidateMode formAutovalidateMode;
   final List<PickedEventPhoto> initialPickedEventPhotos;
@@ -277,7 +279,11 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       _activeDraftId = initialDraft.id;
       _applyDraftValues(initialDraft);
       _lastSavedDraftSignature = _currentDraftContentSignature;
+      // A draft selected by the calling surface is already the user's choice;
+      // do not reload the same collection and show the picker again.
+      _checkedDrafts = true;
     }
+    if (!widget.promptForDraftsOnStart) _checkedDrafts = true;
     final initialPrefill = widget.initialPrefill;
     if (initialPrefill != null) {
       _applyDraftValues(initialPrefill.values);

@@ -26,8 +26,10 @@ import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
+import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_date_rail_card.dart';
 import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
@@ -539,49 +541,7 @@ void main() {
     expect(find.text('Section live'), findsOneWidget);
   });
 
-  testWidgets('Host events has no create-club header and opens event manage', (
-    tester,
-  ) async {
-    final club = buildClub(id: 'club-host', ownerUserId: _hostUid);
-    final event = buildEvent(
-      id: 'event-host',
-      clubId: club.id,
-      startTime: DateTime(2026, 6, 15, 17),
-    );
-
-    await _pumpHostScreen(
-      tester,
-      HostOperationsHomeScreen(now: DateTime(2026, 6, 15, 12)),
-      overrides: [
-        ..._hostClubOverrides(owned: [club]),
-        watchEventsForClubProvider(
-          club.id,
-        ).overrideWithValue(AsyncData<List<Event>>([event])),
-      ],
-    );
-
-    expect(find.text('Events'), findsWidgets);
-    expect(find.byTooltip('Create organizer'), findsNothing);
-    expect(find.byTooltip('Switch organizer'), findsNothing);
-    expect(find.text('New event'), findsOneWidget);
-    expect(find.text('Use guest list'), findsOneWidget);
-    expect(find.text('View club'), findsNothing);
-    expect(find.text('View public profile'), findsNothing);
-
-    expect(
-      tester
-          .widget<HostEventOperationalSpotlight>(
-            find.byType(HostEventOperationalSpotlight),
-          )
-          .event,
-      event,
-    );
-    await tester.tap(find.text('Set up & run'));
-    await pumpFeatureUi(tester);
-
-    expect(find.text('Manage ${event.id}'), findsOneWidget);
-    expect(find.text('Section setup'), findsOneWidget);
-  });
+  registerHostEventEntryTests();
 
   testWidgets('Host events centers its canonical empty-state primitive', (
     tester,
@@ -682,7 +642,7 @@ void main() {
     expect(find.text(past.title), findsNothing);
     expect(find.text(olderPast.title), findsNothing);
     expect(find.text(oldestPast.title), findsNothing);
-    expect(find.text('Repeat ‘Social run’'), findsOneWidget);
+    expect(find.text('Repeat last event'), findsNothing);
     await tester.scrollUntilVisible(
       find.byKey(const ValueKey<String>('host-event-row-upcoming-event')),
       300,
@@ -709,6 +669,11 @@ void main() {
       scrollable: _hostEventsScrollable(),
     );
     expect(find.text(past.title), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.byKey(const ValueKey<String>('host-events-month-2026-5')),
+      300,
+      scrollable: _hostEventsScrollable(),
+    );
     expect(find.text(olderPast.title), findsOneWidget);
     expect(find.text(oldestPast.title), findsOneWidget);
     expect(find.byType(HostEventLifecycleRow), findsNothing);
@@ -786,10 +751,19 @@ void main() {
       closeTo(tester.getTopRight(maySection).dx, 0.5),
     );
 
-    final repeatButton = find.text('Repeat ‘Social run’');
-    await tester.ensureVisible(repeatButton);
+    final createButton = find.byKey(
+      const ValueKey<String>('host-events-create-event'),
+    );
+    await tester.ensureVisible(createButton);
     await pumpFeatureUi(tester);
-    await tester.tap(repeatButton);
+    await tester.tap(createButton);
+    await pumpFeatureUi(tester);
+    expect(find.text('Repeat last event'), findsOneWidget);
+    expect(
+      find.text('Reuse the setup from ${past.title} and choose a new date.'),
+      findsOneWidget,
+    );
+    await tester.tap(find.text('Repeat last event'));
     await pumpFeatureUi(tester);
     expect(find.text('Repeat ${past.id}'), findsOneWidget);
   });
@@ -2436,6 +2410,9 @@ Future<void> _pumpHostScreen(
           final HostCreateEventRouteArguments arguments
               when arguments.initialPrefill != null =>
             Text('Repeat ${arguments.initialPrefill!.sourceEventId}'),
+          final HostCreateEventRouteArguments arguments
+              when arguments.initialDraft != null =>
+            Text('Draft ${arguments.initialDraft!.id}'),
           _ => Text('Create ${state.pathParameters['clubId']}'),
         },
       ),

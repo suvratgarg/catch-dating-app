@@ -1,6 +1,6 @@
 part of '../host_operations_screen.dart';
 
-class HostEventsScaffold extends StatefulWidget {
+class HostEventsScaffold extends ConsumerStatefulWidget {
   const HostEventsScaffold({
     super.key,
     required this.clubs,
@@ -15,10 +15,10 @@ class HostEventsScaffold extends StatefulWidget {
   final DateTime? now;
 
   @override
-  State<HostEventsScaffold> createState() => _HostEventsScaffoldState();
+  ConsumerState<HostEventsScaffold> createState() => _HostEventsScaffoldState();
 }
 
-class _HostEventsScaffoldState extends State<HostEventsScaffold> {
+class _HostEventsScaffoldState extends ConsumerState<HostEventsScaffold> {
   late HostHomeScreenState _state;
   HostEventsLifecycleFilter _eventFilter = HostEventsLifecycleFilter.upcoming;
   late DateTime _clockNow;
@@ -122,9 +122,7 @@ class _HostEventsScaffoldState extends State<HostEventsScaffold> {
                     setState(() => _state = _state.selectClubIndex(index)),
                 onFilterChanged: (filter) =>
                     setState(() => _eventFilter = filter),
-                onCreateEvent: _openCreateEvent,
-                onConnectExternalEvent: _openExternalEvent,
-                onRepeatEvent: _openRepeatEvent,
+                onEventEntrySelected: _handleEventEntrySelected,
                 onManageEvent: _openEvent,
                 onOpenTask: _openAttentionTask,
                 now: _clockNow,
@@ -133,38 +131,85 @@ class _HostEventsScaffoldState extends State<HostEventsScaffold> {
     );
   }
 
-  void _openCreateEvent(Club club) {
-    context.pushNamed(
-      Routes.hostCreateEventScreen.name,
-      pathParameters: {'clubId': club.id},
-      extra: club,
+  Future<void> _handleEventEntrySelected(
+    Club club,
+    HostEventEntryState state,
+    HostEventEntryIntent intent,
+  ) async {
+    switch (intent) {
+      case HostEventEntryIntent.resumeDraft:
+        final draft = await _pickDraft(state);
+        if (draft == null || !mounted) return;
+        await _openCreateEvent(club, initialDraft: draft);
+      case HostEventEntryIntent.repeatLastEvent:
+        final source = state.repeatSource;
+        if (source == null) return;
+        await _openRepeatEvent(club, source);
+      case HostEventEntryIntent.createWithCatchBookings:
+        await _openCreateEvent(club);
+      case HostEventEntryIntent.createFromGuestList:
+        await _openExternalEvent(club);
+    }
+  }
+
+  Future<EventDraft?> _pickDraft(HostEventEntryState state) async {
+    if (!state.hasMultipleDrafts) return state.mostRecentDraft;
+    return showDraftPickerSheet(
+      context: context,
+      drafts: state.drafts,
+      showStartFreshAction: false,
+      onDeleteDraft: (draft) async {
+        await CreateEventDraftController.deleteDraftMutation.run(ref, (tx) {
+          return tx
+              .get(createEventDraftControllerProvider.notifier)
+              .deleteDraft(clubId: draft.clubId, draftId: draft.id);
+        });
+        ref.invalidate(clubEventDraftsProvider(clubId: draft.clubId));
+      },
     );
   }
 
-  void _openExternalEvent(Club club) {
-    context.pushNamed(
+  Future<void> _openCreateEvent(Club club, {EventDraft? initialDraft}) async {
+    await context.pushNamed(
+      Routes.hostCreateEventScreen.name,
+      pathParameters: {'clubId': club.id},
+      extra: HostCreateEventRouteArguments(
+        initialClub: club,
+        initialDraft: initialDraft,
+        promptForDrafts: false,
+      ),
+    );
+    ref.invalidate(clubEventDraftsProvider(clubId: club.id));
+  }
+
+  Future<void> _openExternalEvent(Club club) async {
+    await context.pushNamed(
       Routes.hostCreateEventScreen.name,
       pathParameters: {'clubId': club.id},
       extra: HostCreateEventRouteArguments(
         initialClub: club,
         externalBookingMode: true,
+        promptForDrafts: false,
       ),
     );
+    ref.invalidate(clubEventDraftsProvider(clubId: club.id));
   }
 
-  void _openRepeatEvent(Club club, Event event) {
+  Future<void> _openRepeatEvent(Club club, Event event) async {
     final prefill = CreateEventPrefill.repeat(
       event: event,
       createdAt: _clockNow,
     );
-    context.pushNamed(
+    await context.pushNamed(
       Routes.hostCreateEventScreen.name,
       pathParameters: {'clubId': club.id},
       extra: HostCreateEventRouteArguments(
         initialClub: club,
         initialPrefill: prefill,
+        promptForDrafts: false,
       ),
     );
+    ref.invalidate(clubEventDraftsProvider(clubId: club.id));
   }
 
   void _openEvent(Club club, Event event) {
