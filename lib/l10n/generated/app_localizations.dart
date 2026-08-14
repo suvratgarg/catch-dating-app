@@ -9523,7 +9523,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/host_operations/host_events_list.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'New event'**
+  /// **'Create event'**
   String get hostsHostEventsListLabelNewEvent;
 
   /// CTA to create an external companion event from an existing booking-platform guest list.
@@ -9531,6 +9531,68 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Use guest list'**
   String get hostsHostEventsListLabelUseGuestList;
+
+  /// Explains that event-entry choices lead to a reviewable create flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how you want to start. You can review every detail before publishing.'**
+  String get hostsHostEventEntrySheetSubtitleChooseHowYouWantToStart;
+
+  /// Section label for resuming existing event work.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get hostsHostEventEntrySheetSectionContinueExisting;
+
+  /// Section label for beginning a new event.
+  ///
+  /// In en, this message translates to:
+  /// **'Start new'**
+  String get hostsHostEventEntrySheetSectionStartNew;
+
+  /// Action title for resuming a saved event draft.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue draft'**
+  String get hostsHostEventEntrySheetTitleContinueDraft;
+
+  /// Action title for reusing the most recent eligible event setup.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat last event'**
+  String get hostsHostEventEntrySheetTitleRepeatLastEvent;
+
+  /// Action title for creating an event that uses Catch bookings.
+  ///
+  /// In en, this message translates to:
+  /// **'Sell tickets with Catch'**
+  String get hostsHostEventEntrySheetTitleSellTicketsWithCatch;
+
+  /// Supporting copy showing how many event drafts are available.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 saved draft} other{{count} saved drafts}}'**
+  String hostsHostEventEntrySheetBodySavedDraftCount({required int count});
+
+  /// Supporting copy for the repeat-event action.
+  ///
+  /// In en, this message translates to:
+  /// **'Reuse the setup from {eventTitle} and choose a new date.'**
+  String hostsHostEventEntrySheetBodyReuseEventSetup({
+    required String eventTitle,
+  });
+
+  /// Supporting copy for the Catch-bookings event path.
+  ///
+  /// In en, this message translates to:
+  /// **'Tickets, waitlist, and payments in one place.'**
+  String get hostsHostEventEntrySheetBodyTicketsWaitlistAndPayments;
+
+  /// Supporting copy for creating an event from an external guest list.
+  ///
+  /// In en, this message translates to:
+  /// **'Import CSV or XLSX; ticketing stays on your existing platform.'**
+  String get hostsHostEventEntrySheetBodyImportCsvOrXlsx;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_events_list.dart (Text).
   ///

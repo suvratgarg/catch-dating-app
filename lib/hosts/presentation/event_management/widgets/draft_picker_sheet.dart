@@ -20,6 +20,7 @@ Future<EventDraft?> showDraftPickerSheet({
   required BuildContext context,
   required List<EventDraft> drafts,
   required Future<void> Function(EventDraft draft) onDeleteDraft,
+  bool showStartFreshAction = true,
 }) {
   final completer = Completer<EventDraft?>();
   showCatchBottomSheet(
@@ -30,7 +31,9 @@ Future<EventDraft?> showDraftPickerSheet({
     builder: (sheetContext) => DraftPickerSheet(
       drafts: drafts,
       onSelectDraft: (draft) => completer.complete(draft),
-      onStartFresh: () => completer.complete(null),
+      onStartFresh: showStartFreshAction
+          ? () => completer.complete(null)
+          : null,
       onDeleteDraft: onDeleteDraft,
     ),
   ).then((_) {
@@ -93,13 +96,13 @@ class DraftPickerSheet extends StatefulWidget {
     super.key,
     required this.drafts,
     required this.onSelectDraft,
-    required this.onStartFresh,
+    this.onStartFresh,
     required this.onDeleteDraft,
   });
 
   final List<EventDraft> drafts;
   final ValueChanged<EventDraft> onSelectDraft;
-  final VoidCallback onStartFresh;
+  final VoidCallback? onStartFresh;
   final Future<void> Function(EventDraft draft) onDeleteDraft;
 
   @override
@@ -122,7 +125,7 @@ class _DraftPickerSheetState extends State<DraftPickerSheet> {
   }
 
   void _onStartFresh() {
-    widget.onStartFresh();
+    widget.onStartFresh?.call();
     Navigator.of(context).pop();
   }
 
@@ -157,13 +160,15 @@ class _DraftPickerSheetState extends State<DraftPickerSheet> {
     return CatchBottomSheetScaffold(
       title: context.l10n.hostsDraftPickerSheetTitleResumeADraft,
       subtitle: context.l10n.hostsDraftPickerSheetSubtitlePickUpWhereYou,
-      action: CatchButton(
-        label: context.l10n.hostsDraftPickerSheetLabelStartAFreshEvent,
-        onPressed: _onStartFresh,
-        variant: CatchButtonVariant.secondary,
-        fullWidth: true,
-        icon: Icon(CatchIcons.addRounded),
-      ),
+      action: widget.onStartFresh == null
+          ? null
+          : CatchButton(
+              label: context.l10n.hostsDraftPickerSheetLabelStartAFreshEvent,
+              onPressed: _onStartFresh,
+              variant: CatchButtonVariant.secondary,
+              fullWidth: true,
+              icon: Icon(CatchIcons.addRounded),
+            ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,

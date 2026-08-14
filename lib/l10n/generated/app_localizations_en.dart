@@ -6008,10 +6008,57 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostEventsListTextEvents => 'Events';
 
   @override
-  String get hostsHostEventsListLabelNewEvent => 'New event';
+  String get hostsHostEventsListLabelNewEvent => 'Create event';
 
   @override
   String get hostsHostEventsListLabelUseGuestList => 'Use guest list';
+
+  @override
+  String get hostsHostEventEntrySheetSubtitleChooseHowYouWantToStart =>
+      'Choose how you want to start. You can review every detail before publishing.';
+
+  @override
+  String get hostsHostEventEntrySheetSectionContinueExisting => 'Continue';
+
+  @override
+  String get hostsHostEventEntrySheetSectionStartNew => 'Start new';
+
+  @override
+  String get hostsHostEventEntrySheetTitleContinueDraft => 'Continue draft';
+
+  @override
+  String get hostsHostEventEntrySheetTitleRepeatLastEvent =>
+      'Repeat last event';
+
+  @override
+  String get hostsHostEventEntrySheetTitleSellTicketsWithCatch =>
+      'Sell tickets with Catch';
+
+  @override
+  String hostsHostEventEntrySheetBodySavedDraftCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count saved drafts',
+      one: '1 saved draft',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostsHostEventEntrySheetBodyReuseEventSetup({
+    required String eventTitle,
+  }) {
+    return 'Reuse the setup from $eventTitle and choose a new date.';
+  }
+
+  @override
+  String get hostsHostEventEntrySheetBodyTicketsWaitlistAndPayments =>
+      'Tickets, waitlist, and payments in one place.';
+
+  @override
+  String get hostsHostEventEntrySheetBodyImportCsvOrXlsx =>
+      'Import CSV or XLSX; ticketing stays on your existing platform.';
 
   @override
   String get hostsHostEventsListTextLive => 'LIVE';
