@@ -14877,7 +14877,7 @@
       },
       "statePolicy": {
         "requiredStates": ["data", "empty", "error", "loading", "mutation", "offline", "permission"],
-        "owner": "HostCustomersDirectoryController, HostCustomersController, and hostAudienceContactDetailProvider"
+        "owner": "HostCustomersDirectoryController, HostCustomersController, HostAudienceController, and hostAudienceContactDetailProvider"
       },
       "name": "Host Customers",
       "owner": "hosts",
@@ -14892,16 +14892,18 @@
         "symbol": "HostCustomersScreen"
       },
       "stateController": {
-        "primary": "hostCustomersDirectoryControllerProvider + hostAudienceContactDetailProvider",
+        "primary": "hostCustomersDirectoryControllerProvider + hostAudienceContactDetailProvider + hostMessagingSetupProvider",
         "files": [
           {"file": "lib/hosts/presentation/customers/host_customers_controller.dart", "symbol": "HostCustomersDirectoryController"},
           {"file": "lib/hosts/presentation/customers/host_customers_screen_state.dart", "symbol": "HostCustomersDirectoryState"},
-          {"file": "lib/hosts/data/host_crm_repository.dart", "symbol": "hostAudienceContactDetail"}
+          {"file": "lib/hosts/data/host_crm_repository.dart", "symbol": "hostAudienceContactDetail"},
+          {"file": "lib/hosts/presentation/host_operations/host_audience.dart", "symbol": "HostCustomerMessagingPane"}
         ],
         "mutationOwners": [
-          {"file": "lib/hosts/presentation/customers/host_customers_controller.dart", "symbol": "HostCustomersController"}
+          {"file": "lib/hosts/presentation/customers/host_customers_controller.dart", "symbol": "HostCustomersController"},
+          {"file": "lib/hosts/presentation/host_audience_controller.dart", "symbol": "HostAudienceController"}
         ],
-        "notes": "The directory request owns organizer, normalized search, tag filter, server cursor and id de-duplication. Customer detail keeps identity confidence and revenue coverage explicit; manual contact creation never implies a Catch account, and conversation creation remains server-authorized."
+        "notes": "Customers is the sole organizer CRM destination. Its People workspace owns organizer, normalized search, every supported CRM segment, server cursor, id de-duplication, export and contact administration; Campaigns owns sender setup and the complete campaign lifecycle. Customer detail keeps identity confidence and revenue coverage explicit, manual contact creation never implies a Catch account, and conversation creation remains server-authorized."
       },
       "designRefs": [
         {
@@ -14938,14 +14940,24 @@
         {"id": "customer_revenue_unavailable", "kind": "permission", "status": "implemented", "source": "HostCustomerRevenueCard unavailable coverage", "nextAction": "Capture unlinked revenue boundary."},
         {"id": "conversation_available", "kind": "populated", "status": "tested", "source": "HostCustomerConversationAvailability.available", "previewIds": ["hostCustomersStates"], "tests": ["test/hosts/host_customers_screen_state_test.dart"], "nextAction": "Add callable authorization integration test."},
         {"id": "conversation_unavailable", "kind": "permission", "status": "tested", "source": "HostCustomerConversationAvailability", "tests": ["test/hosts/host_customers_screen_state_test.dart"], "nextAction": "Add rendered disabled-state coverage."},
+        {"id": "customer_export_pending", "kind": "mutation", "status": "implemented", "source": "HostCustomersScreen export lifecycle", "nextAction": "Add native-share controller widget coverage."},
+        {"id": "customer_manage", "kind": "mutation", "status": "implemented", "source": "HostCustomerManageSheet", "tests": ["test/hosts/host_customers_screen_state_test.dart"], "nextAction": "Add rendered rename, suppression, and remove coverage."},
+        {"id": "customer_manage_pending", "kind": "mutation", "status": "implemented", "source": "HostCustomerManageSheet submit lifecycle", "nextAction": "Add revision-conflict widget coverage."},
+        {"id": "customer_messaging_provider_unavailable", "kind": "permission", "status": "implemented", "source": "HostCustomerMessagingPane provider notice", "previewIds": ["hostCustomerMessagingStates"], "nextAction": "Keep provider-gate copy aligned with backend capability state."},
+        {"id": "customer_messaging_disconnected", "kind": "empty", "status": "implemented", "source": "HostCustomerMessagingPane connection setup", "previewIds": ["hostCustomerMessagingStates"], "nextAction": "Add connect handoff widget coverage."},
+        {"id": "customer_messaging_connecting", "kind": "mutation", "status": "implemented", "source": "HostCustomerMessagingPane pending sender mutation", "nextAction": "Add deterministic pending capture."},
+        {"id": "customer_messaging_ready", "kind": "populated", "status": "implemented", "source": "HostCustomerMessagingPane sender and template controls", "previewIds": ["hostCustomerMessagingStates"], "tests": ["test/hosts/host_crm_repository_test.dart"], "nextAction": "Add sender mutation widget coverage."},
+        {"id": "customer_campaign_draft", "kind": "mutation", "status": "implemented", "source": "HostCustomerMessagingPane campaign composer", "previewIds": ["hostCustomerMessagingStates"], "nextAction": "Add rendered draft variable validation coverage."},
+        {"id": "customer_campaign_previewed", "kind": "mutation", "status": "implemented", "source": "HostCustomerMessagingPane campaign preview", "nextAction": "Add deterministic preview capture."},
+        {"id": "customer_campaign_active", "kind": "mutation", "status": "implemented", "source": "HostCustomerMessagingPane campaign lifecycle controls", "previewIds": ["hostCustomerMessagingStates"], "tests": ["test/hosts/host_crm_repository_test.dart"], "nextAction": "Add dispatch and cancel widget coverage."},
         {"id": "offline", "kind": "offline", "status": "implemented", "source": "CatchErrorState AppException mapping", "nextAction": "Add deterministic offline capture."},
         {"id": "text_scale_2", "kind": "accessibility", "status": "planned", "source": "Host Customers screen contract", "nextAction": "Verify directory and detail at 2x text scale."},
         {"id": "reduced_motion", "kind": "accessibility", "status": "planned", "source": "Host Customers screen contract", "nextAction": "Verify mutation and route transitions with reduced motion."},
         {"id": "light_dark", "kind": "theme", "status": "planned", "source": "Catch token primitives", "nextAction": "Capture directory and detail in light and dark themes."}
       ],
       "composition": {
-        "currentLayout": "A dedicated Host tab presents organizer identity, CRM summary, search and lifecycle tags above a paginated person directory; a nested route presents customer identity, attendance, revenue and conversation eligibility.",
-        "targetLayout": "Keep the Customers branch lifecycle-oriented and provider-agnostic while progressively extracting campaign and contact administration spokes from Organizer Audience without duplicating ownership.",
+        "currentLayout": "A dedicated Host tab presents organizer identity and a People/Campaigns workspace selector. People contains CRM summary, export, manual add, search, the complete segment set and a paginated directory; Campaigns contains sender setup and the full campaign lifecycle. A nested route presents customer administration, identity, complete event history, attendance, revenue and conversation eligibility.",
+        "targetLayout": "Keep Customers as the sole CRM owner. Organizer remains focused on organizer configuration, insights and public preview, while legacy Organizer Audience deep links redirect into Customers.",
         "sections": [
           {
             "id": "section.host.customers.directory_header",
@@ -14998,13 +15010,26 @@
             "dependencies": ["catch.section", "catch.surface"],
             "states": ["customer_revenue_exact", "customer_revenue_partial", "customer_revenue_unavailable"],
             "migration": "Revenue is limited to completed, non-refunded Catch payments for the organizer's event set and never collapses exact, partial, and unavailable coverage."
+          },
+          {
+            "id": "section.host.customers.messaging",
+            "name": "WhatsApp sender setup and campaign lifecycle",
+            "status": "implemented_local",
+            "layer": "section",
+            "claudeComponents": [],
+            "flutter": {"file": "lib/hosts/presentation/host_operations/host_audience.dart", "symbol": "HostCustomerMessagingPane"},
+            "currentOwner": "hosts.presentation.customers",
+            "targetOwner": "hosts.presentation.customers",
+            "dependencies": ["catch.button", "catch.field", "catch.notice", "catch.option_group", "catch.section", "catch.surface"],
+            "states": ["customer_messaging_provider_unavailable", "customer_messaging_disconnected", "customer_messaging_ready", "customer_campaign_draft", "customer_campaign_active"],
+            "migration": "Moved intact from Organizer Audience into Customers Campaigns; the same HostCrmRepository commands and revision gates remain authoritative."
           }
         ]
       },
       "openGaps": [
         {"id": "HOST-CUSTOMERS-001", "status": "blocked", "nextAction": "Add High spender only after payment writes maintain an indexed, versioned organizer-contact trait projection; do not scan payment history in the directory."},
         {"id": "HOST-CUSTOMERS-002", "status": "open", "nextAction": "Add Widgetbook and deterministic capture coverage for the directory, manual identity, revenue coverage, and conversation-gate states."},
-        {"id": "HOST-CUSTOMERS-003", "status": "in_progress", "nextAction": "Move campaign and provider administration from Organizer Audience into explicit Customers spokes only after equivalent route-level ownership exists."}
+        {"id": "HOST-CUSTOMERS-003", "status": "closed", "nextAction": "Customers now owns provider administration, campaigns, export, suppression, rename and removal; keep the legacy Organizer Audience redirect covered while old links age out."}
       ]
     },
     {

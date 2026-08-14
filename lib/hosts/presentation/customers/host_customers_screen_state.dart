@@ -1,30 +1,47 @@
 import 'package:flutter/foundation.dart';
 
 enum HostCustomerTag {
+  newToOrganizer,
   firstTime,
   repeat,
   regular,
   atRisk,
+  reliable,
   needsConfirmation,
   advocate,
+  highImpactAdvocate,
+  whatsappReachable,
+  smsReachable,
 }
 
 enum HostCustomerFilter {
   all,
   attended,
+  newToOrganizer,
+  firstTime,
   repeat,
   regular,
   atRisk,
+  reliable,
   needsConfirmation,
-  advocate;
+  advocate,
+  highImpactAdvocate,
+  whatsappReachable,
+  smsReachable;
 
   HostCustomerTag? get tag => switch (this) {
     HostCustomerFilter.all || HostCustomerFilter.attended => null,
+    HostCustomerFilter.newToOrganizer => HostCustomerTag.newToOrganizer,
+    HostCustomerFilter.firstTime => HostCustomerTag.firstTime,
     HostCustomerFilter.repeat => HostCustomerTag.repeat,
     HostCustomerFilter.regular => HostCustomerTag.regular,
     HostCustomerFilter.atRisk => HostCustomerTag.atRisk,
+    HostCustomerFilter.reliable => HostCustomerTag.reliable,
     HostCustomerFilter.needsConfirmation => HostCustomerTag.needsConfirmation,
     HostCustomerFilter.advocate => HostCustomerTag.advocate,
+    HostCustomerFilter.highImpactAdvocate => HostCustomerTag.highImpactAdvocate,
+    HostCustomerFilter.whatsappReachable => HostCustomerTag.whatsappReachable,
+    HostCustomerFilter.smsReachable => HostCustomerTag.smsReachable,
   };
 }
 
@@ -113,6 +130,8 @@ class HostCustomerDirectoryContact {
     required this.lastAttendedAt,
     required this.tags,
     required this.hasAmbiguousIdentity,
+    required this.whatsappOptedIn,
+    required this.whatsappAdminSuppressed,
   });
 
   final String contactId;
@@ -121,6 +140,8 @@ class HostCustomerDirectoryContact {
   final DateTime? lastAttendedAt;
   final Set<HostCustomerTag> tags;
   final bool hasAmbiguousIdentity;
+  final bool whatsappOptedIn;
+  final bool whatsappAdminSuppressed;
 }
 
 enum HostCustomerConversationAvailability { ready, unlinked, ambiguous }

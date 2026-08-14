@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
@@ -81,6 +83,12 @@ class _HostCustomerDetailScreenState
             padding: CatchInsets.pageBody.copyWith(bottom: 0),
             children: [
               HostCustomerIdentityCard(customer: customer),
+              gapH12,
+              CatchButton(
+                label: context.l10n.hostCustomersManage,
+                variant: CatchButtonVariant.secondary,
+                onPressed: () => _manageCustomer(customer),
+              ),
               gapH16,
               HostCustomerConversationCard(
                 customer: customer,
@@ -110,6 +118,20 @@ class _HostCustomerDetailScreenState
         ),
       ),
     );
+  }
+
+  Future<void> _manageCustomer(HostAudienceContactDetail customer) async {
+    final result = await showCatchBottomSheet<HostCustomerManageResult>(
+      context: context,
+      builder: (context) => HostCustomerManageSheet(customer: customer),
+    );
+    if (!mounted || result == null) return;
+    ref.invalidate(hostCustomersDirectoryControllerProvider);
+    ref.invalidate(hostCrmSummaryProvider(widget.organizerId));
+    ref.invalidate(
+      hostAudienceContactDetailProvider(widget.organizerId, widget.contactId),
+    );
+    if (result == HostCustomerManageResult.hidden) context.pop();
   }
 
   Future<void> _startConversation(HostAudienceContactDetail customer) async {
