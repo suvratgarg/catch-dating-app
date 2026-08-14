@@ -5,6 +5,101 @@ Finder _hostEventsScrollable() => find.descendant(
   matching: find.byType(Scrollable),
 );
 
+void registerHostEventEntryTests() {
+  testWidgets('Host events has no create-club header and opens event manage', (
+    tester,
+  ) async {
+    final club = buildClub(id: 'club-host', ownerUserId: _hostUid);
+    final event = buildEvent(
+      id: 'event-host',
+      clubId: club.id,
+      startTime: DateTime(2026, 6, 15, 17),
+    );
+
+    await _pumpHostScreen(
+      tester,
+      HostOperationsHomeScreen(now: DateTime(2026, 6, 15, 12)),
+      overrides: [
+        ..._hostClubOverrides(owned: [club]),
+        watchEventsForClubProvider(
+          club.id,
+        ).overrideWithValue(AsyncData<List<Event>>([event])),
+      ],
+    );
+
+    expect(find.text('Events'), findsWidgets);
+    expect(find.byTooltip('Create organizer'), findsNothing);
+    expect(find.byTooltip('Switch organizer'), findsNothing);
+    expect(find.text('Create event'), findsOneWidget);
+    expect(find.text('Use guest list'), findsNothing);
+    await tester.tap(
+      find.byKey(const ValueKey<String>('host-events-create-event')),
+    );
+    await pumpFeatureUi(tester);
+    expect(find.text('Sell tickets with Catch'), findsOneWidget);
+    expect(find.text('Use guest list'), findsOneWidget);
+    expect(find.text('Continue draft'), findsNothing);
+    expect(find.text('Repeat last event'), findsNothing);
+    await tester.tapAt(const Offset(10, 10));
+    await pumpFeatureUi(tester);
+    expect(find.text('View club'), findsNothing);
+    expect(find.text('View public profile'), findsNothing);
+
+    expect(
+      tester
+          .widget<HostEventOperationalSpotlight>(
+            find.byType(HostEventOperationalSpotlight),
+          )
+          .event,
+      event,
+    );
+    await tester.tap(find.text('Set up & run'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Manage ${event.id}'), findsOneWidget);
+    expect(find.text('Section setup'), findsOneWidget);
+  });
+
+  testWidgets('Host events resumes a loaded draft without a second lookup', (
+    tester,
+  ) async {
+    final club = buildClub(id: 'draft-club', ownerUserId: _hostUid);
+    final draft = EventDraft(
+      id: 'draft-one',
+      clubId: club.id,
+      savedAt: DateTime(2026, 6, 15, 10),
+      customActivityLabel: 'Quiz night',
+    );
+
+    await _pumpHostScreen(
+      tester,
+      HostOperationsHomeScreen(now: DateTime(2026, 6, 15, 12)),
+      overrides: [
+        ..._hostClubOverrides(
+          owned: [club],
+          draftsByOrganizer: {
+            club.id: [draft],
+          },
+        ),
+        watchEventsForClubProvider(
+          club.id,
+        ).overrideWithValue(const AsyncData<List<Event>>([])),
+      ],
+    );
+
+    await tester.tap(
+      find.byKey(const ValueKey<String>('host-events-create-event')),
+    );
+    await pumpFeatureUi(tester);
+    expect(find.text('Continue draft'), findsOneWidget);
+    expect(find.text('Quiz night'), findsOneWidget);
+
+    await tester.tap(find.text('Continue draft'));
+    await pumpFeatureUi(tester);
+    expect(find.text('Draft draft-one'), findsOneWidget);
+  });
+}
+
 void registerHostWorkspacePagingTest() {
   testWidgets('Host club workspace uses native horizontal tab paging', (
     tester,
