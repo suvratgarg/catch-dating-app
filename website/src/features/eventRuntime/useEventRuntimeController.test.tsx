@@ -60,6 +60,7 @@ function bootstrap(participant: unknown = null) {
       startTimeMillis: 1,
       endTimeMillis: Date.now() + 3_600_000,
       locationName: "The Courtyard",
+      checkedInCount: 0,
       runtimeTermsVersion: "event-runtime-v1",
       moduleIds: [],
       requiredFieldIds: ["displayName"],

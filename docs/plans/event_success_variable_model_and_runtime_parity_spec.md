@@ -1,6 +1,6 @@
 ---
 doc_id: event_success_variable_model_and_runtime_parity_spec
-version: 1.8.0
+version: 1.9.0
 updated: 2026-08-14
 owner: event_success
 status: active
@@ -445,6 +445,27 @@ same input values. If the spike fails, fall back to Lottie for playback-only
 motifs plus contracted CSS transforms for the driven countdown; the Layer 1
 contract makes that fallback acceptable rather than a rewrite.
 
+### T13 spike result — fallback selected
+
+The 2026-08-14 production-bundle spike rejected Rive for this venue-network
+surface. Against a minimal React baseline of 59.63 KB gzip, the current
+`@rive-app/react-canvas-lite` path added 49.13 KB gzip of JavaScript, a
+326.40 KB gzip canvas-lite WASM runtime, and a 58.79 KB sample `.riv` artboard:
+about 434 KB of incremental compressed transfer before Catch page content. The
+current Event Runtime route chunk was 10.21 KB gzip. That cost fails the
+congested-network gate, so the conjunctive same-artboard rendering comparison
+did not proceed after the cost failure.
+
+The specified fallback is therefore authoritative: three checked-in Lottie
+vector assets (`theatrical`, `pulse`, `sunrise`) cover the playback-only stage,
+arrival, and reveal roles, while Flutter widget transforms and CSS transforms
+drive the countdown from the generated Layer 1 timeline, seed, progress, and
+participant count. `lottie-web`'s light player is dynamically imported only on
+the Event Runtime surface; the measured minimal spike added 47.57 KB gzip of
+code-splittable JavaScript and no WASM transfer. Flutter uses the same asset
+documents through `lottie`. This resolves the Rive-versus-Lottie decision
+without adding an event-format fork or web audio.
+
 ## B.4 Layer 3 — allow divergence below the marquee
 
 Chip bounce, press springs, idle breathing, and ink-replacement
@@ -714,7 +735,7 @@ docs are updated. Update this table in the same commit as the tranche.
 - [x] T10 Conversation graph
 - [x] T11 `accountability` sweep
 - [x] T12 Presentation contract and parity foundation
-- [ ] T13 Marquee visual parity
+- [x] T13 Marquee visual parity
 - [ ] T14 `durationShape` and format-first setup
 - [ ] T15 Pre-event moment and escalating disclosure
 
@@ -869,7 +890,9 @@ D.6 and D.7.
 
 # Open Questions For The Owner
 
-1. Rive versus Lottie-plus-contracted-CSS, pending the B.3 spike result.
+1. Resolved in T13: the measured Rive transfer cost failed the venue-network
+   spike, so both runtimes use the specified Lottie-plus-contracted-transforms
+   fallback.
 2. Resolved in T11: `sweep` warns loudly and requires explicit Host
    acknowledgement, but never hard-blocks completion. Quiet departures are a
    normal possibility, not automatic evidence of danger.

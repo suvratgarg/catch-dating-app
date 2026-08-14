@@ -820,6 +820,7 @@ function publicRuntimeEventProjection(
     startTimeMillis: event.startTime.toMillis(),
     endTimeMillis: event.endTime.toMillis(),
     locationName: event.meetingLocation.name || event.meetingPoint,
+    checkedInCount: event.checkedInCount ?? 0,
     runtimeTermsVersion: event.runtimeAccess!.termsVersion,
     moduleIds: plan?.selectedModuleIds ?? [],
     layout,

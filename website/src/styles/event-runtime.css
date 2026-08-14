@@ -184,10 +184,27 @@
 }
 
 .event-runtime__live {
-  display: grid;
-  gap: 16px;
+  background:
+    radial-gradient(circle at 50% 18%, color-mix(in srgb, var(--runtime-coral) 28%, transparent), transparent 46%),
+    #0f0e10;
+  border-radius: 30px;
+  isolation: isolate;
   margin: 24px auto 0;
   max-width: 720px;
+  overflow: hidden;
+  padding: 8px;
+  position: relative;
+}
+
+.event-runtime__live[data-activity] {
+  --runtime-coral: var(--activity);
+}
+
+.event-runtime__live-content {
+  display: grid;
+  gap: 16px;
+  position: relative;
+  z-index: 2;
 }
 
 .event-runtime__live-header {
@@ -211,7 +228,8 @@
 }
 
 .event-runtime__checked-in {
-  background: #eaffd0;
+  align-items: center;
+  background: rgb(234 255 208 / 92%);
   border-radius: 999px;
   color: #34520d;
   flex: 0 0 auto;
@@ -219,6 +237,159 @@
   font-weight: 850;
   padding: 8px 11px;
   text-transform: uppercase;
+}
+
+.event-runtime__marquee,
+.event-runtime__reveal-cinematic,
+.event-runtime__stage-motion,
+.event-runtime__reveal-motion {
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.event-runtime__marquee {
+  overflow: hidden;
+  z-index: 0;
+}
+
+.event-runtime__stage-motion {
+  filter: drop-shadow(0 0 32px color-mix(in srgb, var(--runtime-coral) 68%, transparent));
+  mix-blend-mode: screen;
+  opacity: .28;
+}
+
+.event-runtime__stage-motion svg,
+.event-runtime__reveal-motion svg,
+.event-runtime__arrival-ring-motion svg {
+  height: 100% !important;
+  width: 100% !important;
+}
+
+.event-runtime__reveal-cinematic {
+  background: radial-gradient(
+    circle at 50% 42%,
+    transparent 18%,
+    rgb(0 0 0 / calc(.18 + var(--marquee-phase-progress) * .42)) 100%
+  );
+  overflow: hidden;
+  transition: background-color 100ms linear;
+  z-index: 1;
+}
+
+.event-runtime__reveal-motion {
+  filter: drop-shadow(0 0 40px color-mix(in srgb, var(--runtime-coral) 74%, transparent));
+  mix-blend-mode: screen;
+  opacity: .62;
+}
+
+.event-runtime__reveal-spokes,
+.event-runtime__reveal-presence,
+.event-runtime__reveal-particles {
+  inset: 0;
+  position: absolute;
+}
+
+.event-runtime__reveal-spokes span {
+  background: var(--runtime-coral);
+  border-radius: 999px;
+  box-shadow: 0 0 12px color-mix(in srgb, var(--runtime-coral) 70%, transparent);
+  height: min(38vw, 260px);
+  left: calc(50% - 1px);
+  opacity: calc(.25 + var(--marquee-phase-progress) * .5);
+  position: absolute;
+  top: calc(42% - min(38vw, 260px));
+  transform: rotate(calc(
+    var(--marquee-seed-angle) +
+    var(--marquee-index) * 1turn / 14 +
+    var(--marquee-tick-progress) * .35turn +
+    var(--marquee-phase-progress) * 1.8turn
+  ));
+  transform-origin: 50% 100%;
+  transition: opacity 100ms linear, transform 100ms linear;
+  width: 2px;
+}
+
+.event-runtime__reveal-presence span {
+  background: #fffdf8;
+  border-radius: 50%;
+  height: 5px;
+  left: calc(50% - 2.5px);
+  opacity: calc(.2 + var(--marquee-phase-progress) * .18);
+  position: absolute;
+  top: calc(42% - 2.5px);
+  transform: rotate(calc(var(--marquee-index) * 1turn / 28))
+    translateX(min(24vw, 164px));
+  width: 5px;
+}
+
+.event-runtime__reveal-particles span {
+  background: color-mix(in srgb, var(--runtime-coral) 70%, #fffdf8);
+  border-radius: 50%;
+  box-shadow: 0 0 8px color-mix(in srgb, var(--runtime-coral) 58%, transparent);
+  height: calc(3px * var(--marquee-size));
+  left: 50%;
+  opacity: calc(.22 + var(--marquee-phase-progress) * .58);
+  position: absolute;
+  top: 42%;
+  transform: rotate(calc(
+    var(--marquee-angle) + var(--marquee-drift) * .04 +
+    var(--marquee-tick-progress) * .03turn
+  )) translateX(calc(var(--marquee-distance) * min(42vw, 286px)));
+  transition: opacity 100ms linear, transform 100ms linear;
+  width: calc(3px * var(--marquee-size));
+}
+
+.event-runtime__reveal-cinematic[data-phase="climax"]::after {
+  background: rgb(255 255 255 / calc((1 - var(--marquee-phase-progress)) * .72));
+  content: "";
+  inset: 0;
+  position: absolute;
+}
+
+.event-runtime__reveal-cinematic[data-phase="climax"] .event-runtime__reveal-particles span {
+  opacity: calc(1 - var(--marquee-phase-progress));
+  transform: rotate(var(--marquee-burst-angle))
+    translateX(calc((.3 + var(--marquee-phase-progress)) * min(58vw, 396px)));
+}
+
+.event-runtime__reveal-cinematic[data-phase="settle"] {
+  opacity: calc(1 - var(--marquee-phase-progress));
+}
+
+.event-runtime__arrival-ring {
+  align-items: center;
+  display: grid;
+  height: 82px;
+  justify-items: center;
+  padding: 8px;
+  position: relative;
+  width: 82px;
+}
+
+.event-runtime__arrival-ring-motion {
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--runtime-coral) 56%, transparent));
+  inset: 0;
+  opacity: .72;
+  position: absolute;
+}
+
+.event-runtime__arrival-ring strong,
+.event-runtime__arrival-ring small {
+  line-height: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.event-runtime__arrival-ring strong {
+  font-size: 1.45rem;
+}
+
+.event-runtime__arrival-ring small {
+  font-size: .55rem;
+  letter-spacing: .04em;
+  max-width: 60px;
+  text-align: center;
 }
 
 .event-runtime__module {
@@ -446,7 +617,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .event-runtime__pulse {
+  .event-runtime__pulse,
+  .event-runtime__reveal-spokes span,
+  .event-runtime__reveal-particles span {
     animation: none;
+    transition: none;
   }
 }

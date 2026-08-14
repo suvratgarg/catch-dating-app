@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "version": 16,
-  "updated": "2026-07-23",
+  "version": 17,
+  "updated": "2026-08-14",
   "owner": "web_platform",
   "goal": "Define reusable primitive families shared by the marketing and admin React surfaces and their accepted @catch/web-ui adoption state.",
   "sourceDocs": [
@@ -232,6 +232,23 @@
         ]
       },
       "rationale": "The common neutral/success/warning/danger tone model is reusable after domain-specific tones are mapped by adapters."
+    },
+    {
+      "id": "WEB-SHARED-LOTTIE-001",
+      "family": "portable-motion-player",
+      "priority": "p1",
+      "status": "adopted",
+      "packageSymbols": [
+        "LottieAnimationControl"
+      ],
+      "website": {
+        "source": "website/src/shared/ui/primitives/eventRuntime.tsx",
+        "symbols": [
+          "EventRuntimeStageMarquee",
+          "EventRuntimeArrivalRing"
+        ]
+      },
+      "rationale": "The package owns lazy Lottie-light loading, deterministic progress seeking, cleanup, and reduced-motion playback while the guest runtime owns ceremony geometry and styling. Admin has no motion consumer."
     },
     {
       "id": "WEB-SHARED-PANEL-001",

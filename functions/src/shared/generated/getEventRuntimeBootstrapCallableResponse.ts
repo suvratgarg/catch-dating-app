@@ -13,6 +13,7 @@ export interface GetEventRuntimeBootstrapCallableResponse {
     startTimeMillis: number;
     endTimeMillis: number;
     locationName: string;
+    checkedInCount: number;
     runtimeTermsVersion: string;
     /**
      * @maxItems 24

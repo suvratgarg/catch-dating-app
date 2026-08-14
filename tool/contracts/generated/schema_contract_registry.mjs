@@ -49976,6 +49976,7 @@ export const getEventRuntimeBootstrapCallableResponseSchema = {
         "startTimeMillis",
         "endTimeMillis",
         "locationName",
+        "checkedInCount",
         "runtimeTermsVersion",
         "moduleIds",
         "layout",
@@ -50008,6 +50009,10 @@ export const getEventRuntimeBootstrapCallableResponseSchema = {
           "type": "string",
           "minLength": 1,
           "maxLength": 240
+        },
+        "checkedInCount": {
+          "type": "integer",
+          "minimum": 0
         },
         "runtimeTermsVersion": {
           "type": "string",

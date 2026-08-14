@@ -1519,6 +1519,9 @@ abstract final class CatchOpacity {
   /// Event Success motif accent line opacity.
   static const double eventSuccessMotifAccent = 0.34;
 
+  /// Portable Event Success marquee asset tint.
+  static const double revealCinematicAssetTint = 0.48;
+
   /// Event Success stage bouncy-press glow multiplier.
   static const double eventSuccessBouncyGlow = 0.36;
 
@@ -1769,6 +1772,7 @@ abstract final class CatchMotion {
     milliseconds: 500,
   );
   static const Duration eventSuccessThresholdTick = Duration(milliseconds: 1);
+  static const Duration eventSuccessCeremonyTick = Duration(milliseconds: 100);
   static const Duration slow = Duration(milliseconds: 420);
   static const Duration afterglowBeatEntry = Duration(milliseconds: 480);
   static const Duration afterglowCountUp = Duration(milliseconds: 600);
@@ -1793,6 +1797,12 @@ abstract final class CatchMotion {
   static const Duration welcomeRevealStart = Duration(milliseconds: 520);
   static const Duration welcomeRevealStagger = Duration(milliseconds: 80);
   static const int welcomeReelSpins = 1;
+
+  static Duration eventSuccessCountdown(int seconds) =>
+      Duration(seconds: seconds);
+
+  static Duration eventSuccessPulsePeriod(int milliseconds) =>
+      Duration(milliseconds: milliseconds);
   static const double welcomeSpinCurvePower = 3.0;
   static const Curve welcomeRevealCurve = Curves.easeOutCubic;
 

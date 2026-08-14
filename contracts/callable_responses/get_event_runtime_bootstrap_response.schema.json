@@ -17,6 +17,7 @@
         "startTimeMillis",
         "endTimeMillis",
         "locationName",
+        "checkedInCount",
         "runtimeTermsVersion",
         "moduleIds",
         "layout",
@@ -31,6 +32,7 @@
         "startTimeMillis": {"type": "integer"},
         "endTimeMillis": {"type": "integer"},
         "locationName": {"type": "string", "minLength": 1, "maxLength": 240},
+        "checkedInCount": {"type": "integer", "minimum": 0},
         "runtimeTermsVersion": {"type": "string", "minLength": 1, "maxLength": 80},
         "moduleIds": {
           "type": "array",

@@ -1,6 +1,20 @@
 import {cleanup, render, screen} from "@testing-library/react";
-import {afterEach, describe, expect, it} from "vitest";
-import {EventRuntimeRoomMap} from "./eventRuntime";
+import {afterEach, describe, expect, it, vi} from "vitest";
+import {
+  EventRuntimeArrivalRing,
+  EventRuntimeRoomMap,
+  EventRuntimeStageMarquee,
+} from "./eventRuntime";
+
+vi.mock("@catch/web-ui", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@catch/web-ui")>();
+  return {
+    ...actual,
+    LottieAnimationControl: ({source, ...props}: {source: string}) => (
+      <span {...props} data-lottie-source={source} />
+    ),
+  };
+});
 
 afterEach(cleanup);
 
@@ -63,5 +77,53 @@ describe("EventRuntimeRoomMap", () => {
       .toBeTruthy();
     expect(container.querySelector(".event-runtime__room-map-unit.is-confirmed"))
       .toBeNull();
+  });
+});
+
+describe("Event Runtime portable motion", () => {
+  it("renders the contracted reveal layers and caps anonymous presence dots", () => {
+    const {container} = render(
+      <EventRuntimeStageMarquee
+        participantCount={40}
+        particles={[{
+          angleTurns: 0.25,
+          burstTurns: 0.75,
+          distance: 0.5,
+          driftTurns: 0.1,
+          sizeScale: 1.2,
+        }]}
+        phase="anticipation"
+        phaseProgress={0.5}
+        seedAngleTurns={0.3}
+        stageSource="pulse.json"
+        sunriseSource="sunrise.json"
+        tickProgress={0.2}
+      />
+    );
+
+    expect(container.querySelector("[data-phase='anticipation']")).toBeTruthy();
+    expect(container.querySelectorAll(".event-runtime__reveal-spokes span"))
+      .toHaveLength(14);
+    expect(container.querySelectorAll(".event-runtime__reveal-presence span"))
+      .toHaveLength(28);
+    expect(container.querySelectorAll(".event-runtime__reveal-particles span"))
+      .toHaveLength(1);
+    expect(container.querySelector("[data-lottie-source='pulse.json']"))
+      .toBeTruthy();
+  });
+
+  it("announces the arrival count without exposing attendee identity", () => {
+    render(
+      <EventRuntimeArrivalRing
+        ariaLabel="18 people checked in"
+        count={18}
+        label="checked in"
+        source="theatrical.json"
+      />
+    );
+
+    expect(screen.getByLabelText("18 people checked in")).toBeTruthy();
+    expect(screen.getByText("18")).toBeTruthy();
+    expect(screen.getByText("checked in")).toBeTruthy();
   });
 });

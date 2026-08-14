@@ -9,6 +9,7 @@ import {
   ButtonLink,
   ChoiceChip,
   ChoiceChipGrid,
+  EventRuntimeArrivalRing,
   EventRuntimeAssignments,
   EventRuntimeConsent,
   EventRuntimeFieldset,
@@ -25,6 +26,7 @@ import {
   EventRuntimeProfileQuestions,
   EventRuntimeQuestionnaire,
   EventRuntimeRoomMap,
+  EventRuntimeStageMarquee,
   FormStatus,
   SelectField,
   TextAreaField,
@@ -34,9 +36,19 @@ import {useEventRuntimeController} from "./useEventRuntimeController";
 import {
   normalizeEventRuntimeLayoutUnits,
   eventVenueSessionTokenFromFragment,
+  resolveEventRuntimeCeremony,
   shouldRenderEventRuntimeRoomMap,
+  type EventRuntimeCeremony,
   visibleEventRuntimeStandingRound,
 } from "./eventRuntimeModel";
+import {
+  eventRuntimeActivityIdForPresentation,
+  eventRuntimeCeremonyTickMs,
+  eventRuntimeVisualAssetForMotif,
+  eventRuntimeVisualAssetPath,
+  resolveEventRuntimeMarqueeFrame,
+  resolveEventRuntimeStagePresentation,
+} from "./eventRuntimeMotion";
 
 export function EventRuntimePage() {
   const {publicRuntimeId = ""} = useParams<{publicRuntimeId: string}>();
@@ -274,6 +286,7 @@ function LiveEventRuntime({
   controller: ReturnType<typeof useEventRuntimeController>;
 }) {
   const event = controller.bootstrap!.event;
+  const plan = controller.liveState.plan;
   const modules = new Set(event.moduleIds);
   const mission = controller.liveState.mission;
   const revealBlocked = modules.has("live_reveal") &&
@@ -286,10 +299,32 @@ function LiveEventRuntime({
   const lateArrival = controller.liveState.lateArrival;
   const showLateArrival = lateArrival !== null &&
     lateArrival.targetRoundIndex >
-      (controller.liveState.plan?.publishedRotationRoundIndex ?? -1);
+      (plan?.publishedRotationRoundIndex ?? -1);
+  const presentation = resolveEventRuntimeStagePresentation(controller.liveState);
+  const theatricalSource = eventRuntimeVisualAssetPath("theatrical");
   return (
-    <EventRuntimeLive>
-      <EventRuntimeLiveHeader badge={eventRuntimeCopy.checkedIn}>
+    <EventRuntimeLive
+      activityId={eventRuntimeActivityIdForPresentation(
+        presentation,
+        plan?.revealStatus ?? "idle"
+      )}
+      background={(
+        <EventRuntimeLiveMotion
+          ceremony={resolveEventRuntimeCeremony(event.eventId, plan)}
+          checkedInCount={event.checkedInCount}
+          motifId={presentation.motifId}
+          revealStatus={plan?.revealStatus ?? "idle"}
+        />
+      )}
+    >
+      <EventRuntimeLiveHeader badge={(
+        <EventRuntimeArrivalRing
+          ariaLabel={eventRuntimeCopy.checkedInCount(event.checkedInCount)}
+          count={event.checkedInCount}
+          label={eventRuntimeCopy.checkedIn}
+          source={theatricalSource}
+        />
+      )}>
         <EventRuntimeKicker>{eventRuntimeCopy.runtimeEyebrow}</EventRuntimeKicker>
         <h1>{event.title}</h1>
         <p>{event.locationName} · {formatEventTime(event.startTimeMillis)}</p>
@@ -560,6 +595,48 @@ function LiveEventRuntime({
       <FormStatus status={controller.status} />
       <EventRuntimePrivacy>{eventRuntimeCopy.privacyNote}</EventRuntimePrivacy>
     </EventRuntimeLive>
+  );
+}
+
+function EventRuntimeLiveMotion({
+  ceremony,
+  checkedInCount,
+  motifId,
+  revealStatus,
+}: {
+  ceremony: EventRuntimeCeremony | null;
+  checkedInCount: number;
+  motifId: string;
+  revealStatus: "idle" | "countingDown" | "revealed";
+}) {
+  const [ceremonyNowMillis, setCeremonyNowMillis] = useState(() => Date.now());
+  useEffect(() => {
+    if (!ceremony || revealStatus === "idle") return;
+    setCeremonyNowMillis(Date.now());
+    const interval = window.setInterval(
+      () => setCeremonyNowMillis(Date.now()),
+      eventRuntimeCeremonyTickMs
+    );
+    return () => window.clearInterval(interval);
+  }, [ceremony?.timeline.completesAtMillis, revealStatus]);
+  const frame = resolveEventRuntimeMarqueeFrame(
+    ceremony,
+    revealStatus,
+    ceremonyNowMillis
+  );
+  return (
+    <EventRuntimeStageMarquee
+      participantCount={checkedInCount}
+      particles={frame.particles}
+      phase={frame.phase}
+      phaseProgress={frame.phaseProgress}
+      seedAngleTurns={frame.seedAngleTurns}
+      stageSource={eventRuntimeVisualAssetPath(
+        eventRuntimeVisualAssetForMotif(motifId)
+      )}
+      sunriseSource={eventRuntimeVisualAssetPath("sunrise")}
+      tickProgress={frame.tickProgress}
+    />
   );
 }
 

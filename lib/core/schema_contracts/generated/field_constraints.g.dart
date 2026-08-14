@@ -19903,6 +19903,13 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9_-]{20,80}\$',
   );
 
+  static const getEventRuntimeBootstrapCallableResponseEventCheckedInCount = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.checkedInCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
   static const getEventRuntimeBootstrapCallableResponseEventEndTimeMillis = CatchContractFieldConstraints(
     path: 'getEventRuntimeBootstrapCallableResponse.event.endTimeMillis',
     required: true,
@@ -43619,6 +43626,7 @@ abstract final class CatchContractConstraints {
     'getEventRosterInsightsCallableResponse.sourceCoverage': getEventRosterInsightsCallableResponseSourceCoverage,
     'getEventRosterInsightsCallableResponse.spendCoverage': getEventRosterInsightsCallableResponseSpendCoverage,
     'getEventRuntimeBootstrapCallablePayload.publicRuntimeId': getEventRuntimeBootstrapCallablePayloadPublicRuntimeId,
+    'getEventRuntimeBootstrapCallableResponse.event.checkedInCount': getEventRuntimeBootstrapCallableResponseEventCheckedInCount,
     'getEventRuntimeBootstrapCallableResponse.event.endTimeMillis': getEventRuntimeBootstrapCallableResponseEventEndTimeMillis,
     'getEventRuntimeBootstrapCallableResponse.event.eventId': getEventRuntimeBootstrapCallableResponseEventEventId,
     'getEventRuntimeBootstrapCallableResponse.event.layout.label': getEventRuntimeBootstrapCallableResponseEventLayoutLabel,

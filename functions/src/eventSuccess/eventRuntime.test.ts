@@ -354,7 +354,7 @@ test("runtime entry requires only a name and offers preference fields", () => {
 
 test("bootstrap returns bounded event and own state", async () => {
   const h = harness({
-    "events/event-1": event(),
+    "events/event-1": event({checkedInCount: 18}),
     "eventRuntimeParticipants/event-1_runner-1": participant(),
     "eventAttendees/attendee-1": attendee({
       linkedUid: "runner-1",
@@ -372,6 +372,7 @@ test("bootstrap returns bounded event and own state", async () => {
     startTimeMillis: Date.parse("2026-08-11T12:00:00.000Z"),
     endTimeMillis: Date.parse("2026-08-11T15:00:00.000Z"),
     locationName: "The Courtyard",
+    checkedInCount: 18,
     runtimeTermsVersion: "event-runtime-v1",
     moduleIds: [],
     layout: null,

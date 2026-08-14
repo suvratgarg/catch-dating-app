@@ -6466,6 +6466,27 @@ Widget _eventSuccessCompanionCapture({
   );
 }
 
+final _eventSuccessMotionParityAnchor = DateTime.fromMillisecondsSinceEpoch(
+  1786703400000,
+);
+final _eventSuccessMotionParityEvent = EventSuccessCompanionFixtures.racketEvent
+    .copyWith(
+      id: 'event-parity-2026',
+      checkedInCount: 24,
+      startTime: _eventSuccessMotionParityAnchor.subtract(
+        const Duration(hours: 1),
+      ),
+      endTime: _eventSuccessMotionParityAnchor.add(const Duration(hours: 1)),
+    );
+final _eventSuccessMotionParityPlan = EventSuccessCompanionFixtures
+    .revealCountingDownPlan
+    .copyWith(
+      id: 'event-parity-2026',
+      eventId: 'event-parity-2026',
+      activeRevealRoundIndex: 2,
+      revealStartedAt: _eventSuccessMotionParityAnchor,
+    );
+
 class _EventSuccessCompanionMutationCapture extends ConsumerStatefulWidget {
   const _EventSuccessCompanionMutationCapture({
     required this.mode,
@@ -13413,6 +13434,20 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       now: EventSuccessCompanionFixtures.racketStart.subtract(
         const Duration(hours: 1),
       ),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'event_success_companion_motion_parity',
+    routeIds: const <String>['eventSuccessCompanionScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _eventSuccessCompanionProviderOverrides(),
+    builder: (context) => _eventSuccessCompanionCapture(
+      event: _eventSuccessMotionParityEvent,
+      plan: _eventSuccessMotionParityPlan,
+      participation: EventSuccessCompanionFixtures.attendedParticipation(
+        event: _eventSuccessMotionParityEvent,
+      ),
+      now: _eventSuccessMotionParityAnchor.add(const Duration(seconds: 5)),
     ),
   ),
   ScreenCaptureEntry(

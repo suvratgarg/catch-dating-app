@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.4.0
+version: 3.5.0
 updated: 2026-08-14
 owner: recursive_audit_loop
 status: active
@@ -1093,7 +1093,7 @@ Widgetbook callers.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `EventSuccessCompanionScreen` | `lib/event_success/presentation/event_success_companion_screen.dart:883` | Attendee companion surface that resolves the runtime-selected live moment into a full-screen stage with moment-specific color, motif, privacy copy, keyed transitions, native live effects, optional First Hello arrival missions, reveal-safe assignment display, and a private post-event afterglow recap. A selected non-whole-group layout adds the read-only shared room map for the attendee's own assignment only; it exposes no placement controls or other attendee positions. |
+| `EventSuccessCompanionScreen` | `lib/event_success/presentation/event_success_companion_screen.dart:883` | Attendee companion surface that resolves the runtime-selected live moment into a full-screen stage with moment-specific color, portable Lottie motif, privacy copy, keyed transitions, native live effects, optional First Hello arrival missions, reveal-safe assignment display, and a private post-event afterglow recap. Its reveal overlay derives phase, progress, deterministic particles, and tick rhythm from the generated server-clocked presentation contract; stage, arrival-ring, and reveal visuals no longer use parallel Event Success `CustomPainter` motifs. A selected non-whole-group layout adds the read-only shared room map for the attendee's own assignment only; it exposes no placement controls or other attendee positions. |
 
 ### ConsumerWidget
 

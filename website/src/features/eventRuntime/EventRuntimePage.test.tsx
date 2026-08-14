@@ -1,12 +1,22 @@
-import {fireEvent, render, screen} from "@testing-library/react";
+import {cleanup, fireEvent, render, screen} from "@testing-library/react";
 import {MemoryRouter, Route, Routes} from "react-router";
-import {beforeEach, describe, expect, it, vi} from "vitest";
+import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 
 const runtimeController = vi.hoisted(() => ({value: null as any}));
 
 vi.mock("./useEventRuntimeController", () => ({
   useEventRuntimeController: () => runtimeController.value,
 }));
+
+vi.mock("@catch/web-ui", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@catch/web-ui")>();
+  return {
+    ...actual,
+    LottieAnimationControl: ({source}: {source: string}) => (
+      <span data-lottie-source={source} />
+    ),
+  };
+});
 
 import {eventRuntimeCopy} from "../../content/eventRuntime";
 import {EventRuntimePage} from "./EventRuntimePage";
@@ -19,6 +29,7 @@ function controller() {
       event: {
         endTimeMillis: Date.now() - 1_000,
         eventId: "event-1",
+        checkedInCount: 18,
         locationName: "The Courtyard",
         moduleIds: [],
         startTimeMillis: Date.now() - 3_600_000,
@@ -70,6 +81,11 @@ describe("EventRuntimePage conversation graph", () => {
     runtimeController.value = controller();
   });
 
+  afterEach(() => {
+    cleanup();
+    vi.useRealTimers();
+  });
+
   it("renders one private roster-chip mechanism with server-owned format copy", () => {
     render(
       <MemoryRouter initialEntries={["/join/runtime-1"]}>
@@ -95,6 +111,39 @@ describe("EventRuntimePage conversation graph", () => {
     expect(runtimeController.value.submitConversationGraph)
       .toHaveBeenCalledWith();
     expect(screen.getByText(eventRuntimeCopy.conversationPrivacy))
+      .toBeTruthy();
+  });
+
+  it("renders the same server-clocked reveal midpoint and arrival count", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(1_786_703_405_000);
+    runtimeController.value = controller();
+    runtimeController.value.bootstrap.event.moduleIds = ["live_reveal"];
+    runtimeController.value.liveState.plan = {
+      attendeePrompt: null,
+      activeRevealRoundIndex: 2,
+      publishedRevealRoundIndex: -1,
+      publishedRotationRoundIndex: -1,
+      revealCountdownSeconds: 10,
+      revealStartedAtMillis: 1_786_703_400_000,
+      revealStatus: "countingDown",
+      status: "live",
+    };
+
+    const {container} = render(
+      <MemoryRouter initialEntries={["/join/runtime-1"]}>
+        <Routes>
+          <Route path="/join/:publicRuntimeId" element={<EventRuntimePage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    const cinematic = container.querySelector("[data-phase='anticipation']");
+    expect(cinematic).toBeTruthy();
+    expect(cinematic?.getAttribute("style")).toContain(
+      "--marquee-phase-progress: 0.5"
+    );
+    expect(screen.getByLabelText(eventRuntimeCopy.checkedInCount(18)))
       .toBeTruthy();
   });
 });
