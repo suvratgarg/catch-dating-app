@@ -1,3 +1,8 @@
+// Riverpod reports the shared test-root ProviderScope overrides from the
+// library entrypoint against this part file, so the adjacent entrypoint ignores
+// cannot attach to the remapped diagnostics.
+// ignore_for_file: riverpod_lint/scoped_providers_should_specify_dependencies
+
 part of 'profile_widgets_test.dart';
 
 void _registerProfileChoiceEditorsTests() {
