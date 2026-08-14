@@ -597,17 +597,22 @@ test("app builds fail fast on structure and fan iOS roles out in parallel", () =
   assert.doesNotMatch(ios, /contains\(fromJSON\(inputs\.app_roles\)/u);
 });
 
-test("Host full-shell regression checks use only current strict references", () => {
+test("Host iOS builds keep retired shell references out of strict wiring", () => {
   const builds = workflow("app-build-matrix.yml");
   const references = namedStep(
     builds,
-    "Verify stable Host v2 full-shell regression baselines",
+    "Validate Host design reference manifest",
   );
 
   assert.match(references, /DP-HOST-HOME-004/u);
-  assert.match(references, /host_inbox_queries,host_clubs_management/u);
+  assert.match(references, /Host Messaging/u);
+  assert.match(references, /check_reference_screens\.mjs --check --summary/u);
+  assert.doesNotMatch(references, /run_captures\.mjs/u);
+  assert.doesNotMatch(references, /--compare|--strict/u);
   assert.doesNotMatch(references, /host_home_dashboard/u);
   assert.doesNotMatch(references, /host_home_events_list/u);
+  assert.doesNotMatch(references, /host_inbox_queries/u);
+  assert.doesNotMatch(references, /host_clubs_management/u);
 });
 
 test("mobile release workflow consumes the exact successful CI plan authority", () => {
