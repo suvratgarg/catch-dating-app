@@ -1151,17 +1151,17 @@ class _HostEventCheckInQrPanelState
                   event: widget.event,
                   venueSessionToken: session.venueSessionToken,
                 ),
-                size: 168,
+                size: CatchLayout.eventSuccessVenueQrExtent,
                 padding: EdgeInsets.zero,
                 backgroundColor: CatchTokens.editorialWhite,
               ),
             ),
             loading: () => const SizedBox.square(
-              dimension: 168,
+              dimension: CatchLayout.eventSuccessVenueQrExtent,
               child: Center(child: CircularProgressIndicator()),
             ),
             error: (error, _) => SizedBox(
-              width: 320,
+              width: CatchLayout.eventSuccessVenueQrErrorMaxWidth,
               child: CatchInlineErrorState.fromError(
                 error,
                 onRetry: () =>

@@ -614,7 +614,10 @@ class EventSuccessAccountabilityCard extends StatelessWidget {
             CatchSkeleton.text(width: CatchLayout.skeletonTextSectionWideWidth),
           ] else if (attendees.isEmpty) ...[
             gapH12,
-            Text(context.l10n.eventSuccessAccountabilityEmpty),
+            Text(
+              context.l10n.eventSuccessAccountabilityEmpty,
+              style: CatchTextStyles.supporting(context),
+            ),
           ] else ...[
             gapH8,
             CatchSection.fieldRows(
@@ -740,10 +743,13 @@ class _EventSuccessPresenceCard extends StatelessWidget {
                   .eventSuccessEventSuccessHostLiveTextGuestsMayHaveLeft(
                     count: likelyDeparted.length,
                   ),
-              style: CatchTextStyles.bodyM(context),
+              style: CatchTextStyles.sectionTitle(context),
             ),
             gapH4,
-            Text(likelyDeparted.map((entry) => entry.displayName).join(', ')),
+            Text(
+              likelyDeparted.map((entry) => entry.displayName).join(', '),
+              style: CatchTextStyles.supporting(context),
+            ),
             gapH10,
             CatchButton(
               label: context
@@ -760,15 +766,20 @@ class _EventSuccessPresenceCard extends StatelessWidget {
             gapH16,
             Text(
               context.l10n.eventSuccessEventSuccessHostLiveTitleLateArrivals,
-              style: CatchTextStyles.bodyM(context),
+              style: CatchTextStyles.sectionTitle(context),
             ),
             gapH4,
             ...lateArrivals.map(
               (candidate) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s1),
+                padding: CatchInsets.controlVerticalTight,
                 child: Row(
                   children: [
-                    Expanded(child: Text(candidate.displayName)),
+                    Expanded(
+                      child: Text(
+                        candidate.displayName,
+                        style: CatchTextStyles.name(context),
+                      ),
+                    ),
                     gapW8,
                     CatchButton(
                       label: context
