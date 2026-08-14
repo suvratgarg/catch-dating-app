@@ -8,10 +8,6 @@
       "maxLines": 2180
     },
     {
-      "path": "test/core/catch_primitives_test.dart",
-      "maxLines": 3107
-    },
-    {
       "path": "test/core/widgets/catch_field/control_test.dart",
       "maxLines": 1273
     },
