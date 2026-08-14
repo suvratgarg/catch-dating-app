@@ -5976,7 +5976,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostClubsScaffoldBodyDragLeftOrRight =>
-      'Drag left or right to switch between Edit, Audience, Insights, and Preview.';
+      'Drag left or right to switch between Edit, Insights, and Preview.';
 
   @override
   String get hostsHostClubsScaffoldLabelEdit => 'Edit';
@@ -11985,25 +11985,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Disable website sign-up';
 
   @override
-  String get hostsHostClubsScaffoldLabelAudience => 'Audience';
-
-  @override
-  String get hostsHostAudienceTitle => 'Your audience';
-
-  @override
-  String get hostsHostAudienceIntro =>
-      'Build a useful history from Catch bookings, roster imports, manual guests, provider sync, and phone-verified event runtime check-ins. Catch bookings and the Consumer app are not required.';
-
-  @override
-  String get hostsHostAudiencePeople => 'People';
-
-  @override
-  String get hostsHostAudienceMessage => 'Message';
-
-  @override
-  String get hostsHostAudienceAtAGlance => 'At a glance';
-
-  @override
   String get hostsHostAudienceContacts => 'Contacts';
 
   @override
@@ -12024,9 +12005,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostsHostAudienceDirectory => 'People';
-
-  @override
   String get hostsHostAudienceSearch => 'Search by name';
 
   @override
@@ -12039,10 +12017,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsHostAudienceCoveragePartialBody =>
       'Counts may omit older roster changes. Messaging stays blocked until the projection is exact, so nobody receives an accidental blast.';
-
-  @override
-  String get hostsHostAudienceEmpty =>
-      'No people match this filter yet. Import a roster or use the event runtime to start building your history.';
 
   @override
   String get hostsHostAudienceWhatsappSender => 'WhatsApp Business sender';
@@ -12196,7 +12170,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostsHostAudienceRemoveTitle => 'Remove from Audience?';
+  String get hostsHostAudienceRemoveTitle => 'Remove customer?';
 
   @override
   String get hostsHostAudienceRemoveBody =>
@@ -12206,7 +12180,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostAudienceRemoveConfirm => 'Remove';
 
   @override
-  String get hostsHostAudienceRemoveAction => 'Remove from Audience';
+  String get hostsHostAudienceRemoveAction => 'Remove customer';
 
   @override
   String get hostsHostAudienceContactSubtitle => 'Organizer-only CRM record';
@@ -12246,9 +12220,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsHostAudienceContactPauseMessages =>
       'Pause organizer messages';
-
-  @override
-  String get hostsHostAudienceContactEventHistory => 'Event history';
 
   @override
   String get hostsHostAudienceSegmentNew => 'New to your audience';
@@ -12324,9 +12295,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostAudienceWhatsappOptedIn => 'WhatsApp opted in';
-
-  @override
-  String get hostsHostAudienceIdentityNeedsReview => 'Identity needs review';
 
   @override
   String get hostsHostAudienceWebSignupOnly =>
@@ -12797,6 +12765,18 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostCustomersIntro =>
       'Everyone who has attended, registered, been imported, or been added by your team.';
+
+  @override
+  String get hostCustomersWorkspacePeople => 'People';
+
+  @override
+  String get hostCustomersWorkspaceCampaigns => 'Campaigns';
+
+  @override
+  String get hostCustomersManage => 'Manage customer';
+
+  @override
+  String get hostCustomersCheckedIn => 'Checked in';
 
   @override
   String get hostCustomersAdd => 'Add customer';

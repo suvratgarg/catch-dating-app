@@ -149,7 +149,7 @@
       "authorityId": "screen.host.customers",
       "status": "contracted",
       "priority": "P1",
-      "reason": "Compiled Host Customers contract covers organizer selection, search, explainable lifecycle tags, pagination, manual name-only contacts, customer detail, typed Catch revenue coverage, and verified-account conversations.",
+      "reason": "Compiled Host Customers contract covers the consolidated People and Campaigns workspaces: organizer selection, all supported CRM segments, pagination, export, manual and managed contacts, complete customer detail, typed Catch revenue coverage, verified-account conversations, WhatsApp sender setup, and campaign lifecycle controls.",
       "featureContract": "feature.host_customers"
     },
     {

@@ -632,6 +632,8 @@ Widget hostCustomersStates(BuildContext context) {
         lastAttendedAt: contact.lastAttendedAt,
         tags: const {HostCustomerTag.repeat, HostCustomerTag.regular},
         hasAmbiguousIdentity: false,
+        whatsappOptedIn: true,
+        whatsappAdminSuppressed: false,
       ),
     ],
     nextCursor: null,
@@ -696,6 +698,39 @@ Widget hostCustomersStates(BuildContext context) {
     eventsTruncated: false,
     revision: 3,
   );
+  final messagingSetup = HostMessagingSetup(
+    organizerId: organizerId,
+    providerConfigured: true,
+    embeddedSignup: HostWhatsappEmbeddedSignupConfig(
+      appId: 'design-app',
+      configId: 'design-config',
+      graphVersion: 'v24.0',
+    ),
+    connection: HostWhatsappConnection(
+      connectionId: 'design-whatsapp',
+      status: 'active',
+      displayPhoneNumber: '+91 98765 43210',
+      verifiedName: 'Sunday Social Club',
+      qualityRating: 'GREEN',
+      messagingLimitTier: 'TIER_1K',
+      templateSyncStatus: 'ready',
+      webhookStatus: 'healthy',
+      testStatus: 'verified',
+      revision: 2,
+    ),
+    templates: [
+      HostWhatsappTemplate(
+        templateId: 'design-invitation',
+        name: 'event_invitation',
+        language: 'en_US',
+        category: 'MARKETING',
+        status: 'APPROVED',
+        variableNames: ['first_name', 'invite_url'],
+        hasMediaHeader: false,
+        buttonKinds: ['URL'],
+      ),
+    ],
+  );
 
   return _HostCatalog(
     title: 'Host Customers',
@@ -730,6 +765,28 @@ Widget hostCustomersStates(BuildContext context) {
               child: HostCustomerDetailScreen(
                 organizerId: organizerId,
                 contactId: contactId,
+              ),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'campaign and sender workspace',
+        child: _DeviceFrame(
+          child: _HostShellScope(
+            child: ProviderScope(
+              overrides: [
+                hostMessagingSetupProvider(
+                  organizerId,
+                ).overrideWithValue(AsyncData(messagingSetup)),
+              ],
+              child: Scaffold(
+                body: SingleChildScrollView(
+                  padding: CatchInsets.pageBody,
+                  child: HostCustomerMessagingPane(
+                    club: HostOperationsFixtures.primaryClub,
+                  ),
+                ),
               ),
             ),
           ),
@@ -825,6 +882,14 @@ Widget hostCustomerConversationStates(BuildContext context) =>
   path: '[P1 product surfaces]/Host operations/Customers',
 )
 Widget hostCustomersSummaryStates(BuildContext context) =>
+    hostCustomersStates(context);
+
+@widgetbook.UseCase(
+  name: 'Campaign and sender states',
+  type: HostCustomerMessagingPane,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostCustomerMessagingStates(BuildContext context) =>
     hostCustomersStates(context);
 
 @widgetbook.UseCase(

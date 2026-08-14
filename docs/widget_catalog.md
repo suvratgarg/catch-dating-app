@@ -1037,13 +1037,12 @@ Widgetbook callers.
 
 ## Event Success
 
-### Standalone Host Audience And Operations
+### Standalone Host Customer Messaging And Operations
 
 | Widget | File | Purpose |
 |---|---|---|
-| `HostAudiencePane` | `lib/hosts/presentation/host_operations/host_audience.dart:25` | Organizer-level Audience workspace embedded in the Host operations shell. Owns Overview, paginated People/search/fixed categories, person-detail controls/export/privacy, WhatsApp sender setup, campaign compose/preview/approval/dispatch/report, and explicit coverage/provider-gate states. It consumes `HostCrmRepository` through the controller and never reads CRM Firestore collections directly. |
-| `_HostAudienceContactSheet` | `lib/hosts/presentation/host_operations/host_audience.dart:944` | Manager-only contact detail sheet with operational event timeline, transparent traits, endpoint permission/suppression controls and privacy/export actions. It deliberately excludes private feedback, safety, dating and Event Success answers. |
-| `_HostCampaignReview` | `lib/hosts/presentation/host_operations/host_audience.dart:1059` | Campaign snapshot/report surface that keeps eligible, excluded, attempted, accepted, sent, delivered, read, failed and opted-out states distinct. It never labels a provider acceptance as delivery or a link open as a share. |
+| `HostCustomerMessagingPane` | `lib/hosts/presentation/host_operations/host_audience.dart` | Customers-owned messaging workspace. Owns WhatsApp sender setup, template sync/test/disconnect, campaign composition, segment targeting, event destinations, preview/approval/dispatch/cancel/report, and explicit coverage/provider-gate states. It consumes `HostCrmRepository` through the controller and never reads CRM Firestore collections directly. |
+| `_HostCampaignReview` | `lib/hosts/presentation/host_operations/host_audience.dart` | Campaign snapshot/report surface that keeps eligible, excluded, attempted, accepted, sent, delivered, read, failed and opted-out states distinct. It never labels a provider acceptance as delivery or a link open as a share. |
 | `HostEventOperatorScreen` | `lib/hosts/presentation/host_event_operator_screen.dart:18` | Restricted event-staff route. Resolves server-authorized event access and composes only the roster, absolute attendance and runtime-claim capabilities present in an unexpired grant; it has no Audience, provider, import, event-edit, campaign or organizer-settings navigation. |
 | `_HostProviderControl` | `lib/hosts/presentation/widgets/host_operational_roster_panel.dart:661` | Provider capability/status block inside the canonical roster panel. Shows Luma connection and manual refresh when available and exact configuration/export/sample/partner/manual limits for every other provider without implying universal sync. |
 | `_HostLumaConnectionSheet` | `lib/hosts/presentation/widgets/host_operational_roster_panel.dart:887` | Luma credential and external-event selection flow. API keys go only to callable requests, event choices come from the server, and the stored client state receives safe connection/mapping/capability projections rather than credentials. |
@@ -1052,18 +1051,19 @@ Widgetbook callers.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `HostCustomersScreen` | `lib/hosts/presentation/customers/host_customers_screen.dart:39` | Canonical Host customer-directory tab. Owns organizer selection, CRM summary, name search, explainable lifecycle-tag filters, manual-add entry, and controller-backed cursor pagination while reusing Host organizer identity, Catch stat, search, chip, person-row, state, and button components. |
+| `HostCustomersScreen` | `lib/hosts/presentation/customers/host_customers_screen.dart` | Canonical Host CRM tab. Owns organizer selection and the People/Campaign workspace switch; People composes the summary, complete reviewed segment set, search, export, manual add, and cursor pagination, while Campaign composes sender and campaign operations without returning to Organizer. |
 | `HostCustomersNoOrganizer` | `lib/hosts/presentation/customers/host_customers_screen.dart:262` | Provider-free no-organizer route state with the shared Host create-organizer action; replacing a private screen-state helper keeps the route branch cataloged and previewable. |
 | `HostCustomersDirectory` | `lib/hosts/presentation/customers/host_customers_screen.dart:286` | Provider-free directory renderer for loading-complete customer state, truthful source-coverage notice, active-query empty state, person rows, pagination progress, and pagination recovery. |
-| `HostCustomerDirectoryRow` | `lib/hosts/presentation/customers/host_customers_screen.dart:371` | Provider-free customer row rendered through `CatchField.nav`, `CatchPersonAvatar`, attendance metadata, preferred lifecycle label, and ambiguous-identity validity state. |
+| `HostCustomerDirectoryRow` | `lib/hosts/presentation/customers/host_customers_screen.dart` | Provider-free customer row rendered through `CatchField.nav`, `CatchPersonAvatar`, attendance, delivery permission/suppression metadata, preferred CRM label, and ambiguous-identity validity state. |
 | `HostAddCustomerSheet` | `lib/hosts/presentation/customers/host_customers_screen.dart:410` | Manual name-only organizer contact form. Its copy makes clear that creation does not create a Catch account or grant messaging permission. |
-| `HostCustomerDetailScreen` | `lib/hosts/presentation/customers/host_customers_screen.dart:480` | Nested customer detail route with independent provider recovery, identity confidence, guarded conversation action, attendance totals, typed revenue coverage, and checked-in event history. |
+| `HostCustomerManageSheet` | `lib/hosts/presentation/customers/host_customers_screen.dart` | Customer-owned contact administration sheet for corrected display names, WhatsApp suppression/resume, and reversible CRM hiding with optimistic revision enforcement. |
+| `HostCustomerDetailScreen` | `lib/hosts/presentation/customers/host_customer_detail_screen.dart` | Nested customer detail route with independent provider recovery, identity confidence, contact administration, guarded conversation action, attendance totals, typed revenue coverage, and complete operational event history. |
 | `HostCustomerIdentityCard` | `lib/hosts/presentation/customers/host_customers_screen.dart:598` | Provider-free customer identity summary that keeps linked, unlinked, and ambiguous CRM identity states visible. |
 | `HostCustomerConversationCard` | `lib/hosts/presentation/customers/host_customers_screen.dart:646` | Provider-free manager-to-customer conversation action that presents the linked, unlinked, and ambiguous identity boundary and disables creation unless the supplied policy state is ready. |
 | `HostCustomerAttendanceCard` | `lib/hosts/presentation/customers/host_customers_screen.dart:683` | Provider-free attended, expected, and attendance-rate stat rail built from `CatchSection` and `CatchStatColumn`. |
 | `HostCustomerRevenueCard` | `lib/hosts/presentation/customers/host_customers_screen.dart:725` | Provider-free multi-currency Catch revenue presentation that preserves exact, partial, and unavailable coverage and counts only authoritative completed orders supplied by the backend. |
-| `HostCustomerAttendanceHistory` | `lib/hosts/presentation/customers/host_customers_screen.dart:780` | Provider-free checked-in event history section with event names and start dates; cancelled and no-show edges remain represented in aggregate traits rather than being mislabeled as attendance. |
-| `HostCustomersSummary` | `lib/hosts/presentation/customers/host_customers_screen.dart:822` | Provider-free async CRM summary renderer for contacts, past attendees, and repeat attendees using existing Catch stat, skeleton, error, and surface components. |
+| `HostCustomerAttendanceHistory` | `lib/hosts/presentation/customers/host_customers_screen.dart` | Provider-free operational event history with source, status, and checked-in truth kept distinct for every returned edge. |
+| `HostCustomersSummary` | `lib/hosts/presentation/customers/host_customers_screen.dart` | Provider-free async CRM summary for contacts, past attendees, repeat attendees, WhatsApp-ready contacts, and imported/linked source coverage. |
 
 ### StatefulWidget
 

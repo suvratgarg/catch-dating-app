@@ -56,17 +56,26 @@ HostAudienceQuery _queryFor(
   String? cursor,
 }) => HostAudienceQuery(
   search: request.search,
-  segment: switch (request.filter.tag) {
-    null => null,
-    HostCustomerTag.firstTime => HostAudienceSegment.firstTimeAttendee,
-    HostCustomerTag.repeat => HostAudienceSegment.repeatAttendee,
-    HostCustomerTag.regular => HostAudienceSegment.regular,
-    HostCustomerTag.atRisk => HostAudienceSegment.lapsedRegular,
-    HostCustomerTag.needsConfirmation => HostAudienceSegment.needsConfirmation,
-    HostCustomerTag.advocate => HostAudienceSegment.advocate,
-  },
+  segment: hostAudienceSegmentForCustomerFilter(request.filter),
   cursor: cursor,
 );
+
+HostAudienceSegment? hostAudienceSegmentForCustomerFilter(
+  HostCustomerFilter filter,
+) => switch (filter.tag) {
+  null => null,
+  HostCustomerTag.newToOrganizer => HostAudienceSegment.newToOrganizer,
+  HostCustomerTag.firstTime => HostAudienceSegment.firstTimeAttendee,
+  HostCustomerTag.repeat => HostAudienceSegment.repeatAttendee,
+  HostCustomerTag.regular => HostAudienceSegment.regular,
+  HostCustomerTag.atRisk => HostAudienceSegment.lapsedRegular,
+  HostCustomerTag.reliable => HostAudienceSegment.reliableAttendee,
+  HostCustomerTag.needsConfirmation => HostAudienceSegment.needsConfirmation,
+  HostCustomerTag.advocate => HostAudienceSegment.advocate,
+  HostCustomerTag.highImpactAdvocate => HostAudienceSegment.highImpactAdvocate,
+  HostCustomerTag.whatsappReachable => HostAudienceSegment.whatsappReachable,
+  HostCustomerTag.smsReachable => HostAudienceSegment.smsReachable,
+};
 
 HostCustomersDirectoryState _directoryStateFromPage(HostAudiencePage page) =>
     HostCustomersDirectoryState.fromPageData(
@@ -86,17 +95,23 @@ HostCustomerDirectoryContact _directoryContact(HostAudienceContact contact) =>
       hasAmbiguousIdentity:
           contact.identityState == HostAudienceIdentityState.ambiguous ||
           contact.ambiguousCandidateCount > 0,
+      whatsappOptedIn:
+          contact.whatsappStatus == HostAudiencePermissionStatus.optedIn,
+      whatsappAdminSuppressed: contact.whatsappAdminSuppressed,
     );
 
 HostCustomerTag? _customerTag(HostAudienceSegment segment) => switch (segment) {
+  HostAudienceSegment.newToOrganizer => HostCustomerTag.newToOrganizer,
   HostAudienceSegment.firstTimeAttendee => HostCustomerTag.firstTime,
   HostAudienceSegment.repeatAttendee => HostCustomerTag.repeat,
   HostAudienceSegment.regular => HostCustomerTag.regular,
   HostAudienceSegment.lapsedRegular => HostCustomerTag.atRisk,
+  HostAudienceSegment.reliableAttendee => HostCustomerTag.reliable,
   HostAudienceSegment.needsConfirmation => HostCustomerTag.needsConfirmation,
-  HostAudienceSegment.advocate ||
-  HostAudienceSegment.highImpactAdvocate => HostCustomerTag.advocate,
-  _ => null,
+  HostAudienceSegment.advocate => HostCustomerTag.advocate,
+  HostAudienceSegment.highImpactAdvocate => HostCustomerTag.highImpactAdvocate,
+  HostAudienceSegment.whatsappReachable => HostCustomerTag.whatsappReachable,
+  HostAudienceSegment.smsReachable => HostCustomerTag.smsReachable,
 };
 
 HostCustomerDirectoryCoverage _directoryCoverage(
@@ -131,5 +146,28 @@ class HostCustomersController {
   }) => _repository.startContactConversation(
     organizerId: organizerId,
     contactId: contactId,
+  );
+
+  Future<HostAudienceExport> exportCustomers({
+    required String organizerId,
+    HostAudienceSegment? segment,
+  }) => _repository.exportContacts(organizerId, segment: segment);
+
+  Future<void> mutateCustomer({
+    required String organizerId,
+    required String contactId,
+    required int expectedRevision,
+    String? displayNameOverride,
+    bool clearDisplayNameOverride = false,
+    bool? whatsappAdminSuppressed,
+    bool? hidden,
+  }) => _repository.mutateContact(
+    organizerId: organizerId,
+    contactId: contactId,
+    expectedRevision: expectedRevision,
+    displayNameOverride: displayNameOverride,
+    clearDisplayNameOverride: clearDisplayNameOverride,
+    whatsappAdminSuppressed: whatsappAdminSuppressed,
+    hidden: hidden,
   );
 }

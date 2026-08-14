@@ -9463,7 +9463,7 @@ abstract class AppLocalizations {
   /// Accessibility hint for switching Host Clubs workspace pages.
   ///
   /// In en, this message translates to:
-  /// **'Drag left or right to switch between Edit, Audience, Insights, and Preview.'**
+  /// **'Drag left or right to switch between Edit, Insights, and Preview.'**
   String get hostsHostClubsScaffoldBodyDragLeftOrRight;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (label).
@@ -18670,42 +18670,6 @@ abstract class AppLocalizations {
   /// **'Disable website sign-up'**
   String get hostsHostPublicRegistrationActionDisable;
 
-  /// Organizer audience workspace tab.
-  ///
-  /// In en, this message translates to:
-  /// **'Audience'**
-  String get hostsHostClubsScaffoldLabelAudience;
-
-  /// Audience workspace title.
-  ///
-  /// In en, this message translates to:
-  /// **'Your audience'**
-  String get hostsHostAudienceTitle;
-
-  /// Explains audience inputs and standalone value.
-  ///
-  /// In en, this message translates to:
-  /// **'Build a useful history from Catch bookings, roster imports, manual guests, provider sync, and phone-verified event runtime check-ins. Catch bookings and the Consumer app are not required.'**
-  String get hostsHostAudienceIntro;
-
-  /// Audience people lens.
-  ///
-  /// In en, this message translates to:
-  /// **'People'**
-  String get hostsHostAudiencePeople;
-
-  /// Audience messaging lens.
-  ///
-  /// In en, this message translates to:
-  /// **'Message'**
-  String get hostsHostAudienceMessage;
-
-  /// Audience summary heading.
-  ///
-  /// In en, this message translates to:
-  /// **'At a glance'**
-  String get hostsHostAudienceAtAGlance;
-
   /// Contact count label.
   ///
   /// In en, this message translates to:
@@ -18739,12 +18703,6 @@ abstract class AppLocalizations {
     required int linkedCount,
   });
 
-  /// Audience directory heading.
-  ///
-  /// In en, this message translates to:
-  /// **'People'**
-  String get hostsHostAudienceDirectory;
-
   /// Audience search field.
   ///
   /// In en, this message translates to:
@@ -18768,12 +18726,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Counts may omit older roster changes. Messaging stays blocked until the projection is exact, so nobody receives an accidental blast.'**
   String get hostsHostAudienceCoveragePartialBody;
-
-  /// Empty audience state.
-  ///
-  /// In en, this message translates to:
-  /// **'No people match this filter yet. Import a roster or use the event runtime to start building your history.'**
-  String get hostsHostAudienceEmpty;
 
   /// WhatsApp sender section title.
   ///
@@ -19001,28 +18953,28 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{1 organizer contact.} other{{count} organizer contacts.}}'**
   String hostsHostAudienceExportCount({required int count});
 
-  /// Audience contact removal confirmation title.
+  /// Customer removal confirmation title.
   ///
   /// In en, this message translates to:
-  /// **'Remove from Audience?'**
+  /// **'Remove customer?'**
   String get hostsHostAudienceRemoveTitle;
 
-  /// Audience contact removal consequence.
+  /// Customer removal consequence.
   ///
   /// In en, this message translates to:
   /// **'This hides the person from CRM and future campaigns. Event attendance and audit history stay intact.'**
   String get hostsHostAudienceRemoveBody;
 
-  /// Confirm audience contact removal CTA.
+  /// Confirm customer removal CTA.
   ///
   /// In en, this message translates to:
   /// **'Remove'**
   String get hostsHostAudienceRemoveConfirm;
 
-  /// Open audience contact removal confirmation CTA.
+  /// Open customer removal confirmation CTA.
   ///
   /// In en, this message translates to:
-  /// **'Remove from Audience'**
+  /// **'Remove customer'**
   String get hostsHostAudienceRemoveAction;
 
   /// Audience contact sheet privacy subtitle.
@@ -19090,12 +19042,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pause organizer messages'**
   String get hostsHostAudienceContactPauseMessages;
-
-  /// Audience contact event history heading.
-  ///
-  /// In en, this message translates to:
-  /// **'Event history'**
-  String get hostsHostAudienceContactEventHistory;
 
   /// New-to-organizer audience segment label.
   ///
@@ -19222,12 +19168,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'WhatsApp opted in'**
   String get hostsHostAudienceWhatsappOptedIn;
-
-  /// Ambiguous contact identity label.
-  ///
-  /// In en, this message translates to:
-  /// **'Identity needs review'**
-  String get hostsHostAudienceIdentityNeedsReview;
 
   /// Embedded signup platform limitation.
   ///
@@ -19945,6 +19885,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Everyone who has attended, registered, been imported, or been added by your team.'**
   String get hostCustomersIntro;
+
+  /// Customers people workspace label.
+  ///
+  /// In en, this message translates to:
+  /// **'People'**
+  String get hostCustomersWorkspacePeople;
+
+  /// Customers campaigns workspace label.
+  ///
+  /// In en, this message translates to:
+  /// **'Campaigns'**
+  String get hostCustomersWorkspaceCampaigns;
+
+  /// Opens organizer-owned customer identity and delivery controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage customer'**
+  String get hostCustomersManage;
+
+  /// Customer event-history status for a completed check-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Checked in'**
+  String get hostCustomersCheckedIn;
 
   /// Adds a name-only organizer CRM contact.
   ///
