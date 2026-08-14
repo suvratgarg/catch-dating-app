@@ -9,6 +9,10 @@ import {
 import {eventParticipationId} from "../shared/relationshipDocuments";
 import {requireDoc} from "../shared/validation";
 import {eventRuntimeParticipantId} from "./eventRuntime";
+import {
+  activityAttributesForProfile,
+  activityAttributesForRuntimeProfile,
+} from "./assignmentPrimitiveControls";
 
 export type EventSuccessRosterStatus = "signedUp" | "attended";
 
@@ -22,6 +26,7 @@ export interface EventSuccessRosterParticipant {
   arrivalGroup: string | null;
   cohortAtSignup: string;
   profile: Partial<UserProfileDocument>;
+  activityAttributes: Record<string, string | number | boolean | null>;
   source: "catchParticipation" | "externalRuntime";
 }
 
@@ -83,6 +88,7 @@ export async function loadEventSuccessRoster(
       cohortAtSignup: edge.cohortAtSignup ??
         cohortFor(gender, interests),
       profile,
+      activityAttributes: activityAttributesForProfile(profile),
       source: "catchParticipation",
     });
   });
@@ -126,6 +132,9 @@ export async function loadEventSuccessRoster(
         relationshipGoal: edge.runtimeProfile.relationshipGoal,
         dateOfBirth: edge.runtimeProfile.dateOfBirth ?? undefined,
       },
+      activityAttributes: activityAttributesForRuntimeProfile(
+        edge.runtimeProfile
+      ),
       source: "externalRuntime",
     });
   });
@@ -189,6 +198,7 @@ export async function loadEventSuccessRosterParticipant(
         cohortAtSignup: edge.cohortAtSignup ??
           cohortFor(gender, interests),
         profile,
+        activityAttributes: activityAttributesForProfile(profile),
         source: "catchParticipation",
       };
     }
@@ -233,6 +243,9 @@ export async function loadEventSuccessRosterParticipant(
       relationshipGoal: edge.runtimeProfile.relationshipGoal,
       dateOfBirth: edge.runtimeProfile.dateOfBirth ?? undefined,
     },
+    activityAttributes: activityAttributesForRuntimeProfile(
+      edge.runtimeProfile
+    ),
     source: "externalRuntime",
   };
 }

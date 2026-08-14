@@ -3,6 +3,8 @@ import {useParams} from "react-router";
 import {
   eventRuntimeCopy,
   eventRuntimeGenderOptions,
+  eventRuntimePaceBandOptions,
+  eventRuntimeSkillBandOptions,
 } from "../../content/eventRuntime";
 import {
   Button,
@@ -37,6 +39,7 @@ import {
   normalizeEventRuntimeLayoutUnits,
   eventVenueSessionTokenFromFragment,
   resolveEventRuntimeCeremony,
+  resolveEventRuntimeSocialMission,
   shouldRenderEventRuntimeRoomMap,
   type EventRuntimeCeremony,
   visibleEventRuntimeStandingRound,
@@ -172,6 +175,19 @@ export function EventRuntimePage() {
               onChange={(event) => controller.setDisplayName(event.target.value)}
               value={controller.displayName}
             />
+            {controller.preEventFieldId ? (
+              <>
+                <PreEventProfileField controller={controller} />
+                <EventRuntimeConsent
+                  checked={controller.preEventConsent}
+                  onChange={(event) => controller.setPreEventConsent(
+                    event.target.checked
+                  )}
+                >
+                  {eventRuntimeCopy.preEventSensitiveConsent}
+                </EventRuntimeConsent>
+              </>
+            ) : null}
             {controller.offersPreferenceProfile ? (
               <>
                 <EventRuntimeConsent
@@ -233,6 +249,105 @@ export function EventRuntimePage() {
       ) : null}
     </EventRuntimeFrame>
   );
+}
+
+function PreEventProfileField({
+  controller,
+}: {
+  controller: ReturnType<typeof useEventRuntimeController>;
+}) {
+  switch (controller.preEventFieldId) {
+    case "paceBand":
+      return (
+        <EventRuntimeFieldset>
+          <legend>{eventRuntimeCopy.paceBandLabel}</legend>
+          <ChoiceChipGrid aria-label={eventRuntimeCopy.paceBandLabel}>
+            {eventRuntimePaceBandOptions.map((option) => (
+              <ChoiceChip
+                key={option.id}
+                onClick={() => controller.setPaceBand(option.id)}
+                selected={controller.paceBand === option.id}
+              >
+                {option.label}
+              </ChoiceChip>
+            ))}
+          </ChoiceChipGrid>
+        </EventRuntimeFieldset>
+      );
+    case "skillBand":
+      return (
+        <EventRuntimeFieldset>
+          <legend>{eventRuntimeCopy.skillBandLabel}</legend>
+          <ChoiceChipGrid aria-label={eventRuntimeCopy.skillBandLabel}>
+            {eventRuntimeSkillBandOptions.map((option) => (
+              <ChoiceChip
+                key={option.id}
+                onClick={() => controller.setSkillBand(option.id)}
+                selected={controller.skillBand === option.id}
+              >
+                {option.label}
+              </ChoiceChip>
+            ))}
+          </ChoiceChipGrid>
+        </EventRuntimeFieldset>
+      );
+    case "dietaryAndSeatingNotes":
+      return (
+        <TextAreaField
+          id="event-runtime-dietary-seating"
+          label={eventRuntimeCopy.dietaryAndSeatingLabel}
+          maxLength={300}
+          onChange={(event) => controller.setDietaryAndSeatingNotes(
+            event.target.value
+          )}
+          placeholder={eventRuntimeCopy.dietaryAndSeatingPlaceholder}
+          rows={3}
+          value={controller.dietaryAndSeatingNotes}
+        />
+      );
+    case "questionnaireAnswerIds":
+      return (
+        <EventRuntimeProfileQuestions>
+          <h3>{controller.questionnaire.title}</h3>
+          <p>{eventRuntimeCopy.preEventBody}</p>
+          <EventRuntimeQuestionnaire>
+            {controller.questionnaire.questions.map((question) => (
+              <EventRuntimeFieldset key={question.id}>
+                <legend>{question.prompt}</legend>
+                <ChoiceChipGrid aria-label={question.prompt}>
+                  {question.options.map((answer) => (
+                    <ChoiceChip
+                      key={answer.id}
+                      onClick={() => controller.selectQuestionAnswer(
+                        question.id,
+                        answer.id
+                      )}
+                      selected={controller.questionAnswers[question.id] ===
+                        answer.id}
+                    >
+                      {answer.label}
+                    </ChoiceChip>
+                  ))}
+                </ChoiceChipGrid>
+              </EventRuntimeFieldset>
+            ))}
+          </EventRuntimeQuestionnaire>
+        </EventRuntimeProfileQuestions>
+      );
+    case "teamName":
+      return (
+        <TextField
+          id="event-runtime-team-name"
+          label={eventRuntimeCopy.teamNameLabel}
+          maxLength={80}
+          onChange={(event) => controller.setTeamName(event.target.value)}
+          placeholder={eventRuntimeCopy.teamNamePlaceholder}
+          value={controller.teamName}
+        />
+      );
+    case null:
+      return null;
+  }
 }
 
 function CompatibilityProfileFields({
@@ -302,6 +417,11 @@ function LiveEventRuntime({
       (plan?.publishedRotationRoundIndex ?? -1);
   const presentation = resolveEventRuntimeStagePresentation(controller.liveState);
   const theatricalSource = eventRuntimeVisualAssetPath("theatrical");
+  const socialMission = modules.has("social_missions") ?
+    resolveEventRuntimeSocialMission(
+      event.interactionModel,
+      plan?.activeStepIndex ?? 0
+    ) : null;
   return (
     <EventRuntimeLive
       activityId={eventRuntimeActivityIdForPresentation(
@@ -400,6 +520,13 @@ function LiveEventRuntime({
       {controller.liveState.plan?.attendeePrompt ? (
         <EventRuntimeModule title={eventRuntimeCopy.hostPromptTitle}>
           <p>{controller.liveState.plan.attendeePrompt}</p>
+        </EventRuntimeModule>
+      ) : null}
+
+      {socialMission ? (
+        <EventRuntimeModule title={socialMission.title}>
+          <p>{socialMission.body}</p>
+          <small>{socialMission.disclosureLabel}</small>
         </EventRuntimeModule>
       ) : null}
 

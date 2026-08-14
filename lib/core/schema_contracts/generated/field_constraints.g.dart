@@ -4093,7 +4093,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    maxItems: 5,
+    maxItems: 10,
   );
 
   static const claimEventRuntimeAccessCallableResponseCompletedFieldIdsItems = CatchContractFieldConstraints(
@@ -4107,7 +4107,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    maxItems: 5,
+    maxItems: 10,
   );
 
   static const claimEventRuntimeAccessCallableResponseRequiredFieldIdsItems = CatchContractFieldConstraints(
@@ -13865,8 +13865,8 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth'],
-    maxItems: 5,
+    itemEnumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
+    maxItems: 10,
     uniqueItems: true,
   );
 
@@ -13874,7 +13874,7 @@ abstract final class CatchContractConstraints {
     path: 'eventRuntimeParticipantDocument.completedFieldIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth'],
+    enumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
   );
 
   static const eventRuntimeParticipantDocumentConsentsRuntimeTermsVersion = CatchContractFieldConstraints(
@@ -13959,8 +13959,8 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth'],
-    maxItems: 5,
+    itemEnumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
+    maxItems: 10,
     uniqueItems: true,
   );
 
@@ -13968,7 +13968,7 @@ abstract final class CatchContractConstraints {
     path: 'eventRuntimeParticipantDocument.requiredFieldIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth'],
+    enumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
   );
 
   static const eventRuntimeParticipantDocumentRevokedAtNanoseconds = CatchContractFieldConstraints(
@@ -13997,6 +13997,13 @@ abstract final class CatchContractConstraints {
     path: 'eventRuntimeParticipantDocument.runtimeProfile.dateOfBirth._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const eventRuntimeParticipantDocumentRuntimeProfileDietaryAndSeatingNotes = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.runtimeProfile.dietaryAndSeatingNotes',
+    maxLength: 300,
+    minLength: 1,
+    valueTypes: <String>['string'],
   );
 
   static const eventRuntimeParticipantDocumentRuntimeProfileDisplayName = CatchContractFieldConstraints(
@@ -14030,10 +14037,46 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['man', 'woman', 'nonBinary', 'other'],
   );
 
+  static const eventRuntimeParticipantDocumentRuntimeProfilePaceBand = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.runtimeProfile.paceBand',
+    valueTypes: <String>['string'],
+    enumValues: <String>['competitive', 'fast', 'moderate', 'easy'],
+  );
+
+  static const eventRuntimeParticipantDocumentRuntimeProfileQuestionnaireAnswerIds = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.runtimeProfile.questionnaireAnswerIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 8,
+    uniqueItems: true,
+  );
+
+  static const eventRuntimeParticipantDocumentRuntimeProfileQuestionnaireAnswerIdsItems = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.runtimeProfile.questionnaireAnswerIds.items',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const eventRuntimeParticipantDocumentRuntimeProfileRelationshipGoal = CatchContractFieldConstraints(
     path: 'eventRuntimeParticipantDocument.runtimeProfile.relationshipGoal',
     valueTypes: <String>['string'],
     enumValues: <String>['relationship', 'casual', 'marriage', 'friendship', 'unsure'],
+  );
+
+  static const eventRuntimeParticipantDocumentRuntimeProfileSkillBand = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.runtimeProfile.skillBand',
+    valueTypes: <String>['string'],
+    enumValues: <String>['beginner', 'intermediate', 'advanced'],
+  );
+
+  static const eventRuntimeParticipantDocumentRuntimeProfileTeamName = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.runtimeProfile.teamName',
+    maxLength: 80,
+    minLength: 1,
+    valueTypes: <String>['string'],
   );
 
   static const eventRuntimeParticipantDocumentUid = CatchContractFieldConstraints(
@@ -19942,6 +19985,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const getEventRuntimeBootstrapCallableResponseEventInteractionModel = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.interactionModel',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pacePods', 'pairedRotations', 'teamRotations', 'seatedTable', 'freeFormMixer', 'hostLedProgram', 'openFormat'],
+  );
+
   static const getEventRuntimeBootstrapCallableResponseEventLayoutLabel = CatchContractFieldConstraints(
     path: 'getEventRuntimeBootstrapCallableResponse.event.layout.label',
     maxLength: 120,
@@ -20050,8 +20100,8 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth'],
-    maxItems: 5,
+    itemEnumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
+    maxItems: 10,
     uniqueItems: true,
   );
 
@@ -20059,7 +20109,7 @@ abstract final class CatchContractConstraints {
     path: 'getEventRuntimeBootstrapCallableResponse.event.optionalFieldIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth'],
+    enumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
   );
 
   static const getEventRuntimeBootstrapCallableResponseEventPublicRuntimeId = CatchContractFieldConstraints(
@@ -20136,8 +20186,8 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth'],
-    maxItems: 5,
+    itemEnumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
+    maxItems: 10,
     uniqueItems: true,
   );
 
@@ -20145,7 +20195,7 @@ abstract final class CatchContractConstraints {
     path: 'getEventRuntimeBootstrapCallableResponse.event.requiredFieldIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth'],
+    enumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
   );
 
   static const getEventRuntimeBootstrapCallableResponseEventRuntimeTermsVersion = CatchContractFieldConstraints(
@@ -20196,7 +20246,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    maxItems: 5,
+    maxItems: 10,
   );
 
   static const getEventRuntimeBootstrapCallableResponseParticipantCompletedFieldIdsItems = CatchContractFieldConstraints(
@@ -20226,7 +20276,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    maxItems: 5,
+    maxItems: 10,
   );
 
   static const getEventRuntimeBootstrapCallableResponseParticipantRequiredFieldIdsItems = CatchContractFieldConstraints(
@@ -20238,6 +20288,13 @@ abstract final class CatchContractConstraints {
   static const getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileDateOfBirthMillis = CatchContractFieldConstraints(
     path: 'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.dateOfBirthMillis',
     valueTypes: <String>['integer'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileDietaryAndSeatingNotes = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.dietaryAndSeatingNotes',
+    maxLength: 300,
+    minLength: 1,
+    valueTypes: <String>['string'],
   );
 
   static const getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileDisplayName = CatchContractFieldConstraints(
@@ -20270,10 +20327,46 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['man', 'woman', 'nonBinary', 'other'],
   );
 
+  static const getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfilePaceBand = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.paceBand',
+    valueTypes: <String>['string'],
+    enumValues: <String>['competitive', 'fast', 'moderate', 'easy'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileQuestionnaireAnswerIds = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.questionnaireAnswerIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 8,
+    uniqueItems: true,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileQuestionnaireAnswerIdsItems = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.questionnaireAnswerIds.items',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileRelationshipGoal = CatchContractFieldConstraints(
     path: 'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.relationshipGoal',
     valueTypes: <String>['string'],
     enumValues: <String>['relationship', 'casual', 'marriage', 'friendship', 'unsure'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileSkillBand = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.skillBand',
+    valueTypes: <String>['string'],
+    enumValues: <String>['beginner', 'intermediate', 'advanced'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileTeamName = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.teamName',
+    maxLength: 80,
+    minLength: 1,
+    valueTypes: <String>['string'],
   );
 
   static const getEventSuccessConversationGraphCallableResponseCandidates = CatchContractFieldConstraints(
@@ -35675,6 +35768,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const submitEventRuntimeProfileCallablePayloadFieldsDietaryAndSeatingNotes = CatchContractFieldConstraints(
+    path: 'submitEventRuntimeProfileCallablePayload.fields.dietaryAndSeatingNotes',
+    maxLength: 300,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const submitEventRuntimeProfileCallablePayloadFieldsDisplayName = CatchContractFieldConstraints(
     path: 'submitEventRuntimeProfileCallablePayload.fields.displayName',
     maxLength: 120,
@@ -35705,10 +35805,45 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['man', 'woman', 'nonBinary', 'other'],
   );
 
+  static const submitEventRuntimeProfileCallablePayloadFieldsPaceBand = CatchContractFieldConstraints(
+    path: 'submitEventRuntimeProfileCallablePayload.fields.paceBand',
+    valueTypes: <String>['string'],
+    enumValues: <String>['competitive', 'fast', 'moderate', 'easy'],
+  );
+
+  static const submitEventRuntimeProfileCallablePayloadFieldsQuestionnaireAnswerIds = CatchContractFieldConstraints(
+    path: 'submitEventRuntimeProfileCallablePayload.fields.questionnaireAnswerIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 8,
+    uniqueItems: true,
+  );
+
+  static const submitEventRuntimeProfileCallablePayloadFieldsQuestionnaireAnswerIdsItems = CatchContractFieldConstraints(
+    path: 'submitEventRuntimeProfileCallablePayload.fields.questionnaireAnswerIds.items',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const submitEventRuntimeProfileCallablePayloadFieldsRelationshipGoal = CatchContractFieldConstraints(
     path: 'submitEventRuntimeProfileCallablePayload.fields.relationshipGoal',
     valueTypes: <String>['string'],
     enumValues: <String>['relationship', 'casual', 'marriage', 'friendship', 'unsure'],
+  );
+
+  static const submitEventRuntimeProfileCallablePayloadFieldsSkillBand = CatchContractFieldConstraints(
+    path: 'submitEventRuntimeProfileCallablePayload.fields.skillBand',
+    valueTypes: <String>['string'],
+    enumValues: <String>['beginner', 'intermediate', 'advanced'],
+  );
+
+  static const submitEventRuntimeProfileCallablePayloadFieldsTeamName = CatchContractFieldConstraints(
+    path: 'submitEventRuntimeProfileCallablePayload.fields.teamName',
+    maxLength: 80,
+    minLength: 1,
+    valueTypes: <String>['string'],
   );
 
   static const submitEventRuntimeProfileCallablePayloadPublicRuntimeId = CatchContractFieldConstraints(
@@ -35743,7 +35878,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    maxItems: 5,
+    maxItems: 10,
   );
 
   static const submitEventRuntimeProfileCallableResponseCompletedFieldIdsItems = CatchContractFieldConstraints(
@@ -35757,7 +35892,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    maxItems: 5,
+    maxItems: 10,
   );
 
   static const submitEventRuntimeProfileCallableResponseRequiredFieldIdsItems = CatchContractFieldConstraints(
@@ -42836,11 +42971,17 @@ abstract final class CatchContractConstraints {
     'eventRuntimeParticipantDocument.revokedAt._seconds': eventRuntimeParticipantDocumentRevokedAtSeconds,
     'eventRuntimeParticipantDocument.runtimeProfile.dateOfBirth._nanoseconds': eventRuntimeParticipantDocumentRuntimeProfileDateOfBirthNanoseconds,
     'eventRuntimeParticipantDocument.runtimeProfile.dateOfBirth._seconds': eventRuntimeParticipantDocumentRuntimeProfileDateOfBirthSeconds,
+    'eventRuntimeParticipantDocument.runtimeProfile.dietaryAndSeatingNotes': eventRuntimeParticipantDocumentRuntimeProfileDietaryAndSeatingNotes,
     'eventRuntimeParticipantDocument.runtimeProfile.displayName': eventRuntimeParticipantDocumentRuntimeProfileDisplayName,
     'eventRuntimeParticipantDocument.runtimeProfile.gender': eventRuntimeParticipantDocumentRuntimeProfileGender,
     'eventRuntimeParticipantDocument.runtimeProfile.interestedInGenders': eventRuntimeParticipantDocumentRuntimeProfileInterestedInGenders,
     'eventRuntimeParticipantDocument.runtimeProfile.interestedInGenders.items': eventRuntimeParticipantDocumentRuntimeProfileInterestedInGendersItems,
+    'eventRuntimeParticipantDocument.runtimeProfile.paceBand': eventRuntimeParticipantDocumentRuntimeProfilePaceBand,
+    'eventRuntimeParticipantDocument.runtimeProfile.questionnaireAnswerIds': eventRuntimeParticipantDocumentRuntimeProfileQuestionnaireAnswerIds,
+    'eventRuntimeParticipantDocument.runtimeProfile.questionnaireAnswerIds.items': eventRuntimeParticipantDocumentRuntimeProfileQuestionnaireAnswerIdsItems,
     'eventRuntimeParticipantDocument.runtimeProfile.relationshipGoal': eventRuntimeParticipantDocumentRuntimeProfileRelationshipGoal,
+    'eventRuntimeParticipantDocument.runtimeProfile.skillBand': eventRuntimeParticipantDocumentRuntimeProfileSkillBand,
+    'eventRuntimeParticipantDocument.runtimeProfile.teamName': eventRuntimeParticipantDocumentRuntimeProfileTeamName,
     'eventRuntimeParticipantDocument.uid': eventRuntimeParticipantDocumentUid,
     'eventRuntimeParticipantDocument.updatedAt._nanoseconds': eventRuntimeParticipantDocumentUpdatedAtNanoseconds,
     'eventRuntimeParticipantDocument.updatedAt._seconds': eventRuntimeParticipantDocumentUpdatedAtSeconds,
@@ -43650,6 +43791,7 @@ abstract final class CatchContractConstraints {
     'getEventRuntimeBootstrapCallableResponse.event.checkedInCount': getEventRuntimeBootstrapCallableResponseEventCheckedInCount,
     'getEventRuntimeBootstrapCallableResponse.event.endTimeMillis': getEventRuntimeBootstrapCallableResponseEventEndTimeMillis,
     'getEventRuntimeBootstrapCallableResponse.event.eventId': getEventRuntimeBootstrapCallableResponseEventEventId,
+    'getEventRuntimeBootstrapCallableResponse.event.interactionModel': getEventRuntimeBootstrapCallableResponseEventInteractionModel,
     'getEventRuntimeBootstrapCallableResponse.event.layout.label': getEventRuntimeBootstrapCallableResponseEventLayoutLabel,
     'getEventRuntimeBootstrapCallableResponse.event.layout.layoutId': getEventRuntimeBootstrapCallableResponseEventLayoutLayoutId,
     'getEventRuntimeBootstrapCallableResponse.event.layout.units': getEventRuntimeBootstrapCallableResponseEventLayoutUnits,
@@ -43689,11 +43831,17 @@ abstract final class CatchContractConstraints {
     'getEventRuntimeBootstrapCallableResponse.participant.requiredFieldIds': getEventRuntimeBootstrapCallableResponseParticipantRequiredFieldIds,
     'getEventRuntimeBootstrapCallableResponse.participant.requiredFieldIds.items': getEventRuntimeBootstrapCallableResponseParticipantRequiredFieldIdsItems,
     'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.dateOfBirthMillis': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileDateOfBirthMillis,
+    'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.dietaryAndSeatingNotes': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileDietaryAndSeatingNotes,
     'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.displayName': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileDisplayName,
     'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.gender': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileGender,
     'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.interestedInGenders': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileInterestedInGenders,
     'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.interestedInGenders.items': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileInterestedInGendersItems,
+    'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.paceBand': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfilePaceBand,
+    'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.questionnaireAnswerIds': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileQuestionnaireAnswerIds,
+    'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.questionnaireAnswerIds.items': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileQuestionnaireAnswerIdsItems,
     'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.relationshipGoal': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileRelationshipGoal,
+    'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.skillBand': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileSkillBand,
+    'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.teamName': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileTeamName,
     'getEventSuccessConversationGraphCallableResponse.candidates': getEventSuccessConversationGraphCallableResponseCandidates,
     'getEventSuccessConversationGraphCallableResponse.candidates.items.assigned': getEventSuccessConversationGraphCallableResponseCandidatesItemsAssigned,
     'getEventSuccessConversationGraphCallableResponse.candidates.items.displayName': getEventSuccessConversationGraphCallableResponseCandidatesItemsDisplayName,
@@ -45842,11 +45990,17 @@ abstract final class CatchContractConstraints {
     'stripeHostOnboardingLinkCallableResponse.accountId': stripeHostOnboardingLinkCallableResponseAccountId,
     'stripeHostOnboardingLinkCallableResponse.onboardingUrl': stripeHostOnboardingLinkCallableResponseOnboardingUrl,
     'submitEventRuntimeProfileCallablePayload.fields.dateOfBirthMillis': submitEventRuntimeProfileCallablePayloadFieldsDateOfBirthMillis,
+    'submitEventRuntimeProfileCallablePayload.fields.dietaryAndSeatingNotes': submitEventRuntimeProfileCallablePayloadFieldsDietaryAndSeatingNotes,
     'submitEventRuntimeProfileCallablePayload.fields.displayName': submitEventRuntimeProfileCallablePayloadFieldsDisplayName,
     'submitEventRuntimeProfileCallablePayload.fields.gender': submitEventRuntimeProfileCallablePayloadFieldsGender,
     'submitEventRuntimeProfileCallablePayload.fields.interestedInGenders': submitEventRuntimeProfileCallablePayloadFieldsInterestedInGenders,
     'submitEventRuntimeProfileCallablePayload.fields.interestedInGenders.items': submitEventRuntimeProfileCallablePayloadFieldsInterestedInGendersItems,
+    'submitEventRuntimeProfileCallablePayload.fields.paceBand': submitEventRuntimeProfileCallablePayloadFieldsPaceBand,
+    'submitEventRuntimeProfileCallablePayload.fields.questionnaireAnswerIds': submitEventRuntimeProfileCallablePayloadFieldsQuestionnaireAnswerIds,
+    'submitEventRuntimeProfileCallablePayload.fields.questionnaireAnswerIds.items': submitEventRuntimeProfileCallablePayloadFieldsQuestionnaireAnswerIdsItems,
     'submitEventRuntimeProfileCallablePayload.fields.relationshipGoal': submitEventRuntimeProfileCallablePayloadFieldsRelationshipGoal,
+    'submitEventRuntimeProfileCallablePayload.fields.skillBand': submitEventRuntimeProfileCallablePayloadFieldsSkillBand,
+    'submitEventRuntimeProfileCallablePayload.fields.teamName': submitEventRuntimeProfileCallablePayloadFieldsTeamName,
     'submitEventRuntimeProfileCallablePayload.publicRuntimeId': submitEventRuntimeProfileCallablePayloadPublicRuntimeId,
     'submitEventRuntimeProfileCallablePayload.runtimeTermsVersion': submitEventRuntimeProfileCallablePayloadRuntimeTermsVersion,
     'submitEventRuntimeProfileCallablePayload.saveAsCatchPrefill': submitEventRuntimeProfileCallablePayloadSaveAsCatchPrefill,

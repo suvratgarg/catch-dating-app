@@ -25,5 +25,13 @@ export interface SubmitEventRuntimeProfileCallablePayload {
       | "unsure"
       | null;
     dateOfBirthMillis?: number | null;
+    paceBand?: "competitive" | "fast" | "moderate" | "easy" | null;
+    skillBand?: "beginner" | "intermediate" | "advanced" | null;
+    dietaryAndSeatingNotes?: string | null;
+    /**
+     * @maxItems 8
+     */
+    questionnaireAnswerIds?: string[];
+    teamName?: string | null;
   };
 }

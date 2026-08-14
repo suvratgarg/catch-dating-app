@@ -8072,6 +8072,33 @@ class AppLocalizationsEn extends AppLocalizations {
       'First live cue';
 
   @override
+  String get eventSuccessSocialMissionTitleLight => 'Easy start';
+
+  @override
+  String get eventSuccessSocialMissionTitlePersonal => 'A little more personal';
+
+  @override
+  String get eventSuccessSocialMissionTitleReflective => 'One level deeper';
+
+  @override
+  String get eventSuccessSocialMissionBodyPersonal =>
+      'Take turns sharing something you changed your mind about recently and what shifted it.';
+
+  @override
+  String get eventSuccessSocialMissionBodyReflective =>
+      'Take turns answering: what do you hope the people close to you understand about you?';
+
+  @override
+  String get eventSuccessSocialMissionLevelLight => 'Light disclosure';
+
+  @override
+  String get eventSuccessSocialMissionLevelPersonal => 'Personal disclosure';
+
+  @override
+  String get eventSuccessSocialMissionLevelReflective =>
+      'Reflective disclosure';
+
+  @override
   String
   get eventSuccessEventSuccessConversationCueCopyBodySwapOnePracticalTip =>
       'Swap one practical tip before the next round or cooldown.';

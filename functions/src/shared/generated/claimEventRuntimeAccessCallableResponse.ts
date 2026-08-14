@@ -9,11 +9,11 @@ export interface ClaimEventRuntimeAccessCallableResponse {
   status: "pendingApproval" | "needsInput" | "ready";
   attendeeId: string | null;
   /**
-   * @maxItems 5
+   * @maxItems 10
    */
   requiredFieldIds: string[];
   /**
-   * @maxItems 5
+   * @maxItems 10
    */
   completedFieldIds: string[];
 }

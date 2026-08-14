@@ -32,11 +32,14 @@ import type {FormStatus} from "../../shared/forms/types";
 import {websiteQueryKeys} from "../../shared/query/queryKeys";
 import {
   eventRuntimeError,
+  eventRuntimePreEventFieldId,
   eventRuntimeStageForParticipant,
   normalizeRuntimePhone,
   resolveEventRuntimeQuestionnaire,
   type EventRuntimeBootstrap,
   type EventRuntimeGender,
+  type EventRuntimePaceBand,
+  type EventRuntimeSkillBand,
 } from "./eventRuntimeModel";
 import {eventInviteSessionId, eventInviteTokenFromLocation} from
   "../../shared/eventInviteAttribution";
@@ -90,6 +93,11 @@ export function useEventRuntimeController(
   const [preferenceProfileEnabled, setPreferenceProfileEnabled] = useState(false);
   const [sensitiveConsent, setSensitiveConsent] = useState(false);
   const [saveAsCatchPrefill, setSaveAsCatchPrefill] = useState(false);
+  const [paceBand, setPaceBand] = useState<EventRuntimePaceBand | null>(null);
+  const [skillBand, setSkillBand] = useState<EventRuntimeSkillBand | null>(null);
+  const [dietaryAndSeatingNotes, setDietaryAndSeatingNotes] = useState("");
+  const [teamName, setTeamName] = useState("");
+  const [preEventConsent, setPreEventConsent] = useState(false);
   const [liveState, setLiveState] = useState<EventRuntimeLiveState>(emptyLiveState);
   const [questionAnswers, setQuestionAnswers] = useState<Record<string, string>>({});
   const [wingmanCandidates, setWingmanCandidates] = useState<WingmanCandidate[]>([]);
@@ -146,6 +154,8 @@ export function useEventRuntimeController(
     bootstrap?.event.optionalFieldIds.includes("gender") &&
     bootstrap.event.optionalFieldIds.includes("interestedInGenders")
   );
+  const preEventFieldId = bootstrap ?
+    eventRuntimePreEventFieldId(bootstrap.event) : null;
 
   const loadAuthenticatedRuntime = useCallback(async (activeUser: User) => {
     if (loadingRef.current) return loadingRef.current;
@@ -413,6 +423,25 @@ export function useEventRuntimeController(
       setStatus({message: eventRuntimeCopy.missingSensitiveConsent, tone: "is-error"});
       return;
     }
+    const preEventQuestionnaireAnswerIds = questionnaire.questions
+      .map((question) => questionAnswers[question.id])
+      .filter((answerId): answerId is string => Boolean(answerId));
+    const hasPreEventAnswer = preEventFieldId === null ||
+      (preEventFieldId === "paceBand" && paceBand !== null) ||
+      (preEventFieldId === "skillBand" && skillBand !== null) ||
+      (preEventFieldId === "dietaryAndSeatingNotes" &&
+        dietaryAndSeatingNotes.trim().length > 0) ||
+      (preEventFieldId === "questionnaireAnswerIds" &&
+        preEventQuestionnaireAnswerIds.length === questionnaire.questions.length) ||
+      (preEventFieldId === "teamName" && teamName.trim().length > 0);
+    if (!hasPreEventAnswer) {
+      setStatus({message: eventRuntimeCopy.missingPreEventAnswer, tone: "is-error"});
+      return;
+    }
+    if (preEventFieldId && !preEventConsent) {
+      setStatus({message: eventRuntimeCopy.missingSensitiveConsent, tone: "is-error"});
+      return;
+    }
     setStatus({message: "", tone: ""});
     await actionMutation.mutateAsync(async () => {
       let accessStatus = bootstrap.participant?.accessStatus ?? "needsClaim";
@@ -432,7 +461,7 @@ export function useEventRuntimeController(
       await submitEventRuntimeProfile({
         publicRuntimeId,
         runtimeTermsVersion: bootstrap.event.runtimeTermsVersion,
-        sensitiveDataTermsVersion: preferenceProfileEnabled ?
+        sensitiveDataTermsVersion: preferenceProfileEnabled || preEventFieldId ?
           "event-runtime-sensitive-v1" : null,
         saveAsCatchPrefill,
         fields: {
@@ -442,6 +471,17 @@ export function useEventRuntimeController(
             interestedInGenders : [],
           relationshipGoal: preferenceProfileEnabled ? undefined : null,
           dateOfBirthMillis: preferenceProfileEnabled ? undefined : null,
+          ...(preEventFieldId === "paceBand" ? {paceBand} : {}),
+          ...(preEventFieldId === "skillBand" ? {skillBand} : {}),
+          ...(preEventFieldId === "dietaryAndSeatingNotes" ? {
+            dietaryAndSeatingNotes: dietaryAndSeatingNotes.trim(),
+          } : {}),
+          ...(preEventFieldId === "questionnaireAnswerIds" ? {
+            questionnaireAnswerIds: preEventQuestionnaireAnswerIds,
+          } : {}),
+          ...(preEventFieldId === "teamName" ? {
+            teamName: teamName.trim(),
+          } : {}),
         },
       });
       await loadAuthenticatedRuntime(user);
@@ -643,6 +683,15 @@ export function useEventRuntimeController(
     setPreferenceProfileEnabled(
       profile.gender !== null || profile.interestedInGenders.length > 0
     );
+    setPaceBand(profile.paceBand ?? null);
+    setSkillBand(profile.skillBand ?? null);
+    setDietaryAndSeatingNotes(profile.dietaryAndSeatingNotes ?? "");
+    setTeamName(profile.teamName ?? "");
+    setQuestionAnswers((current) => answerMapForIds(
+      resolveEventRuntimeQuestionnaire(next.event.questionnaireConfig).questions,
+      profile.questionnaireAnswerIds ?? [],
+      current
+    ));
   }
 
   return {
@@ -654,6 +703,7 @@ export function useEventRuntimeController(
     conversationGraph,
     conversationGraphLoading,
     displayName,
+    dietaryAndSeatingNotes,
     eventEnded,
     gender,
     handleCodeSubmit,
@@ -664,6 +714,7 @@ export function useEventRuntimeController(
     liveState,
     metNewPeopleCount,
     pending,
+    paceBand,
     phoneNumber,
     publicRuntimeId,
     questionnaire,
@@ -673,6 +724,8 @@ export function useEventRuntimeController(
     offersPreferenceProfile,
     privateNote,
     preferenceProfileEnabled,
+    preEventConsent,
+    preEventFieldId,
     saveAsCatchPrefill,
     saveCompatibilityAnswers,
     selectedConversationUids,
@@ -681,21 +734,28 @@ export function useEventRuntimeController(
     sensitiveConsent,
     setCode,
     setDisplayName,
+    setDietaryAndSeatingNotes,
     setGender,
     setPhoneNumber,
+    setPaceBand,
     setPreferenceProfileEnabled,
+    setPreEventConsent,
     setMetNewPeopleCount,
     setPrivateNote,
     setSaveAsCatchPrefill,
     setSensitiveConsent,
+    setSkillBand,
     setSafetyConcern,
     setStructureRating,
+    setTeamName,
     setWelcomeRating,
     setWingmanTargetUid,
     stage,
+    skillBand,
     startFirstHello,
     status,
     structureRating,
+    teamName,
     submitFeedback,
     submitConversationGraph,
     submitWingmanRequest,

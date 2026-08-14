@@ -2955,7 +2955,7 @@ export interface EventRuntimeParticipantDocument {
     | "optedOut"
     | "revoked";
   /**
-   * @maxItems 5
+   * @maxItems 10
    */
   requiredFieldIds: (
     | "displayName"
@@ -2963,9 +2963,14 @@ export interface EventRuntimeParticipantDocument {
     | "interestedInGenders"
     | "relationshipGoal"
     | "dateOfBirth"
+    | "paceBand"
+    | "skillBand"
+    | "dietaryAndSeatingNotes"
+    | "questionnaireAnswerIds"
+    | "teamName"
   )[];
   /**
-   * @maxItems 5
+   * @maxItems 10
    */
   completedFieldIds: (
     | "displayName"
@@ -2973,6 +2978,11 @@ export interface EventRuntimeParticipantDocument {
     | "interestedInGenders"
     | "relationshipGoal"
     | "dateOfBirth"
+    | "paceBand"
+    | "skillBand"
+    | "dietaryAndSeatingNotes"
+    | "questionnaireAnswerIds"
+    | "teamName"
   )[];
   runtimeProfile: {
     displayName: string;
@@ -2989,6 +2999,14 @@ export interface EventRuntimeParticipantDocument {
       | "unsure"
       | null;
     dateOfBirth: FirebaseFirestore.Timestamp | null;
+    paceBand: "competitive" | "fast" | "moderate" | "easy" | null;
+    skillBand: "beginner" | "intermediate" | "advanced" | null;
+    dietaryAndSeatingNotes: string | null;
+    /**
+     * @maxItems 8
+     */
+    questionnaireAnswerIds: string[];
+    teamName: string | null;
   };
   consents: {
     runtimeTermsVersion: string;

@@ -22575,7 +22575,7 @@ export const eventRuntimeParticipantDocumentSchema = {
     "requiredFieldIds": {
       "type": "array",
       "uniqueItems": true,
-      "maxItems": 5,
+      "maxItems": 10,
       "items": {
         "type": "string",
         "enum": [
@@ -22583,14 +22583,19 @@ export const eventRuntimeParticipantDocumentSchema = {
           "gender",
           "interestedInGenders",
           "relationshipGoal",
-          "dateOfBirth"
+          "dateOfBirth",
+          "paceBand",
+          "skillBand",
+          "dietaryAndSeatingNotes",
+          "questionnaireAnswerIds",
+          "teamName"
         ]
       }
     },
     "completedFieldIds": {
       "type": "array",
       "uniqueItems": true,
-      "maxItems": 5,
+      "maxItems": 10,
       "items": {
         "type": "string",
         "enum": [
@@ -22598,7 +22603,12 @@ export const eventRuntimeParticipantDocumentSchema = {
           "gender",
           "interestedInGenders",
           "relationshipGoal",
-          "dateOfBirth"
+          "dateOfBirth",
+          "paceBand",
+          "skillBand",
+          "dietaryAndSeatingNotes",
+          "questionnaireAnswerIds",
+          "teamName"
         ]
       }
     },
@@ -22610,7 +22620,12 @@ export const eventRuntimeParticipantDocumentSchema = {
         "gender",
         "interestedInGenders",
         "relationshipGoal",
-        "dateOfBirth"
+        "dateOfBirth",
+        "paceBand",
+        "skillBand",
+        "dietaryAndSeatingNotes",
+        "questionnaireAnswerIds",
+        "teamName"
       ],
       "properties": {
         "displayName": {
@@ -22688,6 +22703,57 @@ export const eventRuntimeParticipantDocumentSchema = {
               "type": "null"
             }
           ]
+        },
+        "paceBand": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "competitive",
+            "fast",
+            "moderate",
+            "easy",
+            null
+          ]
+        },
+        "skillBand": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "beginner",
+            "intermediate",
+            "advanced",
+            null
+          ]
+        },
+        "dietaryAndSeatingNotes": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "questionnaireAnswerIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 8,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          }
+        },
+        "teamName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 80
         }
       }
     },
@@ -50009,7 +50075,8 @@ export const getEventRuntimeBootstrapCallableResponseSchema = {
         "layout",
         "requiredFieldIds",
         "optionalFieldIds",
-        "questionnaireConfig"
+        "questionnaireConfig",
+        "interactionModel"
       ],
       "properties": {
         "eventId": {
@@ -50055,6 +50122,18 @@ export const getEventRuntimeBootstrapCallableResponseSchema = {
             "minLength": 1,
             "maxLength": 120
           }
+        },
+        "interactionModel": {
+          "type": "string",
+          "enum": [
+            "pacePods",
+            "pairedRotations",
+            "teamRotations",
+            "seatedTable",
+            "freeFormMixer",
+            "hostLedProgram",
+            "openFormat"
+          ]
         },
         "layout": {
           "anyOf": [
@@ -50143,10 +50222,10 @@ export const getEventRuntimeBootstrapCallableResponseSchema = {
           ]
         },
         "requiredFieldIds": {
-          "description": "Fields that must be completed before event mode opens. Sensitive preference fields are never required for entry.",
+          "description": "Fields that must be completed before event mode opens: display name plus at most one server-selected pre-event payload. Optional preference fields are never required for entry.",
           "type": "array",
           "uniqueItems": true,
-          "maxItems": 5,
+          "maxItems": 10,
           "items": {
             "type": "string",
             "enum": [
@@ -50154,7 +50233,12 @@ export const getEventRuntimeBootstrapCallableResponseSchema = {
               "gender",
               "interestedInGenders",
               "relationshipGoal",
-              "dateOfBirth"
+              "dateOfBirth",
+              "paceBand",
+              "skillBand",
+              "dietaryAndSeatingNotes",
+              "questionnaireAnswerIds",
+              "teamName"
             ]
           }
         },
@@ -50162,7 +50246,7 @@ export const getEventRuntimeBootstrapCallableResponseSchema = {
           "description": "Plan-derived event-only answers the guest may provide to improve preference-aware suggestions. Guests may skip them and receive neutral assignments.",
           "type": "array",
           "uniqueItems": true,
-          "maxItems": 5,
+          "maxItems": 10,
           "items": {
             "type": "string",
             "enum": [
@@ -50170,7 +50254,12 @@ export const getEventRuntimeBootstrapCallableResponseSchema = {
               "gender",
               "interestedInGenders",
               "relationshipGoal",
-              "dateOfBirth"
+              "dateOfBirth",
+              "paceBand",
+              "skillBand",
+              "dietaryAndSeatingNotes",
+              "questionnaireAnswerIds",
+              "teamName"
             ]
           }
         },
@@ -50318,14 +50407,14 @@ export const getEventRuntimeBootstrapCallableResponseSchema = {
               "items": {
                 "type": "string"
               },
-              "maxItems": 5
+              "maxItems": 10
             },
             "completedFieldIds": {
               "type": "array",
               "items": {
                 "type": "string"
               },
-              "maxItems": 5
+              "maxItems": 10
             },
             "runtimeProfile": {
               "type": "object",
@@ -50335,7 +50424,12 @@ export const getEventRuntimeBootstrapCallableResponseSchema = {
                 "gender",
                 "interestedInGenders",
                 "relationshipGoal",
-                "dateOfBirthMillis"
+                "dateOfBirthMillis",
+                "paceBand",
+                "skillBand",
+                "dietaryAndSeatingNotes",
+                "questionnaireAnswerIds",
+                "teamName"
               ],
               "properties": {
                 "displayName": {
@@ -50388,6 +50482,57 @@ export const getEventRuntimeBootstrapCallableResponseSchema = {
                     "integer",
                     "null"
                   ]
+                },
+                "paceBand": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "enum": [
+                    "competitive",
+                    "fast",
+                    "moderate",
+                    "easy",
+                    null
+                  ]
+                },
+                "skillBand": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "enum": [
+                    "beginner",
+                    "intermediate",
+                    "advanced",
+                    null
+                  ]
+                },
+                "dietaryAndSeatingNotes": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1,
+                  "maxLength": 300
+                },
+                "questionnaireAnswerIds": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "maxItems": 8,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  }
+                },
+                "teamName": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1,
+                  "maxLength": 80
                 }
               }
             }
@@ -50627,14 +50772,14 @@ export const claimEventRuntimeAccessCallableResponseSchema = {
       "items": {
         "type": "string"
       },
-      "maxItems": 5
+      "maxItems": 10
     },
     "completedFieldIds": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "maxItems": 5
+      "maxItems": 10
     }
   }
 };
@@ -50727,6 +50872,57 @@ export const submitEventRuntimeProfileCallablePayloadSchema = {
             "integer",
             "null"
           ]
+        },
+        "paceBand": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "competitive",
+            "fast",
+            "moderate",
+            "easy",
+            null
+          ]
+        },
+        "skillBand": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "beginner",
+            "intermediate",
+            "advanced",
+            null
+          ]
+        },
+        "dietaryAndSeatingNotes": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "questionnaireAnswerIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 8,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          }
+        },
+        "teamName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 80
         }
       }
     }
@@ -50758,14 +50954,14 @@ export const submitEventRuntimeProfileCallableResponseSchema = {
       "items": {
         "type": "string"
       },
-      "maxItems": 5
+      "maxItems": 10
     },
     "completedFieldIds": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "maxItems": 5
+      "maxItems": 10
     }
   }
 };

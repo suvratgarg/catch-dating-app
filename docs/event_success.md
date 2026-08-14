@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.17.0
+version: 1.18.0
 updated: 2026-08-14
 owner: recursive_audit_loop
 status: active
@@ -523,7 +523,12 @@ shape is:
     "gender": null,
     "interestedInGenders": [],
     "relationshipGoal": null,
-    "dateOfBirth": null
+    "dateOfBirth": null,
+    "paceBand": null,
+    "skillBand": null,
+    "dietaryAndSeatingNotes": null,
+    "questionnaireAnswerIds": [],
+    "teamName": null
   },
   "consents": {
     "runtimeTermsVersion": "event-runtime-v1",
@@ -548,9 +553,20 @@ gender-interest, relationship-goal or compatibility answers.
 `eventSuccessPlans/{eventId}` owns a server-compiled participant-requirements
 projection: questionnaire version; required and sensitive field ids from
 `displayName`, `gender`, `interestedInGenders`, `relationshipGoal`, and
-`dateOfBirth`; whether module opt-out is allowed; and module disclosure
-versions. Clients cannot widen or narrow requirements. Do not collect a
-sensitive value unless an enabled algorithm consumes it.
+`dateOfBirth`, plus exactly one resolved pre-event payload when the format
+requires it: `paceBand`, `skillBand`, `dietaryAndSeatingNotes`,
+`questionnaireAnswerIds`, or `teamName`; whether module opt-out is allowed; and
+module disclosure versions. Clients cannot widen or narrow requirements. Do
+not collect a sensitive value unless an enabled algorithm consumes it.
+
+The pre-event field is selected from the effective interaction model rather
+than `ActivityKind`. It is part of the ordinary required/completed-field state,
+so `accessStatus: ready` and `readyAt` remain the countable, non-sensitive Host
+readiness source. Pace/skill values are assignment attributes, mixer answers
+also update the private compatibility-response edge, and quiz team names update
+the existing operational `arrivalGroup`. Dinner constraints remain private and
+event-scoped; they do not enable or imitate `tableSeating`, and Host surfaces
+must not expose the answer while that engine remains unsupported.
 
 Existing private Consumer values may prefill the event form but must be
 confirmed. Event answers never overwrite `users/{uid}`. When the participant
@@ -629,12 +645,19 @@ Consumer Flutter router.
 
 ```text
 /e/:publicRuntimeId -> bootstrap -> phone -> OTP -> claim/approval
-  -> minimum required fields -> event moment -> completed/feedback
+  -> name + one format-bound pre-event answer
+  -> event moment -> completed/feedback
 ```
 
 The shell is mobile-first, noindex, accessible, refresh-safe and low-bandwidth.
 It caches only its shell and sanitized latest moment. OTP, claim and sensitive
 writes require connectivity. Retryable actions are idempotent.
+
+When `social_missions` is enabled, the generated moment catalog also owns one
+three-level prompt sequence per interaction model. The live run-of-show selects
+light disclosure at step 0, personal disclosure at step 1, and reflective
+disclosure from step 2 onward. Flutter and web resolve the same prompt id and
+level; neither samples a stage bucket or branches on `ActivityKind`.
 
 ### Roster adapters and ingestion
 

@@ -22576,7 +22576,7 @@ export const eventRuntimeParticipantDocumentSchema: Record<string, unknown> = {
     "requiredFieldIds": {
       "type": "array",
       "uniqueItems": true,
-      "maxItems": 5,
+      "maxItems": 10,
       "items": {
         "type": "string",
         "enum": [
@@ -22584,14 +22584,19 @@ export const eventRuntimeParticipantDocumentSchema: Record<string, unknown> = {
           "gender",
           "interestedInGenders",
           "relationshipGoal",
-          "dateOfBirth"
+          "dateOfBirth",
+          "paceBand",
+          "skillBand",
+          "dietaryAndSeatingNotes",
+          "questionnaireAnswerIds",
+          "teamName"
         ]
       }
     },
     "completedFieldIds": {
       "type": "array",
       "uniqueItems": true,
-      "maxItems": 5,
+      "maxItems": 10,
       "items": {
         "type": "string",
         "enum": [
@@ -22599,7 +22604,12 @@ export const eventRuntimeParticipantDocumentSchema: Record<string, unknown> = {
           "gender",
           "interestedInGenders",
           "relationshipGoal",
-          "dateOfBirth"
+          "dateOfBirth",
+          "paceBand",
+          "skillBand",
+          "dietaryAndSeatingNotes",
+          "questionnaireAnswerIds",
+          "teamName"
         ]
       }
     },
@@ -22611,7 +22621,12 @@ export const eventRuntimeParticipantDocumentSchema: Record<string, unknown> = {
         "gender",
         "interestedInGenders",
         "relationshipGoal",
-        "dateOfBirth"
+        "dateOfBirth",
+        "paceBand",
+        "skillBand",
+        "dietaryAndSeatingNotes",
+        "questionnaireAnswerIds",
+        "teamName"
       ],
       "properties": {
         "displayName": {
@@ -22689,6 +22704,57 @@ export const eventRuntimeParticipantDocumentSchema: Record<string, unknown> = {
               "type": "null"
             }
           ]
+        },
+        "paceBand": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "competitive",
+            "fast",
+            "moderate",
+            "easy",
+            null
+          ]
+        },
+        "skillBand": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "beginner",
+            "intermediate",
+            "advanced",
+            null
+          ]
+        },
+        "dietaryAndSeatingNotes": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "questionnaireAnswerIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 8,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          }
+        },
+        "teamName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 80
         }
       }
     },
@@ -50010,7 +50076,8 @@ export const getEventRuntimeBootstrapCallableResponseSchema: Record<string, unkn
         "layout",
         "requiredFieldIds",
         "optionalFieldIds",
-        "questionnaireConfig"
+        "questionnaireConfig",
+        "interactionModel"
       ],
       "properties": {
         "eventId": {
@@ -50056,6 +50123,18 @@ export const getEventRuntimeBootstrapCallableResponseSchema: Record<string, unkn
             "minLength": 1,
             "maxLength": 120
           }
+        },
+        "interactionModel": {
+          "type": "string",
+          "enum": [
+            "pacePods",
+            "pairedRotations",
+            "teamRotations",
+            "seatedTable",
+            "freeFormMixer",
+            "hostLedProgram",
+            "openFormat"
+          ]
         },
         "layout": {
           "anyOf": [
@@ -50144,10 +50223,10 @@ export const getEventRuntimeBootstrapCallableResponseSchema: Record<string, unkn
           ]
         },
         "requiredFieldIds": {
-          "description": "Fields that must be completed before event mode opens. Sensitive preference fields are never required for entry.",
+          "description": "Fields that must be completed before event mode opens: display name plus at most one server-selected pre-event payload. Optional preference fields are never required for entry.",
           "type": "array",
           "uniqueItems": true,
-          "maxItems": 5,
+          "maxItems": 10,
           "items": {
             "type": "string",
             "enum": [
@@ -50155,7 +50234,12 @@ export const getEventRuntimeBootstrapCallableResponseSchema: Record<string, unkn
               "gender",
               "interestedInGenders",
               "relationshipGoal",
-              "dateOfBirth"
+              "dateOfBirth",
+              "paceBand",
+              "skillBand",
+              "dietaryAndSeatingNotes",
+              "questionnaireAnswerIds",
+              "teamName"
             ]
           }
         },
@@ -50163,7 +50247,7 @@ export const getEventRuntimeBootstrapCallableResponseSchema: Record<string, unkn
           "description": "Plan-derived event-only answers the guest may provide to improve preference-aware suggestions. Guests may skip them and receive neutral assignments.",
           "type": "array",
           "uniqueItems": true,
-          "maxItems": 5,
+          "maxItems": 10,
           "items": {
             "type": "string",
             "enum": [
@@ -50171,7 +50255,12 @@ export const getEventRuntimeBootstrapCallableResponseSchema: Record<string, unkn
               "gender",
               "interestedInGenders",
               "relationshipGoal",
-              "dateOfBirth"
+              "dateOfBirth",
+              "paceBand",
+              "skillBand",
+              "dietaryAndSeatingNotes",
+              "questionnaireAnswerIds",
+              "teamName"
             ]
           }
         },
@@ -50319,14 +50408,14 @@ export const getEventRuntimeBootstrapCallableResponseSchema: Record<string, unkn
               "items": {
                 "type": "string"
               },
-              "maxItems": 5
+              "maxItems": 10
             },
             "completedFieldIds": {
               "type": "array",
               "items": {
                 "type": "string"
               },
-              "maxItems": 5
+              "maxItems": 10
             },
             "runtimeProfile": {
               "type": "object",
@@ -50336,7 +50425,12 @@ export const getEventRuntimeBootstrapCallableResponseSchema: Record<string, unkn
                 "gender",
                 "interestedInGenders",
                 "relationshipGoal",
-                "dateOfBirthMillis"
+                "dateOfBirthMillis",
+                "paceBand",
+                "skillBand",
+                "dietaryAndSeatingNotes",
+                "questionnaireAnswerIds",
+                "teamName"
               ],
               "properties": {
                 "displayName": {
@@ -50389,6 +50483,57 @@ export const getEventRuntimeBootstrapCallableResponseSchema: Record<string, unkn
                     "integer",
                     "null"
                   ]
+                },
+                "paceBand": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "enum": [
+                    "competitive",
+                    "fast",
+                    "moderate",
+                    "easy",
+                    null
+                  ]
+                },
+                "skillBand": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "enum": [
+                    "beginner",
+                    "intermediate",
+                    "advanced",
+                    null
+                  ]
+                },
+                "dietaryAndSeatingNotes": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1,
+                  "maxLength": 300
+                },
+                "questionnaireAnswerIds": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "maxItems": 8,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  }
+                },
+                "teamName": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1,
+                  "maxLength": 80
                 }
               }
             }
@@ -50628,14 +50773,14 @@ export const claimEventRuntimeAccessCallableResponseSchema: Record<string, unkno
       "items": {
         "type": "string"
       },
-      "maxItems": 5
+      "maxItems": 10
     },
     "completedFieldIds": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "maxItems": 5
+      "maxItems": 10
     }
   }
 } as const;
@@ -50728,6 +50873,57 @@ export const submitEventRuntimeProfileCallablePayloadSchema: Record<string, unkn
             "integer",
             "null"
           ]
+        },
+        "paceBand": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "competitive",
+            "fast",
+            "moderate",
+            "easy",
+            null
+          ]
+        },
+        "skillBand": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "beginner",
+            "intermediate",
+            "advanced",
+            null
+          ]
+        },
+        "dietaryAndSeatingNotes": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "questionnaireAnswerIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 8,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          }
+        },
+        "teamName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 80
         }
       }
     }
@@ -50759,14 +50955,14 @@ export const submitEventRuntimeProfileCallableResponseSchema: Record<string, unk
       "items": {
         "type": "string"
       },
-      "maxItems": 5
+      "maxItems": 10
     },
     "completedFieldIds": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "maxItems": 5
+      "maxItems": 10
     }
   }
 } as const;

@@ -2795,6 +2795,16 @@ const EVENT_SUCCESS_MOMENT_KINDS = [
 const EVENT_SUCCESS_SEED_RULE = "fnv1a32-utf8-fields-v1";
 const EVENT_SUCCESS_REVEAL_CLOCK =
   "revealStartedAtPlusStructureRevealCountdown";
+const EVENT_SUCCESS_INTERACTION_MODELS = [
+  "pacePods",
+  "pairedRotations",
+  "teamRotations",
+  "seatedTable",
+  "freeFormMixer",
+  "hostLedProgram",
+  "openFormat",
+];
+const EVENT_SUCCESS_DISCLOSURE_LEVELS = ["light", "personal", "reflective"];
 
 function assertEventSuccessMomentPresentationCatalog(catalog) {
   if (catalog?.schemaVersion !== 1 ||
@@ -2923,7 +2933,45 @@ function assertEventSuccessMomentPresentationCatalog(catalog) {
       );
     }
   }
+  assertEventSuccessSocialMissionPromptSets(catalog.socialMissionPromptSets);
   assertEventSuccessMomentParityFixture(catalog.parityFixture, reveal);
+}
+
+function assertEventSuccessSocialMissionPromptSets(promptSets) {
+  if (!Array.isArray(promptSets) ||
+      promptSets.length !== EVENT_SUCCESS_INTERACTION_MODELS.length) {
+    throw new Error(
+      "Event Success social missions must cover every interaction model."
+    );
+  }
+  const models = new Set();
+  for (const promptSet of promptSets) {
+    if (!EVENT_SUCCESS_INTERACTION_MODELS.includes(
+      promptSet?.interactionModel
+    ) || models.has(promptSet.interactionModel)) {
+      throw new Error(
+        `Invalid Event Success social mission model: ${
+          promptSet?.interactionModel
+        }`
+      );
+    }
+    models.add(promptSet.interactionModel);
+    if (!Array.isArray(promptSet.prompts) ||
+        promptSet.prompts.length !== EVENT_SUCCESS_DISCLOSURE_LEVELS.length) {
+      throw new Error(
+        `${promptSet.interactionModel} requires three social mission prompts.`
+      );
+    }
+    promptSet.prompts.forEach((prompt, index) => {
+      if (prompt?.disclosureLevel !== EVENT_SUCCESS_DISCLOSURE_LEVELS[index] ||
+          typeof prompt?.promptId !== "string" ||
+          !/^[A-Za-z][A-Za-z0-9.]{2,79}$/u.test(prompt.promptId)) {
+        throw new Error(
+          `${promptSet.interactionModel} social mission ${index} is invalid.`
+        );
+      }
+    });
+  }
 }
 
 function assertEventSuccessMomentParityFixture(fixture, presentation) {
@@ -3007,8 +3055,15 @@ function renderTsEventSuccessMomentPresentations(catalog) {
   const momentKindType = EVENT_SUCCESS_MOMENT_KINDS
     .map((value) => JSON.stringify(value))
     .join(" | ");
+  const interactionModelType = EVENT_SUCCESS_INTERACTION_MODELS
+    .map((value) => JSON.stringify(value))
+    .join(" | ");
   return `${tsGeneratedHeader()}export type EventSuccessMomentKind =
   ${momentKindType};
+export type EventSuccessInteractionModel =
+  ${interactionModelType};
+export type EventSuccessDisclosureLevel =
+  "light" | "personal" | "reflective";
 export type EventSuccessAccentPalettePolicyId =
   "primary" | "secondary" | "secondaryUntilReveal";
 export type EventSuccessMomentClockReferenceId =
@@ -3040,10 +3095,22 @@ export interface EventSuccessMomentPresentationContract {
   readonly ambientBedWhenEventEndedId: EventSuccessAmbientBedId | null;
 }
 
+export interface EventSuccessSocialMissionPromptContract {
+  readonly promptId: string;
+  readonly disclosureLevel: EventSuccessDisclosureLevel;
+}
+
+export interface EventSuccessSocialMissionPromptSetContract {
+  readonly interactionModel: EventSuccessInteractionModel;
+  readonly prompts: readonly EventSuccessSocialMissionPromptContract[];
+}
+
 export interface EventSuccessMomentPresentationCatalog {
   readonly schemaVersion: 1;
   readonly kind: "eventSuccessMomentPresentations";
   readonly moments: readonly EventSuccessMomentPresentationContract[];
+  readonly socialMissionPromptSets:
+    readonly EventSuccessSocialMissionPromptSetContract[];
   readonly parityFixture: {
     readonly eventId: string;
     readonly momentKind: EventSuccessMomentKind;
@@ -3081,6 +3148,30 @@ export function eventSuccessMomentPresentationFor(
     throw new Error("Missing Event Success moment presentation: " + momentKind);
   }
   return presentation;
+}
+
+const eventSuccessSocialMissionPromptsByInteractionModel = new Map<
+  EventSuccessInteractionModel,
+  EventSuccessSocialMissionPromptSetContract
+>(eventSuccessMomentPresentationCatalog.socialMissionPromptSets.map((set) => [
+  set.interactionModel,
+  set,
+]));
+
+export function eventSuccessSocialMissionPromptFor(input: {
+  interactionModel: EventSuccessInteractionModel;
+  activeStepIndex: number;
+}): EventSuccessSocialMissionPromptContract {
+  const promptSet = eventSuccessSocialMissionPromptsByInteractionModel.get(
+    input.interactionModel
+  );
+  if (!promptSet || promptSet.prompts.length !== 3) {
+    throw new Error(
+      "Missing Event Success social missions: " + input.interactionModel
+    );
+  }
+  const disclosureIndex = Math.max(0, Math.min(2, input.activeStepIndex));
+  return promptSet.prompts[disclosureIndex];
 }
 
 export function resolveEventSuccessCeremonyTimeline(input: {
@@ -3178,6 +3269,22 @@ function renderDartEventSuccessMomentPresentations(catalog) {
         EVENT_SUCCESS_MOMENT_KINDS.indexOf(moment.momentKind)
       }],`
   ).join("\n");
+  const promptSets = catalog.socialMissionPromptSets.map((promptSet) =>
+    `  EventSuccessSocialMissionPromptSetContract(\n` +
+    `    interactionModel: ${dartString(promptSet.interactionModel)},\n` +
+    `    prompts: <EventSuccessSocialMissionPromptContract>[\n` +
+    promptSet.prompts.map((prompt) =>
+      `      EventSuccessSocialMissionPromptContract(` +
+      `promptId: ${dartString(prompt.promptId)}, ` +
+      `disclosureLevel: ${dartString(prompt.disclosureLevel)}),`
+    ).join("\n") + `\n    ],\n  ),`
+  ).join("\n");
+  const promptSetsByModel = catalog.socialMissionPromptSets.map((promptSet) =>
+    `  ${dartString(promptSet.interactionModel)}: ` +
+      `eventSuccessSocialMissionPromptSets[${
+        EVENT_SUCCESS_INTERACTION_MODELS.indexOf(promptSet.interactionModel)
+      }],`
+  ).join("\n");
   return `${dartGeneratedHeader()}
 import 'dart:convert';
 
@@ -3225,6 +3332,26 @@ class EventSuccessMomentPresentationContract {
   final String? ambientBedWhenEventEndedId;
 }
 
+class EventSuccessSocialMissionPromptContract {
+  const EventSuccessSocialMissionPromptContract({
+    required this.promptId,
+    required this.disclosureLevel,
+  });
+
+  final String promptId;
+  final String disclosureLevel;
+}
+
+class EventSuccessSocialMissionPromptSetContract {
+  const EventSuccessSocialMissionPromptSetContract({
+    required this.interactionModel,
+    required this.prompts,
+  });
+
+  final String interactionModel;
+  final List<EventSuccessSocialMissionPromptContract> prompts;
+}
+
 class EventSuccessCeremonyTimeline {
   const EventSuccessCeremonyTimeline({
     required this.anticipationStartsAtMillis,
@@ -3259,6 +3386,16 @@ final eventSuccessMomentPresentationsByKind =
 ${byKind}
 };
 
+const eventSuccessSocialMissionPromptSets =
+    <EventSuccessSocialMissionPromptSetContract>[
+${promptSets}
+];
+
+final eventSuccessSocialMissionPromptsByInteractionModel =
+    <String, EventSuccessSocialMissionPromptSetContract>{
+${promptSetsByModel}
+};
+
 EventSuccessMomentPresentationContract eventSuccessMomentPresentationFor(
   String momentKind,
 ) {
@@ -3267,6 +3404,25 @@ EventSuccessMomentPresentationContract eventSuccessMomentPresentationFor(
     throw StateError('Missing Event Success moment presentation: \$momentKind');
   }
   return presentation;
+}
+
+EventSuccessSocialMissionPromptContract eventSuccessSocialMissionPromptFor({
+  required String interactionModel,
+  required int activeStepIndex,
+}) {
+  final promptSet =
+      eventSuccessSocialMissionPromptsByInteractionModel[interactionModel];
+  if (promptSet == null || promptSet.prompts.length != 3) {
+    throw StateError(
+      'Missing Event Success social missions: \$interactionModel',
+    );
+  }
+  final disclosureIndex = activeStepIndex < 0
+      ? 0
+      : activeStepIndex > 2
+      ? 2
+      : activeStepIndex;
+  return promptSet.prompts[disclosureIndex];
 }
 
 EventSuccessCeremonyTimeline resolveEventSuccessCeremonyTimeline({

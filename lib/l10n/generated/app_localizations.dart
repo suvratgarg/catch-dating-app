@@ -12701,6 +12701,54 @@ abstract class AppLocalizations {
   /// **'First live cue'**
   String get eventSuccessEventSuccessConversationCueCopyTitleFirstLiveCue;
 
+  /// Title for a light-disclosure social mission.
+  ///
+  /// In en, this message translates to:
+  /// **'Easy start'**
+  String get eventSuccessSocialMissionTitleLight;
+
+  /// Title for a personal-disclosure social mission.
+  ///
+  /// In en, this message translates to:
+  /// **'A little more personal'**
+  String get eventSuccessSocialMissionTitlePersonal;
+
+  /// Title for a reflective-disclosure social mission.
+  ///
+  /// In en, this message translates to:
+  /// **'One level deeper'**
+  String get eventSuccessSocialMissionTitleReflective;
+
+  /// Reciprocal personal-disclosure social mission.
+  ///
+  /// In en, this message translates to:
+  /// **'Take turns sharing something you changed your mind about recently and what shifted it.'**
+  String get eventSuccessSocialMissionBodyPersonal;
+
+  /// Reciprocal reflective-disclosure social mission.
+  ///
+  /// In en, this message translates to:
+  /// **'Take turns answering: what do you hope the people close to you understand about you?'**
+  String get eventSuccessSocialMissionBodyReflective;
+
+  /// Label for a light-disclosure social mission.
+  ///
+  /// In en, this message translates to:
+  /// **'Light disclosure'**
+  String get eventSuccessSocialMissionLevelLight;
+
+  /// Label for a personal-disclosure social mission.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal disclosure'**
+  String get eventSuccessSocialMissionLevelPersonal;
+
+  /// Label for a reflective-disclosure social mission.
+  ///
+  /// In en, this message translates to:
+  /// **'Reflective disclosure'**
+  String get eventSuccessSocialMissionLevelReflective;
+
   /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
   ///
   /// In en, this message translates to:

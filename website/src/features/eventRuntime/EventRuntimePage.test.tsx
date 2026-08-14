@@ -18,7 +18,10 @@ vi.mock("@catch/web-ui", async (importOriginal) => {
   };
 });
 
-import {eventRuntimeCopy} from "../../content/eventRuntime";
+import {
+  eventRuntimeCopy,
+  eventRuntimeSocialMissionCopy,
+} from "../../content/eventRuntime";
 import {EventRuntimePage} from "./EventRuntimePage";
 
 function controller() {
@@ -121,6 +124,7 @@ describe("EventRuntimePage conversation graph", () => {
     runtimeController.value.bootstrap.event.moduleIds = ["live_reveal"];
     runtimeController.value.liveState.plan = {
       attendeePrompt: null,
+      activeStepIndex: 0,
       activeRevealRoundIndex: 2,
       publishedRevealRoundIndex: -1,
       publishedRotationRoundIndex: -1,
@@ -145,5 +149,36 @@ describe("EventRuntimePage conversation graph", () => {
     );
     expect(screen.getByLabelText(eventRuntimeCopy.checkedInCount(18)))
       .toBeTruthy();
+  });
+
+  it("renders the disclosure level selected by the live run-of-show", () => {
+    runtimeController.value.bootstrap.event.moduleIds = ["social_missions"];
+    runtimeController.value.bootstrap.event.interactionModel = "pacePods";
+    runtimeController.value.liveState.plan = {
+      attendeePrompt: null,
+      activeStepIndex: 1,
+      activeRevealRoundIndex: 0,
+      publishedRevealRoundIndex: -1,
+      publishedRotationRoundIndex: -1,
+      revealCountdownSeconds: null,
+      revealStartedAtMillis: null,
+      revealStatus: "idle",
+      status: "live",
+    };
+
+    render(
+      <MemoryRouter initialEntries={["/join/runtime-1"]}>
+        <Routes>
+          <Route path="/join/:publicRuntimeId" element={<EventRuntimePage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(screen.getByRole("heading", {
+      name: eventRuntimeSocialMissionCopy.titles.personal,
+    })).toBeTruthy();
+    expect(screen.getByText(eventRuntimeSocialMissionCopy.prompts[
+      "shared.personal"
+    ])).toBeTruthy();
   });
 });

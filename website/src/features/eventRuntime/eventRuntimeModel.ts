@@ -1,13 +1,20 @@
 import {
   deriveEventSuccessMomentSeed,
   eventSuccessMomentPresentationFor,
+  eventSuccessSocialMissionPromptFor,
   resolveEventSuccessCeremonyTimeline,
   type EventSuccessCeremonyTimeline,
   type EventRuntimeBootstrap,
   type EventRuntimeLiveState,
   type EventSuccessMomentPresentationContract,
+  type EventSuccessDisclosureLevel,
+  type EventSuccessInteractionModel,
 } from "../../firebase";
-import {eventRuntimeCopy, eventRuntimeQuestionnairePacks} from "../../content/eventRuntime";
+import {
+  eventRuntimeCopy,
+  eventRuntimeQuestionnairePacks,
+  eventRuntimeSocialMissionCopy,
+} from "../../content/eventRuntime";
 
 export type {EventRuntimeBootstrap};
 export type EventRuntimeParticipant = NonNullable<EventRuntimeBootstrap["participant"]>;
@@ -18,6 +25,12 @@ export type EventRuntimeStandings = NonNullable<EventRuntimeLiveState["standings
 export type EventRuntimeStandingRound = EventRuntimeStandings["rounds"][number];
 export type EventRuntimeGender = NonNullable<
   EventRuntimeParticipant["runtimeProfile"]["gender"]
+>;
+export type EventRuntimePaceBand = NonNullable<
+  EventRuntimeParticipant["runtimeProfile"]["paceBand"]
+>;
+export type EventRuntimeSkillBand = NonNullable<
+  EventRuntimeParticipant["runtimeProfile"]["skillBand"]
 >;
 
 export interface EventRuntimeQuestion {
@@ -43,6 +56,51 @@ export interface EventRuntimeCeremony {
   presentation: EventSuccessMomentPresentationContract;
   timeline: EventSuccessCeremonyTimeline;
   seed: number;
+}
+
+export type EventRuntimePreEventFieldId =
+  | "paceBand"
+  | "skillBand"
+  | "dietaryAndSeatingNotes"
+  | "questionnaireAnswerIds"
+  | "teamName";
+
+export interface EventRuntimeSocialMission {
+  title: string;
+  body: string;
+  disclosureLabel: string;
+  disclosureLevel: EventSuccessDisclosureLevel;
+}
+
+export function eventRuntimePreEventFieldId(
+  event: EventRuntimeBootstrap["event"]
+): EventRuntimePreEventFieldId | null {
+  const fields = event.requiredFieldIds.filter(isPreEventFieldId);
+  if (fields.length > 1) {
+    throw new Error("Event runtime exposes more than one pre-event payload.");
+  }
+  return fields[0] ?? null;
+}
+
+export function resolveEventRuntimeSocialMission(
+  interactionModel: EventSuccessInteractionModel,
+  activeStepIndex: number
+): EventRuntimeSocialMission {
+  const prompt = eventSuccessSocialMissionPromptFor({
+    interactionModel,
+    activeStepIndex,
+  });
+  const body = eventRuntimeSocialMissionCopy.prompts[
+    prompt.promptId as keyof typeof eventRuntimeSocialMissionCopy.prompts
+  ];
+  if (!body) throw new Error(`Missing social mission copy: ${prompt.promptId}`);
+  return {
+    title: eventRuntimeSocialMissionCopy.titles[prompt.disclosureLevel],
+    body,
+    disclosureLabel:
+      eventRuntimeSocialMissionCopy.labels[prompt.disclosureLevel],
+    disclosureLevel: prompt.disclosureLevel,
+  };
 }
 
 export function resolveEventRuntimeCeremony(
@@ -182,4 +240,10 @@ function errorCode(error: unknown): string {
 
 function rounded(value: number): number {
   return Math.round(value * 1_000_000) / 1_000_000;
+}
+
+function isPreEventFieldId(value: string): value is EventRuntimePreEventFieldId {
+  return value === "paceBand" || value === "skillBand" ||
+    value === "dietaryAndSeatingNotes" ||
+    value === "questionnaireAnswerIds" || value === "teamName";
 }

@@ -1,4 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/event_success_moment_presentations.g.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_conversation_cue.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
@@ -22,6 +24,12 @@ abstract final class EventSuccessConversationCueLibrary {
     required AppLocalizations l10n,
     EventRunOfShowStep? activeStep,
   }) {
+    final profile = EventSuccessActivityProfile.forFormat(event.eventFormat);
+    final prompt = eventSuccessSocialMissionPromptFor(
+      interactionModel: profile.interactionModel.name,
+      activeStepIndex: plan.activeStepIndex,
+    );
+    final disclosureLevel = _disclosureLevel(prompt.disclosureLevel);
     return _dedupe([
       if (activeStep != null)
         EventSuccessConversationCue(
@@ -29,9 +37,9 @@ abstract final class EventSuccessConversationCueLibrary {
           body: activeStep.attendeeExperience,
           contextLabel: activeStep.stage.label,
           moment: EventSuccessConversationCueMoment.live,
+          disclosureLevel: disclosureLevel,
         ),
-      _activityLiveCue(event.activityKind, l10n),
-      _lowPressureCue(event.activityKind, l10n),
+      _socialMissionCue(prompt, l10n),
     ]);
   }
 
@@ -39,8 +47,9 @@ abstract final class EventSuccessConversationCueLibrary {
     Event event, {
     required AppLocalizations l10n,
   }) {
+    final profile = EventSuccessActivityProfile.forFormat(event.eventFormat);
     return _dedupe([
-      _activityOpener(event.activityKind, l10n),
+      _interactionOpener(profile.interactionModel, l10n),
       EventSuccessConversationCue(
         title: l10n.eventSuccessEventSuccessConversationCueCopyTitleSharedRoom,
         body: l10n.eventSuccessEventSuccessConversationCueCopyBodyIAmGladWe(
@@ -73,94 +82,86 @@ abstract final class EventSuccessConversationCueLibrary {
     return List.unmodifiable(values);
   }
 
-  static EventSuccessConversationCue _activityLiveCue(
-    ActivityKind activity,
+  static EventSuccessConversationCue _socialMissionCue(
+    EventSuccessSocialMissionPromptContract prompt,
     AppLocalizations l10n,
   ) {
-    final body = switch (activity) {
-      ActivityKind.socialRun || ActivityKind.running || ActivityKind.walking =>
+    final level = _disclosureLevel(prompt.disclosureLevel);
+    final title = switch (level) {
+      EventSuccessDisclosureLevel.light =>
+        l10n.eventSuccessSocialMissionTitleLight,
+      EventSuccessDisclosureLevel.personal =>
+        l10n.eventSuccessSocialMissionTitlePersonal,
+      EventSuccessDisclosureLevel.reflective =>
+        l10n.eventSuccessSocialMissionTitleReflective,
+    };
+    final contextLabel = switch (level) {
+      EventSuccessDisclosureLevel.light =>
+        l10n.eventSuccessSocialMissionLevelLight,
+      EventSuccessDisclosureLevel.personal =>
+        l10n.eventSuccessSocialMissionLevelPersonal,
+      EventSuccessDisclosureLevel.reflective =>
+        l10n.eventSuccessSocialMissionLevelReflective,
+    };
+    final body = switch (prompt.promptId) {
+      'pacePods.light' =>
         l10n.eventSuccessEventSuccessConversationCueCopyBodyAskSomeoneWhatRoute,
-      ActivityKind.pickleball ||
-      ActivityKind.padel ||
-      ActivityKind.tennis ||
-      ActivityKind.badminton =>
+      'pairedRotations.light' =>
         l10n.eventSuccessEventSuccessConversationCueCopyBodyAskYourNextPartner,
-      ActivityKind.cycling || ActivityKind.spinClass =>
-        l10n.eventSuccessEventSuccessConversationCueCopyBodyAskWhatKindOf,
-      ActivityKind.yoga =>
-        l10n.eventSuccessEventSuccessConversationCueCopyBodyAskWhatPartOf,
-      ActivityKind.strengthTraining =>
-        l10n.eventSuccessEventSuccessConversationCueCopyBodyAskWhatLiftOr,
-      ActivityKind.pubQuiz =>
+      'teamRotations.light' =>
         l10n.eventSuccessEventSuccessConversationCueCopyBodyAskWhichRoundThey,
-      ActivityKind.barCrawl =>
-        l10n.eventSuccessEventSuccessConversationCueCopyBodyAskWhichStopThey,
-      ActivityKind.dinner =>
+      'seatedTable.light' =>
         l10n.eventSuccessEventSuccessConversationCueCopyBodyAskWhatDishThey,
-      ActivityKind.singlesMixer =>
+      'freeFormMixer.light' =>
         l10n.eventSuccessEventSuccessConversationCueCopyBodyAskWhatAnswerFrom,
-      ActivityKind.openActivity =>
+      'hostLedProgram.light' || 'openFormat.light' =>
         l10n.eventSuccessEventSuccessConversationCueCopyBodyAskWhatMadeThem,
+      'shared.personal' => l10n.eventSuccessSocialMissionBodyPersonal,
+      'shared.reflective' => l10n.eventSuccessSocialMissionBodyReflective,
+      _ => throw StateError('Unsupported social mission: ${prompt.promptId}'),
     };
     return EventSuccessConversationCue(
-      title: l10n.eventSuccessEventSuccessConversationCueCopyTitleFirstLiveCue,
+      title: title,
       body: body,
-      contextLabel: activity.label,
+      contextLabel: contextLabel,
       moment: EventSuccessConversationCueMoment.live,
+      disclosureLevel: level,
     );
   }
 
-  static EventSuccessConversationCue _lowPressureCue(
-    ActivityKind activity,
+  static EventSuccessConversationCue _interactionOpener(
+    EventInteractionModel interactionModel,
     AppLocalizations l10n,
   ) {
-    final body = activity.isMovementHeavy
-        ? l10n.eventSuccessEventSuccessConversationCueCopyBodySwapOnePracticalTip
-        : l10n.eventSuccessEventSuccessConversationCueCopyBodyFindOnePersonYou;
-    return EventSuccessConversationCue(
-      title: l10n.eventSuccessEventSuccessConversationCueCopyTitleSecondTouch,
-      body: body,
-      contextLabel:
-          l10n.eventSuccessEventSuccessConversationCueCopyVisiblecopyOptional,
-      moment: EventSuccessConversationCueMoment.live,
-    );
-  }
-
-  static EventSuccessConversationCue _activityOpener(
-    ActivityKind activity,
-    AppLocalizations l10n,
-  ) {
-    final body = switch (activity) {
-      ActivityKind.socialRun || ActivityKind.running || ActivityKind.walking =>
+    final body = switch (interactionModel) {
+      EventInteractionModel.pacePods =>
         l10n.eventSuccessEventSuccessConversationCueCopyBodyILikedTalkingOn,
-      ActivityKind.pickleball ||
-      ActivityKind.padel ||
-      ActivityKind.tennis ||
-      ActivityKind.badminton =>
+      EventInteractionModel.pairedRotations =>
         l10n.eventSuccessEventSuccessConversationCueCopyBodyGoodGameTodayI,
-      ActivityKind.cycling || ActivityKind.spinClass =>
-        l10n.eventSuccessEventSuccessConversationCueCopyBodyThatSessionHadReal,
-      ActivityKind.yoga =>
-        l10n.eventSuccessEventSuccessConversationCueCopyBodyThatClassWasA,
-      ActivityKind.strengthTraining =>
-        l10n.eventSuccessEventSuccessConversationCueCopyBodyNiceTrainingWithYou,
-      ActivityKind.pubQuiz =>
+      EventInteractionModel.teamRotations =>
         l10n.eventSuccessEventSuccessConversationCueCopyBodyILikedBeingOn,
-      ActivityKind.barCrawl =>
-        l10n.eventSuccessEventSuccessConversationCueCopyBodyFunMeetingYouTonight,
-      ActivityKind.dinner =>
+      EventInteractionModel.seatedTable =>
         l10n.eventSuccessEventSuccessConversationCueCopyBodyILikedMeetingYou,
-      ActivityKind.singlesMixer =>
+      EventInteractionModel.freeFormMixer =>
         l10n.eventSuccessEventSuccessConversationCueCopyBodyILikedOurConversation,
-      ActivityKind.openActivity =>
+      EventInteractionModel.hostLedProgram ||
+      EventInteractionModel.openFormat =>
         l10n.eventSuccessEventSuccessConversationCueCopyBodyILikedMeetingYou957a50,
     };
     return EventSuccessConversationCue(
       title: l10n
           .eventSuccessEventSuccessConversationCueCopyTitleUseTheSharedMoment,
       body: body,
-      contextLabel: activity.label,
+      contextLabel: interactionModel.label,
       moment: EventSuccessConversationCueMoment.postEvent,
     );
   }
+
+  static EventSuccessDisclosureLevel _disclosureLevel(String value) =>
+      switch (value) {
+        'light' => EventSuccessDisclosureLevel.light,
+        'personal' => EventSuccessDisclosureLevel.personal,
+        'reflective' => EventSuccessDisclosureLevel.reflective,
+        _ => throw StateError('Unsupported disclosure level: $value'),
+      };
 }

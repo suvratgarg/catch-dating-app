@@ -48,6 +48,26 @@ class EventSuccessMomentPresentationContract {
   final String? ambientBedWhenEventEndedId;
 }
 
+class EventSuccessSocialMissionPromptContract {
+  const EventSuccessSocialMissionPromptContract({
+    required this.promptId,
+    required this.disclosureLevel,
+  });
+
+  final String promptId;
+  final String disclosureLevel;
+}
+
+class EventSuccessSocialMissionPromptSetContract {
+  const EventSuccessSocialMissionPromptSetContract({
+    required this.interactionModel,
+    required this.prompts,
+  });
+
+  final String interactionModel;
+  final List<EventSuccessSocialMissionPromptContract> prompts;
+}
+
 class EventSuccessCeremonyTimeline {
   const EventSuccessCeremonyTimeline({
     required this.anticipationStartsAtMillis,
@@ -301,6 +321,127 @@ const eventSuccessMomentPresentationCatalogJson =
       'clockReferenceId': 'none',
       'ambientBedId': 'sunrise',
       'ambientBedWhenEventEndedId': null,
+    },
+  ],
+  'socialMissionPromptSets': <Object?>[
+    <String, Object?>{
+      'interactionModel': 'pacePods',
+      'prompts': <Object?>[
+        <String, Object?>{
+          'promptId': 'pacePods.light',
+          'disclosureLevel': 'light',
+        },
+        <String, Object?>{
+          'promptId': 'shared.personal',
+          'disclosureLevel': 'personal',
+        },
+        <String, Object?>{
+          'promptId': 'shared.reflective',
+          'disclosureLevel': 'reflective',
+        },
+      ],
+    },
+    <String, Object?>{
+      'interactionModel': 'pairedRotations',
+      'prompts': <Object?>[
+        <String, Object?>{
+          'promptId': 'pairedRotations.light',
+          'disclosureLevel': 'light',
+        },
+        <String, Object?>{
+          'promptId': 'shared.personal',
+          'disclosureLevel': 'personal',
+        },
+        <String, Object?>{
+          'promptId': 'shared.reflective',
+          'disclosureLevel': 'reflective',
+        },
+      ],
+    },
+    <String, Object?>{
+      'interactionModel': 'teamRotations',
+      'prompts': <Object?>[
+        <String, Object?>{
+          'promptId': 'teamRotations.light',
+          'disclosureLevel': 'light',
+        },
+        <String, Object?>{
+          'promptId': 'shared.personal',
+          'disclosureLevel': 'personal',
+        },
+        <String, Object?>{
+          'promptId': 'shared.reflective',
+          'disclosureLevel': 'reflective',
+        },
+      ],
+    },
+    <String, Object?>{
+      'interactionModel': 'seatedTable',
+      'prompts': <Object?>[
+        <String, Object?>{
+          'promptId': 'seatedTable.light',
+          'disclosureLevel': 'light',
+        },
+        <String, Object?>{
+          'promptId': 'shared.personal',
+          'disclosureLevel': 'personal',
+        },
+        <String, Object?>{
+          'promptId': 'shared.reflective',
+          'disclosureLevel': 'reflective',
+        },
+      ],
+    },
+    <String, Object?>{
+      'interactionModel': 'freeFormMixer',
+      'prompts': <Object?>[
+        <String, Object?>{
+          'promptId': 'freeFormMixer.light',
+          'disclosureLevel': 'light',
+        },
+        <String, Object?>{
+          'promptId': 'shared.personal',
+          'disclosureLevel': 'personal',
+        },
+        <String, Object?>{
+          'promptId': 'shared.reflective',
+          'disclosureLevel': 'reflective',
+        },
+      ],
+    },
+    <String, Object?>{
+      'interactionModel': 'hostLedProgram',
+      'prompts': <Object?>[
+        <String, Object?>{
+          'promptId': 'hostLedProgram.light',
+          'disclosureLevel': 'light',
+        },
+        <String, Object?>{
+          'promptId': 'shared.personal',
+          'disclosureLevel': 'personal',
+        },
+        <String, Object?>{
+          'promptId': 'shared.reflective',
+          'disclosureLevel': 'reflective',
+        },
+      ],
+    },
+    <String, Object?>{
+      'interactionModel': 'openFormat',
+      'prompts': <Object?>[
+        <String, Object?>{
+          'promptId': 'openFormat.light',
+          'disclosureLevel': 'light',
+        },
+        <String, Object?>{
+          'promptId': 'shared.personal',
+          'disclosureLevel': 'personal',
+        },
+        <String, Object?>{
+          'promptId': 'shared.reflective',
+          'disclosureLevel': 'reflective',
+        },
+      ],
     },
   ],
   'parityFixture': <String, Object?>{
@@ -567,6 +708,77 @@ final eventSuccessMomentPresentationsByKind =
   'postEvent': eventSuccessMomentPresentations[11],
 };
 
+const eventSuccessSocialMissionPromptSets =
+    <EventSuccessSocialMissionPromptSetContract>[
+  EventSuccessSocialMissionPromptSetContract(
+    interactionModel: 'pacePods',
+    prompts: <EventSuccessSocialMissionPromptContract>[
+      EventSuccessSocialMissionPromptContract(promptId: 'pacePods.light', disclosureLevel: 'light'),
+      EventSuccessSocialMissionPromptContract(promptId: 'shared.personal', disclosureLevel: 'personal'),
+      EventSuccessSocialMissionPromptContract(promptId: 'shared.reflective', disclosureLevel: 'reflective'),
+    ],
+  ),
+  EventSuccessSocialMissionPromptSetContract(
+    interactionModel: 'pairedRotations',
+    prompts: <EventSuccessSocialMissionPromptContract>[
+      EventSuccessSocialMissionPromptContract(promptId: 'pairedRotations.light', disclosureLevel: 'light'),
+      EventSuccessSocialMissionPromptContract(promptId: 'shared.personal', disclosureLevel: 'personal'),
+      EventSuccessSocialMissionPromptContract(promptId: 'shared.reflective', disclosureLevel: 'reflective'),
+    ],
+  ),
+  EventSuccessSocialMissionPromptSetContract(
+    interactionModel: 'teamRotations',
+    prompts: <EventSuccessSocialMissionPromptContract>[
+      EventSuccessSocialMissionPromptContract(promptId: 'teamRotations.light', disclosureLevel: 'light'),
+      EventSuccessSocialMissionPromptContract(promptId: 'shared.personal', disclosureLevel: 'personal'),
+      EventSuccessSocialMissionPromptContract(promptId: 'shared.reflective', disclosureLevel: 'reflective'),
+    ],
+  ),
+  EventSuccessSocialMissionPromptSetContract(
+    interactionModel: 'seatedTable',
+    prompts: <EventSuccessSocialMissionPromptContract>[
+      EventSuccessSocialMissionPromptContract(promptId: 'seatedTable.light', disclosureLevel: 'light'),
+      EventSuccessSocialMissionPromptContract(promptId: 'shared.personal', disclosureLevel: 'personal'),
+      EventSuccessSocialMissionPromptContract(promptId: 'shared.reflective', disclosureLevel: 'reflective'),
+    ],
+  ),
+  EventSuccessSocialMissionPromptSetContract(
+    interactionModel: 'freeFormMixer',
+    prompts: <EventSuccessSocialMissionPromptContract>[
+      EventSuccessSocialMissionPromptContract(promptId: 'freeFormMixer.light', disclosureLevel: 'light'),
+      EventSuccessSocialMissionPromptContract(promptId: 'shared.personal', disclosureLevel: 'personal'),
+      EventSuccessSocialMissionPromptContract(promptId: 'shared.reflective', disclosureLevel: 'reflective'),
+    ],
+  ),
+  EventSuccessSocialMissionPromptSetContract(
+    interactionModel: 'hostLedProgram',
+    prompts: <EventSuccessSocialMissionPromptContract>[
+      EventSuccessSocialMissionPromptContract(promptId: 'hostLedProgram.light', disclosureLevel: 'light'),
+      EventSuccessSocialMissionPromptContract(promptId: 'shared.personal', disclosureLevel: 'personal'),
+      EventSuccessSocialMissionPromptContract(promptId: 'shared.reflective', disclosureLevel: 'reflective'),
+    ],
+  ),
+  EventSuccessSocialMissionPromptSetContract(
+    interactionModel: 'openFormat',
+    prompts: <EventSuccessSocialMissionPromptContract>[
+      EventSuccessSocialMissionPromptContract(promptId: 'openFormat.light', disclosureLevel: 'light'),
+      EventSuccessSocialMissionPromptContract(promptId: 'shared.personal', disclosureLevel: 'personal'),
+      EventSuccessSocialMissionPromptContract(promptId: 'shared.reflective', disclosureLevel: 'reflective'),
+    ],
+  ),
+];
+
+final eventSuccessSocialMissionPromptsByInteractionModel =
+    <String, EventSuccessSocialMissionPromptSetContract>{
+  'pacePods': eventSuccessSocialMissionPromptSets[0],
+  'pairedRotations': eventSuccessSocialMissionPromptSets[1],
+  'teamRotations': eventSuccessSocialMissionPromptSets[2],
+  'seatedTable': eventSuccessSocialMissionPromptSets[3],
+  'freeFormMixer': eventSuccessSocialMissionPromptSets[4],
+  'hostLedProgram': eventSuccessSocialMissionPromptSets[5],
+  'openFormat': eventSuccessSocialMissionPromptSets[6],
+};
+
 EventSuccessMomentPresentationContract eventSuccessMomentPresentationFor(
   String momentKind,
 ) {
@@ -575,6 +787,25 @@ EventSuccessMomentPresentationContract eventSuccessMomentPresentationFor(
     throw StateError('Missing Event Success moment presentation: $momentKind');
   }
   return presentation;
+}
+
+EventSuccessSocialMissionPromptContract eventSuccessSocialMissionPromptFor({
+  required String interactionModel,
+  required int activeStepIndex,
+}) {
+  final promptSet =
+      eventSuccessSocialMissionPromptsByInteractionModel[interactionModel];
+  if (promptSet == null || promptSet.prompts.length != 3) {
+    throw StateError(
+      'Missing Event Success social missions: $interactionModel',
+    );
+  }
+  final disclosureIndex = activeStepIndex < 0
+      ? 0
+      : activeStepIndex > 2
+      ? 2
+      : activeStepIndex;
+  return promptSet.prompts[disclosureIndex];
 }
 
 EventSuccessCeremonyTimeline resolveEventSuccessCeremonyTimeline({

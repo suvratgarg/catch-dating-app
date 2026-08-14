@@ -56,7 +56,7 @@
     "requiredFieldIds": {
       "type": "array",
       "uniqueItems": true,
-      "maxItems": 5,
+      "maxItems": 10,
       "items": {
         "type": "string",
         "enum": [
@@ -64,14 +64,19 @@
           "gender",
           "interestedInGenders",
           "relationshipGoal",
-          "dateOfBirth"
+          "dateOfBirth",
+          "paceBand",
+          "skillBand",
+          "dietaryAndSeatingNotes",
+          "questionnaireAnswerIds",
+          "teamName"
         ]
       }
     },
     "completedFieldIds": {
       "type": "array",
       "uniqueItems": true,
-      "maxItems": 5,
+      "maxItems": 10,
       "items": {
         "type": "string",
         "enum": [
@@ -79,7 +84,12 @@
           "gender",
           "interestedInGenders",
           "relationshipGoal",
-          "dateOfBirth"
+          "dateOfBirth",
+          "paceBand",
+          "skillBand",
+          "dietaryAndSeatingNotes",
+          "questionnaireAnswerIds",
+          "teamName"
         ]
       }
     },
@@ -91,7 +101,12 @@
         "gender",
         "interestedInGenders",
         "relationshipGoal",
-        "dateOfBirth"
+        "dateOfBirth",
+        "paceBand",
+        "skillBand",
+        "dietaryAndSeatingNotes",
+        "questionnaireAnswerIds",
+        "teamName"
       ],
       "properties": {
         "displayName": {"type": "string", "minLength": 1, "maxLength": 120},
@@ -112,6 +127,30 @@
         },
         "dateOfBirth": {
           "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+        },
+        "paceBand": {
+          "type": ["string", "null"],
+          "enum": ["competitive", "fast", "moderate", "easy", null]
+        },
+        "skillBand": {
+          "type": ["string", "null"],
+          "enum": ["beginner", "intermediate", "advanced", null]
+        },
+        "dietaryAndSeatingNotes": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "questionnaireAnswerIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 8,
+          "items": {"type": "string", "minLength": 1, "maxLength": 120}
+        },
+        "teamName": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 80
         }
       }
     },

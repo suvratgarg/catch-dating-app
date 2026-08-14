@@ -61,7 +61,6 @@ import {
   eventSuccessVariableResolutionFor,
 } from "./formatPrimitives";
 import {
-  activityAttributesForProfile,
   assignmentConstraintsForStructureConfig,
   AssignmentPrimitiveStructureConfig,
   rotationPolicyForStructureConfig,
@@ -651,7 +650,7 @@ async function loadEligibleRotationParticipants(
     interestedInGenders: participant.interestedInGenders,
     arrivalGroup: participant.arrivalGroup,
     compatibilityAnswerIds: [],
-    activityAttributes: activityAttributesForProfile(participant.profile),
+    activityAttributes: participant.activityAttributes,
   }));
   if (compatibilityAffectsRanking) {
     const answerIdsByUid = await fetchCompatibilityAnswerIdsByUid(db, eventId);
