@@ -243,7 +243,7 @@ void main() {
     expect(find.text('How the room is grouped'), findsNothing);
     expect(find.text('Your goal for the event'), findsOneWidget);
     expect(find.text('YOUR PLAN'), findsOneWidget);
-    expect(find.text('WHEN PEOPLE ARRIVE'), findsOneWidget);
+    await revealCustomization(tester, find.text('WHEN PEOPLE ARRIVE'));
     expect(find.text('DURING THE EVENT'), findsOneWidget);
     expect(find.text('AFTER THE EVENT'), findsNothing);
     expect(find.text('Save setup'), findsOneWidget);
@@ -384,7 +384,7 @@ void main() {
     );
 
     expect(find.text('Salsa night'), findsWidgets);
-    expect(find.text('Paired rotations'), findsWidgets);
+    await revealCustomization(tester, find.text('Switch partners every'));
     expect(find.text('Open activity'), findsNothing);
     expect(plan.playbookId, EventSuccessPlaybookLibrary.pickleball.id);
     expect(plan.structureConfig.unitKind, EventSuccessUnitKind.pairs);

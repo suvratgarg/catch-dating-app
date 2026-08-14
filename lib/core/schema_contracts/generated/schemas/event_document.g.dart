@@ -685,6 +685,15 @@ const schemaEventDocumentSchema = <String, Object?>{
                 'sweep',
               ],
             },
+            'durationShape': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'continuous',
+                'rounds',
+                'courses',
+                'segments',
+              ],
+            },
           },
         },
         'activityDetails': <String, Object?>{

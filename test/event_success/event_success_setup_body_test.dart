@@ -71,6 +71,20 @@ void main() {
       ),
     );
 
+    expect(_field('Format'), findsOneWidget);
+    expect(find.text('Pickleball'), findsOneWidget);
+    expect(find.text('Customize'), findsOneWidget);
+    expect(_section('Before the event'), findsNothing);
+    expect(_section('When people arrive'), findsNothing);
+    expect(_section('During the event'), findsNothing);
+    expect(
+      tester.getTopLeft(_field('Format')).dy,
+      lessThan(tester.getTopLeft(_field('Your goal for the event')).dy),
+    );
+
+    await tester.tap(find.text('Customize'));
+    await tester.pump();
+
     expect(_section('Before the event'), findsOneWidget);
     expect(_section('When people arrive'), findsOneWidget);
     expect(_section('During the event'), findsOneWidget);
@@ -118,6 +132,32 @@ void main() {
 
     await _tapToggle(tester, EventSuccessModuleCatalog.liveReveal.title);
     await tester.pump();
+    expect(
+      draft.isModuleSelected(EventSuccessModuleCatalog.liveReveal.id),
+      isFalse,
+    );
+
+    await tester.ensureVisible(find.text('Done'));
+    await tester.pump();
+    await tester.tap(find.text('Done'));
+    await tester.pump();
+    expect(
+      _fieldToggle(EventSuccessModuleCatalog.liveReveal.title),
+      findsNothing,
+    );
+    expect(
+      draft.isModuleSelected(EventSuccessModuleCatalog.liveReveal.id),
+      isFalse,
+    );
+
+    await tester.ensureVisible(find.text('Customize'));
+    await tester.pump();
+    await tester.tap(find.text('Customize'));
+    await tester.pump();
+    expect(
+      _fieldToggle(EventSuccessModuleCatalog.liveReveal.title),
+      findsOneWidget,
+    );
     expect(
       draft.isModuleSelected(EventSuccessModuleCatalog.liveReveal.id),
       isFalse,
@@ -246,6 +286,11 @@ void main() {
           ),
         ),
       );
+
+      expect(_field('Format'), findsOneWidget);
+      expect(_section('During the event'), findsNothing);
+      await tester.tap(find.text('Customize'));
+      await tester.pump();
 
       expect(find.text('How the room is grouped'), findsNothing);
       expect(_field('Group people into'), findsNothing);

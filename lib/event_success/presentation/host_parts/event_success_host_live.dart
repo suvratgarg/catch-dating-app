@@ -918,7 +918,7 @@ class LiveNowConsole extends StatelessWidget {
     final isFinalStep = plan.activeStepIndex >= total - 1;
     final nextStepTitle = isFinalStep
         ? context.l10n.eventSuccessEventSuccessHostLiveVisiblecopyFinalStep
-        : plan.steps[plan.activeStepIndex + 1].title;
+        : _runOfShowStepLabel(context, plan, plan.activeStepIndex + 1);
     final primaryLabel = isFinalStep
         ? context
               .l10n
@@ -1228,7 +1228,8 @@ class _ControlRoomStage extends StatelessWidget {
                 context.l10n.eventSuccessControlRoomStepProgress(
                   current: plan.activeStepIndex + 1,
                   total: plan.steps.length,
-                  stage: plan.activeStep.stage.label,
+                  stage:
+                      '${_runOfShowBeatLabel(context, plan.durationShape, plan.activeStepIndex)} · ${plan.activeStep.stage.label}',
                 ),
                 style: CatchTextStyles.monoLabel(context, color: dark.ink2),
               ),
@@ -1356,7 +1357,11 @@ class LiveStepNavigation extends StatelessWidget {
         (plan.activeStepIndex >= plan.steps.length - 1
             ? context.l10n.eventSuccessEventSuccessHostLiveVisiblecopyFinalStep
             : context.l10n.eventSuccessEventSuccessHostLiveVisiblecopyNextTitle(
-                title: plan.steps[plan.activeStepIndex + 1].title,
+                title: _runOfShowStepLabel(
+                  context,
+                  plan,
+                  plan.activeStepIndex + 1,
+                ),
               ));
     return CatchBottomActionContent(
       label: nextLabel,
@@ -1380,6 +1385,44 @@ class LiveStepNavigation extends StatelessWidget {
       ),
     );
   }
+}
+
+String _runOfShowStepLabel(
+  BuildContext context,
+  EventSuccessLivePlan plan,
+  int index,
+) =>
+    '${_runOfShowBeatLabel(context, plan.durationShape, index)} · ${plan.steps[index].title}';
+
+String _runOfShowBeatLabel(
+  BuildContext context,
+  EventSuccessDurationShape shape,
+  int index,
+) {
+  final number = index + 1;
+  return switch (shape) {
+    EventSuccessDurationShape.continuous =>
+      context.l10n.eventSuccessEventSuccessHostLiveLabelBeatNumber(
+        number: number,
+      ),
+    EventSuccessDurationShape.rounds =>
+      context.l10n.eventSuccessEventSuccessHostLiveLabelRoundNumber(
+        number: number,
+      ),
+    EventSuccessDurationShape.courses => switch (number) {
+      1 => context.l10n.eventSuccessEventSuccessHostLiveLabelFirstCourse,
+      2 => context.l10n.eventSuccessEventSuccessHostLiveLabelSecondCourse,
+      3 => context.l10n.eventSuccessEventSuccessHostLiveLabelThirdCourse,
+      4 => context.l10n.eventSuccessEventSuccessHostLiveLabelFourthCourse,
+      _ => context.l10n.eventSuccessEventSuccessHostLiveLabelCourseNumber(
+        number: number,
+      ),
+    },
+    EventSuccessDurationShape.segments =>
+      context.l10n.eventSuccessEventSuccessHostLiveLabelLegNumber(
+        number: number,
+      ),
+  };
 }
 
 Future<void> _showControlRoomFallback(BuildContext context) {

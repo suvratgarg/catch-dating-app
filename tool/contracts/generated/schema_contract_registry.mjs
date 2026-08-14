@@ -18293,6 +18293,15 @@ export const eventDocumentSchema = {
                 "rollCall",
                 "sweep"
               ]
+            },
+            "durationShape": {
+              "type": "string",
+              "enum": [
+                "continuous",
+                "rounds",
+                "courses",
+                "segments"
+              ]
             }
           }
         },
@@ -44632,6 +44641,15 @@ export const adminUpdateEventDetailsCallablePayloadSchema = {
                     "rollCall",
                     "sweep"
                   ]
+                },
+                "durationShape": {
+                  "type": "string",
+                  "enum": [
+                    "continuous",
+                    "rounds",
+                    "courses",
+                    "segments"
+                  ]
                 }
               }
             },
@@ -45720,6 +45738,15 @@ export const createEventCallablePayloadSchema = {
                 "none",
                 "rollCall",
                 "sweep"
+              ]
+            },
+            "durationShape": {
+              "type": "string",
+              "enum": [
+                "continuous",
+                "rounds",
+                "courses",
+                "segments"
               ]
             }
           }

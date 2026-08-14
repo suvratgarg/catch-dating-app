@@ -25,6 +25,25 @@ EventSuccessPlaybook _playbookForFormat(
 int _targetFor(EventSuccessPlaybook playbook) =>
     ((playbook.capacity.min + playbook.capacity.max) / 2).round();
 
+EventSuccessDurationShape _durationShapeFor(
+  EventFormatSnapshot format,
+  EventInteractionModel interactionModel,
+) =>
+    _primitiveOverride(
+      format,
+      'durationShape',
+      EventSuccessDurationShape.values,
+    ) ??
+    switch (interactionModel) {
+      EventInteractionModel.pacePods => EventSuccessDurationShape.segments,
+      EventInteractionModel.pairedRotations ||
+      EventInteractionModel.teamRotations ||
+      EventInteractionModel.freeFormMixer => EventSuccessDurationShape.rounds,
+      EventInteractionModel.seatedTable => EventSuccessDurationShape.courses,
+      EventInteractionModel.hostLedProgram ||
+      EventInteractionModel.openFormat => EventSuccessDurationShape.continuous,
+    };
+
 Map<String, EventSuccessRecommendationLevel> _levelsForFormat(
   EventFormatSnapshot format,
   EventInteractionModel interactionModel,

@@ -719,6 +719,7 @@ test("createEventHandler uses event-success primitives for custom formats",
             compatibilityPolicy: "questionnaireClueOnly",
             matchingObjective: "spread",
             unitOutcome: "score",
+            durationShape: "courses",
           },
         },
         eventSuccessDefaults: {
@@ -743,6 +744,7 @@ test("createEventHandler uses event-success primitives for custom formats",
         compatibilityPolicy: "questionnaireClueOnly",
         matchingObjective: "spread",
         unitOutcome: "score",
+        durationShape: "courses",
       },
     });
     assert.equal(plan?.playbookId, "pub_quiz_team_mixer");

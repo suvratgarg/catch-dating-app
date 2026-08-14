@@ -9,6 +9,7 @@ abstract final class EventSuccessPlaybookLibrary {
     title: {{library.socialRun.title.1}},
     activityType: ActivityKind.socialRun,
     socialIntensity: EventSocialIntensity.light,
+    durationShape: EventSuccessDurationShape.segments,
     summary:
         {{library.socialRun.summary.1}},
     attendeePromise:
@@ -102,6 +103,7 @@ abstract final class EventSuccessPlaybookLibrary {
     title: {{library.pickleball.title.1}},
     activityType: ActivityKind.pickleball,
     socialIntensity: EventSocialIntensity.structured,
+    durationShape: EventSuccessDurationShape.rounds,
     summary:
         {{library.pickleball.summary.1}},
     attendeePromise:
@@ -182,6 +184,7 @@ abstract final class EventSuccessPlaybookLibrary {
     title: {{library.pubQuiz.title.1}},
     activityType: ActivityKind.pubQuiz,
     socialIntensity: EventSocialIntensity.guided,
+    durationShape: EventSuccessDurationShape.rounds,
     summary:
         {{library.pubQuiz.summary.1}},
     attendeePromise:
@@ -256,6 +259,7 @@ abstract final class EventSuccessPlaybookLibrary {
     title: {{library.dinner.title.1}},
     activityType: ActivityKind.dinner,
     socialIntensity: EventSocialIntensity.structured,
+    durationShape: EventSuccessDurationShape.courses,
     summary:
         {{library.dinner.summary.1}},
     attendeePromise:
@@ -341,6 +345,7 @@ abstract final class EventSuccessPlaybookLibrary {
     title: {{library.hostLedSocial.title.1}},
     activityType: ActivityKind.openActivity,
     socialIntensity: EventSocialIntensity.light,
+    durationShape: EventSuccessDurationShape.continuous,
     summary:
         {{library.hostLedSocial.summary.1}},
     attendeePromise:
@@ -429,6 +434,7 @@ abstract final class EventSuccessPlaybookLibrary {
     title: {{library.algorithmicMixer.title.1}},
     activityType: ActivityKind.singlesMixer,
     socialIntensity: EventSocialIntensity.algorithmic,
+    durationShape: EventSuccessDurationShape.rounds,
     summary:
         {{library.algorithmicMixer.summary.1}},
     attendeePromise:

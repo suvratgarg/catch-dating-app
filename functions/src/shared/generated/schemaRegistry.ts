@@ -18294,6 +18294,15 @@ export const eventDocumentSchema: Record<string, unknown> = {
                 "rollCall",
                 "sweep"
               ]
+            },
+            "durationShape": {
+              "type": "string",
+              "enum": [
+                "continuous",
+                "rounds",
+                "courses",
+                "segments"
+              ]
             }
           }
         },
@@ -44633,6 +44642,15 @@ export const adminUpdateEventDetailsCallablePayloadSchema: Record<string, unknow
                     "rollCall",
                     "sweep"
                   ]
+                },
+                "durationShape": {
+                  "type": "string",
+                  "enum": [
+                    "continuous",
+                    "rounds",
+                    "courses",
+                    "segments"
+                  ]
                 }
               }
             },
@@ -45721,6 +45739,15 @@ export const createEventCallablePayloadSchema: Record<string, unknown> = {
                 "none",
                 "rollCall",
                 "sweep"
+              ]
+            },
+            "durationShape": {
+              "type": "string",
+              "enum": [
+                "continuous",
+                "rounds",
+                "courses",
+                "segments"
               ]
             }
           }

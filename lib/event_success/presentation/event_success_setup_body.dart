@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
@@ -62,6 +63,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
       TextEditingController(text: widget.attendeePrompt ?? '');
   bool _hostGoalOpen = false;
   bool _attendeePromptOpen = false;
+  bool _customizingTools = false;
 
   @override
   void didUpdateWidget(covariant EventSuccessSetupBody oldWidget) {
@@ -97,6 +99,27 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
         draft.isModuleSelected(EventSuccessModuleCatalog.guidedRotations.id) ||
         draft.isModuleSelected(EventSuccessModuleCatalog.liveReveal.id) ||
         draft.structureConfig.unitKind != EventSuccessUnitKind.wholeGroup;
+    final formatActions = <Widget>[
+      if (widget.editable)
+        CatchTextButton(
+          key: const ValueKey('eventSuccessCustomizeTools'),
+          label: _customizingTools
+              ? context
+                    .l10n
+                    .eventSuccessEventSuccessSetupBodyLabelDoneCustomizing
+              : context
+                    .l10n
+                    .eventSuccessEventSuccessSetupBodyLabelCustomizeTools,
+          onPressed: () =>
+              setState(() => _customizingTools = !_customizingTools),
+        ),
+      if (widget.showResetToRecommended && widget.onResetToRecommended != null)
+        CatchTextButton(
+          label: context.l10n.eventSuccessEventSuccessSetupBodyLabelReset,
+          onPressed: widget.onResetToRecommended,
+          tone: CatchTextButtonTone.neutral,
+        ),
+    ];
 
     return CatchSectionList(
       emptyStateOmitted: true,
@@ -106,19 +129,13 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
           title: context.l10n.eventSuccessEventSuccessHostSetupTitleYourPlan,
           children: [
             CatchField.read(
-              title: profile.formatLabel,
-              body: profile.summary,
-              valueText: profile.interactionModel.label,
-              action:
-                  widget.showResetToRecommended &&
-                      widget.onResetToRecommended != null
-                  ? CatchTextButton(
-                      label: context
-                          .l10n
-                          .eventSuccessEventSuccessSetupBodyLabelReset,
-                      onPressed: widget.onResetToRecommended,
-                    )
-                  : null,
+              key: const ValueKey('eventSuccessFormatFirst'),
+              title: context.l10n.eventSuccessEventSuccessSetupBodyTitleFormat,
+              body: draft.playbook.summary,
+              valueText: profile.formatLabel,
+              action: formatActions.isEmpty
+                  ? null
+                  : Wrap(spacing: CatchSpacing.s2, children: formatActions),
             ),
             ...widget.planLeadingRows,
             CatchField.inputActions(
@@ -215,44 +232,46 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
             ),
           ],
         ),
-        for (final bucket in _EventSuccessStageBucket.values) ...[
-          if (_recommendationsForBucket(liveTools, bucket).isNotEmpty)
-            CatchSection.fieldRows(
-              title: _bucketTitle(context, bucket),
-              children: [
-                for (final recommendation in _recommendationsForBucket(
-                  liveTools,
-                  bucket,
-                ))
-                  EventSuccessModuleRows._(
-                    recommendation: recommendation,
-                    draft: draft,
-                    editable: widget.editable,
-                    onModuleChanged: (selected) => _applyImmediateDraftUpdate(
-                      (current) => current.withModuleSelection(
-                        recommendation.module.id,
-                        selected,
+        if (_customizingTools)
+          for (final bucket in _EventSuccessStageBucket.values) ...[
+            if (_recommendationsForBucket(liveTools, bucket).isNotEmpty)
+              CatchSection.fieldRows(
+                title: _bucketTitle(context, bucket),
+                children: [
+                  for (final recommendation in _recommendationsForBucket(
+                    liveTools,
+                    bucket,
+                  ))
+                    EventSuccessModuleRows._(
+                      recommendation: recommendation,
+                      draft: draft,
+                      editable: widget.editable,
+                      onModuleChanged: (selected) => _applyImmediateDraftUpdate(
+                        (current) => current.withModuleSelection(
+                          recommendation.module.id,
+                          selected,
+                        ),
                       ),
+                      onDraftChanged: widget.onChanged,
+                      onQuestionnaireModeChanged: (mode) =>
+                          _setQuestionnaireMode(mode),
                     ),
-                    onDraftChanged: widget.onChanged,
-                    onQuestionnaireModeChanged: (mode) =>
-                        _setQuestionnaireMode(mode),
-                  ),
-              ],
-            ),
-          if (bucket == _EventSuccessStageBucket.during && showStructureEditor)
-            EventSuccessStructureConfigEditor(
-              sectionTitle: context
-                  .l10n
-                  .eventSuccessEventSuccessSetupBodyTitleHowTheRoomIsGrouped,
-              value: draft.structureConfig,
-              targetAttendeeCount: widget.targetAttendeeCount,
-              enabled: widget.editable,
-              onChanged: (value) => widget.onChanged(
-                (current) => current.copyWith(structureConfig: value),
+                ],
               ),
-            ),
-        ],
+            if (bucket == _EventSuccessStageBucket.during &&
+                showStructureEditor)
+              EventSuccessStructureConfigEditor(
+                sectionTitle: context
+                    .l10n
+                    .eventSuccessEventSuccessSetupBodyTitleHowTheRoomIsGrouped,
+                value: draft.structureConfig,
+                targetAttendeeCount: widget.targetAttendeeCount,
+                enabled: widget.editable,
+                onChanged: (value) => widget.onChanged(
+                  (current) => current.copyWith(structureConfig: value),
+                ),
+              ),
+          ],
       ],
     );
   }

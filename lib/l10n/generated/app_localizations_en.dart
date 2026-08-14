@@ -757,6 +757,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventSuccessEventSuccessSetupBodyLabelReset => 'Reset';
 
   @override
+  String get eventSuccessEventSuccessSetupBodyTitleFormat => 'Format';
+
+  @override
+  String get eventSuccessEventSuccessSetupBodyLabelCustomizeTools =>
+      'Customize';
+
+  @override
+  String get eventSuccessEventSuccessSetupBodyLabelDoneCustomizing => 'Done';
+
+  @override
   String get eventSuccessEventSuccessSetupBodyTextMatchClueQuestions =>
       'Match clue questions';
 
@@ -10245,6 +10255,46 @@ class AppLocalizationsEn extends AppLocalizations {
     required String stage,
   }) {
     return 'Step $current of $total · $stage';
+  }
+
+  @override
+  String eventSuccessEventSuccessHostLiveLabelBeatNumber({
+    required int number,
+  }) {
+    return 'Beat $number';
+  }
+
+  @override
+  String eventSuccessEventSuccessHostLiveLabelRoundNumber({
+    required int number,
+  }) {
+    return 'Round $number';
+  }
+
+  @override
+  String get eventSuccessEventSuccessHostLiveLabelFirstCourse => 'First course';
+
+  @override
+  String get eventSuccessEventSuccessHostLiveLabelSecondCourse =>
+      'Second course';
+
+  @override
+  String get eventSuccessEventSuccessHostLiveLabelThirdCourse => 'Third course';
+
+  @override
+  String get eventSuccessEventSuccessHostLiveLabelFourthCourse =>
+      'Fourth course';
+
+  @override
+  String eventSuccessEventSuccessHostLiveLabelCourseNumber({
+    required int number,
+  }) {
+    return 'Course $number';
+  }
+
+  @override
+  String eventSuccessEventSuccessHostLiveLabelLegNumber({required int number}) {
+    return 'Leg $number';
   }
 
   @override

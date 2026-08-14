@@ -369,6 +369,7 @@ extension EventSuccessHostDraftPeopleMix on EventSuccessHostDraft {
 class EventSuccessLivePlan {
   const EventSuccessLivePlan({
     required this.playbook,
+    required this.durationShape,
     required this.steps,
     required this.activeStepIndex,
     required this.checkedInCount,
@@ -385,6 +386,7 @@ class EventSuccessLivePlan {
   }) {
     return EventSuccessLivePlan(
       playbook: draft.playbook,
+      durationShape: draft.playbook.durationShape,
       steps: draft.playbook.runOfShow,
       activeStepIndex: activeStepIndex.clamp(
         0,
@@ -396,6 +398,7 @@ class EventSuccessLivePlan {
   }
 
   final EventSuccessPlaybook playbook;
+  final EventSuccessDurationShape durationShape;
   final List<EventRunOfShowStep> steps;
   final int activeStepIndex;
   final int checkedInCount;

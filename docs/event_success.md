@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.16.0
+version: 1.17.0
 updated: 2026-08-14
 owner: recursive_audit_loop
 status: active
@@ -150,6 +150,15 @@ model defaults to `none`, and an explicit event-format value wins. Runtime code
 branches on that primitive only, never on `activityKind`. T11 implements the
 end-of-event `sweep`; `rollCall` remains a distinct value and does not silently
 inherit sweep completion behavior.
+
+`durationShape` gives the existing flat run-of-show list format-owned grouping
+and transition vocabulary without creating a second schedule model. The four
+values are `continuous`, `rounds`, `courses`, and `segments`; saved format
+primitives may override the playbook default. Pace-pod formats default to
+segments, paired/team/free-form formats to rounds, seated-table formats to
+courses, and host-led/open formats to continuous. The Host control room labels
+the same next-step transition as a Beat, Round, course, or Leg from this
+primitive. Screens do not branch on `activityKind` to choose that language.
 
 V1 supports set-based pair rotations and generic micro-pods, plus
 capacity-aware `sequence` scheduling for pair rotations. Sequence scheduling
@@ -838,6 +847,12 @@ wizard with a compact shared form. Durable outcomes:
   setup widget consumed by both `EventSuccessDefaultsPanel` (create-event last
   step) and the Host Manage setup tab. The two surfaces stay in sync
   automatically — no copy or behaviour drift.
+- **Format-first disclosure.** The saved `EventFormatSnapshot` remains the
+  event-format authority and is the first setup row. The host sees the format
+  and playbook summary before detailed tools; an explicit `Customize` action
+  reveals the module rows. Closing and reopening that disclosure never
+  rewrites the draft, so customized module, cadence, reveal, questionnaire, and
+  grouping values remain lossless.
 - **Stage-based live guide.** The shared body groups selectable tools by their
   domain stage: Before the event, When people arrive, During the event, and
   After the event. Catalog order remains stable inside each stage, and
@@ -865,14 +880,15 @@ wizard with a compact shared form. Durable outcomes:
   the active playbook contains, while untouched legacy JSON remains unchanged.
   The two legacy boolean fields stay serialized as `true` until a later schema
   migration. First Hello remains the only Event Success arrival ritual.
-- **Gated Phase 4 prototype.** Widgetbook contains an owner-review-only
+- **Phase 4 owner-review prototype.** Widgetbook contains an owner-review-only
   `EventSuccessModuleConsolidationPrototype` under
   `Event Success / Phase 4 owner review`. It demonstrates the proposed single
   How people mix choice, conditional size/count/cadence/repeat row order,
-  recommendation copy, and a five-decision visible tool set. Its grouping
-  derivation exists as an explicit draft projection, but the prototype has no
-  writer and production still uses the pair-only backend-safe interaction.
-  Wiring the composite control remains blocked on explicit owner approval.
+  recommendation copy, and a five-decision visible tool set. Production now
+  owns the prerequisite format-first disclosure and lossless Customize path.
+  The prototype still has no writer, and its composite grouping control remains
+  an owner-review surface until it can preserve the pair-only backend-safe
+  interaction honestly.
 - **Guarded persistence.** Setup saves are transactionally revision checked,
   reject frozen or stale plans, and update only setup-owned fields. A newer
   remote snapshot never silently replaces local unsaved edits.
