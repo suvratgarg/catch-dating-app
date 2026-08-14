@@ -17,6 +17,7 @@ import type {EventIdCallablePayload} from "../../functions/src/shared/generated/
 import type {FetchEventSuccessWingmanCandidatesCallableResponse} from "../../functions/src/shared/generated/fetchEventSuccessWingmanCandidatesCallableResponse";
 import type {GetEventRuntimeBootstrapCallablePayload} from "../../functions/src/shared/generated/getEventRuntimeBootstrapCallablePayload";
 import type {GetEventRuntimeBootstrapCallableResponse} from "../../functions/src/shared/generated/getEventRuntimeBootstrapCallableResponse";
+import type {GetEventSuccessConversationGraphCallableResponse} from "../../functions/src/shared/generated/getEventSuccessConversationGraphCallableResponse";
 import type {HeartbeatEventSuccessPresenceCallableResponse} from "../../functions/src/shared/generated/heartbeatEventSuccessPresenceCallableResponse";
 import type {ListPublicOrganizerReviewsCallablePayload} from "../../functions/src/shared/generated/listPublicOrganizerReviewsCallablePayload";
 import type {ListPublicOrganizerReviewsCallableResponse} from "../../functions/src/shared/generated/listPublicOrganizerReviewsCallableResponse";
@@ -33,6 +34,8 @@ import type {RequestOrganizerClaimCallableResponse} from "../../functions/src/sh
 import type {StartEventSuccessFirstHelloMissionCallablePayload} from "../../functions/src/shared/generated/startEventSuccessFirstHelloMissionCallablePayload";
 import type {SubmitEventRuntimeProfileCallablePayload} from "../../functions/src/shared/generated/submitEventRuntimeProfileCallablePayload";
 import type {SubmitEventRuntimeProfileCallableResponse} from "../../functions/src/shared/generated/submitEventRuntimeProfileCallableResponse";
+import type {SubmitEventSuccessConversationGraphCallablePayload} from "../../functions/src/shared/generated/submitEventSuccessConversationGraphCallablePayload";
+import type {SubmitEventSuccessConversationGraphCallableResponse} from "../../functions/src/shared/generated/submitEventSuccessConversationGraphCallableResponse";
 import type {SubmitEventSuccessWingmanRequestCallablePayload} from "../../functions/src/shared/generated/submitEventSuccessWingmanRequestCallablePayload";
 import {
   appCheckSiteKey,
@@ -67,6 +70,8 @@ export type RecordOrganizerAnalyticsEventResponse =
 export type RegisterPublicEventPayload = RegisterPublicEventCallablePayload;
 export type RegisterPublicEventResponse = RegisterPublicEventCallableResponse;
 export type EventRuntimeBootstrap = GetEventRuntimeBootstrapCallableResponse;
+export type EventSuccessConversationGraph =
+  GetEventSuccessConversationGraphCallableResponse;
 export type EventInviteLanding = ResolveEventInviteLandingCallableResponse;
 
 export interface PublicEventPhoneVerification {
@@ -215,6 +220,26 @@ export async function heartbeatEventRuntimePresence(
   return invokeWebsiteCallable(
     "heartbeatEventSuccessPresence",
     {eventId, surface: "web"},
+    eventRuntimeFirebaseConfigured
+  );
+}
+
+export async function getEventSuccessConversationGraph(
+  eventId: string
+): Promise<GetEventSuccessConversationGraphCallableResponse> {
+  return invokeWebsiteCallable(
+    "getEventSuccessConversationGraph",
+    {eventId},
+    eventRuntimeFirebaseConfigured
+  );
+}
+
+export async function submitEventSuccessConversationGraph(
+  payload: SubmitEventSuccessConversationGraphCallablePayload
+): Promise<SubmitEventSuccessConversationGraphCallableResponse> {
+  return invokeWebsiteCallable(
+    "submitEventSuccessConversationGraph",
+    payload,
     eventRuntimeFirebaseConfigured
   );
 }

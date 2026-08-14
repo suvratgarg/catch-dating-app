@@ -3331,6 +3331,10 @@ export interface EventSuccessPlanDocument {
       }[];
     }[];
   };
+  /**
+   * Whether assigned attendees begin unselected or preselected in the end-of-event conversation graph. Missing legacy values resolve to optIn.
+   */
+  conversationGraphConsentMode?: "optIn" | "optOut";
   activeStepIndex: number;
   liveControlRevision?: number;
   assignmentDraftRevision?: number;
@@ -3345,6 +3349,29 @@ export interface EventSuccessPlanDocument {
   updatedAt: FirebaseFirestore.Timestamp;
   frozenAt?: FirebaseFirestore.Timestamp | null;
   completedAt?: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Attendee-private end-of-event conversation edges stored at eventSuccessConversationGraphs/{eventId_uid}. Hosts consume aggregate scorecard counts only.
+ */
+export interface EventSuccessConversationGraphDocument {
+  eventId: string;
+  clubId: string;
+  organizerId: string;
+  uid: string;
+  status: "submitted" | "skipped";
+  /**
+   * @maxItems 1000
+   */
+  selectedUids: string[];
+  assignedSelectedCount: number;
+  assignedCandidateCount: number;
+  /**
+   * Snapshot of the event plan mode shown for this response.
+   */
+  consentMode: "optIn" | "optOut";
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
 }
 
 /**
@@ -3727,6 +3754,18 @@ export interface EventSuccessScorecardDocument {
   averageWelcomeRating: number;
   averageStructureRating: number;
   safetyIncidentCount: number;
+  /**
+   * Host-visible aggregate conversation outcomes. Person-to-person edges remain in attendee-private documents.
+   */
+  conversationGraph?: {
+    responseCount: number;
+    skippedCount: number;
+    conversationCount: number;
+    attendeesWithTwoPlusConversations: number;
+    excludedAttendeeCount: number;
+    assignedConversationCount: number;
+    assignedOpportunityCount: number;
+  };
   /**
    * Host-visible operating funnel from acquisition through connection. Counts are aggregate-only and rebuilt from canonical documents.
    */

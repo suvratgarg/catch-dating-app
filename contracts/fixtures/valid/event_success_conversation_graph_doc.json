@@ -1,0 +1,13 @@
+{
+  "eventId": "event-1",
+  "clubId": "club-1",
+  "organizerId": "organizer-1",
+  "uid": "runner-1",
+  "status": "submitted",
+  "selectedUids": ["runner-2", "runner-3"],
+  "assignedSelectedCount": 1,
+  "assignedCandidateCount": 2,
+  "consentMode": "optIn",
+  "createdAt": {"_seconds": 1777619000, "_nanoseconds": 0},
+  "updatedAt": {"_seconds": 1777619000, "_nanoseconds": 0}
+}

@@ -175,6 +175,44 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
               maxLines: 4,
               textInputAction: TextInputAction.newline,
             ),
+            CatchField.optionCards<EventSuccessConversationGraphConsentMode>(
+              key: const ValueKey('eventSuccessConversationGraphConsentMode'),
+              title: context
+                  .l10n
+                  .eventSuccessEventSuccessSetupBodyTitleConversationCheckDefaults,
+              contract: CatchContractConstraints
+                  .eventSuccessPlanDocumentConversationGraphConsentMode,
+              contractValue: (value) => value.name,
+              values: EventSuccessConversationGraphConsentMode.values,
+              itemTitle: (mode) => switch (mode) {
+                EventSuccessConversationGraphConsentMode.optIn =>
+                  context
+                      .l10n
+                      .eventSuccessEventSuccessSetupBodyLabelAskEveryoneToChoose,
+                EventSuccessConversationGraphConsentMode.optOut =>
+                  context
+                      .l10n
+                      .eventSuccessEventSuccessSetupBodyLabelPreselectAssignedPeople,
+              },
+              itemDescription: (mode) => switch (mode) {
+                EventSuccessConversationGraphConsentMode.optIn =>
+                  context
+                      .l10n
+                      .eventSuccessEventSuccessSetupBodyTextAssignedPeopleAppearFirstButNobodyIsSelected,
+                EventSuccessConversationGraphConsentMode.optOut =>
+                  context
+                      .l10n
+                      .eventSuccessEventSuccessSetupBodyTextAssignedPeopleStartSelectedAndCanBeRemoved,
+              },
+              selected: draft.conversationGraphConsentMode,
+              enabled: widget.editable,
+              onChanged: widget.editable
+                  ? (mode) => widget.onChanged(
+                      (current) =>
+                          current.copyWith(conversationGraphConsentMode: mode),
+                    )
+                  : null,
+            ),
           ],
         ),
         for (final bucket in _EventSuccessStageBucket.values) ...[

@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
@@ -67,10 +68,12 @@ void main() {
       () async {
         final event = buildEvent();
         final plan = await repository.ensurePlanForEvent(event);
-        final draft = plan.hostDraft.withModuleSelection(
-          'wingman_requests',
-          false,
-        );
+        final draft = plan.hostDraft
+            .withModuleSelection('wingman_requests', false)
+            .copyWith(
+              conversationGraphConsentMode:
+                  EventSuccessConversationGraphConsentMode.optOut,
+            );
 
         await repository.savePlan(
           plan.copyWithDraft(draft, updatedAt: plan.updatedAt),
@@ -86,6 +89,10 @@ void main() {
         expect(saved, isNotNull);
         expect(saved!.activeStepIndex, 0);
         expect(saved.hasModule('wingman_requests'), isTrue);
+        expect(
+          saved.conversationGraphConsentMode,
+          EventSuccessConversationGraphConsentMode.optOut,
+        );
         final callable =
             functions.httpsCallable('controlEventSuccessLive')
                 as TestHttpsCallable;

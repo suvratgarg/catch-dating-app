@@ -156,6 +156,19 @@ class HostReportSignalGrid extends StatelessWidget {
                 ),
           ),
           CatchMetricCardData(
+            icon: CatchIcons.groups2Outlined,
+            value: '${scorecard.conversationExcludedAttendeeCount}',
+            label: context
+                .l10n
+                .eventSuccessEventSuccessHostReportLabelConversationExclusions,
+            caption: context.l10n
+                .eventSuccessEventSuccessHostReportLabelConversationgraphresponsecountCheckedincountResponses(
+                  conversationGraphResponseCount:
+                      scorecard.conversationGraphResponseCount,
+                  checkedInCount: scorecard.checkedInCount,
+                ),
+          ),
+          CatchMetricCardData(
             icon: CatchIcons.favoriteOutlineRounded,
             value: _eventSuccessPercent(scorecard.caughtSomeoneRate),
             label: context

@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.13.0
-updated: 2026-08-12
+version: 0.14.0
+updated: 2026-08-14
 owner: web_platform
 status: active
 ---
@@ -1093,8 +1093,11 @@ The React marketing runtime owns two non-SEO transactional routes:
   the URL fragment; the route shell consumes and clears it before the controller
   redeems attendance. Without that fragment, a ready attendee sees the venue
   scan gate. After attendance, the route exposes First
-  Hello, wingman, questionnaire, private assignment/rotation/group state and
-  feedback without creating a Consumer profile or booking edge.
+  Hello, wingman, questionnaire, private assignment/rotation/group state,
+  attendee-private end-of-event conversation confirmation, and feedback without
+  creating a Consumer profile or booking edge. The conversation roster is
+  fetched through an attendee-authorized callable; Hosts receive only numeric
+  scorecard counts and exclusion, never who named whom.
 - `/invite/:inviteToken` resolves an opaque bearer token server-side, records a
   short-lived bot-classified touch, preserves the token through registration or
   runtime claim, and redirects to Catch RSVP/runtime or an allowlisted external

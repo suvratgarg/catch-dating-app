@@ -707,6 +707,28 @@ class AppLocalizationsEn extends AppLocalizations {
       'Message to attendees';
 
   @override
+  String get eventSuccessEventSuccessSetupBodyTitleConversationCheckDefaults =>
+      'Conversation check defaults';
+
+  @override
+  String get eventSuccessEventSuccessSetupBodyLabelAskEveryoneToChoose =>
+      'Ask everyone to choose';
+
+  @override
+  String
+  get eventSuccessEventSuccessSetupBodyTextAssignedPeopleAppearFirstButNobodyIsSelected =>
+      'Assigned people appear first as suggestions, but nobody is selected.';
+
+  @override
+  String get eventSuccessEventSuccessSetupBodyLabelPreselectAssignedPeople =>
+      'Preselect assigned people';
+
+  @override
+  String
+  get eventSuccessEventSuccessSetupBodyTextAssignedPeopleStartSelectedAndCanBeRemoved =>
+      'Assigned people start selected; attendees can remove anyone before saving.';
+
+  @override
   String
   get eventSuccessEventSuccessSetupBodyPlaceholderSomethingAttendeesSeeBeforeTheEventKicksOff =>
       'Something attendees see before the event kicks off.';
@@ -5197,6 +5219,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventSuccessEventSuccessHostReportLabelFeedback => 'Feedback';
+
+  @override
+  String get eventSuccessEventSuccessHostReportLabelConversationExclusions =>
+      'Conversation exclusions';
+
+  @override
+  String
+  eventSuccessEventSuccessHostReportLabelConversationgraphresponsecountCheckedincountResponses({
+    required Object conversationGraphResponseCount,
+    required Object checkedInCount,
+  }) {
+    return '$conversationGraphResponseCount/$checkedInCount responses';
+  }
 
   @override
   String get eventSuccessEventSuccessHostReportLabelCaughtSomeone =>

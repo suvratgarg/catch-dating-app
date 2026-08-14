@@ -81,6 +81,7 @@ import {CrossPathsPairHoldDocument} from "./crossPathsPairHoldDocument";
 import {EventBroadcastDocument} from "./eventBroadcastDocument";
 import {EventWaitlistOfferDocument} from "./eventWaitlistOfferDocument";
 import {EventSuccessPlanDocument} from "./eventSuccessPlanDocument";
+import {EventSuccessConversationGraphDocument} from "./eventSuccessConversationGraphDocument";
 import {OrganizerEventSuccessLayoutDocument} from "./organizerEventSuccessLayoutDocument";
 import {EventSuccessAssignmentDraftDocument} from "./eventSuccessAssignmentDraftDocument";
 import {EventSuccessFeedbackDocument} from "./eventSuccessFeedbackDocument";
@@ -241,6 +242,9 @@ import {GetEventSuccessSpatialLayoutCallableResponse} from "./getEventSuccessSpa
 import {EventSuccessSpatialActionCallablePayload} from "./eventSuccessSpatialActionCallablePayload";
 import {EventSuccessSpatialActionCallableResponse} from "./eventSuccessSpatialActionCallableResponse";
 import {GetEventRuntimeBootstrapCallableResponse} from "./getEventRuntimeBootstrapCallableResponse";
+import {GetEventSuccessConversationGraphCallableResponse} from "./getEventSuccessConversationGraphCallableResponse";
+import {SubmitEventSuccessConversationGraphCallablePayload} from "./submitEventSuccessConversationGraphCallablePayload";
+import {SubmitEventSuccessConversationGraphCallableResponse} from "./submitEventSuccessConversationGraphCallableResponse";
 import {ClaimEventRuntimeAccessCallablePayload} from "./claimEventRuntimeAccessCallablePayload";
 import {ClaimEventRuntimeAccessCallableResponse} from "./claimEventRuntimeAccessCallableResponse";
 import {SubmitEventRuntimeProfileCallablePayload} from "./submitEventRuntimeProfileCallablePayload";
@@ -432,6 +436,7 @@ import {
   eventBroadcastDocumentSchema,
   eventWaitlistOfferDocumentSchema,
   eventSuccessPlanDocumentSchema,
+  eventSuccessConversationGraphDocumentSchema,
   organizerEventSuccessLayoutDocumentSchema,
   eventSuccessAssignmentDraftDocumentSchema,
   eventSuccessFeedbackDocumentSchema,
@@ -592,6 +597,9 @@ import {
   eventSuccessSpatialActionCallablePayloadSchema,
   eventSuccessSpatialActionCallableResponseSchema,
   getEventRuntimeBootstrapCallableResponseSchema,
+  getEventSuccessConversationGraphCallableResponseSchema,
+  submitEventSuccessConversationGraphCallablePayloadSchema,
+  submitEventSuccessConversationGraphCallableResponseSchema,
   claimEventRuntimeAccessCallablePayloadSchema,
   claimEventRuntimeAccessCallableResponseSchema,
   submitEventRuntimeProfileCallablePayloadSchema,
@@ -1018,6 +1026,10 @@ export const validateEventSuccessPlanDocument:
   ValidateFunction<EventSuccessPlanDocument> =
     ajv.compile(eventSuccessPlanDocumentSchema) as
       ValidateFunction<EventSuccessPlanDocument>;
+export const validateEventSuccessConversationGraphDocument:
+  ValidateFunction<EventSuccessConversationGraphDocument> =
+    ajv.compile(eventSuccessConversationGraphDocumentSchema) as
+      ValidateFunction<EventSuccessConversationGraphDocument>;
 export const validateOrganizerEventSuccessLayoutDocument:
   ValidateFunction<OrganizerEventSuccessLayoutDocument> =
     ajv.compile(organizerEventSuccessLayoutDocumentSchema) as
@@ -1658,6 +1670,18 @@ export const validateGetEventRuntimeBootstrapCallableResponse:
   ValidateFunction<GetEventRuntimeBootstrapCallableResponse> =
     ajv.compile(getEventRuntimeBootstrapCallableResponseSchema) as
       ValidateFunction<GetEventRuntimeBootstrapCallableResponse>;
+export const validateGetEventSuccessConversationGraphCallableResponse:
+  ValidateFunction<GetEventSuccessConversationGraphCallableResponse> =
+    ajv.compile(getEventSuccessConversationGraphCallableResponseSchema) as
+      ValidateFunction<GetEventSuccessConversationGraphCallableResponse>;
+export const validateSubmitEventSuccessConversationGraphCallablePayload:
+  ValidateFunction<SubmitEventSuccessConversationGraphCallablePayload> =
+    ajv.compile(submitEventSuccessConversationGraphCallablePayloadSchema) as
+      ValidateFunction<SubmitEventSuccessConversationGraphCallablePayload>;
+export const validateSubmitEventSuccessConversationGraphCallableResponse:
+  ValidateFunction<SubmitEventSuccessConversationGraphCallableResponse> =
+    ajv.compile(submitEventSuccessConversationGraphCallableResponseSchema) as
+      ValidateFunction<SubmitEventSuccessConversationGraphCallableResponse>;
 export const validateClaimEventRuntimeAccessCallablePayload:
   ValidateFunction<ClaimEventRuntimeAccessCallablePayload> =
     ajv.compile(claimEventRuntimeAccessCallablePayloadSchema) as

@@ -798,6 +798,8 @@ void main() {
                     catchRecipientCount: 3,
                     catchRate: 0.4,
                     feedbackResponseCount: 2,
+                    conversationGraphResponseCount: 3,
+                    conversationExcludedAttendeeCount: 1,
                   ),
                   assignments: [
                     _assignment(
@@ -851,6 +853,8 @@ void main() {
 
     expect(find.text('HOW RELIABLE IS THIS REPORT?'), findsOneWidget);
     expect(find.text('Feedback'), findsOneWidget);
+    expect(find.text('Conversation exclusions'), findsOneWidget);
+    expect(find.text('3/5 responses'), findsOneWidget);
     expect(find.text('Caught someone'), findsWidgets);
     expect(find.text('People included'), findsOneWidget);
     expect(find.text('Opted out'), findsOneWidget);

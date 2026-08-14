@@ -131,6 +131,19 @@ void main() {
     );
     expect(draftChanges, 2);
 
+    await _openField(tester, 'Conversation check defaults');
+    expect(_choice('Ask everyone to choose', selected: true), findsOneWidget);
+    await _tapChoice(tester, 'Preselect assigned people');
+    await tester.pump();
+    expect(
+      draft.conversationGraphConsentMode,
+      EventSuccessConversationGraphConsentMode.optOut,
+    );
+    expect(
+      _choice('Preselect assigned people', selected: true),
+      findsOneWidget,
+    );
+
     await _openField(tester, 'Switch partners every');
     await _tapChoice(tester, '20 min');
     await tester.pump();

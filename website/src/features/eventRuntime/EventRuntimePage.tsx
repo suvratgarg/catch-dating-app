@@ -462,7 +462,54 @@ function LiveEventRuntime({
         </EventRuntimeModule>
       ) : null}
 
-      {modules.has("decomposed_feedback") && Date.now() >= event.endTimeMillis ? (
+      {controller.eventEnded ? (
+        <EventRuntimeModule
+          title={controller.conversationGraph?.prompt ??
+            eventRuntimeCopy.conversationTitle}
+          accent="coral"
+        >
+          <p>{eventRuntimeCopy.conversationBody}</p>
+          {controller.conversationGraphLoading ? (
+            <p>{eventRuntimeCopy.conversationLoading}</p>
+          ) : controller.conversationGraph?.candidates.length ? (
+            <>
+              <ChoiceChipGrid aria-label={controller.conversationGraph.prompt}>
+                {controller.conversationGraph.candidates.map((candidate) => (
+                  <ChoiceChip
+                    key={candidate.uid}
+                    onClick={() => controller.toggleConversationUid(candidate.uid)}
+                    selected={controller.selectedConversationUids.includes(candidate.uid)}
+                  >
+                    {candidate.displayName}
+                    {candidate.assigned ?
+                      ` · ${eventRuntimeCopy.conversationSuggested}` : ""}
+                  </ChoiceChip>
+                ))}
+              </ChoiceChipGrid>
+              <Button
+                loading={controller.pending}
+                onClick={() => void controller.submitConversationGraph()}
+                type="button"
+              >
+                {eventRuntimeCopy.conversationSave}
+              </Button>
+              <Button
+                disabled={controller.pending}
+                onClick={() => void controller.submitConversationGraph(true)}
+                type="button"
+                variant="ghost"
+              >
+                {eventRuntimeCopy.conversationSkip}
+              </Button>
+            </>
+          ) : controller.conversationGraph ? (
+            <p>{eventRuntimeCopy.conversationEmpty}</p>
+          ) : null}
+          <small>{eventRuntimeCopy.conversationPrivacy}</small>
+        </EventRuntimeModule>
+      ) : null}
+
+      {modules.has("decomposed_feedback") && controller.eventEnded ? (
         <EventRuntimeModule title={eventRuntimeCopy.feedbackTitle}>
           <p>{eventRuntimeCopy.feedbackBody}</p>
           <EventRuntimeForm onSubmit={(submitEvent) => {

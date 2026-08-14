@@ -15915,6 +15915,113 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const eventSuccessConversationGraphDocumentAssignedCandidateCount = CatchContractFieldConstraints(
+    path: 'eventSuccessConversationGraphDocument.assignedCandidateCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const eventSuccessConversationGraphDocumentAssignedSelectedCount = CatchContractFieldConstraints(
+    path: 'eventSuccessConversationGraphDocument.assignedSelectedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const eventSuccessConversationGraphDocumentClubId = CatchContractFieldConstraints(
+    path: 'eventSuccessConversationGraphDocument.clubId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessConversationGraphDocumentConsentMode = CatchContractFieldConstraints(
+    path: 'eventSuccessConversationGraphDocument.consentMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['optIn', 'optOut'],
+  );
+
+  static const eventSuccessConversationGraphDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessConversationGraphDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessConversationGraphDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessConversationGraphDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventSuccessConversationGraphDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventSuccessConversationGraphDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessConversationGraphDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventSuccessConversationGraphDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessConversationGraphDocumentSelectedUids = CatchContractFieldConstraints(
+    path: 'eventSuccessConversationGraphDocument.selectedUids',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 1000,
+    uniqueItems: true,
+  );
+
+  static const eventSuccessConversationGraphDocumentSelectedUidsItems = CatchContractFieldConstraints(
+    path: 'eventSuccessConversationGraphDocument.selectedUids.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessConversationGraphDocumentStatus = CatchContractFieldConstraints(
+    path: 'eventSuccessConversationGraphDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['submitted', 'skipped'],
+  );
+
+  static const eventSuccessConversationGraphDocumentUid = CatchContractFieldConstraints(
+    path: 'eventSuccessConversationGraphDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessConversationGraphDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessConversationGraphDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessConversationGraphDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessConversationGraphDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const eventSuccessFeedbackDocumentClubId = CatchContractFieldConstraints(
     path: 'eventSuccessFeedbackDocument.clubId',
     maxLength: 180,
@@ -16290,6 +16397,12 @@ abstract final class CatchContractConstraints {
     path: 'eventSuccessPlanDocument.contextualOpenersEnabled',
     required: true,
     valueTypes: <String>['boolean'],
+  );
+
+  static const eventSuccessPlanDocumentConversationGraphConsentMode = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.conversationGraphConsentMode',
+    valueTypes: <String>['string'],
+    enumValues: <String>['optIn', 'optOut'],
   );
 
   static const eventSuccessPlanDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
@@ -16973,6 +17086,55 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessScorecardDocumentConversationGraphAssignedConversationCount = CatchContractFieldConstraints(
+    path: 'eventSuccessScorecardDocument.conversationGraph.assignedConversationCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const eventSuccessScorecardDocumentConversationGraphAssignedOpportunityCount = CatchContractFieldConstraints(
+    path: 'eventSuccessScorecardDocument.conversationGraph.assignedOpportunityCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const eventSuccessScorecardDocumentConversationGraphAttendeesWithTwoPlusConversations = CatchContractFieldConstraints(
+    path: 'eventSuccessScorecardDocument.conversationGraph.attendeesWithTwoPlusConversations',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const eventSuccessScorecardDocumentConversationGraphConversationCount = CatchContractFieldConstraints(
+    path: 'eventSuccessScorecardDocument.conversationGraph.conversationCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const eventSuccessScorecardDocumentConversationGraphExcludedAttendeeCount = CatchContractFieldConstraints(
+    path: 'eventSuccessScorecardDocument.conversationGraph.excludedAttendeeCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const eventSuccessScorecardDocumentConversationGraphResponseCount = CatchContractFieldConstraints(
+    path: 'eventSuccessScorecardDocument.conversationGraph.responseCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const eventSuccessScorecardDocumentConversationGraphSkippedCount = CatchContractFieldConstraints(
+    path: 'eventSuccessScorecardDocument.conversationGraph.skippedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
   );
 
   static const eventSuccessScorecardDocumentDemoOps = CatchContractFieldConstraints(
@@ -20023,6 +20185,83 @@ abstract final class CatchContractConstraints {
     path: 'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.relationshipGoal',
     valueTypes: <String>['string'],
     enumValues: <String>['relationship', 'casual', 'marriage', 'friendship', 'unsure'],
+  );
+
+  static const getEventSuccessConversationGraphCallableResponseCandidates = CatchContractFieldConstraints(
+    path: 'getEventSuccessConversationGraphCallableResponse.candidates',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 1000,
+  );
+
+  static const getEventSuccessConversationGraphCallableResponseCandidatesItemsAssigned = CatchContractFieldConstraints(
+    path: 'getEventSuccessConversationGraphCallableResponse.candidates.items.assigned',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const getEventSuccessConversationGraphCallableResponseCandidatesItemsDisplayName = CatchContractFieldConstraints(
+    path: 'getEventSuccessConversationGraphCallableResponse.candidates.items.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventSuccessConversationGraphCallableResponseCandidatesItemsUid = CatchContractFieldConstraints(
+    path: 'getEventSuccessConversationGraphCallableResponse.candidates.items.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventSuccessConversationGraphCallableResponseConsentMode = CatchContractFieldConstraints(
+    path: 'getEventSuccessConversationGraphCallableResponse.consentMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['optIn', 'optOut'],
+  );
+
+  static const getEventSuccessConversationGraphCallableResponseEventId = CatchContractFieldConstraints(
+    path: 'getEventSuccessConversationGraphCallableResponse.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventSuccessConversationGraphCallableResponsePrompt = CatchContractFieldConstraints(
+    path: 'getEventSuccessConversationGraphCallableResponse.prompt',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventSuccessConversationGraphCallableResponseSelectedUids = CatchContractFieldConstraints(
+    path: 'getEventSuccessConversationGraphCallableResponse.selectedUids',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 1000,
+    uniqueItems: true,
+  );
+
+  static const getEventSuccessConversationGraphCallableResponseSelectedUidsItems = CatchContractFieldConstraints(
+    path: 'getEventSuccessConversationGraphCallableResponse.selectedUids.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventSuccessConversationGraphCallableResponseSubmissionStatus = CatchContractFieldConstraints(
+    path: 'getEventSuccessConversationGraphCallableResponse.submissionStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unsubmitted', 'submitted', 'skipped'],
   );
 
   static const getEventSuccessPresenceSummaryCallableResponseEntries = CatchContractFieldConstraints(
@@ -35422,6 +35661,58 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['needsInput', 'ready'],
   );
 
+  static const submitEventSuccessConversationGraphCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'submitEventSuccessConversationGraphCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const submitEventSuccessConversationGraphCallablePayloadSelectedUids = CatchContractFieldConstraints(
+    path: 'submitEventSuccessConversationGraphCallablePayload.selectedUids',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 1000,
+    uniqueItems: true,
+  );
+
+  static const submitEventSuccessConversationGraphCallablePayloadSelectedUidsItems = CatchContractFieldConstraints(
+    path: 'submitEventSuccessConversationGraphCallablePayload.selectedUids.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const submitEventSuccessConversationGraphCallablePayloadSkipped = CatchContractFieldConstraints(
+    path: 'submitEventSuccessConversationGraphCallablePayload.skipped',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const submitEventSuccessConversationGraphCallableResponseConversationCount = CatchContractFieldConstraints(
+    path: 'submitEventSuccessConversationGraphCallableResponse.conversationCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const submitEventSuccessConversationGraphCallableResponseSaved = CatchContractFieldConstraints(
+    path: 'submitEventSuccessConversationGraphCallableResponse.saved',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const submitEventSuccessConversationGraphCallableResponseStatus = CatchContractFieldConstraints(
+    path: 'submitEventSuccessConversationGraphCallableResponse.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['submitted', 'skipped'],
+  );
+
   static const submitEventSuccessWingmanRequestCallablePayloadEventId = CatchContractFieldConstraints(
     path: 'submitEventSuccessWingmanRequestCallablePayload.eventId',
     maxLength: 180,
@@ -42691,6 +42982,20 @@ abstract final class CatchContractConstraints {
     'eventSuccessCompatibilityResponseDocument.uid': eventSuccessCompatibilityResponseDocumentUid,
     'eventSuccessCompatibilityResponseDocument.updatedAt._nanoseconds': eventSuccessCompatibilityResponseDocumentUpdatedAtNanoseconds,
     'eventSuccessCompatibilityResponseDocument.updatedAt._seconds': eventSuccessCompatibilityResponseDocumentUpdatedAtSeconds,
+    'eventSuccessConversationGraphDocument.assignedCandidateCount': eventSuccessConversationGraphDocumentAssignedCandidateCount,
+    'eventSuccessConversationGraphDocument.assignedSelectedCount': eventSuccessConversationGraphDocumentAssignedSelectedCount,
+    'eventSuccessConversationGraphDocument.clubId': eventSuccessConversationGraphDocumentClubId,
+    'eventSuccessConversationGraphDocument.consentMode': eventSuccessConversationGraphDocumentConsentMode,
+    'eventSuccessConversationGraphDocument.createdAt._nanoseconds': eventSuccessConversationGraphDocumentCreatedAtNanoseconds,
+    'eventSuccessConversationGraphDocument.createdAt._seconds': eventSuccessConversationGraphDocumentCreatedAtSeconds,
+    'eventSuccessConversationGraphDocument.eventId': eventSuccessConversationGraphDocumentEventId,
+    'eventSuccessConversationGraphDocument.organizerId': eventSuccessConversationGraphDocumentOrganizerId,
+    'eventSuccessConversationGraphDocument.selectedUids': eventSuccessConversationGraphDocumentSelectedUids,
+    'eventSuccessConversationGraphDocument.selectedUids.items': eventSuccessConversationGraphDocumentSelectedUidsItems,
+    'eventSuccessConversationGraphDocument.status': eventSuccessConversationGraphDocumentStatus,
+    'eventSuccessConversationGraphDocument.uid': eventSuccessConversationGraphDocumentUid,
+    'eventSuccessConversationGraphDocument.updatedAt._nanoseconds': eventSuccessConversationGraphDocumentUpdatedAtNanoseconds,
+    'eventSuccessConversationGraphDocument.updatedAt._seconds': eventSuccessConversationGraphDocumentUpdatedAtSeconds,
     'eventSuccessFeedbackDocument.clubId': eventSuccessFeedbackDocumentClubId,
     'eventSuccessFeedbackDocument.createdAt._nanoseconds': eventSuccessFeedbackDocumentCreatedAtNanoseconds,
     'eventSuccessFeedbackDocument.createdAt._seconds': eventSuccessFeedbackDocumentCreatedAtSeconds,
@@ -42743,6 +43048,7 @@ abstract final class CatchContractConstraints {
     'eventSuccessPlanDocument.completedAt._nanoseconds': eventSuccessPlanDocumentCompletedAtNanoseconds,
     'eventSuccessPlanDocument.completedAt._seconds': eventSuccessPlanDocumentCompletedAtSeconds,
     'eventSuccessPlanDocument.contextualOpenersEnabled': eventSuccessPlanDocumentContextualOpenersEnabled,
+    'eventSuccessPlanDocument.conversationGraphConsentMode': eventSuccessPlanDocumentConversationGraphConsentMode,
     'eventSuccessPlanDocument.createdAt._nanoseconds': eventSuccessPlanDocumentCreatedAtNanoseconds,
     'eventSuccessPlanDocument.createdAt._seconds': eventSuccessPlanDocumentCreatedAtSeconds,
     'eventSuccessPlanDocument.demoOps': eventSuccessPlanDocumentDemoOps,
@@ -42837,6 +43143,13 @@ abstract final class CatchContractConstraints {
     'eventSuccessScorecardDocument.chatStartedCount': eventSuccessScorecardDocumentChatStartedCount,
     'eventSuccessScorecardDocument.checkedInCount': eventSuccessScorecardDocumentCheckedInCount,
     'eventSuccessScorecardDocument.clubId': eventSuccessScorecardDocumentClubId,
+    'eventSuccessScorecardDocument.conversationGraph.assignedConversationCount': eventSuccessScorecardDocumentConversationGraphAssignedConversationCount,
+    'eventSuccessScorecardDocument.conversationGraph.assignedOpportunityCount': eventSuccessScorecardDocumentConversationGraphAssignedOpportunityCount,
+    'eventSuccessScorecardDocument.conversationGraph.attendeesWithTwoPlusConversations': eventSuccessScorecardDocumentConversationGraphAttendeesWithTwoPlusConversations,
+    'eventSuccessScorecardDocument.conversationGraph.conversationCount': eventSuccessScorecardDocumentConversationGraphConversationCount,
+    'eventSuccessScorecardDocument.conversationGraph.excludedAttendeeCount': eventSuccessScorecardDocumentConversationGraphExcludedAttendeeCount,
+    'eventSuccessScorecardDocument.conversationGraph.responseCount': eventSuccessScorecardDocumentConversationGraphResponseCount,
+    'eventSuccessScorecardDocument.conversationGraph.skippedCount': eventSuccessScorecardDocumentConversationGraphSkippedCount,
     'eventSuccessScorecardDocument.demoOps': eventSuccessScorecardDocumentDemoOps,
     'eventSuccessScorecardDocument.demoOpsCommand': eventSuccessScorecardDocumentDemoOpsCommand,
     'eventSuccessScorecardDocument.demoOpsId': eventSuccessScorecardDocumentDemoOpsId,
@@ -43255,6 +43568,16 @@ abstract final class CatchContractConstraints {
     'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.interestedInGenders': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileInterestedInGenders,
     'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.interestedInGenders.items': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileInterestedInGendersItems,
     'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.relationshipGoal': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileRelationshipGoal,
+    'getEventSuccessConversationGraphCallableResponse.candidates': getEventSuccessConversationGraphCallableResponseCandidates,
+    'getEventSuccessConversationGraphCallableResponse.candidates.items.assigned': getEventSuccessConversationGraphCallableResponseCandidatesItemsAssigned,
+    'getEventSuccessConversationGraphCallableResponse.candidates.items.displayName': getEventSuccessConversationGraphCallableResponseCandidatesItemsDisplayName,
+    'getEventSuccessConversationGraphCallableResponse.candidates.items.uid': getEventSuccessConversationGraphCallableResponseCandidatesItemsUid,
+    'getEventSuccessConversationGraphCallableResponse.consentMode': getEventSuccessConversationGraphCallableResponseConsentMode,
+    'getEventSuccessConversationGraphCallableResponse.eventId': getEventSuccessConversationGraphCallableResponseEventId,
+    'getEventSuccessConversationGraphCallableResponse.prompt': getEventSuccessConversationGraphCallableResponsePrompt,
+    'getEventSuccessConversationGraphCallableResponse.selectedUids': getEventSuccessConversationGraphCallableResponseSelectedUids,
+    'getEventSuccessConversationGraphCallableResponse.selectedUids.items': getEventSuccessConversationGraphCallableResponseSelectedUidsItems,
+    'getEventSuccessConversationGraphCallableResponse.submissionStatus': getEventSuccessConversationGraphCallableResponseSubmissionStatus,
     'getEventSuccessPresenceSummaryCallableResponse.entries': getEventSuccessPresenceSummaryCallableResponseEntries,
     'getEventSuccessPresenceSummaryCallableResponse.entries.items.displayName': getEventSuccessPresenceSummaryCallableResponseEntriesItemsDisplayName,
     'getEventSuccessPresenceSummaryCallableResponse.entries.items.heartbeatAtMillis': getEventSuccessPresenceSummaryCallableResponseEntriesItemsHeartbeatAtMillis,
@@ -45404,6 +45727,13 @@ abstract final class CatchContractConstraints {
     'submitEventRuntimeProfileCallableResponse.requiredFieldIds': submitEventRuntimeProfileCallableResponseRequiredFieldIds,
     'submitEventRuntimeProfileCallableResponse.requiredFieldIds.items': submitEventRuntimeProfileCallableResponseRequiredFieldIdsItems,
     'submitEventRuntimeProfileCallableResponse.status': submitEventRuntimeProfileCallableResponseStatus,
+    'submitEventSuccessConversationGraphCallablePayload.eventId': submitEventSuccessConversationGraphCallablePayloadEventId,
+    'submitEventSuccessConversationGraphCallablePayload.selectedUids': submitEventSuccessConversationGraphCallablePayloadSelectedUids,
+    'submitEventSuccessConversationGraphCallablePayload.selectedUids.items': submitEventSuccessConversationGraphCallablePayloadSelectedUidsItems,
+    'submitEventSuccessConversationGraphCallablePayload.skipped': submitEventSuccessConversationGraphCallablePayloadSkipped,
+    'submitEventSuccessConversationGraphCallableResponse.conversationCount': submitEventSuccessConversationGraphCallableResponseConversationCount,
+    'submitEventSuccessConversationGraphCallableResponse.saved': submitEventSuccessConversationGraphCallableResponseSaved,
+    'submitEventSuccessConversationGraphCallableResponse.status': submitEventSuccessConversationGraphCallableResponseStatus,
     'submitEventSuccessWingmanRequestCallablePayload.eventId': submitEventSuccessWingmanRequestCallablePayloadEventId,
     'submitEventSuccessWingmanRequestCallablePayload.note': submitEventSuccessWingmanRequestCallablePayloadNote,
     'submitEventSuccessWingmanRequestCallablePayload.targetUid': submitEventSuccessWingmanRequestCallablePayloadTargetUid,

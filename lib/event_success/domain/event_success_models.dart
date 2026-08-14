@@ -429,6 +429,13 @@ class EventSuccessScorecard {
     this.assignmentParticipantCount = 0,
     this.assignmentOptOutCount = 0,
     this.wingmanRequestCount = 0,
+    this.conversationGraphResponseCount = 0,
+    this.conversationGraphSkippedCount = 0,
+    this.conversationCount = 0,
+    this.attendeesWithTwoPlusConversations = 0,
+    this.conversationExcludedAttendeeCount = 0,
+    this.assignedConversationCount = 0,
+    this.assignedConversationOpportunityCount = 0,
     this.funnel = EventSuccessHostFunnel.empty,
   }) : assert(bookedCount >= 0),
        assert(checkedInCount >= 0),
@@ -445,7 +452,14 @@ class EventSuccessScorecard {
        assert(feedbackResponseCount >= 0),
        assert(assignmentParticipantCount >= 0),
        assert(assignmentOptOutCount >= 0),
-       assert(wingmanRequestCount >= 0);
+       assert(wingmanRequestCount >= 0),
+       assert(conversationGraphResponseCount >= 0),
+       assert(conversationGraphSkippedCount >= 0),
+       assert(conversationCount >= 0),
+       assert(attendeesWithTwoPlusConversations >= 0),
+       assert(conversationExcludedAttendeeCount >= 0),
+       assert(assignedConversationCount >= 0),
+       assert(assignedConversationOpportunityCount >= 0);
 
   final int bookedCount;
   final int checkedInCount;
@@ -463,6 +477,13 @@ class EventSuccessScorecard {
   final int assignmentParticipantCount;
   final int assignmentOptOutCount;
   final int wingmanRequestCount;
+  final int conversationGraphResponseCount;
+  final int conversationGraphSkippedCount;
+  final int conversationCount;
+  final int attendeesWithTwoPlusConversations;
+  final int conversationExcludedAttendeeCount;
+  final int assignedConversationCount;
+  final int assignedConversationOpportunityCount;
   final EventSuccessHostFunnel funnel;
 
   EventSuccessScorecard copyWith({
@@ -482,6 +503,13 @@ class EventSuccessScorecard {
     int? assignmentParticipantCount,
     int? assignmentOptOutCount,
     int? wingmanRequestCount,
+    int? conversationGraphResponseCount,
+    int? conversationGraphSkippedCount,
+    int? conversationCount,
+    int? attendeesWithTwoPlusConversations,
+    int? conversationExcludedAttendeeCount,
+    int? assignedConversationCount,
+    int? assignedConversationOpportunityCount,
     EventSuccessHostFunnel? funnel,
   }) {
     return EventSuccessScorecard(
@@ -507,6 +535,22 @@ class EventSuccessScorecard {
       assignmentOptOutCount:
           assignmentOptOutCount ?? this.assignmentOptOutCount,
       wingmanRequestCount: wingmanRequestCount ?? this.wingmanRequestCount,
+      conversationGraphResponseCount:
+          conversationGraphResponseCount ?? this.conversationGraphResponseCount,
+      conversationGraphSkippedCount:
+          conversationGraphSkippedCount ?? this.conversationGraphSkippedCount,
+      conversationCount: conversationCount ?? this.conversationCount,
+      attendeesWithTwoPlusConversations:
+          attendeesWithTwoPlusConversations ??
+          this.attendeesWithTwoPlusConversations,
+      conversationExcludedAttendeeCount:
+          conversationExcludedAttendeeCount ??
+          this.conversationExcludedAttendeeCount,
+      assignedConversationCount:
+          assignedConversationCount ?? this.assignedConversationCount,
+      assignedConversationOpportunityCount:
+          assignedConversationOpportunityCount ??
+          this.assignedConversationOpportunityCount,
       funnel: funnel ?? this.funnel,
     );
   }
@@ -534,6 +578,12 @@ class EventSuccessScorecard {
       _rate(assignmentOptOutCount, _activeAttendeeDenominator);
 
   double get wingmanRequestRate => _rate(wingmanRequestCount, checkedInCount);
+
+  double get conversationGraphResponseRate =>
+      _rate(conversationGraphResponseCount, checkedInCount);
+
+  double get assignedConversationRate =>
+      _rate(assignedConversationCount, assignedConversationOpportunityCount);
 
   double get experienceScore {
     final safetyPenalty = safetyIncidentCount > 0 ? 0.18 : 0.0;

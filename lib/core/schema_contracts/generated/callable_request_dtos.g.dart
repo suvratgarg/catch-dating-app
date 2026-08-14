@@ -142,6 +142,7 @@ export 'callables/start_event_success_first_hello_mission_callable_request.g.dar
 export 'callables/start_organizer_contact_conversation_callable_request.g.dart';
 export 'callables/start_organizer_conversation_callable_request.g.dart';
 export 'callables/submit_event_runtime_profile_callable_request.g.dart';
+export 'callables/submit_event_success_conversation_graph_callable_request.g.dart';
 export 'callables/submit_event_success_wingman_request_callable_request.g.dart';
 export 'callables/sync_organizer_provider_event_callable_request.g.dart';
 export 'callables/transfer_club_ownership_callable_request.g.dart';
