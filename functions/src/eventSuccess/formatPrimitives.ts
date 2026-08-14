@@ -50,6 +50,7 @@ export interface EventSuccessVariableResolution {
 }
 
 export interface ResolvedEventSuccessPrimitives {
+  interactionModel: EventFormatSnapshot["interactionModel"];
   assignmentAlgorithm: EventSuccessAssignmentAlgorithm;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
   matchingObjective: EventSuccessMatchingObjective;
@@ -176,6 +177,7 @@ export function eventSuccessPrimitivesFor(
   const durationShape = isEventSuccessDurationShape(raw?.durationShape) ?
     raw.durationShape : defaultDurationShapeFor(interactionModel);
   return {
+    interactionModel,
     assignmentAlgorithm,
     compatibilityPolicy,
     matchingObjective,

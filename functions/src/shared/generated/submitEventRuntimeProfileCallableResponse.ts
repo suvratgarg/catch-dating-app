@@ -8,11 +8,11 @@
 export interface SubmitEventRuntimeProfileCallableResponse {
   status: "needsInput" | "ready";
   /**
-   * @maxItems 5
+   * @maxItems 10
    */
   requiredFieldIds: string[];
   /**
-   * @maxItems 5
+   * @maxItems 10
    */
   completedFieldIds: string[];
 }

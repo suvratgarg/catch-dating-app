@@ -29,14 +29,14 @@ const schemaSubmitEventRuntimeProfileCallableResponseSchema = <String, Object?>{
       'items': <String, Object?>{
         'type': 'string',
       },
-      'maxItems': 5,
+      'maxItems': 10,
     },
     'completedFieldIds': <String, Object?>{
       'type': 'array',
       'items': <String, Object?>{
         'type': 'string',
       },
-      'maxItems': 5,
+      'maxItems': 10,
     },
   },
 };

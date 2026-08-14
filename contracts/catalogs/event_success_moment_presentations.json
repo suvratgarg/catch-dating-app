@@ -183,6 +183,64 @@
       "ambientBedWhenEventEndedId": null
     }
   ],
+  "socialMissionPromptSets": [
+    {
+      "interactionModel": "pacePods",
+      "prompts": [
+        {"promptId": "pacePods.light", "disclosureLevel": "light"},
+        {"promptId": "shared.personal", "disclosureLevel": "personal"},
+        {"promptId": "shared.reflective", "disclosureLevel": "reflective"}
+      ]
+    },
+    {
+      "interactionModel": "pairedRotations",
+      "prompts": [
+        {"promptId": "pairedRotations.light", "disclosureLevel": "light"},
+        {"promptId": "shared.personal", "disclosureLevel": "personal"},
+        {"promptId": "shared.reflective", "disclosureLevel": "reflective"}
+      ]
+    },
+    {
+      "interactionModel": "teamRotations",
+      "prompts": [
+        {"promptId": "teamRotations.light", "disclosureLevel": "light"},
+        {"promptId": "shared.personal", "disclosureLevel": "personal"},
+        {"promptId": "shared.reflective", "disclosureLevel": "reflective"}
+      ]
+    },
+    {
+      "interactionModel": "seatedTable",
+      "prompts": [
+        {"promptId": "seatedTable.light", "disclosureLevel": "light"},
+        {"promptId": "shared.personal", "disclosureLevel": "personal"},
+        {"promptId": "shared.reflective", "disclosureLevel": "reflective"}
+      ]
+    },
+    {
+      "interactionModel": "freeFormMixer",
+      "prompts": [
+        {"promptId": "freeFormMixer.light", "disclosureLevel": "light"},
+        {"promptId": "shared.personal", "disclosureLevel": "personal"},
+        {"promptId": "shared.reflective", "disclosureLevel": "reflective"}
+      ]
+    },
+    {
+      "interactionModel": "hostLedProgram",
+      "prompts": [
+        {"promptId": "hostLedProgram.light", "disclosureLevel": "light"},
+        {"promptId": "shared.personal", "disclosureLevel": "personal"},
+        {"promptId": "shared.reflective", "disclosureLevel": "reflective"}
+      ]
+    },
+    {
+      "interactionModel": "openFormat",
+      "prompts": [
+        {"promptId": "openFormat.light", "disclosureLevel": "light"},
+        {"promptId": "shared.personal", "disclosureLevel": "personal"},
+        {"promptId": "shared.reflective", "disclosureLevel": "reflective"}
+      ]
+    }
+  ],
   "parityFixture": {
     "eventId": "event-parity-2026",
     "momentKind": "liveReveal",

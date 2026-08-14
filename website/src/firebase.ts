@@ -17,11 +17,15 @@ export {
   deriveEventSuccessMomentSeed,
   eventSuccessMomentPresentationCatalog,
   eventSuccessMomentPresentationFor,
+  eventSuccessSocialMissionPromptFor,
   resolveEventSuccessCeremonyTimeline,
 } from "../../functions/src/shared/generated/eventSuccessMomentPresentations";
 export type {
   EventSuccessCeremonyTimeline,
   EventSuccessMomentPresentationContract,
+  EventSuccessDisclosureLevel,
+  EventSuccessInteractionModel,
+  EventSuccessSocialMissionPromptContract,
 } from "../../functions/src/shared/generated/eventSuccessMomentPresentations";
 import type {EventIdCallablePayload} from "../../functions/src/shared/generated/eventIdCallablePayload";
 import type {FetchEventSuccessWingmanCandidatesCallableResponse} from "../../functions/src/shared/generated/fetchEventSuccessWingmanCandidatesCallableResponse";
@@ -162,6 +166,7 @@ export interface EventRuntimeLiveState {
 
 export interface EventRuntimePlanState {
   attendeePrompt: string | null;
+  activeStepIndex: number;
   activeRevealRoundIndex: number;
   publishedRevealRoundIndex: number;
   publishedRotationRoundIndex: number;
@@ -391,6 +396,8 @@ export async function watchEventRuntimeLiveState(
       state.plan = data ? {
         attendeePrompt: typeof data.attendeePrompt === "string" ?
           data.attendeePrompt : null,
+        activeStepIndex: Number.isInteger(data.activeStepIndex) ?
+          Number(data.activeStepIndex) : 0,
         activeRevealRoundIndex: Number.isInteger(data.activeRevealRoundIndex) ?
           Number(data.activeRevealRoundIndex) : 0,
         publishedRevealRoundIndex: Number.isInteger(data.publishedRevealRoundIndex) ?

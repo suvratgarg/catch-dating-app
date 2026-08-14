@@ -12,6 +12,7 @@ import {
   EventDocument,
   EventRuntimeClaimRequestDocument,
   EventRuntimeParticipantDocument,
+  EventSuccessCompatibilityResponseDocument,
   EventSuccessPlanDocument,
   OrganizerEventSuccessLayoutDocument,
   OnboardingDraftDocument,
@@ -142,7 +143,7 @@ export async function getEventRuntimeBootstrapHandler(
     participant = await reconcileRuntimeParticipantRequirements({
       participant,
       participantRef,
-      requiredFieldIds: requiredRuntimeFieldIds(plan),
+      requiredFieldIds: requiredRuntimeFieldIds(resolved.event, plan),
       now: deps.timestamp(),
     });
   }
@@ -241,7 +242,7 @@ export async function claimEventRuntimeAccessHandler(
       planSnap,
       "EventSuccessPlanDocument"
     ) : null;
-    const requiredFieldIds = requiredRuntimeFieldIds(plan);
+    const requiredFieldIds = requiredRuntimeFieldIds(resolved.event, plan);
     const now = deps.timestamp();
     let attendee = attendeeSnap.exists ? requireDoc<EventAttendeeDocument>(
       attendeeSnap,
@@ -397,7 +398,8 @@ export async function submitEventRuntimeProfileHandler(
       planSnap,
       "EventSuccessPlanDocument"
     ) : null;
-    const requiredFieldIds = requiredRuntimeFieldIds(plan);
+    const requiredFieldIds = requiredRuntimeFieldIds(resolved.event, plan);
+    assertFormatProfilePayload(resolved.event, payload.fields);
     const profile = mergeRuntimeProfile(
       participant.runtimeProfile,
       payload.fields,
@@ -418,6 +420,28 @@ export async function submitEventRuntimeProfileHandler(
       );
     }
     const now = deps.timestamp();
+    if (profile.questionnaireAnswerIds.length > 0) {
+      const responseRef = db.collection("eventSuccessCompatibilityResponses")
+        .doc(eventRuntimeParticipantId(resolved.eventId, uid));
+      const response: EventSuccessCompatibilityResponseDocument = {
+        eventId: resolved.eventId,
+        clubId: participant.clubId,
+        organizerId: participant.organizerId ?? participant.clubId,
+        uid,
+        answerIds: profile.questionnaireAnswerIds,
+        createdAt: participant.claimedAt,
+        updatedAt: now,
+      };
+      tx.set(responseRef, response, {merge: true});
+    }
+    if (profile.teamName && participant.eventAttendeeId) {
+      tx.update(db.collection("eventAttendees").doc(
+        participant.eventAttendeeId
+      ), {
+        arrivalGroup: profile.teamName,
+        updatedAt: now,
+      });
+    }
     tx.update(participantRef, {
       requiredFieldIds,
       completedFieldIds,
@@ -693,10 +717,33 @@ export function eventRuntimeParticipantId(
 }
 
 export function requiredRuntimeFieldIds(
+  event: EventDocument,
   _plan?: EventSuccessPlanDocument | null
 ): RuntimeFieldId[] {
   void _plan;
-  return ["displayName"];
+  const preEventFieldId = preEventRuntimeFieldId(event);
+  return preEventFieldId ? ["displayName", preEventFieldId] : ["displayName"];
+}
+
+/** Selects the single pre-event payload from resolved format variables. */
+export function preEventRuntimeFieldId(
+  event: EventDocument
+): RuntimeFieldId | null {
+  switch (eventSuccessPrimitivesFor(event.eventFormat).interactionModel) {
+  case "pacePods":
+    return "paceBand";
+  case "pairedRotations":
+    return "skillBand";
+  case "seatedTable":
+    return "dietaryAndSeatingNotes";
+  case "freeFormMixer":
+    return "questionnaireAnswerIds";
+  case "teamRotations":
+    return "teamName";
+  case "hostLedProgram":
+  case "openFormat":
+    return null;
+  }
 }
 
 /** Sensitive preference fields offered by this plan, but never required. */
@@ -724,6 +771,15 @@ export function completedRuntimeFieldIds(
   }
   if (profile.relationshipGoal !== null) fields.push("relationshipGoal");
   if (profile.dateOfBirth !== null) fields.push("dateOfBirth");
+  if (profile.paceBand != null) fields.push("paceBand");
+  if (profile.skillBand != null) fields.push("skillBand");
+  if (profile.dietaryAndSeatingNotes != null) {
+    fields.push("dietaryAndSeatingNotes");
+  }
+  if ((profile.questionnaireAnswerIds?.length ?? 0) > 0) {
+    fields.push("questionnaireAnswerIds");
+  }
+  if (profile.teamName != null) fields.push("teamName");
   return fields;
 }
 
@@ -813,6 +869,7 @@ function publicRuntimeEventProjection(
   layout: GetEventRuntimeBootstrapCallableResponse["event"]["layout"]
 ): GetEventRuntimeBootstrapCallableResponse["event"] {
   const customLabel = event.eventFormat.customActivityLabel?.trim();
+  const primitives = eventSuccessPrimitivesFor(event.eventFormat);
   return {
     eventId,
     publicRuntimeId,
@@ -823,8 +880,9 @@ function publicRuntimeEventProjection(
     checkedInCount: event.checkedInCount ?? 0,
     runtimeTermsVersion: event.runtimeAccess!.termsVersion,
     moduleIds: plan?.selectedModuleIds ?? [],
+    interactionModel: primitives.interactionModel,
     layout,
-    requiredFieldIds: requiredRuntimeFieldIds(plan),
+    requiredFieldIds: requiredRuntimeFieldIds(event, plan),
     optionalFieldIds: optionalRuntimeFieldIds(event, plan),
     questionnaireConfig: plan?.questionnaireConfig ?? null,
   };
@@ -926,6 +984,11 @@ function emptyRuntimeProfile(displayName: string): RuntimeProfile {
     interestedInGenders: [],
     relationshipGoal: null,
     dateOfBirth: null,
+    paceBand: null,
+    skillBand: null,
+    dietaryAndSeatingNotes: null,
+    questionnaireAnswerIds: [],
+    teamName: null,
   };
 }
 
@@ -945,6 +1008,16 @@ function mergeRuntimeProfile(
       existing.dateOfBirth :
       fields.dateOfBirthMillis === null ? null :
         timestampFromMillis(fields.dateOfBirthMillis),
+    paceBand: fields.paceBand === undefined ?
+      existing.paceBand ?? null : fields.paceBand,
+    skillBand: fields.skillBand === undefined ?
+      existing.skillBand ?? null : fields.skillBand,
+    dietaryAndSeatingNotes: fields.dietaryAndSeatingNotes === undefined ?
+      existing.dietaryAndSeatingNotes ?? null : fields.dietaryAndSeatingNotes,
+    questionnaireAnswerIds: fields.questionnaireAnswerIds ??
+      existing.questionnaireAnswerIds ?? [],
+    teamName: fields.teamName === undefined ?
+      existing.teamName ?? null : fields.teamName,
   };
 }
 
@@ -1039,6 +1112,11 @@ function runtimeProfileResponse(
     interestedInGenders: profile.interestedInGenders,
     relationshipGoal: profile.relationshipGoal,
     dateOfBirthMillis: profile.dateOfBirth?.toMillis() ?? null,
+    paceBand: profile.paceBand ?? null,
+    skillBand: profile.skillBand ?? null,
+    dietaryAndSeatingNotes: profile.dietaryAndSeatingNotes ?? null,
+    questionnaireAnswerIds: profile.questionnaireAnswerIds ?? [],
+    teamName: profile.teamName ?? null,
   };
 }
 
@@ -1090,6 +1168,8 @@ function normalizeProfilePayload(data: unknown): unknown {
   if (isRecord(normalized.fields)) {
     normalized.fields = normalizeStringFields(normalized.fields, [
       "displayName",
+      "dietaryAndSeatingNotes",
+      "teamName",
     ]);
   }
   return normalized;
@@ -1112,13 +1192,34 @@ function normalizeStringFields(
   const normalized = {...data};
   for (const field of fields) {
     if (typeof normalized[field] === "string") {
-      normalized[field] = normalized[field].trim().replace(
-        field === "displayName" ? /\s+/g : /$^/,
-        field === "displayName" ? " " : ""
-      );
+      const trimmed = normalized[field].trim();
+      normalized[field] = field === "displayName" || field === "teamName" ?
+        trimmed.replace(/\s+/g, " ") : trimmed;
     }
   }
   return normalized;
+}
+
+function assertFormatProfilePayload(
+  event: EventDocument,
+  fields: SubmitEventRuntimeProfileCallablePayload["fields"]
+): void {
+  const selected = preEventRuntimeFieldId(event);
+  const candidates = [
+    "paceBand",
+    "skillBand",
+    "dietaryAndSeatingNotes",
+    "questionnaireAnswerIds",
+    "teamName",
+  ] as const;
+  for (const field of candidates) {
+    if (field !== selected && fields[field] !== undefined) {
+      throw new HttpsError(
+        "invalid-argument",
+        `The ${field} answer does not belong to this event format.`
+      );
+    }
+  }
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

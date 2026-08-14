@@ -4,6 +4,10 @@
 
 export type EventSuccessMomentKind =
   "none" | "preArrival" | "selfCheckIn" | "firstHelloCheckIn" | "compatibilityQuestionnaire" | "liveStepContext" | "socialPrompt" | "conversationCues" | "assignment" | "liveReveal" | "wingmanRequest" | "postEvent";
+export type EventSuccessInteractionModel =
+  "pacePods" | "pairedRotations" | "teamRotations" | "seatedTable" | "freeFormMixer" | "hostLedProgram" | "openFormat";
+export type EventSuccessDisclosureLevel =
+  "light" | "personal" | "reflective";
 export type EventSuccessAccentPalettePolicyId =
   "primary" | "secondary" | "secondaryUntilReveal";
 export type EventSuccessMomentClockReferenceId =
@@ -35,10 +39,22 @@ export interface EventSuccessMomentPresentationContract {
   readonly ambientBedWhenEventEndedId: EventSuccessAmbientBedId | null;
 }
 
+export interface EventSuccessSocialMissionPromptContract {
+  readonly promptId: string;
+  readonly disclosureLevel: EventSuccessDisclosureLevel;
+}
+
+export interface EventSuccessSocialMissionPromptSetContract {
+  readonly interactionModel: EventSuccessInteractionModel;
+  readonly prompts: readonly EventSuccessSocialMissionPromptContract[];
+}
+
 export interface EventSuccessMomentPresentationCatalog {
   readonly schemaVersion: 1;
   readonly kind: "eventSuccessMomentPresentations";
   readonly moments: readonly EventSuccessMomentPresentationContract[];
+  readonly socialMissionPromptSets:
+    readonly EventSuccessSocialMissionPromptSetContract[];
   readonly parityFixture: {
     readonly eventId: string;
     readonly momentKind: EventSuccessMomentKind;
@@ -291,6 +307,127 @@ export const eventSuccessMomentPresentationCatalog:
       "ambientBedWhenEventEndedId": null
     }
   ],
+  "socialMissionPromptSets": [
+    {
+      "interactionModel": "pacePods",
+      "prompts": [
+        {
+          "promptId": "pacePods.light",
+          "disclosureLevel": "light"
+        },
+        {
+          "promptId": "shared.personal",
+          "disclosureLevel": "personal"
+        },
+        {
+          "promptId": "shared.reflective",
+          "disclosureLevel": "reflective"
+        }
+      ]
+    },
+    {
+      "interactionModel": "pairedRotations",
+      "prompts": [
+        {
+          "promptId": "pairedRotations.light",
+          "disclosureLevel": "light"
+        },
+        {
+          "promptId": "shared.personal",
+          "disclosureLevel": "personal"
+        },
+        {
+          "promptId": "shared.reflective",
+          "disclosureLevel": "reflective"
+        }
+      ]
+    },
+    {
+      "interactionModel": "teamRotations",
+      "prompts": [
+        {
+          "promptId": "teamRotations.light",
+          "disclosureLevel": "light"
+        },
+        {
+          "promptId": "shared.personal",
+          "disclosureLevel": "personal"
+        },
+        {
+          "promptId": "shared.reflective",
+          "disclosureLevel": "reflective"
+        }
+      ]
+    },
+    {
+      "interactionModel": "seatedTable",
+      "prompts": [
+        {
+          "promptId": "seatedTable.light",
+          "disclosureLevel": "light"
+        },
+        {
+          "promptId": "shared.personal",
+          "disclosureLevel": "personal"
+        },
+        {
+          "promptId": "shared.reflective",
+          "disclosureLevel": "reflective"
+        }
+      ]
+    },
+    {
+      "interactionModel": "freeFormMixer",
+      "prompts": [
+        {
+          "promptId": "freeFormMixer.light",
+          "disclosureLevel": "light"
+        },
+        {
+          "promptId": "shared.personal",
+          "disclosureLevel": "personal"
+        },
+        {
+          "promptId": "shared.reflective",
+          "disclosureLevel": "reflective"
+        }
+      ]
+    },
+    {
+      "interactionModel": "hostLedProgram",
+      "prompts": [
+        {
+          "promptId": "hostLedProgram.light",
+          "disclosureLevel": "light"
+        },
+        {
+          "promptId": "shared.personal",
+          "disclosureLevel": "personal"
+        },
+        {
+          "promptId": "shared.reflective",
+          "disclosureLevel": "reflective"
+        }
+      ]
+    },
+    {
+      "interactionModel": "openFormat",
+      "prompts": [
+        {
+          "promptId": "openFormat.light",
+          "disclosureLevel": "light"
+        },
+        {
+          "promptId": "shared.personal",
+          "disclosureLevel": "personal"
+        },
+        {
+          "promptId": "shared.reflective",
+          "disclosureLevel": "reflective"
+        }
+      ]
+    }
+  ],
   "parityFixture": {
     "eventId": "event-parity-2026",
     "momentKind": "liveReveal",
@@ -323,6 +460,30 @@ export function eventSuccessMomentPresentationFor(
     throw new Error("Missing Event Success moment presentation: " + momentKind);
   }
   return presentation;
+}
+
+const eventSuccessSocialMissionPromptsByInteractionModel = new Map<
+  EventSuccessInteractionModel,
+  EventSuccessSocialMissionPromptSetContract
+>(eventSuccessMomentPresentationCatalog.socialMissionPromptSets.map((set) => [
+  set.interactionModel,
+  set,
+]));
+
+export function eventSuccessSocialMissionPromptFor(input: {
+  interactionModel: EventSuccessInteractionModel;
+  activeStepIndex: number;
+}): EventSuccessSocialMissionPromptContract {
+  const promptSet = eventSuccessSocialMissionPromptsByInteractionModel.get(
+    input.interactionModel
+  );
+  if (!promptSet || promptSet.prompts.length !== 3) {
+    throw new Error(
+      "Missing Event Success social missions: " + input.interactionModel
+    );
+  }
+  const disclosureIndex = Math.max(0, Math.min(2, input.activeStepIndex));
+  return promptSet.prompts[disclosureIndex];
 }
 
 export function resolveEventSuccessCeremonyTimeline(input: {

@@ -16,8 +16,17 @@ export const eventRuntimeCopy = {
   confirmCode: "Open event mode",
   confirmingCode: "Checking code...",
   profileKicker: "Set up event mode",
-  profileTitle: "One detail for tonight",
-  profileBody: "Your display name opens event mode. Preference answers are optional, stay scoped to this event, and can be skipped without losing any live tools.",
+  profileTitle: "A couple of details for tonight",
+  profileBody: "Your name and one format-specific answer prepare event mode. Preference answers remain optional and can be skipped without losing live tools.",
+  preEventTitle: "Help the room get ready",
+  preEventBody: "One event-only answer helps the Host prepare tonight before anyone reaches the door.",
+  paceBandLabel: "My comfortable pace",
+  skillBandLabel: "My current playing level",
+  dietaryAndSeatingLabel: "Dietary or seating needs",
+  dietaryAndSeatingPlaceholder: "For example: vegetarian, allergy, step-free seat, or seat me with my arrival group",
+  teamNameLabel: "Team name or arrival group",
+  teamNamePlaceholder: "For example: The Late Entries",
+  preEventSensitiveConsent: "Use this event-only answer to prepare groups, introductions, or Host logistics for tonight.",
   displayNameLabel: "First name or event name",
   genderLabel: "I describe myself as",
   interestedLabel: "I would like to meet",
@@ -103,10 +112,48 @@ export const eventRuntimeCopy = {
   missingName: "Tell us what the host should call you.",
   missingSensitiveConsent: "Confirm that Catch may use these event-only answers before continuing.",
   missingInterests: "Choose at least one kind of person you would like to meet.",
+  missingPreEventAnswer: "Complete tonight's event question before continuing.",
   genericError: "Something did not go through. Try again or ask the host for help.",
   eventUnavailable: "This event mode link is no longer accepting check-ins.",
   verificationExpired: "That code expired. Request a new one.",
   tooManyRequests: "Too many attempts. Wait a few minutes before trying again.",
+} as const;
+
+export const eventRuntimePaceBandOptions = [
+  {id: "competitive", label: "Competitive · around 5:00/km or faster"},
+  {id: "fast", label: "Fast · around 5:00–6:00/km"},
+  {id: "moderate", label: "Moderate · around 6:00–7:00/km"},
+  {id: "easy", label: "Easy · 7:00/km or gentler"},
+] as const;
+
+export const eventRuntimeSkillBandOptions = [
+  {id: "beginner", label: "Beginner"},
+  {id: "intermediate", label: "Intermediate"},
+  {id: "advanced", label: "Advanced"},
+] as const;
+
+export const eventRuntimeSocialMissionCopy = {
+  titles: {
+    light: "Easy start",
+    personal: "A little more personal",
+    reflective: "One level deeper",
+  },
+  labels: {
+    light: "Light disclosure",
+    personal: "Personal disclosure",
+    reflective: "Reflective disclosure",
+  },
+  prompts: {
+    "pacePods.light": "Ask someone what route, cafe, or park they would do again.",
+    "pairedRotations.light": "Ask your next partner what shot they are trying to improve.",
+    "teamRotations.light": "Ask which round they wanted more questions from.",
+    "seatedTable.light": "Ask what dish they would order again.",
+    "freeFormMixer.light": "Ask what answer from tonight surprised them.",
+    "hostLedProgram.light": "Ask what made them say yes to this event.",
+    "openFormat.light": "Ask what made them say yes to this event.",
+    "shared.personal": "Take turns sharing something you changed your mind about recently and what shifted it.",
+    "shared.reflective": "Take turns answering: what do you hope the people close to you understand about you?",
+  },
 } as const;
 
 export const eventRuntimeQuestionnairePacks = {

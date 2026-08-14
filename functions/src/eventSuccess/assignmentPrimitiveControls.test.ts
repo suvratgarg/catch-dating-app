@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   activityAttributesForProfile,
+  activityAttributesForRuntimeProfile,
   assignmentConstraintsForStructureConfig,
   paceBandForRange,
   rotationPolicyForStructureConfig,
@@ -82,6 +83,18 @@ test("extracts pace bands only from real run preference signal", () => {
     {paceBand: "easy"}
   );
 });
+
+test("preserves runtime pace and skill bands for assignment constraints",
+  () => {
+    assert.deepEqual(activityAttributesForRuntimeProfile({
+      paceBand: "moderate",
+      skillBand: "intermediate",
+    }), {paceBand: "moderate", skillBand: "intermediate"});
+    assert.deepEqual(activityAttributesForRuntimeProfile({
+      paceBand: null,
+      skillBand: null,
+    }), {});
+  });
 
 test("buckets pace ranges for assignment clustering", () => {
   assert.equal(paceBandForRange(280, 300), "competitive");

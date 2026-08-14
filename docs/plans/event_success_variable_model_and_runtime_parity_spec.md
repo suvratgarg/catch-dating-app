@@ -1,6 +1,6 @@
 ---
 doc_id: event_success_variable_model_and_runtime_parity_spec
-version: 1.10.0
+version: 1.11.0
 updated: 2026-08-14
 owner: event_success
 status: active
@@ -737,7 +737,7 @@ docs are updated. Update this table in the same commit as the tranche.
 - [x] T12 Presentation contract and parity foundation
 - [x] T13 Marquee visual parity
 - [x] T14 `durationShape` and format-first setup
-- [ ] T15 Pre-event moment and escalating disclosure
+- [x] T15 Pre-event moment and escalating disclosure
 
 **T1 — `matchingObjective` and the `coverage` default.** `effort: high`
 Owner: `functions/src/eventSuccess/compatibilityPolicy.ts`, `assignmentOptimizer.ts`, `formatPrimitives.ts`, `lib/event_success/domain/event_success_activity_profile/`.
@@ -842,6 +842,18 @@ customization remains reachable and lossless.
 **T15 — Pre-event moment and escalating disclosure.** `effort: standard`
 Owner: `website/src/features/eventRuntime/`, `socialMissions` prompt data.
 D.6 and D.7.
+
+Implemented: the runtime profile now binds exactly one required pre-event field
+to the resolved `interactionModel`: pace band, skill band, dietary/seating
+notes, questionnaire answers, or quiz team/arrival group. The existing
+server-owned `needsInput`/`ready` transition remains the non-sensitive source
+for readiness counts. Pace and skill answers enter assignment attributes,
+mixer answers enter private compatibility responses, and quiz team names use
+the existing arrival-group constraint; dinner data does not make the still-
+unsupported `tableSeating` algorithm appear supported. `socialMissions` prompt
+ids and disclosure levels are authored in the generated cross-runtime catalog.
+Both runtimes resolve step 0 to light, step 1 to personal, and later steps to
+reflective disclosure without sampling or branching on `ActivityKind`.
 
 ---
 

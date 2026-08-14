@@ -93,6 +93,57 @@ const schemaSubmitEventRuntimeProfileCallablePayloadSchema = <String, Object?>{
             'null',
           ],
         },
+        'paceBand': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'enum': <Object?>[
+            'competitive',
+            'fast',
+            'moderate',
+            'easy',
+            null,
+          ],
+        },
+        'skillBand': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'enum': <Object?>[
+            'beginner',
+            'intermediate',
+            'advanced',
+            null,
+          ],
+        },
+        'dietaryAndSeatingNotes': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'minLength': 1,
+          'maxLength': 300,
+        },
+        'questionnaireAnswerIds': <String, Object?>{
+          'type': 'array',
+          'uniqueItems': true,
+          'maxItems': 8,
+          'items': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 120,
+          },
+        },
+        'teamName': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'minLength': 1,
+          'maxLength': 80,
+        },
       },
     },
   },

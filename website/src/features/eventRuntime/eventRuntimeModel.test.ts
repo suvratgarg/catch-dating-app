@@ -9,16 +9,19 @@ import {
 } from "../../firebase";
 import {
   eventRuntimeStageForParticipant,
+  eventRuntimePreEventFieldId,
   eventVenueSessionTokenFromFragment,
   normalizeEventRuntimeLayoutUnits,
   normalizeRuntimePhone,
   resolveEventRuntimeCeremony,
   resolveEventRuntimeQuestionnaire,
+  resolveEventRuntimeSocialMission,
   shouldRenderEventRuntimeRoomMap,
   visibleEventRuntimeStandingRound,
   type EventRuntimeAssignment,
   type EventRuntimeLayout,
   type EventRuntimeParticipant,
+  type EventRuntimeBootstrap,
 } from "./eventRuntimeModel";
 
 const layoutCatalog = JSON.parse(fs.readFileSync(path.resolve(
@@ -69,6 +72,7 @@ describe("eventRuntimeModel", () => {
     const fixture = momentPresentationCatalog.parityFixture;
     const ceremony = resolveEventRuntimeCeremony(fixture.eventId, {
       attendeePrompt: null,
+      activeStepIndex: 1,
       activeRevealRoundIndex: fixture.activeRevealRoundIndex,
       publishedRevealRoundIndex: -1,
       publishedRotationRoundIndex: -1,
@@ -96,6 +100,7 @@ describe("eventRuntimeModel", () => {
   it("keeps the reveal countdown configurable with a contract fallback", () => {
     const configured = resolveEventRuntimeCeremony("event-config", {
       attendeePrompt: null,
+      activeStepIndex: 1,
       activeRevealRoundIndex: 0,
       publishedRevealRoundIndex: -1,
       publishedRotationRoundIndex: -1,
@@ -106,6 +111,7 @@ describe("eventRuntimeModel", () => {
     });
     const fallback = resolveEventRuntimeCeremony("event-config", {
       attendeePrompt: null,
+      activeStepIndex: 1,
       activeRevealRoundIndex: 0,
       publishedRevealRoundIndex: -1,
       publishedRotationRoundIndex: -1,
@@ -127,6 +133,28 @@ describe("eventRuntimeModel", () => {
       templateId: "unknown-template",
     });
     expect(questionnaire.questions[0]?.id).toBe("event_energy");
+  });
+
+  it("accepts exactly one server-selected pre-event payload", () => {
+    const event = {
+      requiredFieldIds: ["displayName", "paceBand"],
+    } as EventRuntimeBootstrap["event"];
+    expect(eventRuntimePreEventFieldId(event)).toBe("paceBand");
+    expect(() => eventRuntimePreEventFieldId({
+      ...event,
+      requiredFieldIds: ["displayName", "paceBand", "skillBand"],
+    })).toThrow(/more than one pre-event payload/u);
+  });
+
+  it("walks every social mission from light to reflective disclosure", () => {
+    for (const promptSet of momentPresentationCatalog.socialMissionPromptSets) {
+      expect([0, 1, 2, 3].map((activeStepIndex) =>
+        resolveEventRuntimeSocialMission(
+          promptSet.interactionModel,
+          activeStepIndex
+        ).disclosureLevel
+      )).toEqual(["light", "personal", "reflective", "reflective"]);
+    }
   });
 
   it("routes pending access to Host approval", () => {

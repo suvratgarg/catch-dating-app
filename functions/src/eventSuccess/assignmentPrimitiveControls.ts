@@ -97,6 +97,17 @@ export function activityAttributesForProfile(
   return attributes;
 }
 
+/** Preserves event-scoped pace and skill answers for assignment constraints. */
+export function activityAttributesForRuntimeProfile(profile: {
+  paceBand: "competitive" | "fast" | "moderate" | "easy" | null;
+  skillBand: "beginner" | "intermediate" | "advanced" | null;
+}): Record<string, string | number | boolean | null> {
+  return {
+    ...(profile.paceBand ? {paceBand: profile.paceBand} : {}),
+    ...(profile.skillBand ? {skillBand: profile.skillBand} : {}),
+  };
+}
+
 /**
  * Buckets a running pace range into optimizer-friendly pace bands.
  * @param {number} minSecsPerKm Lower pace bound in seconds per kilometer.

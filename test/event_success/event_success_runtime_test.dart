@@ -472,6 +472,35 @@ void main() {
       );
     });
 
+    test('walks every format from light to reflective disclosure', () {
+      for (final interactionModel in EventInteractionModel.values) {
+        final event = buildEvent(
+          eventFormat: EventFormatSnapshot.custom(
+            label: interactionModel.label,
+            interactionModel: interactionModel,
+          ),
+        );
+        final plan = EventSuccessPlan.defaultForEvent(
+          event,
+          now: event.startTime,
+        );
+        final levels = <EventSuccessDisclosureLevel?>[
+          for (final activeStepIndex in [0, 1, 2, 3])
+            EventSuccessConversationCueLibrary.liveCuesFor(
+              event: event,
+              plan: plan.copyWith(activeStepIndex: activeStepIndex),
+              l10n: _l10n,
+            ).last.disclosureLevel,
+        ];
+        expect(levels, [
+          EventSuccessDisclosureLevel.light,
+          EventSuccessDisclosureLevel.personal,
+          EventSuccessDisclosureLevel.reflective,
+          EventSuccessDisclosureLevel.reflective,
+        ]);
+      }
+    });
+
     test('always exposes the platform-owned post-event surface', () {
       final event = buildEvent();
       final basePlan = EventSuccessPlan.defaultForEvent(

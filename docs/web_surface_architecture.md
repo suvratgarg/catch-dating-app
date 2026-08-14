@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.16.0
+version: 0.17.0
 updated: 2026-08-14
 owner: web_platform
 status: active
@@ -1087,8 +1087,11 @@ The React marketing runtime owns two non-SEO transactional routes:
 
 - `/join/:publicRuntimeId` resolves only a bounded event projection before
   Firebase phone OTP. After authentication it claims or requests one roster
-  identity, collects display name plus only the optional fields required by the
-  configured preference-aware behavior. A static route can never check an
+  identity, collects display name plus exactly one required pre-event payload
+  selected by the effective interaction model (pace, skill, dietary/seating,
+  questionnaire, or team/arrival group), plus only the optional fields required
+  by configured preference-aware behavior. The server recomputes readiness;
+  the browser cannot choose the required payload. A static route can never check an
   attendee in. The Host's live QR adds a short-lived signed venue session in
   the URL fragment; the route shell consumes and clears it before the controller
   redeems attendance. Without that fragment, a ready attendee sees the venue
@@ -1098,6 +1101,11 @@ The React marketing runtime owns two non-SEO transactional routes:
   creating a Consumer profile or booking edge. The conversation roster is
   fetched through an attendee-authorized callable; Hosts receive only numeric
   scorecard counts and exclusion, never who named whom.
+
+The same route renders `social_missions` from the generated Event Success
+prompt catalog. Prompt ids carry `light`, `personal`, or `reflective`
+disclosure and advance monotonically with `activeStepIndex`; web copy adapts
+the shared semantic id, while the sequence remains identical to Flutter.
 - `/invite/:inviteToken` resolves an opaque bearer token server-side, records a
   short-lived bot-classified touch, preserves the token through registration or
   runtime claim, and redirects to Catch RSVP/runtime or an allowlisted external
