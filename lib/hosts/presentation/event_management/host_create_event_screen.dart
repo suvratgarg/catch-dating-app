@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_wizard_state.dart';
@@ -19,13 +20,20 @@ export 'package:catch_dating_app/hosts/presentation/event_management/host_create
 class HostCreateEventRouteArguments {
   const HostCreateEventRouteArguments({
     required this.initialClub,
+    this.initialDraft,
     this.initialPrefill,
     this.externalBookingMode = false,
-  });
+    this.promptForDrafts = true,
+  }) : assert(
+         initialDraft == null || initialPrefill == null,
+         'A create route cannot restore a draft and apply a repeat prefill.',
+       );
 
   final Club initialClub;
+  final EventDraft? initialDraft;
   final CreateEventPrefill? initialPrefill;
   final bool externalBookingMode;
+  final bool promptForDrafts;
 }
 
 class HostCreateEventRouteScreen extends ConsumerWidget {
@@ -33,18 +41,26 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
     super.key,
     required this.clubId,
     this.initialClub,
+    this.initialDraft,
     this.initialPrefill,
     this.externalBookingMode = false,
-  });
+    this.promptForDrafts = true,
+  }) : assert(
+         initialDraft == null || initialPrefill == null,
+         'A create route cannot restore a draft and apply a repeat prefill.',
+       );
 
   final String clubId;
   final Club? initialClub;
+  final EventDraft? initialDraft;
   final CreateEventPrefill? initialPrefill;
   final bool externalBookingMode;
+  final bool promptForDrafts;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final initialClub = this.initialClub;
+    final initialDraft = this.initialDraft;
     final initialPrefill = this.initialPrefill;
     if (initialClub != null && initialClub.id != clubId) {
       return CatchErrorScaffold(
@@ -63,6 +79,15 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
         secondaryAction: const CatchErrorBackAction(),
       );
     }
+    if (initialDraft != null && initialDraft.clubId != clubId) {
+      return CatchErrorScaffold(
+        title:
+            context.l10n.hostsHostCreateEventScreenTitleEventSetupUnavailable,
+        message:
+            context.l10n.hostsHostCreateEventScreenMessageThatOrganizerDoesNot,
+        secondaryAction: const CatchErrorBackAction(),
+      );
+    }
     final routeState = HostCreateEventRouteState.resolve(
       initialClub: initialClub,
       fetchedClub: initialClub == null
@@ -73,8 +98,10 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
     return HostCreateEventRouteStateView(
       clubId: clubId,
       state: routeState,
+      initialDraft: initialDraft,
       initialPrefill: initialPrefill,
       externalBookingMode: externalBookingMode,
+      promptForDrafts: promptForDrafts,
     );
   }
 }
@@ -84,14 +111,18 @@ class HostCreateEventRouteStateView extends ConsumerWidget {
     super.key,
     required this.clubId,
     required this.state,
+    this.initialDraft,
     this.initialPrefill,
     this.externalBookingMode = false,
+    this.promptForDrafts = true,
   });
 
   final String clubId;
   final HostCreateEventRouteState state;
+  final EventDraft? initialDraft;
   final CreateEventPrefill? initialPrefill;
   final bool externalBookingMode;
+  final bool promptForDrafts;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -122,8 +153,10 @@ class HostCreateEventRouteStateView extends ConsumerWidget {
       ),
       HostCreateEventRouteStatus.ready => CreateEventScreen(
         club: state.club!,
+        initialDraft: initialDraft,
         initialPrefill: initialPrefill,
         externalBookingMode: externalBookingMode,
+        promptForDraftsOnStart: promptForDrafts,
         initialStep: initialPrefill == null
             ? CreateEventWizardStep.eventDetails.index
             : CreateEventWizardStep.schedule.index,

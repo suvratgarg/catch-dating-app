@@ -250,6 +250,7 @@ HostAnalyticsEventRow _hostAnalyticsEventRow({required String eventId}) =>
 List _hostClubOverrides({
   List<Club> owned = const [],
   List<Club> hosted = const [],
+  Map<String, List<EventDraft>> draftsByOrganizer = const {},
 }) {
   final organizerIds = {
     ...owned.map((club) => club.id),
@@ -263,6 +264,12 @@ List _hostClubOverrides({
     watchClubsHostedByProvider(
       _hostUid,
     ).overrideWithValue(AsyncData<List<Club>>(hosted)),
+    for (final organizerId in organizerIds)
+      clubEventDraftsProvider(clubId: organizerId).overrideWithValue(
+        AsyncData<List<EventDraft>>(
+          draftsByOrganizer[organizerId] ?? const <EventDraft>[],
+        ),
+      ),
     for (final organizerId in organizerIds)
       hostCrmSummaryProvider(
         organizerId,

@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_draft.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_home_view_model.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
@@ -11,6 +13,68 @@ import '../clubs/clubs_test_helpers.dart' show buildEvent;
 final _l10n = AppLocalizationsEn();
 
 void main() {
+  test('Host event entry resolves organizer capabilities once', () {
+    final draft = EventDraft(
+      id: 'draft-1',
+      clubId: 'club-1',
+      savedAt: DateTime(2026, 6, 15, 10),
+      customActivityLabel: 'Quiz night',
+    );
+    final past = buildEvent(
+      id: 'past',
+      startTime: DateTime(2026, 6, 14, 9),
+      endTime: DateTime(2026, 6, 14, 10),
+    );
+
+    final firstEvent = HostEventEntryState.resolve(organizerId: 'club-1');
+    expect(firstEvent.continueIntents, isEmpty);
+    expect(firstEvent.startIntents, [
+      HostEventEntryIntent.createWithCatchBookings,
+      HostEventEntryIntent.createFromGuestList,
+    ]);
+
+    final returning = HostEventEntryState.resolve(
+      organizerId: 'club-1',
+      drafts: [draft],
+      repeatSource: past,
+    );
+    expect(returning.continueIntents, [
+      HostEventEntryIntent.resumeDraft,
+      HostEventEntryIntent.repeatLastEvent,
+    ]);
+    expect(returning.mostRecentDraft, draft);
+    expect(returning.repeatSource, past);
+
+    final noOrganizer = HostEventEntryState.resolve(
+      organizerId: null,
+      drafts: [draft],
+      repeatSource: past,
+    );
+    expect(noOrganizer.hasOrganizer, isFalse);
+    expect(noOrganizer.intents, isEmpty);
+  });
+
+  test(
+    'Host event entry ignores drafts and repeats from another organizer',
+    () {
+      final state = HostEventEntryState.resolve(
+        organizerId: 'club-1',
+        drafts: [
+          EventDraft(
+            id: 'other-draft',
+            clubId: 'club-2',
+            savedAt: DateTime(2026, 6, 15),
+          ),
+        ],
+        repeatSource: buildEvent(id: 'other-event', clubId: 'club-2'),
+      );
+
+      expect(state.continueIntents, isEmpty);
+      expect(state.drafts, isEmpty);
+      expect(state.repeatSource, isNull);
+    },
+  );
+
   test('Host Events groups upcoming rows and derives truthful metadata', () {
     final now = DateTime(2026, 6, 15, 12);
     final today = buildEvent(
