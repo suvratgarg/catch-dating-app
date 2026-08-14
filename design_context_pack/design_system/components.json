@@ -12988,7 +12988,7 @@
       "name": "CatchBottomAction",
       "status": "active",
       "kind": "composite",
-      "summary": "Canonical platform-adaptive primary bottom action: inset floating chrome on Cupertino platforms and an anchored full-width action bar on Material platforms.",
+      "summary": "Canonical primary bottom-action family: platform-adaptive single-CTA chrome plus a scroll-aware fade overlay for dockless multi-action forms.",
       "design": {
         "figma": {
           "status": "unmapped",
@@ -13081,6 +13081,7 @@
           "leading-content",
           "catch-line",
           "footnote",
+          "scroll-overlay",
           "loading",
           "disabled"
         ],
@@ -13098,7 +13099,11 @@
           "space.s2",
           "space.s3",
           "space.s4",
+          "space.s12",
+          "space.s16",
+          "space.micro18",
           "radius.lg",
+          "theme.light.color.bg",
           "theme.light.color.ink2",
           "theme.light.color.ink3",
           "theme.light.color.line",
@@ -13108,11 +13113,33 @@
           "CatchButton",
           "CatchElevation.raised",
           "CatchIcons.sparkle",
+          "CatchLayout.bottomActionOverlayScrimHeight",
+          "CatchOpacity.bottomActionScrim",
           "CatchSpacing.screenPx",
           "CatchTextStyles.monoLabel"
         ],
         "goldens": [],
         "members": [
+          {
+            "id": "catch.bottom_action.overlay",
+            "symbol": "CatchBottomActionOverlay",
+            "file": "lib/core/widgets/catch_bottom_action.dart",
+            "summary": "Dockless pinned-action layout that lets scrolling content pass beneath a soft background fade while paired form insets keep final content reachable.",
+            "states": [
+              "scrolling",
+              "long-content",
+              "safe-area",
+              "light",
+              "dark"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.bottom_action",
+              "parentConceptId": "catch.bottom_action",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.bottom_action"
+            }
+          },
           {
             "id": "catch.bottom_action.content",
             "symbol": "CatchBottomActionContent",
@@ -13157,6 +13184,7 @@
         ],
         "notes": [
           "Callers provide one CTA contract; CatchBottomAction selects floating Cupertino or anchored Material chrome from the active platform.",
+          "Use CatchBottomActionOverlay for multi-action form footers that must stay pinned without an opaque dock; keep the scrolling body visible beneath its fade.",
           "Do not place primary screen CTAs in CatchBottomDock or branch on platform at feature call sites."
         ]
       },

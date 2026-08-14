@@ -30,6 +30,7 @@ import 'package:catch_dating_app/events/shared/event_agenda_list.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/events/shared/map_pin_tile.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/when_step.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/locations/shared/catch_map_preview.dart';
 import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
@@ -667,21 +668,17 @@ void main() {
           body: ListView(
             children: [
               const CatchStepProgress(currentStep: 1, totalSteps: 4),
-              CatchBottomDock(
-                child: CatchButton(
-                  label: 'Next',
-                  onPressed: () => footerTapped = true,
-                  fullWidth: true,
-                  icon: Icon(CatchIcons.arrowForwardRounded),
-                ),
+              CatchButton(
+                label: 'Next',
+                onPressed: () => footerTapped = true,
+                fullWidth: true,
+                icon: Icon(CatchIcons.arrowForwardRounded),
               ),
-              const CatchBottomDock(
-                child: CatchButton(
-                  label: 'Schedule event',
-                  onPressed: _noop,
-                  isLoading: true,
-                  fullWidth: true,
-                ),
+              const CatchButton(
+                label: 'Schedule event',
+                onPressed: _noop,
+                isLoading: true,
+                fullWidth: true,
               ),
               SizedBox(
                 height: 240,
@@ -724,7 +721,7 @@ void main() {
     });
 
     testWidgets(
-      'stepper footer blends into page and keeps actions inside width',
+      'stepper footer fades scrolling content without restoring dock chrome',
       (tester) async {
         tester.view.physicalSize = const Size(320, 640);
         tester.view.devicePixelRatio = 1;
@@ -733,27 +730,20 @@ void main() {
 
         await pumpEventsTestApp(
           tester,
-          const Scaffold(
-            body: SizedBox.expand(),
-            bottomNavigationBar: CatchBottomDock(
-              child: Row(
-                children: [
-                  CatchButton(
-                    label: 'Save Draft',
-                    onPressed: _noop,
-                    variant: CatchButtonVariant.ghost,
-                    size: CatchButtonSize.lg,
-                  ),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: CatchButton(
-                      label: 'Schedule event',
-                      onPressed: _noop,
-                      fullWidth: true,
-                    ),
-                  ),
+          Scaffold(
+            body: StepperFooter(
+              body: ListView(
+                padding: CatchInsets.formStepBodyWithBottomActions,
+                children: const [
+                  SizedBox(height: 560),
+                  Text('Last form field'),
                 ],
               ),
+              isLastStep: true,
+              isLoading: false,
+              onPrimary: _noop,
+              onSaveDraft: _noop,
+              lastStepLabel: 'Schedule event',
             ),
           ),
         );
@@ -761,14 +751,41 @@ void main() {
         expect(tester.takeException(), isNull);
         expect(find.text('Save Draft'), findsOneWidget);
         expect(find.text('Schedule event'), findsOneWidget);
-        expect(
-          find.descendant(
-            of: find.byType(CatchBottomDock),
-            matching: find.byType(Divider),
-          ),
-          findsNothing,
+        expect(find.byType(CatchBottomDock), findsNothing);
+        expect(find.byType(Divider), findsNothing);
+        expect(find.byType(BackdropFilter), findsOneWidget);
+
+        final scrim = tester.widget<DecoratedBox>(
+          find.byKey(const ValueKey('catch_bottom_action_overlay.scrim')),
         );
-        expect(find.byType(CatchBottomDock), findsOneWidget);
+        final gradient = (scrim.decoration as BoxDecoration).gradient;
+        expect(gradient, isA<LinearGradient>());
+        final colors = (gradient! as LinearGradient).colors;
+        expect(colors.first.a, CatchOpacity.none);
+        expect(colors.last.a, CatchOpacity.visible);
+
+        final bodyRect = tester.getRect(
+          find.byKey(const ValueKey('catch_bottom_action_overlay.body')),
+        );
+        final scrimRect = tester.getRect(
+          find.byKey(const ValueKey('catch_bottom_action_overlay.scrim')),
+        );
+        final actionsRect = tester.getRect(
+          find.byKey(const ValueKey('catch_bottom_action_overlay.actions')),
+        );
+        expect(scrimRect.top, lessThan(bodyRect.bottom));
+        expect(actionsRect.top, lessThan(bodyRect.bottom));
+        expect(actionsRect.bottom, lessThanOrEqualTo(bodyRect.bottom));
+        expect(actionsRect.top, greaterThan(scrimRect.top));
+        expect(actionsRect.left, greaterThanOrEqualTo(CatchSpacing.screenPx));
+        expect(
+          actionsRect.right,
+          lessThanOrEqualTo(320 - CatchSpacing.screenPx),
+        );
+
+        await tester.drag(find.byType(ListView), const Offset(0, -160));
+        await tester.pump();
+        expect(find.text('Last form field').hitTestable(), findsOneWidget);
       },
     );
 

@@ -41,7 +41,7 @@ class WhenStep extends StatelessWidget {
       key: formKey,
       autovalidateMode: autovalidateMode,
       child: ListView(
-        padding: CatchInsets.formStepBody,
+        padding: CatchInsets.formStepBodyWithBottomActions,
         children: [
           CatchSection.fieldRows(
             first: true,

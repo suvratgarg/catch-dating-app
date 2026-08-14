@@ -61,7 +61,7 @@ class EventSuccessStep extends ConsumerWidget {
         EventSuccessUnitKind.wholeGroup;
 
     return ListView(
-      padding: CatchInsets.formStepBodyRelaxed,
+      padding: CatchInsets.formStepBodyRelaxedWithBottomActions,
       children: [
         CatchSectionList(
           emptyStateOmitted: true,

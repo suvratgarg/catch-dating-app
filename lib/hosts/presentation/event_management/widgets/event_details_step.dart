@@ -159,7 +159,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
       key: widget.formKey,
       autovalidateMode: widget.autovalidateMode,
       child: ListView(
-        padding: CatchInsets.formStepBody,
+        padding: CatchInsets.formStepBodyWithBottomActions,
         children: [
           CatchSectionList(
             emptyStateOmitted: true,

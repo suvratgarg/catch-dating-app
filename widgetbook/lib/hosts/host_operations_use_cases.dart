@@ -4343,6 +4343,34 @@ Widget createEventStepHeaderCatalogStates(BuildContext context) {
   path: '[P1 product surfaces]/Host shared',
 )
 Widget stepperFooterCatalogStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+  Widget scrollingBody(String title) => ListView(
+    padding: CatchInsets.formStepBodyWithBottomActions,
+    children: [
+      Text(title, style: CatchTextStyles.titleL(context)),
+      gapH24,
+      for (var index = 0; index < 5; index++) ...[
+        DecoratedBox(
+          decoration: BoxDecoration(
+            color: t.surface,
+            border: Border.all(color: t.line),
+            borderRadius: BorderRadius.circular(CatchRadius.md),
+          ),
+          child: SizedBox(
+            height: 88,
+            child: Center(
+              child: Text(
+                'Scrolling form content ${index + 1}',
+                style: CatchTextStyles.supporting(context),
+              ),
+            ),
+          ),
+        ),
+        gapH12,
+      ],
+    ],
+  );
+
   return _HostCatalog(
     title: 'StepperFooter',
     contractId: 'component.host.stepper_footer',
@@ -4350,33 +4378,25 @@ Widget stepperFooterCatalogStates(BuildContext context) {
       _StateCard(
         label: 'save and next',
         child: _DeviceFrame(
-          child: Column(
-            children: [
-              const Expanded(child: SizedBox.shrink()),
-              StepperFooter(
-                isLastStep: false,
-                isLoading: false,
-                onPrimary: () {},
-                onSaveDraft: () {},
-              ),
-            ],
+          child: StepperFooter(
+            body: scrollingBody('Event basics'),
+            isLastStep: false,
+            isLoading: false,
+            onPrimary: () {},
+            onSaveDraft: () {},
           ),
         ),
       ),
       _StateCard(
         label: 'last step loading',
         child: _DeviceFrame(
-          child: Column(
-            children: [
-              const Expanded(child: SizedBox.shrink()),
-              StepperFooter(
-                isLastStep: true,
-                isLoading: true,
-                onPrimary: () {},
-                onSaveDraft: null,
-                lastStepLabel: 'Schedule event',
-              ),
-            ],
+          child: StepperFooter(
+            body: scrollingBody('Event success'),
+            isLastStep: true,
+            isLoading: true,
+            onPrimary: () {},
+            onSaveDraft: null,
+            lastStepLabel: 'Schedule event',
           ),
         ),
       ),

@@ -30,6 +30,14 @@ void main() {
         CatchSpacing.s8,
       ),
     );
+    expect(
+      CatchInsets.formStepBodyWithBottomActions.bottom,
+      CatchSpacing.s16 + CatchSpacing.s8,
+    );
+    expect(
+      CatchInsets.formStepBodyRelaxedWithBottomActions.bottom,
+      CatchSpacing.s16 + CatchSpacing.s12,
+    );
     expect(CatchInsets.cardContent, const EdgeInsets.all(CatchSpacing.s4));
     expect(CatchInsets.cardContentDense, const EdgeInsets.all(CatchSpacing.s3));
     expect(CatchInsets.content, const EdgeInsets.all(CatchSpacing.s4));

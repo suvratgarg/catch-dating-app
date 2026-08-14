@@ -575,6 +575,25 @@ abstract final class CatchInsets {
   /// Form-step padding with more bottom space for final/action-heavy steps.
   static const EdgeInsets formStepBodyRelaxed = pageBodyRelaxed;
 
+  /// Scroll padding for form steps rendered beneath dockless pinned actions.
+  /// The final field can clear the 56-point control row and its breathing room
+  /// while ordinary content remains visible behind the action scrim.
+  static const EdgeInsets formStepBodyWithBottomActions = EdgeInsets.fromLTRB(
+    CatchSpacing.screenPx,
+    CatchSpacing.screenPt,
+    CatchSpacing.screenPx,
+    CatchSpacing.s16 + CatchSpacing.s8,
+  );
+
+  /// Relaxed scroll-end variant for final/action-heavy overlaid form steps.
+  static const EdgeInsets formStepBodyRelaxedWithBottomActions =
+      EdgeInsets.fromLTRB(
+        CatchSpacing.screenPx,
+        CatchSpacing.screenPt,
+        CatchSpacing.screenPx,
+        CatchSpacing.s16 + CatchSpacing.s12,
+      );
+
   /// Long-form edit body padding under a top app bar.
   static const EdgeInsets formEditBodyRelaxed = EdgeInsets.fromLTRB(
     CatchSpacing.screenPx,
@@ -1416,7 +1435,8 @@ abstract final class CatchOpacity {
   static const double profileShadowDark = 0.34;
   static const double profileShadowLight = 0.10;
 
-  /// Bottom scrim stop for overlaid actions on full-bleed media.
+  /// Midpoint stop for bottom action scrims over scrolling page content or
+  /// full-bleed media.
   static const double bottomActionScrim = 0.82;
 
   /// Hover overlay for buttons and tappable controls.
@@ -2116,6 +2136,7 @@ abstract final class CatchLayout {
   static const double celebrationPaperActionTopGap = CatchSpacing.s6;
   static const double celebrationDetailLabelWidth = 78.0;
   static const double bottomActionScrimHeight = 128.0;
+  static const double bottomActionOverlayScrimHeight = 160.0;
   static const double floatingControlExtent = 48.0;
   static const double selectionBadgeRadius = 14.0;
   static const double badgeMdVerticalPadding =
@@ -2176,6 +2197,9 @@ abstract final class CatchLayout {
   static const double activityChipIconSize = 15.0;
   static const double activityChipIconGap = 7.0;
   static const double buttonLgHeight = CatchSpacing.s12 + CatchSpacing.s2;
+  static const double bottomActionHorizontalPadding = CatchSpacing.screenPx;
+  static const double bottomActionMinimumBottomPadding = CatchSpacing.micro18;
+  static const double bottomActionBlurSigma = 10.0;
   static const double controlCompactMinHeight =
       CatchSpacing.s12 + CatchSpacing.s1;
   static const double controlMdMinHeight = CatchSpacing.s12 + CatchSpacing.s2;

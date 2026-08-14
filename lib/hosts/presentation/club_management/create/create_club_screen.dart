@@ -565,117 +565,131 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
               ),
               gapH4,
               Expanded(
-                child: IgnorePointer(
-                  ignoring: !screenState.requestControlsEnabled,
-                  child: PageView(
-                    controller: _pageController,
-                    physics: const NeverScrollableScrollPhysics(),
-                    children: [
-                      ClubBasicsStep(
-                        formKey: _basicsFormKey,
-                        autovalidateMode: widget.formAutovalidateMode,
-                        nameController: _nameController,
-                        selectedOrganizerType: _organizerType,
-                        onOrganizerTypeChanged: (organizerType) =>
-                            _handleRouteIntent(
-                              HostClubCreateOrganizerTypeChangedIntent(
-                                organizerType,
-                              ),
-                            ),
-                        selectedCity: screenState.fields.selectedCity,
-                        onCityChanged: (city) => _handleRouteIntent(
-                          HostClubCreateCityChangedIntent(city),
-                        ),
-                        areaController: _areaController,
-                        detailsEnabled: screenState.fields.detailsEnabled,
-                        clubPhotoPreviews: screenState.media.clubPhotoPreviews,
-                        existingImageUrl:
-                            screenState.media.existingCoverImageUrl,
-                        profileImageBytes: screenState.media.profileImageBytes,
-                        existingProfileImageUrl:
-                            screenState.media.existingProfileImageUrl,
-                        onPickClubPhotos: screenState.media.enabled
-                            ? () => _handleRouteIntent(
-                                const HostClubCreatePickClubPhotosIntent(),
-                              )
-                            : null,
-                        onRemoveClubPhoto: screenState.media.enabled
-                            ? (index) => _handleRouteIntent(
-                                HostClubCreateRemoveClubPhotoIntent(index),
-                              )
-                            : null,
-                        onReorderClubPhoto: screenState.media.enabled
-                            ? (fromIndex, toIndex) => _handleRouteIntent(
-                                HostClubCreateReorderClubPhotoIntent(
-                                  fromIndex: fromIndex,
-                                  toIndex: toIndex,
+                child: StepperFooter(
+                  body: IgnorePointer(
+                    ignoring: !screenState.requestControlsEnabled,
+                    child: PageView(
+                      controller: _pageController,
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: [
+                        ClubBasicsStep(
+                          formKey: _basicsFormKey,
+                          autovalidateMode: widget.formAutovalidateMode,
+                          nameController: _nameController,
+                          selectedOrganizerType: _organizerType,
+                          onOrganizerTypeChanged: (organizerType) =>
+                              _handleRouteIntent(
+                                HostClubCreateOrganizerTypeChangedIntent(
+                                  organizerType,
                                 ),
-                              )
-                            : null,
-                        onPickProfileImage: screenState.media.enabled
-                            ? () => _handleRouteIntent(
-                                const HostClubCreatePickProfileImageIntent(),
-                              )
-                            : null,
-                        onRemoveProfileImage: screenState.media.enabled
-                            ? () => _handleRouteIntent(
-                                const HostClubCreateRemoveProfileImageIntent(),
-                              )
-                            : null,
-                      ),
-                      ClubDetailsStep(
-                        formKey: _detailsFormKey,
-                        descriptionController: _descriptionController,
-                        instagramController: _instagramController,
-                        phoneController: _phoneController,
-                        emailController: _emailController,
-                      ),
-                      ClubHostDefaultsStep(
-                        formKey: _defaultsFormKey,
-                        defaults: _hostDefaults,
-                        currencyCode: screenState.fields.currencyCode,
-                        onChanged: (defaults) => _handleRouteIntent(
-                          HostClubCreateDefaultsChangedIntent(defaults),
+                              ),
+                          selectedCity: screenState.fields.selectedCity,
+                          onCityChanged: (city) => _handleRouteIntent(
+                            HostClubCreateCityChangedIntent(city),
+                          ),
+                          areaController: _areaController,
+                          detailsEnabled: screenState.fields.detailsEnabled,
+                          clubPhotoPreviews:
+                              screenState.media.clubPhotoPreviews,
+                          existingImageUrl:
+                              screenState.media.existingCoverImageUrl,
+                          profileImageBytes:
+                              screenState.media.profileImageBytes,
+                          existingProfileImageUrl:
+                              screenState.media.existingProfileImageUrl,
+                          onPickClubPhotos: screenState.media.enabled
+                              ? () => _handleRouteIntent(
+                                  const HostClubCreatePickClubPhotosIntent(),
+                                )
+                              : null,
+                          onRemoveClubPhoto: screenState.media.enabled
+                              ? (index) => _handleRouteIntent(
+                                  HostClubCreateRemoveClubPhotoIntent(index),
+                                )
+                              : null,
+                          onReorderClubPhoto: screenState.media.enabled
+                              ? (fromIndex, toIndex) => _handleRouteIntent(
+                                  HostClubCreateReorderClubPhotoIntent(
+                                    fromIndex: fromIndex,
+                                    toIndex: toIndex,
+                                  ),
+                                )
+                              : null,
+                          onPickProfileImage: screenState.media.enabled
+                              ? () => _handleRouteIntent(
+                                  const HostClubCreatePickProfileImageIntent(),
+                                )
+                              : null,
+                          onRemoveProfileImage: screenState.media.enabled
+                              ? () => _handleRouteIntent(
+                                  const HostClubCreateRemoveProfileImageIntent(),
+                                )
+                              : null,
                         ),
-                      ),
-                      ClubEventSuccessDefaultsStep(
-                        formKey: _eventSuccessFormKey,
-                        defaults: _hostDefaults,
-                        onChanged: (defaults) => _handleRouteIntent(
-                          HostClubCreateDefaultsChangedIntent(defaults),
+                        ClubDetailsStep(
+                          formKey: _detailsFormKey,
+                          descriptionController: _descriptionController,
+                          instagramController: _instagramController,
+                          phoneController: _phoneController,
+                          emailController: _emailController,
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              if (screenState.mutationError != null)
-                CatchErrorBanner(message: screenState.mutationError!),
-              if (screenState.draftRestore.hasError)
-                CatchErrorBanner.fromError(
-                  screenState.draftRestore.error!,
-                  context: AppErrorContext.club,
-                  onRetry:
-                      screenState.draftRestore.retryIntent == null ||
-                          screenState.draftRestore.isLoading
-                      ? null
-                      : () => unawaited(
-                          _handleDraftRestoreIntent(
-                            screenState.draftRestore.retryIntent!,
+                        ClubHostDefaultsStep(
+                          formKey: _defaultsFormKey,
+                          defaults: _hostDefaults,
+                          currencyCode: screenState.fields.currencyCode,
+                          onChanged: (defaults) => _handleRouteIntent(
+                            HostClubCreateDefaultsChangedIntent(defaults),
                           ),
                         ),
+                        ClubEventSuccessDefaultsStep(
+                          formKey: _eventSuccessFormKey,
+                          defaults: _hostDefaults,
+                          onChanged: (defaults) => _handleRouteIntent(
+                            HostClubCreateDefaultsChangedIntent(defaults),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  notice:
+                      screenState.mutationError == null &&
+                          !screenState.draftRestore.hasError
+                      ? null
+                      : Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (screenState.mutationError != null)
+                              CatchErrorBanner(
+                                message: screenState.mutationError!,
+                              ),
+                            if (screenState.draftRestore.hasError)
+                              CatchErrorBanner.fromError(
+                                screenState.draftRestore.error!,
+                                context: AppErrorContext.club,
+                                onRetry:
+                                    screenState.draftRestore.retryIntent ==
+                                            null ||
+                                        screenState.draftRestore.isLoading
+                                    ? null
+                                    : () => unawaited(
+                                        _handleDraftRestoreIntent(
+                                          screenState.draftRestore.retryIntent!,
+                                        ),
+                                      ),
+                              ),
+                          ],
+                        ),
+                  isLastStep: screenState.footer.isLastStep,
+                  isLoading: screenState.footer.isLoading,
+                  primaryLabel: screenState.footer.primaryLabel,
+                  onPrimary: () =>
+                      _handlePrimaryIntent(screenState.footer.primaryIntent),
+                  onSaveDraft: screenState.footer.saveDraftIntent == null
+                      ? null
+                      : () => _handleSaveDraftIntent(
+                          screenState.footer.saveDraftIntent!,
+                        ),
                 ),
-              StepperFooter(
-                isLastStep: screenState.footer.isLastStep,
-                isLoading: screenState.footer.isLoading,
-                primaryLabel: screenState.footer.primaryLabel,
-                onPrimary: () =>
-                    _handlePrimaryIntent(screenState.footer.primaryIntent),
-                onSaveDraft: screenState.footer.saveDraftIntent == null
-                    ? null
-                    : () => _handleSaveDraftIntent(
-                        screenState.footer.saveDraftIntent!,
-                      ),
               ),
             ],
           ),

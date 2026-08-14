@@ -45,7 +45,7 @@ class ClubEventSuccessDefaultsStep extends StatelessWidget {
       key: formKey,
       child: scrollable
           ? ListView(
-              padding: padding ?? CatchInsets.formStepBody,
+              padding: padding ?? CatchInsets.formStepBodyWithBottomActions,
               children: [panel],
             )
           : Padding(padding: padding ?? EdgeInsets.zero, child: panel),

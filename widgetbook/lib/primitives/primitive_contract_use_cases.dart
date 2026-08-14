@@ -7004,6 +7004,7 @@ Widget catchBottomActionContractStates(BuildContext context) {
       'leading-content',
       'catch-line',
       'footnote',
+      'scroll-overlay',
       'loading',
       'disabled',
     ],
@@ -7032,6 +7033,46 @@ Widget catchBottomActionContractStates(BuildContext context) {
             catchLine: 'FREE TO JOIN',
             footnote: 'No charge until the host approves.',
             onPressed: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'scroll-overlay',
+        child: SizedBox(
+          width: WidgetbookPreviewLayout.dockFrameWidth,
+          height: 360,
+          child: CatchBottomActionOverlay(
+            body: ListView(
+              padding: CatchInsets.formStepBodyWithBottomActions,
+              children: [
+                for (var index = 0; index < 5; index++) ...[
+                  Text('Scrolling form row ${index + 1}'),
+                  const Divider(),
+                  const SizedBox(height: CatchSpacing.s6),
+                ],
+              ],
+            ),
+            actions: Row(
+              children: [
+                Expanded(
+                  child: CatchButton(
+                    label: 'Save Draft',
+                    variant: CatchButtonVariant.ghost,
+                    size: CatchButtonSize.lg,
+                    onPressed: _noop,
+                  ),
+                ),
+                const SizedBox(width: CatchSpacing.s3),
+                Expanded(
+                  child: CatchButton(
+                    label: 'Next',
+                    size: CatchButtonSize.lg,
+                    fullWidth: true,
+                    onPressed: _noop,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

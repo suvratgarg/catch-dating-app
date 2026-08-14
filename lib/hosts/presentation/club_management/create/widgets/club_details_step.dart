@@ -27,7 +27,7 @@ class ClubDetailsStep extends StatelessWidget {
     return Form(
       key: formKey,
       child: SingleChildScrollView(
-        padding: CatchInsets.formStepBody,
+        padding: CatchInsets.formStepBodyWithBottomActions,
         child: CatchSectionList(
           emptyStateOmitted: true,
           gap: 0,

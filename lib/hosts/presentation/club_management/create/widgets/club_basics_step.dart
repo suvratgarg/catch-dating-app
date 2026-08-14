@@ -59,7 +59,7 @@ class ClubBasicsStep extends StatelessWidget {
       key: formKey,
       autovalidateMode: autovalidateMode,
       child: SingleChildScrollView(
-        padding: CatchInsets.formStepBody,
+        padding: CatchInsets.formStepBodyWithBottomActions,
         child: CatchSectionList(
           emptyStateOmitted: true,
           gap: 0,

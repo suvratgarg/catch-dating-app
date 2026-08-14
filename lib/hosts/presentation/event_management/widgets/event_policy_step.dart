@@ -72,7 +72,7 @@ class EventPolicyStep extends StatelessWidget {
       key: formKey,
       autovalidateMode: autovalidateMode,
       child: ListView(
-        padding: CatchInsets.formStepBody,
+        padding: CatchInsets.formStepBodyWithBottomActions,
         children: [
           CatchSectionList(
             emptyStateOmitted: true,
