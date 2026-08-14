@@ -647,9 +647,12 @@
     },
     {
       "routeId": "hostCustomersScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "The production Customers directory and Widgetbook gallery exist; deterministic full-shell loading, empty, populated, filtering, pagination, manual-add, accessibility, and theme captures remain planned."
+      "captureIds": [
+        "host_customers_populated"
+      ],
+      "reason": "The production Customers directory has a deterministic populated full-shell capture aligned with the direct people workspace; broader loading, empty, filtering, pagination, manual-add, accessibility, and theme states remain future coverage."
     },
     {
       "routeId": "hostCustomerDetailScreen",
@@ -974,6 +977,7 @@
         "host_inbox_offline",
         "host_inbox_empty",
         "host_inbox_queries",
+        "host_messaging_campaigns",
         "host_inbox_prospective",
         "host_inbox_general",
         "host_inbox_roster_no_threads",
@@ -987,7 +991,7 @@
         "host_inbox_reduced_motion",
         "host_inbox_light_dark"
       ],
-      "reason": "The production event-scoped Host Inbox has deterministic captures for uid/data loading, generic and offline errors, empty, Booked, Prospective, explicit General inquiries, roster-without-threads, search active/empty, inquiry-only rows, broadcast composer ready/pending/error, text scale 2.0, reduced motion, and paired light/dark output. The old All/Unread captures were retired. A fresh strict comparison is still required before visual parity can close."
+      "reason": "The production Host Messaging route has deterministic captures for its Inbox and Campaigns workspaces, uid/data loading, generic and offline errors, empty, Booked, Prospective, explicit General inquiries, roster-without-threads, search active/empty, inquiry-only rows, broadcast composer ready/pending/error, text scale 2.0, reduced motion, and paired light/dark output. The old All/Unread captures were retired. A fresh strict comparison is still required before visual parity can close."
     },
     {
       "routeId": "hostChatScreen",
