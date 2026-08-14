@@ -1027,7 +1027,7 @@ void main() {
       expect(tabRail, findsOneWidget);
       expect(tab('Organizer'), findsNothing);
       expect(tab('Edit'), findsOneWidget);
-      expect(tab('Audience'), findsOneWidget);
+      expect(tab('Audience'), findsNothing);
       expect(tab('Insights'), findsOneWidget);
       expect(tab('Preview'), findsOneWidget);
       expect(
@@ -1043,7 +1043,7 @@ void main() {
       );
       expect(
         workspaceSemantics.properties.hint,
-        'Drag left or right to switch between Edit, Audience, Insights, and Preview.',
+        'Drag left or right to switch between Edit, Insights, and Preview.',
       );
       final currentPage = tester.widget<CatchTabbedPageScrollView>(
         find.byType(CatchTabbedPageScrollView),

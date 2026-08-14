@@ -82,6 +82,18 @@ HostClubsScreen hostOrganizerScreenForUri(Uri uri) {
   );
 }
 
+@visibleForTesting
+String? hostOrganizerAudienceRedirect(Uri uri) {
+  if (uri.queryParameters['tab'] != 'audience') return null;
+  final clubId = uri.queryParameters['clubId']?.trim();
+  return Uri(
+    path: Routes.hostCustomersScreen.path,
+    queryParameters: {
+      if (clubId != null && clubId.isNotEmpty) 'organizerId': clubId,
+    },
+  ).toString();
+}
+
 Event? _eventDetailInitialEvent(GoRouterState state) {
   return switch (state.extra) {
     EventDetailRouteExtra(:final initialEvent) => initialEvent,
@@ -873,6 +885,8 @@ StatefulShellRoute _hostShellRoute(
           GoRoute(
             path: Routes.hostOrganizerScreen.path,
             name: Routes.hostOrganizerScreen.name,
+            redirect: (context, state) =>
+                hostOrganizerAudienceRedirect(state.uri),
             builder: (context, state) => hostOrganizerScreenForUri(state.uri),
           ),
         ],

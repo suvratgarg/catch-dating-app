@@ -7777,6 +7777,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerMessagingPane',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Campaign and sender states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostCustomerMessagingStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostCustomerRevenueCard',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
