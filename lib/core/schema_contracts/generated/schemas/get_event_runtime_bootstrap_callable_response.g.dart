@@ -26,6 +26,7 @@ const schemaGetEventRuntimeBootstrapCallableResponseSchema = <String, Object?>{
         'startTimeMillis',
         'endTimeMillis',
         'locationName',
+        'checkedInCount',
         'runtimeTermsVersion',
         'moduleIds',
         'layout',
@@ -58,6 +59,10 @@ const schemaGetEventRuntimeBootstrapCallableResponseSchema = <String, Object?>{
           'type': 'string',
           'minLength': 1,
           'maxLength': 240,
+        },
+        'checkedInCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
         },
         'runtimeTermsVersion': <String, Object?>{
           'type': 'string',

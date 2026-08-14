@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.15.0
+version: 0.16.0
 updated: 2026-08-14
 owner: web_platform
 status: active
@@ -1121,6 +1121,16 @@ computes the same anticipation, climax, settle, completion, and deterministic
 seed as Flutter. Missing legacy countdown configuration uses the catalog
 fallback. This foundation adds no route or visual fork, and web intentionally
 does not play the catalog's ambient-bed audio.
+
+The guest runtime now renders the same three checked-in Lottie vector assets as
+Flutter for stage motifs, the anonymous checked-in ring, and the reveal
+cinematic. `@catch/web-ui` lazy-loads `lottie-web/build/player/lottie_light`
+only when one of those surfaces mounts. The feature adapter derives phase,
+progress, deterministic particles, and asset selection from the generated
+presentation contract and samples the server timeline every
+100ms; CSS owns only those driven transforms. The bounded bootstrap projection
+includes the aggregate `checkedInCount` required by the co-presence ring and no
+attendee identities. Web audio remains intentionally absent.
 
 ## Why Subdomains Instead Of Paths
 

@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.15.0
+version: 1.16.0
 updated: 2026-08-14
 owner: recursive_audit_loop
 status: active
@@ -910,13 +910,12 @@ derived from event id, moment kind, reveal round, and that anchor. This is one
 moment model for every event format; there is no event-type presentation fork.
 Web retains the metadata for parity and ships no per-attendee audio.
 
-- **Animated motifs.** `_StageMotifPainter` now takes a `phase` parameter
-  driven by the catalog's 16s default idle-pulse period (gated on
-  `Platform.environment['FLUTTER_TEST']`
-  so widget tests don't deadlock `pumpAndSettle`). Orbits rotate, sparks
-  drift with independent sine phases + alpha shimmer, rhythm waves swell
-  and recede, path filaments scroll diagonally, reveal spokes accelerate,
-  afterglow gets a breathing halo.
+- **Portable marquee assets.** Three checked-in Lottie vector documents under
+  `assets/motion/event_success/` own theatrical, pulse, and sunrise art for the
+  Flutter companion and React guest runtime. The generated motif id selects
+  one asset, and the catalog's idle-pulse period drives playback. The former
+  stage, arrival-ring, and reveal `CustomPainter` implementations are deleted;
+  they are not retained as a parallel path.
 - **Idle pulse + touch microinteractions.** `_StagePanel` breathes on a 6s
   sine border-glow. `_StageGlyph` runs an entry spring tween then a
   continuous 4s breath modulating scale + accent glow blur. `_StageBouncyPress`
@@ -932,23 +931,22 @@ Web retains the metadata for parity and ships no per-attendee audio.
   assets are caught + memoized so the UI never blocks on the sound designer.
   Six curated stock sounds to source are documented in
   `assets/audio/event_success/README.md`.
-- **Reveal cinematic (the marquee).** New `_RevealCinematicOverlay` runs
-  three phases over the full stage when the reveal moment is active:
+- **Reveal cinematic (the marquee).** `_RevealCinematicOverlay` composes the
+  portable vector assets with ordinary Flutter widgets over the full stage:
   anticipation (vignette darkens 0.18→0.6, 14 gold spokes rotate with
-  acceleration `pow(anticipation, 1.4) × 2π × 1.8`, 72-particle field
-  drifts inward), climax 1.5s (white flash, particle field bursts on a
-  generated deterministic seed so every viewer receives the same seed), settle
-  700ms (vignette releases, particles dissipate, sunrise vibe pack takes over).
-  Phase lengths and boundaries come from the generated contract and the saved
-  countdown, server-anchored to the existing reveal clock.
+  acceleration `pow(anticipation, 1.4) × 2π × 1.8`, and the contracted particle
+  field drifts inward), climax (white flash and seeded particle burst), then
+  settle (vignette release and sunrise art). A configurable 100ms clock samples
+  the generated timeline, so phase entry does not wait for a Firestore status
+  transition and remains inside the 250ms cross-runtime gate.
 - **Co-presence layer.** Three surfaces wired off the existing
   `Event.checkedInCount` (denormalized + maintained by Cloud Functions — no
   new Firestore listeners): `_LiveArrivalRing` on arrival moments (140×140
-  ring with 24 anonymous dot slots, big tabular numeral in center,
+  Lottie-backed ring with 24 anonymous dot slots, big tabular numeral in center,
   scale-pulse on increment), `_LiveOthersInRoomLine` on the questionnaire
   progress rail (pill with chip pulse on count climb), and a shared
   anonymous-dot ring inside the reveal cinematic pulsing on the same
-  `tickPhase` clock so every attendee's screen pulses on the *same* shared
+  server-derived tick clock so every attendee's screen pulses on the *same* shared
   rhythm during the countdown.
 - **First Hello completion celebration.** When the answer submits, the
   card overlays a sunrise gradient sweep (triangle-wave alpha to 0.62 over
@@ -960,7 +958,7 @@ Web retains the metadata for parity and ships no per-attendee audio.
   optional `countValue` (the "X people remembered" beat uses it) — the
   first run of digits in the value string animates 0→countValue over 600ms
   on an easeOutCubic curve.
-- **Test-mode animation gate.** All repeating Tickers (motif background,
+- **Test-mode animation gate.** All repeating Tickers (portable motif playback,
   panel pulse, glyph breath, cinematic tick, arrival ring pulse, others-in-
   room pulse) check `_kStageAnimationsEnabled =
   !Platform.environment.containsKey('FLUTTER_TEST')` before `.repeat()`.

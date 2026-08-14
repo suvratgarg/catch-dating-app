@@ -26,3 +26,5 @@ export type {
   ToggleGroupControlProps,
   UiLabelProps,
 } from "./primitives";
+export {LottieAnimationControl} from "./motion";
+export type {LottieAnimationControlProps} from "./motion";

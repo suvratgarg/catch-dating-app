@@ -36,6 +36,7 @@ export const eventRuntimeCopy = {
   venueBody: "The shared event link opens this companion but cannot check you in. Scan the current QR on the Host's screen at the venue.",
   runtimeEyebrow: "Live at your event",
   checkedIn: "Checked in",
+  checkedInCount: (count: number) => `${count} checked in`,
   shareTitle: "Bring someone along",
   shareBody: "Share your personal event link. Catch can see when it is opened. Registration and check-in credit appears only when Catch or the booking provider can reconcile that same link.",
   shareAction: "Share this event",

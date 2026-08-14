@@ -64,7 +64,7 @@ class CompanionStageScaffold extends StatelessWidget {
                 child: AnimatedStageMotifBackground._(
                   accent: stageTheme.accent,
                   foreground: stageTheme.foreground,
-                  motif: stageTheme.motif,
+                  visualAsset: stageTheme.visualAsset,
                   idlePulsePeriodMs:
                       presentation.choreography.idlePulsePeriodMs,
                 ),
@@ -81,6 +81,7 @@ class CompanionStageScaffold extends StatelessWidget {
                 momentKind: momentKind,
                 stageTheme: stageTheme,
                 checkedInCount: event.checkedInCount ?? 0,
+                tickInterval: eventSuccessCeremonyTickInterval,
               ),
             ),
             SafeArea(
@@ -900,6 +901,7 @@ class CompanionMomentStage extends StatelessWidget {
             child: LiveArrivalRing._(
               checkedInCount: event.checkedInCount ?? 0,
               stageTheme: stageTheme,
+              idlePulsePeriodMs: presentation.choreography.idlePulsePeriodMs,
             ),
           ),
           gapH18,
@@ -1346,14 +1348,14 @@ class _CompanionStageTheme {
     required this.foreground,
     required this.accent,
     required this.gradient,
-    required this.motif,
+    required this.visualAsset,
   });
 
   final Color background;
   final Color foreground;
   final Color accent;
   final Gradient gradient;
-  final _StageMotif motif;
+  final EventSuccessMotionAsset visualAsset;
 
   static _CompanionStageTheme forMoment(
     BuildContext context, {
@@ -1379,7 +1381,7 @@ class _CompanionStageTheme {
         background: d.ink,
         foreground: d.ink,
         accent: d.gold,
-        motif: _stageMotifForId(choreography.motifId),
+        visualAsset: eventSuccessMotionAssetForMotif(choreography.motifId),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -1416,7 +1418,7 @@ class _CompanionStageTheme {
       background: background,
       foreground: d.ink,
       accent: accent,
-      motif: _stageMotifForId(choreography.motifId),
+      visualAsset: eventSuccessMotionAssetForMotif(choreography.motifId),
       gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
@@ -1443,35 +1445,19 @@ ActivityKind _activityKindForPaletteTokenId(String id) => switch (id) {
   _ => throw StateError('Unsupported Event Success palette token id: $id'),
 };
 
-_StageMotif _stageMotifForId(String id) => switch (id) {
-  'path' => _StageMotif.path,
-  'gate' => _StageMotif.gate,
-  'spark' => _StageMotif.spark,
-  'rhythm' => _StageMotif.rhythm,
-  'orbit' => _StageMotif.orbit,
-  'reveal' => _StageMotif.reveal,
-  'signal' => _StageMotif.signal,
-  'afterglow' => _StageMotif.afterglow,
-  _ => throw StateError('Unsupported Event Success stage motif id: $id'),
-};
-
-enum _StageMotif { path, gate, spark, rhythm, orbit, reveal, signal, afterglow }
-
-/// Drives a continuous `phase` (0→1, looping) into [_StageMotifPainter] so the
-/// stage background is perpetually alive — orbits rotate, sparks drift, rhythm
-/// waves breathe, paths scroll. The generated moment contract owns the loop
-/// period so Flutter and web consume the same idle pulse.
+/// Plays the portable stage asset on the idle-pulse period owned by the
+/// generated moment contract.
 class AnimatedStageMotifBackground extends StatefulWidget {
   const AnimatedStageMotifBackground._({
     required this.accent,
     required this.foreground,
-    required this._motif,
+    required this.visualAsset,
     required this.idlePulsePeriodMs,
   });
 
   final Color accent;
   final Color foreground;
-  final _StageMotif _motif;
+  final EventSuccessMotionAsset visualAsset;
   final int idlePulsePeriodMs;
 
   @override
@@ -1483,21 +1469,23 @@ class _AnimatedStageMotifBackgroundState
     extends State<AnimatedStageMotifBackground>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
-    duration: Duration(milliseconds: widget.idlePulsePeriodMs),
+    duration: CatchMotion.eventSuccessPulsePeriod(widget.idlePulsePeriodMs),
     vsync: this,
   );
 
   @override
   void initState() {
     super.initState();
-    if (_kStageAnimationsEnabled) _controller.repeat();
+    if (!_kStageAnimationsEnabled) _controller.value = 0.5;
   }
 
   @override
   void didUpdateWidget(covariant AnimatedStageMotifBackground oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.idlePulsePeriodMs != widget.idlePulsePeriodMs) {
-      _controller.duration = Duration(milliseconds: widget.idlePulsePeriodMs);
+      _controller.duration = CatchMotion.eventSuccessPulsePeriod(
+        widget.idlePulsePeriodMs,
+      );
     }
   }
 
@@ -1509,169 +1497,27 @@ class _AnimatedStageMotifBackgroundState
 
   @override
   Widget build(BuildContext context) {
+    final color = Color.lerp(widget.foreground, widget.accent, 0.72)!;
     return RepaintBoundary(
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, _) {
-          return CustomPaint(
-            painter: _StageMotifPainter(
-              accent: widget.accent,
-              foreground: widget.foreground,
-              motif: widget._motif,
-              phase: _controller.value,
-            ),
-          );
-        },
+      child: ColorFiltered(
+        colorFilter: ColorFilter.mode(
+          color.withValues(alpha: CatchOpacity.eventSuccessMotifAccent),
+          BlendMode.srcIn,
+        ),
+        child: Lottie.asset(
+          widget.visualAsset.path,
+          controller: _controller,
+          fit: BoxFit.cover,
+          repeat: false,
+          onLoaded: (_) {
+            if (_kStageAnimationsEnabled && !_controller.isAnimating) {
+              _controller.repeat();
+            }
+          },
+        ),
       ),
     );
   }
-}
-
-class _StageMotifPainter extends CustomPainter {
-  const _StageMotifPainter({
-    required this.accent,
-    required this.foreground,
-    required this.motif,
-    required this.phase,
-  });
-
-  final Color accent;
-  final Color foreground;
-  final _StageMotif motif;
-
-  /// 0→1, loops every animation cycle. Used per-motif to drive rotation,
-  /// drift, and pulse so the surface is never static.
-  final double phase;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.4
-      ..color = foreground.withValues(
-        alpha: CatchOpacity.eventSuccessMotifBase,
-      );
-    final accentPaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.2
-      ..color = accent.withValues(alpha: CatchOpacity.eventSuccessMotifAccent);
-
-    final twoPi = math.pi * 2;
-    // Two phase rotations let secondary motion lead/lag the primary, giving
-    // the surface depth without doubling the Ticker rate.
-    final phaseA = phase * twoPi;
-    final phaseB = (phase * twoPi * 0.6) + (math.pi / 3);
-
-    switch (motif) {
-      case _StageMotif.path:
-      case _StageMotif.gate:
-        // Diagonal filaments scroll along their length so the room reads as
-        // moving forward instead of stationary.
-        for (var i = 0; i < 5; i++) {
-          final scroll = (phase + i * 0.18) % 1.0;
-          final top = size.height * (0.18 + i * 0.12) + scroll * 18 - 9;
-          canvas.drawLine(
-            Offset(size.width * -0.08, top),
-            Offset(size.width * 1.06, top + size.height * 0.18),
-            i == 1 ? accentPaint : paint,
-          );
-        }
-      case _StageMotif.spark:
-      case _StageMotif.signal:
-        // Sparks pulse alpha and drift along a slow loop. Each spark has its
-        // own phase offset so the field shimmers rather than blinks in unison.
-        for (var i = 0; i < 18; i++) {
-          final baseX = size.width * (((i * 37) % 100) / 100);
-          final baseY = size.height * (((i * 61) % 100) / 100);
-          final localPhase = (phase + i * 0.057) % 1.0;
-          final dx = math.cos(localPhase * twoPi) * 6;
-          final dy = math.sin(localPhase * twoPi) * 4;
-          final alpha =
-              0.10 + 0.14 * (0.5 + 0.5 * math.sin(localPhase * twoPi));
-          canvas.drawCircle(
-            Offset(baseX + dx, baseY + dy),
-            i.isEven ? 2.5 : 1.4,
-            Paint()
-              ..color = (i.isEven ? accent : foreground).withValues(
-                alpha: alpha,
-              ),
-          );
-        }
-      case _StageMotif.rhythm:
-        // Rhythm waves phase-shift so the curves swell and recede — like the
-        // room is breathing in time.
-        final path = Path();
-        final swell = math.sin(phaseA) * 12;
-        for (var i = 0; i < 4; i++) {
-          final y = size.height * (0.28 + i * 0.14);
-          final lead = math.sin(phaseA + i * 0.7) * 24;
-          path
-            ..moveTo(0, y)
-            ..cubicTo(
-              size.width * 0.24,
-              y - 54 + lead,
-              size.width * 0.56,
-              y + 54 + swell,
-              size.width,
-              y - lead * 0.4,
-            );
-        }
-        canvas.drawPath(path, paint);
-      case _StageMotif.orbit:
-      case _StageMotif.reveal:
-      case _StageMotif.afterglow:
-        // Orbits and reveal radii rotate counter-pulse so the eye sees depth.
-        // Ring thicknesses subtly pulse to read as "alive."
-        final center = Offset(size.width * 0.72, size.height * 0.28);
-        canvas.save();
-        canvas.translate(center.dx, center.dy);
-        canvas.rotate(phaseA * 0.35);
-        for (var i = 0; i < 5; i++) {
-          final radius = 72 + i * 46;
-          final pulse = 1.0 + 0.02 * math.sin(phaseB + i * 0.7);
-          canvas.drawCircle(
-            Offset.zero,
-            radius * pulse,
-            i == 2 ? accentPaint : paint,
-          );
-        }
-        canvas.restore();
-        if (motif == _StageMotif.reveal) {
-          // Radial spokes accelerate on the second half of the loop, hinting
-          // at the anticipation feel the cinematic reveal will land on.
-          final accel = 0.6 + 0.6 * math.sin(phaseA * 0.5).abs();
-          for (var i = 0; i < 10; i++) {
-            final angle = (twoPi / 10) * i + phaseA * accel * 0.4;
-            final start = Offset(
-              center.dx + math.cos(angle) * 48,
-              center.dy + math.sin(angle) * 48,
-            );
-            final end = Offset(
-              center.dx + math.cos(angle) * 180,
-              center.dy + math.sin(angle) * 180,
-            );
-            canvas.drawLine(start, end, accentPaint);
-          }
-        }
-        if (motif == _StageMotif.afterglow) {
-          // Afterglow gets a soft inner halo that breathes slowly, signaling
-          // the night winding down rather than ramping up.
-          final haloAlpha = 0.06 + 0.04 * math.sin(phaseA * 0.5);
-          canvas.drawCircle(
-            center,
-            120,
-            Paint()..color = accent.withValues(alpha: haloAlpha),
-          );
-        }
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _StageMotifPainter oldDelegate) =>
-      oldDelegate.accent != accent ||
-      oldDelegate.foreground != foreground ||
-      oldDelegate.motif != motif ||
-      oldDelegate.phase != phase;
 }
 
 String _heroBadgeLabel({
@@ -1904,19 +1750,25 @@ class LiveArrivalRing extends StatefulWidget {
   const LiveArrivalRing._({
     required this.checkedInCount,
     required this._stageTheme,
+    required this.idlePulsePeriodMs,
   });
 
   final int checkedInCount;
   final _CompanionStageTheme _stageTheme;
+  final int idlePulsePeriodMs;
 
   @override
   State<LiveArrivalRing> createState() => _LiveArrivalRingState();
 }
 
 class _LiveArrivalRingState extends State<LiveArrivalRing>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late final AnimationController _pulse = AnimationController(
     duration: CatchMotion.pulse,
+    vsync: this,
+  );
+  late final AnimationController _motion = AnimationController(
+    duration: CatchMotion.eventSuccessPulsePeriod(widget.idlePulsePeriodMs),
     vsync: this,
   );
 
@@ -1926,11 +1778,21 @@ class _LiveArrivalRingState extends State<LiveArrivalRing>
   void initState() {
     super.initState();
     _lastCount = widget.checkedInCount;
+    if (_kStageAnimationsEnabled) {
+      _motion.repeat();
+    } else {
+      _motion.value = 0.5;
+    }
   }
 
   @override
   void didUpdateWidget(covariant LiveArrivalRing oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.idlePulsePeriodMs != widget.idlePulsePeriodMs) {
+      _motion.duration = CatchMotion.eventSuccessPulsePeriod(
+        widget.idlePulsePeriodMs,
+      );
+    }
     if (widget.checkedInCount > _lastCount && _kStageAnimationsEnabled) {
       _pulse.forward(from: 0);
     }
@@ -1940,6 +1802,7 @@ class _LiveArrivalRingState extends State<LiveArrivalRing>
   @override
   void dispose() {
     _pulse.dispose();
+    _motion.dispose();
     super.dispose();
   }
 
@@ -1958,6 +1821,7 @@ class _LiveArrivalRingState extends State<LiveArrivalRing>
       child: ArrivalRingCard._(
         checkedInCount: widget.checkedInCount,
         stageTheme: theme,
+        motion: _motion,
       ),
     );
   }
@@ -1967,10 +1831,12 @@ class ArrivalRingCard extends StatelessWidget {
   const ArrivalRingCard._({
     required this.checkedInCount,
     required this._stageTheme,
+    required this.motion,
   });
 
   final int checkedInCount;
   final _CompanionStageTheme _stageTheme;
+  final Animation<double> motion;
 
   @override
   Widget build(BuildContext context) {
@@ -1990,50 +1856,88 @@ class ArrivalRingCard extends StatelessWidget {
     return SizedBox(
       width: CatchLayout.eventSuccessArrivalRingExtent,
       height: CatchLayout.eventSuccessArrivalRingExtent,
-      child: CustomPaint(
-        painter: _ArrivalRingPainter(
-          dotCount: math.min(checkedInCount, 24),
-          activeAccent: _stageTheme.accent,
-          dimForeground: fg.withValues(
-            alpha: CatchOpacity.eventSuccessSubtleBorder,
-          ),
-          accentForeground: fg.withValues(
-            alpha: CatchOpacity.eventSuccessArrivalAccent,
-          ),
-        ),
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: CatchLayout.eventSuccessArrivalRingInnerPadding,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Positioned.fill(
+            child: ColorFiltered(
+              colorFilter: ColorFilter.mode(
+                _stageTheme.accent.withValues(
+                  alpha: CatchOpacity.eventSuccessArrivalAccent,
+                ),
+                BlendMode.srcIn,
+              ),
+              child: Lottie.asset(
+                EventSuccessMotionAsset.theatrical.path,
+                controller: motion,
+                fit: BoxFit.contain,
+                repeat: false,
+              ),
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  context.l10n
-                      .eventSuccessEventSuccessCompanionSharedTextCheckedincount(
-                        checkedInCount: checkedInCount,
-                      ),
-                  style: CatchTextStyles.headlineS(context, color: fg).copyWith(
-                    height: 1.0,
-                    fontFeatures: const [FontFeature.tabularFigures()],
+          ),
+          ...List<Widget>.generate(24, (index) {
+            final angle = (math.pi * 2 / 24) * index - math.pi / 2;
+            final filled = index < math.min(checkedInCount, 24);
+            final highlight = filled && index % 6 == 0;
+            final color = highlight
+                ? _stageTheme.accent.withValues(
+                    alpha: CatchOpacity.eventSuccessArrivalHighlight,
+                  )
+                : fg.withValues(
+                    alpha: filled
+                        ? CatchOpacity.eventSuccessArrivalAccent
+                        : CatchOpacity.eventSuccessSubtleBorder,
+                  );
+            return Positioned.fill(
+              child: Align(
+                alignment: Alignment(
+                  math.cos(angle) * 0.84,
+                  math.sin(angle) * 0.84,
+                ),
+                child: ClipOval(
+                  child: ColoredBox(
+                    color: color,
+                    child: SizedBox.square(dimension: filled ? 7 : 4),
                   ),
                 ),
-                gapH2,
-                Text(
-                  caption,
-                  textAlign: TextAlign.center,
-                  style: CatchTextStyles.labelS(
-                    context,
-                    color: fg.withValues(
-                      alpha: CatchOpacity.eventSuccessArrivalCaption,
+              ),
+            );
+          }),
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: CatchLayout.eventSuccessArrivalRingInnerPadding,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    context.l10n
+                        .eventSuccessEventSuccessCompanionSharedTextCheckedincount(
+                          checkedInCount: checkedInCount,
+                        ),
+                    style: CatchTextStyles.headlineS(context, color: fg)
+                        .copyWith(
+                          height: 1.0,
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                        ),
+                  ),
+                  gapH2,
+                  Text(
+                    caption,
+                    textAlign: TextAlign.center,
+                    style: CatchTextStyles.labelS(
+                      context,
+                      color: fg.withValues(
+                        alpha: CatchOpacity.eventSuccessArrivalCaption,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -2131,55 +2035,6 @@ class _LiveOthersInRoomLineState extends State<LiveOthersInRoomLine>
       },
     );
   }
-}
-
-class _ArrivalRingPainter extends CustomPainter {
-  const _ArrivalRingPainter({
-    required this.dotCount,
-    required this.activeAccent,
-    required this.dimForeground,
-    required this.accentForeground,
-  });
-
-  final int dotCount;
-  final Color activeAccent;
-  final Color dimForeground;
-  final Color accentForeground;
-
-  // Always paint 24 dot slots so the ring shape reads even with few
-  // arrivals — filled dots represent attendees, dim dots represent slots
-  // still empty.
-  static const int _slotCount = 24;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = math.min(size.width, size.height) * 0.42;
-    for (var i = 0; i < _slotCount; i++) {
-      final angle = (math.pi * 2 / _slotCount) * i - math.pi / 2;
-      final position = Offset(
-        center.dx + math.cos(angle) * radius,
-        center.dy + math.sin(angle) * radius,
-      );
-      final filled = i < dotCount;
-      final isHighlight = filled && (i % 6 == 0);
-      final color = isHighlight
-          ? activeAccent.withValues(
-              alpha: CatchOpacity.eventSuccessArrivalHighlight,
-            )
-          : filled
-          ? accentForeground
-          : dimForeground;
-      canvas.drawCircle(position, filled ? 3.4 : 2.0, Paint()..color = color);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _ArrivalRingPainter oldDelegate) =>
-      oldDelegate.dotCount != dotCount ||
-      oldDelegate.activeAccent != activeAccent ||
-      oldDelegate.dimForeground != dimForeground ||
-      oldDelegate.accentForeground != accentForeground;
 }
 
 class NoCompanionActionsCard extends StatelessWidget {

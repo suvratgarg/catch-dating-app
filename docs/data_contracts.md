@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.24.0
+version: 1.25.0
 updated: 2026-08-14
 owner: recursive_audit_loop
 status: active
@@ -650,7 +650,10 @@ another provider (`externalCompanion`); its provider/source identifiers are
 provenance, not a claim that Catch owns or has synchronized the source event.
 `runtimeAccess.publicRuntimeId` is an opaque join identifier, never the event
 document id or a bearer authorization credential. The runtime bootstrap
-callable resolves it and returns only a bounded public event projection.
+callable resolves it and returns only a bounded public event projection. That
+projection includes non-negative aggregate `checkedInCount` for the anonymous
+co-presence visual; it does not include a roster, attendee identifiers, or
+per-attendee attendance state.
 
 `eventRuntimeParticipants/{eventId_uid}` is the private bridge between a
 Firebase phone-auth identity and an event-scoped operational attendee. It owns

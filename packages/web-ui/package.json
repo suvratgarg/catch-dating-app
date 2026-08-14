@@ -16,6 +16,9 @@
   "peerDependencies": {
     "react": "^19.0.0"
   },
+  "dependencies": {
+    "lottie-web": "5.13.0"
+  },
   "devDependencies": {
     "@testing-library/react": "^16.3.2",
     "@types/react": "^19.2.18",
