@@ -1,7 +1,7 @@
 {
   "$schema": "./state_matrix.schema.json",
   "version": 1,
-  "updated": "2026-08-13",
+  "updated": "2026-08-14",
   "requiredStateKinds": [
     "loading",
     "populated",
@@ -5025,7 +5025,9 @@
             "lib/hosts/presentation/customers/host_customers_screen.dart",
             "lib/hosts/presentation/customers/host_customers_screen_state.dart",
             "lib/hosts/presentation/customers/host_customers_controller.dart",
-            "lib/hosts/data/host_crm_repository.dart"
+            "lib/hosts/data/host_crm_repository.dart",
+            "lib/hosts/presentation/host_operations/host_audience.dart",
+            "lib/hosts/presentation/host_audience_controller.dart"
           ],
           "componentIds": [
             "catch.button",
@@ -5033,6 +5035,8 @@
             "catch.empty_state",
             "catch.error_state",
             "catch.field",
+            "catch.notice",
+            "catch.option_group",
             "catch.person_row",
             "catch.search_field",
             "catch.section",
@@ -5177,6 +5181,74 @@
               "status": "tested",
               "tests": ["test/hosts/host_customers_screen_state_test.dart"],
               "notes": "The disabled conversation card explains unlinked and ambiguous identity states."
+            },
+            {
+              "id": "customer_export_pending",
+              "kind": "mutation",
+              "status": "implemented",
+              "notes": "Customer export keeps the directory available while the organizer-scoped CSV is prepared for native sharing."
+            },
+            {
+              "id": "customer_manage",
+              "kind": "mutation",
+              "status": "tested",
+              "tests": ["test/hosts/host_customers_screen_state_test.dart"],
+              "notes": "The customer-management sheet exposes rename, suppression, and removal without weakening identity or revision boundaries."
+            },
+            {
+              "id": "customer_manage_pending",
+              "kind": "mutation",
+              "status": "implemented",
+              "notes": "Customer-management mutations own a pending state while optimistic revision checks complete."
+            },
+            {
+              "id": "customer_messaging_provider_unavailable",
+              "kind": "permission",
+              "status": "implemented",
+              "previewIds": ["hostCustomerMessagingStates"],
+              "notes": "Campaigns explains when the configured messaging provider is unavailable instead of presenting unusable sender controls."
+            },
+            {
+              "id": "customer_messaging_disconnected",
+              "kind": "empty",
+              "status": "implemented",
+              "previewIds": ["hostCustomerMessagingStates"],
+              "notes": "Campaigns provides the sender-connection handoff when the organizer has no active messaging connection."
+            },
+            {
+              "id": "customer_messaging_connecting",
+              "kind": "mutation",
+              "status": "implemented",
+              "notes": "Sender connection and configuration mutations expose a deterministic pending state."
+            },
+            {
+              "id": "customer_messaging_ready",
+              "kind": "populated",
+              "status": "tested",
+              "previewIds": ["hostCustomerMessagingStates"],
+              "tests": ["test/hosts/host_crm_repository_test.dart"],
+              "notes": "A ready provider exposes the organizer sender, approved templates, and campaign composition controls."
+            },
+            {
+              "id": "customer_campaign_draft",
+              "kind": "mutation",
+              "status": "implemented",
+              "previewIds": ["hostCustomerMessagingStates"],
+              "notes": "The campaign composer preserves draft audience, template, variable, and schedule input before preview."
+            },
+            {
+              "id": "customer_campaign_previewed",
+              "kind": "mutation",
+              "status": "implemented",
+              "notes": "Campaign preview resolves the selected segment and message variables before dispatch becomes available."
+            },
+            {
+              "id": "customer_campaign_active",
+              "kind": "mutation",
+              "status": "tested",
+              "previewIds": ["hostCustomerMessagingStates"],
+              "tests": ["test/hosts/host_crm_repository_test.dart"],
+              "notes": "Active campaigns expose authoritative dispatch status and cancellation through the Customers workspace."
             },
             {
               "id": "offline",
