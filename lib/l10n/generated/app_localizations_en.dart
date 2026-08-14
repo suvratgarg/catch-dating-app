@@ -6061,9 +6061,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostClubsScaffoldLabelPreview => 'Preview';
 
   @override
-  String get hostsHostClubsScaffoldTooltipSwitchClub => 'Switch organizer';
-
-  @override
   String get hostsHostClubsScaffoldTitleNoHostClubsYet =>
       'No hosted organizers yet';
 
@@ -6233,14 +6230,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsHostTodayTextNothingNeedsYouRight =>
       'Nothing needs you right now.';
-
-  @override
-  String hostsHostTodayTextLongweekdayDaypart({
-    required Object longWeekday,
-    required Object daypart,
-  }) {
-    return '$longWeekday $daypart';
-  }
 
   @override
   String get hostsHostTodayTooltipSwitchClub => 'Switch organizer';
@@ -7637,17 +7626,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostClubsScaffoldVisiblecopyOwner => 'Owner';
-
-  @override
-  String get hostsHostClubsScaffoldVisiblecopyHostTeam => 'Host team';
-
-  @override
-  String hostsHostClubsScaffoldLabelNameRolelabel({
-    required Object name,
-    required Object roleLabel,
-  }) {
-    return '$name · $roleLabel';
-  }
 
   @override
   String
@@ -9534,21 +9512,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }) {
     return '$minAge–$maxAge';
   }
-
-  @override
-  String get hostsHostTodayVisiblecopyMorning => 'morning';
-
-  @override
-  String get hostsHostTodayVisiblecopyAfternoon => 'afternoon';
-
-  @override
-  String get hostsHostTodayVisiblecopyEvening => 'evening';
-
-  @override
-  String get hostsHostTodayLabelOwner => 'Owner';
-
-  @override
-  String get hostsHostTodayLabelHostTeam => 'Host team';
 
   @override
   String hostsHostTodayVisiblecopySignedupcount({

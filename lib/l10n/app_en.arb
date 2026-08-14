@@ -11210,13 +11210,6 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_clubs_scaffold"
   },
-  "hostsHostClubsScaffoldTooltipSwitchClub": "Switch organizer",
-  "@hostsHostClubsScaffoldTooltipSwitchClub": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (tooltip).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_clubs_scaffold"
-  },
   "hostsHostClubsScaffoldTitleNoHostClubsYet": "No hosted organizers yet",
   "@hostsHostClubsScaffoldTitleNoHostClubsYet": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (title).",
@@ -11536,17 +11529,6 @@
   "hostsHostTodayTextNothingNeedsYouRight": "Nothing needs you right now.",
   "@hostsHostTodayTextNothingNeedsYouRight": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
-  },
-  "hostsHostTodayTextLongweekdayDaypart": "{longWeekday} {daypart}",
-  "@hostsHostTodayTextLongweekdayDaypart": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (Text).",
-    "placeholders": {
-      "longWeekday": {},
-      "daypart": {}
-    },
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_today"
@@ -14094,24 +14076,6 @@
   "hostsHostClubsScaffoldVisiblecopyOwner": "Owner",
   "@hostsHostClubsScaffoldVisiblecopyOwner": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_clubs_scaffold"
-  },
-  "hostsHostClubsScaffoldVisiblecopyHostTeam": "Host team",
-  "@hostsHostClubsScaffoldVisiblecopyHostTeam": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_clubs_scaffold"
-  },
-  "hostsHostClubsScaffoldLabelNameRolelabel": "{name} · {roleLabel}",
-  "@hostsHostClubsScaffoldLabelNameRolelabel": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (label).",
-    "placeholders": {
-      "name": {},
-      "roleLabel": {}
-    },
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_clubs_scaffold"
@@ -17335,41 +17299,6 @@
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_club_profile"
-  },
-  "hostsHostTodayVisiblecopyMorning": "morning",
-  "@hostsHostTodayVisiblecopyMorning": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
-  },
-  "hostsHostTodayVisiblecopyAfternoon": "afternoon",
-  "@hostsHostTodayVisiblecopyAfternoon": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
-  },
-  "hostsHostTodayVisiblecopyEvening": "evening",
-  "@hostsHostTodayVisiblecopyEvening": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
-  },
-  "hostsHostTodayLabelOwner": "Owner",
-  "@hostsHostTodayLabelOwner": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
-  },
-  "hostsHostTodayLabelHostTeam": "Host team",
-  "@hostsHostTodayLabelHostTeam": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
   },
   "hostsHostTodayVisiblecopySignedupcount": "{signedUpCount}",
   "@hostsHostTodayVisiblecopySignedupcount": {
