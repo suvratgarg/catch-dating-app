@@ -5,14 +5,28 @@ import 'package:catch_dating_app/health_activity/data/health_activity_client.dar
 import 'package:catch_dating_app/health_activity/domain/runner_activity.dart';
 import 'package:health/health.dart' as health;
 
+enum MobileHealthDevicePlatform { ios, android, unsupported }
+
+MobileHealthDevicePlatform _defaultDevicePlatform() {
+  if (Platform.isIOS) return MobileHealthDevicePlatform.ios;
+  if (Platform.isAndroid) return MobileHealthDevicePlatform.android;
+  return MobileHealthDevicePlatform.unsupported;
+}
+
 class MobileHealthActivityClient implements HealthActivityClient {
-  MobileHealthActivityClient({health.Health? healthClient})
-    : _health = healthClient ?? health.Health();
+  MobileHealthActivityClient({
+    health.Health? healthClient,
+    MobileHealthDevicePlatform? devicePlatform,
+  }) : _health = healthClient ?? health.Health(),
+       _devicePlatform = devicePlatform ?? _defaultDevicePlatform();
 
   final health.Health _health;
+  final MobileHealthDevicePlatform _devicePlatform;
+  final HealthWorkoutPointMapper _mapper = const HealthWorkoutPointMapper();
   bool _configured = false;
 
-  bool get _isSupportedDevice => Platform.isIOS || Platform.isAndroid;
+  bool get _isSupportedDevice =>
+      _devicePlatform != MobileHealthDevicePlatform.unsupported;
 
   @override
   Future<HealthActivityCapabilities> capabilities() async {
@@ -23,7 +37,7 @@ class MobileHealthActivityClient implements HealthActivityClient {
     }
 
     await _configure();
-    if (Platform.isIOS) {
+    if (_devicePlatform == MobileHealthDevicePlatform.ios) {
       return const HealthActivityCapabilities(
         platform: HealthActivityPlatform.appleHealth,
       );
@@ -58,7 +72,7 @@ class MobileHealthActivityClient implements HealthActivityClient {
 
     final activities = <PhysicalActivity>[];
     for (final point in points) {
-      final activity = _activityFromWorkoutPoint(point);
+      final activity = _mapper.fromPoint(point);
       if (activity != null) activities.add(activity);
     }
     activities.sort((a, b) => a.startTime.compareTo(b.startTime));
@@ -77,7 +91,9 @@ class MobileHealthActivityClient implements HealthActivityClient {
 
   @override
   Future<void> installHealthConnect() async {
-    if (Platform.isAndroid) await _health.installHealthConnect();
+    if (_devicePlatform == MobileHealthDevicePlatform.android) {
+      await _health.installHealthConnect();
+    }
   }
 
   @override
@@ -98,12 +114,12 @@ class MobileHealthActivityClient implements HealthActivityClient {
 
   List<health.HealthDataType> get _activityReadTypes {
     final types = <health.HealthDataType>[health.HealthDataType.WORKOUT];
-    if (Platform.isIOS &&
+    if (_devicePlatform == MobileHealthDevicePlatform.ios &&
         _health.isDataTypeAvailable(
           health.HealthDataType.DISTANCE_WALKING_RUNNING,
         )) {
       types.add(health.HealthDataType.DISTANCE_WALKING_RUNNING);
-    } else if (Platform.isAndroid &&
+    } else if (_devicePlatform == MobileHealthDevicePlatform.android &&
         _health.isDataTypeAvailable(health.HealthDataType.DISTANCE_DELTA)) {
       types.add(health.HealthDataType.DISTANCE_DELTA);
     }
@@ -115,8 +131,17 @@ class MobileHealthActivityClient implements HealthActivityClient {
         _activityReadTypes.length,
         health.HealthDataAccess.READ,
       );
+}
 
-  PhysicalActivity? _activityFromWorkoutPoint(health.HealthDataPoint point) {
+/// Pure translation from plugin-owned workout payloads into Catch domain data.
+///
+/// Keeping this mapper free of platform channels makes unit conversion,
+/// activity taxonomy, filtering, and stable-id behavior directly testable in
+/// the Consumer app package.
+class HealthWorkoutPointMapper {
+  const HealthWorkoutPointMapper();
+
+  PhysicalActivity? fromPoint(health.HealthDataPoint point) {
     final value = point.value;
     if (value is! health.WorkoutHealthValue) return null;
     final type = _activityType(value.workoutActivityType);

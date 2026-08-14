@@ -7,6 +7,8 @@ current list; this document owns only the durable commands and testing policy.
 
 ```sh
 flutter test
+flutter test --concurrency=1 --directory apps/consumer
+flutter test --concurrency=1 --directory apps/host
 bash tool/test_app_shell_integration.sh
 flutter test --concurrency=1 test/goldens
 node tool/run.mjs check test:flutter-test-size

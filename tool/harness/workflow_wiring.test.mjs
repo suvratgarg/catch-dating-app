@@ -138,6 +138,24 @@ test("Flutter analysis covers every pubspec and empty test selections fail close
   assert.match(coverage, /exit 1/u);
 });
 
+test("Flutter CI runs Consumer and Host package tests as aggregate gates", () => {
+  const flutter = workflow("flutter-ci.yml");
+  assert.match(flutter, /^  app-package-tests:\n/mu);
+  assert.match(
+    flutter,
+    /working-directory: apps\/consumer\n        run: flutter test --concurrency=1/u,
+  );
+  assert.match(
+    flutter,
+    /working-directory: apps\/host\n        run: flutter test --concurrency=1/u,
+  );
+  assert.match(flutter, /needs:\n(?:      - .*\n)*      - app-package-tests/u);
+  assert.match(
+    flutter,
+    /APP_PACKAGES_RESULT: \$\{\{ needs\['app-package-tests'\]\.result \}\}/u,
+  );
+});
+
 test("Flutter l10n ratchet derives JSON live and uploads ephemeral evidence", () => {
   const flutter = workflow("flutter-ci.yml");
   const scan = namedStep(
