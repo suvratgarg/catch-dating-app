@@ -41,6 +41,7 @@ export 'presentation/host_event_manage_screen.dart'; // public-api: route entry 
 export 'presentation/host_event_manage_screen_state.dart'; // public-api: provider-free display state reused by tests and routes
 export 'presentation/host_home_screen_state.dart'; // public-api: provider-free display state reused by tests and routes
 export 'presentation/host_operations_screen.dart'; // public-api: route entry point exposed to app routing
+export 'presentation/host_organizer_selection_controller.dart'; // public-api: Host-shell organizer identity state seam
 export 'presentation/host_profile_controller.dart'; // public-api: command seam for route-owned actions
 export 'presentation/host_team_workspace_state.dart'; // public-api: provider-free display state reused by tests and routes
 export 'presentation/payments/host_payment_account_card.dart'; // public-api: shared presentation component used outside this feature
@@ -51,5 +52,6 @@ export 'presentation/widgets/host_club_tools.dart'; // public-api: shared presen
 export 'presentation/widgets/host_event_attendance_panel.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/host_event_tools.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/host_loading_skeletons.dart'; // public-api: shared presentation component used outside this feature
+export 'presentation/widgets/host_organizer_switcher.dart'; // public-api: shared Host-shell identity component
 export 'presentation/widgets/host_team_management_section.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/stepper_footer.dart'; // public-api: shared presentation component used outside this feature
