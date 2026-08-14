@@ -1733,6 +1733,15 @@ const schemaSpecs = [
       "eventSuccessLiveActionCallablePayload.ts",
   },
   {
+    name: "SetEventSuccessAccountabilityResolutionCallablePayload",
+    source:
+      "callables/" +
+      "set_event_success_accountability_resolution_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "setEventSuccessAccountabilityResolutionCallablePayload.ts",
+  },
+  {
     name: "RecordEventSuccessUnitOutcomesCallablePayload",
     source:
       "callables/record_event_success_unit_outcomes_payload.schema.json",

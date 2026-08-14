@@ -14,6 +14,7 @@ final class EventSuccessLiveActionCallableRequest {
     this.activeStepIndex,
     this.roundIndex,
     this.confirmed,
+    this.accountabilityAcknowledged,
   });
 
   final String eventId;
@@ -22,6 +23,7 @@ final class EventSuccessLiveActionCallableRequest {
   final int? activeStepIndex;
   final int? roundIndex;
   final bool? confirmed;
+  final bool? accountabilityAcknowledged;
 
   Map<String, Object?> toJson() => {
     'eventId': eventId,
@@ -30,5 +32,6 @@ final class EventSuccessLiveActionCallableRequest {
     'activeStepIndex': ?activeStepIndex,
     'roundIndex': ?roundIndex,
     'confirmed': ?confirmed,
+    'accountabilityAcknowledged': ?accountabilityAcknowledged,
   };
 }

@@ -322,6 +322,7 @@ export 'set_cross_paths_event_consent_callable_payload.g.dart';
 export 'set_cross_paths_event_consent_callable_response.g.dart';
 export 'set_event_attendee_attendance_callable_payload.g.dart';
 export 'set_event_attendee_attendance_callable_response.g.dart';
+export 'set_event_success_accountability_resolution_callable_payload.g.dart';
 export 'set_organizer_notification_preference_callable_payload.g.dart';
 export 'set_review_response_callable_payload.g.dart';
 export 'start_club_host_conversation_callable_payload.g.dart';

@@ -25,6 +25,10 @@ class LiveTab extends StatelessWidget {
     this.standings,
     this.presenceSummary,
     this.presenceError,
+    this.accountabilityAttendees = const [],
+    this.accountabilityError,
+    this.loadingAccountability = false,
+    this.resolvingAccountability = false,
     this.resolvingLateArrival = false,
     this.lateArrivalError,
     required this.wingmanRequests,
@@ -36,6 +40,7 @@ class LiveTab extends StatelessWidget {
     required this.onPreviousStep,
     required this.onNextStep,
     required this.onCompleteGuide,
+    this.onResolveAccountability,
     required this.microPodsGenerationState,
     required this.rotationsGenerationState,
     required this.onGenerateMicroPods,
@@ -74,6 +79,10 @@ class LiveTab extends StatelessWidget {
   final EventSuccessStandings? standings;
   final EventSuccessPresenceSummary? presenceSummary;
   final Object? presenceError;
+  final List<EventAttendee> accountabilityAttendees;
+  final Object? accountabilityError;
+  final bool loadingAccountability;
+  final bool resolvingAccountability;
   final bool resolvingLateArrival;
   final Object? lateArrivalError;
   final List<EventSuccessWingmanRequest> wingmanRequests;
@@ -84,7 +93,12 @@ class LiveTab extends StatelessWidget {
   final EventSuccessLiveActionState actionState;
   final Future<void> Function(int stepIndex)? onPreviousStep;
   final Future<void> Function(int stepIndex)? onNextStep;
-  final Future<void> Function()? onCompleteGuide;
+  final Future<void> Function(bool accountabilityAcknowledged)? onCompleteGuide;
+  final Future<void> Function(
+    String attendeeId,
+    EventSuccessAccountabilityResolution? resolution,
+  )?
+  onResolveAccountability;
   final EventSuccessAssignmentGenerationActionState microPodsGenerationState;
   final EventSuccessAssignmentGenerationActionState rotationsGenerationState;
   final Future<void> Function()? onGenerateMicroPods;
@@ -156,6 +170,15 @@ class LiveTab extends StatelessWidget {
       event: event,
       now: DateTime.now(),
     );
+    final accountability = EventSuccessActivityProfile.forFormat(
+      event.eventFormat,
+    ).accountability;
+    final checkedInAccountabilityAttendees = accountabilityAttendees
+        .where((attendee) => attendee.isCheckedIn)
+        .toList(growable: false);
+    final unresolvedAccountabilityAttendees = checkedInAccountabilityAttendees
+        .where((attendee) => attendee.currentAccountabilityResolution == null)
+        .toList(growable: false);
     final livePlan = runtime.livePlan(
       bookedCount: roster.bookedCount == 0
           ? event.signedUpCount
@@ -272,6 +295,46 @@ class LiveTab extends StatelessWidget {
       );
     }
 
+    Widget? accountabilityCard() =>
+        accountability != EventSuccessAccountability.sweep
+        ? null
+        : EventSuccessAccountabilityCard(
+            attendees: checkedInAccountabilityAttendees,
+            isLoading: loadingAccountability,
+            isResolving: resolvingAccountability,
+            error: accountabilityError,
+            onResolve: onResolveAccountability,
+          );
+
+    Future<void> completeGuide() async {
+      final complete = onCompleteGuide;
+      if (complete == null) return;
+      if (accountability != EventSuccessAccountability.sweep ||
+          unresolvedAccountabilityAttendees.isEmpty) {
+        await complete(false);
+        return;
+      }
+      final finishAnyway = await showCatchAdaptiveDialog<bool>(
+        context: context,
+        title: context.l10n.eventSuccessAccountabilityWarningTitle,
+        message: context.l10n.eventSuccessAccountabilityWarningMessage(
+          count: unresolvedAccountabilityAttendees.length,
+        ),
+        actions: [
+          CatchDialogAction(
+            label: context.l10n.eventSuccessAccountabilityReviewAction,
+            value: false,
+          ),
+          CatchDialogAction(
+            label: context.l10n.eventSuccessAccountabilityFinishAnywayAction,
+            value: true,
+            isDefault: true,
+          ),
+        ],
+      );
+      if (finishAnyway == true) await complete(true);
+    }
+
     Widget liveRevealCard() => EventSuccessLiveRevealHostCard(
       event: event,
       plan: plan,
@@ -338,8 +401,9 @@ class LiveTab extends StatelessWidget {
         runtime.liveRevealEnabled &&
         (runtime.guidedRotationsEnabled || runtime.microPodsEnabled);
     final currentStepCards = compactLiveControls
-        ? <Widget>[?presenceCard(), ?spatialMapCard()]
+        ? <Widget>[?accountabilityCard(), ?presenceCard(), ?spatialMapCard()]
         : <Widget>[
+            ?accountabilityCard(),
             ?presenceCard(),
             if (runtime.wingmanRequestsEnabled &&
                 activeStepHas(EventSuccessModuleCatalog.wingmanRequests.id))
@@ -419,7 +483,7 @@ class LiveTab extends StatelessWidget {
           compactLiveControls &&
               !actionState.isCompleting &&
               onCompleteGuide != null
-          ? () => unawaited(onCompleteGuide!())
+          ? () => unawaited(completeGuide())
           : null,
     );
     final errorBanners = <Widget>[
@@ -488,7 +552,7 @@ class LiveTab extends StatelessWidget {
             isLoading: actionState.isCompleting,
             onPressed: actionState.isCompleting || onCompleteGuide == null
                 ? null
-                : () => unawaited(onCompleteGuide!()),
+                : () => unawaited(completeGuide()),
             fullWidth: true,
           ),
         ],
@@ -496,6 +560,138 @@ class LiveTab extends StatelessWidget {
     );
   }
 }
+
+enum _EventSuccessAccountabilitySelection { unresolved, returned, departed }
+
+class EventSuccessAccountabilityCard extends StatelessWidget {
+  const EventSuccessAccountabilityCard({
+    super.key,
+    required this.attendees,
+    required this.isLoading,
+    required this.isResolving,
+    required this.error,
+    required this.onResolve,
+  });
+
+  final List<EventAttendee> attendees;
+  final bool isLoading;
+  final bool isResolving;
+  final Object? error;
+  final Future<void> Function(
+    String attendeeId,
+    EventSuccessAccountabilityResolution? resolution,
+  )?
+  onResolve;
+
+  @override
+  Widget build(BuildContext context) {
+    final resolvedCount = attendees
+        .where((attendee) => attendee.currentAccountabilityResolution != null)
+        .length;
+    return CatchSurface.card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CatchSectionHeader(
+            padding: EdgeInsets.zero,
+            title: context.l10n.eventSuccessAccountabilityTitle,
+            subtitle: context.l10n.eventSuccessAccountabilitySubtitle,
+          ),
+          gapH8,
+          Text(
+            context.l10n.eventSuccessAccountabilityProgress(
+              resolved: resolvedCount,
+              total: attendees.length,
+            ),
+            style: CatchTextStyles.supporting(context),
+          ),
+          if (error != null) ...[
+            gapH10,
+            CatchErrorBanner.fromError(error!, context: AppErrorContext.event),
+          ],
+          if (isLoading && attendees.isEmpty) ...[
+            gapH12,
+            CatchSkeleton.text(width: CatchLayout.skeletonTextSectionWideWidth),
+          ] else if (attendees.isEmpty) ...[
+            gapH12,
+            Text(context.l10n.eventSuccessAccountabilityEmpty),
+          ] else ...[
+            gapH8,
+            CatchSection.fieldRows(
+              first: true,
+              children: [
+                for (final indexed in attendees.indexed)
+                  CatchField.choices<_EventSuccessAccountabilitySelection>(
+                    key: ValueKey(
+                      'event_success.accountability.${indexed.$2.id}',
+                    ),
+                    title: indexed.$2.displayName,
+                    body: _accountabilitySelectionLabel(
+                      context,
+                      _accountabilitySelection(indexed.$2),
+                    ),
+                    contract: CatchContractConstraints
+                        .setEventSuccessAccountabilityResolutionCallablePayloadResolution,
+                    contractValue: (value) => value.name,
+                    values: _EventSuccessAccountabilitySelection.values,
+                    itemLabel: (value) =>
+                        _accountabilitySelectionLabel(context, value),
+                    selected: {_accountabilitySelection(indexed.$2)},
+                    onSelectionChanged: isResolving || onResolve == null
+                        ? null
+                        : (selection) {
+                            final value = selection.firstOrNull;
+                            if (value == null) return;
+                            unawaited(
+                              onResolve!(
+                                indexed.$2.id,
+                                _accountabilityResolution(value),
+                              ),
+                            );
+                          },
+                    isLoading: isResolving,
+                    divider: indexed.$1 > 0,
+                  ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+_EventSuccessAccountabilitySelection _accountabilitySelection(
+  EventAttendee attendee,
+) => switch (attendee.currentAccountabilityResolution) {
+  EventSuccessAccountabilityResolution.returned =>
+    _EventSuccessAccountabilitySelection.returned,
+  EventSuccessAccountabilityResolution.departed =>
+    _EventSuccessAccountabilitySelection.departed,
+  null => _EventSuccessAccountabilitySelection.unresolved,
+};
+
+EventSuccessAccountabilityResolution? _accountabilityResolution(
+  _EventSuccessAccountabilitySelection selection,
+) => switch (selection) {
+  _EventSuccessAccountabilitySelection.returned =>
+    EventSuccessAccountabilityResolution.returned,
+  _EventSuccessAccountabilitySelection.departed =>
+    EventSuccessAccountabilityResolution.departed,
+  _EventSuccessAccountabilitySelection.unresolved => null,
+};
+
+String _accountabilitySelectionLabel(
+  BuildContext context,
+  _EventSuccessAccountabilitySelection selection,
+) => switch (selection) {
+  _EventSuccessAccountabilitySelection.unresolved =>
+    context.l10n.eventSuccessAccountabilityUnresolved,
+  _EventSuccessAccountabilitySelection.returned =>
+    context.l10n.eventSuccessAccountabilityReturned,
+  _EventSuccessAccountabilitySelection.departed =>
+    context.l10n.eventSuccessAccountabilityDeparted,
+};
 
 class _EventSuccessPresenceCard extends StatelessWidget {
   const _EventSuccessPresenceCard({

@@ -3404,6 +3404,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatEventSuccessPrimitivesAccountability = CatchContractFieldConstraints(
+    path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.eventSuccessPrimitives.accountability',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'rollCall', 'sweep'],
+  );
+
   static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatEventSuccessPrimitivesAssignmentAlgorithm = CatchContractFieldConstraints(
     path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.eventSuccessPrimitives.assignmentAlgorithm',
     valueTypes: <String>['string'],
@@ -7345,6 +7351,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const createEventCallablePayloadEventFormatEventSuccessPrimitivesAccountability = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventFormat.eventSuccessPrimitives.accountability',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'rollCall', 'sweep'],
+  );
+
   static const createEventCallablePayloadEventFormatEventSuccessPrimitivesAssignmentAlgorithm = CatchContractFieldConstraints(
     path: 'createEventCallablePayload.eventFormat.eventSuccessPrimitives.assignmentAlgorithm',
     valueTypes: <String>['string'],
@@ -10383,6 +10395,47 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const eventAttendeeDocumentAccountabilityResolution = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.accountabilityResolution',
+    valueTypes: <String>['string'],
+    enumValues: <String>['returned', 'departed'],
+  );
+
+  static const eventAttendeeDocumentAccountabilityResolvedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.accountabilityResolvedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventAttendeeDocumentAccountabilityResolvedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.accountabilityResolvedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAttendeeDocumentAccountabilityResolvedBy = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.accountabilityResolvedBy',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendeeDocumentAccountabilityResolvedForCheckInAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.accountabilityResolvedForCheckInAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventAttendeeDocumentAccountabilityResolvedForCheckInAtSeconds = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.accountabilityResolvedForCheckInAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const eventAttendeeDocumentArrivalGroup = CatchContractFieldConstraints(
     path: 'eventAttendeeDocument.arrivalGroup',
     maxLength: 180,
@@ -11558,6 +11611,12 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const eventDocumentEventFormatEventSuccessPrimitivesAccountability = CatchContractFieldConstraints(
+    path: 'eventDocument.eventFormat.eventSuccessPrimitives.accountability',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'rollCall', 'sweep'],
   );
 
   static const eventDocumentEventFormatEventSuccessPrimitivesAssignmentAlgorithm = CatchContractFieldConstraints(
@@ -16257,6 +16316,11 @@ abstract final class CatchContractConstraints {
     path: 'eventSuccessLateArrivalDocument.updatedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const eventSuccessLiveActionCallablePayloadAccountabilityAcknowledged = CatchContractFieldConstraints(
+    path: 'eventSuccessLiveActionCallablePayload.accountabilityAcknowledged',
+    valueTypes: <String>['boolean'],
   );
 
   static const eventSuccessLiveActionCallablePayloadAction = CatchContractFieldConstraints(
@@ -35385,6 +35449,29 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
+  static const setEventSuccessAccountabilityResolutionCallablePayloadAttendeeId = CatchContractFieldConstraints(
+    path: 'setEventSuccessAccountabilityResolutionCallablePayload.attendeeId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventSuccessAccountabilityResolutionCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'setEventSuccessAccountabilityResolutionCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventSuccessAccountabilityResolutionCallablePayloadResolution = CatchContractFieldConstraints(
+    path: 'setEventSuccessAccountabilityResolutionCallablePayload.resolution',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['returned', 'departed', 'unresolved'],
+  );
+
   static const setOrganizerNotificationPreferenceCallablePayloadEnabled = CatchContractFieldConstraints(
     path: 'setOrganizerNotificationPreferenceCallablePayload.enabled',
     required: true,
@@ -41245,6 +41332,7 @@ abstract final class CatchContractConstraints {
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.defaultModuleIds': adminUpdateEventDetailsCallablePayloadFieldsEventFormatDefaultModuleIds,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.defaultModuleIds.items': adminUpdateEventDetailsCallablePayloadFieldsEventFormatDefaultModuleIdsItems,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.defaultPlaybookId': adminUpdateEventDetailsCallablePayloadFieldsEventFormatDefaultPlaybookId,
+    'adminUpdateEventDetailsCallablePayload.fields.eventFormat.eventSuccessPrimitives.accountability': adminUpdateEventDetailsCallablePayloadFieldsEventFormatEventSuccessPrimitivesAccountability,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.eventSuccessPrimitives.assignmentAlgorithm': adminUpdateEventDetailsCallablePayloadFieldsEventFormatEventSuccessPrimitivesAssignmentAlgorithm,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.eventSuccessPrimitives.compatibilityPolicy': adminUpdateEventDetailsCallablePayloadFieldsEventFormatEventSuccessPrimitivesCompatibilityPolicy,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.eventSuccessPrimitives.matchingObjective': adminUpdateEventDetailsCallablePayloadFieldsEventFormatEventSuccessPrimitivesMatchingObjective,
@@ -41797,6 +41885,7 @@ abstract final class CatchContractConstraints {
     'createEventCallablePayload.eventFormat.defaultModuleIds': createEventCallablePayloadEventFormatDefaultModuleIds,
     'createEventCallablePayload.eventFormat.defaultModuleIds.items': createEventCallablePayloadEventFormatDefaultModuleIdsItems,
     'createEventCallablePayload.eventFormat.defaultPlaybookId': createEventCallablePayloadEventFormatDefaultPlaybookId,
+    'createEventCallablePayload.eventFormat.eventSuccessPrimitives.accountability': createEventCallablePayloadEventFormatEventSuccessPrimitivesAccountability,
     'createEventCallablePayload.eventFormat.eventSuccessPrimitives.assignmentAlgorithm': createEventCallablePayloadEventFormatEventSuccessPrimitivesAssignmentAlgorithm,
     'createEventCallablePayload.eventFormat.eventSuccessPrimitives.compatibilityPolicy': createEventCallablePayloadEventFormatEventSuccessPrimitivesCompatibilityPolicy,
     'createEventCallablePayload.eventFormat.eventSuccessPrimitives.matchingObjective': createEventCallablePayloadEventFormatEventSuccessPrimitivesMatchingObjective,
@@ -42219,6 +42308,12 @@ abstract final class CatchContractConstraints {
     'eventAttendeeAttendanceReceiptDocument.expiresAt._seconds': eventAttendeeAttendanceReceiptDocumentExpiresAtSeconds,
     'eventAttendeeAttendanceReceiptDocument.organizerId': eventAttendeeAttendanceReceiptDocumentOrganizerId,
     'eventAttendeeAttendanceReceiptDocument.priorRevision': eventAttendeeAttendanceReceiptDocumentPriorRevision,
+    'eventAttendeeDocument.accountabilityResolution': eventAttendeeDocumentAccountabilityResolution,
+    'eventAttendeeDocument.accountabilityResolvedAt._nanoseconds': eventAttendeeDocumentAccountabilityResolvedAtNanoseconds,
+    'eventAttendeeDocument.accountabilityResolvedAt._seconds': eventAttendeeDocumentAccountabilityResolvedAtSeconds,
+    'eventAttendeeDocument.accountabilityResolvedBy': eventAttendeeDocumentAccountabilityResolvedBy,
+    'eventAttendeeDocument.accountabilityResolvedForCheckInAt._nanoseconds': eventAttendeeDocumentAccountabilityResolvedForCheckInAtNanoseconds,
+    'eventAttendeeDocument.accountabilityResolvedForCheckInAt._seconds': eventAttendeeDocumentAccountabilityResolvedForCheckInAtSeconds,
     'eventAttendeeDocument.arrivalGroup': eventAttendeeDocumentArrivalGroup,
     'eventAttendeeDocument.attendanceRevision': eventAttendeeDocumentAttendanceRevision,
     'eventAttendeeDocument.cancelledAt._nanoseconds': eventAttendeeDocumentCancelledAtNanoseconds,
@@ -42380,6 +42475,7 @@ abstract final class CatchContractConstraints {
     'eventDocument.eventFormat.defaultModuleIds': eventDocumentEventFormatDefaultModuleIds,
     'eventDocument.eventFormat.defaultModuleIds.items': eventDocumentEventFormatDefaultModuleIdsItems,
     'eventDocument.eventFormat.defaultPlaybookId': eventDocumentEventFormatDefaultPlaybookId,
+    'eventDocument.eventFormat.eventSuccessPrimitives.accountability': eventDocumentEventFormatEventSuccessPrimitivesAccountability,
     'eventDocument.eventFormat.eventSuccessPrimitives.assignmentAlgorithm': eventDocumentEventFormatEventSuccessPrimitivesAssignmentAlgorithm,
     'eventDocument.eventFormat.eventSuccessPrimitives.compatibilityPolicy': eventDocumentEventFormatEventSuccessPrimitivesCompatibilityPolicy,
     'eventDocument.eventFormat.eventSuccessPrimitives.matchingObjective': eventDocumentEventFormatEventSuccessPrimitivesMatchingObjective,
@@ -43028,6 +43124,7 @@ abstract final class CatchContractConstraints {
     'eventSuccessLateArrivalDocument.uid': eventSuccessLateArrivalDocumentUid,
     'eventSuccessLateArrivalDocument.updatedAt._nanoseconds': eventSuccessLateArrivalDocumentUpdatedAtNanoseconds,
     'eventSuccessLateArrivalDocument.updatedAt._seconds': eventSuccessLateArrivalDocumentUpdatedAtSeconds,
+    'eventSuccessLiveActionCallablePayload.accountabilityAcknowledged': eventSuccessLiveActionCallablePayloadAccountabilityAcknowledged,
     'eventSuccessLiveActionCallablePayload.action': eventSuccessLiveActionCallablePayloadAction,
     'eventSuccessLiveActionCallablePayload.activeStepIndex': eventSuccessLiveActionCallablePayloadActiveStepIndex,
     'eventSuccessLiveActionCallablePayload.confirmed': eventSuccessLiveActionCallablePayloadConfirmed,
@@ -45690,6 +45787,9 @@ abstract final class CatchContractConstraints {
     'setEventAttendeeAttendanceCallableResponse.changed': setEventAttendeeAttendanceCallableResponseChanged,
     'setEventAttendeeAttendanceCallableResponse.checkedIn': setEventAttendeeAttendanceCallableResponseCheckedIn,
     'setEventAttendeeAttendanceCallableResponse.replayed': setEventAttendeeAttendanceCallableResponseReplayed,
+    'setEventSuccessAccountabilityResolutionCallablePayload.attendeeId': setEventSuccessAccountabilityResolutionCallablePayloadAttendeeId,
+    'setEventSuccessAccountabilityResolutionCallablePayload.eventId': setEventSuccessAccountabilityResolutionCallablePayloadEventId,
+    'setEventSuccessAccountabilityResolutionCallablePayload.resolution': setEventSuccessAccountabilityResolutionCallablePayloadResolution,
     'setOrganizerNotificationPreferenceCallablePayload.enabled': setOrganizerNotificationPreferenceCallablePayloadEnabled,
     'setOrganizerNotificationPreferenceCallablePayload.organizerId': setOrganizerNotificationPreferenceCallablePayloadOrganizerId,
     'setReviewResponseCallablePayload.message': setReviewResponseCallablePayloadMessage,

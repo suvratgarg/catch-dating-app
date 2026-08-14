@@ -17,4 +17,8 @@ export interface EventSuccessLiveActionCallablePayload {
   activeStepIndex?: number;
   roundIndex?: number;
   confirmed?: boolean;
+  /**
+   * Explicit Host acknowledgement that a sweep still has unresolved checked-in attendees.
+   */
+  accountabilityAcknowledged?: boolean;
 }

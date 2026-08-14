@@ -31,6 +31,7 @@ import 'package:catch_dating_app/event_success/presentation/event_success_setup_
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
@@ -1425,6 +1426,82 @@ void main() {
       EventSuccessLiveEffectKind.guideComplete,
     ]);
   });
+
+  testWidgets(
+    'unresolved sweep warns while review and finish-anyway stay available',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(430, 5000);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final event = buildEvent(id: 'event-accountability-warning');
+      final plan = EventSuccessPlan.defaultForEvent(
+        event,
+        now: event.startTime,
+      );
+      bool? acknowledged;
+
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: Scaffold(
+              body: SafeArea(
+                child: EventSuccessHostPanel(
+                  event: event,
+                  plan: plan,
+                  planIsPersisted: true,
+                  roster: const EventParticipationRoster(
+                    bookedIds: ['guest-1'],
+                    checkedInIds: ['guest-1'],
+                    waitlistedIds: [],
+                  ),
+                  accountabilityAttendees: [
+                    _accountabilityAttendee(
+                      event: event,
+                      id: 'imported-guest-1',
+                      displayName: 'Ari Guest',
+                    ),
+                  ],
+                  onCompleteLiveGuide: (value) async {
+                    acknowledged = value;
+                  },
+                  initialTab: EventSuccessHostTab.live,
+                  showTabs: false,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Return sweep'), findsOneWidget);
+      expect(find.text('Ari Guest'), findsOneWidget);
+
+      await tester.tap(
+        find.widgetWithText(CatchButton, 'Mark live guide complete'),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Some guests aren’t marked yet'), findsOneWidget);
+      expect(find.textContaining('leave without checking out'), findsOneWidget);
+      expect(acknowledged, isNull);
+
+      await tester.tap(find.text('Review sweep'));
+      await tester.pumpAndSettle();
+      expect(acknowledged, isNull);
+
+      await tester.tap(
+        find.widgetWithText(CatchButton, 'Mark live guide complete'),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Finish anyway'));
+      await tester.pumpAndSettle();
+
+      expect(acknowledged, isTrue);
+    },
+  );
 
   testWidgets('host live mode requires generation before rotation edits', (
     tester,
@@ -3457,6 +3534,27 @@ EventSuccessWingmanRequest _wingmanRequest({
     note: note,
     createdAt: now,
     updatedAt: now,
+  );
+}
+
+EventAttendee _accountabilityAttendee({
+  required Event event,
+  required String id,
+  required String displayName,
+}) {
+  final checkedInAt = event.startTime.add(const Duration(minutes: 5));
+  return EventAttendee(
+    id: id,
+    eventId: event.id,
+    clubId: event.clubId,
+    organizerId: event.organizerId,
+    displayName: displayName,
+    searchName: displayName.toLowerCase(),
+    source: EventAttendeeSource.hostImport,
+    status: EventAttendeeStatus.checkedIn,
+    createdAt: event.startTime,
+    updatedAt: checkedInAt,
+    checkedInAt: checkedInAt,
   );
 }
 

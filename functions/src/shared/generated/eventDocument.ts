@@ -110,6 +110,7 @@ export interface EventDocument {
         | "balance"
         | "spread";
       unitOutcome?: "none" | "completion" | "score" | "rank";
+      accountability?: "none" | "rollCall" | "sweep";
     };
     activityDetails?: {
       [k: string]: unknown;

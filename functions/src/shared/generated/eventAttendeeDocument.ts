@@ -81,6 +81,19 @@ export interface EventAttendeeDocument {
    */
   preCheckInStatus?: "invited" | "registered" | "waitlisted" | null;
   /**
+   * Host-recorded sweep result. It is current only when accountabilityResolvedForCheckInAt equals checkedInAt.
+   */
+  accountabilityResolution?: "returned" | "departed" | null;
+  accountabilityResolvedForCheckInAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  } | null;
+  accountabilityResolvedAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  } | null;
+  accountabilityResolvedBy?: string | null;
+  /**
    * External source that most recently supplied provider-authoritative fields, independent of row creation source.
    */
   provider?:

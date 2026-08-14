@@ -18285,6 +18285,14 @@ export const eventDocumentSchema = {
                 "score",
                 "rank"
               ]
+            },
+            "accountability": {
+              "type": "string",
+              "enum": [
+                "none",
+                "rollCall",
+                "sweep"
+              ]
             }
           }
         },
@@ -21701,6 +21709,80 @@ export const eventAttendeeDocumentSchema = {
         null
       ],
       "description": "Operational status restored by an absolute undo. Null outside checked-in state."
+    },
+    "accountabilityResolution": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "returned",
+        "departed",
+        null
+      ],
+      "description": "Host-recorded sweep result. It is current only when accountabilityResolvedForCheckInAt equals checkedInAt."
+    },
+    "accountabilityResolvedForCheckInAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "accountabilityResolvedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "accountabilityResolvedBy": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
     },
     "provider": {
       "type": [
@@ -44542,6 +44624,14 @@ export const adminUpdateEventDetailsCallablePayloadSchema = {
                     "score",
                     "rank"
                   ]
+                },
+                "accountability": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "rollCall",
+                    "sweep"
+                  ]
                 }
               }
             },
@@ -45622,6 +45712,14 @@ export const createEventCallablePayloadSchema = {
                 "completion",
                 "score",
                 "rank"
+              ]
+            },
+            "accountability": {
+              "type": "string",
+              "enum": [
+                "none",
+                "rollCall",
+                "sweep"
               ]
             }
           }
@@ -53080,6 +53178,47 @@ export const eventSuccessLiveActionCallablePayloadSchema = {
     },
     "confirmed": {
       "type": "boolean"
+    },
+    "accountabilityAcknowledged": {
+      "type": "boolean",
+      "description": "Explicit Host acknowledgement that a sweep still has unresolved checked-in attendees."
+    }
+  }
+};
+
+export const setEventSuccessAccountabilityResolutionCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/set_event_success_accountability_resolution_payload.schema.json",
+  "title": "SetEventSuccessAccountabilityResolutionCallablePayload",
+  "description": "Host resolution for one currently checked-in operational attendee during an Event Success sweep.",
+  "x-callable-aliases": [
+    "setEventSuccessAccountabilityResolution"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "attendeeId",
+    "resolution"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "attendeeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "resolution": {
+      "type": "string",
+      "enum": [
+        "returned",
+        "departed",
+        "unresolved"
+      ]
     }
   }
 };

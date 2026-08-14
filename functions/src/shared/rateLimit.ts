@@ -87,6 +87,10 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   heartbeatEventSuccessPresence: {maxRequests: 6, windowMs: 60 * 1000},
   getEventSuccessPresenceSummary: {maxRequests: 6, windowMs: 60 * 1000},
   resolveEventSuccessLateArrival: {maxRequests: 30, windowMs: 60 * 1000},
+  setEventSuccessAccountabilityResolution: {
+    maxRequests: 120,
+    windowMs: 60 * 1000,
+  },
   upsertEventSuccessLayout: {maxRequests: 20, windowMs: 60 * 1000},
   controlEventSuccessSpatial: {maxRequests: 120, windowMs: 60 * 1000},
   claimEventRuntimeAccess: {maxRequests: 10, windowMs: 60 * 60 * 1000},

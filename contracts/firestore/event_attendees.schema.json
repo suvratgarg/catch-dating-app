@@ -121,6 +121,22 @@
       "enum": ["invited", "registered", "waitlisted", null],
       "description": "Operational status restored by an absolute undo. Null outside checked-in state."
     },
+    "accountabilityResolution": {
+      "type": ["string", "null"],
+      "enum": ["returned", "departed", null],
+      "description": "Host-recorded sweep result. It is current only when accountabilityResolvedForCheckInAt equals checkedInAt."
+    },
+    "accountabilityResolvedForCheckInAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+    },
+    "accountabilityResolvedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+    },
+    "accountabilityResolvedBy": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 180
+    },
     "provider": {
       "type": ["string", "null"],
       "enum": ["luma", "eventbrite", "partiful", "posh", "bookmyshow", "district", "sortmyscene", "airbnb", null],

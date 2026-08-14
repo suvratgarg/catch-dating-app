@@ -279,6 +279,7 @@ import {OverrideEventSuccessRotationsCallablePayload} from "./overrideEventSucce
 import {PrepareEventSuccessRotationDraftCallablePayload} from "./prepareEventSuccessRotationDraftCallablePayload";
 import {PublishEventSuccessRotationRoundCallablePayload} from "./publishEventSuccessRotationRoundCallablePayload";
 import {EventSuccessLiveActionCallablePayload} from "./eventSuccessLiveActionCallablePayload";
+import {SetEventSuccessAccountabilityResolutionCallablePayload} from "./setEventSuccessAccountabilityResolutionCallablePayload";
 import {RecordEventSuccessUnitOutcomesCallablePayload} from "./recordEventSuccessUnitOutcomesCallablePayload";
 import {RecordEventSuccessUnitOutcomesCallableResponse} from "./recordEventSuccessUnitOutcomesCallableResponse";
 import {HeartbeatEventSuccessPresenceCallablePayload} from "./heartbeatEventSuccessPresenceCallablePayload";
@@ -634,6 +635,7 @@ import {
   prepareEventSuccessRotationDraftCallablePayloadSchema,
   publishEventSuccessRotationRoundCallablePayloadSchema,
   eventSuccessLiveActionCallablePayloadSchema,
+  setEventSuccessAccountabilityResolutionCallablePayloadSchema,
   recordEventSuccessUnitOutcomesCallablePayloadSchema,
   recordEventSuccessUnitOutcomesCallableResponseSchema,
   heartbeatEventSuccessPresenceCallablePayloadSchema,
@@ -1818,6 +1820,10 @@ export const validateEventSuccessLiveActionCallablePayload:
   ValidateFunction<EventSuccessLiveActionCallablePayload> =
     ajv.compile(eventSuccessLiveActionCallablePayloadSchema) as
       ValidateFunction<EventSuccessLiveActionCallablePayload>;
+export const validateSetEventSuccessAccountabilityResolutionCallablePayload:
+  ValidateFunction<SetEventSuccessAccountabilityResolutionCallablePayload> =
+    ajv.compile(setEventSuccessAccountabilityResolutionCallablePayloadSchema) as
+      ValidateFunction<SetEventSuccessAccountabilityResolutionCallablePayload>;
 export const validateRecordEventSuccessUnitOutcomesCallablePayload:
   ValidateFunction<RecordEventSuccessUnitOutcomesCallablePayload> =
     ajv.compile(recordEventSuccessUnitOutcomesCallablePayloadSchema) as

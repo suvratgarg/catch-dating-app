@@ -643,6 +643,7 @@ void main() {
             'compatibilityPolicy': 'questionnaireClueOnly',
             'matchingObjective': 'spread',
             'unitOutcome': 'score',
+            'accountability': 'rollCall',
           },
         );
 
@@ -671,6 +672,7 @@ void main() {
         );
         expect(profile.matchingObjective, EventSuccessMatchingObjective.spread);
         expect(profile.unitOutcome, EventSuccessUnitOutcome.score);
+        expect(profile.accountability, EventSuccessAccountability.rollCall);
         expect(profile.assignmentResolution.supported, isFalse);
         expect(profile.playbook.id, EventSuccessPlaybookLibrary.pubQuiz.id);
         expect(profile.structureConfig.unitKind, EventSuccessUnitKind.teams);
@@ -759,6 +761,34 @@ void main() {
         );
       }
     });
+
+    test(
+      'accountability defaults from interaction shape and stays overridable',
+      () {
+        expect(
+          EventSuccessActivityProfile.forActivity(
+            ActivityKind.socialRun,
+          ).accountability,
+          EventSuccessAccountability.sweep,
+        );
+        expect(
+          EventSuccessActivityProfile.forActivity(
+            ActivityKind.pubQuiz,
+          ).accountability,
+          EventSuccessAccountability.none,
+        );
+        expect(
+          EventSuccessActivityProfile.forFormat(
+            const EventFormatSnapshot(
+              activityKind: ActivityKind.socialRun,
+              interactionModel: EventInteractionModel.pacePods,
+              eventSuccessPrimitives: {'accountability': 'none'},
+            ),
+          ).accountability,
+          EventSuccessAccountability.none,
+        );
+      },
+    );
 
     test('event defaults normalize to the selected activity', () {
       final racketDefaults = EventSuccessDefaults(

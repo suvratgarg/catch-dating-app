@@ -20208,6 +20208,75 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No checked-in events yet.'**
   String get hostCustomersNoAttendance;
+
+  /// Host accountability sweep heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Return sweep'**
+  String get eventSuccessAccountabilityTitle;
+
+  /// Explains the non-alarmist accountability sweep boundary.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark each checked-in guest as returned or departed. People may leave quietly; this is a safety aid, not a checkout requirement.'**
+  String get eventSuccessAccountabilitySubtitle;
+
+  /// Resolved attendee count in the Host sweep.
+  ///
+  /// In en, this message translates to:
+  /// **'{resolved} of {total} marked'**
+  String eventSuccessAccountabilityProgress({
+    required int resolved,
+    required int total,
+  });
+
+  /// Empty accountability sweep state.
+  ///
+  /// In en, this message translates to:
+  /// **'No checked-in guests to review.'**
+  String get eventSuccessAccountabilityEmpty;
+
+  /// Unresolved accountability choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Not marked'**
+  String get eventSuccessAccountabilityUnresolved;
+
+  /// Returned accountability choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Returned'**
+  String get eventSuccessAccountabilityReturned;
+
+  /// Departed accountability choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Departed'**
+  String get eventSuccessAccountabilityDeparted;
+
+  /// Completion warning title for an unresolved sweep.
+  ///
+  /// In en, this message translates to:
+  /// **'Some guests aren’t marked yet'**
+  String get eventSuccessAccountabilityWarningTitle;
+
+  /// Normalizes quiet departures while warning before completion.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 checked-in guest isn’t marked returned or departed.} other{{count} checked-in guests aren’t marked returned or departed.}} People sometimes leave without checking out. Review the list if useful, or finish anyway.'**
+  String eventSuccessAccountabilityWarningMessage({required int count});
+
+  /// Dismisses completion to review unresolved guests.
+  ///
+  /// In en, this message translates to:
+  /// **'Review sweep'**
+  String get eventSuccessAccountabilityReviewAction;
+
+  /// Acknowledges unresolved guests and completes the event.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish anyway'**
+  String get eventSuccessAccountabilityFinishAnywayAction;
 }
 
 class _AppLocalizationsDelegate

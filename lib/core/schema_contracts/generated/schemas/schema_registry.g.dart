@@ -1392,6 +1392,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaEventSuccessLiveActionCallablePayloadSchema,
   ),
   SchemaContractDefinition(
+    name: 'SetEventSuccessAccountabilityResolutionCallablePayload',
+    source: 'callables/set_event_success_accountability_resolution_payload.schema.json',
+    schema: schemaSetEventSuccessAccountabilityResolutionCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
     name: 'RecordEventSuccessUnitOutcomesCallablePayload',
     source: 'callables/record_event_success_unit_outcomes_payload.schema.json',
     schema: schemaRecordEventSuccessUnitOutcomesCallablePayloadSchema,
@@ -2064,6 +2069,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'PrepareEventSuccessRotationDraftCallablePayload': schemaPrepareEventSuccessRotationDraftCallablePayloadSchema,
   'PublishEventSuccessRotationRoundCallablePayload': schemaPublishEventSuccessRotationRoundCallablePayloadSchema,
   'EventSuccessLiveActionCallablePayload': schemaEventSuccessLiveActionCallablePayloadSchema,
+  'SetEventSuccessAccountabilityResolutionCallablePayload': schemaSetEventSuccessAccountabilityResolutionCallablePayloadSchema,
   'RecordEventSuccessUnitOutcomesCallablePayload': schemaRecordEventSuccessUnitOutcomesCallablePayloadSchema,
   'RecordEventSuccessUnitOutcomesCallableResponse': schemaRecordEventSuccessUnitOutcomesCallableResponseSchema,
   'HeartbeatEventSuccessPresenceCallablePayload': schemaHeartbeatEventSuccessPresenceCallablePayloadSchema,
@@ -2421,6 +2427,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'callables/prepare_event_success_rotation_draft_payload.schema.json': schemaPrepareEventSuccessRotationDraftCallablePayloadSchema,
   'callables/publish_event_success_rotation_round_payload.schema.json': schemaPublishEventSuccessRotationRoundCallablePayloadSchema,
   'callables/event_success_live_action_payload.schema.json': schemaEventSuccessLiveActionCallablePayloadSchema,
+  'callables/set_event_success_accountability_resolution_payload.schema.json': schemaSetEventSuccessAccountabilityResolutionCallablePayloadSchema,
   'callables/record_event_success_unit_outcomes_payload.schema.json': schemaRecordEventSuccessUnitOutcomesCallablePayloadSchema,
   'callable_responses/record_event_success_unit_outcomes_response.schema.json': schemaRecordEventSuccessUnitOutcomesCallableResponseSchema,
   'callables/heartbeat_event_success_presence_payload.schema.json': schemaHeartbeatEventSuccessPresenceCallablePayloadSchema,
