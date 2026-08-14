@@ -34,6 +34,10 @@
       "minimum": 0,
       "maximum": 100
     },
-    "confirmed": {"type": "boolean"}
+    "confirmed": {"type": "boolean"},
+    "accountabilityAcknowledged": {
+      "type": "boolean",
+      "description": "Explicit Host acknowledgement that a sweep still has unresolved checked-in attendees."
+    }
   }
 }

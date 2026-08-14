@@ -53,5 +53,9 @@ const schemaEventSuccessLiveActionCallablePayloadSchema = <String, Object?>{
     'confirmed': <String, Object?>{
       'type': 'boolean',
     },
+    'accountabilityAcknowledged': <String, Object?>{
+      'type': 'boolean',
+      'description': 'Explicit Host acknowledgement that a sweep still has unresolved checked-in attendees.',
+    },
   },
 };

@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.22.0
+version: 1.23.0
 updated: 2026-08-14
 owner: recursive_audit_loop
 status: active
@@ -55,12 +55,30 @@ generator, and commit the generated diff.
 `novelty`, `balance`, and `spread`) and the optional `matchingObjective` format
 primitive. The same source owns the closed `eventSuccessUnitOutcome` enum
 (`none`, `completion`, `score`, and `rank`) and its optional `unitOutcome`
-primitive. The schema generator projects those contracts into Functions, Dart,
+primitive, plus `eventSuccessAccountability` (`none`, `rollCall`, `sweep`) and
+its optional `accountability` primitive. The schema generator projects those contracts into Functions, Dart,
 and tool registries. Runtime resolution, including the profile-free `coverage`
 default, format-bound outcome defaults, and explicit unsupported assignment
 algorithms, is owned by the Event Success format resolver documented in
 `docs/event_success.md`; generated contract files must not encode a separate
 fallback.
+
+### Event Success Accountability Boundary
+
+`eventAttendees/{attendeeId}` carries optional Host-owned accountability fields:
+the `returned`/`departed` resolution, the exact `checkedInAt` timestamp it was
+resolved for, resolver identity, and server resolution time. A resolution is
+current only when its stored check-in timestamp exactly matches the row's
+current check-in. This includes Host-imported and unlinked operational guests
+without synthesizing a Catch UID.
+
+Direct attendee-row writes remain denied. The generated
+`setEventSuccessAccountabilityResolution` callable request accepts one current
+attendee and `returned`, `departed`, or `unresolved`; the Functions transaction
+validates organizer-manager authority, event identity, current check-in, and
+`accountability: sweep`. The live completion request separately carries
+`accountabilityAcknowledged` so an unresolved sweep warns by default but an
+explicit Host choice can still complete the event.
 
 ### Event Success Live-Control Boundary
 

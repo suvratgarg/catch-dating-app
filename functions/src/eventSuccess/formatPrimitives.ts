@@ -28,6 +28,10 @@ export type EventSuccessUnitOutcome = NonNullable<
   EventSuccessFormatPrimitives["unitOutcome"]
 >;
 
+export type EventSuccessAccountability = NonNullable<
+  EventSuccessFormatPrimitives["accountability"]
+>;
+
 export type EventSuccessVariableResolutionStatus =
   "supported" | "unsupported";
 
@@ -46,6 +50,7 @@ export interface ResolvedEventSuccessPrimitives {
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
   matchingObjective: EventSuccessMatchingObjective;
   unitOutcome: EventSuccessUnitOutcome;
+  accountability: EventSuccessAccountability;
   assignmentResolution: EventSuccessVariableResolution;
 }
 
@@ -161,11 +166,14 @@ export function eventSuccessPrimitivesFor(
       defaultMatchingObjectiveFor(interactionModel, compatibilityPolicy);
   const unitOutcome = isEventSuccessUnitOutcome(raw?.unitOutcome) ?
     raw.unitOutcome : defaultUnitOutcomeFor(interactionModel);
+  const accountability = isEventSuccessAccountability(raw?.accountability) ?
+    raw.accountability : defaultAccountabilityFor(interactionModel);
   return {
     assignmentAlgorithm,
     compatibilityPolicy,
     matchingObjective,
     unitOutcome,
+    accountability,
     assignmentResolution: eventSuccessVariableResolutionFor({
       assignmentAlgorithm,
       compatibilityPolicy,
@@ -173,6 +181,13 @@ export function eventSuccessPrimitivesFor(
       unitOutcome,
     }),
   };
+}
+
+/** Returns the reviewed end-of-event accountability default. */
+export function defaultAccountabilityFor(
+  interactionModel: EventFormatSnapshot["interactionModel"]
+): EventSuccessAccountability {
+  return interactionModel === "pacePods" ? "sweep" : "none";
 }
 
 /**
@@ -389,6 +404,13 @@ export function isEventSuccessUnitOutcome(
     value === "completion" ||
     value === "score" ||
     value === "rank";
+}
+
+/** Checks accountability primitive membership. */
+export function isEventSuccessAccountability(
+  value: unknown
+): value is EventSuccessAccountability {
+  return value === "none" || value === "rollCall" || value === "sweep";
 }
 
 /** Returns the implemented endpoint for an assignment algorithm. */

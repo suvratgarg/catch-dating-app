@@ -54,8 +54,10 @@ import 'package:catch_dating_app/event_success/presentation/event_success_live_r
 import 'package:catch_dating_app/event_success/presentation/event_success_room_map.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_setup_body.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_skeletons.dart';
+import 'package:catch_dating_app/events/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -160,6 +162,9 @@ class _EventSuccessHostSectionState
     final resolveLateArrivalMutation = ref.watch(
       EventSuccessController.resolveLateArrivalMutation,
     );
+    final accountabilityResolutionMutation = ref.watch(
+      EventSuccessController.accountabilityResolutionMutation,
+    );
     final persistedPlan = planAsync.asData?.value;
     final hasSavedGuide = persistedPlan != null;
     final shouldLoadRoster =
@@ -170,9 +175,10 @@ class _EventSuccessHostSectionState
         hasSavedGuide && (showTabs || initialTab == EventSuccessHostTab.live);
     final shouldLoadPreferences = shouldLoadAssignments;
     final shouldLoadWingmanRequests = shouldLoadAssignments;
-    final unitOutcome = EventSuccessActivityProfile.forFormat(
+    final eventSuccessProfile = EventSuccessActivityProfile.forFormat(
       event.eventFormat,
-    ).unitOutcome;
+    );
+    final unitOutcome = eventSuccessProfile.unitOutcome;
     final shouldLoadStandings =
         shouldLoadAssignments &&
         (unitOutcome == EventSuccessUnitOutcome.score ||
@@ -187,6 +193,13 @@ class _EventSuccessHostSectionState
               .watch(watchEventSuccessPresenceSummaryProvider(event.id))
               .whenData((summary) => summary)
         : const AsyncData<EventSuccessPresenceSummary?>(null);
+    final shouldLoadAccountability =
+        shouldLoadAssignments &&
+        eventSuccessProfile.accountability == EventSuccessAccountability.sweep;
+    final AsyncValue<List<EventAttendee>> accountabilityAttendeesAsync =
+        shouldLoadAccountability
+        ? ref.watch(watchEventAttendeesProvider(event.id))
+        : const AsyncData(<EventAttendee>[]);
     final AsyncValue<EventSuccessLayout?> spatialLayoutAsync =
         shouldLoadAssignments &&
             persistedPlan.layoutId != null &&
@@ -355,6 +368,15 @@ class _EventSuccessHostSectionState
       presenceError: presenceSummaryAsync.hasError
           ? presenceSummaryAsync.error
           : null,
+      accountabilityAttendees:
+          accountabilityAttendeesAsync.asData?.value ?? const [],
+      accountabilityError: accountabilityAttendeesAsync.hasError
+          ? accountabilityAttendeesAsync.error
+          : accountabilityResolutionMutation.hasError
+          ? _mutationError(accountabilityResolutionMutation)
+          : null,
+      loadingAccountability: accountabilityAttendeesAsync.isLoading,
+      resolvingAccountability: accountabilityResolutionMutation.isPending,
       resolvingLateArrival: resolveLateArrivalMutation.isPending,
       lateArrivalError: resolveLateArrivalMutation.hasError
           ? _mutationError(resolveLateArrivalMutation)
@@ -385,10 +407,25 @@ class _EventSuccessHostSectionState
         index: index,
         expectedRevision: state.plan.liveControlRevision,
       ),
-      onCompleteLiveGuide: () => _completeEventSuccessLiveGuide(
-        eventId: event.id,
-        expectedRevision: state.plan.liveControlRevision,
-      ),
+      onCompleteLiveGuide: (accountabilityAcknowledged) =>
+          _completeEventSuccessLiveGuide(
+            eventId: event.id,
+            expectedRevision: state.plan.liveControlRevision,
+            accountabilityAcknowledged: accountabilityAcknowledged,
+          ),
+      onResolveAccountability: (attendeeId, resolution) async {
+        await EventSuccessController.accountabilityResolutionMutation.run(
+          ref,
+          (tx) => tx
+              .get(eventSuccessControllerProvider.notifier)
+              .setAccountabilityResolution(
+                eventId: event.id,
+                attendeeId: attendeeId,
+                resolution: resolution,
+              ),
+        );
+        ref.invalidate(watchEventAttendeesProvider(event.id));
+      },
       microPodsGenerationState:
           EventSuccessAssignmentGenerationActionState.resolve(
             pending: generateMicroPodsMutation.isPending,
@@ -725,6 +762,7 @@ class _EventSuccessHostSectionState
   Future<void> _completeEventSuccessLiveGuide({
     required String eventId,
     required int expectedRevision,
+    required bool accountabilityAcknowledged,
   }) {
     unawaited(
       ref
@@ -735,7 +773,11 @@ class _EventSuccessHostSectionState
       ref,
       (tx) => tx
           .get(eventSuccessControllerProvider.notifier)
-          .completePlan(eventId: eventId, expectedRevision: expectedRevision),
+          .completePlan(
+            eventId: eventId,
+            expectedRevision: expectedRevision,
+            accountabilityAcknowledged: accountabilityAcknowledged,
+          ),
     );
   }
 
@@ -1002,6 +1044,10 @@ class EventSuccessHostPanel extends StatefulWidget {
     this.standings,
     this.presenceSummary,
     this.presenceError,
+    this.accountabilityAttendees = const [],
+    this.accountabilityError,
+    this.loadingAccountability = false,
+    this.resolvingAccountability = false,
     this.resolvingLateArrival = false,
     this.lateArrivalError,
     this.wingmanRequests = const [],
@@ -1017,6 +1063,7 @@ class EventSuccessHostPanel extends StatefulWidget {
     this.liveActionState = const EventSuccessLiveActionState(),
     this.onSetLiveStep,
     this.onCompleteLiveGuide,
+    this.onResolveAccountability,
     this.onPlayLiveEffect,
     this.microPodsGenerationState =
         const EventSuccessAssignmentGenerationActionState(),
@@ -1058,6 +1105,10 @@ class EventSuccessHostPanel extends StatefulWidget {
   final EventSuccessStandings? standings;
   final EventSuccessPresenceSummary? presenceSummary;
   final Object? presenceError;
+  final List<EventAttendee> accountabilityAttendees;
+  final Object? accountabilityError;
+  final bool loadingAccountability;
+  final bool resolvingAccountability;
   final bool resolvingLateArrival;
   final Object? lateArrivalError;
   final List<EventSuccessWingmanRequest> wingmanRequests;
@@ -1073,7 +1124,13 @@ class EventSuccessHostPanel extends StatefulWidget {
   onSaveSetup;
   final EventSuccessLiveActionState liveActionState;
   final Future<void> Function(int stepIndex)? onSetLiveStep;
-  final Future<void> Function()? onCompleteLiveGuide;
+  final Future<void> Function(bool accountabilityAcknowledged)?
+  onCompleteLiveGuide;
+  final Future<void> Function(
+    String attendeeId,
+    EventSuccessAccountabilityResolution? resolution,
+  )?
+  onResolveAccountability;
   final Future<void> Function(EventSuccessLiveEffectKind kind)?
   onPlayLiveEffect;
   final EventSuccessAssignmentGenerationActionState microPodsGenerationState;
@@ -1154,6 +1211,10 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         standings: widget.standings,
         presenceSummary: widget.presenceSummary,
         presenceError: widget.presenceError,
+        accountabilityAttendees: widget.accountabilityAttendees,
+        accountabilityError: widget.accountabilityError,
+        loadingAccountability: widget.loadingAccountability,
+        resolvingAccountability: widget.resolvingAccountability,
         resolvingLateArrival: widget.resolvingLateArrival,
         lateArrivalError: widget.lateArrivalError,
         wingmanRequests: widget.wingmanRequests,
@@ -1174,6 +1235,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         ),
         onNextStep: _liveStepCallback(widget.fixtureActions?.onNextStep),
         onCompleteGuide: _liveCompleteCallback(),
+        onResolveAccountability: widget.onResolveAccountability,
         microPodsGenerationState: widget.microPodsGenerationState,
         rotationsGenerationState: widget.rotationsGenerationState,
         onGenerateMicroPods: _voidFixtureCallback(
@@ -1269,10 +1331,11 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
     );
   }
 
-  Future<void> Function()? _liveCompleteCallback() {
+  Future<void> Function(bool accountabilityAcknowledged)?
+  _liveCompleteCallback() {
     final fixtureAction = widget.fixtureActions?.onCompletePlan;
     if (fixtureAction != null) {
-      return () => _runLiveAction(
+      return (_) => _runLiveAction(
         key: 'complete',
         action: () async {
           await widget.onPlayLiveEffect?.call(
@@ -1284,7 +1347,10 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
     }
     final productionAction = widget.onCompleteLiveGuide;
     if (productionAction == null) return null;
-    return () => _runLiveAction(key: 'complete', action: productionAction);
+    return (accountabilityAcknowledged) => _runLiveAction(
+      key: 'complete',
+      action: () => productionAction(accountabilityAcknowledged),
+    );
   }
 
   Future<void> _runLiveAction({

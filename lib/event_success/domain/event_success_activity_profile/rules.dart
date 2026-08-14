@@ -297,6 +297,21 @@ EventSuccessUnitOutcome _unitOutcomeFor(
   };
 }
 
+EventSuccessAccountability _accountabilityFor(
+  EventFormatSnapshot format,
+  EventInteractionModel interactionModel,
+) {
+  final override = _primitiveOverride(
+    format,
+    'accountability',
+    EventSuccessAccountability.values,
+  );
+  if (override != null) return override;
+  return interactionModel == EventInteractionModel.pacePods
+      ? EventSuccessAccountability.sweep
+      : EventSuccessAccountability.none;
+}
+
 EventSuccessAssignmentResolution _assignmentResolutionFor(
   EventSuccessAssignmentAlgorithm assignmentAlgorithm,
 ) {

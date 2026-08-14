@@ -1065,6 +1065,12 @@ describe("firestore.rules", () => {
           eventId: "event-1",
         }),
       );
+      await assertFails(
+        updateDoc(doc(authedDb("host-1"), "eventAttendees", "attendee-1"), {
+          accountabilityResolution: "departed",
+          accountabilityResolvedForCheckInAt: Timestamp.now(),
+        }),
+      );
     });
 
     it("limits event staff to one event's live operational surfaces", async () => {

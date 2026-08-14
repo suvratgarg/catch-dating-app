@@ -12951,4 +12951,53 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersNoAttendance => 'No checked-in events yet.';
+
+  @override
+  String get eventSuccessAccountabilityTitle => 'Return sweep';
+
+  @override
+  String get eventSuccessAccountabilitySubtitle =>
+      'Mark each checked-in guest as returned or departed. People may leave quietly; this is a safety aid, not a checkout requirement.';
+
+  @override
+  String eventSuccessAccountabilityProgress({
+    required int resolved,
+    required int total,
+  }) {
+    return '$resolved of $total marked';
+  }
+
+  @override
+  String get eventSuccessAccountabilityEmpty =>
+      'No checked-in guests to review.';
+
+  @override
+  String get eventSuccessAccountabilityUnresolved => 'Not marked';
+
+  @override
+  String get eventSuccessAccountabilityReturned => 'Returned';
+
+  @override
+  String get eventSuccessAccountabilityDeparted => 'Departed';
+
+  @override
+  String get eventSuccessAccountabilityWarningTitle =>
+      'Some guests aren’t marked yet';
+
+  @override
+  String eventSuccessAccountabilityWarningMessage({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count checked-in guests aren’t marked returned or departed.',
+      one: '1 checked-in guest isn’t marked returned or departed.',
+    );
+    return '$_temp0 People sometimes leave without checking out. Review the list if useful, or finish anyway.';
+  }
+
+  @override
+  String get eventSuccessAccountabilityReviewAction => 'Review sweep';
+
+  @override
+  String get eventSuccessAccountabilityFinishAnywayAction => 'Finish anyway';
 }

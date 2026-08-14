@@ -17,6 +17,7 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
         EventSuccessLiveActionCallableRequest,
         HeartbeatEventSuccessPresenceCallableRequest,
         ResolveEventSuccessLateArrivalCallableRequest,
+        SetEventSuccessAccountabilityResolutionCallableRequest,
         StartEventSuccessFirstHelloMissionCallableRequest,
         SubmitEventSuccessWingmanRequestCallableRequest,
         UpsertEventSuccessLayoutCallableRequest;
@@ -32,6 +33,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_presence.dar
 import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -51,6 +53,7 @@ part 'event_success_repository/arrival.dart';
 part 'event_success_repository/layout.dart';
 part 'event_success_repository/standings.dart';
 part 'event_success_repository/presence.dart';
+part 'event_success_repository/accountability.dart';
 part 'event_success_repository/providers.dart';
 
 const _plansPath = 'eventSuccessPlans';
@@ -133,7 +136,8 @@ class EventSuccessRepository extends _EventSuccessRepositoryCore
         _EventSuccessArrivalRepository,
         _EventSuccessLayoutRepository,
         _EventSuccessStandingsRepository,
-        _EventSuccessPresenceRepository {
+        _EventSuccessPresenceRepository,
+        _EventSuccessAccountabilityRepository {
   const EventSuccessRepository(this._db, {FirebaseFunctions? functions})
     // Keep the public named parameter as `functions:` for tests and callers.
     // ignore: prefer_initializing_formals

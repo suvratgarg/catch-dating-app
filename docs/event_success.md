@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.13.0
+version: 1.14.0
 updated: 2026-08-14
 owner: recursive_audit_loop
 status: active
@@ -144,6 +144,13 @@ complete ordering. Pace pods default to `completion`, team rotations to
 an explicit saved value wins. The Functions resolver enumerates this axis with
 the other primitives rather than branching on an event name.
 
+`accountability` is another saved, format-neutral primitive with `none`,
+`rollCall`, and `sweep`. `pacePods` defaults to `sweep`; every other interaction
+model defaults to `none`, and an explicit event-format value wins. Runtime code
+branches on that primitive only, never on `activityKind`. T11 implements the
+end-of-event `sweep`; `rollCall` remains a distinct value and does not silently
+inherit sweep completion behavior.
+
 V1 supports set-based pair rotations and generic micro-pods, plus
 capacity-aware `sequence` scheduling for pair rotations. Sequence scheduling
 uses the saved `resourceCapacity.concurrentUnits` value rather than a
@@ -252,6 +259,21 @@ the attendee for the next round with a visible reason. It writes only
 `eventSuccessAssignmentDrafts` and `eventSuccessLateArrivals`. Published
 `eventSuccessAssignments` are immutable through this operation.
 
+### Accountability sweep
+
+For `accountability: sweep`, the Host control room lists every currently
+checked-in `eventAttendees` row, including imported or unlinked guests. A Host
+may mark each row `returned` or `departed`. The server stores the exact
+`checkedInAt` timestamp beside the resolution; checking in again makes the old
+resolution stale and reopens that attendee without requiring a destructive
+history rewrite.
+
+Unresolved rows raise a completion warning. `Review sweep` returns to the list;
+`Finish anyway` sends an explicit acknowledgement and completes normally. This
+is intentionally a safety aid rather than a checkout mandate: guests may leave
+quietly, and unresolved state is not evidence of an incident. `none` and
+`rollCall` never inherit the sweep warning.
+
 First Hello check-in is modeled as an optional arrival module with server-owned
 mission assignment/completion. `startEventSuccessFirstHelloMission` verifies the
 attendee is signed up, the check-in window is open, a current signed Host venue
@@ -291,6 +313,11 @@ compares `expectedRevision` with `liveControlRevision`. Reveal publication is
 monotonic: an expired countdown is already published according to its persisted
 server anchor, and neither cancellation nor a later action can move the
 published reveal index backwards.
+
+For a sweep event, completion also reads the bounded operational roster. An
+unresolved row requires `accountabilityAcknowledged: true`; acknowledgement is
+the warning override, not a hard block. Already-complete actions remain
+idempotent.
 
 Guided rotations use a two-stage boundary. `generateEventSuccessRotations` and
 Host overrides write only `eventSuccessAssignmentDrafts`; the Firestore trigger
@@ -551,6 +578,7 @@ window, capability, hidden safety state and deterministic ids.
 | `claimEventRuntimeAccess` | Link/reuse exactly one attendee row, create/update runtime participant, and return `ready`, `needsInput` or `hostApprovalPending`. |
 | `submitEventRuntimeProfile` | Accept only required fields, validate consent/version, recompute completeness and optionally fill missing onboarding draft fields. |
 | `heartbeatEventSuccessPresence` | Accept only a checked-in caller and record a server-timestamped liveness heartbeat. Return the active configurable cadence and thresholds. |
+| `setEventSuccessAccountabilityResolution` | Organizer-manager-only returned/departed/unresolved write for one currently checked-in operational attendee on a `sweep` event. Bind the result to that exact check-in timestamp. |
 | `setEventRuntimeModuleOptOut` | Purpose-scoped opt-out that does not cancel attendance or identity. |
 | `checkInEventRuntime` | Redeem a current signed Host venue session after identity/profile readiness and apply absolute attendance; never a blind toggle. |
 | `approveEventRuntimeClaim` | Host approves one pending UID-to-attendee claim or rejects it with a bounded reason. |

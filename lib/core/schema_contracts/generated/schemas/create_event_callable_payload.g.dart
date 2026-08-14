@@ -764,6 +764,14 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
                 'rank',
               ],
             },
+            'accountability': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'none',
+                'rollCall',
+                'sweep',
+              ],
+            },
           },
         },
         'activityDetails': <String, Object?>{

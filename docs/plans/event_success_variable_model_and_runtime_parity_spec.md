@@ -1,6 +1,6 @@
 ---
 doc_id: event_success_variable_model_and_runtime_parity_spec
-version: 1.6.0
+version: 1.7.0
 updated: 2026-08-14
 owner: event_success
 status: active
@@ -228,11 +228,13 @@ variable only adds grouping and labelling semantics.
 | --- | --- |
 | `none` | no end-of-event body count |
 | `rollCall` | host confirms each attendee is present at a declared beat |
-| `sweep` | host must resolve every checked-in attendee to returned/departed before the event can be completed |
+| `sweep` | host resolves checked-in attendees to returned/departed and explicitly acknowledges any unresolved guests before completion |
 
-`sweep` blocks event completion until every checked-in attendee is explicitly
-resolved. This is the run-club and outdoor-activity safety obligation and it is
-currently carried in an organizer's head.
+`sweep` raises a loud Host warning while any checked-in attendee is unresolved,
+but it does not hard-block completion. The Host can review the list or choose
+`Finish anyway` with explicit acknowledgement. This preserves the run-club and
+outdoor-activity safety aid without treating a quiet or unannounced departure
+as an incident.
 
 Departure resolution also feeds A.9.
 
@@ -638,8 +640,9 @@ exclusion, never who named whom.
 ## D.4 Roll call and sweep
 
 The `accountability` variable's runtime surface. Generic mechanism, deep utility
-for run clubs and outdoor formats. Blocks event completion until every
-checked-in attendee is resolved.
+for run clubs and outdoor formats. Unresolved checked-in attendees produce a
+Host warning and explicit completion acknowledgement, never an inescapable
+completion lock.
 
 ## D.5 Live standings
 
@@ -709,7 +712,7 @@ docs are updated. Update this table in the same commit as the tranche.
 - [x] T8 Presence and late arrivals
 - [x] T9 Signed venue session replaces GPS
 - [x] T10 Conversation graph
-- [ ] T11 `accountability` sweep
+- [x] T11 `accountability` sweep
 - [ ] T12 Presentation contract and parity foundation
 - [ ] T13 Marquee visual parity
 - [ ] T14 `durationShape` and format-first setup
@@ -791,8 +794,9 @@ host-aggregate projection contains no name-to-name edges.
 
 **T11 — `accountability` sweep.** `effort: standard`
 Owner: control room, event completion path.
-A.8 and D.4. Tests: completion blocked while any checked-in attendee is
-unresolved.
+A.8 and D.4. Tests: unresolved checked-in attendees raise the completion
+warning; review does not complete; explicit `Finish anyway` acknowledgement
+does complete.
 
 **T12 — Presentation contract and parity foundation.** `effort: standard`
 Owner: `contracts/catalogs/`, `lib/event_success/presentation/event_success_companion_screen_state.dart`, `website/src/features/eventRuntime/`.
@@ -866,7 +870,9 @@ D.6 and D.7.
 # Open Questions For The Owner
 
 1. Rive versus Lottie-plus-contracted-CSS, pending the B.3 spike result.
-2. Whether `sweep` should hard-block event completion or warn loudly.
+2. Resolved in T11: `sweep` warns loudly and requires explicit Host
+   acknowledgement, but never hard-blocks completion. Quiet departures are a
+   normal possibility, not automatic evidence of danger.
 3. Resolved in T3: the exclusion ledger is time-based for every format, with a
    configurable threshold and a 40-minute default.
 4. Resolved in T10: explicit opt-in is the default, with assigned attendees

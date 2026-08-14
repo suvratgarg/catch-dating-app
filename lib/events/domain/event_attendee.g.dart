@@ -52,6 +52,16 @@ _EventAttendee _$EventAttendeeFromJson(
     _$EventAttendeeStatusEnumMap,
     json['preCheckInStatus'],
   ),
+  accountabilityResolution: $enumDecodeNullable(
+    _$EventSuccessAccountabilityResolutionEnumMap,
+    json['accountabilityResolution'],
+  ),
+  accountabilityResolvedForCheckInAt: const NullableTimestampConverter()
+      .fromJson(json['accountabilityResolvedForCheckInAt']),
+  accountabilityResolvedAt: const NullableTimestampConverter().fromJson(
+    json['accountabilityResolvedAt'],
+  ),
+  accountabilityResolvedBy: json['accountabilityResolvedBy'] as String?,
 );
 
 Map<String, dynamic> _$EventAttendeeToJson(
@@ -97,6 +107,15 @@ Map<String, dynamic> _$EventAttendeeToJson(
   'linkedAt': const NullableTimestampConverter().toJson(instance.linkedAt),
   'attendanceRevision': instance.attendanceRevision,
   'preCheckInStatus': _$EventAttendeeStatusEnumMap[instance.preCheckInStatus],
+  'accountabilityResolution':
+      _$EventSuccessAccountabilityResolutionEnumMap[instance
+          .accountabilityResolution],
+  'accountabilityResolvedForCheckInAt': const NullableTimestampConverter()
+      .toJson(instance.accountabilityResolvedForCheckInAt),
+  'accountabilityResolvedAt': const NullableTimestampConverter().toJson(
+    instance.accountabilityResolvedAt,
+  ),
+  'accountabilityResolvedBy': instance.accountabilityResolvedBy,
 };
 
 const _$EventAttendeeSourceEnumMap = {
@@ -126,4 +145,9 @@ const _$ExternalBookingProviderEnumMap = {
   ExternalBookingProvider.district: 'district',
   ExternalBookingProvider.sortmyscene: 'sortmyscene',
   ExternalBookingProvider.airbnb: 'airbnb',
+};
+
+const _$EventSuccessAccountabilityResolutionEnumMap = {
+  EventSuccessAccountabilityResolution.returned: 'returned',
+  EventSuccessAccountabilityResolution.departed: 'departed',
 };

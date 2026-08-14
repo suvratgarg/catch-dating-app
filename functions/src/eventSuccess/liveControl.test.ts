@@ -130,6 +130,37 @@ test("reveal publication requires explicit confirmation", () => {
   );
 });
 
+test("sweep completion warns but explicit acknowledgement completes", () => {
+  assert.throws(
+    () => resolveEventSuccessLiveAction(
+      baseState(),
+      {
+        eventId: "event-1",
+        expectedRevision: 4,
+        action: "complete",
+      },
+      1_000,
+      {accountability: "sweep", unresolvedCount: 1}
+    ),
+    (error: unknown) => error instanceof HttpsError &&
+      error.code === "failed-precondition" &&
+      error.message.includes("finish anyway")
+  );
+
+  const acknowledged = resolveEventSuccessLiveAction(
+    baseState(),
+    {
+      eventId: "event-1",
+      expectedRevision: 4,
+      action: "complete",
+      accountabilityAcknowledged: true,
+    },
+    1_000,
+    {accountability: "sweep", unresolvedCount: 1}
+  );
+  assert.equal(acknowledged.update.status, "complete");
+});
+
 test("live writer rejects a stale revision fence", () => {
   assert.throws(
     () => resolveEventSuccessLiveAction(

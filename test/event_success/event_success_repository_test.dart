@@ -5,6 +5,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_feature_stat
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
+import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
@@ -149,6 +150,54 @@ void main() {
             'eventId': 'event-1',
             'expectedRevision': 5,
             'action': 'cancelRevealCountdown',
+          },
+        ]);
+      },
+    );
+
+    test(
+      'sends accountability acknowledgement and attendee resolutions',
+      () async {
+        await repository.completePlan(
+          eventId: 'event-1',
+          expectedRevision: 8,
+          accountabilityAcknowledged: true,
+        );
+        await repository.setAccountabilityResolution(
+          eventId: 'event-1',
+          attendeeId: 'imported-guest-1',
+          resolution: EventSuccessAccountabilityResolution.returned,
+        );
+        await repository.setAccountabilityResolution(
+          eventId: 'event-1',
+          attendeeId: 'imported-guest-1',
+          resolution: null,
+        );
+
+        final live =
+            functions.httpsCallable('controlEventSuccessLive')
+                as TestHttpsCallable;
+        expect(live.calls, [
+          {
+            'eventId': 'event-1',
+            'expectedRevision': 8,
+            'action': 'complete',
+            'accountabilityAcknowledged': true,
+          },
+        ]);
+        final resolution =
+            functions.httpsCallable('setEventSuccessAccountabilityResolution')
+                as TestHttpsCallable;
+        expect(resolution.calls, [
+          {
+            'eventId': 'event-1',
+            'attendeeId': 'imported-guest-1',
+            'resolution': 'returned',
+          },
+          {
+            'eventId': 'event-1',
+            'attendeeId': 'imported-guest-1',
+            'resolution': 'unresolved',
           },
         ]);
       },

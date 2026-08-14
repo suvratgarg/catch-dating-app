@@ -209,6 +209,8 @@ export {
   controlEventSuccessLive,
   publishEventSuccessRotationRound,
 } from "./eventSuccess/liveControl";
+export {setEventSuccessAccountabilityResolution} from
+  "./eventSuccess/accountability";
 export {
   getEventSuccessPresenceSummary,
   heartbeatEventSuccessPresence,

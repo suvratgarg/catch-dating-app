@@ -246,6 +246,7 @@ export interface EventSuccessFormatPrimitives {
     | "balance"
     | "spread";
   unitOutcome?: "none" | "completion" | "score" | "rank";
+  accountability?: "none" | "rollCall" | "sweep";
 }
 
 export type EventSuccessStructureConfig = {
@@ -2807,6 +2808,13 @@ export interface EventAttendeeDocument {
    * Operational status restored by an absolute undo. Null outside checked-in state.
    */
   preCheckInStatus?: "invited" | "registered" | "waitlisted" | null;
+  /**
+   * Host-recorded sweep result. It is current only when accountabilityResolvedForCheckInAt equals checkedInAt.
+   */
+  accountabilityResolution?: "returned" | "departed" | null;
+  accountabilityResolvedForCheckInAt?: FirebaseFirestore.Timestamp | null;
+  accountabilityResolvedAt?: FirebaseFirestore.Timestamp | null;
+  accountabilityResolvedBy?: string | null;
   /**
    * External source that most recently supplied provider-authoritative fields, independent of row creation source.
    */

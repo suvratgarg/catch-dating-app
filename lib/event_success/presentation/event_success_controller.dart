@@ -9,6 +9,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_presence.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -42,6 +43,7 @@ class EventSuccessController extends _$EventSuccessController {
   static final recordUnitOutcomesMutation = Mutation<void>();
   static final resolveLateArrivalMutation =
       Mutation<EventSuccessLateArrivalResolution>();
+  static final accountabilityResolutionMutation = Mutation<void>();
 
   @override
   void build() {}
@@ -190,11 +192,31 @@ class EventSuccessController extends _$EventSuccessController {
   Future<void> completePlan({
     required String eventId,
     required int expectedRevision,
+    required bool accountabilityAcknowledged,
   }) async {
     requireSignedInUid(ref, action: 'complete the live event guide');
     await ref
         .read(eventSuccessRepositoryProvider)
-        .completePlan(eventId: eventId, expectedRevision: expectedRevision);
+        .completePlan(
+          eventId: eventId,
+          expectedRevision: expectedRevision,
+          accountabilityAcknowledged: accountabilityAcknowledged,
+        );
+  }
+
+  Future<void> setAccountabilityResolution({
+    required String eventId,
+    required String attendeeId,
+    required EventSuccessAccountabilityResolution? resolution,
+  }) async {
+    requireSignedInUid(ref, action: 'resolve the event accountability sweep');
+    await ref
+        .read(eventSuccessRepositoryProvider)
+        .setAccountabilityResolution(
+          eventId: eventId,
+          attendeeId: attendeeId,
+          resolution: resolution,
+        );
   }
 
   Future<void> submitFeedback(EventSuccessFeedback feedback) async {
