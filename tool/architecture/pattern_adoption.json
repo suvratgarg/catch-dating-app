@@ -1,6 +1,6 @@
 {
-  "version": "1.11.1",
-  "updated": "2026-08-10",
+  "version": "1.12.0",
+  "updated": "2026-08-14",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Defines architecture reference exhibits, adopter files, candidate status, and back-propagation obligations enforced by architecture checks.",
   "patterns": [
@@ -1215,6 +1215,8 @@
       "status": "reference",
       "architectureExhibit": "docs/app_architecture.md#exhibit-arch-shell-scroll-001-adaptive-tab-root-scroll-clearance",
       "prototypeFiles": [
+        "lib/core/presentation/app_shell.dart",
+        "lib/core/presentation/host_app_shell.dart",
         "lib/core/presentation/catch_adaptive_tab_scaffold.dart",
         "lib/core/presentation/app_shell_active_tab.dart",
         "lib/core/widgets/catch_section_layout.dart",
@@ -1228,12 +1230,12 @@
       "adopters": [
         {
           "path": "lib/core/presentation/app_shell.dart",
-          "role": "consumer shell delegates adaptive placement and raw exclusion publication",
+          "role": "shared destination adapter owns localized labels, selected icons, unread badges, semantics, haptics, and bottom, rail, or sidebar rendering while the consumer shell continues to request bottom navigation",
           "status": "aligned"
         },
         {
           "path": "lib/core/presentation/host_app_shell.dart",
-          "role": "host shell delegates the same adaptive placement contract",
+          "role": "Host shell supplies one destination set to compact bottom, medium rail, and expanded sidebar variants without moving feature state or route behavior into shell chrome",
           "status": "aligned"
         },
         {
@@ -1273,14 +1275,14 @@
         }
       ],
       "exceptions": [],
-      "requiredBackPropagation": "When shell placement, tab geometry, root routes, or terminal primitives change, update both shells, every manifest owner, the architecture exhibit, Widgetbook platform states, and the known-bad scanner fixtures in one pass.",
+      "requiredBackPropagation": "When shell placement, window classes, side-navigation geometry, tab geometry, root routes, or terminal primitives change, update both shells, every manifest owner, the architecture exhibit, exact 599/600/839/840 tests, Widgetbook phone/tablet/desktop states, and the known-bad scanner fixtures in one pass.",
       "requiredChecks": [
         "node tool/design/check_tab_root_scroll_contracts.mjs --check",
         "node --test tool/design/check_tab_root_scroll_contracts.test.mjs",
         "flutter test test/core/semantic_layout_contracts_test.dart test/core/app_shell_test.dart test/routing/app_shell_guest_cta_test.dart test/routing/host_shell_navigation_test.dart",
         "node tool/architecture/check_app_architecture_exhibits.mjs"
       ],
-      "notes": "The shell publishes placement; root scroll primitives consume it. Android anchored chrome is already in layout, iOS floating chrome is a raw exclusion, and transient no-bar shells fall back to device safe area."
+      "notes": "The shell publishes placement; root scroll primitives consume it. Compact Android anchored chrome is already in layout, compact iOS floating chrome is a raw exclusion, Host side navigation consumes horizontal space and publishes no bottom obstruction, and transient no-bar shells fall back to device safe area. ScreenSize owns whole-window classes; feature-local reflows continue to use ComponentBreakpoints."
     },
     {
       "id": "ARCH-TABBED-SCREEN-001",

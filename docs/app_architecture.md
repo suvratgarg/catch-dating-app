@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.11.0
-updated: 2026-08-12
+version: 1.12.0
+updated: 2026-08-14
 owner: app_architecture
 status: active
 ---
@@ -436,11 +436,15 @@ lazy slivers.
 
 ## App Shell Chrome Policy
 
-The consumer and host tab shells own bottom tab chrome only for tab-root
-screens. Branch child routes that own their own route chrome or bottom affordance
-must set `parentNavigatorKey: _rootNavigatorKey` in `lib/routing/go_router.dart`
-so detail CTAs, chat composers, and full-screen actions are not rendered under
-the floating tab bar.
+The consumer shell and compact Host shell own bottom tab chrome only for
+tab-root screens. The medium and expanded Host shell instead owns persistent
+side navigation. Branch child routes that own their own route chrome or bottom
+affordance must set `parentNavigatorKey: _rootNavigatorKey` in
+`lib/routing/go_router.dart` so compact detail CTAs, chat composers, and
+full-screen actions are not rendered under the floating tab bar. A later
+master-detail adopter may intentionally keep a child selection inside its Host
+branch on medium or expanded layouts, but the route remains the selection
+authority and must preserve compact full-screen behavior.
 
 Bottom sheets must be opened through `showCatchBottomSheet` from
 `lib/core/widgets/catch_bottom_sheet.dart`. The helper presents on the root
@@ -466,14 +470,145 @@ screens consume that contract through `CatchScrollTerminalPadding` or
 `CatchSliverTerminalPadding`; they never read safe-area bottom values directly.
 
 Software-keyboard visibility is defined by `MediaQuery.viewInsets.bottom > 0`,
-not by focus. While that inset is nonzero, both `AppShell` and `HostAppShell`
-omit authenticated navigation, the consumer shell also omits its guest auth
-CTA, floating `extendBody` behavior is disabled, and
-`AppShellActiveTab.bottomOverlayInset` is zero. Floating shells keep the route
-body in the same stack position while removing only the navigation sibling, so
-the focused editable element, text, cursor selection, and keyboard connection
-survive the inset transition. A hardware keyboard leaves `viewInsets.bottom`
-at zero, so navigation remains available.
+not by focus. While that inset is nonzero, bottom navigation is omitted, the
+consumer shell also omits its guest auth CTA, floating `extendBody` behavior is
+disabled, and `AppShellActiveTab.bottomOverlayInset` is zero. Floating shells
+keep the route body in the same stack position while removing only the bottom
+navigation sibling, so the focused editable element, text, cursor selection,
+and keyboard connection survive the inset transition. Medium and expanded
+Host side navigation remains mounted because it does not overlap the software
+keyboard. A hardware keyboard leaves `viewInsets.bottom` at zero, so all
+navigation remains available.
+
+### Exhibit ARCH-SHELL-SCROLL-001: Adaptive Tab-Root Scroll Clearance
+
+<!-- exhibit-freshness: ARCH-SHELL-SCROLL-001 source=tool/architecture/pattern_adoption.json owner=app_architecture -->
+
+`CatchAdaptiveTabScaffold` is the single shell placement boundary. Consumer
+destinations and compact Host destinations keep the existing platform-aware
+bottom bar. Authenticated Host destinations additionally provide a medium rail
+and expanded sidebar. The scaffold selects among those supplied widgets from
+the available width and always publishes the resulting bottom obstruction
+through `AppShellActiveTab`:
+
+```dart
+CatchAdaptiveTabScaffold(
+  activeIndex: navigationShell.currentIndex,
+  navigationBar: bottomNavigation,
+  mediumSideNavigation: railNavigation,
+  expandedSideNavigation: sidebarNavigation,
+  body: navigationShell,
+)
+```
+
+Side navigation consumes horizontal layout space and therefore publishes
+`AppShellBottomBarPlacement.none` with zero bottom obstruction. Root scroll
+owners continue to use `CatchScrollTerminalPadding` or
+`CatchSliverTerminalPadding`; they never special-case tablet or desktop
+navigation. `AppShellNavigationBar` remains the sole destination adapter, so
+labels, selected icons, unread badges, semantics, haptics, and `goBranch`
+behavior cannot drift among bottom, rail, and sidebar chrome.
+
+#### Host adaptive workspace specification
+
+The 2026-08-14 current-state review found a sound phone hierarchy but only
+width expansion on tablet and desktop: bottom navigation remained attached to
+the window edge, operational rows became excessively long, the Inbox left a
+mostly empty canvas, Organizer retained only a 600 px form lane, and Create
+Event preserved a phone pager plus full-width footer. The adaptive programme
+therefore changes information architecture and task concurrency at larger
+widths; it does not scale typography, icons, cards, or spacing proportionally.
+
+**Window classes**
+
+| Class | Width | Shell | Composition contract |
+|---|---:|---|---|
+| compact | `< 600` | platform-aware bottom navigation | one task or record at a time; sheets and full-screen details; touch-first pinned actions |
+| medium | `600–839` | labelled 96 px rail | one primary pane plus an optional persistent contextual pane; portrait remains touch-first and landscape may split |
+| expanded | `>= 840` | labelled 240 px sidebar | bounded workspace canvas; master-detail and multi-pane composition; pointer and keyboard affordances |
+
+The whole-window class comes only from `ScreenSize`. Feature components use
+`ComponentResponsiveBuilder` and a named local threshold when their own width,
+not the application window, determines a table, grid, preview, or control-row
+reflow. Very wide three-pane workspaces may add named local thresholds around
+1100 or 1280 logical pixels without adding a second global breakpoint system.
+Feature code must not select layout from `kIsWeb`, bundle identity, or operating
+system.
+
+**Platform-specific product composition**
+
+| Surface | Compact phone | Medium tablet | Expanded web or Mac window |
+|---|---|---|---|
+| Events | consolidated hero, attention queue, lifecycle list, full-screen Manage | rail plus event list and persistent selected-event summary where selection exists | operational command centre with event index, selected status/tasks, and compact quick actions |
+| Customers | search/filter directory, pushed customer detail | directory plus selected customer detail | filter/index pane, durable customer detail, history/actions pane when useful |
+| Inbox | event scope and conversation list, pushed thread | conversation list plus selected thread | event/audience navigation, conversation list, and thread/detail at sufficiently wide local width |
+| Organizer | top tabs and one form lane | rail plus secondary organizer navigation and one content pane | secondary navigation, editor, and preview or insights pane |
+| Create Event | current paged wizard and bottom actions | step rail plus focused form; optional summary pane in landscape | step rail, approximately 640 px form lane, live cover/summary preview, compact sticky actions |
+| Manage Event | full-screen Setup/Guests/Live/Report sections | persistent section navigation plus active operation pane | section navigation, roster table or live console, sticky event summary and commands |
+
+The consolidated Events route remains canonical. Responsive work must not
+recreate the retired Today destination or split operational shortcuts away from
+the lifecycle list.
+
+**Architecture boundaries**
+
+1. `HostAppShell` owns window class, global navigation chrome, and branch
+   selection. It does not own feature data, selected domain records, or
+   workspace policy.
+2. Route screens own providers, URL/path state, selected record ids, async
+   boundaries, retry, and navigation effects.
+3. Provider-free compact, medium, and expanded views own composition only and
+   receive the same typed display state and action callbacks. A responsive
+   variant must not introduce a parallel repository, controller, or backend
+   query.
+4. Controllers and view models own product behavior; repositories, services,
+   Firestore contracts, and Functions remain viewport-agnostic.
+5. Platform capabilities such as file selection, drag/drop, sharing,
+   notifications, native menus, and window restoration stay behind replaceable
+   services. Layout widgets never infer capabilities from the current window
+   class.
+6. Compact child routes may continue above the root navigator. Master-detail
+   routes must later preserve selected ids in the branch/URL so resizing,
+   browser back/forward, deep links, and window restoration remain truthful.
+
+**Workspace geometry and input**
+
+- A desktop workspace uses bounded content regions rather than either the
+  phone-era universal 600 px lane or full-window data rows. Form lanes may
+  retain a local 600–680 px reading width inside a wider multi-pane workspace.
+- Desktop density becomes more compact and information-rich: shorter rows,
+  aligned columns, visible counts/status, toolbars, and fewer modal
+  transitions. Display typography does not grow merely because the window did.
+- Every side-navigation destination remains visibly labelled. Pointer hover,
+  tooltips, Tab traversal, visible focus, Escape/back behavior, and browser
+  history are first-class acceptance requirements; shortcuts beyond standard
+  traversal require discoverable menus or tooltips.
+- Text scale 1.0, 1.5, and 2.0, light/dark theme, reduced motion, software and
+  hardware keyboards, and resizable windows remain supported in every class.
+
+**Delivery slices and acceptance**
+
+1. Foundation: adaptive Host bottom/rail/sidebar shell, shared geometry,
+   current-branch preservation, exact 599/600/839/840 boundary tests, and
+   phone/tablet/desktop Widgetbook states. This is the reference slice.
+2. Events reference workspace: keep the existing typed lifecycle state and
+   callbacks, then add medium and expanded provider-free compositions with no
+   data-layer changes.
+3. Customers and Inbox: introduce URL-backed master-detail selection and
+   preserve full-screen compact routes.
+4. Organizer, Create Event, and Manage Event: recompose the existing state and
+   controllers into multi-pane workspaces, retaining local component
+   breakpoints for forms and roster tables.
+5. Desktop input and native Mac capability work: verify keyboard/focus/browser
+   behavior first; add a macOS runner, entitlements, signing, notarization,
+   menus, updates, and release automation only through a separate approved
+   platform-delivery slice.
+
+Each slice requires focused widget tests at its boundary widths, route-state
+preservation tests, phone/tablet/desktop visual review, generic Flutter
+analysis, Catch UI lint proof, applicable design contracts, and a bounded Git
+diff. A screenshot is evidence for visual composition, not proof of keyboard,
+screen-reader, routing, or platform capability behavior.
 
 Consumer shell initialization effects that do not render UI must use
 `ref.listen`, not `ref.watch`. In particular, completion or failure of

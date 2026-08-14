@@ -71,20 +71,43 @@ class HostAppShell extends ConsumerWidget {
       }
     });
 
-    final authenticatedNavigationBar = isAuthenticated
+    void selectDestination(int index) => navigationShell.goBranch(
+      index,
+      initialLocation: index == navigationShell.currentIndex,
+    );
+
+    final bottomNavigation = isAuthenticated
         ? AppShellNavigationBar(
             currentIndex: navigationShell.currentIndex,
             unreadCount: unreadCount,
             items: _hostNavigationItems,
-            onDestinationSelected: (index) => navigationShell.goBranch(
-              index,
-              initialLocation: index == navigationShell.currentIndex,
-            ),
+            onDestinationSelected: selectDestination,
           )
         : null;
+    final railNavigation = isAuthenticated
+        ? AppShellNavigationBar(
+            currentIndex: navigationShell.currentIndex,
+            unreadCount: unreadCount,
+            items: _hostNavigationItems,
+            layout: AppShellNavigationLayout.rail,
+            onDestinationSelected: selectDestination,
+          )
+        : null;
+    final sidebarNavigation = isAuthenticated
+        ? AppShellNavigationBar(
+            currentIndex: navigationShell.currentIndex,
+            unreadCount: unreadCount,
+            items: _hostNavigationItems,
+            layout: AppShellNavigationLayout.sidebar,
+            onDestinationSelected: selectDestination,
+          )
+        : null;
+
     return CatchAdaptiveTabScaffold(
       activeIndex: navigationShell.currentIndex,
-      navigationBar: authenticatedNavigationBar,
+      navigationBar: bottomNavigation,
+      mediumSideNavigation: railNavigation,
+      expandedSideNavigation: sidebarNavigation,
       body: CatchNoticeHost(
         persistentNotices: [
           if (isOffline) CatchNoticeData.offline(context.l10n),

@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
 version: 3.4.0
-updated: 2026-08-13
+updated: 2026-08-14
 owner: recursive_audit_loop
 status: active
 ---
@@ -50,14 +50,14 @@ Routine inventory edits do not increment this document contract version.
 | Widget | File | Purpose |
 |---|---|---|
 | `AppShell` | `lib/core/presentation/app_shell.dart:45` | Main consumer tab shell with adaptive Home / Explore / Chats / You navigation. Uses the shared `CatchTabBar` for both iOS and Android chrome, watches provider-backed connectivity for the offline app notice, initializes FCM through a side-effect-only `appShellFcmInitializationProvider` listener that cannot rebuild the keyed navigation shell, exposes active-tab state through `AppShellActiveTab`, and keeps Crashlytics/Analytics user IDs synced with auth state. A nonzero software-keyboard `viewInsets.bottom` suppresses authenticated navigation and the guest auth CTA, disables floating extend-body behavior, and publishes zero bottom obstruction; hardware keyboards do not hide the bar. Floating layouts keep the route body in a stable stack slot while removing only the navigation sibling, preserving the focused editor, text, and cursor selection across the keyboard transition. Shell-level streams stay limited to shell-wide UI such as auth, connectivity, FCM, and unread badges. |
-| `HostAppShell` | `lib/core/presentation/host_app_shell.dart:20` | Host tab shell for Events / Customers / Inbox / Organizer. Reuses the consumer shell's FCM, connectivity, analytics, navigation primitive, software-keyboard suppression, stable focused-route layout, and zero-obstruction contract while preserving host destinations. |
+| `HostAppShell` | `lib/core/presentation/host_app_shell.dart:20` | Host tab shell for Events / Customers / Inbox / Organizer. Reuses the consumer shell's FCM, connectivity, analytics, and destination adapter while supplying compact bottom navigation, a medium labelled rail, and an expanded labelled sidebar to `CatchAdaptiveTabScaffold`. Bottom chrome preserves software-keyboard focus continuity; side chrome consumes horizontal layout space and publishes zero bottom obstruction. |
 
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
 | `AppShellActiveTab` | `lib/core/presentation/app_shell_active_tab.dart:10` | Inherited lifecycle and obstruction signal for indexed-stack tabs. Lets retained tab branches detect whether they are selected and consume `bottomOverlayInset` / safe-area-adjusted `bottomOverlayClearanceOf` without coupling feature screens to `StatefulNavigationShell` or recomputing shell geometry. The shells publish zero obstruction while software keyboards are visible. |
-| `AppShellNavigationBar` / `AppShellNavigationItem` | `lib/core/presentation/app_shell.dart:240` | Destination-driven shell adapter with stable key, platform icon mapping, and unread badge counts passed into `CatchTabBar`. Consumer uses Home / Explore / Chats / You; `HostAppShell` supplies Today / Events / Inbox / Organizer through the same primitive. |
+| `AppShellNavigationBar` / `AppShellNavigationItem` / `AppShellSideNavigation` / `AppShellSideNavigationButton` | `lib/core/presentation/app_shell.dart:240` | Destination-driven shell family with a stable key, localized labels, platform icon mapping, unread badges, selected semantics, haptics, and bottom/rail/sidebar layouts. `AppShellSideNavigation` owns the labelled vertical plane and `AppShellSideNavigationButton` owns one compact or expanded destination. Consumer uses Home / Explore / Chats / You; `HostAppShell` supplies Events / Customers / Inbox / Organizer through the same destination list. Widgetbook covers the bottom adapter, labelled rail, selected expanded destination, and full Host phone/tablet/desktop shells. |
 | `CatchStartupLoadingScreen` | `lib/core/widgets/catch_startup_loading_screen.dart:9` | Boot-only loading composition used by the force-update gate while the native splash is preserved. Matches the native splash background, keeps the role-specific Consumer `Catch_` or Host `Catch Host` mark centered, and delays the canonical `CatchLoadingIndicator` so fast boots do not flash Flutter loading chrome. It is registered as `catch.startup_loading_screen`, not as an independent loading concept. |
 
 ---

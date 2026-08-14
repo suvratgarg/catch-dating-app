@@ -75,15 +75,21 @@ void main() {
     );
     expect(find.text('EVENTS BODY'), findsOneWidget);
 
-    await tester.tap(find.bySemanticsLabel(RegExp('Customers')));
+    await tester.tap(
+      find.byKey(const ValueKey('app_shell.navigation.destination.1')),
+    );
     await pumpFeatureUi(tester);
     expect(find.text('CUSTOMERS BODY'), findsOneWidget);
 
-    await tester.tap(find.bySemanticsLabel(RegExp('Inbox')));
+    await tester.tap(
+      find.byKey(const ValueKey('app_shell.navigation.destination.2')),
+    );
     await pumpFeatureUi(tester);
     expect(find.text('INBOX BODY'), findsOneWidget);
 
-    await tester.tap(find.bySemanticsLabel(RegExp('Organizer')));
+    await tester.tap(
+      find.byKey(const ValueKey('app_shell.navigation.destination.3')),
+    );
     await pumpFeatureUi(tester);
     expect(find.text('ORGANIZER BODY'), findsOneWidget);
   });
@@ -91,11 +97,15 @@ void main() {
   testWidgets(
     'real Host shell publishes adaptive placement through keyboard changes',
     (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(390, 844);
       const editorKey = ValueKey('host-shell-focus-continuity-editor');
       final editorController = TextEditingController(text: 'Host draft');
       final editorFocusNode = FocusNode();
       addTearDown(editorController.dispose);
       addTearDown(editorFocusNode.dispose);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetViewInsets);
 
       final router = GoRouter(
@@ -246,6 +256,119 @@ void main() {
       TargetPlatform.iOS,
     }),
   );
+
+  for (final scenario in const [
+    (
+      width: 599.0,
+      chromeKey: 'catch_tab_bar.anchored_chrome',
+      sideNavigation: false,
+      sidebar: false,
+    ),
+    (
+      width: 600.0,
+      chromeKey: 'app_shell.navigation.rail',
+      sideNavigation: true,
+      sidebar: false,
+    ),
+    (
+      width: 839.0,
+      chromeKey: 'app_shell.navigation.rail',
+      sideNavigation: true,
+      sidebar: false,
+    ),
+    (
+      width: 840.0,
+      chromeKey: 'app_shell.navigation.sidebar',
+      sideNavigation: true,
+      sidebar: true,
+    ),
+  ]) {
+    testWidgets('Host shell selects chrome at ${scenario.width}px', (
+      tester,
+    ) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = Size(scenario.width, 900);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final router = GoRouter(
+        initialLocation: '/host/events',
+        routes: [
+          StatefulShellRoute.indexedStack(
+            builder: (context, state, navigationShell) =>
+                HostAppShell(navigationShell: navigationShell),
+            branches: [
+              _branch('/host/events', 'EVENTS BODY'),
+              _branch('/host/customers', 'CUSTOMERS BODY'),
+              _branch('/host/inbox', 'INBOX BODY'),
+              _branch('/host/organizer', 'ORGANIZER BODY'),
+            ],
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            uidProvider.overrideWith((ref) => Stream.value(_uid)),
+            totalUnreadCountProvider(_uid).overrideWithValue(7),
+            appConnectivityProvider.overrideWith(
+              (ref) => Stream.value(const [ConnectivityResult.wifi]),
+            ),
+            appShellFcmInitializationProvider(
+              _uid,
+              router,
+            ).overrideWith((ref) async {}),
+            errorLoggerProvider.overrideWithValue(ErrorLogger()),
+            appAnalyticsProvider.overrideWithValue(AppAnalytics()),
+          ],
+          child: MaterialApp.router(
+            theme: AppTheme.light,
+            routerConfig: router,
+          ),
+        ),
+      );
+      await pumpFeatureUi(tester);
+
+      expect(find.byKey(ValueKey(scenario.chromeKey)), findsOneWidget);
+      expect(
+        find.byType(CatchTabBar<int>),
+        scenario.sideNavigation ? findsNothing : findsOneWidget,
+      );
+      final activeTab = tester.widget<AppShellActiveTab>(
+        find.byType(AppShellActiveTab),
+      );
+      expect(
+        activeTab.bottomBarPlacement,
+        scenario.sideNavigation
+            ? AppShellBottomBarPlacement.none
+            : AppShellBottomBarPlacement.anchored,
+      );
+      expect(
+        find.text('Catch Host'),
+        scenario.sidebar ? findsOneWidget : findsNothing,
+      );
+      if (scenario.sideNavigation) {
+        final expectedLabels = ['Events', 'Customers', 'Inbox', 'Organizer'];
+        for (final (index, label) in expectedLabels.indexed) {
+          final destination = find.byKey(
+            ValueKey('app_shell.navigation.destination.$index'),
+          );
+          expect(destination, findsOneWidget);
+          final semantics = tester.widget<Semantics>(destination);
+          expect(semantics.properties.label, label);
+          expect(semantics.properties.button, isTrue);
+          expect(semantics.properties.selected, index == 0);
+        }
+      } else {
+        expect(find.bySemanticsLabel(RegExp('Events')), findsOneWidget);
+        expect(find.bySemanticsLabel(RegExp('Customers')), findsOneWidget);
+        expect(find.bySemanticsLabel(RegExp('Inbox')), findsOneWidget);
+        expect(find.bySemanticsLabel(RegExp('Organizer')), findsOneWidget);
+      }
+    });
+  }
 }
 
 StatefulShellBranch _branch(String path, String label) {
