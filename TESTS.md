@@ -21,6 +21,11 @@ node tool/run.mjs check --category meta
 
 Use focused tests while iterating, then run the owning surface's full gate before handoff. Never run multiple Flutter analyzer/test processes concurrently. Add regression coverage beside the owned surface and make recurring architectural rules enforceable through the tool manifest.
 
+Functions tests are discovered recursively from compiled
+`functions/lib/**/*.test.js` plus `functions/test/**/*.test.cjs`; rules specs
+remain in the emulator-owned `test:rules` lane. Adding a new nested Functions
+domain test therefore requires no script edit.
+
 `.github/workflows/flutter-ci.yml` compiles Widgetbook on every relevant Flutter
 change and publishes an LCOV plus feature-level Markdown coverage artifact.
 `.github/workflows/visual-integration-ci.yml` runs desktop goldens with the
