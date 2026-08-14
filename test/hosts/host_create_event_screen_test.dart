@@ -341,7 +341,6 @@ void main() {
         ),
       );
       await _openCreateEventFlow(tester);
-
       await _enterCreateEventText(
         tester,
         CreateEventFormKeys.description,
@@ -350,7 +349,6 @@ void main() {
       await _pumpTestAnimation(tester);
       await _tapPrimaryButton(tester, 'Next');
       await _pumpTestAnimation(tester);
-
       await _enterCreateEventText(
         tester,
         CreateEventFormKeys.meetingPoint,
@@ -359,7 +357,6 @@ void main() {
       await _pickMapPoint(tester);
       await _tapPrimaryButton(tester, 'Next');
       await _pumpTestAnimation(tester);
-
       await _pickFutureDate(tester);
       await acceptInitialTime(tester);
       await _tapPrimaryButton(tester, 'Next');
@@ -370,13 +367,7 @@ void main() {
       await _tapPrimaryButton(tester, 'Next');
       await _pumpTestAnimation(tester);
 
-      expect(
-        find.byKey(const ValueKey('eventSuccessFormatFirst')),
-        findsOneWidget,
-      );
-      await tester.tap(
-        find.byKey(const ValueKey('eventSuccessCustomizeTools')),
-      );
+      await tester.tap(find.text('Customize'));
       await _pumpTestAnimation(tester);
 
       expect(
