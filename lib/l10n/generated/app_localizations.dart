@@ -178,10 +178,10 @@ abstract class AppLocalizations {
   /// **'Customers'**
   String get hostNavigationCustomers;
 
-  /// Host bottom navigation label for attendee inquiries.
+  /// Host bottom navigation label for conversations, broadcasts, and campaigns.
   ///
   /// In en, this message translates to:
-  /// **'Inbox'**
+  /// **'Messaging'**
   String get hostNavigationInbox;
 
   /// Host bottom navigation label for organizer identity and settings.
@@ -295,10 +295,10 @@ abstract class AppLocalizations {
   /// **'Chats'**
   String get consumerChatsTitle;
 
-  /// Host attendee inbox screen heading.
+  /// Host messaging screen heading.
   ///
   /// In en, this message translates to:
-  /// **'Inbox'**
+  /// **'Messaging'**
   String get hostInboxTitle;
 
   /// Host inbox subtitle describing attendee conversations.
@@ -20080,17 +20080,17 @@ abstract class AppLocalizations {
   /// **'Everyone who has attended, registered, been imported, or been added by your team.'**
   String get hostCustomersIntro;
 
-  /// Customers people workspace label.
+  /// Messaging workspace label for direct inquiries and event broadcasts.
   ///
   /// In en, this message translates to:
-  /// **'People'**
-  String get hostCustomersWorkspacePeople;
+  /// **'Inbox'**
+  String get hostMessagingWorkspaceInbox;
 
-  /// Customers campaigns workspace label.
+  /// Messaging workspace label for cross-event outbound campaigns.
   ///
   /// In en, this message translates to:
   /// **'Campaigns'**
-  String get hostCustomersWorkspaceCampaigns;
+  String get hostMessagingWorkspaceCampaigns;
 
   /// Opens organizer-owned customer identity and delivery controls.
   ///

@@ -76,6 +76,7 @@ import 'package:catch_dating_app/hosts/presentation/customers/host_customer_deta
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
@@ -319,7 +320,7 @@ HostProfile _hostProfileVariant(HostProfileStatus status) {
 )
 @widgetbook.UseCase(
   name: 'Covered by host home route states',
-  type: HostOrganizerIdentityPill,
+  type: HostOrganizerAvatar,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(
@@ -510,8 +511,8 @@ Widget hostHomeRouteStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Identity switcher states',
-  type: HostOrganizerIdentityPill,
+  name: 'Navigation identity states',
+  type: HostOrganizerAvatar,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 Widget hostOrganizerIdentityPillStates(BuildContext context) {
@@ -519,36 +520,41 @@ Widget hostOrganizerIdentityPillStates(BuildContext context) {
     profileImageUrl: 'assets/fixtures/club_hero_portrait.jpg',
   );
   return _HostCatalog(
-    title: 'HostOrganizerIdentityPill',
-    contractId: 'component.host.events.organizer-identity-pill',
+    title: 'HostOrganizerAvatar',
+    contractId: 'component.host.navigation.organizer-avatar',
     children: [
       _StateCard(
-        label: 'single club / passive',
+        label: 'navigation avatar',
         child: _HostHomeSectionFrame(
-          child: HostOrganizerIdentityPill(
-            club: club,
-            currentUid: _hostUid,
-            clubs: [club],
-            showClubPicker: true,
-            onSwitchClubIndex: (_) {},
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: HostOrganizerAvatar(
+              club: club,
+              size: CatchLayout.appShellNavigationIdentityExtent,
+            ),
           ),
         ),
       ),
       _StateCard(
-        label: 'multiple clubs / whole-surface action',
+        label: 'long-press switcher sheet',
         child: _HostHomeSectionFrame(
-          child: HostOrganizerIdentityPill(
-            club: club,
-            currentUid: _hostUid,
+          child: HostOrganizerSwitcherSheet(
             clubs: HostOperationsFixtures.clubs,
-            showClubPicker: true,
-            onSwitchClubIndex: (_) {},
+            selectedOrganizerId: club.id,
           ),
         ),
       ),
     ],
   );
 }
+
+@widgetbook.UseCase(
+  name: 'Long-press switcher states',
+  type: HostOrganizerSwitcherSheet,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+Widget hostOrganizerSwitcherSheetStates(BuildContext context) =>
+    hostOrganizerIdentityPillStates(context);
 
 @widgetbook.UseCase(
   name: 'Overview route states',
@@ -698,40 +704,6 @@ Widget hostCustomersStates(BuildContext context) {
     eventsTruncated: false,
     revision: 3,
   );
-  final messagingSetup = HostMessagingSetup(
-    organizerId: organizerId,
-    providerConfigured: true,
-    embeddedSignup: HostWhatsappEmbeddedSignupConfig(
-      appId: 'design-app',
-      configId: 'design-config',
-      graphVersion: 'v24.0',
-    ),
-    connection: HostWhatsappConnection(
-      connectionId: 'design-whatsapp',
-      status: 'active',
-      displayPhoneNumber: '+91 98765 43210',
-      verifiedName: 'Sunday Social Club',
-      qualityRating: 'GREEN',
-      messagingLimitTier: 'TIER_1K',
-      templateSyncStatus: 'ready',
-      webhookStatus: 'healthy',
-      testStatus: 'verified',
-      revision: 2,
-    ),
-    templates: [
-      HostWhatsappTemplate(
-        templateId: 'design-invitation',
-        name: 'event_invitation',
-        language: 'en_US',
-        category: 'MARKETING',
-        status: 'APPROVED',
-        variableNames: ['first_name', 'invite_url'],
-        hasMediaHeader: false,
-        buttonKinds: ['URL'],
-      ),
-    ],
-  );
-
   return _HostCatalog(
     title: 'Host Customers',
     contractId: 'screen.host.customers',
@@ -765,28 +737,6 @@ Widget hostCustomersStates(BuildContext context) {
               child: HostCustomerDetailScreen(
                 organizerId: organizerId,
                 contactId: contactId,
-              ),
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'campaign and sender workspace',
-        child: _DeviceFrame(
-          child: _HostShellScope(
-            child: ProviderScope(
-              overrides: [
-                hostMessagingSetupProvider(
-                  organizerId,
-                ).overrideWithValue(AsyncData(messagingSetup)),
-              ],
-              child: Scaffold(
-                body: SingleChildScrollView(
-                  padding: CatchInsets.pageBody,
-                  child: HostCustomerMessagingPane(
-                    club: HostOperationsFixtures.primaryClub,
-                  ),
-                ),
               ),
             ),
           ),
@@ -887,10 +837,72 @@ Widget hostCustomersSummaryStates(BuildContext context) =>
 @widgetbook.UseCase(
   name: 'Campaign and sender states',
   type: HostCustomerMessagingPane,
-  path: '[P1 product surfaces]/Host operations/Customers',
+  path: '[P1 product surfaces]/Host operations/Messaging',
 )
-Widget hostCustomerMessagingStates(BuildContext context) =>
-    hostCustomersStates(context);
+Widget hostCustomerMessagingStates(BuildContext context) {
+  final organizerId = HostOperationsFixtures.primaryClub.id;
+  final messagingSetup = HostMessagingSetup(
+    organizerId: organizerId,
+    providerConfigured: true,
+    embeddedSignup: HostWhatsappEmbeddedSignupConfig(
+      appId: 'design-app',
+      configId: 'design-config',
+      graphVersion: 'v24.0',
+    ),
+    connection: HostWhatsappConnection(
+      connectionId: 'design-whatsapp',
+      status: 'active',
+      displayPhoneNumber: '+91 98765 43210',
+      verifiedName: 'Sunday Social Club',
+      qualityRating: 'GREEN',
+      messagingLimitTier: 'TIER_1K',
+      templateSyncStatus: 'ready',
+      webhookStatus: 'healthy',
+      testStatus: 'verified',
+      revision: 2,
+    ),
+    templates: [
+      HostWhatsappTemplate(
+        templateId: 'design-invitation',
+        name: 'event_invitation',
+        language: 'en_US',
+        category: 'MARKETING',
+        status: 'APPROVED',
+        variableNames: ['first_name', 'invite_url'],
+        hasMediaHeader: false,
+        buttonKinds: ['URL'],
+      ),
+    ],
+  );
+  return _HostCatalog(
+    title: 'Host Messaging',
+    contractId: 'screen.host.inbox',
+    children: [
+      _StateCard(
+        label: 'campaign and sender workspace',
+        child: _DeviceFrame(
+          child: _HostShellScope(
+            child: ProviderScope(
+              overrides: [
+                hostMessagingSetupProvider(
+                  organizerId,
+                ).overrideWithValue(AsyncData(messagingSetup)),
+              ],
+              child: Scaffold(
+                body: SingleChildScrollView(
+                  padding: CatchInsets.pageBody,
+                  child: HostCustomerMessagingPane(
+                    club: HostOperationsFixtures.primaryClub,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
 
 @widgetbook.UseCase(
   name: 'Route states',
@@ -1118,11 +1130,7 @@ Widget hostHomeEventSectionStates(BuildContext context) {
         child: _HostHomeSectionFrame(
           child: HostEventsClubCard(
             club: _club,
-            currentUid: _hostUid,
-            clubs: [_club],
-            showClubPicker: false,
             selectedFilter: HostEventsLifecycleFilter.upcoming,
-            onSwitchClubIndex: (_) {},
             onFilterChanged: (_) {},
             onEventEntrySelected: (_, _, _) {},
             onManageEvent: (_, _) {},
@@ -1152,11 +1160,7 @@ Widget hostHomeEventSectionStates(BuildContext context) {
           },
           child: HostEventsClubCard(
             club: _club,
-            currentUid: _hostUid,
-            clubs: [_club],
-            showClubPicker: false,
             selectedFilter: HostEventsLifecycleFilter.past,
-            onSwitchClubIndex: (_) {},
             onFilterChanged: (_) {},
             onEventEntrySelected: (_, _, _) {},
             onManageEvent: (_, _) {},
@@ -1173,11 +1177,7 @@ Widget hostHomeEventSectionStates(BuildContext context) {
           },
           child: HostEventsClubCard(
             club: _club,
-            currentUid: _hostUid,
-            clubs: [_club],
-            showClubPicker: false,
             selectedFilter: HostEventsLifecycleFilter.upcoming,
-            onSwitchClubIndex: (_) {},
             onFilterChanged: (_) {},
             onEventEntrySelected: (_, _, _) {},
             onManageEvent: (_, _) {},
@@ -1196,11 +1196,7 @@ Widget hostHomeEventSectionStates(BuildContext context) {
           },
           child: HostEventsClubCard(
             club: _club,
-            currentUid: _hostUid,
-            clubs: [_club],
-            showClubPicker: false,
             selectedFilter: HostEventsLifecycleFilter.upcoming,
-            onSwitchClubIndex: (_) {},
             onFilterChanged: (_) {},
             onEventEntrySelected: (_, _, _) {},
             onManageEvent: (_, _) {},
@@ -1220,11 +1216,7 @@ Widget hostHomeEventSectionStates(BuildContext context) {
           },
           child: HostEventsClubCard(
             club: _club,
-            currentUid: _hostUid,
-            clubs: [_club],
-            showClubPicker: false,
             selectedFilter: HostEventsLifecycleFilter.upcoming,
-            onSwitchClubIndex: (_) {},
             onFilterChanged: (_) {},
             onEventEntrySelected: (_, _, _) {},
             onManageEvent: (_, _) {},
@@ -1239,11 +1231,7 @@ Widget hostHomeEventSectionStates(BuildContext context) {
           clubEventStreams: {_club.id: Stream<List<Event>>.value(const [])},
           child: HostEventsClubCard(
             club: _club,
-            currentUid: _hostUid,
-            clubs: [_club],
-            showClubPicker: false,
             selectedFilter: HostEventsLifecycleFilter.upcoming,
-            onSwitchClubIndex: (_) {},
             onFilterChanged: (_) {},
             onEventEntrySelected: (_, _, _) {},
             onManageEvent: (_, _) {},
@@ -1262,11 +1250,7 @@ Widget hostHomeEventSectionStates(BuildContext context) {
           },
           child: HostEventsClubCard(
             club: _club,
-            currentUid: _hostUid,
-            clubs: [_club],
-            showClubPicker: false,
             selectedFilter: HostEventsLifecycleFilter.upcoming,
-            onSwitchClubIndex: (_) {},
             onFilterChanged: (_) {},
             onEventEntrySelected: (_, _, _) {},
             onManageEvent: (_, _) {},
@@ -1748,7 +1732,6 @@ Widget _hostHomeExactCatalog(BuildContext context, String focus) {
 Widget _hostHomePreviewFor(BuildContext context, String focus) {
   final club = HostOperationsFixtures.primaryClub;
   final event = HostOperationsFixtures.upcomingEvent;
-  final clubs = HostOperationsFixtures.clubs;
   final state = buildHostEventsOverviewState(
     AsyncData<List<Event>>([event, HostOperationsFixtures.privateEvent]),
     now: event.startTime.subtract(const Duration(hours: 2)),
@@ -1767,14 +1750,12 @@ Widget _hostHomePreviewFor(BuildContext context, String focus) {
         onPressed: () {},
       ),
     ),
-    'HostOrganizerIdentityPill' => HostOrganizerIdentityPill(
+    'HostOrganizerAvatar' => HostOrganizerAvatar(
       club: club.copyWith(
         profileImageUrl: 'assets/fixtures/club_hero_portrait.jpg',
       ),
-      currentUid: _hostUid,
-      clubs: clubs,
-      showClubPicker: true,
-      onSwitchClubIndex: (_) {},
+      size: CatchLayout.appShellNavigationIdentityExtent,
+      selected: true,
     ),
     'HostEventsOverviewSection' => HostEventsOverviewSection(
       club: club,
@@ -1917,11 +1898,7 @@ Widget _hostClubPreviewFor(String focus) {
     ),
     'HostEventsClubCard' => HostEventsClubCard(
       club: club,
-      currentUid: _hostUid,
-      clubs: [club],
-      showClubPicker: false,
       selectedFilter: HostEventsLifecycleFilter.upcoming,
-      onSwitchClubIndex: (_) {},
       onFilterChanged: (_) {},
       onEventEntrySelected: (_, _, _) {},
       onManageEvent: (_, _) {},

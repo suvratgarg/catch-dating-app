@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-08-10",
+  "updated": "2026-08-15",
   "id": "feature.host_organizers",
   "name": "Host Organizers",
   "owner": "hosts",
@@ -116,6 +116,12 @@
             "language": "dart",
             "file": "lib/hosts/presentation/host_operations/host_auth_required_screen.dart",
             "symbol": "HostAuthRequiredScreen"
+          },
+          {
+            "id": "host_shell",
+            "language": "dart",
+            "file": "lib/core/presentation/host_app_shell.dart",
+            "symbol": "HostAppShell"
           }
         ],
         "componentContracts": [
@@ -226,12 +232,12 @@
         },
         {
           "id": "switch_organizer",
-          "owner": "workspace",
-          "codeValue": "_selectClubIndex",
+          "owner": "host_shell",
+          "codeValue": "_openOrganizerSwitcher",
           "cardinality": "unbounded",
           "scopeKeys": ["viewerUid", "routeInstanceId", "clubId"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["multiple_clubs_switcher", "organizer_overview", "cohost_club_edit_limited"]}],
-          "description": "Switches all organizer workspace tabs to another organizer the viewer hosts."
+          "description": "Long-presses the Organizer navigation avatar, provides haptic feedback, and switches all Host workspaces to another organizer the viewer hosts."
         },
         {
           "id": "select_workspace_tab",

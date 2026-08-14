@@ -1,27 +1,57 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
+import 'package:catch_dating_app/core/motion/catch_transitions.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/presentation/catch_adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
+import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class HostAppShell extends ConsumerWidget {
-  const HostAppShell({super.key, required this.navigationShell});
+class HostAppShell extends ConsumerStatefulWidget {
+  const HostAppShell({
+    super.key,
+    required this.navigationShell,
+    this.requestedOrganizerId,
+  });
 
   final StatefulNavigationShell navigationShell;
+  final String? requestedOrganizerId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HostAppShell> createState() => _HostAppShellState();
+}
+
+class _HostAppShellState extends ConsumerState<HostAppShell> {
+  String? _consumedRequestedOrganizerId;
+  String? _scheduledSelection;
+
+  @override
+  void didUpdateWidget(covariant HostAppShell oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final requestedOrganizerId = widget.requestedOrganizerId?.trim();
+    if (requestedOrganizerId != null &&
+        requestedOrganizerId.isNotEmpty &&
+        requestedOrganizerId != _consumedRequestedOrganizerId) {
+      _consumedRequestedOrganizerId = null;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final uidAsync = ref.watch(uidProvider);
     final uid = uidAsync.asData?.value ?? '';
     final isAuthenticated = uid.isNotEmpty;
@@ -37,6 +67,33 @@ class HostAppShell extends ConsumerWidget {
         connectivityResultsAreOffline(connectivityResults);
     final errorLogger = ref.read(errorLoggerProvider);
     final analytics = ref.read(appAnalyticsProvider);
+    final clubsAsync = isAuthenticated
+        ? ref.watch(hostOperableClubsProvider(uid))
+        : null;
+    final clubs = clubsAsync?.asData?.value ?? const <Club>[];
+    final selectedOrganizerId = isAuthenticated
+        ? ref.watch(hostOrganizerSelectionProvider(uid))
+        : null;
+    final requestedOrganizerId = widget.requestedOrganizerId?.trim();
+    final hasUnconsumedRequest =
+        requestedOrganizerId != null &&
+        requestedOrganizerId.isNotEmpty &&
+        requestedOrganizerId != _consumedRequestedOrganizerId;
+    final selectedOrganizer = resolveSelectedHostOrganizer(
+      clubs,
+      selectedOrganizerId: selectedOrganizerId,
+      preferredOrganizerId: hasUnconsumedRequest ? requestedOrganizerId : null,
+    );
+    if (hasUnconsumedRequest && clubsAsync?.hasValue == true) {
+      _consumedRequestedOrganizerId = requestedOrganizerId;
+    }
+    if (isAuthenticated && selectedOrganizer != null) {
+      _scheduleSelectionSync(
+        uid: uid,
+        organizerId: selectedOrganizer.id,
+        currentOrganizerId: selectedOrganizerId,
+      );
+    }
 
     if (isAuthenticated) {
       // Reuse the shared FCM-init provider so host and consumer shells cannot
@@ -71,40 +128,56 @@ class HostAppShell extends ConsumerWidget {
       }
     });
 
-    void selectDestination(int index) => navigationShell.goBranch(
+    void selectDestination(int index) => widget.navigationShell.goBranch(
       index,
-      initialLocation: index == navigationShell.currentIndex,
+      initialLocation: index == widget.navigationShell.currentIndex,
+    );
+
+    final navigationItems = _hostNavigationItems(
+      selectedOrganizer: selectedOrganizer,
+      onOrganizerLongPress: clubs.length > 1 && selectedOrganizer != null
+          ? () => unawaited(
+              _openOrganizerSwitcher(
+                uid: uid,
+                clubs: clubs,
+                selectedOrganizer: selectedOrganizer,
+              ),
+            )
+          : null,
+      organizerSemanticHint: clubs.length > 1
+          ? context.l10n.hostsHostTodayTooltipSwitchClub
+          : null,
     );
 
     final bottomNavigation = isAuthenticated
         ? AppShellNavigationBar(
-            currentIndex: navigationShell.currentIndex,
+            currentIndex: widget.navigationShell.currentIndex,
             unreadCount: unreadCount,
-            items: _hostNavigationItems,
+            items: navigationItems,
             onDestinationSelected: selectDestination,
           )
         : null;
     final railNavigation = isAuthenticated
         ? AppShellNavigationBar(
-            currentIndex: navigationShell.currentIndex,
+            currentIndex: widget.navigationShell.currentIndex,
             unreadCount: unreadCount,
-            items: _hostNavigationItems,
+            items: navigationItems,
             layout: AppShellNavigationLayout.rail,
             onDestinationSelected: selectDestination,
           )
         : null;
     final sidebarNavigation = isAuthenticated
         ? AppShellNavigationBar(
-            currentIndex: navigationShell.currentIndex,
+            currentIndex: widget.navigationShell.currentIndex,
             unreadCount: unreadCount,
-            items: _hostNavigationItems,
+            items: navigationItems,
             layout: AppShellNavigationLayout.sidebar,
             onDestinationSelected: selectDestination,
           )
         : null;
 
     return CatchAdaptiveTabScaffold(
-      activeIndex: navigationShell.currentIndex,
+      activeIndex: widget.navigationShell.currentIndex,
       navigationBar: bottomNavigation,
       mediumSideNavigation: railNavigation,
       expandedSideNavigation: sidebarNavigation,
@@ -112,13 +185,55 @@ class HostAppShell extends ConsumerWidget {
         persistentNotices: [
           if (isOffline) CatchNoticeData.offline(context.l10n),
         ],
-        child: navigationShell,
+        child: widget.navigationShell,
       ),
     );
   }
+
+  void _scheduleSelectionSync({
+    required String uid,
+    required String organizerId,
+    required String? currentOrganizerId,
+  }) {
+    if (currentOrganizerId == organizerId ||
+        _scheduledSelection == organizerId) {
+      return;
+    }
+    _scheduledSelection = organizerId;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      ref
+          .read(hostOrganizerSelectionProvider(uid).notifier)
+          .select(organizerId);
+      if (_scheduledSelection == organizerId) _scheduledSelection = null;
+    });
+  }
+
+  Future<void> _openOrganizerSwitcher({
+    required String uid,
+    required List<Club> clubs,
+    required Club selectedOrganizer,
+  }) async {
+    catchTransitionHaptic();
+    final organizerId = await showHostOrganizerSwitcherSheet(
+      context: context,
+      clubs: clubs,
+      selectedOrganizerId: selectedOrganizer.id,
+    );
+    if (!mounted ||
+        organizerId == null ||
+        organizerId == selectedOrganizer.id) {
+      return;
+    }
+    ref.read(hostOrganizerSelectionProvider(uid).notifier).select(organizerId);
+  }
 }
 
-final _hostNavigationItems = [
+List<AppShellNavigationItem> _hostNavigationItems({
+  required Club? selectedOrganizer,
+  required VoidCallback? onOrganizerLongPress,
+  required String? organizerSemanticHint,
+}) => [
   AppShellNavigationItem(
     destination: AppShellNavigationDestination.hostEvents,
     materialIcon: CatchIcons.tabEvents,
@@ -147,5 +262,25 @@ final _hostNavigationItems = [
     materialSelectedIcon: CatchIcons.tabOrganizerFilled,
     cupertinoIcon: CatchIcons.tabOrganizer,
     cupertinoSelectedIcon: CatchIcons.tabOrganizerFilled,
+    iconBuilder: selectedOrganizer == null
+        ? null
+        : (context) => HostOrganizerAvatar(
+            key: const ValueKey<String>('host-organizer-navigation-avatar'),
+            club: selectedOrganizer,
+            size: CatchLayout.appShellNavigationIdentityExtent,
+          ),
+    selectedIconBuilder: selectedOrganizer == null
+        ? null
+        : (context) => HostOrganizerAvatar(
+            key: const ValueKey<String>(
+              'host-organizer-navigation-avatar-selected',
+            ),
+            club: selectedOrganizer,
+            size: CatchLayout.appShellNavigationIdentityExtent,
+            selected: true,
+          ),
+    onLongPress: onOrganizerLongPress,
+    semanticValue: selectedOrganizer?.name,
+    semanticHint: organizerSemanticHint,
   ),
 ];

@@ -20,6 +20,17 @@ enum _HostInviteDestination {
   final String wireValue;
 }
 
+const _hostCampaignEligibleSegments = <HostAudienceSegment>[
+  HostAudienceSegment.firstTimeAttendee,
+  HostAudienceSegment.repeatAttendee,
+  HostAudienceSegment.regular,
+  HostAudienceSegment.lapsedRegular,
+  HostAudienceSegment.reliableAttendee,
+  HostAudienceSegment.advocate,
+  HostAudienceSegment.highImpactAdvocate,
+  HostAudienceSegment.whatsappReachable,
+];
+
 class HostCustomerMessagingPane extends ConsumerStatefulWidget {
   const HostCustomerMessagingPane({
     super.key,
@@ -278,7 +289,7 @@ class _HostCustomerMessagingPaneState
                 spacing: CatchSpacing.s2,
                 runSpacing: CatchSpacing.s2,
                 children: [
-                  for (final segment in HostAudienceSegment.values)
+                  for (final segment in _hostCampaignEligibleSegments)
                     CatchChip.selectable(
                       label: _segmentLabel(context, segment),
                       selected: _campaignSegments.contains(segment),

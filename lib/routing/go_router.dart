@@ -816,8 +816,12 @@ StatefulShellRoute _hostShellRoute(
   _RouterNavigatorKeys keys,
 ) {
   return StatefulShellRoute.indexedStack(
-    builder: (context, state, navigationShell) =>
-        HostAppShell(navigationShell: navigationShell),
+    builder: (context, state, navigationShell) => HostAppShell(
+      navigationShell: navigationShell,
+      requestedOrganizerId:
+          state.uri.queryParameters['organizerId'] ??
+          state.uri.queryParameters['clubId'],
+    ),
     branches: [
       StatefulShellBranch(
         navigatorKey: keys.hostEvents,
@@ -826,7 +830,11 @@ StatefulShellRoute _hostShellRoute(
           GoRoute(
             path: Routes.hostEventsScreen.path,
             name: Routes.hostEventsScreen.name,
-            builder: (context, state) => const HostOperationsHomeScreen(),
+            builder: (context, state) => HostOperationsHomeScreen(
+              initialClubId:
+                  state.uri.queryParameters['organizerId'] ??
+                  state.uri.queryParameters['clubId'],
+            ),
           ),
         ],
       ),

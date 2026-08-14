@@ -7703,13 +7703,24 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostOrganizerIdentityPill',
+                name: 'HostOrganizerAvatar',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'Identity switcher states',
+                    name: 'Navigation identity states',
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
                             .hostOrganizerIdentityPillStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostOrganizerSwitcherSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Long-press switcher states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostOrganizerSwitcherSheetStates,
                   ),
                 ],
               ),
@@ -7803,17 +7814,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
                             .hostCustomerIdentityStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostCustomerMessagingPane',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Campaign and sender states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostCustomerMessagingStates,
                   ),
                 ],
               ),
@@ -7941,6 +7941,22 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Route and section states',
                 builder: _widgetbook_workspace_hosts_host_operations_use_cases
                     .hostEventManageRouteAndSectionStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
+            name: 'Messaging',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerMessagingPane',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Campaign and sender states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostCustomerMessagingStates,
+                  ),
+                ],
               ),
             ],
           ),

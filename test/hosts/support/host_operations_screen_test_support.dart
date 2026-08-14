@@ -31,6 +31,21 @@ void registerHostEventEntryTests() {
     expect(find.byTooltip('Create organizer'), findsNothing);
     expect(find.byTooltip('Switch organizer'), findsNothing);
     expect(find.text('Create event'), findsOneWidget);
+    expect(
+      tester
+          .widget<CatchScreenHeaderTitle>(find.byType(CatchScreenHeaderTitle))
+          .eyebrow,
+      isNull,
+    );
+    expect(
+      find.descendant(
+        of: find.byType(CatchScreenHeaderTitle),
+        matching: find.byKey(
+          const ValueKey<String>('host-events-create-event'),
+        ),
+      ),
+      findsOneWidget,
+    );
     expect(find.text('Use guest list'), findsNothing);
     await tester.tap(
       find.byKey(const ValueKey<String>('host-events-create-event')),
@@ -458,3 +473,23 @@ Uint8List _testPngBytes() => base64Decode(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUl'
   'EQVQIHWP4////fwAJ+wP9KobjigAAAABJRU5ErkJggg==',
 );
+
+class _EmptyHostCustomersDirectoryController
+    extends HostCustomersDirectoryController {
+  _EmptyHostCustomersDirectoryController(this.requests);
+
+  final List<HostCustomersDirectoryRequest> requests;
+
+  @override
+  Future<HostCustomersDirectoryState> build(
+    HostCustomersDirectoryRequest request,
+  ) async {
+    requests.add(request);
+    return const HostCustomersDirectoryState(
+      contacts: [],
+      nextCursor: null,
+      sourceCoverage: HostCustomerDirectoryCoverage.exact,
+      projectionVersion: 1,
+    );
+  }
+}

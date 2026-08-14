@@ -112,9 +112,9 @@
     "x-surface": "host.navigation",
     "x-max-chars": 16
   },
-  "hostNavigationInbox": "Inbox",
+  "hostNavigationInbox": "Messaging",
   "@hostNavigationInbox": {
-    "description": "Host bottom navigation label for attendee inquiries.",
+    "description": "Host bottom navigation label for conversations, broadcasts, and campaigns.",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "host.navigation",
@@ -286,9 +286,9 @@
     "x-surface": "consumer.chats",
     "x-max-chars": 20
   },
-  "hostInboxTitle": "Inbox",
+  "hostInboxTitle": "Messaging",
   "@hostInboxTitle": {
-    "description": "Host attendee inbox screen heading.",
+    "description": "Host messaging screen heading.",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "host.inbox",
@@ -21130,10 +21130,10 @@
   "@eventSuccessRoomMapDragHint": {"description": "Additive drag affordance explanation.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_room_map"},
   "hostCustomersIntro": "Everyone who has attended, registered, been imported, or been added by your team.",
   "@hostCustomersIntro": {"description": "Customers directory scope explanation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostCustomersWorkspacePeople": "People",
-  "@hostCustomersWorkspacePeople": {"description": "Customers people workspace label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostCustomersWorkspaceCampaigns": "Campaigns",
-  "@hostCustomersWorkspaceCampaigns": {"description": "Customers campaigns workspace label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostMessagingWorkspaceInbox": "Inbox",
+  "@hostMessagingWorkspaceInbox": {"description": "Messaging workspace label for direct inquiries and event broadcasts.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
+  "hostMessagingWorkspaceCampaigns": "Campaigns",
+  "@hostMessagingWorkspaceCampaigns": {"description": "Messaging workspace label for cross-event outbound campaigns.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
   "hostCustomersManage": "Manage customer",
   "@hostCustomersManage": {"description": "Opens organizer-owned customer identity and delivery controls.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersCheckedIn": "Checked in",

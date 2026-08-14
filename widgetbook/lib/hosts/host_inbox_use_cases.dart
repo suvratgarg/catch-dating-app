@@ -319,6 +319,7 @@ HostInboxViewModel _workspace({
   events: [HostInboxSurfaceFixtures.event],
   inbox: HostInboxSurfaceFixtures.allThreads,
   participations: HostInboxSurfaceFixtures.participations,
+  selectedOrganizerId: HostInboxSurfaceFixtures.club.id,
   selectedScope: const HostInboxScope.event(HostInboxSurfaceFixtures.eventId),
   selectedSegment: segment,
   query: '',
@@ -364,7 +365,6 @@ class _HostInboxFrame extends StatelessWidget {
     final inboxValue = error == null
         ? viewModel ?? AsyncData(HostInboxSurfaceFixtures.allThreads)
         : AsyncError<ChatsListViewModel>(StateError(error!), StackTrace.empty);
-    final eventQuery = EventsForClubsQuery([HostInboxSurfaceFixtures.club.id]);
     return ProviderScope(
       overrides: [
         uidProvider.overrideWithValue(
@@ -373,7 +373,9 @@ class _HostInboxFrame extends StatelessWidget {
         hostOperableClubsProvider(
           HostInboxSurfaceFixtures.hostUid,
         ).overrideWithValue(AsyncData([HostInboxSurfaceFixtures.club])),
-        watchEventsForClubsProvider(eventQuery).overrideWithValue(
+        watchEventsForClubProvider(
+          HostInboxSurfaceFixtures.club.id,
+        ).overrideWithValue(
           AsyncData<List<Event>>([HostInboxSurfaceFixtures.event]),
         ),
         chatsListViewModelProvider.overrideWithValue(inboxValue),

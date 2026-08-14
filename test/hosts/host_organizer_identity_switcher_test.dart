@@ -2,99 +2,60 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/widgets/catch_index_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../clubs/clubs_test_helpers.dart';
 import '../test_pump_helpers.dart';
 
-const _hostUid = 'host-1';
-const _switcherKey = ValueKey('host-events-organizer-switcher');
-const _identityArtKey = ValueKey('host-events-organizer-identity-art');
-
 void main() {
-  testWidgets('single-club identity is explicitly passive', (tester) async {
-    final club = buildClub(name: 'Sea Face Social', ownerUserId: _hostUid);
+  test('selection is isolated per signed-in Host user', () {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
 
-    await _pumpSwitcher(
-      tester,
-      club: club,
-      clubs: [club],
-      showClubPicker: true,
-    );
+    expect(container.read(hostOrganizerSelectionProvider('host-1')), isNull);
+    container
+        .read(hostOrganizerSelectionProvider('host-1').notifier)
+        .select('club-2');
 
-    final surface = tester.widget<CatchSurface>(find.byKey(_switcherKey));
-    expect(surface.onTap, isNull);
-    expect(find.byType(MenuAnchor), findsNothing);
-    expect(find.byIcon(CatchIcons.expandMoreRounded), findsNothing);
+    expect(container.read(hostOrganizerSelectionProvider('host-1')), 'club-2');
+    expect(container.read(hostOrganizerSelectionProvider('host-2')), isNull);
   });
 
-  testWidgets('multi-club identity opens from the whole bounded surface', (
-    tester,
-  ) async {
-    final ownerClub = buildClub(
-      id: 'owner-club',
-      name: 'Sea Face Social',
-      ownerUserId: _hostUid,
-    );
-    final teamClub = buildClub(
-      id: 'team-club',
-      name: 'Long Table Club',
-      ownerUserId: 'another-owner',
-      hostUserIds: const [_hostUid],
-    );
-    var selectedIndex = -1;
+  test(
+    'selection resolution prefers a valid route, then state, then first',
+    () {
+      final first = buildClub();
+      final second = buildClub(id: 'club-2');
+      final clubs = [first, second];
 
-    await _pumpSwitcher(
-      tester,
-      club: ownerClub,
-      clubs: [ownerClub, teamClub],
-      showClubPicker: true,
-      onSwitchClubIndex: (index) => selectedIndex = index,
-    );
+      expect(resolveSelectedHostOrganizer(clubs), first);
+      expect(
+        resolveSelectedHostOrganizer(clubs, selectedOrganizerId: second.id),
+        second,
+      );
+      expect(
+        resolveSelectedHostOrganizer(
+          clubs,
+          selectedOrganizerId: first.id,
+          preferredOrganizerId: second.id,
+        ),
+        second,
+      );
+      expect(
+        resolveSelectedHostOrganizer(clubs, selectedOrganizerId: 'missing'),
+        first,
+      );
+      expect(resolveSelectedHostOrganizer(const []), isNull);
+    },
+  );
 
-    final surface = tester.widget<CatchSurface>(find.byKey(_switcherKey));
-    expect(surface.onTap, isNotNull);
-    expect(find.byIcon(CatchIcons.expandMoreRounded), findsOneWidget);
-
-    await tester.tap(find.byKey(_identityArtKey));
-    await pumpFeatureUi(tester);
-
-    final ownerOption = find.byKey(
-      const ValueKey('host-events-organizer-option-owner-club'),
-    );
-    final teamOption = find.byKey(
-      const ValueKey('host-events-organizer-option-team-club'),
-    );
-    expect(ownerOption, findsOneWidget);
-    expect(teamOption, findsOneWidget);
-    expect(
-      find.descendant(of: ownerOption, matching: find.text('Owner')),
-      findsOneWidget,
-    );
-    expect(
-      find.descendant(of: teamOption, matching: find.text('Host team')),
-      findsOneWidget,
-    );
-    expect(
-      find.descendant(of: ownerOption, matching: find.byIcon(CatchIcons.check)),
-      findsOneWidget,
-    );
-    expect(tester.widget<Semantics>(ownerOption).properties.selected, isTrue);
-    expect(tester.widget<Semantics>(teamOption).properties.selected, isFalse);
-
-    await tester.tap(
-      find.descendant(of: teamOption, matching: find.text('Long Table Club')),
-    );
-    await pumpFeatureUi(tester);
-
-    expect(selectedIndex, 1);
-  });
-
-  testWidgets('identity art prefers the real logo with activity fallback', (
+  testWidgets('organizer avatar prefers the real logo with activity fallback', (
     tester,
   ) async {
     const logoPath = 'assets/fixtures/club_hero_portrait.jpg';
@@ -103,69 +64,118 @@ void main() {
       profileImageUrl: logoPath,
     );
 
-    await _pumpSwitcher(tester, club: clubWithLogo, clubs: [clubWithLogo]);
+    await _pumpAvatar(tester, clubWithLogo);
 
-    var art = tester.widget<CatchPersonAvatar>(find.byKey(_identityArtKey));
+    var art = tester.widget<CatchPersonAvatar>(find.byType(CatchPersonAvatar));
     expect(art.imageUrl, logoPath);
     expect(art.initials, 'SF');
     expect(art.activityKind, ActivityKind.socialRun);
 
-    final clubWithoutLogo = buildClub(name: 'Long Table Club');
-    await _pumpSwitcher(
-      tester,
-      club: clubWithoutLogo,
-      clubs: [clubWithoutLogo],
-    );
+    await _pumpAvatar(tester, buildClub(name: 'Long Table Club'));
 
-    art = tester.widget<CatchPersonAvatar>(find.byKey(_identityArtKey));
+    art = tester.widget<CatchPersonAvatar>(find.byType(CatchPersonAvatar));
     expect(art.imageUrl, isNull);
     expect(art.initials, 'LT');
     expect(art.activityKind, ActivityKind.socialRun);
   });
 
-  testWidgets('identity surface and menu remain stable at 2x text', (
-    tester,
-  ) async {
-    final ownerClub = buildClub(
-      id: 'owner-club',
+  testWidgets(
+    'switcher sheet marks the current organizer and returns a choice',
+    (tester) async {
+      final ownerClub = buildClub(id: 'owner-club', name: 'Sea Face Social');
+      final teamClub = buildClub(id: 'team-club', name: 'Long Table Club');
+      String? selectedOrganizerId;
+
+      await _pumpSheetLauncher(
+        tester,
+        clubs: [ownerClub, teamClub],
+        selectedOrganizerId: ownerClub.id,
+        onSelected: (value) => selectedOrganizerId = value,
+      );
+      await tester.tap(find.text('Open switcher'));
+      await pumpFeatureUi(tester);
+
+      final ownerOption = find.byKey(
+        const ValueKey<String>('host-organizer-switcher-option-owner-club'),
+      );
+      final teamOption = find.byKey(
+        const ValueKey<String>('host-organizer-switcher-option-team-club'),
+      );
+      expect(
+        find.byKey(const ValueKey<String>('host-organizer-switcher-sheet')),
+        findsOneWidget,
+      );
+      expect(tester.widget<CatchIndexRow>(ownerOption).selected, isTrue);
+      expect(tester.widget<CatchIndexRow>(teamOption).selected, isFalse);
+      expect(
+        find.descendant(
+          of: ownerOption,
+          matching: find.byIcon(CatchIcons.checkCircleFilled),
+        ),
+        findsOneWidget,
+      );
+
+      await tester.tap(teamOption);
+      await pumpFeatureUi(tester);
+
+      expect(selectedOrganizerId, teamClub.id);
+      expect(
+        find.byKey(const ValueKey<String>('host-organizer-switcher-sheet')),
+        findsNothing,
+      );
+    },
+  );
+
+  testWidgets('switcher sheet remains stable at 2x text', (tester) async {
+    final first = buildClub(
       name: 'Sea Face Social With An Intentionally Long Name',
-      ownerUserId: _hostUid,
     );
-    final teamClub = buildClub(
-      id: 'team-club',
+    final second = buildClub(
+      id: 'club-2',
       name: 'Long Table Club With An Intentionally Long Name',
-      ownerUserId: 'another-owner',
-      hostUserIds: const [_hostUid],
     );
 
-    await _pumpSwitcher(
+    await _pumpSheetLauncher(
       tester,
-      club: ownerClub,
-      clubs: [ownerClub, teamClub],
-      showClubPicker: true,
+      clubs: [first, second],
+      selectedOrganizerId: first.id,
       textScale: 2,
+      onSelected: (_) {},
     );
-    await tester.tap(find.byKey(_switcherKey));
+    await tester.tap(find.text('Open switcher'));
     await pumpFeatureUi(tester);
 
     expect(tester.takeException(), isNull);
     expect(
-      find.byKey(const ValueKey('host-events-organizer-option-owner-club')),
+      find.byKey(
+        const ValueKey<String>('host-organizer-switcher-option-club-1'),
+      ),
       findsOneWidget,
     );
     expect(
-      find.byKey(const ValueKey('host-events-organizer-option-team-club')),
+      find.byKey(
+        const ValueKey<String>('host-organizer-switcher-option-club-2'),
+      ),
       findsOneWidget,
     );
   });
 }
 
-Future<void> _pumpSwitcher(
+Future<void> _pumpAvatar(WidgetTester tester, Club club) async {
+  await tester.pumpWidget(
+    MaterialApp(
+      theme: AppTheme.light,
+      home: Scaffold(body: HostOrganizerAvatar(club: club, size: 40)),
+    ),
+  );
+  await pumpFeatureUi(tester);
+}
+
+Future<void> _pumpSheetLauncher(
   WidgetTester tester, {
-  required Club club,
   required List<Club> clubs,
-  bool showClubPicker = false,
-  ValueChanged<int>? onSwitchClubIndex,
+  required String selectedOrganizerId,
+  required ValueChanged<String?> onSelected,
   double textScale = 1,
 }) async {
   await tester.pumpWidget(
@@ -174,14 +184,18 @@ Future<void> _pumpSwitcher(
       home: MediaQuery(
         data: MediaQueryData(textScaler: TextScaler.linear(textScale)),
         child: Scaffold(
-          body: Align(
-            alignment: Alignment.topRight,
-            child: HostOrganizerIdentityPill(
-              club: club,
-              currentUid: _hostUid,
-              clubs: clubs,
-              showClubPicker: showClubPicker,
-              onSwitchClubIndex: onSwitchClubIndex ?? (_) {},
+          body: Builder(
+            builder: (context) => TextButton(
+              onPressed: () async {
+                onSelected(
+                  await showHostOrganizerSwitcherSheet(
+                    context: context,
+                    clubs: clubs,
+                    selectedOrganizerId: selectedOrganizerId,
+                  ),
+                );
+              },
+              child: const Text('Open switcher'),
             ),
           ),
         ),

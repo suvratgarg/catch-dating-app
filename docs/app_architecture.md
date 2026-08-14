@@ -2011,10 +2011,11 @@ Rules:
 
 - `HostCrmRepository` is the single Flutter Functions facade for organizer
   customer summary, directory/detail, contact controls/export, Meta sender
-  setup and campaign lifecycle. The top-level Customers branch owns both the
-  People and Campaigns workspaces; Organizer must not mount a second Audience
-  workspace, and event-manage widgets must not read restricted CRM collections
-  directly.
+  setup and campaign lifecycle. The top-level Customers branch owns the direct
+  organizer CRM directory and customer detail; the top-level Messaging branch
+  owns the Inbox and Campaigns workspaces, including sender setup and campaign
+  lifecycle. Organizer must not mount a second Audience workspace, and
+  event-manage widgets must not read restricted CRM collections directly.
 - CRM categories are server facts. Flutter may label fixed segment ids but must
   not infer “valuable customer” from ticket price, private feedback, gender,
   compatibility, wingman, dating or safety data.
@@ -2083,14 +2084,21 @@ and initialization complete.
 - Host, web, and desktop retain their existing startup behavior unless their
   role-specific owner explicitly adopts a different boot composition.
 
-Host Inbox is the reference for sharing foundations without sharing product
-composition. Consumer `/chats` owns `ChatsListScreen`; Host `/host/inbox` owns
-`HostInboxScreen`. They may reuse `ChatConversationsList`, `CatchPersonRow`,
-search state, inquiry repositories, and routing contracts, but the consumer
-screen must not remain the Host route dispatcher.
+Host Messaging is the reference for sharing foundations without sharing product
+composition. Consumer `/chats` owns `ChatsListScreen`; the compatibility route
+`/host/inbox` owns `HostInboxScreen` and presents the product label Messaging.
+They may reuse `ChatConversationsList`, `CatchPersonRow`, search state, inquiry
+repositories, and routing contracts, but the consumer screen must not remain
+the Host route dispatcher.
 
-The Host Inbox contract is:
+The Host Messaging contract is:
 
+- every workspace follows `hostOrganizerSelectionProvider`; Inbox events,
+  inquiry previews, WhatsApp sender setup, and campaigns must all resolve from
+  the same selected organizer;
+- Inbox and Campaigns are first-class local workspaces. Inbox owns personal
+  inquiries and event broadcasts; Campaigns owns cross-event WhatsApp sender
+  setup and campaign lifecycle;
 - an explicit selected Event or explicit General scope; General is never an
   event-id sentinel;
 - personal two-party contacted-host inquiry threads, separated by event;
@@ -2103,10 +2111,12 @@ The Host Inbox contract is:
 - production callable-backed affordances stay disabled until the target-specific
   live dependency preflight succeeds.
 
-`HostInboxViewModel.compose` is the provider-free reference adapter for scope,
-classification, roster/thread separation, search, lifecycle, and row-status
-policy. `HostInboxScreen` owns provider reads, typed route effects, and sheet
-composition; `HostInboxBroadcastController` owns the mutation.
+`HostInboxViewModel.compose` is the provider-free Inbox adapter for organizer
+filtering, scope, classification, roster/thread separation, search, lifecycle,
+and row-status policy. `HostInboxScreen` owns selected-organizer provider reads,
+workspace composition, typed route effects, and sheets;
+`HostInboxBroadcastController` owns the event-broadcast mutation and
+`HostAudienceController` owns campaign mutations.
 
 ### Installable App Target Contract
 

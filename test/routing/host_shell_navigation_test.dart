@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
@@ -8,6 +9,7 @@ import 'package:catch_dating_app/core/presentation/host_app_shell.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_bar.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
+import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
@@ -16,9 +18,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../clubs/clubs_test_helpers.dart';
 import '../test_pump_helpers.dart';
 
 const _uid = 'host-user';
+final _organizer = buildClub(
+  id: 'saket-run-club',
+  name: 'Saket Run Club',
+  ownerUserId: _uid,
+);
+final _secondOrganizer = buildClub(
+  id: 'lodhi-social',
+  name: 'Lodhi Social',
+  ownerUserId: _uid,
+);
 
 void main() {
   testWidgets('real Host shell owns the lifecycle IA and switches branches', (
@@ -45,6 +58,9 @@ void main() {
       ProviderScope(
         overrides: [
           uidProvider.overrideWith((ref) => Stream.value(_uid)),
+          hostOperableClubsProvider(
+            _uid,
+          ).overrideWithValue(AsyncData([_organizer, _secondOrganizer])),
           totalUnreadCountProvider(_uid).overrideWithValue(0),
           appConnectivityProvider.overrideWith(
             (ref) => Stream.value(const [ConnectivityResult.wifi]),
@@ -74,6 +90,41 @@ void main() {
       ]),
     );
     expect(find.text('EVENTS BODY'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey<String>('host-organizer-navigation-avatar')),
+      findsOneWidget,
+    );
+    expect(navigationBar.items!.last.semanticValue, _organizer.name);
+
+    await tester.longPress(
+      find.byKey(const ValueKey('app_shell.navigation.destination.3')),
+    );
+    await pumpFeatureUi(tester);
+    expect(
+      find.byKey(const ValueKey<String>('host-organizer-switcher-sheet')),
+      findsOneWidget,
+    );
+    await tester.tap(
+      find.byKey(
+        const ValueKey<String>('host-organizer-switcher-option-lodhi-social'),
+      ),
+    );
+    await pumpFeatureUi(tester);
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(HostAppShell)),
+    );
+    expect(
+      container.read(hostOrganizerSelectionProvider(_uid)),
+      _secondOrganizer.id,
+    );
+    expect(
+      tester
+          .widget<AppShellNavigationBar>(find.byType(AppShellNavigationBar))
+          .items!
+          .last
+          .semanticValue,
+      _secondOrganizer.name,
+    );
 
     await tester.tap(
       find.byKey(const ValueKey('app_shell.navigation.destination.1')),
@@ -142,6 +193,9 @@ void main() {
         ProviderScope(
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value(_uid)),
+            hostOperableClubsProvider(
+              _uid,
+            ).overrideWithValue(AsyncData([_organizer])),
             totalUnreadCountProvider(_uid).overrideWithValue(0),
             appConnectivityProvider.overrideWith(
               (ref) => Stream.value(const [ConnectivityResult.wifi]),
@@ -312,6 +366,9 @@ void main() {
         ProviderScope(
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value(_uid)),
+            hostOperableClubsProvider(
+              _uid,
+            ).overrideWithValue(AsyncData([_organizer])),
             totalUnreadCountProvider(_uid).overrideWithValue(7),
             appConnectivityProvider.overrideWith(
               (ref) => Stream.value(const [ConnectivityResult.wifi]),
@@ -349,8 +406,18 @@ void main() {
         find.text('Catch Host'),
         scenario.sidebar ? findsOneWidget : findsNothing,
       );
+      final navigationBar = tester.widget<AppShellNavigationBar>(
+        find.byType(AppShellNavigationBar),
+      );
+      expect(navigationBar.items!.last.onLongPress, isNull);
+      expect(navigationBar.items!.last.semanticValue, _organizer.name);
       if (scenario.sideNavigation) {
-        final expectedLabels = ['Events', 'Customers', 'Inbox', 'Organizer'];
+        final expectedLabels = [
+          'Events',
+          'Customers',
+          'Messaging',
+          'Organizer',
+        ];
         for (final (index, label) in expectedLabels.indexed) {
           final destination = find.byKey(
             ValueKey('app_shell.navigation.destination.$index'),
@@ -364,7 +431,7 @@ void main() {
       } else {
         expect(find.bySemanticsLabel(RegExp('Events')), findsOneWidget);
         expect(find.bySemanticsLabel(RegExp('Customers')), findsOneWidget);
-        expect(find.bySemanticsLabel(RegExp('Inbox')), findsOneWidget);
+        expect(find.bySemanticsLabel(RegExp('Messaging')), findsOneWidget);
         expect(find.bySemanticsLabel(RegExp('Organizer')), findsOneWidget);
       }
     });

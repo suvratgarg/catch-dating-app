@@ -52,7 +52,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostNavigationCustomers => 'Customers';
 
   @override
-  String get hostNavigationInbox => 'Inbox';
+  String get hostNavigationInbox => 'Messaging';
 
   @override
   String get hostNavigationOrganizer => 'Organizer';
@@ -125,7 +125,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get consumerChatsTitle => 'Chats';
 
   @override
-  String get hostInboxTitle => 'Inbox';
+  String get hostInboxTitle => 'Messaging';
 
   @override
   String get hostInboxSubtitle => 'Attendee queries';
@@ -12902,10 +12902,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Everyone who has attended, registered, been imported, or been added by your team.';
 
   @override
-  String get hostCustomersWorkspacePeople => 'People';
+  String get hostMessagingWorkspaceInbox => 'Inbox';
 
   @override
-  String get hostCustomersWorkspaceCampaigns => 'Campaigns';
+  String get hostMessagingWorkspaceCampaigns => 'Campaigns';
 
   @override
   String get hostCustomersManage => 'Manage customer';

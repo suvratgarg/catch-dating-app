@@ -306,7 +306,7 @@ void _registerHostOperationsClubWorkspaceTests() {
     expect(find.text('Repeat ${past.id}'), findsOneWidget);
   });
 
-  testWidgets('Host events switches between hosted clubs from the app bar', (
+  testWidgets('Host events follows the shared organizer selection', (
     tester,
   ) async {
     final ownedClub = buildClub(
@@ -345,7 +345,10 @@ void _registerHostOperationsClubWorkspaceTests() {
       ],
     );
 
-    expect(find.text('Sunday sea-face crew'), findsWidgets);
+    expect(
+      tester.widget<HostEventsClubCard>(find.byType(HostEventsClubCard)).club,
+      ownedClub,
+    );
     expect(
       tester
           .widget<HostEventOperationalSpotlight>(
@@ -355,16 +358,19 @@ void _registerHostOperationsClubWorkspaceTests() {
       ownedEvent,
     );
 
-    await tester.tap(find.byTooltip('Switch organizer'));
-    await pumpFeatureUi(tester);
-    expect(find.text('Quizzicals'), findsOneWidget);
-    expect(find.text('Host team'), findsOneWidget);
-    await tester.tap(
-      find.byKey(const ValueKey('host-events-organizer-option-cohost-club')),
+    expect(find.byTooltip('Switch organizer'), findsNothing);
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(HostEventsScaffold)),
     );
+    container
+        .read(hostOrganizerSelectionProvider(_hostUid).notifier)
+        .select(cohostClub.id);
     await pumpFeatureUi(tester);
 
-    expect(find.text('Quizzicals'), findsOneWidget);
+    expect(
+      tester.widget<HostEventsClubCard>(find.byType(HostEventsClubCard)).club,
+      cohostClub,
+    );
     expect(
       tester
           .widget<HostEventOperationalSpotlight>(
@@ -373,6 +379,63 @@ void _registerHostOperationsClubWorkspaceTests() {
           .event,
       hostedEvent,
     );
+  });
+
+  testWidgets('Host Customers follows the shared organizer selection', (
+    tester,
+  ) async {
+    final ownedClub = buildClub(
+      id: 'owned-club',
+      name: 'Sunday sea-face crew',
+      ownerUserId: _hostUid,
+    );
+    final cohostClub = buildClub(
+      id: 'cohost-club',
+      name: 'Quizzicals',
+      hostUserId: 'owner-2',
+      hostUserIds: const [_hostUid],
+    );
+    final directoryRequests = <HostCustomersDirectoryRequest>[];
+    await _pumpHostScreen(
+      tester,
+      const HostCustomersScreen(),
+      overrides: [
+        ..._hostClubOverrides(owned: [ownedClub], hosted: [cohostClub]),
+        hostCustomersDirectoryControllerProvider.overrideWith2(
+          (_) => _EmptyHostCustomersDirectoryController(directoryRequests),
+        ),
+      ],
+    );
+
+    expect(directoryRequests.last.organizerId, ownedClub.id);
+    expect(find.byTooltip('Switch organizer'), findsNothing);
+    expect(find.text('People'), findsNothing);
+    expect(find.text('Campaigns'), findsNothing);
+    expect(
+      tester
+          .widget<CatchScreenHeaderTitle>(find.byType(CatchScreenHeaderTitle))
+          .eyebrow,
+      isNull,
+    );
+    expect(
+      find.descendant(
+        of: find.byType(CatchScreenHeaderTitle),
+        matching: find.byKey(
+          const ValueKey<String>('host-customers-add-customer'),
+        ),
+      ),
+      findsOneWidget,
+    );
+
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(HostCustomersScreen)),
+    );
+    container
+        .read(hostOrganizerSelectionProvider(_hostUid).notifier)
+        .select(cohostClub.id);
+    await pumpFeatureUi(tester);
+
+    expect(directoryRequests.last.organizerId, cohostClub.id);
   });
 
   testWidgets('Host clubs defaults to the consolidated edit workspace', (

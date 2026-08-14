@@ -65,6 +65,7 @@ class HostInboxViewModel {
     required List<Event> events,
     required ChatsListViewModel inbox,
     required List<EventParticipation> participations,
+    required String selectedOrganizerId,
     required HostInboxScope selectedScope,
     required HostInboxAudienceSegment selectedSegment,
     required String query,
@@ -82,7 +83,9 @@ class HostInboxViewModel {
       for (final event in orderedEvents) HostInboxScope.event(event.id),
       const HostInboxScope.general(),
     ];
-    final allThreads = [...inbox.newMatches, ...inbox.conversations];
+    final allThreads = [...inbox.newMatches, ...inbox.conversations]
+        .where((preview) => preview.match.clubId == selectedOrganizerId)
+        .toList(growable: false);
 
     if (selectedEvent == null) {
       final generalThreads = allThreads

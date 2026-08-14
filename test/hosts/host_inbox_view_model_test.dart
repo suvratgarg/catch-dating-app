@@ -71,6 +71,12 @@ void main() {
         _preview(uid: 'inquiry-1', eventIds: ['live'], name: 'Kabir'),
         _preview(uid: 'other-event', eventIds: ['upcoming'], name: 'Other'),
         _preview(uid: 'general', eventIds: const [], name: 'General'),
+        _preview(
+          uid: 'other-organizer',
+          eventIds: ['live'],
+          name: 'Other organizer',
+          clubId: 'club-2',
+        ),
       ]);
       final participations = [
         buildEventParticipation(event: live, uid: 'booked-1'),
@@ -97,6 +103,7 @@ void main() {
         events: [live, upcoming],
         inbox: inbox,
         participations: participations,
+        selectedOrganizerId: 'club-1',
         selectedScope: const HostInboxScope.event('live'),
         selectedSegment: HostInboxAudienceSegment.booked,
         query: '',
@@ -113,6 +120,7 @@ void main() {
         events: [live, upcoming],
         inbox: inbox,
         participations: participations,
+        selectedOrganizerId: 'club-1',
         selectedScope: const HostInboxScope.event('live'),
         selectedSegment: HostInboxAudienceSegment.prospective,
         query: '',
@@ -137,6 +145,7 @@ void main() {
           _preview(uid: 'event', eventIds: ['live'], name: 'Event'),
         ]),
         participations: const [],
+        selectedOrganizerId: 'club-1',
         selectedScope: const HostInboxScope.general(),
         selectedSegment: HostInboxAudienceSegment.booked,
         query: '',
@@ -161,6 +170,7 @@ void main() {
           buildEventParticipation(event: live, uid: 'two'),
         ],
         selectedScope: const HostInboxScope.event('live'),
+        selectedOrganizerId: 'club-1',
         selectedSegment: HostInboxAudienceSegment.booked,
         query: 'mira',
         now: now,
@@ -189,6 +199,7 @@ void main() {
             ),
           ],
           selectedScope: const HostInboxScope.event('live'),
+          selectedOrganizerId: 'club-1',
           selectedSegment: HostInboxAudienceSegment.prospective,
           query: '',
           now: now,
@@ -216,6 +227,7 @@ ChatThreadPreview _preview({
   required String uid,
   required List<String> eventIds,
   required String name,
+  String clubId = 'club-1',
 }) {
   final match = Match(
     id: 'match-$uid-${eventIds.join('-')}',
@@ -227,7 +239,7 @@ ChatThreadPreview _preview({
     lastMessagePreview: 'Can you help?',
     lastMessageSenderId: uid,
     conversationType: MatchConversationType.clubHostInquiry,
-    clubId: 'club-1',
+    clubId: clubId,
   );
   return ChatThreadPreview(
     match: match,

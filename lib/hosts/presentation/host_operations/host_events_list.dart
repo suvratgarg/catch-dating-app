@@ -4,11 +4,7 @@ class HostEventsClubCard extends ConsumerWidget {
   const HostEventsClubCard({
     super.key,
     required this.club,
-    required this.currentUid,
-    required this.clubs,
-    required this.showClubPicker,
     required this.selectedFilter,
-    required this.onSwitchClubIndex,
     required this.onFilterChanged,
     required this.onEventEntrySelected,
     required this.onManageEvent,
@@ -17,11 +13,7 @@ class HostEventsClubCard extends ConsumerWidget {
   });
 
   final Club club;
-  final String currentUid;
-  final List<Club> clubs;
-  final bool showClubPicker;
   final HostEventsLifecycleFilter selectedFilter;
-  final ValueChanged<int> onSwitchClubIndex;
   final ValueChanged<HostEventsLifecycleFilter> onFilterChanged;
   final HostEventEntryCallback onEventEntrySelected;
   final HostHomeManageEventCallback onManageEvent;
@@ -55,13 +47,9 @@ class HostEventsClubCard extends ConsumerWidget {
 
     return HostEventsClubSection(
       club: club,
-      currentUid: currentUid,
-      clubs: clubs,
-      showClubPicker: showClubPicker,
       state: workspaceState,
       entryState: entryState,
       overviewState: overviewState,
-      onSwitchClubIndex: onSwitchClubIndex,
       onFilterChanged: onFilterChanged,
       onRetryEvents: () => ref.invalidate(watchEventsForClubProvider(club.id)),
       onEventEntrySelected: onEventEntrySelected,
@@ -76,13 +64,9 @@ class HostEventsClubSection extends StatelessWidget {
   const HostEventsClubSection({
     super.key,
     required this.club,
-    required this.currentUid,
-    required this.clubs,
-    required this.showClubPicker,
     required this.state,
     required this.entryState,
     required this.overviewState,
-    required this.onSwitchClubIndex,
     required this.onFilterChanged,
     required this.onEventEntrySelected,
     required this.onManageEvent,
@@ -92,13 +76,9 @@ class HostEventsClubSection extends StatelessWidget {
   });
 
   final Club club;
-  final String currentUid;
-  final List<Club> clubs;
-  final bool showClubPicker;
   final HostEventsWorkspaceState state;
   final HostEventEntryState entryState;
   final HostEventsOverviewState overviewState;
-  final ValueChanged<int> onSwitchClubIndex;
   final ValueChanged<HostEventsLifecycleFilter> onFilterChanged;
   final VoidCallback? onRetryEvents;
   final HostEventEntryCallback onEventEntrySelected;
@@ -113,15 +93,14 @@ class HostEventsClubSection extends StatelessWidget {
       slivers: [
         SliverToBoxAdapter(
           child: CatchScreenHeaderTitle.block(
-            eyebrow: _hostEventsHeaderEyebrow(context, now),
             title: context.l10n.hostsHostEventsListTextEvents,
             actions: [
-              HostOrganizerIdentityPill(
-                club: club,
-                currentUid: currentUid,
-                clubs: clubs,
-                showClubPicker: showClubPicker,
-                onSwitchClubIndex: onSwitchClubIndex,
+              CatchButton(
+                key: const ValueKey<String>('host-events-create-event'),
+                label: context.l10n.hostsHostEventsListLabelNewEvent,
+                icon: Icon(CatchIcons.addRounded, size: CatchIcon.sm),
+                size: CatchButtonSize.sm,
+                onPressed: () => _showEventEntrySheet(context),
               ),
             ],
           ),
@@ -132,13 +111,6 @@ class HostEventsClubSection extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                gapH4,
-                CatchButton(
-                  key: const ValueKey<String>('host-events-create-event'),
-                  label: context.l10n.hostsHostEventsListLabelNewEvent,
-                  icon: Icon(CatchIcons.addRounded, size: CatchIcon.sm),
-                  onPressed: () => _showEventEntrySheet(context),
-                ),
                 if (overviewState.status ==
                     HostEventsOverviewStatus.content) ...[
                   gapH20,

@@ -2,8 +2,8 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/host_organizers.feature.json",
-  "generatedFor": "2026-08-10",
-  "sourceDigest": "sha256:0fe09e837aef5bd01ce8f0f74416674c20542301d1880f980b0674c79bef6ab3",
+  "generatedFor": "2026-08-15",
+  "sourceDigest": "sha256:16b189a162b8c992a23d16f3ae857b7a73c037c9f27888a0a034ee14257ec6ff",
   "resolvedDigest": "sha256:ebde8e681a6f4eb376a4ae8675393f37c29ea8e1887ce9b4983d7ab6efc78f84",
   "feature": {
     "id": "feature.host_organizers",
@@ -132,6 +132,12 @@
             "language": "dart",
             "file": "lib/hosts/presentation/host_operations/host_auth_required_screen.dart",
             "symbol": "HostAuthRequiredScreen"
+          },
+          {
+            "id": "host_shell",
+            "language": "dart",
+            "file": "lib/core/presentation/host_app_shell.dart",
+            "symbol": "HostAppShell"
           }
         ],
         "componentContracts": [
@@ -334,8 +340,8 @@
         },
         {
           "id": "switch_organizer",
-          "owner": "workspace",
-          "codeValue": "_selectClubIndex",
+          "owner": "host_shell",
+          "codeValue": "_openOrganizerSwitcher",
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
@@ -352,7 +358,7 @@
               ]
             }
           ],
-          "description": "Switches all organizer workspace tabs to another organizer the viewer hosts.",
+          "description": "Long-presses the Organizer navigation avatar, provides haptic feedback, and switches all Host workspaces to another organizer the viewer hosts.",
           "implementationStatus": "implemented"
         },
         {
