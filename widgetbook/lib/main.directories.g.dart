@@ -83,6 +83,26 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookComponent(
+        name: 'AppShellSideNavigation',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Labelled rail',
+            builder: _widgetbook_workspace_shell_app_shell_use_cases
+                .appShellSideNavigationState,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
+        name: 'AppShellSideNavigationButton',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Selected destination',
+            builder: _widgetbook_workspace_shell_app_shell_use_cases
+                .appShellSideNavigationButtonState,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
         name: 'GuestAuthCtaBar',
         useCases: [
           _widgetbook.WidgetbookUseCase(
@@ -96,9 +116,19 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'HostAppShell',
         useCases: [
           _widgetbook.WidgetbookUseCase(
-            name: 'Host shell',
+            name: 'Host shell · desktop',
             builder: _widgetbook_workspace_shell_app_shell_use_cases
-                .hostAppShellGuestState,
+                .hostAppShellDesktopState,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Host shell · phone',
+            builder: _widgetbook_workspace_shell_app_shell_use_cases
+                .hostAppShellPhoneState,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Host shell · tablet',
+            builder: _widgetbook_workspace_shell_app_shell_use_cases
+                .hostAppShellTabletState,
           ),
         ],
       ),

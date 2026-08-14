@@ -22,6 +22,8 @@ abstract final class WidgetbookPreviewLayout {
   static const double smallPreviewExtent = 96;
   static const double compactPreviewExtent = 260;
   static const double phoneChromeWidth = 390;
+  static const double tabletChromeWidth = 834;
+  static const double desktopChromeWidth = 1180;
   static const double dockFrameWidth = 430;
   static const double fieldLeadingWidth = CatchSpacing.s12;
   static const double fieldContentClampWidth = 180;
@@ -63,6 +65,8 @@ abstract final class WidgetbookPreviewLayout {
   static const double catalogRailHeight = 128;
   static const double catalogSliverSpacerHeight = 120;
   static const double celebrationViewportHeight = 640;
+  static const double tabletChromeHeight = 720;
+  static const double desktopChromeHeight = 720;
   static const double paperCelebrationViewportHeight = 740;
   static const double paperScaffoldViewportHeight = 720;
   static const double phonePreviewCornerRadius = CatchSpacing.s7;

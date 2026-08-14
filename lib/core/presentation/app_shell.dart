@@ -4,11 +4,13 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
+import 'package:catch_dating_app/core/motion/catch_transitions.dart';
 import 'package:catch_dating_app/core/platform/adaptive_platform.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
 import 'package:catch_dating_app/core/presentation/catch_adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -22,6 +24,7 @@ import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -218,38 +221,240 @@ class AppShellNavigationBar extends StatelessWidget {
     required this.unreadCount,
     required this.onDestinationSelected,
     this.items,
+    this.layout = AppShellNavigationLayout.bottom,
   });
 
   final int currentIndex;
   final int unreadCount;
   final ValueChanged<int> onDestinationSelected;
   final List<AppShellNavigationItem>? items;
+  final AppShellNavigationLayout layout;
 
   @override
   Widget build(BuildContext context) {
     final selectedIndex = currentIndex;
     final destinations = items ?? _consumerNavigationItems();
     final l10n = context.l10n;
+    final navigationItems = [
+      for (final (fallbackIndex, item) in destinations.indexed)
+        CatchTabBarItem(
+          id: item.branchIndex ?? fallbackIndex,
+          icon: prefersCupertinoControls()
+              ? item.cupertinoIcon
+              : item.materialIcon,
+          activeIcon: prefersCupertinoControls()
+              ? item.cupertinoSelectedIcon
+              : item.materialSelectedIcon,
+          label: item.destination.localizedLabel(l10n),
+          badgeCount: item.showsUnreadBadge ? unreadCount : 0,
+        ),
+    ];
 
-    return CatchTabBar<int>(
-      key: AppShellKeys.navigationBar,
-      active: selectedIndex,
-      onChanged: onDestinationSelected,
-      items: [
-        for (final (fallbackIndex, item) in destinations.indexed)
-          CatchTabBarItem(
-            id: item.branchIndex ?? fallbackIndex,
-            icon: prefersCupertinoControls()
-                ? item.cupertinoIcon
-                : item.materialIcon,
-            activeIcon: prefersCupertinoControls()
-                ? item.cupertinoSelectedIcon
-                : item.materialSelectedIcon,
-            label: item.destination.localizedLabel(l10n),
-            badgeCount: item.showsUnreadBadge ? unreadCount : 0,
+    return switch (layout) {
+      AppShellNavigationLayout.bottom => CatchTabBar<int>(
+        key: AppShellKeys.navigationBar,
+        active: selectedIndex,
+        onChanged: onDestinationSelected,
+        items: navigationItems,
+      ),
+      AppShellNavigationLayout.rail => AppShellSideNavigation(
+        key: AppShellKeys.navigationBar,
+        active: selectedIndex,
+        items: navigationItems,
+        onChanged: onDestinationSelected,
+      ),
+      AppShellNavigationLayout.sidebar => AppShellSideNavigation(
+        key: AppShellKeys.navigationBar,
+        active: selectedIndex,
+        items: navigationItems,
+        onChanged: onDestinationSelected,
+        expanded: true,
+        title: l10n.appTitleHost,
+      ),
+    };
+  }
+}
+
+/// Placement variants supported by the shared shell destination adapter.
+enum AppShellNavigationLayout { bottom, rail, sidebar }
+
+/// Labelled vertical destination plane for medium and expanded app shells.
+class AppShellSideNavigation extends StatelessWidget {
+  const AppShellSideNavigation({
+    super.key,
+    required this.active,
+    required this.items,
+    required this.onChanged,
+    this.expanded = false,
+    this.title,
+  });
+
+  final int active;
+  final List<CatchTabBarItem<int>> items;
+  final ValueChanged<int> onChanged;
+  final bool expanded;
+  final String? title;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return DecoratedBox(
+      key: ValueKey(
+        expanded ? 'app_shell.navigation.sidebar' : 'app_shell.navigation.rail',
+      ),
+      decoration: BoxDecoration(
+        color: t.surface,
+        border: Border(right: BorderSide(color: t.line)),
+      ),
+      child: SafeArea(
+        right: false,
+        child: SizedBox(
+          width: expanded
+              ? CatchLayout.appShellSidebarWidth
+              : CatchLayout.appShellRailWidth,
+          child: Material(
+            color: Colors.transparent,
+            child: FocusTraversalGroup(
+              policy: OrderedTraversalPolicy(),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: CatchSpacing.s3,
+                  vertical: CatchSpacing.s4,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (title case final title?) ...[
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                          CatchSpacing.s2,
+                          CatchSpacing.s2,
+                          CatchSpacing.s2,
+                          CatchSpacing.s6,
+                        ),
+                        child: Text(
+                          title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: CatchTextStyles.headlineS(
+                            context,
+                            color: t.ink,
+                          ),
+                        ),
+                      ),
+                    ],
+                    for (final item in items) ...[
+                      AppShellSideNavigationButton(
+                        item: item,
+                        selected: item.id == active,
+                        expanded: expanded,
+                        onTap: () => onChanged(item.id),
+                      ),
+                      if (item != items.last)
+                        const SizedBox(height: CatchSpacing.s2),
+                    ],
+                  ],
+                ),
+              ),
+            ),
           ),
-      ],
+        ),
+      ),
     );
+  }
+}
+
+/// One selected, focusable, and badge-aware side-navigation destination.
+class AppShellSideNavigationButton extends StatelessWidget {
+  const AppShellSideNavigationButton({
+    super.key,
+    required this.item,
+    required this.selected,
+    required this.expanded,
+    required this.onTap,
+  });
+
+  final CatchTabBarItem<int> item;
+  final bool selected;
+  final bool expanded;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final color = selected ? t.ink : t.ink3;
+    final icon = CatchTabBarIcon(
+      icon: selected ? item.activeIcon ?? item.icon : item.icon,
+      color: color,
+      badgeCount: item.badgeCount,
+    );
+    final label = Text(
+      item.label,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      textAlign: expanded ? TextAlign.start : TextAlign.center,
+      style: CatchTextStyles.buttonSm(context, color: color),
+    );
+    final content = expanded
+        ? Row(
+            children: [
+              icon,
+              const SizedBox(width: CatchSpacing.s3),
+              Expanded(child: label),
+            ],
+          )
+        : Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              icon,
+              const SizedBox(height: CatchSpacing.s1),
+              label,
+            ],
+          );
+    final button = Semantics(
+      key: ValueKey('app_shell.navigation.destination.${item.id}'),
+      container: true,
+      button: true,
+      selected: selected,
+      label: item.label,
+      child: ExcludeSemantics(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: expanded
+                ? CatchLayout.appShellSidebarItemMinHeight
+                : CatchLayout.appShellRailItemMinHeight,
+          ),
+          child: Material(
+            color: selected
+                ? t.ink.withValues(alpha: CatchOpacity.tabBarPillFill)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(CatchRadius.md),
+            child: InkWell(
+              onTap: () {
+                catchSelectionHaptic();
+                onTap();
+              },
+              borderRadius: BorderRadius.circular(CatchRadius.md),
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: expanded ? CatchSpacing.s3 : CatchSpacing.s1,
+                  vertical: CatchSpacing.s2,
+                ),
+                child: content,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    return expanded
+        ? button
+        : Tooltip(
+            message: item.label,
+            excludeFromSemantics: true,
+            child: button,
+          );
   }
 }
 

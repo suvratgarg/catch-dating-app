@@ -32,7 +32,9 @@
       "path": "lib/core/presentation/host_app_shell.dart",
       "requires": [
         {"text": "return CatchAdaptiveTabScaffold(", "minimumOccurrences": 1},
-        {"text": "navigationBar: authenticatedNavigationBar", "minimumOccurrences": 1}
+        {"text": "navigationBar: bottomNavigation", "minimumOccurrences": 1},
+        {"text": "mediumSideNavigation: railNavigation", "minimumOccurrences": 1},
+        {"text": "expandedSideNavigation: sidebarNavigation", "minimumOccurrences": 1}
       ],
       "forbids": [
         {"text": "CatchTabBar.floatsFor(context)"},

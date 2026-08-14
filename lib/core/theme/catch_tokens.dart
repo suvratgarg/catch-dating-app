@@ -2396,6 +2396,10 @@ abstract final class CatchLayout {
   static const double tabBarPillHorizontalPadding = CatchSpacing.s3;
   static const double tabBarLabelGap = CatchSpacing.s1;
   static const double tabBarIconSize = 22.0;
+  static const double appShellRailWidth = 96.0;
+  static const double appShellSidebarWidth = 240.0;
+  static const double appShellRailItemMinHeight = 64.0;
+  static const double appShellSidebarItemMinHeight = 48.0;
   static const double tabRailHeight = 48.0;
   static const double topBarHeight = 56.0;
   static const double topBarLargeHeight = 104.0;

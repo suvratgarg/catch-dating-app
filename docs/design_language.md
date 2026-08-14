@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.6.4
-updated: 2026-08-11
+version: 1.7.0
+updated: 2026-08-14
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
@@ -300,7 +300,12 @@ that detaches the explanation from the options it describes.
 - **Sizing:** constraints over constant heights/widths; min/max constraints, intrinsics,
   `Flexible`/`Expanded`, `AspectRatio`, content max-width clamp. Resilient to **Dynamic
   Type** (validate at text scale 1.0/1.5/2.0).
-- **Scale target:** phone + Dynamic Type. **No** tablet/web adaptive work for now.
+- **Scale targets:** Host covers phone, tablet, and desktop web/Mac windows plus
+  Dynamic Type; other product surfaces remain phone + Dynamic Type until their
+  owner adopts an explicit adaptive contract. Larger Host classes recompose
+  navigation, panes, task concurrency, and density; they do not proportionally
+  enlarge phone components. The canonical Host contract lives in
+  [`app_architecture.md#host-adaptive-workspace-specification`](app_architecture.md#host-adaptive-workspace-specification).
 - **Motion:** route motion through `CatchMotion` and
   `lib/core/motion/catch_transitions.dart`. Use `catchSelectionHaptic()` for
   discrete choices, `catchTransitionHaptic()` for map/sheet state changes,
