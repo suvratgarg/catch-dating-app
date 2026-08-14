@@ -71,6 +71,11 @@ full-home-shell group lives in the same Dart test library through
 `dashboard_full_home_shell_tests.dart`, preserving private fixtures while making
 the focused spec independently navigable in failures.
 
+Explore, Event Success, core primitives, Host operations, and Profile use the
+same library-part pattern, organized by behavioral area. Their former five
+oversized entrypoints are now below the ceiling; each behavior part is also
+below the ceiling.
+
 Expected-error tests and deterministic captures should inject
 `ErrorLogger.silent(...)` or a recording `consoleSink`. Production defaults
 still print and report unexpected failures; never make the global logger silent
