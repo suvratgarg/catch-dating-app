@@ -22,6 +22,7 @@ import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
 import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
@@ -37,6 +38,7 @@ import 'package:catch_dating_app/hosts/data/host_profile_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_club_edit_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_row.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
@@ -65,6 +67,7 @@ import '../test_pump_helpers.dart';
 
 part 'host_operations_state_events_tests.dart';
 part 'host_operations_club_workspace_tests.dart';
+part 'host_operations_customers_tests.dart';
 part 'host_operations_analytics_team_tests.dart';
 part 'host_operations_team_failures_tests.dart';
 part 'support/host_operations_screen_test_support.dart';
@@ -80,6 +83,7 @@ void main() {
 
   _registerHostOperationsStateEventsTests();
   _registerHostOperationsClubWorkspaceTests();
+  _registerHostOperationsCustomersTests();
   _registerHostOperationsAnalyticsTeamTests();
   _registerHostOperationsTeamFailuresTests();
 }
@@ -210,6 +214,14 @@ Future<void> _pumpHostScreen(
             Text('Manage ${state.pathParameters['eventId']}'),
             Text('Section ${state.uri.queryParameters['section'] ?? 'setup'}'),
           ],
+        ),
+      ),
+      GoRoute(
+        path: Routes.hostAppEventDetailScreen.path,
+        name: Routes.hostAppEventDetailScreen.name,
+        builder: (_, state) => Text(
+          'Event ${state.pathParameters['clubId']} '
+          '${state.pathParameters['eventId']}',
         ),
       ),
     ],

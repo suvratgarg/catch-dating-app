@@ -13,7 +13,7 @@
       "runtime": "flutter",
       "authority": {"registry": "flutter_screens", "id": "screen.host.customers"},
       "actionScope": {
-        "included": "Customer directory recovery, organizer switching, name search, every supported CRM segment, pagination, export, organizer-only manual contact creation, rename/suppression/removal controls, complete event evidence, detail routing, and verified-account direct conversation creation.",
+        "included": "Customer directory recovery, shared organizer selection, debounced name search, readiness-visible server-backed CRM segments, pagination, header-menu export, organizer-only manual contact creation, rename/suppression/removal controls, complete event evidence, customer and event detail routing, and verified-account direct conversation creation.",
         "excluded": [
           "Merge and unmerge controls remain backend-only until a reviewed conflict-resolution UI exists; the deprecated Audience tab did not expose them.",
           "High-spender segmentation remains excluded until completed non-refunded payment totals are projected into indexed organizer-contact traits."
@@ -93,7 +93,7 @@
           "cardinality": "unbounded",
           "scopeKeys": ["viewerUid", "organizerId", "query"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["customers_populated", "customers_filtered_empty"]}],
-          "description": "Searches the organizer customer directory by normalized display name."
+          "description": "Debounces text input before searching the organizer customer directory by normalized display name."
         },
         {
           "id": "filter_customers",
@@ -102,7 +102,7 @@
           "cardinality": "unbounded",
           "scopeKeys": ["viewerUid", "organizerId", "filter"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["customers_populated", "customers_filtered_empty"]}],
-          "description": "Filters the directory by existing versioned attendance and lifecycle traits, including an explainable At risk alias for lapsed regulars."
+          "description": "Filters the directory by server-backed versioned lifecycle traits visible for the current CRM channel readiness, including an explainable At risk alias for lapsed regulars."
         },
         {
           "id": "load_more",
@@ -145,6 +145,15 @@
           "scopeKeys": ["viewerUid", "organizerId", "contactId"],
           "outcomes": [{"kind": "route", "authority": {"registry": "flutter_screens", "id": "screen.host.customers"}}],
           "description": "Opens the nested route-level customer detail surface for the selected contact."
+        },
+        {
+          "id": "open_customer_event",
+          "owner": "customer_detail",
+          "codeValue": "pushNamed",
+          "cardinality": "unbounded",
+          "scopeKeys": ["viewerUid", "organizerId", "contactId", "eventId"],
+          "outcomes": [{"kind": "route", "authority": {"registry": "flutter_screens", "id": "screen.event.detail"}}],
+          "description": "Opens the host event detail route from one customer event-history row."
         },
         {
           "id": "manage_customer",
@@ -195,9 +204,9 @@
         "customer_manage_pending": {"dimensions": {"mutation": "managing_contact"}, "actionCases": [{"id": "pending", "disabledActions": ["manage_customer"]}]},
         "customer_detail_loading": {"dimensions": {"load": "loading"}},
         "customer_detail_error": {"dimensions": {"load": "error"}, "actionCases": [{"id": "recovery", "enabledActions": ["retry_customer_detail"]}]},
-        "customer_detail_linked": {"dimensions": {"identity": "linked"}, "actionCases": [{"id": "linked", "enabledActions": ["start_conversation"]}]},
-        "customer_detail_unlinked": {"dimensions": {"identity": "unlinked"}, "actionCases": [{"id": "unlinked", "disabledActions": ["start_conversation"]}]},
-        "customer_detail_ambiguous": {"dimensions": {"identity": "ambiguous"}, "actionCases": [{"id": "ambiguous", "disabledActions": ["start_conversation"]}]},
+        "customer_detail_linked": {"dimensions": {"identity": "linked"}, "actionCases": [{"id": "linked", "enabledActions": ["start_conversation", "open_customer_event"]}]},
+        "customer_detail_unlinked": {"dimensions": {"identity": "unlinked"}, "actionCases": [{"id": "unlinked", "enabledActions": ["open_customer_event"], "disabledActions": ["start_conversation"]}]},
+        "customer_detail_ambiguous": {"dimensions": {"identity": "ambiguous"}, "actionCases": [{"id": "ambiguous", "enabledActions": ["open_customer_event"], "disabledActions": ["start_conversation"]}]},
         "customer_revenue_exact": {"dimensions": {"revenue": "exact"}},
         "customer_revenue_partial": {"dimensions": {"revenue": "partial"}},
         "customer_revenue_unavailable": {"dimensions": {"revenue": "unavailable"}},

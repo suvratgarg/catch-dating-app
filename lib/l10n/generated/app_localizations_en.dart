@@ -12893,17 +12893,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersFilterByTag => 'Filter by tag';
 
   @override
-  String get hostCustomersFilterAttended => 'Attended';
-
-  @override
   String get hostCustomersFilterAtRisk => 'At risk';
 
   @override
-  String get hostCustomersEmpty => 'No customers yet';
+  String get hostCustomersNeedsReview => 'Needs review';
 
   @override
-  String get hostCustomersEmptyBody =>
-      'Customers appear after attendance, registration, import, or a manual add.';
+  String get hostCustomersEmpty => 'No customers yet';
 
   @override
   String get hostCustomersNoResults => 'No customers match these filters.';

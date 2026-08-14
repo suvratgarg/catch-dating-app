@@ -16,7 +16,6 @@ enum HostCustomerTag {
 
 enum HostCustomerFilter {
   all,
-  attended,
   newToOrganizer,
   firstTime,
   repeat,
@@ -30,7 +29,7 @@ enum HostCustomerFilter {
   smsReachable;
 
   HostCustomerTag? get tag => switch (this) {
-    HostCustomerFilter.all || HostCustomerFilter.attended => null,
+    HostCustomerFilter.all => null,
     HostCustomerFilter.newToOrganizer => HostCustomerTag.newToOrganizer,
     HostCustomerFilter.firstTime => HostCustomerTag.firstTime,
     HostCustomerFilter.repeat => HostCustomerTag.repeat,

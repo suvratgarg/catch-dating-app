@@ -20074,29 +20074,23 @@ abstract class AppLocalizations {
   /// **'Filter by tag'**
   String get hostCustomersFilterByTag;
 
-  /// Customers with at least one check-in.
-  ///
-  /// In en, this message translates to:
-  /// **'Attended'**
-  String get hostCustomersFilterAttended;
-
   /// Explainable alias for the versioned lapsed-regular segment.
   ///
   /// In en, this message translates to:
   /// **'At risk'**
   String get hostCustomersFilterAtRisk;
 
+  /// Customer row warning tag for ambiguous identity resolution.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs review'**
+  String get hostCustomersNeedsReview;
+
   /// Empty customer directory title.
   ///
   /// In en, this message translates to:
   /// **'No customers yet'**
   String get hostCustomersEmpty;
-
-  /// Empty customer directory explanation.
-  ///
-  /// In en, this message translates to:
-  /// **'Customers appear after attendance, registration, import, or a manual add.'**
-  String get hostCustomersEmptyBody;
 
   /// Filtered customer directory empty state.
   ///

@@ -27,6 +27,7 @@ import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_row.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
@@ -37,6 +38,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+
+enum _HostCustomersHeaderAction { export, whatsappReady, sources }
 
 class HostCustomersScreen extends ConsumerStatefulWidget {
   const HostCustomersScreen({super.key, this.initialOrganizerId});
@@ -50,12 +53,14 @@ class HostCustomersScreen extends ConsumerStatefulWidget {
 
 class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
   final _searchController = TextEditingController();
+  Timer? _searchDebounce;
   String? _search;
   HostCustomerFilter _filter = HostCustomerFilter.all;
   bool _exporting = false;
 
   @override
   void dispose() {
+    _searchDebounce?.cancel();
     _searchController.dispose();
     super.dispose();
   }
@@ -97,15 +102,21 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
           ? widget.initialOrganizerId
           : null,
     )!;
+    final summary = ref.watch(hostCrmSummaryProvider(selectedClub.id));
+    final visibleFilters = hostCustomerFiltersForSmsReadiness(
+      summary.asData?.value.smsReadiness,
+    );
+    final effectiveFilter = visibleFilters.contains(_filter)
+        ? _filter
+        : HostCustomerFilter.all;
     final request = HostCustomersDirectoryRequest(
       organizerId: selectedClub.id,
       search: _search,
-      filter: _filter,
+      filter: effectiveFilter,
     );
     final directory = ref.watch(
       hostCustomersDirectoryControllerProvider(request),
     );
-    final summary = ref.watch(hostCrmSummaryProvider(selectedClub.id));
     final t = CatchTokens.of(context);
 
     return Scaffold(
@@ -128,6 +139,21 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                     size: CatchButtonSize.sm,
                     onPressed: () => _addCustomer(selectedClub, request),
                   ),
+                  CatchTopBarMenuAction<_HostCustomersHeaderAction>(
+                    tooltip: context.l10n.hostsHostAudienceExport,
+                    items: _hostCustomersHeaderActions(
+                      context,
+                      summary.asData?.value,
+                      exportEnabled: !_exporting,
+                    ),
+                    onSelected: (action) {
+                      if (action == _HostCustomersHeaderAction.export) {
+                        unawaited(
+                          _exportCustomers(selectedClub, effectiveFilter),
+                        );
+                      }
+                    },
+                  ),
                 ],
               ),
             ),
@@ -135,34 +161,12 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
               padding: CatchInsets.pageHorizontal,
               sliver: SliverList.list(
                 children: [
-                  Text(
-                    context.l10n.hostCustomersIntro,
-                    style: CatchTextStyles.supporting(context, color: t.ink2),
-                  ),
-                  gapH16,
                   HostCustomersSummary(
                     summary: summary,
                     onRetry: () =>
                         ref.invalidate(hostCrmSummaryProvider(selectedClub.id)),
                   ),
                   gapH16,
-                  Wrap(
-                    spacing: CatchSpacing.s2,
-                    runSpacing: CatchSpacing.s2,
-                    children: [
-                      CatchButton(
-                        label: context.l10n.hostsHostAudienceExport,
-                        icon: Icon(CatchIcons.downloadRounded),
-                        variant: CatchButtonVariant.secondary,
-                        size: CatchButtonSize.sm,
-                        isLoading: _exporting,
-                        onPressed: _exporting
-                            ? null
-                            : () => _exportCustomers(selectedClub),
-                      ),
-                    ],
-                  ),
-                  gapH20,
                   CatchFieldLanes.single(
                     child: CatchField.input(
                       title: context.l10n.hostsHostAudienceSearch,
@@ -170,12 +174,12 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                           .listOrganizerContactsCallablePayloadQuery,
                       controller: _searchController,
                       textInputAction: TextInputAction.search,
+                      inputHint: context.l10n.hostsHostAudienceSearch,
                       prefixIcon: Icon(CatchIcons.searchRounded),
                       showClearButton: true,
-                      onSubmitted: (value) => setState(() {
-                        final normalized = value.trim();
-                        _search = normalized.isEmpty ? null : normalized;
-                      }),
+                      showLabel: false,
+                      onChanged: _scheduleSearch,
+                      onSubmitted: _applySearch,
                     ),
                   ),
                   gapH16,
@@ -188,11 +192,12 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
-                        for (final filter in HostCustomerFilter.values) ...[
-                          if (filter != HostCustomerFilter.values.first) gapW8,
+                        for (final (index, filter)
+                            in visibleFilters.indexed) ...[
+                          if (index > 0) gapW8,
                           CatchChip.selectable(
                             label: _customerFilterLabel(context, filter),
-                            selected: _filter == filter,
+                            selected: effectiveFilter == filter,
                             contractExemption:
                                 'Customer filters map to reviewed CRM segments.',
                             onChanged: (_) => setState(() => _filter = filter),
@@ -219,9 +224,9 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                     ),
                     builder: (context, state) => HostCustomersDirectory(
                       state: state,
-                      filter: _filter,
                       hasActiveQuery:
-                          _search != null || _filter != HostCustomerFilter.all,
+                          _search != null ||
+                          effectiveFilter != HostCustomerFilter.all,
                       onCustomerSelected: (contact) =>
                           _openCustomer(selectedClub, contact),
                       onLoadMore: state.canLoadMore
@@ -245,6 +250,56 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     );
   }
 
+  List<CatchActionMenuItem<_HostCustomersHeaderAction>>
+  _hostCustomersHeaderActions(
+    BuildContext context,
+    HostCrmSummary? summary, {
+    required bool exportEnabled,
+  }) => [
+    CatchActionMenuItem(
+      value: _HostCustomersHeaderAction.export,
+      label: context.l10n.hostsHostAudienceExport,
+      icon: CatchIcons.downloadRounded,
+      enabled: exportEnabled,
+    ),
+    if (summary != null) ...[
+      CatchActionMenuItem(
+        value: _HostCustomersHeaderAction.whatsappReady,
+        label: context.l10n.hostsHostAudienceWhatsappReady,
+        sublabel: '${summary.whatsappOptInCount}',
+        icon: CatchIcons.tabChats,
+        enabled: false,
+      ),
+      CatchActionMenuItem(
+        value: _HostCustomersHeaderAction.sources,
+        label: context.l10n.hostsHostAudienceSources(
+          importedCount: summary.importedContactCount,
+          linkedCount: summary.linkedAccountCount,
+        ),
+        icon: CatchIcons.info,
+        enabled: false,
+      ),
+    ],
+  ];
+
+  void _scheduleSearch(String value) {
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(
+      CatchMotion.searchDebounce,
+      () => _applySearch(value),
+    );
+  }
+
+  void _applySearch(String value) {
+    _searchDebounce?.cancel();
+    final normalized = value.trim();
+    final nextSearch = normalized.isEmpty ? null : normalized;
+    if (_search == nextSearch) return;
+    if (mounted) {
+      setState(() => _search = nextSearch);
+    }
+  }
+
   Future<void> _addCustomer(
     Club club,
     HostCustomersDirectoryRequest request,
@@ -259,7 +314,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     _openCustomerById(club, created.contactId);
   }
 
-  Future<void> _exportCustomers(Club club) async {
+  Future<void> _exportCustomers(Club club, HostCustomerFilter filter) async {
     if (_exporting) return;
     setState(() => _exporting = true);
     try {
@@ -267,7 +322,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
           .read(hostCustomersControllerProvider)
           .exportCustomers(
             organizerId: club.id,
-            segment: hostAudienceSegmentForCustomerFilter(_filter),
+            segment: hostAudienceSegmentForCustomerFilter(filter),
           );
       if (!mounted) return;
       await ref
@@ -340,25 +395,19 @@ class HostCustomersDirectory extends StatelessWidget {
   const HostCustomersDirectory({
     super.key,
     required this.state,
-    required this.filter,
     required this.hasActiveQuery,
     required this.onCustomerSelected,
     required this.onLoadMore,
   });
 
   final HostCustomersDirectoryState state;
-  final HostCustomerFilter filter;
   final bool hasActiveQuery;
   final ValueChanged<HostCustomerDirectoryContact> onCustomerSelected;
   final VoidCallback? onLoadMore;
 
   @override
   Widget build(BuildContext context) {
-    final contacts = filter == HostCustomerFilter.attended
-        ? state.contacts
-              .where((contact) => contact.attendedEventCount > 0)
-              .toList(growable: false)
-        : state.contacts;
+    final contacts = state.contacts;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -379,9 +428,7 @@ class HostCustomersDirectory extends StatelessWidget {
             title: hasActiveQuery
                 ? context.l10n.hostCustomersNoResults
                 : context.l10n.hostCustomersEmpty,
-            message: hasActiveQuery
-                ? null
-                : context.l10n.hostCustomersEmptyBody,
+            message: hasActiveQuery ? null : context.l10n.hostCustomersIntro,
             layout: CatchEmptyStateLayout.inline,
           )
         else
@@ -389,7 +436,7 @@ class HostCustomersDirectory extends StatelessWidget {
             child: Column(
               children: [
                 for (final (index, contact) in contacts.indexed)
-                  HostCustomerDirectoryRow(
+                  HostCustomerRow(
                     contact: contact,
                     divider: index < contacts.length - 1,
                     onTap: () => onCustomerSelected(contact),
@@ -417,51 +464,6 @@ class HostCustomersDirectory extends StatelessWidget {
           ),
         ],
       ],
-    );
-  }
-}
-
-class HostCustomerDirectoryRow extends StatelessWidget {
-  const HostCustomerDirectoryRow({
-    super.key,
-    required this.contact,
-    required this.divider,
-    required this.onTap,
-  });
-
-  final HostCustomerDirectoryContact contact;
-  final bool divider;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final metadata = <String>[
-      context.l10n.hostsHostAudienceEventsAttended(
-        count: contact.attendedEventCount,
-      ),
-      if (contact.lastAttendedAt != null)
-        context.l10n.hostsHostAudienceLastSeen(
-          date: AppTimeFormatters.shortDate(contact.lastAttendedAt!),
-        ),
-      if (contact.whatsappOptedIn)
-        context.l10n.hostsHostAudienceWhatsappOptedIn,
-      if (contact.whatsappAdminSuppressed)
-        context.l10n.hostsHostAudienceContactConsentPaused,
-    ];
-    return CatchFieldLanes.single(
-      child: CatchField.nav(
-        title: contact.displayName,
-        body: metadata.join(' · '),
-        valueText: _preferredCustomerTag(context, contact.tags),
-        leading: CatchPersonAvatar(
-          size: CatchSpacing.s7,
-          name: contact.displayName,
-        ),
-        leadingExtent: CatchSpacing.s7,
-        valid: !contact.hasAmbiguousIdentity,
-        divider: divider,
-        onTap: onTap,
-      ),
     );
   }
 }
@@ -896,7 +898,7 @@ class HostCustomerAttendanceHistory extends StatelessWidget {
               child: Column(
                 children: [
                   for (final (index, event) in events.indexed)
-                    CatchField.read(
+                    CatchField.nav(
                       title: event.displayName,
                       body: event.eventStartAt == null
                           ? event.source
@@ -905,6 +907,13 @@ class HostCustomerAttendanceHistory extends StatelessWidget {
                           ? context.l10n.hostCustomersCheckedIn
                           : event.status,
                       divider: index < events.length - 1,
+                      onTap: () => context.pushNamed(
+                        Routes.hostAppEventDetailScreen.name,
+                        pathParameters: {
+                          'clubId': customer.organizerId,
+                          'eventId': event.eventId,
+                        },
+                      ),
                     ),
                 ],
               ),
@@ -963,26 +972,7 @@ class HostCustomersSummary extends StatelessWidget {
                   monoValue: true,
                 ),
               ),
-              Expanded(
-                child: CatchStatColumn(
-                  value: '${value.whatsappOptInCount}',
-                  label: context.l10n.hostsHostAudienceWhatsappReady,
-                  monoValue: true,
-                  highlight: true,
-                ),
-              ),
             ],
-          ),
-          gapH12,
-          Text(
-            context.l10n.hostsHostAudienceSources(
-              importedCount: value.importedContactCount,
-              linkedCount: value.linkedAccountCount,
-            ),
-            style: CatchTextStyles.supporting(
-              context,
-              color: CatchTokens.of(context).ink2,
-            ),
           ),
         ],
       ),
@@ -995,7 +985,6 @@ String _customerFilterLabel(
   HostCustomerFilter filter,
 ) => switch (filter) {
   HostCustomerFilter.all => context.l10n.hostsHostAudienceAll,
-  HostCustomerFilter.attended => context.l10n.hostCustomersFilterAttended,
   HostCustomerFilter.newToOrganizer => context.l10n.hostsHostAudienceSegmentNew,
   HostCustomerFilter.firstTime =>
     context.l10n.hostsHostAudienceSegmentFirstTime,
@@ -1012,40 +1001,3 @@ String _customerFilterLabel(
     context.l10n.hostsHostAudienceSegmentWhatsapp,
   HostCustomerFilter.smsReachable => context.l10n.hostsHostAudienceSegmentSms,
 };
-
-String? _preferredCustomerTag(BuildContext context, Set<HostCustomerTag> tags) {
-  if (tags.contains(HostCustomerTag.highImpactAdvocate)) {
-    return context.l10n.hostsHostAudienceSegmentHighImpact;
-  }
-  if (tags.contains(HostCustomerTag.atRisk)) {
-    return context.l10n.hostCustomersFilterAtRisk;
-  }
-  if (tags.contains(HostCustomerTag.needsConfirmation)) {
-    return context.l10n.hostsHostAudienceSegmentNeedsConfirmation;
-  }
-  if (tags.contains(HostCustomerTag.regular)) {
-    return context.l10n.hostsHostAudienceSegmentRegular;
-  }
-  if (tags.contains(HostCustomerTag.reliable)) {
-    return context.l10n.hostsHostAudienceSegmentReliable;
-  }
-  if (tags.contains(HostCustomerTag.repeat)) {
-    return context.l10n.hostsHostAudienceSegmentRepeat;
-  }
-  if (tags.contains(HostCustomerTag.firstTime)) {
-    return context.l10n.hostsHostAudienceSegmentFirstTime;
-  }
-  if (tags.contains(HostCustomerTag.newToOrganizer)) {
-    return context.l10n.hostsHostAudienceSegmentNew;
-  }
-  if (tags.contains(HostCustomerTag.advocate)) {
-    return context.l10n.hostsHostAudienceSegmentAdvocate;
-  }
-  if (tags.contains(HostCustomerTag.whatsappReachable)) {
-    return context.l10n.hostsHostAudienceSegmentWhatsapp;
-  }
-  if (tags.contains(HostCustomerTag.smsReachable)) {
-    return context.l10n.hostsHostAudienceSegmentSms;
-  }
-  return null;
-}
