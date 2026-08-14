@@ -28,10 +28,6 @@
       "maxLines": 1647
     },
     {
-      "path": "test/hosts/host_operations_screen_test.dart",
-      "maxLines": 2482
-    },
-    {
       "path": "test/onboarding/onboarding_widgets_test.dart",
       "maxLines": 1629
     }
