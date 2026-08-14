@@ -166,7 +166,9 @@ class _EventSuccessMarqueeVisual extends StatelessWidget {
         frame.tickProgress * 0.35 +
         math.pow(anticipation, 1.4) * 1.8;
     return Semantics(
-      label: 'Shared reveal ${frame.phase.name}',
+      label:
+          '${context.l10n.eventSuccessEventSuccessCompanionScreenStateVisiblecopySharedReveal} '
+          '${frame.phase.name}',
       child: Stack(
         fit: StackFit.expand,
         children: [
