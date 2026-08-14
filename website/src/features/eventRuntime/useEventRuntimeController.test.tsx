@@ -5,7 +5,10 @@ import {beforeEach, describe, expect, it, vi} from "vitest";
 
 const runtime = vi.hoisted(() => ({user: null as null | {uid: string}}));
 const getEventRuntimeBootstrap = vi.hoisted(() => vi.fn());
+const getEventSuccessConversationGraph = vi.hoisted(() => vi.fn());
+const submitEventSuccessConversationGraph = vi.hoisted(() => vi.fn());
 const checkInEventRuntime = vi.hoisted(() => vi.fn());
+const heartbeatEventRuntimePresence = vi.hoisted(() => vi.fn());
 const createEventRuntimeAttendeeInviteLink = vi.hoisted(() => vi.fn());
 const recordEventRuntimeShareIntent = vi.hoisted(() => vi.fn());
 const watchEventRuntimeAuthState = vi.hoisted(() => vi.fn(
@@ -24,12 +27,15 @@ vi.mock("../../firebase", () => ({
   createEventRuntimeAttendeeInviteLink,
   fetchEventRuntimeWingmanCandidates: vi.fn(),
   getEventRuntimeBootstrap,
+  getEventSuccessConversationGraph,
+  heartbeatEventRuntimePresence,
   recordEventInviteLinkOpen: vi.fn(),
   recordEventRuntimeShareIntent,
   saveEventRuntimeCompatibilityAnswers: vi.fn(),
   saveEventRuntimeFeedback: vi.fn(),
   startEventRuntimeFirstHello: vi.fn(),
   submitEventRuntimeProfile: vi.fn(),
+  submitEventSuccessConversationGraph,
   submitEventRuntimeWingmanRequest: vi.fn(),
   watchEventRuntimeAuthState,
   watchEventRuntimeLiveState,
@@ -52,8 +58,9 @@ function bootstrap(participant: unknown = null) {
       publicRuntimeId: "runtime_123456789012345678901234",
       title: "Courtyard Social",
       startTimeMillis: 1,
-      endTimeMillis: 2,
+      endTimeMillis: Date.now() + 3_600_000,
       locationName: "The Courtyard",
+      checkedInCount: 0,
       runtimeTermsVersion: "event-runtime-v1",
       moduleIds: [],
       requiredFieldIds: ["displayName"],
@@ -69,6 +76,10 @@ describe("useEventRuntimeController", () => {
     vi.clearAllMocks();
     runtime.user = null;
     getEventRuntimeBootstrap.mockResolvedValue(bootstrap());
+    checkInEventRuntime.mockResolvedValue({
+      status: "checkedIn",
+      alreadyCheckedIn: false,
+    });
     createEventRuntimeAttendeeInviteLink.mockResolvedValue({
       eventId: "event-1",
       inviteLinkId: "invite-1",
@@ -77,6 +88,29 @@ describe("useEventRuntimeController", () => {
       source: "runtime_web",
     });
     recordEventRuntimeShareIntent.mockResolvedValue({recorded: true});
+    heartbeatEventRuntimePresence.mockResolvedValue({
+      presenceState: "present",
+      serverTimeMillis: 1,
+      heartbeatIntervalSeconds: 30,
+      presentWindowSeconds: 90,
+      likelyDepartedAfterSeconds: 300,
+    });
+    getEventSuccessConversationGraph.mockResolvedValue({
+      eventId: "event-1",
+      consentMode: "optIn",
+      prompt: "Who were your teammates?",
+      candidates: [
+        {uid: "guest-2", displayName: "Rhea", assigned: true},
+        {uid: "guest-3", displayName: "Mina", assigned: false},
+      ],
+      selectedUids: [],
+      submissionStatus: "unsubmitted",
+    });
+    submitEventSuccessConversationGraph.mockResolvedValue({
+      saved: true,
+      status: "submitted",
+      conversationCount: 1,
+    });
   });
 
   it("opens phone verification for an anonymous guest", async () => {
@@ -113,6 +147,76 @@ describe("useEventRuntimeController", () => {
     await waitFor(() => expect(result.current.stage).toBe("runtime"));
     expect(checkInEventRuntime).not.toHaveBeenCalled();
     expect(watchEventRuntimeLiveState).toHaveBeenCalled();
+    await waitFor(() => expect(heartbeatEventRuntimePresence)
+      .toHaveBeenCalledWith("event-1"));
+  });
+
+  it("does not grant attendance from a static runtime link", async () => {
+    runtime.user = {uid: "guest-1"};
+    getEventRuntimeBootstrap.mockResolvedValue(bootstrap({
+      accessStatus: "ready",
+      attendanceStatus: "registered",
+      eventId: "event-1",
+      clubId: "club-1",
+      organizerId: "club-1",
+      requiredFieldIds: ["displayName"],
+      completedFieldIds: ["displayName"],
+      runtimeProfile: {
+        displayName: "Ari",
+        gender: null,
+        interestedInGenders: [],
+        relationshipGoal: null,
+        dateOfBirthMillis: null,
+      },
+    }));
+
+    const {result} = renderHook(
+      () => useEventRuntimeController("runtime_123456789012345678901234"),
+      {wrapper: wrapper()}
+    );
+
+    await waitFor(() => expect(result.current.stage).toBe("venue"));
+    expect(checkInEventRuntime).not.toHaveBeenCalled();
+    expect(watchEventRuntimeLiveState).not.toHaveBeenCalled();
+  });
+
+  it("redeems a live venue session before opening runtime tools", async () => {
+    runtime.user = {uid: "guest-1"};
+    let checkedIn = false;
+    getEventRuntimeBootstrap.mockImplementation(async () => bootstrap({
+      accessStatus: "ready",
+      attendanceStatus: checkedIn ? "checkedIn" : "registered",
+      eventId: "event-1",
+      clubId: "club-1",
+      organizerId: "club-1",
+      requiredFieldIds: ["displayName"],
+      completedFieldIds: ["displayName"],
+      runtimeProfile: {
+        displayName: "Ari",
+        gender: null,
+        interestedInGenders: [],
+        relationshipGoal: null,
+        dateOfBirthMillis: null,
+      },
+    }));
+    checkInEventRuntime.mockImplementation(async () => {
+      checkedIn = true;
+      return {status: "checkedIn", alreadyCheckedIn: false};
+    });
+
+    const {result} = renderHook(
+      () => useEventRuntimeController(
+        "runtime_123456789012345678901234",
+        "signed-live-session"
+      ),
+      {wrapper: wrapper()}
+    );
+
+    await waitFor(() => expect(result.current.stage).toBe("runtime"));
+    expect(checkInEventRuntime).toHaveBeenCalledWith({
+      publicRuntimeId: "runtime_123456789012345678901234",
+      venueSessionToken: "signed-live-session",
+    });
   });
 
   it("shares a stable attendee link and records only the Catch share action", async () => {
@@ -160,5 +264,89 @@ describe("useEventRuntimeController", () => {
       inviteLinkId: "invite-1",
       channelHint: "systemShare",
     });
+  });
+
+  it("keeps assigned suggestions unselected in the default opt-in mode", async () => {
+    runtime.user = {uid: "guest-1"};
+    const ended = bootstrap({
+      accessStatus: "ready",
+      attendanceStatus: "checkedIn",
+      eventId: "event-1",
+      clubId: "club-1",
+      organizerId: "club-1",
+      requiredFieldIds: ["displayName"],
+      completedFieldIds: ["displayName"],
+      runtimeProfile: {
+        displayName: "Ari",
+        gender: null,
+        interestedInGenders: [],
+        relationshipGoal: null,
+        dateOfBirthMillis: null,
+      },
+    });
+    ended.event.endTimeMillis = Date.now() - 1_000;
+    getEventRuntimeBootstrap.mockResolvedValue(ended);
+
+    const {result} = renderHook(
+      () => useEventRuntimeController("runtime_123456789012345678901234"),
+      {wrapper: wrapper()}
+    );
+
+    await waitFor(() => expect(result.current.conversationGraph).not.toBeNull());
+    expect(result.current.selectedConversationUids).toEqual([]);
+    expect(result.current.conversationGraph?.candidates[0]).toEqual({
+      uid: "guest-2",
+      displayName: "Rhea",
+      assigned: true,
+    });
+
+    act(() => result.current.toggleConversationUid("guest-2"));
+    await act(async () => result.current.submitConversationGraph());
+
+    expect(submitEventSuccessConversationGraph).toHaveBeenCalledWith({
+      eventId: "event-1",
+      selectedUids: ["guest-2"],
+      skipped: false,
+    });
+  });
+
+  it("honors configured opt-out preselection returned by the server", async () => {
+    runtime.user = {uid: "guest-1"};
+    const ended = bootstrap({
+      accessStatus: "ready",
+      attendanceStatus: "checkedIn",
+      eventId: "event-1",
+      clubId: "club-1",
+      organizerId: "club-1",
+      requiredFieldIds: ["displayName"],
+      completedFieldIds: ["displayName"],
+      runtimeProfile: {
+        displayName: "Ari",
+        gender: null,
+        interestedInGenders: [],
+        relationshipGoal: null,
+        dateOfBirthMillis: null,
+      },
+    });
+    ended.event.endTimeMillis = Date.now() - 1_000;
+    getEventRuntimeBootstrap.mockResolvedValue(ended);
+    getEventSuccessConversationGraph.mockResolvedValue({
+      eventId: "event-1",
+      consentMode: "optOut",
+      prompt: "Who were your teammates?",
+      candidates: [
+        {uid: "guest-2", displayName: "Rhea", assigned: true},
+      ],
+      selectedUids: ["guest-2"],
+      submissionStatus: "unsubmitted",
+    });
+
+    const {result} = renderHook(
+      () => useEventRuntimeController("runtime_123456789012345678901234"),
+      {wrapper: wrapper()}
+    );
+
+    await waitFor(() => expect(result.current.conversationGraph).not.toBeNull());
+    expect(result.current.selectedConversationUids).toEqual(["guest-2"]);
   });
 });

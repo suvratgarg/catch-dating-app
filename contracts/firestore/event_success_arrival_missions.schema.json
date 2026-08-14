@@ -26,6 +26,8 @@
     "targetContext",
     "question",
     "answerOptions",
+    "venueSessionId",
+    "venueSessionRedemptionId",
     "status",
     "createdAt",
     "updatedAt"
@@ -93,6 +95,16 @@
           }
         }
       },
+      "x-catch-ownership": "callable-owned"
+    },
+    "venueSessionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{24,80}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "venueSessionRedemptionId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
       "x-catch-ownership": "callable-owned"
     },
     "status": {

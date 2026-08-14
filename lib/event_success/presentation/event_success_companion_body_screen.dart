@@ -21,6 +21,7 @@ class EventSuccessCompanionScreen extends StatefulWidget {
     this.rotationPeerProfiles = const [],
     this.rotationPeersLoading = false,
     this.guidedRotationsOptedOut = false,
+    this.lateArrivalResolution,
     this.arrivalMission,
     this.now,
     this.compatibilityActionState =
@@ -63,6 +64,7 @@ class EventSuccessCompanionScreen extends StatefulWidget {
   final List<PublicProfile> rotationPeerProfiles;
   final bool rotationPeersLoading;
   final bool guidedRotationsOptedOut;
+  final EventSuccessLateArrivalResolution? lateArrivalResolution;
   final EventSuccessArrivalMission? arrivalMission;
   final DateTime? now;
   final CompatibilityQuestionnaireActionState compatibilityActionState;
@@ -87,7 +89,7 @@ class EventSuccessCompanionScreen extends StatefulWidget {
   onSaveWingmanRequest;
   final Future<void> Function()? onWithdrawWingmanRequest;
   final Future<void> Function(EventSuccessFeedback feedback)? onSubmitFeedback;
-  final Future<void> Function()? onSelfCheckIn;
+  final Future<void> Function(String venueSessionToken)? onSelfCheckIn;
   final Future<void> Function(EventSuccessLiveEffectKind kind)?
   onPlayLiveEffect;
   final Future<void> Function(EventSuccessAmbientBed bed)? onPlayAmbientBed;
@@ -146,7 +148,7 @@ class _EventSuccessCompanionScreenState
 
     final stageTheme = _CompanionStageTheme.forMoment(
       context,
-      moment: attendeeMoment,
+      presentation: momentPresentation,
       plan: plan,
     );
     final momentContents = <Widget>[];
@@ -162,12 +164,28 @@ class _EventSuccessCompanionScreenState
       );
     }
 
+    final lateArrivalResolution = widget.lateArrivalResolution;
+    if (lateArrivalResolution != null &&
+        lateArrivalResolution.targetRoundIndex >
+            plan.publishedRotationRoundIndex) {
+      addMomentContent(
+        CatchSurface.message(
+          messageIcon: CatchIcons.scheduleRounded,
+          title: context
+              .l10n
+              .eventSuccessEventSuccessCompanionBodyScreenTitleLateArrival,
+          message: lateArrivalResolution.reason,
+        ),
+        momentKey: screenState.transitionKey('late-arrival'),
+      );
+    }
+
     if (attendeeMoment.showSelfCheckIn) {
       addMomentContent(
         SelfCheckInCard(
           event: event,
           actionState: selfCheckInActionState,
-          onSelfCheckIn: widget.onSelfCheckIn ?? _noopFuture,
+          onSelfCheckIn: widget.onSelfCheckIn ?? _noopVenueCheckIn,
         ),
         momentKey: screenState.transitionKey(
           context
@@ -480,7 +498,7 @@ class _EventSuccessCompanionScreenState
         showSelfCheckIn: attendeeMoment.showSelfCheckIn,
         eventEnded: screenState.eventEnded,
         selfCheckInActionState: selfCheckInActionState,
-        onSelfCheckIn: widget.onSelfCheckIn ?? _noopFuture,
+        onSelfCheckIn: widget.onSelfCheckIn ?? _noopVenueCheckIn,
       );
     }
 

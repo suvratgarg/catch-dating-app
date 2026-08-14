@@ -7,6 +7,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/event_success_moment_presentations.g.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -39,6 +40,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_models.dart'
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_preference.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_presence.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_runtime.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
@@ -49,6 +51,7 @@ import 'package:catch_dating_app/event_success/presentation/event_success_contro
 import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_motion_contract.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_room_map.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -65,6 +68,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lottie/lottie.dart';
 
 part 'companion_parts/event_success_companion_afterglow.dart';
 part 'companion_parts/event_success_companion_arrival_mission.dart';
@@ -281,10 +285,19 @@ class CompanionMessage extends StatelessWidget {
 }
 
 Future<void> _noopFuture() async {}
+Future<void> _noopVenueCheckIn(String _) async {}
 Future<void> _noopSaveCompatibilityAnswers(List<String> answerIds) async {}
 void _noopIncludeChange(bool include) {}
 Future<void> _noopSaveWingmanRequest(PublicProfile target, String note) async {}
 Future<void> _noopSubmitFeedback(EventSuccessFeedback feedback) async {}
+
+Future<String?> showEventVenueSessionScanner({
+  required BuildContext context,
+  required String eventId,
+}) => showCatchBottomSheet<String>(
+  context: context,
+  builder: (context) => EventCheckInQrScannerSheet(eventId: eventId),
+);
 
 CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
   return catchAsyncStateFromAsyncValue(value);
@@ -451,6 +464,20 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
     final profile = routeState.profile!;
     final participation = routeState.participation!;
     final plan = routeState.plan!;
+    final attendeeIsPresent =
+        participation.status == EventParticipationStatus.attended;
+    if (attendeeIsPresent && !routeState.eventEnded) {
+      ref.watch(maintainEventSuccessPresenceProvider(eventId));
+    }
+    final AsyncValue<EventSuccessLateArrivalResolution?>
+    lateArrivalResolutionAsync = attendeeIsPresent
+        ? ref.watch(
+            watchUserEventSuccessLateArrivalResolutionProvider(
+              eventId: eventId,
+              uid: uid,
+            ),
+          )
+        : const AsyncData<EventSuccessLateArrivalResolution?>(null);
     final AsyncValue<EventSuccessLayout?> spatialLayoutAsync =
         plan.layoutId != null &&
             plan.structureConfig.unitKind != EventSuccessUnitKind.wholeGroup
@@ -655,6 +682,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
             rotationPeersAsync.asData?.value ?? const <PublicProfile>[],
         rotationPeersLoading: rotationPeersAsync.isLoading,
         guidedRotationsOptedOut: routeState.guidedRotationsOptedOut,
+        lateArrivalResolution: lateArrivalResolutionAsync.asData?.value,
         arrivalMission: routeState.activeArrivalMission,
         now: routeState.referenceNow!,
         compatibilityActionState: CompatibilityQuestionnaireActionState(
@@ -680,11 +708,19 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
           isSaving: feedbackMutation.isPending,
         ),
         onStartArrivalMission: () async {
+          final venueSessionToken = await showCatchBottomSheet<String>(
+            context: context,
+            builder: (context) => EventCheckInQrScannerSheet(eventId: event.id),
+          );
+          if (venueSessionToken == null || !context.mounted) return;
           await EventSuccessController.firstHelloStartMutation.run(
             ref,
             (tx) => tx
                 .get(eventSuccessControllerProvider.notifier)
-                .startFirstHelloMission(event: event),
+                .startFirstHelloMission(
+                  event: event,
+                  venueSessionToken: venueSessionToken,
+                ),
           );
         },
         onCompleteArrivalMission: (mission, answerId) async {
@@ -699,12 +735,20 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
                 ),
           );
         },
-        onSkipArrivalMission: () {
-          EventBookingController.selfCheckInMutation.run(
+        onSkipArrivalMission: () async {
+          final venueSessionToken = await showCatchBottomSheet<String>(
+            context: context,
+            builder: (context) => EventCheckInQrScannerSheet(eventId: event.id),
+          );
+          if (venueSessionToken == null || !context.mounted) return;
+          await EventBookingController.selfCheckInMutation.run(
             ref,
             (tx) => tx
                 .get(eventBookingControllerProvider.notifier)
-                .selfCheckIn(eventId: event.id),
+                .selfCheckIn(
+                  eventId: event.id,
+                  venueSessionToken: venueSessionToken,
+                ),
           );
         },
         onSetMicroPodsIncluded: (include) {
@@ -747,7 +791,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
                 .submitFeedback(feedback),
           );
         },
-        onSelfCheckIn: () async {
+        onSelfCheckIn: (venueSessionToken) async {
           unawaited(
             ref
                 .read(eventSuccessLiveEffectsControllerProvider)
@@ -757,7 +801,10 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
             ref,
             (tx) => tx
                 .get(eventBookingControllerProvider.notifier)
-                .selfCheckIn(eventId: event.id),
+                .selfCheckIn(
+                  eventId: event.id,
+                  venueSessionToken: venueSessionToken,
+                ),
           );
         },
         onPlayLiveEffect: (kind) =>

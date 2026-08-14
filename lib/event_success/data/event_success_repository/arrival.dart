@@ -18,8 +18,7 @@ mixin _EventSuccessArrivalRepository on _EventSuccessRepositoryCore {
 
   Future<void> startFirstHelloMission({
     required Event event,
-    required double? latitude,
-    required double? longitude,
+    required String venueSessionToken,
   }) => withBackendErrorContext(
     () {
       final functions = _functions;
@@ -31,8 +30,7 @@ mixin _EventSuccessArrivalRepository on _EventSuccessRepositoryCore {
           .call(
             StartEventSuccessFirstHelloMissionCallableRequest(
               eventId: event.id,
-              latitude: latitude,
-              longitude: longitude,
+              venueSessionToken: venueSessionToken,
             ).toJson(),
           );
     },
@@ -46,8 +44,6 @@ mixin _EventSuccessArrivalRepository on _EventSuccessRepositoryCore {
   Future<void> completeFirstHelloMission({
     required Event event,
     required String answerId,
-    required double? latitude,
-    required double? longitude,
   }) => withBackendErrorContext(
     () {
       final functions = _functions;
@@ -60,8 +56,6 @@ mixin _EventSuccessArrivalRepository on _EventSuccessRepositoryCore {
             CompleteEventSuccessFirstHelloMissionCallableRequest(
               eventId: event.id,
               answerId: answerId,
-              latitude: latitude,
-              longitude: longitude,
             ).toJson(),
           );
     },

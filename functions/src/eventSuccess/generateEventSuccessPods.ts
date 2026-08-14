@@ -49,7 +49,6 @@ import {
   eventSuccessPrimitivesFor,
 } from "./formatPrimitives";
 import {
-  activityAttributesForProfile,
   assignmentConstraintsForStructureConfig,
   AssignmentPrimitiveStructureConfig,
   rotationPolicyForStructureConfig,
@@ -296,7 +295,7 @@ export async function generateEventSuccessPodsHandler(
       gender: participant.gender,
       interestedInGenders: participant.interestedInGenders,
       arrivalGroup: participant.arrivalGroup,
-      activityAttributes: activityAttributesForProfile(participant.profile),
+      activityAttributes: participant.activityAttributes,
     }))
     .filter((participant) => !optedOutUids.has(participant.uid))
     .sort(compareParticipants);
@@ -396,7 +395,7 @@ export async function overrideEventSuccessGroupsHandler(
       gender: participant.gender,
       interestedInGenders: participant.interestedInGenders,
       arrivalGroup: participant.arrivalGroup,
-      activityAttributes: activityAttributesForProfile(participant.profile),
+      activityAttributes: participant.activityAttributes,
     }))
     .filter((participant) => !optedOutUids.has(participant.uid))
     .sort(compareParticipants);

@@ -22,6 +22,8 @@ export interface EventSuccessArrivalMissionDocument {
     id: string;
     label: string;
   }[];
+  venueSessionId: string;
+  venueSessionRedemptionId: string;
   status: "active" | "completed" | "skipped";
   selectedAnswerId?: string;
   /**

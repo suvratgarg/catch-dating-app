@@ -246,6 +246,14 @@
       "type": "string",
       "enum": ["none", "completion", "score", "rank"]
     },
+    "eventSuccessAccountability": {
+      "type": "string",
+      "enum": ["none", "rollCall", "sweep"]
+    },
+    "eventSuccessDurationShape": {
+      "type": "string",
+      "enum": ["continuous", "rounds", "courses", "segments"]
+    },
     "eventSuccessFormatPrimitives": {
       "type": "object",
       "additionalProperties": false,
@@ -268,6 +276,12 @@
         },
         "unitOutcome": {
           "$ref": "#/definitions/eventSuccessUnitOutcome"
+        },
+        "accountability": {
+          "$ref": "#/definitions/eventSuccessAccountability"
+        },
+        "durationShape": {
+          "$ref": "#/definitions/eventSuccessDurationShape"
         }
       }
     },

@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.13.0
-updated: 2026-08-12
+version: 0.17.0
+updated: 2026-08-14
 owner: web_platform
 status: active
 ---
@@ -1087,10 +1087,25 @@ The React marketing runtime owns two non-SEO transactional routes:
 
 - `/join/:publicRuntimeId` resolves only a bounded event projection before
   Firebase phone OTP. After authentication it claims or requests one roster
-  identity, collects display name plus only the optional fields required by the
-  configured preference-aware behavior, and exposes self check-in, First
-  Hello, wingman, questionnaire, private assignment/rotation/group state and
-  feedback without creating a Consumer profile or booking edge.
+  identity, collects display name plus exactly one required pre-event payload
+  selected by the effective interaction model (pace, skill, dietary/seating,
+  questionnaire, or team/arrival group), plus only the optional fields required
+  by configured preference-aware behavior. The server recomputes readiness;
+  the browser cannot choose the required payload. A static route can never check an
+  attendee in. The Host's live QR adds a short-lived signed venue session in
+  the URL fragment; the route shell consumes and clears it before the controller
+  redeems attendance. Without that fragment, a ready attendee sees the venue
+  scan gate. After attendance, the route exposes First
+  Hello, wingman, questionnaire, private assignment/rotation/group state,
+  attendee-private end-of-event conversation confirmation, and feedback without
+  creating a Consumer profile or booking edge. The conversation roster is
+  fetched through an attendee-authorized callable; Hosts receive only numeric
+  scorecard counts and exclusion, never who named whom.
+
+The same route renders `social_missions` from the generated Event Success
+prompt catalog. Prompt ids carry `light`, `personal`, or `reflective`
+disclosure and advance monotonically with `activeStepIndex`; web copy adapts
+the shared semantic id, while the sequence remains identical to Flutter.
 - `/invite/:inviteToken` resolves an opaque bearer token server-side, records a
   short-lived bot-classified touch, preserves the token through registration or
   runtime claim, and redirects to Catch RSVP/runtime or an allowlisted external
@@ -1105,6 +1120,25 @@ external booking URL and Catch events to Catch registration. Consumer Flutter
 event detail and payment confirmation expose the same personal-link contract.
 Both surfaces can observe only use of the Catch share/copy control and later
 token use; neither can inspect an ordinary WhatsApp send or forward.
+
+The no-download runtime consumes the generated Event Success moment
+presentation catalog from `functions/src/shared/generated/` through its pure
+feature model. Its Firestore plan projection retains `revealStartedAt` in
+milliseconds plus the saved reveal-countdown value, and the generated resolver
+computes the same anticipation, climax, settle, completion, and deterministic
+seed as Flutter. Missing legacy countdown configuration uses the catalog
+fallback. This foundation adds no route or visual fork, and web intentionally
+does not play the catalog's ambient-bed audio.
+
+The guest runtime now renders the same three checked-in Lottie vector assets as
+Flutter for stage motifs, the anonymous checked-in ring, and the reveal
+cinematic. `@catch/web-ui` lazy-loads `lottie-web/build/player/lottie_light`
+only when one of those surfaces mounts. The feature adapter derives phase,
+progress, deterministic particles, and asset selection from the generated
+presentation contract and samples the server timeline every
+100ms; CSS owns only those driven transforms. The bounded bootstrap projection
+includes the aggregate `checkedInCount` required by the co-presence ring and no
+attendee identities. Web audio remains intentionally absent.
 
 ## Why Subdomains Instead Of Paths
 

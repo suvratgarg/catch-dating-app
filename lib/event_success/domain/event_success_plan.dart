@@ -41,6 +41,8 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
     @Default(false) bool compatibilityAffectsRanking,
     @Default(EventSuccessQuestionnaireConfig.defaultTemplate())
     EventSuccessQuestionnaireConfig questionnaireConfig,
+    @Default(EventSuccessConversationGraphConsentMode.optIn)
+    EventSuccessConversationGraphConsentMode conversationGraphConsentMode,
     @Default(0) int activeStepIndex,
     @Default(0) int liveControlRevision,
     @Default(0) int assignmentDraftRevision,
@@ -109,6 +111,7 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
       // Legacy flags intentionally use their hardcoded `true` defaults.
       compatibilityAffectsRanking: draft.compatibilityAffectsRanking,
       questionnaireConfig: draft.questionnaireConfig.normalized(),
+      conversationGraphConsentMode: draft.conversationGraphConsentMode,
       activeStepIndex: activeStepIndex,
       status: status,
       attendeePrompt: attendeePrompt,
@@ -133,6 +136,7 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
     hostGoal: hostGoal,
     compatibilityAffectsRanking: compatibilityAffectsRanking,
     questionnaireConfig: questionnaireConfig,
+    conversationGraphConsentMode: conversationGraphConsentMode,
   );
 
   List<EventSuccessModule> get selectedModules => playbook.modules
@@ -230,6 +234,7 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
       contextualOpenersEnabled: true,
       compatibilityAffectsRanking: draft.compatibilityAffectsRanking,
       questionnaireConfig: draft.questionnaireConfig.normalized(),
+      conversationGraphConsentMode: draft.conversationGraphConsentMode,
       updatedAt: updatedAt,
     );
   }

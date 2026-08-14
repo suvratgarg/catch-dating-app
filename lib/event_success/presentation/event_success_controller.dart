@@ -6,9 +6,10 @@ import 'package:catch_dating_app/event_success/domain/event_success_compatibilit
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_presence.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
-import 'package:catch_dating_app/events/data/event_check_in_location_service.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -40,6 +41,9 @@ class EventSuccessController extends _$EventSuccessController {
   static final spatialControlMutation =
       Mutation<EventSuccessSpatialActionResult>();
   static final recordUnitOutcomesMutation = Mutation<void>();
+  static final resolveLateArrivalMutation =
+      Mutation<EventSuccessLateArrivalResolution>();
+  static final accountabilityResolutionMutation = Mutation<void>();
 
   @override
   void build() {}
@@ -188,11 +192,31 @@ class EventSuccessController extends _$EventSuccessController {
   Future<void> completePlan({
     required String eventId,
     required int expectedRevision,
+    required bool accountabilityAcknowledged,
   }) async {
     requireSignedInUid(ref, action: 'complete the live event guide');
     await ref
         .read(eventSuccessRepositoryProvider)
-        .completePlan(eventId: eventId, expectedRevision: expectedRevision);
+        .completePlan(
+          eventId: eventId,
+          expectedRevision: expectedRevision,
+          accountabilityAcknowledged: accountabilityAcknowledged,
+        );
+  }
+
+  Future<void> setAccountabilityResolution({
+    required String eventId,
+    required String attendeeId,
+    required EventSuccessAccountabilityResolution? resolution,
+  }) async {
+    requireSignedInUid(ref, action: 'resolve the event accountability sweep');
+    await ref
+        .read(eventSuccessRepositoryProvider)
+        .setAccountabilityResolution(
+          eventId: eventId,
+          attendeeId: attendeeId,
+          resolution: resolution,
+        );
   }
 
   Future<void> submitFeedback(EventSuccessFeedback feedback) async {
@@ -220,17 +244,16 @@ class EventSuccessController extends _$EventSuccessController {
         );
   }
 
-  Future<void> startFirstHelloMission({required Event event}) async {
+  Future<void> startFirstHelloMission({
+    required Event event,
+    required String venueSessionToken,
+  }) async {
     requireSignedInUid(ref, action: 'start First Hello check-in');
-    final position = await ref
-        .read(eventCheckInLocationServiceProvider)
-        .getCurrentLocation();
     await ref
         .read(eventSuccessRepositoryProvider)
         .startFirstHelloMission(
           event: event,
-          latitude: position.latitude,
-          longitude: position.longitude,
+          venueSessionToken: venueSessionToken,
         );
   }
 
@@ -243,17 +266,9 @@ class EventSuccessController extends _$EventSuccessController {
     if (mission.eventId != event.id) {
       throw StateError('First Hello mission does not belong to this event.');
     }
-    final position = await ref
-        .read(eventCheckInLocationServiceProvider)
-        .getCurrentLocation();
     await ref
         .read(eventSuccessRepositoryProvider)
-        .completeFirstHelloMission(
-          event: event,
-          answerId: answerId,
-          latitude: position.latitude,
-          longitude: position.longitude,
-        );
+        .completeFirstHelloMission(event: event, answerId: answerId);
   }
 
   Future<void> saveWingmanRequest({
@@ -290,6 +305,21 @@ class EventSuccessController extends _$EventSuccessController {
         .read(eventSuccessRepositoryProvider)
         .generateGuidedRotations(
           eventId: eventId,
+          expectedRevision: expectedRevision,
+        );
+  }
+
+  Future<EventSuccessLateArrivalResolution> resolveLateArrival({
+    required String eventId,
+    required String uid,
+    required int expectedRevision,
+  }) async {
+    requireSignedInUid(ref, action: 'place a late event attendee');
+    return ref
+        .read(eventSuccessRepositoryProvider)
+        .resolveLateArrival(
+          eventId: eventId,
+          uid: uid,
           expectedRevision: expectedRevision,
         );
   }

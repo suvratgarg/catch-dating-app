@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
@@ -385,6 +386,9 @@ class EventSuccessRuntime {
     if (steps.isEmpty) return null;
     return EventSuccessLivePlan(
       playbook: plan.playbook,
+      durationShape: EventSuccessActivityProfile.forFormat(
+        event.eventFormat,
+      ).durationShape,
       steps: steps,
       activeStepIndex: math.min(
         math.max(plan.activeStepIndex, 0),

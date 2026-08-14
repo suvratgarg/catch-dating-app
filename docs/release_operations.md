@@ -575,6 +575,26 @@ or real member was opted in or exposed. The client surfaces are live; real
 discovery remains empty until Admin selects an eligible real Mumbai event and
 real members make both consent choices themselves.
 
+## Event Venue Session Signing And Expiry
+
+The live Host check-in QR binds one environment-specific Firebase Secret
+Manager value:
+
+- `EVENT_VENUE_SESSION_SIGNING_KEY`
+
+Use at least 32 random bytes and different material in dev, staging, and prod.
+Rotation intentionally invalidates every outstanding live QR. Never expose the
+value to Remote Config, clients, repository files, or CI logs. The Functions
+runtime service account needs `roles/secretmanager.secretAccessor` on this
+individual secret.
+
+The reviewed defaults are a 90-second lifetime and refresh after 60 seconds.
+Deployments may set `EVENT_VENUE_SESSION_TTL_SECONDS` from 30 through 300 and
+`EVENT_VENUE_SESSION_REFRESH_SECONDS` from 10 through 240; refresh must remain
+strictly less than lifetime or both values fall back to the reviewed defaults.
+Firestore TTL must be enabled on `expiresAt` for `eventVenueSessions` and
+`eventVenueSessionRedemptions`.
+
 ## Required Secrets
 
 Build workflows need environment-specific Google Maps SDK secrets. Do not rely

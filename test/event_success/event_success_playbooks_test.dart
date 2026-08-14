@@ -643,6 +643,7 @@ void main() {
             'compatibilityPolicy': 'questionnaireClueOnly',
             'matchingObjective': 'spread',
             'unitOutcome': 'score',
+            'accountability': 'rollCall',
           },
         );
 
@@ -671,6 +672,7 @@ void main() {
         );
         expect(profile.matchingObjective, EventSuccessMatchingObjective.spread);
         expect(profile.unitOutcome, EventSuccessUnitOutcome.score);
+        expect(profile.accountability, EventSuccessAccountability.rollCall);
         expect(profile.assignmentResolution.supported, isFalse);
         expect(profile.playbook.id, EventSuccessPlaybookLibrary.pubQuiz.id);
         expect(profile.structureConfig.unitKind, EventSuccessUnitKind.teams);
@@ -759,6 +761,76 @@ void main() {
         );
       }
     });
+
+    test('activity profiles bind and override all duration shapes', () {
+      final profiles = {
+        ActivityKind.socialRun: EventSuccessDurationShape.segments,
+        ActivityKind.pubQuiz: EventSuccessDurationShape.rounds,
+        ActivityKind.dinner: EventSuccessDurationShape.courses,
+        ActivityKind.pickleball: EventSuccessDurationShape.rounds,
+        ActivityKind.openActivity: EventSuccessDurationShape.continuous,
+      };
+
+      for (final entry in profiles.entries) {
+        expect(
+          EventSuccessActivityProfile.forActivity(entry.key).durationShape,
+          entry.value,
+        );
+      }
+      expect(
+        EventSuccessPlaybookLibrary.all
+            .map((playbook) => playbook.durationShape)
+            .toSet(),
+        containsAll(EventSuccessDurationShape.values),
+      );
+      expect(
+        EventSuccessActivityProfile.forFormat(
+          const EventFormatSnapshot(
+            activityKind: ActivityKind.openActivity,
+            interactionModel: EventInteractionModel.freeFormMixer,
+          ),
+        ).durationShape,
+        EventSuccessDurationShape.rounds,
+      );
+      expect(
+        EventSuccessActivityProfile.forFormat(
+          const EventFormatSnapshot(
+            activityKind: ActivityKind.openActivity,
+            interactionModel: EventInteractionModel.openFormat,
+            eventSuccessPrimitives: {'durationShape': 'courses'},
+          ),
+        ).durationShape,
+        EventSuccessDurationShape.courses,
+      );
+    });
+
+    test(
+      'accountability defaults from interaction shape and stays overridable',
+      () {
+        expect(
+          EventSuccessActivityProfile.forActivity(
+            ActivityKind.socialRun,
+          ).accountability,
+          EventSuccessAccountability.sweep,
+        );
+        expect(
+          EventSuccessActivityProfile.forActivity(
+            ActivityKind.pubQuiz,
+          ).accountability,
+          EventSuccessAccountability.none,
+        );
+        expect(
+          EventSuccessActivityProfile.forFormat(
+            const EventFormatSnapshot(
+              activityKind: ActivityKind.socialRun,
+              interactionModel: EventInteractionModel.pacePods,
+              eventSuccessPrimitives: {'accountability': 'none'},
+            ),
+          ).accountability,
+          EventSuccessAccountability.none,
+        );
+      },
+    );
 
     test('event defaults normalize to the selected activity', () {
       final racketDefaults = EventSuccessDefaults(

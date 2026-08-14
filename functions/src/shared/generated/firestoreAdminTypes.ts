@@ -246,6 +246,8 @@ export interface EventSuccessFormatPrimitives {
     | "balance"
     | "spread";
   unitOutcome?: "none" | "completion" | "score" | "rank";
+  accountability?: "none" | "rollCall" | "sweep";
+  durationShape?: "continuous" | "rounds" | "courses" | "segments";
 }
 
 export type EventSuccessStructureConfig = {
@@ -2808,6 +2810,13 @@ export interface EventAttendeeDocument {
    */
   preCheckInStatus?: "invited" | "registered" | "waitlisted" | null;
   /**
+   * Host-recorded sweep result. It is current only when accountabilityResolvedForCheckInAt equals checkedInAt.
+   */
+  accountabilityResolution?: "returned" | "departed" | null;
+  accountabilityResolvedForCheckInAt?: FirebaseFirestore.Timestamp | null;
+  accountabilityResolvedAt?: FirebaseFirestore.Timestamp | null;
+  accountabilityResolvedBy?: string | null;
+  /**
    * External source that most recently supplied provider-authoritative fields, independent of row creation source.
    */
   provider?:
@@ -2946,7 +2955,7 @@ export interface EventRuntimeParticipantDocument {
     | "optedOut"
     | "revoked";
   /**
-   * @maxItems 5
+   * @maxItems 10
    */
   requiredFieldIds: (
     | "displayName"
@@ -2954,9 +2963,14 @@ export interface EventRuntimeParticipantDocument {
     | "interestedInGenders"
     | "relationshipGoal"
     | "dateOfBirth"
+    | "paceBand"
+    | "skillBand"
+    | "dietaryAndSeatingNotes"
+    | "questionnaireAnswerIds"
+    | "teamName"
   )[];
   /**
-   * @maxItems 5
+   * @maxItems 10
    */
   completedFieldIds: (
     | "displayName"
@@ -2964,6 +2978,11 @@ export interface EventRuntimeParticipantDocument {
     | "interestedInGenders"
     | "relationshipGoal"
     | "dateOfBirth"
+    | "paceBand"
+    | "skillBand"
+    | "dietaryAndSeatingNotes"
+    | "questionnaireAnswerIds"
+    | "teamName"
   )[];
   runtimeProfile: {
     displayName: string;
@@ -2980,6 +2999,14 @@ export interface EventRuntimeParticipantDocument {
       | "unsure"
       | null;
     dateOfBirth: FirebaseFirestore.Timestamp | null;
+    paceBand: "competitive" | "fast" | "moderate" | "easy" | null;
+    skillBand: "beginner" | "intermediate" | "advanced" | null;
+    dietaryAndSeatingNotes: string | null;
+    /**
+     * @maxItems 8
+     */
+    questionnaireAnswerIds: string[];
+    teamName: string | null;
   };
   consents: {
     runtimeTermsVersion: string;
@@ -2989,6 +3016,61 @@ export interface EventRuntimeParticipantDocument {
   claimedAt: FirebaseFirestore.Timestamp;
   readyAt: FirebaseFirestore.Timestamp | null;
   revokedAt: FirebaseFirestore.Timestamp | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Short-lived server-owned venue-presence authority shown only in the Host live QR.
+ */
+export interface EventVenueSessionDocument {
+  eventId: string;
+  organizerId: string;
+  createdBy: string;
+  issuedAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Server-only single-use receipt binding one attendee to one live venue session.
+ */
+export interface EventVenueSessionRedemptionDocument {
+  eventId: string;
+  sessionId: string;
+  uid: string;
+  purpose: "attendance" | "firstHello";
+  redeemedAt: FirebaseFirestore.Timestamp;
+  consumedAt: FirebaseFirestore.Timestamp | null;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Server-owned liveness heartbeat stored at eventSuccessPresence/{eventId_uid}; presence state is derived from heartbeatAt and deployment policy rather than persisted.
+ */
+export interface EventSuccessPresenceDocument {
+  eventId: string;
+  clubId: string;
+  organizerId: string;
+  uid: string;
+  surface: "flutter" | "web";
+  heartbeatAt: FirebaseFirestore.Timestamp;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Server-owned Host resolution for a checked-in late attendee stored at eventSuccessLateArrivals/{eventId_uid}.
+ */
+export interface EventSuccessLateArrivalDocument {
+  eventId: string;
+  clubId: string;
+  organizerId: string;
+  uid: string;
+  resolvedByUid: string;
+  status: "insertedIntoOpenPair" | "extendedUnit" | "heldForNextRound";
+  targetRoundIndex: number;
+  assignmentDraftRevision: number;
+  reason: string;
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
 }
@@ -3276,6 +3358,10 @@ export interface EventSuccessPlanDocument {
       }[];
     }[];
   };
+  /**
+   * Whether assigned attendees begin unselected or preselected in the end-of-event conversation graph. Missing legacy values resolve to optIn.
+   */
+  conversationGraphConsentMode?: "optIn" | "optOut";
   activeStepIndex: number;
   liveControlRevision?: number;
   assignmentDraftRevision?: number;
@@ -3290,6 +3376,29 @@ export interface EventSuccessPlanDocument {
   updatedAt: FirebaseFirestore.Timestamp;
   frozenAt?: FirebaseFirestore.Timestamp | null;
   completedAt?: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Attendee-private end-of-event conversation edges stored at eventSuccessConversationGraphs/{eventId_uid}. Hosts consume aggregate scorecard counts only.
+ */
+export interface EventSuccessConversationGraphDocument {
+  eventId: string;
+  clubId: string;
+  organizerId: string;
+  uid: string;
+  status: "submitted" | "skipped";
+  /**
+   * @maxItems 1000
+   */
+  selectedUids: string[];
+  assignedSelectedCount: number;
+  assignedCandidateCount: number;
+  /**
+   * Snapshot of the event plan mode shown for this response.
+   */
+  consentMode: "optIn" | "optOut";
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
 }
 
 /**
@@ -3416,6 +3525,8 @@ export interface EventSuccessArrivalMissionDocument {
     id: string;
     label: string;
   }[];
+  venueSessionId: string;
+  venueSessionRedemptionId: string;
   status: "active" | "completed" | "skipped";
   selectedAnswerId?: string;
   createdAt: FirebaseFirestore.Timestamp;
@@ -3670,6 +3781,18 @@ export interface EventSuccessScorecardDocument {
   averageWelcomeRating: number;
   averageStructureRating: number;
   safetyIncidentCount: number;
+  /**
+   * Host-visible aggregate conversation outcomes. Person-to-person edges remain in attendee-private documents.
+   */
+  conversationGraph?: {
+    responseCount: number;
+    skippedCount: number;
+    conversationCount: number;
+    attendeesWithTwoPlusConversations: number;
+    excludedAttendeeCount: number;
+    assignedConversationCount: number;
+    assignedOpportunityCount: number;
+  };
   /**
    * Host-visible operating funnel from acquisition through connection. Counts are aggregate-only and rebuilt from canonical documents.
    */

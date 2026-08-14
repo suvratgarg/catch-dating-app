@@ -19,7 +19,10 @@ import {
 } from "../shared/generated/schemaValidators";
 import {validateCallableWithAjv, requireDoc} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
-import {appCheckCallableOptions} from "../shared/callableOptions";
+import {
+  appCheckCallableOptions,
+  appCheckCallableOptionsWithSecrets,
+} from "../shared/callableOptions";
 import {normalizeEventIdPayload} from "../events/eventPayloadNormalization";
 import {blockDocId} from "../safety/blocking";
 import {
@@ -27,7 +30,6 @@ import {
   eventParticipationPatch,
 } from "../shared/relationshipDocuments";
 import {
-  EVENT_FIRST_HELLO_MAX_DISTANCE_METERS,
   EVENT_SELF_CHECK_IN_WINDOW_AFTER_MINUTES,
   EVENT_SELF_CHECK_IN_WINDOW_BEFORE_MINUTES,
 } from "../shared/businessRules";
@@ -42,14 +44,22 @@ import {
   loadEventSuccessRosterParticipant,
 } from "./eventSuccessRoster";
 import {eventRuntimeParticipantId} from "./eventRuntime";
+import {
+  eventVenueSessionRedemptionDocument,
+  eventVenueSessionRedemptionId,
+  eventVenueSessionSigningKey,
+  rejectVenueSessionReplay,
+  requireEventVenueSessionDocument,
+  verifyEventVenueSessionToken,
+} from "../events/venueSessions";
 
 const FIRST_HELLO_MODULE_ID = "first_hello_check_in";
-const EARTH_RADIUS_M = 6_371_000;
 
 interface FirstHelloDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   nowMillis: () => number;
+  verifyVenueSessionToken?: typeof verifyEventVenueSessionToken;
   checkRateLimit?: (
     db: FirebaseFirestore.Firestore,
     uid: string,
@@ -84,6 +94,8 @@ interface FirstHelloMissionDocument {
   answerOptions: FirstHelloAnswerOption[];
   status: "active" | "completed" | "skipped";
   selectedAnswerId?: string;
+  venueSessionId: string;
+  venueSessionRedemptionId: string;
   createdAt?: unknown;
   updatedAt?: unknown;
   completedAt?: unknown;
@@ -97,6 +109,7 @@ const defaultDeps: FirstHelloDeps = {
   nowMillis: () => Date.now(),
   checkRateLimit: defaultCheckRateLimit,
   recordSignalFacts: recordParticipantSignalFactsBestEffort,
+  verifyVenueSessionToken: verifyEventVenueSessionToken,
 };
 
 const firstHelloAnswerOptions: FirstHelloAnswerOption[] = [
@@ -165,7 +178,6 @@ export async function startEventSuccessFirstHelloMissionHandler(
     return {missionId: missionRef.id, attended: true};
   }
   requireCheckInWindow(event, deps.nowMillis());
-  requireVenueProximity(event, data.latitude, data.longitude);
 
   if (existingMissionSnap.exists) {
     const existing = requireDoc<FirstHelloMissionDocument>(
@@ -181,6 +193,23 @@ export async function startEventSuccessFirstHelloMissionHandler(
     }
   }
 
+  const nowMillis = deps.nowMillis();
+  const claims = (deps.verifyVenueSessionToken ??
+    verifyEventVenueSessionToken)({
+    token: data.venueSessionToken,
+    eventId: data.eventId,
+    nowMillis,
+  });
+  const sessionRef = db.collection("eventVenueSessions")
+    .doc(claims.sessionId);
+  const redemptionId = eventVenueSessionRedemptionId({
+    eventId: data.eventId,
+    sessionId: claims.sessionId,
+    uid: observerUid,
+  });
+  const redemptionRef = db.collection("eventVenueSessionRedemptions")
+    .doc(redemptionId);
+
   const target = await chooseFirstHelloTarget({
     db,
     eventId: data.eventId,
@@ -195,10 +224,40 @@ export async function startEventSuccessFirstHelloMissionHandler(
     organizerId: event.organizerId ?? event.clubId,
     observerUid,
     target,
+    venueSessionId: claims.sessionId,
+    venueSessionRedemptionId: redemptionId,
     now,
   });
 
-  await missionRef.set(mission);
+  await db.runTransaction(async (tx) => {
+    const [currentMissionSnap, sessionSnap, redemptionSnap] =
+      await Promise.all([
+        tx.get(missionRef),
+        tx.get(sessionRef),
+        tx.get(redemptionRef),
+      ]);
+    if (currentMissionSnap.exists) {
+      const currentMission = requireDoc<FirstHelloMissionDocument>(
+        currentMissionSnap,
+        "EventSuccessArrivalMissionDocument"
+      );
+      if (
+        currentMission.eventId === data.eventId &&
+        currentMission.observerUid === observerUid &&
+        currentMission.status === "active"
+      ) return;
+    }
+    rejectVenueSessionReplay(redemptionSnap);
+    requireEventVenueSessionDocument(sessionSnap, claims, nowMillis);
+    tx.create(redemptionRef, eventVenueSessionRedemptionDocument({
+      claims,
+      uid: observerUid,
+      purpose: "firstHello",
+      now,
+      retentionBaseMillis: nowMillis,
+    }));
+    tx.set(missionRef, mission);
+  });
 
   logger.info(
     "[event-success] First Hello mission started",
@@ -294,7 +353,6 @@ export async function completeEventSuccessFirstHelloMissionHandler(
     }
 
     requireCheckInWindow(event, deps.nowMillis());
-    requireVenueProximity(event, data.latitude, data.longitude);
 
     if (!missionSnap.exists) {
       throw new HttpsError(
@@ -311,6 +369,15 @@ export async function completeEventSuccessFirstHelloMissionHandler(
       data.eventId,
       observerUid,
       data.answerId
+    );
+    const redemptionRef = db.collection("eventVenueSessionRedemptions")
+      .doc(mission.venueSessionRedemptionId);
+    const redemptionSnap = await tx.get(redemptionRef);
+    requireFirstHelloVenueRedemption(
+      redemptionSnap,
+      mission,
+      data.eventId,
+      observerUid
     );
 
     const targetParticipationRef = db
@@ -396,6 +463,7 @@ export async function completeEventSuccessFirstHelloMissionHandler(
       completedAt: now,
       updatedAt: now,
     });
+    tx.update(redemptionRef, {consumedAt: now});
     wasMarkedAttended = true;
   });
 
@@ -420,7 +488,7 @@ export async function completeEventSuccessFirstHelloMissionHandler(
 }
 
 export const startEventSuccessFirstHelloMission = onCall(
-  appCheckCallableOptions,
+  appCheckCallableOptionsWithSecrets([eventVenueSessionSigningKey]),
   (request) => startEventSuccessFirstHelloMissionHandler(request)
 );
 
@@ -549,6 +617,8 @@ function buildFirstHelloMission(params: {
   organizerId?: string;
   observerUid: string;
   target: FirstHelloCandidate;
+  venueSessionId: string;
+  venueSessionRedemptionId: string;
   now: FirebaseFirestore.FieldValue;
 }): FirstHelloMissionDocument {
   return {
@@ -556,6 +626,8 @@ function buildFirstHelloMission(params: {
     clubId: params.clubId,
     organizerId: params.organizerId ?? params.clubId,
     observerUid: params.observerUid,
+    venueSessionId: params.venueSessionId,
+    venueSessionRedemptionId: params.venueSessionRedemptionId,
     targetUid: params.target.uid,
     targetDisplayName: params.target.displayName,
     targetContext: "They are checked in and ready for the same room.",
@@ -769,6 +841,39 @@ function requireOwnedActiveMission(
   }
 }
 
+function requireFirstHelloVenueRedemption(
+  snapshot: FirebaseFirestore.DocumentSnapshot,
+  mission: FirstHelloMissionDocument,
+  eventId: string,
+  observerUid: string
+): void {
+  if (!snapshot.exists) {
+    throw new HttpsError(
+      "failed-precondition",
+      "First Hello has no valid venue-presence proof. Scan the live Host QR."
+    );
+  }
+  const redemption = snapshot.data() as {
+    eventId?: string;
+    sessionId?: string;
+    uid?: string;
+    purpose?: string;
+    consumedAt?: unknown;
+  };
+  if (
+    redemption.eventId !== eventId ||
+    redemption.sessionId !== mission.venueSessionId ||
+    redemption.uid !== observerUid ||
+    redemption.purpose !== "firstHello" ||
+    redemption.consumedAt != null
+  ) {
+    throw new HttpsError(
+      "failed-precondition",
+      "This First Hello venue-presence proof is no longer valid."
+    );
+  }
+}
+
 /**
  * Enforces the shared event check-in time window.
  * @param {EventDocument} event Event document.
@@ -793,73 +898,6 @@ function requireCheckInWindow(event: EventDocument, nowMillis: number) {
       "Check-in closed. Contact the host."
     );
   }
-}
-
-/**
- * Enforces the tighter First Hello venue radius when event coordinates exist.
- * @param {EventDocument} event Event document.
- * @param {number|null|undefined} latitude Caller latitude.
- * @param {number|null|undefined} longitude Caller longitude.
- */
-function requireVenueProximity(
-  event: EventDocument,
-  latitude: number | null | undefined,
-  longitude: number | null | undefined
-) {
-  const eventLat = event.meetingLocation?.latitude ?? event.startingPointLat;
-  const eventLng = event.meetingLocation?.longitude ?? event.startingPointLng;
-  if (eventLat == null || eventLng == null) {
-    throw new HttpsError(
-      "failed-precondition",
-      "This event has no exact meeting location. Contact the host."
-    );
-  }
-  if (latitude == null || longitude == null) {
-    throw new HttpsError(
-      "invalid-argument",
-      "Location is required to start First Hello. Enable GPS and try again."
-    );
-  }
-  const distance = haversineDistanceM(latitude, longitude, eventLat, eventLng);
-  if (distance > EVENT_FIRST_HELLO_MAX_DISTANCE_METERS) {
-    throw new HttpsError(
-      "failed-precondition",
-      `You must be within ${EVENT_FIRST_HELLO_MAX_DISTANCE_METERS} m ` +
-      "of the meeting point to start First Hello. You appear to be " +
-      `${Math.round(distance)} m away.`
-    );
-  }
-}
-
-/**
- * Haversine distance between two lat/lng points, in metres.
- * @param {number} lat1 First point latitude.
- * @param {number} lng1 First point longitude.
- * @param {number} lat2 Second point latitude.
- * @param {number} lng2 Second point longitude.
- * @return {number} Distance in metres.
- */
-function haversineDistanceM(
-  lat1: number, lng1: number,
-  lat2: number, lng2: number
-): number {
-  const dLat = toRad(lat2 - lat1);
-  const dLng = toRad(lng2 - lng1);
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-    Math.sin(dLng / 2) * Math.sin(dLng / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return EARTH_RADIUS_M * c;
-}
-
-/**
- * Converts degrees to radians.
- * @param {number} deg Angle in degrees.
- * @return {number} Angle in radians.
- */
-function toRad(deg: number): number {
-  return (deg * Math.PI) / 180;
 }
 
 /**

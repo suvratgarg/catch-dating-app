@@ -13,11 +13,20 @@ export interface GetEventRuntimeBootstrapCallableResponse {
     startTimeMillis: number;
     endTimeMillis: number;
     locationName: string;
+    checkedInCount: number;
     runtimeTermsVersion: string;
     /**
      * @maxItems 24
      */
     moduleIds: string[];
+    interactionModel:
+      | "pacePods"
+      | "pairedRotations"
+      | "teamRotations"
+      | "seatedTable"
+      | "freeFormMixer"
+      | "hostLedProgram"
+      | "openFormat";
     layout: null | {
       layoutId: string;
       label: string;
@@ -36,9 +45,9 @@ export interface GetEventRuntimeBootstrapCallableResponse {
       }[];
     };
     /**
-     * Fields that must be completed before event mode opens. Sensitive preference fields are never required for entry.
+     * Fields that must be completed before event mode opens: display name plus at most one server-selected pre-event payload. Optional preference fields are never required for entry.
      *
-     * @maxItems 5
+     * @maxItems 10
      */
     requiredFieldIds: (
       | "displayName"
@@ -46,11 +55,16 @@ export interface GetEventRuntimeBootstrapCallableResponse {
       | "interestedInGenders"
       | "relationshipGoal"
       | "dateOfBirth"
+      | "paceBand"
+      | "skillBand"
+      | "dietaryAndSeatingNotes"
+      | "questionnaireAnswerIds"
+      | "teamName"
     )[];
     /**
      * Plan-derived event-only answers the guest may provide to improve preference-aware suggestions. Guests may skip them and receive neutral assignments.
      *
-     * @maxItems 5
+     * @maxItems 10
      */
     optionalFieldIds: (
       | "displayName"
@@ -58,6 +72,11 @@ export interface GetEventRuntimeBootstrapCallableResponse {
       | "interestedInGenders"
       | "relationshipGoal"
       | "dateOfBirth"
+      | "paceBand"
+      | "skillBand"
+      | "dietaryAndSeatingNotes"
+      | "questionnaireAnswerIds"
+      | "teamName"
     )[];
     questionnaireConfig: null | {
       templateId: string;
@@ -98,11 +117,11 @@ export interface GetEventRuntimeBootstrapCallableResponse {
     clubId: string;
     organizerId: string;
     /**
-     * @maxItems 5
+     * @maxItems 10
      */
     requiredFieldIds: string[];
     /**
-     * @maxItems 5
+     * @maxItems 10
      */
     completedFieldIds: string[];
     runtimeProfile: {
@@ -117,6 +136,14 @@ export interface GetEventRuntimeBootstrapCallableResponse {
         | "unsure"
         | null;
       dateOfBirthMillis: number | null;
+      paceBand: "competitive" | "fast" | "moderate" | "easy" | null;
+      skillBand: "beginner" | "intermediate" | "advanced" | null;
+      dietaryAndSeatingNotes: string | null;
+      /**
+       * @maxItems 8
+       */
+      questionnaireAnswerIds: string[];
+      teamName: string | null;
     };
   };
 }

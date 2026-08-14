@@ -1,4 +1,4 @@
-import {useMutation} from "@tanstack/react-query";
+import {useMutation, useQuery} from "@tanstack/react-query";
 import {type FormEvent, useCallback, useEffect, useId, useMemo, useRef, useState} from "react";
 import type {User} from "../../firebase";
 import {
@@ -9,29 +9,37 @@ import {
   createEventRuntimeAttendeeInviteLink,
   fetchEventRuntimeWingmanCandidates,
   getEventRuntimeBootstrap,
+  getEventSuccessConversationGraph,
+  heartbeatEventRuntimePresence,
   recordEventInviteLinkOpen,
   recordEventRuntimeShareIntent,
   saveEventRuntimeCompatibilityAnswers,
   saveEventRuntimeFeedback,
   startEventRuntimeFirstHello,
   submitEventRuntimeProfile,
+  submitEventSuccessConversationGraph,
   submitEventRuntimeWingmanRequest,
   watchEventRuntimeAuthState,
   watchEventRuntimeLiveState,
   withdrawEventRuntimeWingmanRequest,
   type EventRuntimeLiveState,
   type EventRuntimeAttendeeInviteLink,
+  type EventSuccessConversationGraph,
   type PublicEventPhoneVerification,
 } from "../../firebase";
 import {eventRuntimeCopy} from "../../content/eventRuntime";
 import type {FormStatus} from "../../shared/forms/types";
+import {websiteQueryKeys} from "../../shared/query/queryKeys";
 import {
   eventRuntimeError,
+  eventRuntimePreEventFieldId,
   eventRuntimeStageForParticipant,
   normalizeRuntimePhone,
   resolveEventRuntimeQuestionnaire,
   type EventRuntimeBootstrap,
   type EventRuntimeGender,
+  type EventRuntimePaceBand,
+  type EventRuntimeSkillBand,
 } from "./eventRuntimeModel";
 import {eventInviteSessionId, eventInviteTokenFromLocation} from
   "../../shared/eventInviteAttribution";
@@ -42,6 +50,7 @@ export type EventRuntimeStage =
   | "otp"
   | "profile"
   | "approval"
+  | "venue"
   | "runtime"
   | "unavailable";
 
@@ -56,12 +65,16 @@ const emptyLiveState: EventRuntimeLiveState = {
   compatibilityAnswerIds: [],
   feedback: null,
   mission: null,
+  lateArrival: null,
   plan: null,
   standings: null,
   wingmanTargetUid: null,
 };
 
-export function useEventRuntimeController(publicRuntimeId: string) {
+export function useEventRuntimeController(
+  publicRuntimeId: string,
+  venueSessionToken: string | null = null
+) {
   const reactId = useId();
   const recaptchaContainerId = `event-runtime-recaptcha-${reactId.replace(/:/gu, "")}`;
   const verificationRef = useRef<PublicEventPhoneVerification | null>(null);
@@ -80,6 +93,11 @@ export function useEventRuntimeController(publicRuntimeId: string) {
   const [preferenceProfileEnabled, setPreferenceProfileEnabled] = useState(false);
   const [sensitiveConsent, setSensitiveConsent] = useState(false);
   const [saveAsCatchPrefill, setSaveAsCatchPrefill] = useState(false);
+  const [paceBand, setPaceBand] = useState<EventRuntimePaceBand | null>(null);
+  const [skillBand, setSkillBand] = useState<EventRuntimeSkillBand | null>(null);
+  const [dietaryAndSeatingNotes, setDietaryAndSeatingNotes] = useState("");
+  const [teamName, setTeamName] = useState("");
+  const [preEventConsent, setPreEventConsent] = useState(false);
   const [liveState, setLiveState] = useState<EventRuntimeLiveState>(emptyLiveState);
   const [questionAnswers, setQuestionAnswers] = useState<Record<string, string>>({});
   const [wingmanCandidates, setWingmanCandidates] = useState<WingmanCandidate[]>([]);
@@ -89,6 +107,9 @@ export function useEventRuntimeController(publicRuntimeId: string) {
   const [metNewPeopleCount, setMetNewPeopleCount] = useState(2);
   const [safetyConcern, setSafetyConcern] = useState(false);
   const [privateNote, setPrivateNote] = useState("");
+  const [eventEnded, setEventEnded] = useState(false);
+  const [selectedConversationUids, setSelectedConversationUids] =
+    useState<string[]>([]);
   const actionMutation = useMutation<void, unknown, () => Promise<void>>({
     mutationFn: (action) => action(),
     onError: (error) => {
@@ -112,6 +133,18 @@ export function useEventRuntimeController(publicRuntimeId: string) {
   const attendeeInviteLink = attendeeLinkMutation.data ?? null;
   const inviteToken = useMemo(eventInviteTokenFromLocation, []);
   const recordedInviteOpenRef = useRef(false);
+  const conversationGraphEventId = bootstrap?.participant?.eventId ?? "";
+  const conversationGraphQuery = useQuery<EventSuccessConversationGraph>({
+    enabled: stage === "runtime" &&
+      eventEnded &&
+      bootstrap?.participant?.attendanceStatus === "checkedIn",
+    queryFn: () => getEventSuccessConversationGraph(conversationGraphEventId),
+    queryKey: websiteQueryKeys.eventRuntime.conversationGraph(
+      conversationGraphEventId || null
+    ),
+  });
+  const conversationGraph = conversationGraphQuery.data ?? null;
+  const conversationGraphLoading = conversationGraphQuery.isLoading;
 
   const questionnaire = useMemo(
     () => resolveEventRuntimeQuestionnaire(bootstrap?.event.questionnaireConfig ?? null),
@@ -121,6 +154,8 @@ export function useEventRuntimeController(publicRuntimeId: string) {
     bootstrap?.event.optionalFieldIds.includes("gender") &&
     bootstrap.event.optionalFieldIds.includes("interestedInGenders")
   );
+  const preEventFieldId = bootstrap ?
+    eventRuntimePreEventFieldId(bootstrap.event) : null;
 
   const loadAuthenticatedRuntime = useCallback(async (activeUser: User) => {
     if (loadingRef.current) return loadingRef.current;
@@ -129,12 +164,22 @@ export function useEventRuntimeController(publicRuntimeId: string) {
         let next = await getEventRuntimeBootstrap({publicRuntimeId});
         setBootstrap(next);
         hydrateProfile(next);
-        const nextStage = eventRuntimeStageForParticipant(next.participant);
+        let nextStage: EventRuntimeStage = eventRuntimeStageForParticipant(next.participant);
         if (nextStage === "runtime" && next.participant?.attendanceStatus !== "checkedIn") {
-          await checkInEventRuntime({publicRuntimeId});
-          next = await getEventRuntimeBootstrap({publicRuntimeId});
-          setBootstrap(next);
-          hydrateProfile(next);
+          if (!venueSessionToken) {
+            nextStage = "venue";
+          } else {
+            try {
+              await checkInEventRuntime({publicRuntimeId, venueSessionToken});
+              next = await getEventRuntimeBootstrap({publicRuntimeId});
+              setBootstrap(next);
+              hydrateProfile(next);
+              nextStage = eventRuntimeStageForParticipant(next.participant);
+            } catch (error) {
+              setStatus({message: eventRuntimeError(error), tone: "is-error"});
+              nextStage = "venue";
+            }
+          }
         }
         if (userRef.current?.uid === activeUser.uid) setStage(nextStage);
       } catch (error) {
@@ -148,7 +193,7 @@ export function useEventRuntimeController(publicRuntimeId: string) {
     } finally {
       if (loadingRef.current === request) loadingRef.current = null;
     }
-  }, [publicRuntimeId]);
+  }, [publicRuntimeId, venueSessionToken]);
 
   useEffect(() => {
     let cancelled = false;
@@ -187,6 +232,28 @@ export function useEventRuntimeController(publicRuntimeId: string) {
       unsubscribe();
     };
   }, [inviteToken, loadAuthenticatedRuntime, publicRuntimeId]);
+
+  useEffect(() => {
+    const endTimeMillis = bootstrap?.event.endTimeMillis;
+    if (endTimeMillis === undefined) return undefined;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const refreshEndedState = () => {
+      const remaining = endTimeMillis - Date.now();
+      if (remaining <= 0) {
+        setEventEnded(true);
+        return;
+      }
+      setEventEnded(false);
+      timer = setTimeout(
+        refreshEndedState,
+        Math.min(remaining, 2_147_000_000)
+      );
+    };
+    refreshEndedState();
+    return () => {
+      if (timer !== undefined) clearTimeout(timer);
+    };
+  }, [bootstrap?.event.endTimeMillis]);
 
   useEffect(() => {
     const participant = bootstrap?.participant;
@@ -234,6 +301,54 @@ export function useEventRuntimeController(publicRuntimeId: string) {
       unsubscribe();
     };
   }, [bootstrap, questionnaire.questions, stage, user]);
+
+  useEffect(() => {
+    if (conversationGraphQuery.data) {
+      setSelectedConversationUids(conversationGraphQuery.data.selectedUids);
+    }
+  }, [conversationGraphQuery.data]);
+
+  useEffect(() => {
+    if (conversationGraphQuery.error) {
+      setStatus({
+        message: eventRuntimeError(conversationGraphQuery.error),
+        tone: "is-error",
+      });
+    }
+  }, [conversationGraphQuery.error]);
+
+  useEffect(() => {
+    const participant = bootstrap?.participant;
+    if (
+      stage !== "runtime" ||
+      participant?.attendanceStatus !== "checkedIn" ||
+      !bootstrap ||
+      eventEnded
+    ) return undefined;
+    let disposed = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const sendHeartbeat = async () => {
+      if (Date.now() > bootstrap.event.endTimeMillis) return;
+      try {
+        const response = await heartbeatEventRuntimePresence(
+          participant.eventId
+        );
+        if (!disposed) {
+          timer = setTimeout(
+            sendHeartbeat,
+            response.heartbeatIntervalSeconds * 1000
+          );
+        }
+      } catch {
+        if (!disposed) timer = setTimeout(sendHeartbeat, 10_000);
+      }
+    };
+    void sendHeartbeat();
+    return () => {
+      disposed = true;
+      if (timer !== undefined) clearTimeout(timer);
+    };
+  }, [bootstrap, eventEnded, stage]);
 
   useEffect(() => {
     const participant = bootstrap?.participant;
@@ -308,6 +423,25 @@ export function useEventRuntimeController(publicRuntimeId: string) {
       setStatus({message: eventRuntimeCopy.missingSensitiveConsent, tone: "is-error"});
       return;
     }
+    const preEventQuestionnaireAnswerIds = questionnaire.questions
+      .map((question) => questionAnswers[question.id])
+      .filter((answerId): answerId is string => Boolean(answerId));
+    const hasPreEventAnswer = preEventFieldId === null ||
+      (preEventFieldId === "paceBand" && paceBand !== null) ||
+      (preEventFieldId === "skillBand" && skillBand !== null) ||
+      (preEventFieldId === "dietaryAndSeatingNotes" &&
+        dietaryAndSeatingNotes.trim().length > 0) ||
+      (preEventFieldId === "questionnaireAnswerIds" &&
+        preEventQuestionnaireAnswerIds.length === questionnaire.questions.length) ||
+      (preEventFieldId === "teamName" && teamName.trim().length > 0);
+    if (!hasPreEventAnswer) {
+      setStatus({message: eventRuntimeCopy.missingPreEventAnswer, tone: "is-error"});
+      return;
+    }
+    if (preEventFieldId && !preEventConsent) {
+      setStatus({message: eventRuntimeCopy.missingSensitiveConsent, tone: "is-error"});
+      return;
+    }
     setStatus({message: "", tone: ""});
     await actionMutation.mutateAsync(async () => {
       let accessStatus = bootstrap.participant?.accessStatus ?? "needsClaim";
@@ -327,7 +461,7 @@ export function useEventRuntimeController(publicRuntimeId: string) {
       await submitEventRuntimeProfile({
         publicRuntimeId,
         runtimeTermsVersion: bootstrap.event.runtimeTermsVersion,
-        sensitiveDataTermsVersion: preferenceProfileEnabled ?
+        sensitiveDataTermsVersion: preferenceProfileEnabled || preEventFieldId ?
           "event-runtime-sensitive-v1" : null,
         saveAsCatchPrefill,
         fields: {
@@ -337,6 +471,17 @@ export function useEventRuntimeController(publicRuntimeId: string) {
             interestedInGenders : [],
           relationshipGoal: preferenceProfileEnabled ? undefined : null,
           dateOfBirthMillis: preferenceProfileEnabled ? undefined : null,
+          ...(preEventFieldId === "paceBand" ? {paceBand} : {}),
+          ...(preEventFieldId === "skillBand" ? {skillBand} : {}),
+          ...(preEventFieldId === "dietaryAndSeatingNotes" ? {
+            dietaryAndSeatingNotes: dietaryAndSeatingNotes.trim(),
+          } : {}),
+          ...(preEventFieldId === "questionnaireAnswerIds" ? {
+            questionnaireAnswerIds: preEventQuestionnaireAnswerIds,
+          } : {}),
+          ...(preEventFieldId === "teamName" ? {
+            teamName: teamName.trim(),
+          } : {}),
         },
       });
       await loadAuthenticatedRuntime(user);
@@ -439,9 +584,15 @@ export function useEventRuntimeController(publicRuntimeId: string) {
   async function startFirstHello() {
     const participant = bootstrap?.participant;
     if (!participant || pending) return;
+    if (!venueSessionToken) {
+      setStatus({message: eventRuntimeCopy.venueBody, tone: "is-error"});
+      return;
+    }
     await actionMutation.mutateAsync(async () => {
-      const position = await browserPosition();
-      await startEventRuntimeFirstHello({eventId: participant.eventId, ...position});
+      await startEventRuntimeFirstHello({
+        eventId: participant.eventId,
+        venueSessionToken,
+      });
     }).catch(() => undefined);
   }
 
@@ -449,11 +600,9 @@ export function useEventRuntimeController(publicRuntimeId: string) {
     const participant = bootstrap?.participant;
     if (!participant || pending) return;
     await actionMutation.mutateAsync(async () => {
-      const position = await browserPosition();
       await completeEventRuntimeFirstHello({
         eventId: participant.eventId,
         answerId,
-        ...position,
       });
     }).catch(() => undefined);
   }
@@ -497,6 +646,34 @@ export function useEventRuntimeController(publicRuntimeId: string) {
     }).catch(() => undefined);
   }
 
+  function toggleConversationUid(uid: string) {
+    if (pending) return;
+    setSelectedConversationUids((current) => current.includes(uid) ?
+      current.filter((value) => value !== uid) :
+      [...current, uid]);
+  }
+
+  async function submitConversationGraph(skipped = false) {
+    const participant = bootstrap?.participant;
+    if (!participant || !conversationGraph || pending) return;
+    await actionMutation.mutateAsync(async () => {
+      const selectedUids = skipped ? [] : [...selectedConversationUids].sort();
+      await submitEventSuccessConversationGraph({
+        eventId: participant.eventId,
+        selectedUids,
+        skipped,
+      });
+      setSelectedConversationUids(selectedUids);
+      const refreshedGraph = await conversationGraphQuery.refetch();
+      if (refreshedGraph.error) throw refreshedGraph.error;
+      setStatus({
+        message: skipped ? eventRuntimeCopy.conversationSkipped :
+          eventRuntimeCopy.conversationSaved,
+        tone: "is-success",
+      });
+    }).catch(() => undefined);
+  }
+
   function hydrateProfile(next: EventRuntimeBootstrap) {
     const profile = next.participant?.runtimeProfile;
     if (!profile) return;
@@ -506,6 +683,15 @@ export function useEventRuntimeController(publicRuntimeId: string) {
     setPreferenceProfileEnabled(
       profile.gender !== null || profile.interestedInGenders.length > 0
     );
+    setPaceBand(profile.paceBand ?? null);
+    setSkillBand(profile.skillBand ?? null);
+    setDietaryAndSeatingNotes(profile.dietaryAndSeatingNotes ?? "");
+    setTeamName(profile.teamName ?? "");
+    setQuestionAnswers((current) => answerMapForIds(
+      resolveEventRuntimeQuestionnaire(next.event.questionnaireConfig).questions,
+      profile.questionnaireAnswerIds ?? [],
+      current
+    ));
   }
 
   return {
@@ -514,7 +700,11 @@ export function useEventRuntimeController(publicRuntimeId: string) {
     attendeeInviteLinkLoading: attendeeLinkMutation.isPending,
     code,
     completeFirstHello,
+    conversationGraph,
+    conversationGraphLoading,
     displayName,
+    dietaryAndSeatingNotes,
+    eventEnded,
     gender,
     handleCodeSubmit,
     handlePhoneSubmit,
@@ -524,6 +714,7 @@ export function useEventRuntimeController(publicRuntimeId: string) {
     liveState,
     metNewPeopleCount,
     pending,
+    paceBand,
     phoneNumber,
     publicRuntimeId,
     questionnaire,
@@ -533,30 +724,42 @@ export function useEventRuntimeController(publicRuntimeId: string) {
     offersPreferenceProfile,
     privateNote,
     preferenceProfileEnabled,
+    preEventConsent,
+    preEventFieldId,
     saveAsCatchPrefill,
     saveCompatibilityAnswers,
+    selectedConversationUids,
     shareEvent,
     selectQuestionAnswer,
     sensitiveConsent,
     setCode,
     setDisplayName,
+    setDietaryAndSeatingNotes,
     setGender,
     setPhoneNumber,
+    setPaceBand,
     setPreferenceProfileEnabled,
+    setPreEventConsent,
     setMetNewPeopleCount,
     setPrivateNote,
     setSaveAsCatchPrefill,
     setSensitiveConsent,
+    setSkillBand,
     setSafetyConcern,
     setStructureRating,
+    setTeamName,
     setWelcomeRating,
     setWingmanTargetUid,
     stage,
+    skillBand,
     startFirstHello,
     status,
     structureRating,
+    teamName,
     submitFeedback,
+    submitConversationGraph,
     submitWingmanRequest,
+    toggleConversationUid,
     toggleInterest,
     safetyConcern,
     welcomeRating,
@@ -577,23 +780,4 @@ function answerMapForIds(
     if (selected) next[question.id] = selected.id;
   }
   return next;
-}
-
-async function browserPosition(): Promise<{latitude: number | null; longitude: number | null}> {
-  if (!("geolocation" in navigator)) return {latitude: null, longitude: null};
-  try {
-    const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(resolve, reject, {
-        enableHighAccuracy: false,
-        maximumAge: 60_000,
-        timeout: 8_000,
-      });
-    });
-    return {
-      latitude: position.coords.latitude,
-      longitude: position.coords.longitude,
-    };
-  } catch {
-    return {latitude: null, longitude: null};
-  }
 }

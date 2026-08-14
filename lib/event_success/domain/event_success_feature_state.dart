@@ -16,6 +16,8 @@ enum EventSuccessSetupStatus {
   final String label;
 }
 
+enum EventSuccessConversationGraphConsentMode { optIn, optOut }
+
 class EventSuccessHostDraft {
   const EventSuccessHostDraft({
     required this.playbook,
@@ -28,6 +30,8 @@ class EventSuccessHostDraft {
     this.compatibilityAffectsRanking = false,
     this.questionnaireConfig =
         const EventSuccessQuestionnaireConfig.defaultTemplate(),
+    this.conversationGraphConsentMode =
+        EventSuccessConversationGraphConsentMode.optIn,
   }) : assert(targetAttendeeCount > 0);
 
   factory EventSuccessHostDraft.fromPlaybook(
@@ -91,6 +95,7 @@ class EventSuccessHostDraft {
   final bool contextualOpenersEnabled;
   final bool compatibilityAffectsRanking;
   final EventSuccessQuestionnaireConfig questionnaireConfig;
+  final EventSuccessConversationGraphConsentMode conversationGraphConsentMode;
 
   Set<String> get effectiveSelectedModuleIds =>
       playbook.effectiveModuleSelection(selectedModuleIds);
@@ -198,6 +203,7 @@ class EventSuccessHostDraft {
     bool? contextualOpenersEnabled,
     bool? compatibilityAffectsRanking,
     EventSuccessQuestionnaireConfig? questionnaireConfig,
+    EventSuccessConversationGraphConsentMode? conversationGraphConsentMode,
   }) {
     final resolvedPlaybook = playbook ?? this.playbook;
     final resolvedIds = selectedModuleIds ?? this.selectedModuleIds;
@@ -232,6 +238,8 @@ class EventSuccessHostDraft {
           canUseCompatibilityRanking &&
           (compatibilityAffectsRanking ?? this.compatibilityAffectsRanking),
       questionnaireConfig: questionnaireConfig ?? this.questionnaireConfig,
+      conversationGraphConsentMode:
+          conversationGraphConsentMode ?? this.conversationGraphConsentMode,
     );
   }
 
@@ -361,6 +369,7 @@ extension EventSuccessHostDraftPeopleMix on EventSuccessHostDraft {
 class EventSuccessLivePlan {
   const EventSuccessLivePlan({
     required this.playbook,
+    required this.durationShape,
     required this.steps,
     required this.activeStepIndex,
     required this.checkedInCount,
@@ -377,6 +386,7 @@ class EventSuccessLivePlan {
   }) {
     return EventSuccessLivePlan(
       playbook: draft.playbook,
+      durationShape: draft.playbook.durationShape,
       steps: draft.playbook.runOfShow,
       activeStepIndex: activeStepIndex.clamp(
         0,
@@ -388,6 +398,7 @@ class EventSuccessLivePlan {
   }
 
   final EventSuccessPlaybook playbook;
+  final EventSuccessDurationShape durationShape;
   final List<EventRunOfShowStep> steps;
   final int activeStepIndex;
   final int checkedInCount;

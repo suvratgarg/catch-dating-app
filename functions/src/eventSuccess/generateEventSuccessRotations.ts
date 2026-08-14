@@ -61,12 +61,15 @@ import {
   eventSuccessVariableResolutionFor,
 } from "./formatPrimitives";
 import {
-  activityAttributesForProfile,
   assignmentConstraintsForStructureConfig,
   AssignmentPrimitiveStructureConfig,
   rotationPolicyForStructureConfig,
 } from "./assignmentPrimitiveControls";
 import {loadEventSuccessRoster} from "./eventSuccessRoster";
+import {
+  eventSuccessPresencePolicy,
+  loadLikelyDepartedEventSuccessUids,
+} from "./presence";
 import {
   applyEventSuccessSpatialLayout,
   assignmentConstraintsForSpatialPlan,
@@ -90,6 +93,8 @@ interface EventSuccessRotationsDeps {
     uid: string,
     action: string
   ) => Promise<void>;
+  nowMillis?: () => number;
+  environment?: NodeJS.ProcessEnv;
 }
 
 interface EventSuccessPlanDocument {
@@ -229,6 +234,8 @@ const defaultDeps: EventSuccessRotationsDeps = {
   firestore: () => admin.firestore(),
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
   checkRateLimit: defaultCheckRateLimit,
+  nowMillis: () => Date.now(),
+  environment: process.env,
 };
 
 /**
@@ -295,7 +302,9 @@ export async function prepareEventSuccessRotationDraft(
     await loadEligibleRotationParticipants(
       db,
       input.eventId,
-      questionnaireMode !== "icebreaker"
+      questionnaireMode !== "icebreaker",
+      deps.nowMillis?.() ?? Date.now(),
+      eventSuccessPresencePolicy(deps.environment ?? process.env)
     );
   const topology = {
     ...resolveAssignmentTopology(plan, participants.length, {
@@ -408,7 +417,13 @@ export async function overrideEventSuccessRotationsHandler(
     throw staleLiveControlError();
   }
   const {participants, blockedPairs} =
-    await loadEligibleRotationParticipants(db, payload.eventId, false);
+    await loadEligibleRotationParticipants(
+      db,
+      payload.eventId,
+      false,
+      deps.nowMillis?.() ?? Date.now(),
+      eventSuccessPresencePolicy(deps.environment ?? process.env)
+    );
   const primitives = eventSuccessPrimitivesFor(event.eventFormat);
   const topology = {
     ...resolveAssignmentTopology(plan, participants.length, {
@@ -604,7 +619,9 @@ async function loadRotationEventContext(
 async function loadEligibleRotationParticipants(
   db: FirebaseFirestore.Firestore,
   eventId: string,
-  compatibilityAffectsRanking: boolean
+  compatibilityAffectsRanking: boolean,
+  nowMillis: number,
+  presencePolicy: ReturnType<typeof eventSuccessPresencePolicy>
 ): Promise<{
   participants: RotationParticipant[];
   blockedPairs: Set<string>;
@@ -615,7 +632,17 @@ async function loadEligibleRotationParticipants(
   ]);
   const activeEdges = roster
     .filter((participant) => !optedOutUids.has(participant.uid));
-  const eligibleEdges = preferCheckedInParticipants(activeEdges);
+  const preferredEdges = preferCheckedInParticipants(activeEdges);
+  const likelyDepartedUids = await loadLikelyDepartedEventSuccessUids({
+    db,
+    eventId,
+    eligibleUids: new Set(preferredEdges.map((participant) => participant.uid)),
+    nowMillis,
+    policy: presencePolicy,
+  });
+  const eligibleEdges = preferredEdges.filter(
+    (participant) => !likelyDepartedUids.has(participant.uid)
+  );
   let participants = eligibleEdges.map((participant): RotationParticipant => ({
     uid: participant.uid,
     status: participant.status,
@@ -623,7 +650,7 @@ async function loadEligibleRotationParticipants(
     interestedInGenders: participant.interestedInGenders,
     arrivalGroup: participant.arrivalGroup,
     compatibilityAnswerIds: [],
-    activityAttributes: activityAttributesForProfile(participant.profile),
+    activityAttributes: participant.activityAttributes,
   }));
   if (compatibilityAffectsRanking) {
     const answerIdsByUid = await fetchCompatibilityAnswerIdsByUid(db, eventId);

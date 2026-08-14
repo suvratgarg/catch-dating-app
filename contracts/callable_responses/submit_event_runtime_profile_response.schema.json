@@ -8,7 +8,7 @@
   "required": ["status", "requiredFieldIds", "completedFieldIds"],
   "properties": {
     "status": {"type": "string", "enum": ["needsInput", "ready"]},
-    "requiredFieldIds": {"type": "array", "items": {"type": "string"}, "maxItems": 5},
-    "completedFieldIds": {"type": "array", "items": {"type": "string"}, "maxItems": 5}
+    "requiredFieldIds": {"type": "array", "items": {"type": "string"}, "maxItems": 10},
+    "completedFieldIds": {"type": "array", "items": {"type": "string"}, "maxItems": 10}
   }
 }

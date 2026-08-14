@@ -67,6 +67,10 @@ import {
   eventAttendeeImportDocumentSchema,
   eventRosterHandoffDocumentSchema,
   eventRuntimeParticipantDocumentSchema,
+  eventVenueSessionDocumentSchema,
+  eventVenueSessionRedemptionDocumentSchema,
+  eventSuccessPresenceDocumentSchema,
+  eventSuccessLateArrivalDocumentSchema,
   eventRuntimeClaimRequestDocumentSchema,
   eventCrossPathsConsentDocumentSchema,
   crossPathsShowcaseEligibilityDocumentSchema,
@@ -76,6 +80,7 @@ import {
   eventBroadcastDocumentSchema,
   eventWaitlistOfferDocumentSchema,
   eventSuccessPlanDocumentSchema,
+  eventSuccessConversationGraphDocumentSchema,
   organizerEventSuccessLayoutDocumentSchema,
   eventSuccessAssignmentDraftDocumentSchema,
   eventSuccessFeedbackDocumentSchema,
@@ -236,12 +241,17 @@ import {
   eventSuccessSpatialActionCallablePayloadSchema,
   eventSuccessSpatialActionCallableResponseSchema,
   getEventRuntimeBootstrapCallableResponseSchema,
+  getEventSuccessConversationGraphCallableResponseSchema,
+  submitEventSuccessConversationGraphCallablePayloadSchema,
+  submitEventSuccessConversationGraphCallableResponseSchema,
   claimEventRuntimeAccessCallablePayloadSchema,
   claimEventRuntimeAccessCallableResponseSchema,
   submitEventRuntimeProfileCallablePayloadSchema,
   submitEventRuntimeProfileCallableResponseSchema,
   checkInEventRuntimeCallablePayloadSchema,
   checkInEventRuntimeCallableResponseSchema,
+  createEventVenueSessionCallablePayloadSchema,
+  createEventVenueSessionCallableResponseSchema,
   approveEventRuntimeClaimCallablePayloadSchema,
   approveEventRuntimeClaimCallableResponseSchema,
   createEventRosterHandoffCallablePayloadSchema,
@@ -268,8 +278,14 @@ import {
   prepareEventSuccessRotationDraftCallablePayloadSchema,
   publishEventSuccessRotationRoundCallablePayloadSchema,
   eventSuccessLiveActionCallablePayloadSchema,
+  setEventSuccessAccountabilityResolutionCallablePayloadSchema,
   recordEventSuccessUnitOutcomesCallablePayloadSchema,
   recordEventSuccessUnitOutcomesCallableResponseSchema,
+  heartbeatEventSuccessPresenceCallablePayloadSchema,
+  heartbeatEventSuccessPresenceCallableResponseSchema,
+  getEventSuccessPresenceSummaryCallableResponseSchema,
+  resolveEventSuccessLateArrivalCallablePayloadSchema,
+  resolveEventSuccessLateArrivalCallableResponseSchema,
   overrideEventSuccessGroupsCallablePayloadSchema,
   submitEventSuccessWingmanRequestCallablePayloadSchema,
   startEventSuccessFirstHelloMissionCallablePayloadSchema,
@@ -430,6 +446,10 @@ export const validateEventAttendeeAttendanceReceiptDocument = ajv.compile(eventA
 export const validateEventAttendeeImportDocument = ajv.compile(eventAttendeeImportDocumentSchema);
 export const validateEventRosterHandoffDocument = ajv.compile(eventRosterHandoffDocumentSchema);
 export const validateEventRuntimeParticipantDocument = ajv.compile(eventRuntimeParticipantDocumentSchema);
+export const validateEventVenueSessionDocument = ajv.compile(eventVenueSessionDocumentSchema);
+export const validateEventVenueSessionRedemptionDocument = ajv.compile(eventVenueSessionRedemptionDocumentSchema);
+export const validateEventSuccessPresenceDocument = ajv.compile(eventSuccessPresenceDocumentSchema);
+export const validateEventSuccessLateArrivalDocument = ajv.compile(eventSuccessLateArrivalDocumentSchema);
 export const validateEventRuntimeClaimRequestDocument = ajv.compile(eventRuntimeClaimRequestDocumentSchema);
 export const validateEventCrossPathsConsentDocument = ajv.compile(eventCrossPathsConsentDocumentSchema);
 export const validateCrossPathsShowcaseEligibilityDocument = ajv.compile(crossPathsShowcaseEligibilityDocumentSchema);
@@ -439,6 +459,7 @@ export const validateCrossPathsPairHoldDocument = ajv.compile(crossPathsPairHold
 export const validateEventBroadcastDocument = ajv.compile(eventBroadcastDocumentSchema);
 export const validateEventWaitlistOfferDocument = ajv.compile(eventWaitlistOfferDocumentSchema);
 export const validateEventSuccessPlanDocument = ajv.compile(eventSuccessPlanDocumentSchema);
+export const validateEventSuccessConversationGraphDocument = ajv.compile(eventSuccessConversationGraphDocumentSchema);
 export const validateOrganizerEventSuccessLayoutDocument = ajv.compile(organizerEventSuccessLayoutDocumentSchema);
 export const validateEventSuccessAssignmentDraftDocument = ajv.compile(eventSuccessAssignmentDraftDocumentSchema);
 export const validateEventSuccessFeedbackDocument = ajv.compile(eventSuccessFeedbackDocumentSchema);
@@ -599,12 +620,17 @@ export const validateGetEventSuccessSpatialLayoutCallableResponse = ajv.compile(
 export const validateEventSuccessSpatialActionCallablePayload = ajv.compile(eventSuccessSpatialActionCallablePayloadSchema);
 export const validateEventSuccessSpatialActionCallableResponse = ajv.compile(eventSuccessSpatialActionCallableResponseSchema);
 export const validateGetEventRuntimeBootstrapCallableResponse = ajv.compile(getEventRuntimeBootstrapCallableResponseSchema);
+export const validateGetEventSuccessConversationGraphCallableResponse = ajv.compile(getEventSuccessConversationGraphCallableResponseSchema);
+export const validateSubmitEventSuccessConversationGraphCallablePayload = ajv.compile(submitEventSuccessConversationGraphCallablePayloadSchema);
+export const validateSubmitEventSuccessConversationGraphCallableResponse = ajv.compile(submitEventSuccessConversationGraphCallableResponseSchema);
 export const validateClaimEventRuntimeAccessCallablePayload = ajv.compile(claimEventRuntimeAccessCallablePayloadSchema);
 export const validateClaimEventRuntimeAccessCallableResponse = ajv.compile(claimEventRuntimeAccessCallableResponseSchema);
 export const validateSubmitEventRuntimeProfileCallablePayload = ajv.compile(submitEventRuntimeProfileCallablePayloadSchema);
 export const validateSubmitEventRuntimeProfileCallableResponse = ajv.compile(submitEventRuntimeProfileCallableResponseSchema);
 export const validateCheckInEventRuntimeCallablePayload = ajv.compile(checkInEventRuntimeCallablePayloadSchema);
 export const validateCheckInEventRuntimeCallableResponse = ajv.compile(checkInEventRuntimeCallableResponseSchema);
+export const validateCreateEventVenueSessionCallablePayload = ajv.compile(createEventVenueSessionCallablePayloadSchema);
+export const validateCreateEventVenueSessionCallableResponse = ajv.compile(createEventVenueSessionCallableResponseSchema);
 export const validateApproveEventRuntimeClaimCallablePayload = ajv.compile(approveEventRuntimeClaimCallablePayloadSchema);
 export const validateApproveEventRuntimeClaimCallableResponse = ajv.compile(approveEventRuntimeClaimCallableResponseSchema);
 export const validateCreateEventRosterHandoffCallablePayload = ajv.compile(createEventRosterHandoffCallablePayloadSchema);
@@ -631,8 +657,14 @@ export const validateOverrideEventSuccessRotationsCallablePayload = ajv.compile(
 export const validatePrepareEventSuccessRotationDraftCallablePayload = ajv.compile(prepareEventSuccessRotationDraftCallablePayloadSchema);
 export const validatePublishEventSuccessRotationRoundCallablePayload = ajv.compile(publishEventSuccessRotationRoundCallablePayloadSchema);
 export const validateEventSuccessLiveActionCallablePayload = ajv.compile(eventSuccessLiveActionCallablePayloadSchema);
+export const validateSetEventSuccessAccountabilityResolutionCallablePayload = ajv.compile(setEventSuccessAccountabilityResolutionCallablePayloadSchema);
 export const validateRecordEventSuccessUnitOutcomesCallablePayload = ajv.compile(recordEventSuccessUnitOutcomesCallablePayloadSchema);
 export const validateRecordEventSuccessUnitOutcomesCallableResponse = ajv.compile(recordEventSuccessUnitOutcomesCallableResponseSchema);
+export const validateHeartbeatEventSuccessPresenceCallablePayload = ajv.compile(heartbeatEventSuccessPresenceCallablePayloadSchema);
+export const validateHeartbeatEventSuccessPresenceCallableResponse = ajv.compile(heartbeatEventSuccessPresenceCallableResponseSchema);
+export const validateGetEventSuccessPresenceSummaryCallableResponse = ajv.compile(getEventSuccessPresenceSummaryCallableResponseSchema);
+export const validateResolveEventSuccessLateArrivalCallablePayload = ajv.compile(resolveEventSuccessLateArrivalCallablePayloadSchema);
+export const validateResolveEventSuccessLateArrivalCallableResponse = ajv.compile(resolveEventSuccessLateArrivalCallableResponseSchema);
 export const validateOverrideEventSuccessGroupsCallablePayload = ajv.compile(overrideEventSuccessGroupsCallablePayloadSchema);
 export const validateSubmitEventSuccessWingmanRequestCallablePayload = ajv.compile(submitEventSuccessWingmanRequestCallablePayloadSchema);
 export const validateStartEventSuccessFirstHelloMissionCallablePayload = ajv.compile(startEventSuccessFirstHelloMissionCallablePayloadSchema);

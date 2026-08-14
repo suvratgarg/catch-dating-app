@@ -478,6 +478,23 @@ function eventSuccessFeedback(overrides = {}) {
   };
 }
 
+function eventSuccessConversationGraph(overrides = {}) {
+  return {
+    eventId: "event-1",
+    clubId: "club-1",
+    organizerId: "organizer-1",
+    uid: "runner-1",
+    status: "submitted",
+    selectedUids: ["runner-2"],
+    assignedSelectedCount: 1,
+    assignedCandidateCount: 2,
+    consentMode: "optIn",
+    createdAt: Timestamp.fromDate(new Date("2026-05-02T04:00:00.000Z")),
+    updatedAt: Timestamp.fromDate(new Date("2026-05-02T04:00:00.000Z")),
+    ...overrides,
+  };
+}
+
 function eventSuccessAssignment(overrides = {}) {
   return {
     eventId: "event-1",
@@ -1048,6 +1065,12 @@ describe("firestore.rules", () => {
           eventId: "event-1",
         }),
       );
+      await assertFails(
+        updateDoc(doc(authedDb("host-1"), "eventAttendees", "attendee-1"), {
+          accountabilityResolution: "departed",
+          accountabilityResolvedForCheckInAt: Timestamp.now(),
+        }),
+      );
     });
 
     it("limits event staff to one event's live operational surfaces", async () => {
@@ -1470,6 +1493,8 @@ describe("firestore.rules", () => {
         ["eventShareIntents", "intent-1"],
         ["eventInviteAttributions", "attribution-1"],
         ["eventAttendeeAttendanceReceipts", "receipt-1"],
+        ["eventVenueSessions", "session-1"],
+        ["eventVenueSessionRedemptions", "redemption-1"],
         ["organizerProviderConnections", "connection-1"],
         ["externalEventMappings", "mapping-1"],
         ["providerSyncRuns", "sync-1"],
@@ -2691,6 +2716,14 @@ describe("firestore.rules", () => {
         hostGoal: "Keep the event welcoming.",
         updatedAt: serverTimestamp(),
       }));
+      await assertSucceeds(updateDoc(planRef, {
+        conversationGraphConsentMode: "optOut",
+        updatedAt: serverTimestamp(),
+      }));
+      await assertFails(updateDoc(planRef, {
+        conversationGraphConsentMode: "preselectedForever",
+        updatedAt: serverTimestamp(),
+      }));
       await assertFails(updateDoc(planRef, {
         activeStepIndex: 1,
         status: "live",
@@ -3028,6 +3061,47 @@ describe("firestore.rules", () => {
       await assertFails(
         getDoc(doc(authedDb("runner-2"), "eventSuccessFeedback", "event-1_runner-1")),
       );
+    });
+
+    it("keeps conversation graph edges attendee-private and server-written", async () => {
+      await seed(["clubs", "club-1"], club());
+      await seed(["events", "event-1"], event());
+      await seed(
+        ["eventParticipations", "event-1_runner-1"],
+        eventParticipation({
+          status: "attended",
+          attendedAt: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
+        }),
+      );
+      await seed(
+        ["eventSuccessConversationGraphs", "event-1_runner-1"],
+        eventSuccessConversationGraph(),
+      );
+
+      await assertSucceeds(getDoc(doc(
+        authedDb("runner-1"),
+        "eventSuccessConversationGraphs",
+        "event-1_runner-1",
+      )));
+      await assertFails(getDoc(doc(
+        authedDb("runner-2"),
+        "eventSuccessConversationGraphs",
+        "event-1_runner-1",
+      )));
+      await assertFails(getDoc(doc(
+        authedDb("host-1"),
+        "eventSuccessConversationGraphs",
+        "event-1_runner-1",
+      )));
+      await assertFails(getDocs(query(
+        collection(authedDb("host-1"), "eventSuccessConversationGraphs"),
+        where("eventId", "==", "event-1"),
+      )));
+      await assertFails(setDoc(doc(
+        authedDb("runner-1"),
+        "eventSuccessConversationGraphs",
+        "event-1_runner-1",
+      ), eventSuccessConversationGraph()));
     });
 
     it("keeps event safety reports server-owned", async () => {
@@ -3562,6 +3636,68 @@ describe("firestore.rules", () => {
       await assertFails(setDoc(draftRef("host-1"), {
         eventId: "event-1",
       }));
+    });
+
+    it("keeps presence private and scopes late-arrival outcomes", async () => {
+      await seed(["clubs", "club-1"], club());
+      await seed(["events", "event-1"], event());
+      await seed(
+        ["eventParticipations", "event-1_runner-1"],
+        eventParticipation({status: "attended"}),
+      );
+      const timestamp = Timestamp.fromDate(
+        new Date("2026-05-02T01:45:00.000Z"),
+      );
+      await seed(["eventSuccessPresence", "event-1_runner-1"], {
+        eventId: "event-1",
+        clubId: "club-1",
+        organizerId: "club-1",
+        uid: "runner-1",
+        surface: "flutter",
+        heartbeatAt: timestamp,
+        createdAt: timestamp,
+        updatedAt: timestamp,
+      });
+      await seed(["eventSuccessLateArrivals", "event-1_runner-1"], {
+        eventId: "event-1",
+        clubId: "club-1",
+        organizerId: "club-1",
+        uid: "runner-1",
+        resolvedByUid: "host-1",
+        status: "heldForNextRound",
+        targetRoundIndex: 2,
+        assignmentDraftRevision: 4,
+        reason: "The prepared units are full. You will join the next round.",
+        createdAt: timestamp,
+        updatedAt: timestamp,
+      });
+
+      const presenceRef = (uid) => doc(
+        authedDb(uid),
+        "eventSuccessPresence",
+        "event-1_runner-1",
+      );
+      await assertFails(getDoc(presenceRef("runner-1")));
+      await assertFails(getDoc(presenceRef("host-1")));
+      await assertFails(setDoc(presenceRef("runner-1"), {
+        eventId: "event-1",
+      }));
+
+      const resolutionRef = (uid) => doc(
+        authedDb(uid),
+        "eventSuccessLateArrivals",
+        "event-1_runner-1",
+      );
+      await assertSucceeds(getDoc(resolutionRef("runner-1")));
+      await assertSucceeds(getDoc(resolutionRef("host-1")));
+      await assertFails(getDoc(resolutionRef("runner-2")));
+      await assertFails(setDoc(resolutionRef("host-1"), {
+        eventId: "event-1",
+      }));
+      await assertFails(getDocs(query(
+        collection(authedDb("host-1"), "eventSuccessLateArrivals"),
+        where("eventId", "==", "event-1"),
+      )));
     });
 
     it("keeps outcome facts Host-only and shares standings with participants", async () => {

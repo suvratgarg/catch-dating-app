@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/event_success_moment_presentations.g.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
@@ -734,9 +735,12 @@ class EventSuccessMomentPresentation {
     required this.privacyLine,
     required this.icon,
     required this.badgeTone,
+    required this.choreography,
     this.effectKind,
-    this.ambientBed = EventSuccessAmbientBed.theatrical,
-  });
+    EventSuccessAmbientBed? ambientBed,
+  }) : ambientBed =
+           ambientBed ??
+           _eventSuccessAmbientBedForId(choreography.ambientBedId);
 
   final String badgeLabel;
   final String headline;
@@ -744,6 +748,7 @@ class EventSuccessMomentPresentation {
   final String privacyLine;
   final IconData icon;
   final CatchBadgeTone badgeTone;
+  final EventSuccessMomentPresentationContract choreography;
   final EventSuccessLiveEffectKind? effectKind;
   final EventSuccessAmbientBed ambientBed;
 
@@ -757,6 +762,7 @@ class EventSuccessMomentPresentation {
     required bool eventEnded,
   }) {
     final step = moment.activeStep;
+    final choreography = eventSuccessMomentPresentationFor(moment.kind.name);
     return switch (moment.kind) {
       EventSuccessAttendeeMomentKind.preArrival => EventSuccessMomentPresentation(
         badgeLabel: l10n
@@ -771,6 +777,7 @@ class EventSuccessMomentPresentation {
             .eventSuccessEventSuccessCompanionScreenStateVisiblecopyPreEventDetailsStay,
         icon: CatchIcons.eventAvailableOutlined,
         badgeTone: CatchBadgeTone.brand,
+        choreography: choreography,
         effectKind: EventSuccessLiveEffectKind.liveEntry,
       ),
       EventSuccessAttendeeMomentKind.selfCheckIn => EventSuccessMomentPresentation(
@@ -784,6 +791,7 @@ class EventSuccessMomentPresentation {
             .eventSuccessEventSuccessCompanionScreenStateVisiblecopyCheckInOnlyUpdates,
         icon: CatchIcons.qrCode2Rounded,
         badgeTone: CatchBadgeTone.warning,
+        choreography: choreography,
         effectKind: EventSuccessLiveEffectKind.liveEntry,
       ),
       EventSuccessAttendeeMomentKind.firstHelloCheckIn =>
@@ -798,6 +806,7 @@ class EventSuccessMomentPresentation {
               .eventSuccessEventSuccessCompanionScreenStateVisiblecopyThisChecksYouIn,
           icon: CatchIcons.wavingHandOutlined,
           badgeTone: CatchBadgeTone.brand,
+          choreography: choreography,
           effectKind: EventSuccessLiveEffectKind.liveEntry,
         ),
       EventSuccessAttendeeMomentKind.compatibilityQuestionnaire =>
@@ -812,6 +821,7 @@ class EventSuccessMomentPresentation {
               .eventSuccessEventSuccessCompanionScreenStateVisiblecopyHostsDoNotSee,
           icon: CatchIcons.tuneRounded,
           badgeTone: CatchBadgeTone.brand,
+          choreography: choreography,
           effectKind: EventSuccessLiveEffectKind.liveEntry,
         ),
       EventSuccessAttendeeMomentKind.liveStepContext => EventSuccessMomentPresentation(
@@ -828,8 +838,8 @@ class EventSuccessMomentPresentation {
             .eventSuccessEventSuccessCompanionScreenStateVisiblecopyEveryoneSeesTheSame,
         icon: CatchIcons.locationOnOutlined,
         badgeTone: CatchBadgeTone.brand,
+        choreography: choreography,
         effectKind: EventSuccessLiveEffectKind.stepChange,
-        ambientBed: EventSuccessAmbientBed.pulse,
       ),
       EventSuccessAttendeeMomentKind.socialPrompt => EventSuccessMomentPresentation(
         badgeLabel:
@@ -844,8 +854,8 @@ class EventSuccessMomentPresentation {
             .eventSuccessEventSuccessCompanionScreenStateVisiblecopyPromptsAreSharedGuidance,
         icon: CatchIcons.chatBubbleOutlineRounded,
         badgeTone: CatchBadgeTone.brand,
+        choreography: choreography,
         effectKind: EventSuccessLiveEffectKind.stepChange,
-        ambientBed: EventSuccessAmbientBed.pulse,
       ),
       EventSuccessAttendeeMomentKind.conversationCues => EventSuccessMomentPresentation(
         badgeLabel:
@@ -860,8 +870,8 @@ class EventSuccessMomentPresentation {
             .eventSuccessEventSuccessCompanionScreenStateVisiblecopyConversationCuesAreSuggestions,
         icon: CatchIcons.forumOutlined,
         badgeTone: CatchBadgeTone.brand,
+        choreography: choreography,
         effectKind: EventSuccessLiveEffectKind.stepChange,
-        ambientBed: EventSuccessAmbientBed.pulse,
       ),
       EventSuccessAttendeeMomentKind.assignment => EventSuccessMomentPresentation(
         badgeLabel: l10n
@@ -873,8 +883,8 @@ class EventSuccessMomentPresentation {
             .eventSuccessEventSuccessCompanionScreenStateVisiblecopyOnlyYourOwnAssignment,
         icon: CatchIcons.groups2Outlined,
         badgeTone: CatchBadgeTone.success,
+        choreography: choreography,
         effectKind: EventSuccessLiveEffectKind.stepChange,
-        ambientBed: EventSuccessAmbientBed.pulse,
       ),
       EventSuccessAttendeeMomentKind.liveReveal => EventSuccessMomentPresentation(
         badgeLabel: l10n
@@ -886,10 +896,10 @@ class EventSuccessMomentPresentation {
             .eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourDetailsStayHidden,
         icon: CatchIcons.boltRounded,
         badgeTone: CatchBadgeTone.brand,
+        choreography: choreography,
         effectKind: _revealHeroEffect(plan),
         // Cinematic owns the soundscape during anticipation/climax; the bed
         // resumes from the next moment's vibe.
-        ambientBed: EventSuccessAmbientBed.silent,
       ),
       EventSuccessAttendeeMomentKind.wingmanRequest => EventSuccessMomentPresentation(
         badgeLabel: l10n
@@ -902,8 +912,8 @@ class EventSuccessMomentPresentation {
             .eventSuccessEventSuccessCompanionScreenStateVisiblecopyOnlyTheHostSees,
         icon: CatchIcons.volunteerActivismOutlined,
         badgeTone: CatchBadgeTone.brand,
+        choreography: choreography,
         effectKind: EventSuccessLiveEffectKind.stepChange,
-        ambientBed: EventSuccessAmbientBed.pulse,
       ),
       EventSuccessAttendeeMomentKind.postEvent => EventSuccessMomentPresentation(
         badgeLabel: l10n
@@ -916,8 +926,8 @@ class EventSuccessMomentPresentation {
             .eventSuccessEventSuccessCompanionScreenStateVisiblecopyThisRecapIsPrivate,
         icon: CatchIcons.nightlightRound,
         badgeTone: CatchBadgeTone.success,
+        choreography: choreography,
         effectKind: EventSuccessLiveEffectKind.guideComplete,
-        ambientBed: EventSuccessAmbientBed.sunrise,
       ),
       EventSuccessAttendeeMomentKind.none => EventSuccessMomentPresentation(
         badgeLabel: eventEnded
@@ -937,14 +947,26 @@ class EventSuccessMomentPresentation {
             .eventSuccessEventSuccessCompanionScreenStateVisiblecopyCatchOnlyShowsThe,
         icon: CatchIcons.eventOutlined,
         badgeTone: CatchBadgeTone.neutral,
+        choreography: choreography,
         effectKind: attended ? EventSuccessLiveEffectKind.liveEntry : null,
-        ambientBed: eventEnded
-            ? EventSuccessAmbientBed.sunrise
-            : EventSuccessAmbientBed.theatrical,
+        ambientBed: _eventSuccessAmbientBedForId(
+          eventEnded
+              ? choreography.ambientBedWhenEventEndedId ??
+                    choreography.ambientBedId
+              : choreography.ambientBedId,
+        ),
       ),
     };
   }
 }
+
+EventSuccessAmbientBed _eventSuccessAmbientBedForId(String id) => switch (id) {
+  'theatrical' => EventSuccessAmbientBed.theatrical,
+  'pulse' => EventSuccessAmbientBed.pulse,
+  'sunrise' => EventSuccessAmbientBed.sunrise,
+  'silent' => EventSuccessAmbientBed.silent,
+  _ => throw StateError('Unsupported Event Success ambient bed id: $id'),
+};
 
 List<PublicProfile> _wingmanCandidatesForViewer({
   required UserProfile viewer,

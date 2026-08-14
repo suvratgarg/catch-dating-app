@@ -56,6 +56,7 @@ import {
   validateEventSafetyReportDocument,
   validateEventSuccessAssignmentDocument,
   validateEventSuccessCompatibilityResponseDocument,
+  validateEventSuccessConversationGraphDocument,
   validateEventSuccessFeedbackDocument,
   validateEventSuccessPlanDocument,
   validateEventSuccessPreferenceDocument,
@@ -173,6 +174,10 @@ test("generated schema validators accept valid contract fixtures", () => {
     readFixture(
       "fixtures/valid/event_success_compatibility_response_doc.json"
     )
+  );
+  assertValid(
+    validateEventSuccessConversationGraphDocument as Validator,
+    readFixture("fixtures/valid/event_success_conversation_graph_doc.json")
   );
   assertValid(
     validateEventSuccessWingmanRequestDocument as Validator,

@@ -23,6 +23,18 @@ export interface EventSuccessScorecardDocument {
   averageStructureRating: number;
   safetyIncidentCount: number;
   /**
+   * Host-visible aggregate conversation outcomes. Person-to-person edges remain in attendee-private documents.
+   */
+  conversationGraph?: {
+    responseCount: number;
+    skippedCount: number;
+    conversationCount: number;
+    attendeesWithTwoPlusConversations: number;
+    excludedAttendeeCount: number;
+    assignedConversationCount: number;
+    assignedOpportunityCount: number;
+  };
+  /**
    * Host-visible operating funnel from acquisition through connection. Counts are aggregate-only and rebuilt from canonical documents.
    */
   funnel: {

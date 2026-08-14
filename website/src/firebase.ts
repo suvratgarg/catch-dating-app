@@ -11,11 +11,28 @@ import type {CreateEventInviteLinkCallablePayload} from "../../functions/src/sha
 import type {CreatePublicOrganizerReviewCallablePayload} from "../../functions/src/shared/generated/createPublicOrganizerReviewCallablePayload";
 import type {CreatePublicOrganizerReviewCallableResponse} from "../../functions/src/shared/generated/createPublicOrganizerReviewCallableResponse";
 import type {EventSuccessAssignmentDocument} from "../../functions/src/shared/generated/eventSuccessAssignmentDocument";
+import type {EventSuccessLateArrivalDocument} from "../../functions/src/shared/generated/eventSuccessLateArrivalDocument";
 import type {EventSuccessStandingsDocument} from "../../functions/src/shared/generated/eventSuccessStandingsDocument";
+export {
+  deriveEventSuccessMomentSeed,
+  eventSuccessMomentPresentationCatalog,
+  eventSuccessMomentPresentationFor,
+  eventSuccessSocialMissionPromptFor,
+  resolveEventSuccessCeremonyTimeline,
+} from "../../functions/src/shared/generated/eventSuccessMomentPresentations";
+export type {
+  EventSuccessCeremonyTimeline,
+  EventSuccessMomentPresentationContract,
+  EventSuccessDisclosureLevel,
+  EventSuccessInteractionModel,
+  EventSuccessSocialMissionPromptContract,
+} from "../../functions/src/shared/generated/eventSuccessMomentPresentations";
 import type {EventIdCallablePayload} from "../../functions/src/shared/generated/eventIdCallablePayload";
 import type {FetchEventSuccessWingmanCandidatesCallableResponse} from "../../functions/src/shared/generated/fetchEventSuccessWingmanCandidatesCallableResponse";
 import type {GetEventRuntimeBootstrapCallablePayload} from "../../functions/src/shared/generated/getEventRuntimeBootstrapCallablePayload";
 import type {GetEventRuntimeBootstrapCallableResponse} from "../../functions/src/shared/generated/getEventRuntimeBootstrapCallableResponse";
+import type {GetEventSuccessConversationGraphCallableResponse} from "../../functions/src/shared/generated/getEventSuccessConversationGraphCallableResponse";
+import type {HeartbeatEventSuccessPresenceCallableResponse} from "../../functions/src/shared/generated/heartbeatEventSuccessPresenceCallableResponse";
 import type {ListPublicOrganizerReviewsCallablePayload} from "../../functions/src/shared/generated/listPublicOrganizerReviewsCallablePayload";
 import type {ListPublicOrganizerReviewsCallableResponse} from "../../functions/src/shared/generated/listPublicOrganizerReviewsCallableResponse";
 import type {RecordOrganizerAnalyticsEventCallablePayload} from "../../functions/src/shared/generated/recordOrganizerAnalyticsEventCallablePayload";
@@ -31,6 +48,8 @@ import type {RequestOrganizerClaimCallableResponse} from "../../functions/src/sh
 import type {StartEventSuccessFirstHelloMissionCallablePayload} from "../../functions/src/shared/generated/startEventSuccessFirstHelloMissionCallablePayload";
 import type {SubmitEventRuntimeProfileCallablePayload} from "../../functions/src/shared/generated/submitEventRuntimeProfileCallablePayload";
 import type {SubmitEventRuntimeProfileCallableResponse} from "../../functions/src/shared/generated/submitEventRuntimeProfileCallableResponse";
+import type {SubmitEventSuccessConversationGraphCallablePayload} from "../../functions/src/shared/generated/submitEventSuccessConversationGraphCallablePayload";
+import type {SubmitEventSuccessConversationGraphCallableResponse} from "../../functions/src/shared/generated/submitEventSuccessConversationGraphCallableResponse";
 import type {SubmitEventSuccessWingmanRequestCallablePayload} from "../../functions/src/shared/generated/submitEventSuccessWingmanRequestCallablePayload";
 import {
   appCheckSiteKey,
@@ -65,6 +84,8 @@ export type RecordOrganizerAnalyticsEventResponse =
 export type RegisterPublicEventPayload = RegisterPublicEventCallablePayload;
 export type RegisterPublicEventResponse = RegisterPublicEventCallableResponse;
 export type EventRuntimeBootstrap = GetEventRuntimeBootstrapCallableResponse;
+export type EventSuccessConversationGraph =
+  GetEventSuccessConversationGraphCallableResponse;
 export type EventInviteLanding = ResolveEventInviteLandingCallableResponse;
 
 export interface PublicEventPhoneVerification {
@@ -137,6 +158,7 @@ export interface EventRuntimeLiveState {
   compatibilityAnswerIds: string[];
   feedback: EventRuntimeFeedback | null;
   mission: EventRuntimeMission | null;
+  lateArrival: EventSuccessLateArrivalDocument | null;
   plan: EventRuntimePlanState | null;
   standings: EventSuccessStandingsDocument | null;
   wingmanTargetUid: string | null;
@@ -144,8 +166,12 @@ export interface EventRuntimeLiveState {
 
 export interface EventRuntimePlanState {
   attendeePrompt: string | null;
+  activeStepIndex: number;
   activeRevealRoundIndex: number;
   publishedRevealRoundIndex: number;
+  publishedRotationRoundIndex: number;
+  revealCountdownSeconds: number | null;
+  revealStartedAtMillis: number | null;
   revealStatus: "idle" | "countingDown" | "revealed";
   status: "setup" | "live" | "complete";
 }
@@ -200,6 +226,36 @@ export async function checkInEventRuntime(
 ): Promise<CheckInEventRuntimeCallableResponse> {
   return invokeWebsiteCallable(
     "checkInEventRuntime",
+    payload,
+    eventRuntimeFirebaseConfigured
+  );
+}
+
+export async function heartbeatEventRuntimePresence(
+  eventId: string
+): Promise<HeartbeatEventSuccessPresenceCallableResponse> {
+  return invokeWebsiteCallable(
+    "heartbeatEventSuccessPresence",
+    {eventId, surface: "web"},
+    eventRuntimeFirebaseConfigured
+  );
+}
+
+export async function getEventSuccessConversationGraph(
+  eventId: string
+): Promise<GetEventSuccessConversationGraphCallableResponse> {
+  return invokeWebsiteCallable(
+    "getEventSuccessConversationGraph",
+    {eventId},
+    eventRuntimeFirebaseConfigured
+  );
+}
+
+export async function submitEventSuccessConversationGraph(
+  payload: SubmitEventSuccessConversationGraphCallablePayload
+): Promise<SubmitEventSuccessConversationGraphCallableResponse> {
+  return invokeWebsiteCallable(
+    "submitEventSuccessConversationGraph",
     payload,
     eventRuntimeFirebaseConfigured
   );
@@ -300,6 +356,7 @@ export async function watchEventRuntimeLiveState(
     compatibilityAnswerIds: [],
     feedback: null,
     mission: null,
+    lateArrival: null,
     plan: null,
     standings: null,
     wingmanTargetUid: null,
@@ -334,18 +391,44 @@ export async function watchEventRuntimeLiveState(
     doc(runtime.firestore, "eventSuccessPlans", context.eventId),
     (snapshot) => {
       const data = snapshot.data();
+      const structureConfig = isRecord(data?.structureConfig) ?
+        data.structureConfig : null;
       state.plan = data ? {
         attendeePrompt: typeof data.attendeePrompt === "string" ?
           data.attendeePrompt : null,
+        activeStepIndex: Number.isInteger(data.activeStepIndex) ?
+          Number(data.activeStepIndex) : 0,
         activeRevealRoundIndex: Number.isInteger(data.activeRevealRoundIndex) ?
           Number(data.activeRevealRoundIndex) : 0,
         publishedRevealRoundIndex: Number.isInteger(data.publishedRevealRoundIndex) ?
           Number(data.publishedRevealRoundIndex) : -1,
+        publishedRotationRoundIndex: Number.isInteger(
+          data.publishedRotationRoundIndex
+        ) ? Number(data.publishedRotationRoundIndex) : -1,
+        revealCountdownSeconds: Number.isInteger(
+          structureConfig?.revealCountdownSeconds
+        ) ? Number(structureConfig?.revealCountdownSeconds) : null,
+        revealStartedAtMillis: eventRuntimeTimestampMillis(
+          data.revealStartedAt
+        ),
         revealStatus: data.revealStatus === "countingDown" ||
           data.revealStatus === "revealed" ? data.revealStatus : "idle",
         status: data.status === "live" || data.status === "complete" ?
           data.status : "setup",
       } : null;
+      emit();
+    },
+    (error) => onError(error)
+  ));
+  subscriptions.push(onSnapshot(
+    doc(
+      runtime.firestore,
+      "eventSuccessLateArrivals",
+      `${context.eventId}_${context.uid}`
+    ),
+    (snapshot) => {
+      state.lateArrival = snapshot.exists() ?
+        snapshot.data() as EventSuccessLateArrivalDocument : null;
       emit();
     },
     (error) => onError(error)
@@ -421,6 +504,26 @@ export async function watchEventRuntimeLiveState(
     (error) => onError(error)
   ));
   return () => subscriptions.forEach((unsubscribe) => unsubscribe());
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+export function eventRuntimeTimestampMillis(value: unknown): number | null {
+  if (!isRecord(value)) return null;
+  const toMillis = value.toMillis;
+  if (typeof toMillis === "function") {
+    const millis = Number(toMillis.call(value));
+    return Number.isFinite(millis) ? millis : null;
+  }
+  const seconds = value.seconds ?? value._seconds;
+  const nanoseconds = value.nanoseconds ?? value._nanoseconds ?? 0;
+  if (typeof seconds !== "number" || typeof nanoseconds !== "number") {
+    return null;
+  }
+  const millis = seconds * 1000 + Math.floor(nanoseconds / 1_000_000);
+  return Number.isFinite(millis) ? millis : null;
 }
 
 export async function saveEventRuntimeCompatibilityAnswers(

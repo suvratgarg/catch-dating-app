@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_venue_sessions.schema.json",
+  "title": "EventVenueSessionDocument",
+  "description": "Short-lived server-owned venue-presence authority shown only in the Host live QR.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventVenueSessions",
+  "x-firestore-path": "eventVenueSessions/{sessionId}",
+  "x-document-id-field": "sessionId",
+  "x-owner": "createEventVenueSession callable; no client reads or writes",
+  "required": ["eventId", "organizerId", "createdBy", "issuedAt", "expiresAt"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "createdBy": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "issuedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "expiresAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+  }
+}

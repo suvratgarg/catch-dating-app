@@ -105,6 +105,10 @@ service cloud.firestore {
       return eventId + '_' + uid;
     }
 
+    function eventSuccessConversationGraphDocId(eventId, uid) {
+      return eventId + '_' + uid;
+    }
+
     function eventSuccessPreferenceDocId(eventId, uid) {
       return eventId + '_' + uid;
     }
@@ -123,6 +127,10 @@ service cloud.firestore {
 
     function eventSuccessAssignmentDocId(eventId, moduleId, uid) {
       return eventId + '_' + moduleId + '_' + uid;
+    }
+
+    function eventSuccessLateArrivalDocId(eventId, uid) {
+      return eventId + '_' + uid;
     }
 
     function hasBlockBetween(uidA, uidB) {
@@ -1146,6 +1154,16 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Live venue-session authority and redemption receipts are callable-only.
+    // Printable join links never read or write either collection.
+    match /eventVenueSessions/{sessionId} {
+      allow read, write: if false;
+    }
+
+    match /eventVenueSessionRedemptions/{redemptionId} {
+      allow read, write: if false;
+    }
+
     // The no-download identity edge is private to the authenticated owner.
     // It is not a roster-list surface and every mutation is callable-owned.
     match /eventRuntimeParticipants/{participantId} {
@@ -1324,7 +1342,7 @@ service cloud.firestore {
           'eventId', 'clubId', 'playbookId', 'selectedModuleIds',
           'targetAttendeeCount', 'structureConfig', 'hostGoal', 'wingmanRequestsEnabled',
           'contextualOpenersEnabled', 'compatibilityAffectsRanking',
-          'questionnaireConfig',
+          'questionnaireConfig', 'conversationGraphConsentMode',
           'activeStepIndex', 'liveControlRevision',
           'assignmentDraftRevision', 'publishedRotationRoundIndex',
           'publishedRevealRoundIndex', 'status',
@@ -1358,6 +1376,10 @@ service cloud.firestore {
         && data.wingmanRequestsEnabled is bool
         && data.contextualOpenersEnabled is bool
         && optionalBool(data, 'compatibilityAffectsRanking')
+        && (
+          !hasField(data, 'conversationGraphConsentMode')
+          || data.conversationGraphConsentMode in ['optIn', 'optOut']
+        )
         && (
           !hasField(data, 'questionnaireConfig')
           || isValidEventSuccessQuestionnaireConfig(data.questionnaireConfig)
@@ -1569,7 +1591,8 @@ service cloud.firestore {
         'playbookId', 'selectedModuleIds', 'targetAttendeeCount',
         'structureConfig', 'hostGoal', 'wingmanRequestsEnabled',
         'contextualOpenersEnabled', 'compatibilityAffectsRanking',
-        'questionnaireConfig', 'attendeePrompt', 'updatedAt'
+        'questionnaireConfig', 'conversationGraphConsentMode',
+        'attendeePrompt', 'updatedAt'
       ]);
     }
 
@@ -1706,6 +1729,23 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    match /eventSuccessConversationGraphs/{graphId} {
+      allow get: if isAuthed()
+        && resource.data.keys().hasAll(['eventId', 'uid'])
+        && resource.data.eventId is string
+        && resource.data.uid == request.auth.uid
+        && graphId == eventSuccessConversationGraphDocId(
+          resource.data.eventId,
+          request.auth.uid
+        )
+        && hasCheckedInEventSuccessAccess(
+          resource.data.eventId,
+          request.auth.uid
+        );
+      allow list: if false;
+      allow create, update, delete: if false;
+    }
+
     match /eventSafetyReports/{reportId} {
       allow read, write: if false;
     }
@@ -1819,6 +1859,31 @@ service cloud.firestore {
         && resource.data.moduleId == 'guided_rotations'
         && isClubHostForEvent(resource.data.eventId);
       allow write: if false;
+    }
+
+    match /eventSuccessPresence/{presenceId} {
+      allow read, write: if false;
+    }
+
+    match /eventSuccessLateArrivals/{resolutionId} {
+      allow get: if isAuthed()
+        && resource.data.eventId is string
+        && resource.data.uid is string
+        && resolutionId == eventSuccessLateArrivalDocId(
+          resource.data.eventId,
+          resource.data.uid
+        )
+        && (
+          isClubHostForEvent(resource.data.eventId)
+          || (
+            resource.data.uid == request.auth.uid
+            && hasEventSuccessParticipantAccess(
+              resource.data.eventId,
+              request.auth.uid
+            )
+          )
+        );
+      allow list, write: if false;
     }
 
     match /eventSuccessUnitOutcomes/{eventId} {

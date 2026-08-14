@@ -17,12 +17,14 @@
         "startTimeMillis",
         "endTimeMillis",
         "locationName",
+        "checkedInCount",
         "runtimeTermsVersion",
         "moduleIds",
         "layout",
         "requiredFieldIds",
         "optionalFieldIds",
-        "questionnaireConfig"
+        "questionnaireConfig",
+        "interactionModel"
       ],
       "properties": {
         "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
@@ -31,12 +33,25 @@
         "startTimeMillis": {"type": "integer"},
         "endTimeMillis": {"type": "integer"},
         "locationName": {"type": "string", "minLength": 1, "maxLength": 240},
+        "checkedInCount": {"type": "integer", "minimum": 0},
         "runtimeTermsVersion": {"type": "string", "minLength": 1, "maxLength": 80},
         "moduleIds": {
           "type": "array",
           "uniqueItems": true,
           "maxItems": 24,
           "items": {"type": "string", "minLength": 1, "maxLength": 120}
+        },
+        "interactionModel": {
+          "type": "string",
+          "enum": [
+            "pacePods",
+            "pairedRotations",
+            "teamRotations",
+            "seatedTable",
+            "freeFormMixer",
+            "hostLedProgram",
+            "openFormat"
+          ]
         },
         "layout": {
           "anyOf": [
@@ -45,18 +60,18 @@
           ]
         },
         "requiredFieldIds": {
-          "description": "Fields that must be completed before event mode opens. Sensitive preference fields are never required for entry.",
+          "description": "Fields that must be completed before event mode opens: display name plus at most one server-selected pre-event payload. Optional preference fields are never required for entry.",
           "type": "array",
           "uniqueItems": true,
-          "maxItems": 5,
-          "items": {"type": "string", "enum": ["displayName", "gender", "interestedInGenders", "relationshipGoal", "dateOfBirth"]}
+          "maxItems": 10,
+          "items": {"type": "string", "enum": ["displayName", "gender", "interestedInGenders", "relationshipGoal", "dateOfBirth", "paceBand", "skillBand", "dietaryAndSeatingNotes", "questionnaireAnswerIds", "teamName"]}
         },
         "optionalFieldIds": {
           "description": "Plan-derived event-only answers the guest may provide to improve preference-aware suggestions. Guests may skip them and receive neutral assignments.",
           "type": "array",
           "uniqueItems": true,
-          "maxItems": 5,
-          "items": {"type": "string", "enum": ["displayName", "gender", "interestedInGenders", "relationshipGoal", "dateOfBirth"]}
+          "maxItems": 10,
+          "items": {"type": "string", "enum": ["displayName", "gender", "interestedInGenders", "relationshipGoal", "dateOfBirth", "paceBand", "skillBand", "dietaryAndSeatingNotes", "questionnaireAnswerIds", "teamName"]}
         },
         "questionnaireConfig": {
           "anyOf": [
@@ -97,17 +112,17 @@
             "requiredFieldIds": {
               "type": "array",
               "items": {"type": "string"},
-              "maxItems": 5
+              "maxItems": 10
             },
             "completedFieldIds": {
               "type": "array",
               "items": {"type": "string"},
-              "maxItems": 5
+              "maxItems": 10
             },
             "runtimeProfile": {
               "type": "object",
               "additionalProperties": false,
-              "required": ["displayName", "gender", "interestedInGenders", "relationshipGoal", "dateOfBirthMillis"],
+              "required": ["displayName", "gender", "interestedInGenders", "relationshipGoal", "dateOfBirthMillis", "paceBand", "skillBand", "dietaryAndSeatingNotes", "questionnaireAnswerIds", "teamName"],
               "properties": {
                 "displayName": {"type": "string", "minLength": 1, "maxLength": 120},
                 "gender": {"type": ["string", "null"], "enum": ["man", "woman", "nonBinary", "other", null]},
@@ -120,7 +135,17 @@
                   "type": ["string", "null"],
                   "enum": ["relationship", "casual", "marriage", "friendship", "unsure", null]
                 },
-                "dateOfBirthMillis": {"type": ["integer", "null"]}
+                "dateOfBirthMillis": {"type": ["integer", "null"]},
+                "paceBand": {"type": ["string", "null"], "enum": ["competitive", "fast", "moderate", "easy", null]},
+                "skillBand": {"type": ["string", "null"], "enum": ["beginner", "intermediate", "advanced", null]},
+                "dietaryAndSeatingNotes": {"type": ["string", "null"], "minLength": 1, "maxLength": 300},
+                "questionnaireAnswerIds": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "maxItems": 8,
+                  "items": {"type": "string", "minLength": 1, "maxLength": 120}
+                },
+                "teamName": {"type": ["string", "null"], "minLength": 1, "maxLength": 80}
               }
             }
           }

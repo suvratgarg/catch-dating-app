@@ -661,6 +661,23 @@ const model = {
             "rank"
           ]
         },
+        "eventSuccessAccountability": {
+          "type": "string",
+          "enum": [
+            "none",
+            "rollCall",
+            "sweep"
+          ]
+        },
+        "eventSuccessDurationShape": {
+          "type": "string",
+          "enum": [
+            "continuous",
+            "rounds",
+            "courses",
+            "segments"
+          ]
+        },
         "eventSuccessFormatPrimitives": {
           "type": "object",
           "additionalProperties": false,
@@ -683,6 +700,12 @@ const model = {
             },
             "unitOutcome": {
               "$ref": "#/definitions/eventSuccessUnitOutcome"
+            },
+            "accountability": {
+              "$ref": "#/definitions/eventSuccessAccountability"
+            },
+            "durationShape": {
+              "$ref": "#/definitions/eventSuccessDurationShape"
             }
           }
         },

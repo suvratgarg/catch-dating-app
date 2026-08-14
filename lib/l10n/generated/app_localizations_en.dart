@@ -707,6 +707,28 @@ class AppLocalizationsEn extends AppLocalizations {
       'Message to attendees';
 
   @override
+  String get eventSuccessEventSuccessSetupBodyTitleConversationCheckDefaults =>
+      'Conversation check defaults';
+
+  @override
+  String get eventSuccessEventSuccessSetupBodyLabelAskEveryoneToChoose =>
+      'Ask everyone to choose';
+
+  @override
+  String
+  get eventSuccessEventSuccessSetupBodyTextAssignedPeopleAppearFirstButNobodyIsSelected =>
+      'Assigned people appear first as suggestions, but nobody is selected.';
+
+  @override
+  String get eventSuccessEventSuccessSetupBodyLabelPreselectAssignedPeople =>
+      'Preselect assigned people';
+
+  @override
+  String
+  get eventSuccessEventSuccessSetupBodyTextAssignedPeopleStartSelectedAndCanBeRemoved =>
+      'Assigned people start selected; attendees can remove anyone before saving.';
+
+  @override
   String
   get eventSuccessEventSuccessSetupBodyPlaceholderSomethingAttendeesSeeBeforeTheEventKicksOff =>
       'Something attendees see before the event kicks off.';
@@ -733,6 +755,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventSuccessEventSuccessSetupBodyLabelReset => 'Reset';
+
+  @override
+  String get eventSuccessEventSuccessSetupBodyTitleFormat => 'Format';
+
+  @override
+  String get eventSuccessEventSuccessSetupBodyLabelCustomizeTools =>
+      'Customize';
+
+  @override
+  String get eventSuccessEventSuccessSetupBodyLabelDoneCustomizing => 'Done';
 
   @override
   String get eventSuccessEventSuccessSetupBodyTextMatchClueQuestions =>
@@ -2186,7 +2218,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostEventAttendancePanelBodyCheckInQr =>
-      'Show this code to attendees as they arrive.';
+      'Keep this live code on screen as attendees arrive. It refreshes automatically and cannot be printed for later check-in.';
 
   @override
   String get hostsHostEventAttendancePanelRuntimeShareLabel =>
@@ -2200,7 +2232,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String hostsHostEventAttendancePanelRuntimeShareText({
     required String runtimeUrl,
   }) {
-    return 'Open this link when you arrive to check in and join the Event Success experience: $runtimeUrl';
+    return 'Open this link to join the event companion. Scan the Host\'s live QR at the venue to check in: $runtimeUrl';
   }
 
   @override
@@ -4643,7 +4675,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String
   get eventSuccessEventSuccessCompanionLiveCardsTextLocationStillVerifiesThe =>
-      'Location still verifies the venue after the QR is scanned.';
+      'Only the Host\'s current live QR confirms venue presence. Printed and shared join codes cannot check you in.';
 
   @override
   String get eventSuccessEventSuccessCompanionLiveCardsMessageCopyOpener =>
@@ -4883,6 +4915,34 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventSuccessEventSuccessHostLiveSubtitleCloseWithOneSuggested =>
       'Close with one suggested first message after mutual matches.';
+
+  @override
+  String get eventSuccessEventSuccessHostLiveTitleGuestPresence =>
+      'Guest presence';
+
+  @override
+  String
+  get eventSuccessEventSuccessHostLiveSubtitlePresenceNeverChangesPublished =>
+      'Presence can update the next prepared round. Published rounds stay unchanged.';
+
+  @override
+  String eventSuccessEventSuccessHostLiveTextGuestsMayHaveLeft({
+    required int count,
+  }) {
+    return '$count guests may have left. Regenerate the next round before publishing?';
+  }
+
+  @override
+  String get eventSuccessEventSuccessHostLiveLabelRegenerateNextRound =>
+      'Regenerate next round';
+
+  @override
+  String get eventSuccessEventSuccessHostLiveTitleLateArrivals =>
+      'Late arrivals';
+
+  @override
+  String get eventSuccessEventSuccessHostLiveLabelPlaceNextRound =>
+      'Place next round';
 
   @override
   String get eventSuccessEventSuccessHostLiveTitleSupportingControls =>
@@ -5169,6 +5229,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventSuccessEventSuccessHostReportLabelFeedback => 'Feedback';
+
+  @override
+  String get eventSuccessEventSuccessHostReportLabelConversationExclusions =>
+      'Conversation exclusions';
+
+  @override
+  String
+  eventSuccessEventSuccessHostReportLabelConversationgraphresponsecountCheckedincountResponses({
+    required Object conversationGraphResponseCount,
+    required Object checkedInCount,
+  }) {
+    return '$conversationGraphResponseCount/$checkedInCount responses';
+  }
 
   @override
   String get eventSuccessEventSuccessHostReportLabelCaughtSomeone =>
@@ -7963,24 +8036,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'Ask your next partner what shot they are trying to improve.';
 
   @override
-  String get eventSuccessEventSuccessConversationCueCopyBodyAskWhatKindOf =>
-      'Ask what kind of ride they want to do next.';
-
-  @override
-  String get eventSuccessEventSuccessConversationCueCopyBodyAskWhatPartOf =>
-      'Ask what part of class helped them switch off.';
-
-  @override
-  String get eventSuccessEventSuccessConversationCueCopyBodyAskWhatLiftOr =>
-      'Ask what lift or movement they are working on right now.';
-
-  @override
   String get eventSuccessEventSuccessConversationCueCopyBodyAskWhichRoundThey =>
       'Ask which round they wanted more questions from.';
-
-  @override
-  String get eventSuccessEventSuccessConversationCueCopyBodyAskWhichStopThey =>
-      'Ask which stop they would come back to with friends.';
 
   @override
   String get eventSuccessEventSuccessConversationCueCopyBodyAskWhatDishThey =>
@@ -7995,25 +8052,31 @@ class AppLocalizationsEn extends AppLocalizations {
       'Ask what made them say yes to this event.';
 
   @override
-  String get eventSuccessEventSuccessConversationCueCopyTitleFirstLiveCue =>
-      'First live cue';
+  String get eventSuccessSocialMissionTitleLight => 'Easy start';
 
   @override
-  String
-  get eventSuccessEventSuccessConversationCueCopyBodySwapOnePracticalTip =>
-      'Swap one practical tip before the next round or cooldown.';
+  String get eventSuccessSocialMissionTitlePersonal => 'A little more personal';
 
   @override
-  String get eventSuccessEventSuccessConversationCueCopyBodyFindOnePersonYou =>
-      'Find one person you have not spoken to and ask one specific follow-up.';
+  String get eventSuccessSocialMissionTitleReflective => 'One level deeper';
 
   @override
-  String get eventSuccessEventSuccessConversationCueCopyTitleSecondTouch =>
-      'Second touch';
+  String get eventSuccessSocialMissionBodyPersonal =>
+      'Take turns sharing something you changed your mind about recently and what shifted it.';
 
   @override
-  String get eventSuccessEventSuccessConversationCueCopyVisiblecopyOptional =>
-      'Optional';
+  String get eventSuccessSocialMissionBodyReflective =>
+      'Take turns answering: what do you hope the people close to you understand about you?';
+
+  @override
+  String get eventSuccessSocialMissionLevelLight => 'Light disclosure';
+
+  @override
+  String get eventSuccessSocialMissionLevelPersonal => 'Personal disclosure';
+
+  @override
+  String get eventSuccessSocialMissionLevelReflective =>
+      'Reflective disclosure';
 
   @override
   String get eventSuccessEventSuccessConversationCueCopyBodyILikedTalkingOn =>
@@ -8024,27 +8087,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'Good game today. I am still thinking about that rally.';
 
   @override
-  String
-  get eventSuccessEventSuccessConversationCueCopyBodyThatSessionHadReal =>
-      'That session had real energy. What kind of ride do you usually like?';
-
-  @override
-  String get eventSuccessEventSuccessConversationCueCopyBodyThatClassWasA =>
-      'That class was a good reset. Do you usually go for flow or stretch?';
-
-  @override
-  String
-  get eventSuccessEventSuccessConversationCueCopyBodyNiceTrainingWithYou =>
-      'Nice training with you today. What are you building toward right now?';
-
-  @override
   String get eventSuccessEventSuccessConversationCueCopyBodyILikedBeingOn =>
       'I liked being on a quiz night with you. Which round was your favorite?';
-
-  @override
-  String
-  get eventSuccessEventSuccessConversationCueCopyBodyFunMeetingYouTonight =>
-      'Fun meeting you tonight. Which stop won for you?';
 
   @override
   String get eventSuccessEventSuccessConversationCueCopyBodyILikedMeetingYou =>
@@ -8371,6 +8415,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String
   get eventSuccessEventSuccessCompanionBodyScreenVisiblecopySelfCheckIn =>
       'self-check-in';
+
+  @override
+  String get eventSuccessEventSuccessCompanionBodyScreenTitleLateArrival =>
+      'Your next round';
 
   @override
   String get eventSuccessEventSuccessCompanionBodyScreenVisiblecopyFirstHello =>
@@ -10225,6 +10273,46 @@ class AppLocalizationsEn extends AppLocalizations {
     required String stage,
   }) {
     return 'Step $current of $total · $stage';
+  }
+
+  @override
+  String eventSuccessEventSuccessHostLiveLabelBeatNumber({
+    required int number,
+  }) {
+    return 'Beat $number';
+  }
+
+  @override
+  String eventSuccessEventSuccessHostLiveLabelRoundNumber({
+    required int number,
+  }) {
+    return 'Round $number';
+  }
+
+  @override
+  String get eventSuccessEventSuccessHostLiveLabelFirstCourse => 'First course';
+
+  @override
+  String get eventSuccessEventSuccessHostLiveLabelSecondCourse =>
+      'Second course';
+
+  @override
+  String get eventSuccessEventSuccessHostLiveLabelThirdCourse => 'Third course';
+
+  @override
+  String get eventSuccessEventSuccessHostLiveLabelFourthCourse =>
+      'Fourth course';
+
+  @override
+  String eventSuccessEventSuccessHostLiveLabelCourseNumber({
+    required int number,
+  }) {
+    return 'Course $number';
+  }
+
+  @override
+  String eventSuccessEventSuccessHostLiveLabelLegNumber({required int number}) {
+    return 'Leg $number';
   }
 
   @override
@@ -12911,4 +12999,53 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersNoAttendance => 'No checked-in events yet.';
+
+  @override
+  String get eventSuccessAccountabilityTitle => 'Return sweep';
+
+  @override
+  String get eventSuccessAccountabilitySubtitle =>
+      'Mark each checked-in guest as returned or departed. People may leave quietly; this is a safety aid, not a checkout requirement.';
+
+  @override
+  String eventSuccessAccountabilityProgress({
+    required int resolved,
+    required int total,
+  }) {
+    return '$resolved of $total marked';
+  }
+
+  @override
+  String get eventSuccessAccountabilityEmpty =>
+      'No checked-in guests to review.';
+
+  @override
+  String get eventSuccessAccountabilityUnresolved => 'Not marked';
+
+  @override
+  String get eventSuccessAccountabilityReturned => 'Returned';
+
+  @override
+  String get eventSuccessAccountabilityDeparted => 'Departed';
+
+  @override
+  String get eventSuccessAccountabilityWarningTitle =>
+      'Some guests aren’t marked yet';
+
+  @override
+  String eventSuccessAccountabilityWarningMessage({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count checked-in guests aren’t marked returned or departed.',
+      one: '1 checked-in guest isn’t marked returned or departed.',
+    );
+    return '$_temp0 People sometimes leave without checking out. Review the list if useful, or finish anyway.';
+  }
+
+  @override
+  String get eventSuccessAccountabilityReviewAction => 'Review sweep';
+
+  @override
+  String get eventSuccessAccountabilityFinishAnywayAction => 'Finish anyway';
 }

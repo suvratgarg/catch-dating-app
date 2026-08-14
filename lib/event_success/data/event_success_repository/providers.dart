@@ -8,6 +8,90 @@ EventSuccessRepository eventSuccessRepository(Ref ref) =>
     );
 
 @riverpod
+Stream<void> maintainEventSuccessPresence(Ref ref, String eventId) async* {
+  var disposed = false;
+  Timer? timer;
+  Completer<void>? waiting;
+  ref.onDispose(() {
+    disposed = true;
+    timer?.cancel();
+    if (waiting case final completer? when !completer.isCompleted) {
+      completer.complete();
+    }
+  });
+  Future<void> wait(Duration duration) {
+    waiting = Completer<void>();
+    timer = Timer(duration, waiting!.complete);
+    return waiting!.future;
+  }
+
+  while (!disposed) {
+    try {
+      final heartbeat = await ref
+          .read(eventSuccessRepositoryProvider)
+          .heartbeatPresence(eventId: eventId);
+      if (disposed) return;
+      yield null;
+      await wait(Duration(seconds: heartbeat.policy.heartbeatIntervalSeconds));
+    } catch (error, stackTrace) {
+      if (disposed) return;
+      logAppError(
+        error,
+        stackTrace: stackTrace,
+        context: const AppErrorContext(
+          operation: AppOperation.runtime,
+          action: 'maintain Event Success presence',
+          resource: 'event success presence heartbeat',
+        ),
+        logError: ref.read(errorLoggerProvider),
+      );
+      await wait(const Duration(seconds: 10));
+    }
+  }
+}
+
+@riverpod
+Stream<EventSuccessPresenceSummary> watchEventSuccessPresenceSummary(
+  Ref ref,
+  String eventId,
+) async* {
+  var disposed = false;
+  Timer? timer;
+  Completer<void>? waiting;
+  ref.onDispose(() {
+    disposed = true;
+    timer?.cancel();
+    if (waiting case final completer? when !completer.isCompleted) {
+      completer.complete();
+    }
+  });
+  Future<void> wait(Duration duration) {
+    waiting = Completer<void>();
+    timer = Timer(duration, waiting!.complete);
+    return waiting!.future;
+  }
+
+  while (!disposed) {
+    final summary = await ref
+        .read(eventSuccessRepositoryProvider)
+        .fetchPresenceSummary(eventId);
+    if (disposed) return;
+    yield summary;
+    await wait(Duration(seconds: summary.policy.heartbeatIntervalSeconds));
+  }
+}
+
+@riverpod
+Stream<EventSuccessLateArrivalResolution?>
+watchUserEventSuccessLateArrivalResolution(
+  Ref ref, {
+  required String eventId,
+  required String uid,
+}) => ref
+    .watch(eventSuccessRepositoryProvider)
+    .watchLateArrivalResolution(eventId: eventId, uid: uid);
+
+@riverpod
 Stream<EventSuccessPlan?> watchEventSuccessPlan(Ref ref, String eventId) =>
     ref.watch(eventSuccessRepositoryProvider).watchPlan(eventId);
 
@@ -176,6 +260,9 @@ String eventSuccessPeerUidsKey(List<String> uids) {
 EventSuccessScorecard _eventSuccessScorecardFromJson(
   Map<String, dynamic> json,
 ) {
+  final conversationGraph = json['conversationGraph'] is Map
+      ? Map<String, dynamic>.from(json['conversationGraph'] as Map)
+      : const <String, dynamic>{};
   return EventSuccessScorecard(
     bookedCount: _nonNegativeInt(json['bookedCount']),
     checkedInCount: _nonNegativeInt(json['checkedInCount']),
@@ -194,6 +281,25 @@ EventSuccessScorecard _eventSuccessScorecardFromJson(
     averageStructureRating: _rating(json['averageStructureRating']),
     safetyIncidentCount: _nonNegativeInt(json['safetyIncidentCount']),
     feedbackResponseCount: _nonNegativeInt(json['feedbackCount']),
+    conversationGraphResponseCount: _nonNegativeInt(
+      conversationGraph['responseCount'],
+    ),
+    conversationGraphSkippedCount: _nonNegativeInt(
+      conversationGraph['skippedCount'],
+    ),
+    conversationCount: _nonNegativeInt(conversationGraph['conversationCount']),
+    attendeesWithTwoPlusConversations: _nonNegativeInt(
+      conversationGraph['attendeesWithTwoPlusConversations'],
+    ),
+    conversationExcludedAttendeeCount: _nonNegativeInt(
+      conversationGraph['excludedAttendeeCount'],
+    ),
+    assignedConversationCount: _nonNegativeInt(
+      conversationGraph['assignedConversationCount'],
+    ),
+    assignedConversationOpportunityCount: _nonNegativeInt(
+      conversationGraph['assignedOpportunityCount'],
+    ),
     funnel: _eventSuccessHostFunnelFromJson(json['funnel']),
   );
 }

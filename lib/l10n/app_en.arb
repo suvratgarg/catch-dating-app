@@ -1468,6 +1468,41 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_setup_body"
   },
+  "eventSuccessEventSuccessSetupBodyTitleConversationCheckDefaults": "Conversation check defaults",
+  "@eventSuccessEventSuccessSetupBodyTitleConversationCheckDefaults": {
+    "description": "Host setting for the end-of-event conversation graph consent default.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_success_setup_body"
+  },
+  "eventSuccessEventSuccessSetupBodyLabelAskEveryoneToChoose": "Ask everyone to choose",
+  "@eventSuccessEventSuccessSetupBodyLabelAskEveryoneToChoose": {
+    "description": "Opt-in conversation graph mode label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_success_setup_body"
+  },
+  "eventSuccessEventSuccessSetupBodyTextAssignedPeopleAppearFirstButNobodyIsSelected": "Assigned people appear first as suggestions, but nobody is selected.",
+  "@eventSuccessEventSuccessSetupBodyTextAssignedPeopleAppearFirstButNobodyIsSelected": {
+    "description": "Opt-in conversation graph mode explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_success_setup_body"
+  },
+  "eventSuccessEventSuccessSetupBodyLabelPreselectAssignedPeople": "Preselect assigned people",
+  "@eventSuccessEventSuccessSetupBodyLabelPreselectAssignedPeople": {
+    "description": "Opt-out conversation graph mode label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_success_setup_body"
+  },
+  "eventSuccessEventSuccessSetupBodyTextAssignedPeopleStartSelectedAndCanBeRemoved": "Assigned people start selected; attendees can remove anyone before saving.",
+  "@eventSuccessEventSuccessSetupBodyTextAssignedPeopleStartSelectedAndCanBeRemoved": {
+    "description": "Opt-out conversation graph mode explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_success_setup_body"
+  },
   "eventSuccessEventSuccessSetupBodyPlaceholderSomethingAttendeesSeeBeforeTheEventKicksOff": "Something attendees see before the event kicks off.",
   "@eventSuccessEventSuccessSetupBodyPlaceholderSomethingAttendeesSeeBeforeTheEventKicksOff": {
     "description": "Product copy used by lib/event_success/presentation/event_success_setup_body.dart (placeholder).",
@@ -1514,6 +1549,27 @@
   "@eventSuccessEventSuccessSetupBodyLabelReset": {
     "description": "Product copy used by lib/event_success/presentation/event_success_setup_body.dart (label).",
     "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_success_setup_body"
+  },
+  "eventSuccessEventSuccessSetupBodyTitleFormat": "Format",
+  "@eventSuccessEventSuccessSetupBodyTitleFormat": {
+    "description": "Primary saved event-format row in Event Success setup.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_success_setup_body"
+  },
+  "eventSuccessEventSuccessSetupBodyLabelCustomizeTools": "Customize",
+  "@eventSuccessEventSuccessSetupBodyLabelCustomizeTools": {
+    "description": "Opens the advanced Event Success module controls after the format summary.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_success_setup_body"
+  },
+  "eventSuccessEventSuccessSetupBodyLabelDoneCustomizing": "Done",
+  "@eventSuccessEventSuccessSetupBodyLabelDoneCustomizing": {
+    "description": "Closes the Event Success module controls without changing their values.",
+    "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_setup_body"
   },
@@ -4410,7 +4466,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.widgets.host_event_attendance_panel"
   },
-  "hostsHostEventAttendancePanelBodyCheckInQr": "Show this code to attendees as they arrive.",
+  "hostsHostEventAttendancePanelBodyCheckInQr": "Keep this live code on screen as attendees arrive. It refreshes automatically and cannot be printed for later check-in.",
   "@hostsHostEventAttendancePanelBodyCheckInQr": {
     "description": "Supporting copy for the host attendee check-in QR disclosure.",
     "x-audience": "host",
@@ -4431,7 +4487,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.widgets.host_event_attendance_panel"
   },
-  "hostsHostEventAttendancePanelRuntimeShareText": "Open this link when you arrive to check in and join the Event Success experience: {runtimeUrl}",
+  "hostsHostEventAttendancePanelRuntimeShareText": "Open this link to join the event companion. Scan the Host''s live QR at the venue to check in: {runtimeUrl}",
   "@hostsHostEventAttendancePanelRuntimeShareText": {
     "description": "Message used when a host shares the no-download attendee runtime link.",
     "placeholders": {
@@ -8827,7 +8883,7 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.companion_parts.event_success_companion_live_cards"
   },
-  "eventSuccessEventSuccessCompanionLiveCardsTextLocationStillVerifiesThe": "Location still verifies the venue after the QR is scanned.",
+  "eventSuccessEventSuccessCompanionLiveCardsTextLocationStillVerifiesThe": "Only the Host''s current live QR confirms venue presence. Printed and shared join codes cannot check you in.",
   "@eventSuccessEventSuccessCompanionLiveCardsTextLocationStillVerifiesThe": {
     "description": "Product copy used by lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart (Text).",
     "x-audience": "consumer",
@@ -9224,6 +9280,49 @@
   "eventSuccessEventSuccessHostLiveSubtitleCloseWithOneSuggested": "Close with one suggested first message after mutual matches.",
   "@eventSuccessEventSuccessHostLiveSubtitleCloseWithOneSuggested": {
     "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (subtitle).",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessEventSuccessHostLiveTitleGuestPresence": "Guest presence",
+  "@eventSuccessEventSuccessHostLiveTitleGuestPresence": {
+    "description": "Title for the Host presence and late-arrival control.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessEventSuccessHostLiveSubtitlePresenceNeverChangesPublished": "Presence can update the next prepared round. Published rounds stay unchanged.",
+  "@eventSuccessEventSuccessHostLiveSubtitlePresenceNeverChangesPublished": {
+    "description": "Explains the immutable published-round boundary.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessEventSuccessHostLiveTextGuestsMayHaveLeft": "{count} guests may have left. Regenerate the next round before publishing?",
+  "@eventSuccessEventSuccessHostLiveTextGuestsMayHaveLeft": {
+    "description": "Host prompt when monitored guest heartbeats expire.",
+    "placeholders": {"count": {"type": "int"}},
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessEventSuccessHostLiveLabelRegenerateNextRound": "Regenerate next round",
+  "@eventSuccessEventSuccessHostLiveLabelRegenerateNextRound": {
+    "description": "Host action after reviewing likely departed guests.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessEventSuccessHostLiveTitleLateArrivals": "Late arrivals",
+  "@eventSuccessEventSuccessHostLiveTitleLateArrivals": {
+    "description": "Host late-arrival section title.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessEventSuccessHostLiveLabelPlaceNextRound": "Place next round",
+  "@eventSuccessEventSuccessHostLiveLabelPlaceNextRound": {
+    "description": "Host action to place or hold a late attendee.",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
@@ -9683,6 +9782,24 @@
   "eventSuccessEventSuccessHostReportLabelFeedback": "Feedback",
   "@eventSuccessEventSuccessHostReportLabelFeedback": {
     "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
+  },
+  "eventSuccessEventSuccessHostReportLabelConversationExclusions": "Conversation exclusions",
+  "@eventSuccessEventSuccessHostReportLabelConversationExclusions": {
+    "description": "Aggregate count of respondents who confirmed no conversations; no attendee edges are shown.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
+  },
+  "eventSuccessEventSuccessHostReportLabelConversationgraphresponsecountCheckedincountResponses": "{conversationGraphResponseCount}/{checkedInCount} responses",
+  "@eventSuccessEventSuccessHostReportLabelConversationgraphresponsecountCheckedincountResponses": {
+    "description": "Aggregate conversation graph response coverage for the host recap.",
+    "placeholders": {
+      "conversationGraphResponseCount": {},
+      "checkedInCount": {}
+    },
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
@@ -14694,36 +14811,8 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
   },
-  "eventSuccessEventSuccessConversationCueCopyBodyAskWhatKindOf": "Ask what kind of ride they want to do next.",
-  "@eventSuccessEventSuccessConversationCueCopyBodyAskWhatKindOf": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
-  },
-  "eventSuccessEventSuccessConversationCueCopyBodyAskWhatPartOf": "Ask what part of class helped them switch off.",
-  "@eventSuccessEventSuccessConversationCueCopyBodyAskWhatPartOf": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
-  },
-  "eventSuccessEventSuccessConversationCueCopyBodyAskWhatLiftOr": "Ask what lift or movement they are working on right now.",
-  "@eventSuccessEventSuccessConversationCueCopyBodyAskWhatLiftOr": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
-  },
   "eventSuccessEventSuccessConversationCueCopyBodyAskWhichRoundThey": "Ask which round they wanted more questions from.",
   "@eventSuccessEventSuccessConversationCueCopyBodyAskWhichRoundThey": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
-  },
-  "eventSuccessEventSuccessConversationCueCopyBodyAskWhichStopThey": "Ask which stop they would come back to with friends.",
-  "@eventSuccessEventSuccessConversationCueCopyBodyAskWhichStopThey": {
     "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
@@ -14750,41 +14839,22 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
   },
-  "eventSuccessEventSuccessConversationCueCopyTitleFirstLiveCue": "First live cue",
-  "@eventSuccessEventSuccessConversationCueCopyTitleFirstLiveCue": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (title).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
-  },
-  "eventSuccessEventSuccessConversationCueCopyBodySwapOnePracticalTip": "Swap one practical tip before the next round or cooldown.",
-  "@eventSuccessEventSuccessConversationCueCopyBodySwapOnePracticalTip": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
-  },
-  "eventSuccessEventSuccessConversationCueCopyBodyFindOnePersonYou": "Find one person you have not spoken to and ask one specific follow-up.",
-  "@eventSuccessEventSuccessConversationCueCopyBodyFindOnePersonYou": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
-  },
-  "eventSuccessEventSuccessConversationCueCopyTitleSecondTouch": "Second touch",
-  "@eventSuccessEventSuccessConversationCueCopyTitleSecondTouch": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (title).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
-  },
-  "eventSuccessEventSuccessConversationCueCopyVisiblecopyOptional": "Optional",
-  "@eventSuccessEventSuccessConversationCueCopyVisiblecopyOptional": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (visibleCopy).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
-  },
+  "eventSuccessSocialMissionTitleLight": "Easy start",
+  "@eventSuccessSocialMissionTitleLight": {"description": "Title for a light-disclosure social mission.", "x-audience": "consumer", "x-owner": "product", "x-surface": "event_success.presentation.social_missions"},
+  "eventSuccessSocialMissionTitlePersonal": "A little more personal",
+  "@eventSuccessSocialMissionTitlePersonal": {"description": "Title for a personal-disclosure social mission.", "x-audience": "consumer", "x-owner": "product", "x-surface": "event_success.presentation.social_missions"},
+  "eventSuccessSocialMissionTitleReflective": "One level deeper",
+  "@eventSuccessSocialMissionTitleReflective": {"description": "Title for a reflective-disclosure social mission.", "x-audience": "consumer", "x-owner": "product", "x-surface": "event_success.presentation.social_missions"},
+  "eventSuccessSocialMissionBodyPersonal": "Take turns sharing something you changed your mind about recently and what shifted it.",
+  "@eventSuccessSocialMissionBodyPersonal": {"description": "Reciprocal personal-disclosure social mission.", "x-audience": "consumer", "x-owner": "product", "x-surface": "event_success.presentation.social_missions"},
+  "eventSuccessSocialMissionBodyReflective": "Take turns answering: what do you hope the people close to you understand about you?",
+  "@eventSuccessSocialMissionBodyReflective": {"description": "Reciprocal reflective-disclosure social mission.", "x-audience": "consumer", "x-owner": "product", "x-surface": "event_success.presentation.social_missions"},
+  "eventSuccessSocialMissionLevelLight": "Light disclosure",
+  "@eventSuccessSocialMissionLevelLight": {"description": "Label for a light-disclosure social mission.", "x-audience": "consumer", "x-owner": "product", "x-surface": "event_success.presentation.social_missions"},
+  "eventSuccessSocialMissionLevelPersonal": "Personal disclosure",
+  "@eventSuccessSocialMissionLevelPersonal": {"description": "Label for a personal-disclosure social mission.", "x-audience": "consumer", "x-owner": "product", "x-surface": "event_success.presentation.social_missions"},
+  "eventSuccessSocialMissionLevelReflective": "Reflective disclosure",
+  "@eventSuccessSocialMissionLevelReflective": {"description": "Label for a reflective-disclosure social mission.", "x-audience": "consumer", "x-owner": "product", "x-surface": "event_success.presentation.social_missions"},
   "eventSuccessEventSuccessConversationCueCopyBodyILikedTalkingOn": "I liked talking on the run. Want to compare routes sometime?",
   "@eventSuccessEventSuccessConversationCueCopyBodyILikedTalkingOn": {
     "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
@@ -14799,36 +14869,8 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
   },
-  "eventSuccessEventSuccessConversationCueCopyBodyThatSessionHadReal": "That session had real energy. What kind of ride do you usually like?",
-  "@eventSuccessEventSuccessConversationCueCopyBodyThatSessionHadReal": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
-  },
-  "eventSuccessEventSuccessConversationCueCopyBodyThatClassWasA": "That class was a good reset. Do you usually go for flow or stretch?",
-  "@eventSuccessEventSuccessConversationCueCopyBodyThatClassWasA": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
-  },
-  "eventSuccessEventSuccessConversationCueCopyBodyNiceTrainingWithYou": "Nice training with you today. What are you building toward right now?",
-  "@eventSuccessEventSuccessConversationCueCopyBodyNiceTrainingWithYou": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
-  },
   "eventSuccessEventSuccessConversationCueCopyBodyILikedBeingOn": "I liked being on a quiz night with you. Which round was your favorite?",
   "@eventSuccessEventSuccessConversationCueCopyBodyILikedBeingOn": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
-  },
-  "eventSuccessEventSuccessConversationCueCopyBodyFunMeetingYouTonight": "Fun meeting you tonight. Which stop won for you?",
-  "@eventSuccessEventSuccessConversationCueCopyBodyFunMeetingYouTonight": {
     "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
@@ -15406,6 +15448,13 @@
   "eventSuccessEventSuccessCompanionBodyScreenVisiblecopySelfCheckIn": "self-check-in",
   "@eventSuccessEventSuccessCompanionBodyScreenVisiblecopySelfCheckIn": {
     "description": "Product copy used by lib/event_success/presentation/event_success_companion_body_screen.dart (visibleCopy).",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_success_companion_body_screen"
+  },
+  "eventSuccessEventSuccessCompanionBodyScreenTitleLateArrival": "Your next round",
+  "@eventSuccessEventSuccessCompanionBodyScreenTitleLateArrival": {
+    "description": "Attendee title for a Host-resolved late-arrival outcome.",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_body_screen"
@@ -18632,6 +18681,66 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
   },
+  "eventSuccessEventSuccessHostLiveLabelBeatNumber": "Beat {number}",
+  "@eventSuccessEventSuccessHostLiveLabelBeatNumber": {
+    "description": "Numbered transition label for a continuous run of show.",
+    "placeholders": {"number": {"type": "int"}},
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessEventSuccessHostLiveLabelRoundNumber": "Round {number}",
+  "@eventSuccessEventSuccessHostLiveLabelRoundNumber": {
+    "description": "Numbered transition label for a round-based run of show.",
+    "placeholders": {"number": {"type": "int"}},
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessEventSuccessHostLiveLabelFirstCourse": "First course",
+  "@eventSuccessEventSuccessHostLiveLabelFirstCourse": {
+    "description": "First transition label for a course-based run of show.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessEventSuccessHostLiveLabelSecondCourse": "Second course",
+  "@eventSuccessEventSuccessHostLiveLabelSecondCourse": {
+    "description": "Second transition label for a course-based run of show.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessEventSuccessHostLiveLabelThirdCourse": "Third course",
+  "@eventSuccessEventSuccessHostLiveLabelThirdCourse": {
+    "description": "Third transition label for a course-based run of show.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessEventSuccessHostLiveLabelFourthCourse": "Fourth course",
+  "@eventSuccessEventSuccessHostLiveLabelFourthCourse": {
+    "description": "Fourth transition label for a course-based run of show.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessEventSuccessHostLiveLabelCourseNumber": "Course {number}",
+  "@eventSuccessEventSuccessHostLiveLabelCourseNumber": {
+    "description": "Fallback numbered transition label for later courses.",
+    "placeholders": {"number": {"type": "int"}},
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessEventSuccessHostLiveLabelLegNumber": "Leg {number}",
+  "@eventSuccessEventSuccessHostLiveLabelLegNumber": {
+    "description": "Numbered transition label for a segmented run of show.",
+    "placeholders": {"number": {"type": "int"}},
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
   "eventSuccessControlRoomUpNext": "Up next",
   "@eventSuccessControlRoomUpNext": {
     "description": "Kicker above the next live-guide step in Control Room.",
@@ -21076,5 +21185,27 @@
   "hostCustomersEventHistory": "Past attendance",
   "@hostCustomersEventHistory": {"description": "Customer event history heading.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersNoAttendance": "No checked-in events yet.",
-  "@hostCustomersNoAttendance": {"description": "Customer with no checked-in event history.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"}
+  "@hostCustomersNoAttendance": {"description": "Customer with no checked-in event history.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "eventSuccessAccountabilityTitle": "Return sweep",
+  "@eventSuccessAccountabilityTitle": {"description": "Host accountability sweep heading.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.host"},
+  "eventSuccessAccountabilitySubtitle": "Mark each checked-in guest as returned or departed. People may leave quietly; this is a safety aid, not a checkout requirement.",
+  "@eventSuccessAccountabilitySubtitle": {"description": "Explains the non-alarmist accountability sweep boundary.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.host"},
+  "eventSuccessAccountabilityProgress": "{resolved} of {total} marked",
+  "@eventSuccessAccountabilityProgress": {"description": "Resolved attendee count in the Host sweep.", "placeholders": {"resolved": {"type": "int"}, "total": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.host"},
+  "eventSuccessAccountabilityEmpty": "No checked-in guests to review.",
+  "@eventSuccessAccountabilityEmpty": {"description": "Empty accountability sweep state.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.host"},
+  "eventSuccessAccountabilityUnresolved": "Not marked",
+  "@eventSuccessAccountabilityUnresolved": {"description": "Unresolved accountability choice.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.host"},
+  "eventSuccessAccountabilityReturned": "Returned",
+  "@eventSuccessAccountabilityReturned": {"description": "Returned accountability choice.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.host"},
+  "eventSuccessAccountabilityDeparted": "Departed",
+  "@eventSuccessAccountabilityDeparted": {"description": "Departed accountability choice.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.host"},
+  "eventSuccessAccountabilityWarningTitle": "Some guests aren’t marked yet",
+  "@eventSuccessAccountabilityWarningTitle": {"description": "Completion warning title for an unresolved sweep.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.host"},
+  "eventSuccessAccountabilityWarningMessage": "{count, plural, =1{1 checked-in guest isn’t marked returned or departed.} other{{count} checked-in guests aren’t marked returned or departed.}} People sometimes leave without checking out. Review the list if useful, or finish anyway.",
+  "@eventSuccessAccountabilityWarningMessage": {"description": "Normalizes quiet departures while warning before completion.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.host"},
+  "eventSuccessAccountabilityReviewAction": "Review sweep",
+  "@eventSuccessAccountabilityReviewAction": {"description": "Dismisses completion to review unresolved guests.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.host"},
+  "eventSuccessAccountabilityFinishAnywayAction": "Finish anyway",
+  "@eventSuccessAccountabilityFinishAnywayAction": {"description": "Acknowledges unresolved guests and completes the event.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.host"}
 }

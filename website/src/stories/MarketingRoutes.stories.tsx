@@ -27,9 +27,17 @@ import {
   Button,
   EventRuntimeForm,
   EventRuntimeFrame,
+  EventRuntimeKicker,
+  EventRuntimeLive,
+  EventRuntimeLiveHeader,
   EventRuntimePanel,
+  EventRuntimeStageMarquee,
   TextField,
 } from "../shared/ui/primitives";
+import {
+  deriveEventRuntimeMarqueeParticles,
+  eventRuntimeVisualAssetPath,
+} from "../features/eventRuntime/eventRuntimeMotion";
 
 const generatedOrganizerListing = requireListing("afterfly");
 
@@ -166,6 +174,44 @@ export const EventRuntimeShells: Story = {
     },
   },
   render: EventRuntime.render,
+};
+
+export const EventRuntimeMotionParity: Story = {
+  name: "Event runtime motion parity · anticipation midpoint",
+  parameters: {
+    a11y: {test: "error"},
+  },
+  render: () => (
+    <PageShell pageClassName="event-runtime-page">
+      <EventRuntimeFrame
+        brandLabel={eventRuntimeCopy.brand}
+        brandWord={eventRuntimeCopy.brandWord}
+        eventTitle="Event parity 2026"
+      >
+        <EventRuntimeLive
+          activityId="tennis"
+          background={(
+            <EventRuntimeStageMarquee
+              participantCount={24}
+              particles={deriveEventRuntimeMarqueeParticles(2_263_797_243, 72)}
+              phase="anticipation"
+              phaseProgress={0.5}
+              seedAngleTurns={2_263_797_243 / 0x1_0000_0000}
+              stageSource={eventRuntimeVisualAssetPath("pulse")}
+              sunriseSource={eventRuntimeVisualAssetPath("sunrise")}
+              tickProgress={0}
+            />
+          )}
+        >
+          <EventRuntimeLiveHeader badge={null}>
+            <EventRuntimeKicker>Live reveal</EventRuntimeKicker>
+            <h1>The room is watching together</h1>
+            <p>Everyone here sees this same server-clocked moment.</p>
+          </EventRuntimeLiveHeader>
+        </EventRuntimeLive>
+      </EventRuntimeFrame>
+    </PageShell>
+  ),
 };
 
 export const EventInvite: Story = {

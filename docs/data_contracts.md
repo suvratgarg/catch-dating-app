@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.21.0
-updated: 2026-08-13
+version: 1.25.0
+updated: 2026-08-14
 owner: recursive_audit_loop
 status: active
 ---
@@ -48,6 +48,28 @@ Read this before changing:
 Do not hand-edit generated outputs. Change the contract source, run the schema
 generator, and commit the generated diff.
 
+### Event Success Moment Presentation Contract
+
+`contracts/catalogs/event_success_moment_presentations.json` is the authored
+cross-runtime choreography source. It exhaustively covers every attendee moment
+kind and owns palette and motif ids, phase durations, tempo, idle-pulse period,
+particle density, the deterministic seed rule, server-clock reference, and
+ambient-bed ids. The schema generator rejects missing, duplicate, or unknown
+moments and fails closed when the live-reveal ceremony loses its countdown
+clock, positive phase durations, or particle field.
+
+The generator emits typed Dart into
+`lib/core/schema_contracts/generated/event_success_moment_presentations.g.dart`
+and TypeScript into
+`functions/src/shared/generated/eventSuccessMomentPresentations.ts`. Both
+outputs implement `fnv1a32-utf8-fields-v1` over event id, moment kind, reveal
+round, and server anchor, with an unambiguous byte separator. Both resolve the
+same anticipation, climax, settle, and completion boundaries. Live reveal uses
+the saved `structureConfig.revealCountdownSeconds`; the catalog's anticipation
+duration is only the legacy-document fallback, not a hard-coded client policy.
+The guest runtime may consume the ambient-bed id as choreography metadata but
+must not play per-attendee web audio.
+
 ### Event Success Format Primitives
 
 `contracts/shared/event_common.schema.json` owns the closed
@@ -55,12 +77,30 @@ generator, and commit the generated diff.
 `novelty`, `balance`, and `spread`) and the optional `matchingObjective` format
 primitive. The same source owns the closed `eventSuccessUnitOutcome` enum
 (`none`, `completion`, `score`, and `rank`) and its optional `unitOutcome`
-primitive. The schema generator projects those contracts into Functions, Dart,
+primitive, plus `eventSuccessAccountability` (`none`, `rollCall`, `sweep`) and
+its optional `accountability` primitive. The schema generator projects those contracts into Functions, Dart,
 and tool registries. Runtime resolution, including the profile-free `coverage`
 default, format-bound outcome defaults, and explicit unsupported assignment
 algorithms, is owned by the Event Success format resolver documented in
 `docs/event_success.md`; generated contract files must not encode a separate
 fallback.
+
+### Event Success Accountability Boundary
+
+`eventAttendees/{attendeeId}` carries optional Host-owned accountability fields:
+the `returned`/`departed` resolution, the exact `checkedInAt` timestamp it was
+resolved for, resolver identity, and server resolution time. A resolution is
+current only when its stored check-in timestamp exactly matches the row's
+current check-in. This includes Host-imported and unlinked operational guests
+without synthesizing a Catch UID.
+
+Direct attendee-row writes remain denied. The generated
+`setEventSuccessAccountabilityResolution` callable request accepts one current
+attendee and `returned`, `departed`, or `unresolved`; the Functions transaction
+validates organizer-manager authority, event identity, current check-in, and
+`accountability: sweep`. The live completion request separately carries
+`accountabilityAcknowledged` so an unresolved sweep warns by default but an
+explicit Host choice can still complete the event.
 
 ### Event Success Live-Control Boundary
 
@@ -86,6 +126,53 @@ callable request schemas under `contracts/callables/`. Every mutating request
 carries an expected revision, and reveal or rotation publication also carries
 explicit confirmation. The asynchronous draft trigger's bounded retry count is
 deployment configuration, not a persisted plan constant.
+
+### Event Success Presence And Late-Arrival Boundary
+
+`contracts/firestore/event_success_presence.schema.json` owns the server-only
+heartbeat record at `eventSuccessPresence/{eventId_uid}`. The document stores
+event/organizer/attendee identity, runtime surface, and server timestamps; it
+does not persist a presence enum. `present`, `idle`, and `likelyDeparted` are
+derived from the Functions server clock and the bounded deployment policy.
+Direct clients cannot read or write presence documents.
+
+The heartbeat request/response schemas and Host summary response under
+`contracts/callables/` and `contracts/callable_responses/` carry the active
+policy into Flutter and web. Defaults are a 30-second heartbeat, a 90-second
+present window, and a 300-second likely-departed threshold. Unmonitored
+attendees remain eligible; absence of a heartbeat is not departure evidence.
+
+`contracts/firestore/event_success_late_arrivals.schema.json` owns the
+deterministic Host resolution at `eventSuccessLateArrivals/{eventId_uid}`.
+`resolveEventSuccessLateArrival` carries explicit confirmation and an expected
+live revision. The transaction can change only the unpublished next-round
+assignment draft, increments its draft revision when changed, and records a
+bounded attendee-visible reason. It never writes
+`eventSuccessAssignments/{eventId_moduleId_uid}`. Rules allow only the subject
+attendee or event Host to get a resolution; collection queries and direct
+writes are denied.
+
+### Event Success Conversation Graph Boundary
+
+`contracts/firestore/event_success_conversation_graphs.schema.json` owns the
+attendee-private post-event response at
+`eventSuccessConversationGraphs/{eventId_uid}`. The server accepts a response
+only from a checked-in attendee after the event ends, filters the unified roster
+through the block boundary, and stores UID edges only in this private source.
+Rules allow only the subject attendee to get the deterministic document; Hosts,
+other attendees, collection queries, and every direct client write are denied.
+
+`eventSuccessPlans.conversationGraphConsentMode` is a closed `optIn` / `optOut`
+setup field. Missing and legacy values resolve to the reviewed `optIn` default,
+which suggests assigned attendees without selecting them. A Host may configure
+`optOut` before setup freezes; it preselects visible assigned attendees and
+still lets the attendee remove any or all selections or skip the response.
+
+The generated get/submit callable contracts expose the same roster-chip
+mechanism for every format while the backend derives only the prompt from
+interaction primitives. Raw edges never enter the Host projection.
+`eventSuccessScorecards.conversationGraph` contains numeric counts and
+exclusion totals only; no attendee identifier or name-to-name edge is present.
 
 ### Event Success Spatial Layout Boundary
 
@@ -455,6 +542,8 @@ Root-level edge/action documents are the source of truth for many-to-many state:
 | Unified Host operational roster row | `eventAttendees/{attendeeId}` |
 | Roster import audit and idempotency receipt | `eventAttendeeImports/{importId}` |
 | Private no-download Event Success identity | server-owned `eventRuntimeParticipants/{eventId_uid}` |
+| Short-lived Host venue authority | server-only `eventVenueSessions/{sessionId}` |
+| Per-attendee venue redemption | server-only `eventVenueSessionRedemptions/{sha256(eventId_sessionId_uid)}` |
 | Ambiguous or walk-in Event Success claim review | server-owned `eventRuntimeClaimRequests/{eventId_uid}` |
 | Organizer-scoped communication permission | server-only `organizerCommunicationPreferences/{organizerId_uid}` |
 | Organizer-scoped operational contact | server-only `organizerContacts/{contactId}` |
@@ -561,7 +650,10 @@ another provider (`externalCompanion`); its provider/source identifiers are
 provenance, not a claim that Catch owns or has synchronized the source event.
 `runtimeAccess.publicRuntimeId` is an opaque join identifier, never the event
 document id or a bearer authorization credential. The runtime bootstrap
-callable resolves it and returns only a bounded public event projection.
+callable resolves it and returns only a bounded public event projection. That
+projection includes non-negative aggregate `checkedInCount` for the anonymous
+co-presence visual; it does not include a roster, attendee identifiers, or
+per-attendee attendance state.
 
 `eventRuntimeParticipants/{eventId_uid}` is the private bridge between a
 Firebase phone-auth identity and an event-scoped operational attendee. It owns
@@ -571,6 +663,16 @@ Consumer `users/{uid}`, `publicProfiles/{uid}`, `eventParticipations/{eventId_ui
 dating match, or marketing grant. Clients may get only their own deterministic
 edge; list and direct writes are denied. Event Success modules authorize a
 `ready` runtime edge independently of the Consumer booking/network edge.
+
+Attendance authority is separate from runtime identity and joinability.
+`eventVenueSessions/{sessionId}` backs a short-lived signed token issued only to
+an organizer manager during the check-in window. The Host screen refreshes it
+before expiry. `eventVenueSessionRedemptions/{sha256(eventId_sessionId_uid)}`
+atomically binds one authenticated attendee to one displayed session and rejects
+replay by that attendee; different attendees may redeem the same live display.
+Both collections deny all direct client access and use `expiresAt` TTL. A static
+`publicRuntimeId` URL, printable event QR, or latitude/longitude claim carries no
+attendance authority.
 
 When the verified phone cannot be matched unambiguously, or when the event's
 walk-in policy requires review, the server writes

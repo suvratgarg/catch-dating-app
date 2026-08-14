@@ -5,8 +5,9 @@
   "description": "Checks a ready no-download participant into the linked operational attendee row.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["publicRuntimeId"],
+  "required": ["publicRuntimeId", "venueSessionToken"],
   "properties": {
-    "publicRuntimeId": {"type": "string", "pattern": "^[A-Za-z0-9_-]{20,80}$"}
+    "publicRuntimeId": {"type": "string", "pattern": "^[A-Za-z0-9_-]{20,80}$"},
+    "venueSessionToken": {"type": "string", "minLength": 64, "maxLength": 2048}
   }
 }

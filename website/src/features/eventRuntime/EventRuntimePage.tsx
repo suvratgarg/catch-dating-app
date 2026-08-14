@@ -1,13 +1,17 @@
+import {useEffect, useState} from "react";
 import {useParams} from "react-router";
 import {
   eventRuntimeCopy,
   eventRuntimeGenderOptions,
+  eventRuntimePaceBandOptions,
+  eventRuntimeSkillBandOptions,
 } from "../../content/eventRuntime";
 import {
   Button,
   ButtonLink,
   ChoiceChip,
   ChoiceChipGrid,
+  EventRuntimeArrivalRing,
   EventRuntimeAssignments,
   EventRuntimeConsent,
   EventRuntimeFieldset,
@@ -24,6 +28,7 @@ import {
   EventRuntimeProfileQuestions,
   EventRuntimeQuestionnaire,
   EventRuntimeRoomMap,
+  EventRuntimeStageMarquee,
   FormStatus,
   SelectField,
   TextAreaField,
@@ -32,13 +37,39 @@ import {
 import {useEventRuntimeController} from "./useEventRuntimeController";
 import {
   normalizeEventRuntimeLayoutUnits,
+  eventVenueSessionTokenFromFragment,
+  resolveEventRuntimeCeremony,
+  resolveEventRuntimeSocialMission,
   shouldRenderEventRuntimeRoomMap,
+  type EventRuntimeCeremony,
   visibleEventRuntimeStandingRound,
 } from "./eventRuntimeModel";
+import {
+  eventRuntimeActivityIdForPresentation,
+  eventRuntimeCeremonyTickMs,
+  eventRuntimeVisualAssetForMotif,
+  eventRuntimeVisualAssetPath,
+  resolveEventRuntimeMarqueeFrame,
+  resolveEventRuntimeStagePresentation,
+} from "./eventRuntimeMotion";
 
 export function EventRuntimePage() {
   const {publicRuntimeId = ""} = useParams<{publicRuntimeId: string}>();
-  const controller = useEventRuntimeController(publicRuntimeId);
+  const [venueSessionToken] = useState(() =>
+    eventVenueSessionTokenFromFragment(window.location.hash)
+  );
+  useEffect(() => {
+    if (!venueSessionToken) return;
+    window.history.replaceState(
+      null,
+      "",
+      `${window.location.pathname}${window.location.search}`
+    );
+  }, [venueSessionToken]);
+  const controller = useEventRuntimeController(
+    publicRuntimeId,
+    venueSessionToken
+  );
   const event = controller.bootstrap?.event ?? null;
 
   if (controller.stage === "loading") {
@@ -144,6 +175,19 @@ export function EventRuntimePage() {
               onChange={(event) => controller.setDisplayName(event.target.value)}
               value={controller.displayName}
             />
+            {controller.preEventFieldId ? (
+              <>
+                <PreEventProfileField controller={controller} />
+                <EventRuntimeConsent
+                  checked={controller.preEventConsent}
+                  onChange={(event) => controller.setPreEventConsent(
+                    event.target.checked
+                  )}
+                >
+                  {eventRuntimeCopy.preEventSensitiveConsent}
+                </EventRuntimeConsent>
+              </>
+            ) : null}
             {controller.offersPreferenceProfile ? (
               <>
                 <EventRuntimeConsent
@@ -190,11 +234,120 @@ export function EventRuntimePage() {
         </EventRuntimePanel>
       ) : null}
 
+      {controller.stage === "venue" ? (
+        <EventRuntimePanel
+          kicker={eventRuntimeCopy.venueKicker}
+          title={eventRuntimeCopy.venueTitle}
+          body={eventRuntimeCopy.venueBody}
+        >
+          <FormStatus status={controller.status} />
+        </EventRuntimePanel>
+      ) : null}
+
       {controller.stage === "runtime" && event ? (
         <LiveEventRuntime controller={controller} />
       ) : null}
     </EventRuntimeFrame>
   );
+}
+
+function PreEventProfileField({
+  controller,
+}: {
+  controller: ReturnType<typeof useEventRuntimeController>;
+}) {
+  switch (controller.preEventFieldId) {
+    case "paceBand":
+      return (
+        <EventRuntimeFieldset>
+          <legend>{eventRuntimeCopy.paceBandLabel}</legend>
+          <ChoiceChipGrid aria-label={eventRuntimeCopy.paceBandLabel}>
+            {eventRuntimePaceBandOptions.map((option) => (
+              <ChoiceChip
+                key={option.id}
+                onClick={() => controller.setPaceBand(option.id)}
+                selected={controller.paceBand === option.id}
+              >
+                {option.label}
+              </ChoiceChip>
+            ))}
+          </ChoiceChipGrid>
+        </EventRuntimeFieldset>
+      );
+    case "skillBand":
+      return (
+        <EventRuntimeFieldset>
+          <legend>{eventRuntimeCopy.skillBandLabel}</legend>
+          <ChoiceChipGrid aria-label={eventRuntimeCopy.skillBandLabel}>
+            {eventRuntimeSkillBandOptions.map((option) => (
+              <ChoiceChip
+                key={option.id}
+                onClick={() => controller.setSkillBand(option.id)}
+                selected={controller.skillBand === option.id}
+              >
+                {option.label}
+              </ChoiceChip>
+            ))}
+          </ChoiceChipGrid>
+        </EventRuntimeFieldset>
+      );
+    case "dietaryAndSeatingNotes":
+      return (
+        <TextAreaField
+          id="event-runtime-dietary-seating"
+          label={eventRuntimeCopy.dietaryAndSeatingLabel}
+          maxLength={300}
+          onChange={(event) => controller.setDietaryAndSeatingNotes(
+            event.target.value
+          )}
+          placeholder={eventRuntimeCopy.dietaryAndSeatingPlaceholder}
+          rows={3}
+          value={controller.dietaryAndSeatingNotes}
+        />
+      );
+    case "questionnaireAnswerIds":
+      return (
+        <EventRuntimeProfileQuestions>
+          <h3>{controller.questionnaire.title}</h3>
+          <p>{eventRuntimeCopy.preEventBody}</p>
+          <EventRuntimeQuestionnaire>
+            {controller.questionnaire.questions.map((question) => (
+              <EventRuntimeFieldset key={question.id}>
+                <legend>{question.prompt}</legend>
+                <ChoiceChipGrid aria-label={question.prompt}>
+                  {question.options.map((answer) => (
+                    <ChoiceChip
+                      key={answer.id}
+                      onClick={() => controller.selectQuestionAnswer(
+                        question.id,
+                        answer.id
+                      )}
+                      selected={controller.questionAnswers[question.id] ===
+                        answer.id}
+                    >
+                      {answer.label}
+                    </ChoiceChip>
+                  ))}
+                </ChoiceChipGrid>
+              </EventRuntimeFieldset>
+            ))}
+          </EventRuntimeQuestionnaire>
+        </EventRuntimeProfileQuestions>
+      );
+    case "teamName":
+      return (
+        <TextField
+          id="event-runtime-team-name"
+          label={eventRuntimeCopy.teamNameLabel}
+          maxLength={80}
+          onChange={(event) => controller.setTeamName(event.target.value)}
+          placeholder={eventRuntimeCopy.teamNamePlaceholder}
+          value={controller.teamName}
+        />
+      );
+    case null:
+      return null;
+  }
 }
 
 function CompatibilityProfileFields({
@@ -248,6 +401,7 @@ function LiveEventRuntime({
   controller: ReturnType<typeof useEventRuntimeController>;
 }) {
   const event = controller.bootstrap!.event;
+  const plan = controller.liveState.plan;
   const modules = new Set(event.moduleIds);
   const mission = controller.liveState.mission;
   const revealBlocked = modules.has("live_reveal") &&
@@ -257,9 +411,40 @@ function LiveEventRuntime({
     controller.liveState.plan,
     standings
   );
+  const lateArrival = controller.liveState.lateArrival;
+  const showLateArrival = lateArrival !== null &&
+    lateArrival.targetRoundIndex >
+      (plan?.publishedRotationRoundIndex ?? -1);
+  const presentation = resolveEventRuntimeStagePresentation(controller.liveState);
+  const theatricalSource = eventRuntimeVisualAssetPath("theatrical");
+  const socialMission = modules.has("social_missions") ?
+    resolveEventRuntimeSocialMission(
+      event.interactionModel,
+      plan?.activeStepIndex ?? 0
+    ) : null;
   return (
-    <EventRuntimeLive>
-      <EventRuntimeLiveHeader badge={eventRuntimeCopy.checkedIn}>
+    <EventRuntimeLive
+      activityId={eventRuntimeActivityIdForPresentation(
+        presentation,
+        plan?.revealStatus ?? "idle"
+      )}
+      background={(
+        <EventRuntimeLiveMotion
+          ceremony={resolveEventRuntimeCeremony(event.eventId, plan)}
+          checkedInCount={event.checkedInCount}
+          motifId={presentation.motifId}
+          revealStatus={plan?.revealStatus ?? "idle"}
+        />
+      )}
+    >
+      <EventRuntimeLiveHeader badge={(
+        <EventRuntimeArrivalRing
+          ariaLabel={eventRuntimeCopy.checkedInCount(event.checkedInCount)}
+          count={event.checkedInCount}
+          label={eventRuntimeCopy.checkedIn}
+          source={theatricalSource}
+        />
+      )}>
         <EventRuntimeKicker>{eventRuntimeCopy.runtimeEyebrow}</EventRuntimeKicker>
         <h1>{event.title}</h1>
         <p>{event.locationName} · {formatEventTime(event.startTimeMillis)}</p>
@@ -326,9 +511,22 @@ function LiveEventRuntime({
           ) : <p>{eventRuntimeCopy.assignmentEmpty}</p>}
       </EventRuntimeModule>
 
+      {showLateArrival ? (
+        <EventRuntimeModule title={eventRuntimeCopy.lateArrivalTitle}>
+          <p>{lateArrival.reason}</p>
+        </EventRuntimeModule>
+      ) : null}
+
       {controller.liveState.plan?.attendeePrompt ? (
         <EventRuntimeModule title={eventRuntimeCopy.hostPromptTitle}>
           <p>{controller.liveState.plan.attendeePrompt}</p>
+        </EventRuntimeModule>
+      ) : null}
+
+      {socialMission ? (
+        <EventRuntimeModule title={socialMission.title}>
+          <p>{socialMission.body}</p>
+          <small>{socialMission.disclosureLabel}</small>
         </EventRuntimeModule>
       ) : null}
 
@@ -426,7 +624,54 @@ function LiveEventRuntime({
         </EventRuntimeModule>
       ) : null}
 
-      {modules.has("decomposed_feedback") && Date.now() >= event.endTimeMillis ? (
+      {controller.eventEnded ? (
+        <EventRuntimeModule
+          title={controller.conversationGraph?.prompt ??
+            eventRuntimeCopy.conversationTitle}
+          accent="coral"
+        >
+          <p>{eventRuntimeCopy.conversationBody}</p>
+          {controller.conversationGraphLoading ? (
+            <p>{eventRuntimeCopy.conversationLoading}</p>
+          ) : controller.conversationGraph?.candidates.length ? (
+            <>
+              <ChoiceChipGrid aria-label={controller.conversationGraph.prompt}>
+                {controller.conversationGraph.candidates.map((candidate) => (
+                  <ChoiceChip
+                    key={candidate.uid}
+                    onClick={() => controller.toggleConversationUid(candidate.uid)}
+                    selected={controller.selectedConversationUids.includes(candidate.uid)}
+                  >
+                    {candidate.displayName}
+                    {candidate.assigned ?
+                      ` · ${eventRuntimeCopy.conversationSuggested}` : ""}
+                  </ChoiceChip>
+                ))}
+              </ChoiceChipGrid>
+              <Button
+                loading={controller.pending}
+                onClick={() => void controller.submitConversationGraph()}
+                type="button"
+              >
+                {eventRuntimeCopy.conversationSave}
+              </Button>
+              <Button
+                disabled={controller.pending}
+                onClick={() => void controller.submitConversationGraph(true)}
+                type="button"
+                variant="ghost"
+              >
+                {eventRuntimeCopy.conversationSkip}
+              </Button>
+            </>
+          ) : controller.conversationGraph ? (
+            <p>{eventRuntimeCopy.conversationEmpty}</p>
+          ) : null}
+          <small>{eventRuntimeCopy.conversationPrivacy}</small>
+        </EventRuntimeModule>
+      ) : null}
+
+      {modules.has("decomposed_feedback") && controller.eventEnded ? (
         <EventRuntimeModule title={eventRuntimeCopy.feedbackTitle}>
           <p>{eventRuntimeCopy.feedbackBody}</p>
           <EventRuntimeForm onSubmit={(submitEvent) => {
@@ -477,6 +722,48 @@ function LiveEventRuntime({
       <FormStatus status={controller.status} />
       <EventRuntimePrivacy>{eventRuntimeCopy.privacyNote}</EventRuntimePrivacy>
     </EventRuntimeLive>
+  );
+}
+
+function EventRuntimeLiveMotion({
+  ceremony,
+  checkedInCount,
+  motifId,
+  revealStatus,
+}: {
+  ceremony: EventRuntimeCeremony | null;
+  checkedInCount: number;
+  motifId: string;
+  revealStatus: "idle" | "countingDown" | "revealed";
+}) {
+  const [ceremonyNowMillis, setCeremonyNowMillis] = useState(() => Date.now());
+  useEffect(() => {
+    if (!ceremony || revealStatus === "idle") return;
+    setCeremonyNowMillis(Date.now());
+    const interval = window.setInterval(
+      () => setCeremonyNowMillis(Date.now()),
+      eventRuntimeCeremonyTickMs
+    );
+    return () => window.clearInterval(interval);
+  }, [ceremony?.timeline.completesAtMillis, revealStatus]);
+  const frame = resolveEventRuntimeMarqueeFrame(
+    ceremony,
+    revealStatus,
+    ceremonyNowMillis
+  );
+  return (
+    <EventRuntimeStageMarquee
+      participantCount={checkedInCount}
+      particles={frame.particles}
+      phase={frame.phase}
+      phaseProgress={frame.phaseProgress}
+      seedAngleTurns={frame.seedAngleTurns}
+      stageSource={eventRuntimeVisualAssetPath(
+        eventRuntimeVisualAssetForMotif(motifId)
+      )}
+      sunriseSource={eventRuntimeVisualAssetPath("sunrise")}
+      tickProgress={frame.tickProgress}
+    />
   );
 }
 

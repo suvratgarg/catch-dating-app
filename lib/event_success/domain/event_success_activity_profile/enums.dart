@@ -53,4 +53,6 @@ enum EventSuccessMatchingObjective {
 
 enum EventSuccessUnitOutcome { none, completion, score, rank }
 
+enum EventSuccessAccountability { none, rollCall, sweep }
+
 enum EventSuccessAssignmentSupport { supported, unsupported }

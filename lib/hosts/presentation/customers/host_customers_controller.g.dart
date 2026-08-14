@@ -58,7 +58,7 @@ final class HostCustomersDirectoryControllerProvider
 }
 
 String _$hostCustomersDirectoryControllerHash() =>
-    r'5df82fc8d6b3474836d4e9992a37e2ca5e5766bf';
+    r'3eee98f7d7cc8408f3daf42a44989a8a86cb36df';
 
 final class HostCustomersDirectoryControllerFamily extends $Family
     with

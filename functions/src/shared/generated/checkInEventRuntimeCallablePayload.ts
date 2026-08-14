@@ -7,4 +7,5 @@
  */
 export interface CheckInEventRuntimeCallablePayload {
   publicRuntimeId: string;
+  venueSessionToken: string;
 }

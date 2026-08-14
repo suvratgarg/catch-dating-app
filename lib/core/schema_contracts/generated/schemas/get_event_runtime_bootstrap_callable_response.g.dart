@@ -26,12 +26,14 @@ const schemaGetEventRuntimeBootstrapCallableResponseSchema = <String, Object?>{
         'startTimeMillis',
         'endTimeMillis',
         'locationName',
+        'checkedInCount',
         'runtimeTermsVersion',
         'moduleIds',
         'layout',
         'requiredFieldIds',
         'optionalFieldIds',
         'questionnaireConfig',
+        'interactionModel',
       ],
       'properties': <String, Object?>{
         'eventId': <String, Object?>{
@@ -59,6 +61,10 @@ const schemaGetEventRuntimeBootstrapCallableResponseSchema = <String, Object?>{
           'minLength': 1,
           'maxLength': 240,
         },
+        'checkedInCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
         'runtimeTermsVersion': <String, Object?>{
           'type': 'string',
           'minLength': 1,
@@ -73,6 +79,18 @@ const schemaGetEventRuntimeBootstrapCallableResponseSchema = <String, Object?>{
             'minLength': 1,
             'maxLength': 120,
           },
+        },
+        'interactionModel': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'pacePods',
+            'pairedRotations',
+            'teamRotations',
+            'seatedTable',
+            'freeFormMixer',
+            'hostLedProgram',
+            'openFormat',
+          ],
         },
         'layout': <String, Object?>{
           'anyOf': <Object?>[
@@ -161,10 +179,10 @@ const schemaGetEventRuntimeBootstrapCallableResponseSchema = <String, Object?>{
           ],
         },
         'requiredFieldIds': <String, Object?>{
-          'description': 'Fields that must be completed before event mode opens. Sensitive preference fields are never required for entry.',
+          'description': 'Fields that must be completed before event mode opens: display name plus at most one server-selected pre-event payload. Optional preference fields are never required for entry.',
           'type': 'array',
           'uniqueItems': true,
-          'maxItems': 5,
+          'maxItems': 10,
           'items': <String, Object?>{
             'type': 'string',
             'enum': <Object?>[
@@ -173,6 +191,11 @@ const schemaGetEventRuntimeBootstrapCallableResponseSchema = <String, Object?>{
               'interestedInGenders',
               'relationshipGoal',
               'dateOfBirth',
+              'paceBand',
+              'skillBand',
+              'dietaryAndSeatingNotes',
+              'questionnaireAnswerIds',
+              'teamName',
             ],
           },
         },
@@ -180,7 +203,7 @@ const schemaGetEventRuntimeBootstrapCallableResponseSchema = <String, Object?>{
           'description': 'Plan-derived event-only answers the guest may provide to improve preference-aware suggestions. Guests may skip them and receive neutral assignments.',
           'type': 'array',
           'uniqueItems': true,
-          'maxItems': 5,
+          'maxItems': 10,
           'items': <String, Object?>{
             'type': 'string',
             'enum': <Object?>[
@@ -189,6 +212,11 @@ const schemaGetEventRuntimeBootstrapCallableResponseSchema = <String, Object?>{
               'interestedInGenders',
               'relationshipGoal',
               'dateOfBirth',
+              'paceBand',
+              'skillBand',
+              'dietaryAndSeatingNotes',
+              'questionnaireAnswerIds',
+              'teamName',
             ],
           },
         },
@@ -336,14 +364,14 @@ const schemaGetEventRuntimeBootstrapCallableResponseSchema = <String, Object?>{
               'items': <String, Object?>{
                 'type': 'string',
               },
-              'maxItems': 5,
+              'maxItems': 10,
             },
             'completedFieldIds': <String, Object?>{
               'type': 'array',
               'items': <String, Object?>{
                 'type': 'string',
               },
-              'maxItems': 5,
+              'maxItems': 10,
             },
             'runtimeProfile': <String, Object?>{
               'type': 'object',
@@ -354,6 +382,11 @@ const schemaGetEventRuntimeBootstrapCallableResponseSchema = <String, Object?>{
                 'interestedInGenders',
                 'relationshipGoal',
                 'dateOfBirthMillis',
+                'paceBand',
+                'skillBand',
+                'dietaryAndSeatingNotes',
+                'questionnaireAnswerIds',
+                'teamName',
               ],
               'properties': <String, Object?>{
                 'displayName': <String, Object?>{
@@ -406,6 +439,57 @@ const schemaGetEventRuntimeBootstrapCallableResponseSchema = <String, Object?>{
                     'integer',
                     'null',
                   ],
+                },
+                'paceBand': <String, Object?>{
+                  'type': <Object?>[
+                    'string',
+                    'null',
+                  ],
+                  'enum': <Object?>[
+                    'competitive',
+                    'fast',
+                    'moderate',
+                    'easy',
+                    null,
+                  ],
+                },
+                'skillBand': <String, Object?>{
+                  'type': <Object?>[
+                    'string',
+                    'null',
+                  ],
+                  'enum': <Object?>[
+                    'beginner',
+                    'intermediate',
+                    'advanced',
+                    null,
+                  ],
+                },
+                'dietaryAndSeatingNotes': <String, Object?>{
+                  'type': <Object?>[
+                    'string',
+                    'null',
+                  ],
+                  'minLength': 1,
+                  'maxLength': 300,
+                },
+                'questionnaireAnswerIds': <String, Object?>{
+                  'type': 'array',
+                  'uniqueItems': true,
+                  'maxItems': 8,
+                  'items': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 120,
+                  },
+                },
+                'teamName': <String, Object?>{
+                  'type': <Object?>[
+                    'string',
+                    'null',
+                  ],
+                  'minLength': 1,
+                  'maxLength': 80,
                 },
               },
             },

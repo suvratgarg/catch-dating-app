@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show
         CancelEventCallableRequest,
+        CreateEventVenueSessionCallableRequest,
         CreateEventInviteLinkCallableRequest,
         CreateEventWaitlistOffersCallableRequest,
         DisableEventInviteLinkCallableRequest,
@@ -26,6 +27,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
+import 'package:catch_dating_app/events/domain/event_venue_session.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -679,21 +681,18 @@ class EventRepository {
   /// Self-check-in for a signed-up participant via the
   /// [selfCheckInAttendance] Cloud Function.
   ///
-  /// Passes the viewer's GPS coordinates so the server can verify proximity
-  /// to the event's required exact meeting location. Null viewer coordinates
-  /// fail closed; they never bypass the proximity check.
+  /// Passes the current signed Host venue-session token. Printable event links
+  /// and location claims carry no attendance authority.
   Future<void> selfCheckInAttendance({
     required String eventId,
-    required double? latitude,
-    required double? longitude,
+    required String venueSessionToken,
   }) => withBackendErrorContext(
     () => _functions
         .httpsCallable('selfCheckInAttendance')
         .call(
           SelfCheckInAttendanceCallableRequest(
             eventId: eventId,
-            latitude: latitude,
-            longitude: longitude,
+            venueSessionToken: venueSessionToken,
           ).toJson(),
         ),
     context: const BackendErrorContext(
@@ -702,6 +701,25 @@ class EventRepository {
       resource: _collectionPath,
     ),
   );
+
+  Future<EventVenueSession> createVenueSession({required String eventId}) =>
+      withBackendErrorContext(
+        () async {
+          final result = await _functions
+              .httpsCallable('createEventVenueSession')
+              .call<Object?>(
+                CreateEventVenueSessionCallableRequest(
+                  eventId: eventId,
+                ).toJson(),
+              );
+          return EventVenueSession.fromCallableData(result.data);
+        },
+        context: const BackendErrorContext(
+          service: BackendService.functions,
+          action: 'refresh live venue QR',
+          resource: 'eventVenueSessions',
+        ),
+      );
 
   Future<SendEventBroadcastCallableResponse> sendEventBroadcast({
     required String requestId,
@@ -751,6 +769,21 @@ Stream<List<EventInviteLink>> watchEventInviteLinks(Ref ref, String eventId) =>
 @riverpod
 Stream<List<Event>> watchEventsForClub(Ref ref, String clubId) =>
     ref.watch(eventRepositoryProvider).watchEventsForClub(clubId: clubId);
+
+@riverpod
+Stream<EventVenueSession> eventVenueSession(Ref ref, String eventId) async* {
+  while (ref.mounted) {
+    final session = await ref
+        .read(eventRepositoryProvider)
+        .createVenueSession(eventId: eventId);
+    yield session;
+    final nowMillis = DateTime.now().millisecondsSinceEpoch;
+    final waitMillis = (session.refreshAfterMillis - nowMillis)
+        .clamp(1000, 240000)
+        .toInt();
+    await Future<void>.delayed(Duration(milliseconds: waitMillis));
+  }
+}
 
 @riverpod
 Stream<List<Event>> watchEventsForClubs(Ref ref, EventsForClubsQuery query) =>

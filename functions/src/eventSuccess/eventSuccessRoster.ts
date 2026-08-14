@@ -9,18 +9,24 @@ import {
 import {eventParticipationId} from "../shared/relationshipDocuments";
 import {requireDoc} from "../shared/validation";
 import {eventRuntimeParticipantId} from "./eventRuntime";
+import {
+  activityAttributesForProfile,
+  activityAttributesForRuntimeProfile,
+} from "./assignmentPrimitiveControls";
 
 export type EventSuccessRosterStatus = "signedUp" | "attended";
 
 export interface EventSuccessRosterParticipant {
   uid: string;
   status: EventSuccessRosterStatus;
+  attendedAtMillis?: number;
   gender?: Gender;
   interestedInGenders: Gender[];
   displayName: string;
   arrivalGroup: string | null;
   cohortAtSignup: string;
   profile: Partial<UserProfileDocument>;
+  activityAttributes: Record<string, string | number | boolean | null>;
   source: "catchParticipation" | "externalRuntime";
 }
 
@@ -73,6 +79,7 @@ export async function loadEventSuccessRoster(
     byUid.set(edge.uid, {
       uid: edge.uid,
       status: edge.status,
+      ...attendedAtProjection(edge.status, edge.attendedAt),
       gender,
       interestedInGenders: interests,
       displayName: profile.displayName || profile.name ||
@@ -81,6 +88,7 @@ export async function loadEventSuccessRoster(
       cohortAtSignup: edge.cohortAtSignup ??
         cohortFor(gender, interests),
       profile,
+      activityAttributes: activityAttributesForProfile(profile),
       source: "catchParticipation",
     });
   });
@@ -111,6 +119,7 @@ export async function loadEventSuccessRoster(
     byUid.set(edge.uid, {
       uid: edge.uid,
       status,
+      ...attendedAtProjection(status, attendee.checkedInAt),
       gender,
       interestedInGenders: interests,
       displayName: edge.runtimeProfile.displayName,
@@ -123,6 +132,9 @@ export async function loadEventSuccessRoster(
         relationshipGoal: edge.runtimeProfile.relationshipGoal,
         dateOfBirth: edge.runtimeProfile.dateOfBirth ?? undefined,
       },
+      activityAttributes: activityAttributesForRuntimeProfile(
+        edge.runtimeProfile
+      ),
       source: "externalRuntime",
     });
   });
@@ -177,6 +189,7 @@ export async function loadEventSuccessRosterParticipant(
       return {
         uid,
         status: edge.status,
+        ...attendedAtProjection(edge.status, edge.attendedAt),
         gender,
         interestedInGenders: interests,
         displayName: profile.displayName || profile.name ||
@@ -185,6 +198,7 @@ export async function loadEventSuccessRosterParticipant(
         cohortAtSignup: edge.cohortAtSignup ??
           cohortFor(gender, interests),
         profile,
+        activityAttributes: activityAttributesForProfile(profile),
         source: "catchParticipation",
       };
     }
@@ -213,6 +227,7 @@ export async function loadEventSuccessRosterParticipant(
   return {
     uid,
     status,
+    ...attendedAtProjection(status, attendee.checkedInAt),
     gender: edge.runtimeProfile.gender ?? undefined,
     interestedInGenders: edge.runtimeProfile.interestedInGenders,
     displayName: edge.runtimeProfile.displayName,
@@ -228,6 +243,9 @@ export async function loadEventSuccessRosterParticipant(
       relationshipGoal: edge.runtimeProfile.relationshipGoal,
       dateOfBirth: edge.runtimeProfile.dateOfBirth ?? undefined,
     },
+    activityAttributes: activityAttributesForRuntimeProfile(
+      edge.runtimeProfile
+    ),
     source: "externalRuntime",
   };
 }
@@ -241,6 +259,22 @@ function runtimeRosterStatus(
   if (attendee.status === "checkedIn") return "attended";
   if (attendee.status === "registered") return "signedUp";
   return null;
+}
+
+function attendedAtProjection(
+  status: EventSuccessRosterStatus,
+  value: unknown
+): {attendedAtMillis?: number} {
+  if (
+    status !== "attended" ||
+    value === null ||
+    typeof value !== "object" ||
+    !("toMillis" in value) ||
+    typeof value.toMillis !== "function"
+  ) return {};
+  const attendedAtMillis = value.toMillis();
+  return Number.isFinite(attendedAtMillis) && attendedAtMillis >= 0 ?
+    {attendedAtMillis} : {};
 }
 
 function cohortFor(gender: Gender | undefined, interests: Gender[]): string {

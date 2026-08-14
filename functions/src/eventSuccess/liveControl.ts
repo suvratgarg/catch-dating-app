@@ -1,7 +1,10 @@
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {EventDocument} from "../shared/generated/firestoreAdminTypes";
+import {
+  EventAttendeeDocument,
+  EventDocument,
+} from "../shared/generated/firestoreAdminTypes";
 import {EventSuccessLiveActionCallablePayload} from
   "../shared/generated/eventSuccessLiveActionCallablePayload";
 import {PublishEventSuccessRotationRoundCallablePayload} from
@@ -19,6 +22,14 @@ import {
 } from "../shared/eventOrganizers";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
+import {
+  requireAccountabilityAcknowledgement,
+  unresolvedAccountabilityCount,
+} from "./accountability";
+import {
+  EventSuccessAccountability,
+  eventSuccessPrimitivesFor,
+} from "./formatPrimitives";
 
 const GUIDED_ROTATIONS_MODULE_ID = "guided_rotations";
 
@@ -73,6 +84,11 @@ export interface LiveActionResolution {
   update: LivePlanUpdate;
 }
 
+export interface LiveCompletionAccountability {
+  accountability: EventSuccessAccountability;
+  unresolvedCount: number;
+}
+
 export interface RotationPublishResolution {
   replayed: boolean;
   revision: number;
@@ -96,7 +112,11 @@ const defaultDeps: EventSuccessLiveControlDeps = {
 export function resolveEventSuccessLiveAction(
   state: LivePlanState,
   payload: EventSuccessLiveActionCallablePayload,
-  nowMillis: number
+  nowMillis: number,
+  completionAccountability: LiveCompletionAccountability = {
+    accountability: "none",
+    unresolvedCount: 0,
+  }
 ): LiveActionResolution {
   const effectiveRevealIndex = effectivePublishedRevealIndex(state, nowMillis);
   if (payload.action === "complete" && state.status === "complete") {
@@ -120,6 +140,12 @@ export function resolveEventSuccessLiveAction(
   if (state.status === "complete") {
     throw new HttpsError("failed-precondition",
       "The live event guide is already complete.");
+  }
+  if (payload.action === "complete") {
+    requireAccountabilityAcknowledgement({
+      ...completionAccountability,
+      acknowledged: payload.accountabilityAcknowledged,
+    });
   }
 
   const common: LivePlanUpdate = {
@@ -305,7 +331,29 @@ export async function controlEventSuccessLiveHandler(
     );
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, uid, "controlEventSuccessLive");
-  await requireEventManager(db, payload.eventId, uid);
+  const event = await requireEventManager(db, payload.eventId, uid);
+  let accountability: EventSuccessAccountability = "none";
+  let unresolvedCount = 0;
+  if (payload.action === "complete") {
+    accountability = eventSuccessPrimitivesFor(
+      event.eventFormat
+    ).accountability;
+    if (accountability === "sweep") {
+      const attendeeSnap = await db.collection("eventAttendees")
+        .where("eventId", "==", payload.eventId)
+        .limit(1001)
+        .get();
+      if (attendeeSnap.docs.length > 1000) {
+        throw new HttpsError(
+          "failed-precondition",
+          "The accountability sweep exceeds the supported roster size."
+        );
+      }
+      unresolvedCount = unresolvedAccountabilityCount(
+        attendeeSnap.docs.map((doc) => doc.data() as EventAttendeeDocument)
+      );
+    }
+  }
   const planRef = db.collection("eventSuccessPlans").doc(payload.eventId);
 
   return db.runTransaction(async (transaction) => {
@@ -320,7 +368,8 @@ export async function controlEventSuccessLiveHandler(
     const resolution = resolveEventSuccessLiveAction(
       state,
       payload,
-      deps.nowMillis()
+      deps.nowMillis(),
+      {accountability, unresolvedCount}
     );
     if (resolution.replayed) {
       return {replayed: true, revision: state.liveControlRevision};
@@ -454,7 +503,7 @@ async function requireEventManager(
   db: FirebaseFirestore.Firestore,
   eventId: string,
   uid: string
-): Promise<void> {
+): Promise<EventDocument> {
   const eventSnap = await db.collection("events").doc(eventId).get();
   if (!eventSnap.exists) {
     throw new HttpsError("not-found", "Event not found.");
@@ -466,6 +515,7 @@ async function requireEventManager(
     throw new HttpsError("permission-denied",
       "Only an organizer manager can control this live event.");
   }
+  return event;
 }
 
 function livePlanState(plan: LivePlanDocument): LivePlanState {

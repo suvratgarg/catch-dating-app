@@ -32,6 +32,8 @@ const schemaEventSuccessArrivalMissionDocumentSchema = <String, Object?>{
     'targetContext',
     'question',
     'answerOptions',
+    'venueSessionId',
+    'venueSessionRedemptionId',
     'status',
     'createdAt',
     'updatedAt',
@@ -109,6 +111,16 @@ const schemaEventSuccessArrivalMissionDocumentSchema = <String, Object?>{
           },
         },
       },
+      'x-catch-ownership': 'callable-owned',
+    },
+    'venueSessionId': <String, Object?>{
+      'type': 'string',
+      'pattern': '^[A-Za-z0-9_-]{24,80}\$',
+      'x-catch-ownership': 'callable-owned',
+    },
+    'venueSessionRedemptionId': <String, Object?>{
+      'type': 'string',
+      'pattern': '^[a-f0-9]{64}\$',
       'x-catch-ownership': 'callable-owned',
     },
     'status': <String, Object?>{

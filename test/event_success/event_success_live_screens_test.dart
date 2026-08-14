@@ -17,6 +17,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_models.dart'
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_preference.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_presence.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_runtime.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
@@ -30,6 +31,7 @@ import 'package:catch_dating_app/event_success/presentation/event_success_setup_
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
@@ -49,9 +51,90 @@ import '../events/events_test_helpers.dart'
 import '../test_pump_helpers.dart';
 import 'event_success_live_test_helpers.dart';
 
+part 'event_success_live_host_completion_tests.dart';
+
 final _l10n = AppLocalizationsEn();
 
 void main() {
+  testWidgets('host confirms presence changes before the next round', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(430, 1800);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    final event = buildEvent(bookedCount: 3, checkedInCount: 3);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
+    var regenerateCount = 0;
+    String? placedUid;
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: EventSuccessHostPanel(
+              event: event,
+              plan: plan,
+              planIsPersisted: true,
+              initialTab: EventSuccessHostTab.live,
+              showTabs: false,
+              roster: const EventParticipationRoster(
+                bookedIds: ['guest-1', 'guest-2', 'late-1'],
+                checkedInIds: ['guest-1', 'guest-2', 'late-1'],
+                waitlistedIds: [],
+              ),
+              presenceSummary: const EventSuccessPresenceSummary(
+                serverTimeMillis: 10,
+                liveControlRevision: 4,
+                nextRoundIndex: 1,
+                policy: EventSuccessPresencePolicy(
+                  heartbeatIntervalSeconds: 30,
+                  presentWindowSeconds: 90,
+                  likelyDepartedAfterSeconds: 300,
+                ),
+                entries: [
+                  EventSuccessPresenceEntry(
+                    uid: 'guest-1',
+                    displayName: 'Ari',
+                    state: EventSuccessPresenceState.likelyDeparted,
+                    heartbeatAtMillis: 1,
+                  ),
+                ],
+                lateArrivals: [
+                  EventSuccessLateArrivalCandidate(
+                    uid: 'late-1',
+                    displayName: 'Mina',
+                    checkedInAtMillis: 9,
+                  ),
+                ],
+              ),
+              onGenerateGuidedRotations: () async => regenerateCount += 1,
+              onResolveLateArrival: (uid) async => placedUid = uid,
+            ),
+          ),
+        ),
+      ),
+    );
+    await pumpFeatureUi(tester);
+
+    expect(find.textContaining('1 guests may have left'), findsOneWidget);
+    expect(
+      find.textContaining('Published rounds stay unchanged'),
+      findsOneWidget,
+    );
+    expect(find.text('Ari'), findsOneWidget);
+    expect(find.text('Mina'), findsOneWidget);
+
+    await tester.tap(find.text('Regenerate next round'));
+    await tester.pump();
+    await tester.tap(find.text('Place next round'));
+    await tester.pump();
+
+    expect(regenerateCount, 1);
+    expect(placedUid, 'late-1');
+  });
+
   testWidgets('question progress rail uses stage press without Material ink', (
     tester,
   ) async {
@@ -160,7 +243,7 @@ void main() {
     expect(find.text('How the room is grouped'), findsNothing);
     expect(find.text('Your goal for the event'), findsOneWidget);
     expect(find.text('YOUR PLAN'), findsOneWidget);
-    expect(find.text('WHEN PEOPLE ARRIVE'), findsOneWidget);
+    await revealCustomization(tester, find.text('WHEN PEOPLE ARRIVE'));
     expect(find.text('DURING THE EVENT'), findsOneWidget);
     expect(find.text('AFTER THE EVENT'), findsNothing);
     expect(find.text('Save setup'), findsOneWidget);
@@ -301,7 +384,7 @@ void main() {
     );
 
     expect(find.text('Salsa night'), findsWidgets);
-    expect(find.text('Paired rotations'), findsWidgets);
+    await revealCustomization(tester, find.text('Switch partners every'));
     expect(find.text('Open activity'), findsNothing);
     expect(plan.playbookId, EventSuccessPlaybookLibrary.pickleball.id);
     expect(plan.structureConfig.unitKind, EventSuccessUnitKind.pairs);
@@ -718,6 +801,8 @@ void main() {
                     catchRecipientCount: 3,
                     catchRate: 0.4,
                     feedbackResponseCount: 2,
+                    conversationGraphResponseCount: 3,
+                    conversationExcludedAttendeeCount: 1,
                   ),
                   assignments: [
                     _assignment(
@@ -771,6 +856,8 @@ void main() {
 
     expect(find.text('HOW RELIABLE IS THIS REPORT?'), findsOneWidget);
     expect(find.text('Feedback'), findsOneWidget);
+    expect(find.text('Conversation exclusions'), findsOneWidget);
+    expect(find.text('3/5 responses'), findsOneWidget);
     expect(find.text('Caught someone'), findsWidgets);
     expect(find.text('People included'), findsOneWidget);
     expect(find.text('Opted out'), findsOneWidget);
@@ -1274,121 +1361,7 @@ void main() {
     expect(find.text('Reveal now'), findsOneWidget);
   });
 
-  testWidgets('host live actions dispatch ceremony effects once per tap', (
-    tester,
-  ) async {
-    tester.view.devicePixelRatio = 1;
-    tester.view.physicalSize = const Size(430, 5000);
-    addTearDown(tester.view.resetDevicePixelRatio);
-    addTearDown(tester.view.resetPhysicalSize);
-
-    final effects = _FakeEventSuccessLiveEffectsController();
-    var nextPressed = 0;
-    var completePressed = 0;
-    final start = DateTime(2026, 5, 21, 8);
-    final event = _racketEvent(
-      startTime: start,
-      endTime: start.add(const Duration(minutes: 30)),
-    );
-
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          eventSuccessLiveEffectsControllerProvider.overrideWithValue(effects),
-        ],
-        child: MaterialApp(
-          theme: AppTheme.light,
-          home: Scaffold(
-            body: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: EventSuccessHostPanel(
-                  event: event,
-                  plan: _racketPlan(event),
-                  planIsPersisted: true,
-                  roster: const EventParticipationRoster(
-                    bookedIds: ['runner-1', 'runner-2'],
-                    checkedInIds: ['runner-1'],
-                    waitlistedIds: [],
-                  ),
-                  fixtureActions: EventSuccessHostFixtureActions(
-                    onNextStep: () => nextPressed++,
-                    onCompletePlan: () => completePressed++,
-                  ),
-                  onPlayLiveEffect: effects.play,
-                  initialTab: EventSuccessHostTab.live,
-                  showTabs: false,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-
-    await tester.tap(find.byKey(const ValueKey('eventSuccessNextStepButton')));
-    await tester.tap(find.byKey(const ValueKey('eventSuccessNextStepButton')));
-    await tester.pump();
-    await tester.tap(
-      find.widgetWithText(CatchButton, 'Mark live guide complete'),
-    );
-    await tester.pump();
-
-    expect(nextPressed, 1);
-    expect(completePressed, 1);
-    expect(effects.playedKinds, [
-      EventSuccessLiveEffectKind.stepChange,
-      EventSuccessLiveEffectKind.guideComplete,
-    ]);
-  });
-
-  testWidgets('host live mode requires generation before rotation edits', (
-    tester,
-  ) async {
-    tester.view.devicePixelRatio = 1;
-    tester.view.physicalSize = const Size(430, 1600);
-    addTearDown(tester.view.resetDevicePixelRatio);
-    addTearDown(tester.view.resetPhysicalSize);
-
-    final start = DateTime(2026, 5, 21, 8);
-    final event = _racketEvent(
-      startTime: start,
-      endTime: start.add(const Duration(minutes: 30)),
-    );
-    final plan = _racketPlan(event);
-
-    await tester.pumpWidget(
-      ProviderScope(
-        child: MaterialApp(
-          theme: AppTheme.light,
-          home: Scaffold(
-            body: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: EventSuccessHostPanel(
-                  event: event,
-                  plan: plan,
-                  planIsPersisted: true,
-                  roster: const EventParticipationRoster(
-                    bookedIds: ['runner-1', 'runner-2'],
-                    checkedInIds: ['runner-1', 'runner-2'],
-                    waitlistedIds: [],
-                  ),
-                  initialTab: EventSuccessHostTab.live,
-                  showTabs: false,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-
-    expect(find.text('Timed partner rotations'), findsOneWidget);
-    expect(find.text('0 rounds'), findsOneWidget);
-    expect(find.text('Generate rotations'), findsOneWidget);
-    expect(find.text('Edit rotations'), findsNothing);
-  });
+  _hostLiveCompletionTests();
 
   testWidgets('host live mode marks host-edited rotations', (tester) async {
     tester.view.devicePixelRatio = 1;
@@ -3373,6 +3346,27 @@ EventSuccessWingmanRequest _wingmanRequest({
     note: note,
     createdAt: now,
     updatedAt: now,
+  );
+}
+
+EventAttendee _accountabilityAttendee({
+  required Event event,
+  required String id,
+  required String displayName,
+}) {
+  final checkedInAt = event.startTime.add(const Duration(minutes: 5));
+  return EventAttendee(
+    id: id,
+    eventId: event.id,
+    clubId: event.clubId,
+    organizerId: event.organizerId,
+    displayName: displayName,
+    searchName: displayName.toLowerCase(),
+    source: EventAttendeeSource.hostImport,
+    status: EventAttendeeStatus.checkedIn,
+    createdAt: event.startTime,
+    updatedAt: checkedInAt,
+    checkedInAt: checkedInAt,
   );
 }
 

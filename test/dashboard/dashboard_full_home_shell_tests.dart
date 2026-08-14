@@ -245,6 +245,7 @@ void _dashboardFullHomeShellTests() {
         bookedCount: 1,
         startTime: now.add(const Duration(minutes: 5)),
       );
+      final events = FakeEventRepository();
 
       await tester.pumpWidget(
         ProviderScope(
@@ -255,7 +256,7 @@ void _dashboardFullHomeShellTests() {
             exploreRecommendedEventsProvider(
               recommendationsQueryFor(user.uid, const []),
             ).overrideWithValue(noRecommendationCandidates),
-            eventRepositoryProvider.overrideWithValue(FakeEventRepository()),
+            eventRepositoryProvider.overrideWithValue(events),
             eventSuccessRepositoryProvider.overrideWithValue(
               _FakeEventSuccessRepository(),
             ),
@@ -286,8 +287,10 @@ void _dashboardFullHomeShellTests() {
       expect(find.textContaining('Next event'), findsNothing);
 
       await tester.tap(find.text('Check in'));
+      await _completeDashboardVenueSessionScan(tester);
       await _pumpDashboardUi(tester);
 
+      expect(events.selfCheckedInVenueSessionToken, 'signed-venue-session');
       expect(find.text('CHECKED IN'), findsOneWidget);
       expect(find.text('Checked in.'), findsOneWidget);
     });
@@ -337,6 +340,7 @@ void _dashboardFullHomeShellTests() {
       await _pumpDashboardUi(tester);
 
       await tester.tap(find.text('Check in'));
+      await _completeDashboardVenueSessionScan(tester);
       await _pumpDashboardUi(tester);
 
       expect(
@@ -546,4 +550,17 @@ void _dashboardFullHomeShellTests() {
       },
     );
   });
+}
+
+Future<void> _completeDashboardVenueSessionScan(WidgetTester tester) async {
+  await tester.pump();
+  final scanner = tester.widget<EventCheckInQrScanner>(
+    find.byType(EventCheckInQrScanner),
+  );
+  scanner.onResult(
+    const EventCheckInQrScan(
+      EventCheckInQrScanResult.matchedVenueSession,
+      venueSessionToken: 'signed-venue-session',
+    ),
+  );
 }

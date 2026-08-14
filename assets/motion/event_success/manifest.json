@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "1.0.0",
+  "player": "lottie-light-css-v1",
+  "assets": {
+    "theatrical": {
+      "path": "assets/motion/event_success/theatrical.json",
+      "roles": ["stage", "arrivalRing"]
+    },
+    "pulse": {
+      "path": "assets/motion/event_success/pulse.json",
+      "roles": ["stage", "revealAnticipation"]
+    },
+    "sunrise": {
+      "path": "assets/motion/event_success/sunrise.json",
+      "roles": ["stage", "revealClimax", "revealSettle"]
+    }
+  },
+  "motifBindings": {
+    "path": "theatrical",
+    "gate": "theatrical",
+    "spark": "theatrical",
+    "signal": "theatrical",
+    "rhythm": "pulse",
+    "orbit": "pulse",
+    "reveal": "pulse",
+    "afterglow": "sunrise"
+  },
+  "parityFixture": {
+    "eventId": "event-parity-2026",
+    "momentKind": "liveReveal",
+    "activeRevealRoundIndex": 2,
+    "serverAnchorMillis": 1786703400000,
+    "revealCountdownMs": 10000,
+    "atMillis": 1786703405000,
+    "participantCount": 24,
+    "expected": {
+      "phase": "anticipation",
+      "progress": 0.5,
+      "seed": 2263797243,
+      "visualAssetId": "pulse"
+    }
+  }
+}

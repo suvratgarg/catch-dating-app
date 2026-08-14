@@ -3,6 +3,7 @@ import test from "node:test";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {eventAttendeeId} from "../events/eventAttendees";
+import {eventVenueSessionRedemptionId} from "../events/venueSessions";
 import {
   approveEventRuntimeClaimHandler,
   checkInEventRuntimeHandler,
@@ -16,6 +17,10 @@ import {
 } from "./eventRuntime";
 
 type FakeData = Record<string, unknown>;
+
+const venueSessionId = "session_123456789012345678901234";
+const venueSessionToken =
+  "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
 class FakeDocRef {
   constructor(readonly firestore: FakeFirestore, readonly path: string) {}
@@ -245,14 +250,19 @@ function participant(overrides: FakeData = {}): FakeData {
     identityVersion: 1,
     claimMethod: "verifiedPhone",
     accessStatus: "ready",
-    requiredFieldIds: ["displayName"],
-    completedFieldIds: ["displayName"],
+    requiredFieldIds: ["displayName", "questionnaireAnswerIds"],
+    completedFieldIds: ["displayName", "questionnaireAnswerIds"],
     runtimeProfile: {
       displayName: "Asha Shah",
       gender: null,
       interestedInGenders: [],
       relationshipGoal: null,
       dateOfBirth: null,
+      paceBand: null,
+      skillBand: null,
+      dietaryAndSeatingNotes: null,
+      questionnaireAnswerIds: ["event_energy_easy_conversation"],
+      teamName: null,
     },
     consents: {
       runtimeTermsVersion: "event-runtime-v1",
@@ -301,6 +311,18 @@ function harness(initial: Record<string, FakeData | undefined>) {
       ) => {
         limits.push(`${uid}:${action}`);
       },
+      verifyVenueSessionToken: (params: {
+        token: string;
+        eventId: string;
+        nowMillis: number;
+      }) => ({
+        version: 1 as const,
+        eventId: params.eventId,
+        organizerId: "organizer-1",
+        sessionId: venueSessionId,
+        issuedAtMillis: timestamp("2026-08-11T09:59:00.000Z").toMillis(),
+        expiresAtMillis: timestamp("2026-08-11T10:01:00.000Z").toMillis(),
+      }),
     },
   };
 }
@@ -309,11 +331,24 @@ function code(error: unknown, expected: string): boolean {
   return error instanceof HttpsError && error.code === expected;
 }
 
-test("runtime entry requires only a name and offers preference fields", () => {
-  assert.deepEqual(requiredRuntimeFieldIds(null), ["displayName"]);
-  assert.deepEqual(requiredRuntimeFieldIds({
-    selectedModuleIds: ["first_hello_check_in"],
-  } as never), ["displayName"]);
+test("runtime entry requires one variable-bound pre-event payload", () => {
+  const formats = [
+    ["pacePods", "paceBand"],
+    ["pairedRotations", "skillBand"],
+    ["seatedTable", "dietaryAndSeatingNotes"],
+    ["freeFormMixer", "questionnaireAnswerIds"],
+    ["teamRotations", "teamName"],
+    ["openFormat", null],
+  ] as const;
+  for (const [interactionModel, expectedField] of formats) {
+    const required = requiredRuntimeFieldIds(event({eventFormat: {
+      version: 1,
+      activityKind: "openActivity",
+      interactionModel,
+    }}) as never, null);
+    assert.deepEqual(required, expectedField ?
+      ["displayName", expectedField] : ["displayName"]);
+  }
   assert.deepEqual(optionalRuntimeFieldIds(
     event() as never,
     {selectedModuleIds: ["first_hello_check_in"]} as never
@@ -332,12 +367,26 @@ test("runtime entry requires only a name and offers preference fields", () => {
     interestedInGenders: ["man"],
     relationshipGoal: null,
     dateOfBirth: null,
-  }), ["displayName", "gender", "interestedInGenders"]);
+    paceBand: "moderate",
+    skillBand: "intermediate",
+    dietaryAndSeatingNotes: "Vegetarian",
+    questionnaireAnswerIds: ["event_energy_easy_conversation"],
+    teamName: "Late Entries",
+  }), [
+    "displayName",
+    "gender",
+    "interestedInGenders",
+    "paceBand",
+    "skillBand",
+    "dietaryAndSeatingNotes",
+    "questionnaireAnswerIds",
+    "teamName",
+  ]);
 });
 
 test("bootstrap returns bounded event and own state", async () => {
   const h = harness({
-    "events/event-1": event(),
+    "events/event-1": event({checkedInCount: 18}),
     "eventRuntimeParticipants/event-1_runner-1": participant(),
     "eventAttendees/attendee-1": attendee({
       linkedUid: "runner-1",
@@ -355,10 +404,12 @@ test("bootstrap returns bounded event and own state", async () => {
     startTimeMillis: Date.parse("2026-08-11T12:00:00.000Z"),
     endTimeMillis: Date.parse("2026-08-11T15:00:00.000Z"),
     locationName: "The Courtyard",
+    checkedInCount: 18,
     runtimeTermsVersion: "event-runtime-v1",
     moduleIds: [],
+    interactionModel: "freeFormMixer",
     layout: null,
-    requiredFieldIds: ["displayName"],
+    requiredFieldIds: ["displayName", "questionnaireAnswerIds"],
     optionalFieldIds: [],
     questionnaireConfig: null,
   });
@@ -386,9 +437,12 @@ test("verified phone claims the matching imported attendee", async () => {
     displayName: "  Asha   Shah ",
     runtimeTermsVersion: "event-runtime-v1",
   }), h.deps);
-  assert.equal(result.status, "ready");
+  assert.equal(result.status, "needsInput");
   assert.equal(result.attendeeId, attendeeId);
-  assert.deepEqual(result.requiredFieldIds, ["displayName"]);
+  assert.deepEqual(result.requiredFieldIds, [
+    "displayName",
+    "questionnaireAnswerIds",
+  ]);
   assert.equal(h.firestore.get(`eventAttendees/${attendeeId}`)?.linkedUid,
     "runner-1");
   assert.equal(h.firestore.get("users/runner-1"), undefined);
@@ -434,6 +488,10 @@ test("profile submission requires sensitive consent and seeds only a draft",
       accessStatus: "needsInput",
       requiredFieldIds: ["displayName", "gender", "interestedInGenders"],
       completedFieldIds: ["displayName"],
+      runtimeProfile: {
+        ...(participant().runtimeProfile as FakeData),
+        questionnaireAnswerIds: [],
+      },
       readyAt: null,
     });
     const initial = {
@@ -448,7 +506,11 @@ test("profile submission requires sensitive consent and seeds only a draft",
       publicRuntimeId: "runtime_123456789012345678901234",
       runtimeTermsVersion: "event-runtime-v1",
       saveAsCatchPrefill: true,
-      fields: {gender: "woman", interestedInGenders: ["man"]},
+      fields: {
+        gender: "woman",
+        interestedInGenders: ["man"],
+        questionnaireAnswerIds: ["event_energy_easy_conversation"],
+      },
     };
     await assert.rejects(
       () => submitEventRuntimeProfileHandler(
@@ -469,7 +531,56 @@ test("profile submission requires sensitive consent and seeds only a draft",
     assert.equal(draft?.phoneNumber, "9876543210");
     assert.equal(draft?.gender, "woman");
     assert.equal(h.firestore.get("users/runner-1"), undefined);
+    assert.deepEqual(h.firestore.get(
+      "eventSuccessCompatibilityResponses/event-1_runner-1"
+    )?.answerIds, ["event_energy_easy_conversation"]);
   });
+
+test("profile submission rejects a neighboring format payload", async () => {
+  const h = harness({
+    "events/event-1": event(),
+    "eventRuntimeParticipants/event-1_runner-1": participant(),
+  });
+  await assert.rejects(
+    () => submitEventRuntimeProfileHandler(request("runner-1", {
+      publicRuntimeId: "runtime_123456789012345678901234",
+      runtimeTermsVersion: "event-runtime-v1",
+      sensitiveDataTermsVersion: "sensitive-runtime-v1",
+      saveAsCatchPrefill: false,
+      fields: {paceBand: "moderate"},
+    }), h.deps),
+    (error) => code(error, "invalid-argument")
+  );
+});
+
+test("quiz team name becomes the existing arrival group", async () => {
+  const h = harness({
+    "events/event-1": event({eventFormat: {
+      version: 1,
+      activityKind: "pubQuiz",
+      interactionModel: "teamRotations",
+    }}),
+    "eventRuntimeParticipants/event-1_runner-1": participant({
+      accessStatus: "needsInput",
+      requiredFieldIds: ["displayName", "teamName"],
+      completedFieldIds: ["displayName"],
+      readyAt: null,
+    }),
+    "eventAttendees/attendee-1": attendee({linkedUid: "runner-1"}),
+  });
+  const result = await submitEventRuntimeProfileHandler(request("runner-1", {
+    publicRuntimeId: "runtime_123456789012345678901234",
+    runtimeTermsVersion: "event-runtime-v1",
+    sensitiveDataTermsVersion: "sensitive-runtime-v1",
+    saveAsCatchPrefill: false,
+    fields: {teamName: "  Late   Entries  "},
+  }), h.deps);
+  assert.equal(result.status, "ready");
+  assert.equal(
+    h.firestore.get("eventAttendees/attendee-1")?.arrivalGroup,
+    "Late Entries"
+  );
+});
 
 test("bootstrap upgrades legacy demographic-gated participants", async () => {
   const h = harness({
@@ -481,6 +592,10 @@ test("bootstrap upgrades legacy demographic-gated participants", async () => {
       accessStatus: "needsInput",
       requiredFieldIds: ["displayName", "gender", "interestedInGenders"],
       completedFieldIds: ["displayName"],
+      runtimeProfile: {
+        ...(participant().runtimeProfile as FakeData),
+        questionnaireAnswerIds: ["event_energy_easy_conversation"],
+      },
       readyAt: null,
     }),
     "eventAttendees/attendee-1": attendee({linkedUid: "runner-1"}),
@@ -490,7 +605,10 @@ test("bootstrap upgrades legacy demographic-gated participants", async () => {
     {publicRuntimeId: "runtime_123456789012345678901234"}
   ), h.deps);
   assert.equal(result.participant?.accessStatus, "ready");
-  assert.deepEqual(result.participant?.requiredFieldIds, ["displayName"]);
+  assert.deepEqual(result.participant?.requiredFieldIds, [
+    "displayName",
+    "questionnaireAnswerIds",
+  ]);
   assert.deepEqual(result.event.optionalFieldIds, [
     "gender",
     "interestedInGenders",
@@ -503,16 +621,27 @@ test("bootstrap upgrades legacy demographic-gated participants", async () => {
 test("ready runtime attendance checks in without a Consumer booking edge",
   async () => {
     const h = harness({
-      "events/event-1": event({checkedInCount: 2}),
+      "events/event-1": event({
+        checkedInCount: 2,
+        startTime: timestamp("2026-08-11T10:05:00.000Z"),
+      }),
       "eventRuntimeParticipants/event-1_runner-1": participant(),
       "eventAttendees/attendee-1": attendee({
         linkedUid: "runner-1",
         status: "registered",
       }),
+      [`eventVenueSessions/${venueSessionId}`]: {
+        eventId: "event-1",
+        organizerId: "organizer-1",
+        createdBy: "host-1",
+        issuedAt: timestamp("2026-08-11T09:59:00.000Z"),
+        expiresAt: timestamp("2026-08-11T10:01:00.000Z"),
+      },
     });
 
     const result = await checkInEventRuntimeHandler(request("runner-1", {
       publicRuntimeId: "runtime_123456789012345678901234",
+      venueSessionToken,
     }), h.deps);
 
     assert.deepEqual(result, {
@@ -527,6 +656,70 @@ test("ready runtime attendance checks in without a Consumer booking edge",
       h.firestore.get("eventParticipations/event-1_runner-1"),
       undefined
     );
+  });
+
+test("static runtime link cannot write attendance", async () => {
+  const h = harness({
+    "events/event-1": event({
+      startTime: timestamp("2026-08-11T10:05:00.000Z"),
+    }),
+    "eventRuntimeParticipants/event-1_runner-1": participant(),
+    "eventAttendees/attendee-1": attendee({
+      linkedUid: "runner-1",
+      status: "registered",
+    }),
+  });
+
+  await assert.rejects(
+    () => checkInEventRuntimeHandler(request("runner-1", {
+      publicRuntimeId: "runtime_123456789012345678901234",
+    }), h.deps),
+    (error) => code(error, "invalid-argument")
+  );
+  assert.equal(h.firestore.get("eventAttendees/attendee-1")?.status,
+    "registered");
+});
+
+test("venue session replay is rejected without a second attendance write",
+  async () => {
+    const redemptionId = eventVenueSessionRedemptionId({
+      eventId: "event-1",
+      sessionId: venueSessionId,
+      uid: "runner-1",
+    });
+    const h = harness({
+      "events/event-1": event({
+        checkedInCount: 3,
+        startTime: timestamp("2026-08-11T10:05:00.000Z"),
+      }),
+      "eventRuntimeParticipants/event-1_runner-1": participant(),
+      "eventAttendees/attendee-1": attendee({
+        linkedUid: "runner-1",
+        status: "checkedIn",
+      }),
+      [`eventVenueSessions/${venueSessionId}`]: {
+        eventId: "event-1",
+        organizerId: "organizer-1",
+        createdBy: "host-1",
+        issuedAt: timestamp("2026-08-11T09:59:00.000Z"),
+        expiresAt: timestamp("2026-08-11T10:01:00.000Z"),
+      },
+      [`eventVenueSessionRedemptions/${redemptionId}`]: {
+        eventId: "event-1",
+        sessionId: venueSessionId,
+        uid: "runner-1",
+        purpose: "attendance",
+      },
+    });
+
+    await assert.rejects(
+      () => checkInEventRuntimeHandler(request("runner-1", {
+        publicRuntimeId: "runtime_123456789012345678901234",
+        venueSessionToken,
+      }), h.deps),
+      (error) => code(error, "already-exists")
+    );
+    assert.equal(h.firestore.get("events/event-1")?.checkedInCount, 3);
   });
 
 test("Host approval binds only a candidate from the same event", async () => {

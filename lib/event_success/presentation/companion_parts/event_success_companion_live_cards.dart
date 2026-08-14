@@ -585,7 +585,7 @@ class SelfCheckInCard extends StatefulWidget {
 
   final Event event;
   final SelfCheckInActionState actionState;
-  final Future<void> Function() onSelfCheckIn;
+  final Future<void> Function(String venueSessionToken) onSelfCheckIn;
 
   @override
   State<SelfCheckInCard> createState() => _SelfCheckInCardState();
@@ -644,7 +644,7 @@ class _SelfCheckInCardState extends State<SelfCheckInCard> {
                       .eventSuccessEventSuccessCompanionLiveCardsLabelCheckIn,
                   variant: CatchButtonVariant.ghost,
                   isLoading: busy,
-                  onPressed: busy ? null : _checkIn,
+                  onPressed: busy ? null : () => _scanHostQr(context),
                   fullWidth: true,
                 ),
               ],
@@ -656,20 +656,20 @@ class _SelfCheckInCardState extends State<SelfCheckInCard> {
   }
 
   Future<void> _scanHostQr(BuildContext context) async {
-    final matched = await showCatchBottomSheet<bool>(
+    final venueSessionToken = await showCatchBottomSheet<String>(
       context: context,
       builder: (context) =>
           EventCheckInQrScannerSheet(eventId: widget.event.id),
     );
-    if (matched == true && context.mounted) {
-      await _checkIn();
+    if (venueSessionToken != null && context.mounted) {
+      await _checkIn(venueSessionToken);
     }
   }
 
-  Future<void> _checkIn() async {
+  Future<void> _checkIn(String venueSessionToken) async {
     setState(() => _checkingIn = true);
     try {
-      await widget.onSelfCheckIn();
+      await widget.onSelfCheckIn(venueSessionToken);
     } finally {
       if (mounted) setState(() => _checkingIn = false);
     }
@@ -718,7 +718,7 @@ class _EventCheckInQrScannerSheetState
                       .l10n
                       .eventSuccessEventSuccessCompanionLiveCardsMessageClose,
                   child: CatchIconButton(
-                    onTap: () => Navigator.of(context).maybePop(false),
+                    onTap: () => Navigator.of(context).maybePop(),
                     child: Icon(
                       CatchIcons.closeRounded,
                       size: CatchIcon.md,
@@ -786,8 +786,8 @@ class _EventCheckInQrScannerSheetState
     );
   }
 
-  void _handleScanResult(EventCheckInQrScanResult result) {
-    switch (result) {
+  void _handleScanResult(EventCheckInQrScan scan) {
+    switch (scan.result) {
       case EventCheckInQrScanResult.ignored:
         return;
       case EventCheckInQrScanResult.invalid:
@@ -802,9 +802,15 @@ class _EventCheckInQrScannerSheetState
               .l10n
               .eventSuccessEventSuccessCompanionLiveCardsVisiblecopyThisQrBelongsTo,
         );
-      case EventCheckInQrScanResult.matched:
+      case EventCheckInQrScanResult.printableJoinOnly:
+        setState(
+          () => _errorText = context
+              .l10n
+              .eventSuccessEventSuccessCompanionLiveCardsTextLocationStillVerifiesThe,
+        );
+      case EventCheckInQrScanResult.matchedVenueSession:
         unawaited(HapticFeedback.lightImpact());
-        Navigator.of(context).maybePop(true);
+        Navigator.of(context).maybePop(scan.venueSessionToken);
     }
   }
 }

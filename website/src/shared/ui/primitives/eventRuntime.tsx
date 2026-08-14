@@ -1,4 +1,5 @@
-import type {FormHTMLAttributes, ReactNode} from "react";
+import {LottieAnimationControl} from "@catch/web-ui";
+import type {CSSProperties, FormHTMLAttributes, ReactNode} from "react";
 import {CheckboxField, Form} from "./forms";
 import {PlainLink} from "./actions";
 import {classNames} from "./foundation";
@@ -89,8 +90,21 @@ export function EventRuntimeConsent({
   );
 }
 
-export function EventRuntimeLive({children}: {children: ReactNode}) {
-  return <main className="event-runtime__live">{children}</main>;
+export function EventRuntimeLive({
+  activityId,
+  background,
+  children,
+}: {
+  activityId?: string | null;
+  background?: ReactNode;
+  children: ReactNode;
+}) {
+  return (
+    <main className="event-runtime__live" data-activity={activityId ?? undefined}>
+      {background}
+      <div className="event-runtime__live-content">{children}</div>
+    </main>
+  );
 }
 
 export function EventRuntimeLiveHeader({
@@ -110,6 +124,120 @@ export function EventRuntimeLiveHeader({
 
 export function EventRuntimeKicker({children}: {children: ReactNode}) {
   return <p className="event-runtime__kicker">{children}</p>;
+}
+
+export interface EventRuntimeMarqueeParticleVisual {
+  angleTurns: number;
+  burstTurns: number;
+  distance: number;
+  driftTurns: number;
+  sizeScale: number;
+}
+
+export function EventRuntimeStageMarquee({
+  participantCount,
+  particles,
+  phase,
+  phaseProgress,
+  seedAngleTurns,
+  stageSource,
+  sunriseSource,
+  tickProgress,
+}: {
+  participantCount: number;
+  particles: readonly EventRuntimeMarqueeParticleVisual[];
+  phase: "idle" | "anticipation" | "climax" | "settle";
+  phaseProgress: number;
+  seedAngleTurns: number;
+  stageSource: string;
+  sunriseSource: string;
+  tickProgress: number;
+}) {
+  const reducedMotion = typeof window !== "undefined" &&
+    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  const frameStyle = {
+    "--marquee-phase-progress": `${phaseProgress}`,
+    "--marquee-seed-angle": `${seedAngleTurns}turn`,
+    "--marquee-tick-progress": `${tickProgress}`,
+  } as CSSProperties;
+  return (
+    <div className="event-runtime__marquee" aria-hidden="true">
+      <LottieAnimationControl
+        className="event-runtime__stage-motion"
+        reducedMotion={reducedMotion}
+        source={stageSource}
+      />
+      {phase !== "idle" ? (
+        <div
+          className="event-runtime__reveal-cinematic"
+          data-phase={phase}
+          style={frameStyle}
+        >
+          <LottieAnimationControl
+            autoplay={phase === "anticipation"}
+            className="event-runtime__reveal-motion"
+            loop={phase === "anticipation"}
+            progress={phase === "anticipation" ? null : phaseProgress}
+            reducedMotion={reducedMotion}
+            source={phase === "anticipation" ? stageSource : sunriseSource}
+          />
+          <div className="event-runtime__reveal-spokes">
+            {Array.from({length: 14}, (_, index) => (
+              <span key={index} style={{"--marquee-index": index} as CSSProperties} />
+            ))}
+          </div>
+          <div className="event-runtime__reveal-presence">
+            {Array.from(
+              {length: Math.min(Math.max(0, participantCount), 28)},
+              (_, index) => (
+                <span key={index} style={{"--marquee-index": index} as CSSProperties} />
+              )
+            )}
+          </div>
+          <div className="event-runtime__reveal-particles">
+            {particles.map((particle, index) => (
+              <span
+                key={index}
+                style={{
+                  "--marquee-angle": `${particle.angleTurns}turn`,
+                  "--marquee-burst-angle": `${particle.burstTurns}turn`,
+                  "--marquee-distance": `${particle.distance}`,
+                  "--marquee-drift": `${particle.driftTurns}turn`,
+                  "--marquee-size": `${particle.sizeScale}`,
+                } as CSSProperties}
+              />
+            ))}
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+export function EventRuntimeArrivalRing({
+  ariaLabel,
+  count,
+  label,
+  source,
+}: {
+  ariaLabel: string;
+  count: number;
+  label: string;
+  source: string;
+}) {
+  const reducedMotion = typeof window !== "undefined" &&
+    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  return (
+    <span className="event-runtime__arrival-ring" aria-label={ariaLabel}>
+      <LottieAnimationControl
+        className="event-runtime__arrival-ring-motion"
+        reducedMotion={reducedMotion}
+        source={source}
+      />
+      <strong>{count}</strong>
+      <small>{label}</small>
+    </span>
+  );
 }
 
 export function EventRuntimeModule({

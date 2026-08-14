@@ -25,6 +25,7 @@
   "questionnaireConfig": {
     "templateId": "balanced"
   },
+  "conversationGraphConsentMode": "optIn",
   "activeStepIndex": 0,
   "status": "setup",
   "revealStatus": "idle",

@@ -1519,6 +1519,9 @@ abstract final class CatchOpacity {
   /// Event Success motif accent line opacity.
   static const double eventSuccessMotifAccent = 0.34;
 
+  /// Portable Event Success marquee asset tint.
+  static const double revealCinematicAssetTint = 0.48;
+
   /// Event Success stage bouncy-press glow multiplier.
   static const double eventSuccessBouncyGlow = 0.36;
 
@@ -1769,6 +1772,7 @@ abstract final class CatchMotion {
     milliseconds: 500,
   );
   static const Duration eventSuccessThresholdTick = Duration(milliseconds: 1);
+  static const Duration eventSuccessCeremonyTick = Duration(milliseconds: 100);
   static const Duration slow = Duration(milliseconds: 420);
   static const Duration afterglowBeatEntry = Duration(milliseconds: 480);
   static const Duration afterglowCountUp = Duration(milliseconds: 600);
@@ -1778,14 +1782,10 @@ abstract final class CatchMotion {
   static const Duration authOtpResendCooldown = Duration(seconds: 60);
   static const Duration revealDrop = Duration(milliseconds: 280);
   static const Duration revealSettle = Duration(milliseconds: 170);
-  static const Duration revealCinematicTick = Duration(seconds: 1);
-  static const Duration revealCinematicClimax = Duration(milliseconds: 1500);
-  static const Duration revealCinematicSettle = Duration(milliseconds: 700);
   static const Duration cinematicShort = Duration(seconds: 4);
   static const Duration cinematicMedium = Duration(seconds: 6);
   static const Duration noticeAutoDismiss = Duration(seconds: 6);
   static const Duration liveRevealClockTick = Duration(milliseconds: 250);
-  static const Duration ambientLoop = Duration(seconds: 16);
   static const Duration pulse = Duration(milliseconds: 700);
   static const Duration skeletonShimmer = Duration(milliseconds: 1200);
   static const Duration startupIndicatorDelay = Duration(milliseconds: 600);
@@ -1797,6 +1797,12 @@ abstract final class CatchMotion {
   static const Duration welcomeRevealStart = Duration(milliseconds: 520);
   static const Duration welcomeRevealStagger = Duration(milliseconds: 80);
   static const int welcomeReelSpins = 1;
+
+  static Duration eventSuccessCountdown(int seconds) =>
+      Duration(seconds: seconds);
+
+  static Duration eventSuccessPulsePeriod(int milliseconds) =>
+      Duration(milliseconds: milliseconds);
   static const double welcomeSpinCurvePower = 3.0;
   static const Curve welcomeRevealCurve = Curves.easeOutCubic;
 
@@ -2276,6 +2282,8 @@ abstract final class CatchLayout {
   static const double eventSuccessStageGlyphExtent = 88.0;
   static const double eventSuccessStageGlyphIconSize = CatchSpacing.s10;
   static const double eventSuccessArrivalRingExtent = 140.0;
+  static const double eventSuccessVenueQrExtent = 168.0;
+  static const double eventSuccessVenueQrErrorMaxWidth = 320.0;
   static const double eventSuccessCountdownDialWidthFactor = 0.68;
   static const double eventSuccessCountdownDialMinExtent = 168.0;
   static const double eventSuccessCountdownDialMaxExtent = 228.0;

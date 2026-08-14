@@ -6,6 +6,7 @@ class EventSuccessActivityProfile {
     required this.formatLabel,
     required this.interactionModel,
     required this.playbook,
+    required this.durationShape,
     required this.structureConfig,
     required this.phoneAvailability,
     required this.rotationSuitability,
@@ -13,6 +14,7 @@ class EventSuccessActivityProfile {
     required this.compatibilityPolicy,
     required this.matchingObjective,
     required this.unitOutcome,
+    required this.accountability,
     required this.assignmentResolution,
     required this.summary,
     required this.recommendations,
@@ -46,12 +48,14 @@ class EventSuccessActivityProfile {
       compatibilityPolicy,
     );
     final unitOutcome = _unitOutcomeFor(format, interactionModel);
+    final accountability = _accountabilityFor(format, interactionModel);
     final assignmentResolution = _assignmentResolutionFor(assignmentAlgorithm);
     final playbook = _playbookForFormat(
       format,
       interactionModel,
       compatibilityPolicy,
     );
+    final durationShape = _durationShapeFor(format, interactionModel);
     final structureConfig =
         EventSuccessStructureConfig.defaultForInteractionModel(
           interactionModel,
@@ -78,6 +82,7 @@ class EventSuccessActivityProfile {
       formatLabel: format.label,
       interactionModel: interactionModel,
       playbook: playbook,
+      durationShape: durationShape,
       structureConfig: structureConfig,
       phoneAvailability: _phoneAvailabilityFor(format, interactionModel),
       rotationSuitability: _rotationSuitabilityFor(format),
@@ -85,6 +90,7 @@ class EventSuccessActivityProfile {
       compatibilityPolicy: compatibilityPolicy,
       matchingObjective: matchingObjective,
       unitOutcome: unitOutcome,
+      accountability: accountability,
       assignmentResolution: assignmentResolution,
       summary: _summaryFor(interactionModel),
       recommendations: recommendations,
@@ -98,6 +104,7 @@ class EventSuccessActivityProfile {
   final String formatLabel;
   final EventInteractionModel interactionModel;
   final EventSuccessPlaybook playbook;
+  final EventSuccessDurationShape durationShape;
   final EventSuccessStructureConfig structureConfig;
   final EventSuccessPhoneAvailability phoneAvailability;
   final EventSuccessRotationSuitability rotationSuitability;
@@ -105,6 +112,7 @@ class EventSuccessActivityProfile {
   final EventSuccessCompatibilityPolicy compatibilityPolicy;
   final EventSuccessMatchingObjective matchingObjective;
   final EventSuccessUnitOutcome unitOutcome;
+  final EventSuccessAccountability accountability;
   final EventSuccessAssignmentResolution assignmentResolution;
   final String summary;
   final List<EventSuccessModuleRecommendation> recommendations;

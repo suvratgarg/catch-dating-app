@@ -1288,6 +1288,38 @@ abstract class AppLocalizations {
   /// **'Message to attendees'**
   String get eventSuccessEventSuccessSetupBodyTitleMessageToAttendees;
 
+  /// Host setting for the end-of-event conversation graph consent default.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation check defaults'**
+  String get eventSuccessEventSuccessSetupBodyTitleConversationCheckDefaults;
+
+  /// Opt-in conversation graph mode label.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask everyone to choose'**
+  String get eventSuccessEventSuccessSetupBodyLabelAskEveryoneToChoose;
+
+  /// Opt-in conversation graph mode explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned people appear first as suggestions, but nobody is selected.'**
+  String
+  get eventSuccessEventSuccessSetupBodyTextAssignedPeopleAppearFirstButNobodyIsSelected;
+
+  /// Opt-out conversation graph mode label.
+  ///
+  /// In en, this message translates to:
+  /// **'Preselect assigned people'**
+  String get eventSuccessEventSuccessSetupBodyLabelPreselectAssignedPeople;
+
+  /// Opt-out conversation graph mode explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned people start selected; attendees can remove anyone before saving.'**
+  String
+  get eventSuccessEventSuccessSetupBodyTextAssignedPeopleStartSelectedAndCanBeRemoved;
+
   /// Product copy used by lib/event_success/presentation/event_success_setup_body.dart (placeholder).
   ///
   /// In en, this message translates to:
@@ -1330,6 +1362,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reset'**
   String get eventSuccessEventSuccessSetupBodyLabelReset;
+
+  /// Primary saved event-format row in Event Success setup.
+  ///
+  /// In en, this message translates to:
+  /// **'Format'**
+  String get eventSuccessEventSuccessSetupBodyTitleFormat;
+
+  /// Opens the advanced Event Success module controls after the format summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Customize'**
+  String get eventSuccessEventSuccessSetupBodyLabelCustomizeTools;
+
+  /// Closes the Event Success module controls without changing their values.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get eventSuccessEventSuccessSetupBodyLabelDoneCustomizing;
 
   /// Product copy used by lib/event_success/presentation/event_success_setup_body.dart (Text).
   ///
@@ -3822,7 +3872,7 @@ abstract class AppLocalizations {
   /// Supporting copy for the host attendee check-in QR disclosure.
   ///
   /// In en, this message translates to:
-  /// **'Show this code to attendees as they arrive.'**
+  /// **'Keep this live code on screen as attendees arrive. It refreshes automatically and cannot be printed for later check-in.'**
   String get hostsHostEventAttendancePanelBodyCheckInQr;
 
   /// Button label for sharing the no-download attendee runtime link.
@@ -3840,7 +3890,7 @@ abstract class AppLocalizations {
   /// Message used when a host shares the no-download attendee runtime link.
   ///
   /// In en, this message translates to:
-  /// **'Open this link when you arrive to check in and join the Event Success experience: {runtimeUrl}'**
+  /// **'Open this link to join the event companion. Scan the Host\'\'s live QR at the venue to check in: {runtimeUrl}'**
   String hostsHostEventAttendancePanelRuntimeShareText({
     required String runtimeUrl,
   });
@@ -7492,7 +7542,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart (Text).
   ///
   /// In en, this message translates to:
-  /// **'Location still verifies the venue after the QR is scanned.'**
+  /// **'Only the Host\'\'s current live QR confirms venue presence. Printed and shared join codes cannot check you in.'**
   String
   get eventSuccessEventSuccessCompanionLiveCardsTextLocationStillVerifiesThe;
 
@@ -7834,6 +7884,45 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Close with one suggested first message after mutual matches.'**
   String get eventSuccessEventSuccessHostLiveSubtitleCloseWithOneSuggested;
+
+  /// Title for the Host presence and late-arrival control.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest presence'**
+  String get eventSuccessEventSuccessHostLiveTitleGuestPresence;
+
+  /// Explains the immutable published-round boundary.
+  ///
+  /// In en, this message translates to:
+  /// **'Presence can update the next prepared round. Published rounds stay unchanged.'**
+  String
+  get eventSuccessEventSuccessHostLiveSubtitlePresenceNeverChangesPublished;
+
+  /// Host prompt when monitored guest heartbeats expire.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} guests may have left. Regenerate the next round before publishing?'**
+  String eventSuccessEventSuccessHostLiveTextGuestsMayHaveLeft({
+    required int count,
+  });
+
+  /// Host action after reviewing likely departed guests.
+  ///
+  /// In en, this message translates to:
+  /// **'Regenerate next round'**
+  String get eventSuccessEventSuccessHostLiveLabelRegenerateNextRound;
+
+  /// Host late-arrival section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Late arrivals'**
+  String get eventSuccessEventSuccessHostLiveTitleLateArrivals;
+
+  /// Host action to place or hold a late attendee.
+  ///
+  /// In en, this message translates to:
+  /// **'Place next round'**
+  String get eventSuccessEventSuccessHostLiveLabelPlaceNextRound;
 
   /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (title).
   ///
@@ -8232,6 +8321,22 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Feedback'**
   String get eventSuccessEventSuccessHostReportLabelFeedback;
+
+  /// Aggregate count of respondents who confirmed no conversations; no attendee edges are shown.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation exclusions'**
+  String get eventSuccessEventSuccessHostReportLabelConversationExclusions;
+
+  /// Aggregate conversation graph response coverage for the host recap.
+  ///
+  /// In en, this message translates to:
+  /// **'{conversationGraphResponseCount}/{checkedInCount} responses'**
+  String
+  eventSuccessEventSuccessHostReportLabelConversationgraphresponsecountCheckedincountResponses({
+    required Object conversationGraphResponseCount,
+    required Object checkedInCount,
+  });
 
   /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).
   ///
@@ -12545,32 +12650,8 @@ abstract class AppLocalizations {
   /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
   ///
   /// In en, this message translates to:
-  /// **'Ask what kind of ride they want to do next.'**
-  String get eventSuccessEventSuccessConversationCueCopyBodyAskWhatKindOf;
-
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'Ask what part of class helped them switch off.'**
-  String get eventSuccessEventSuccessConversationCueCopyBodyAskWhatPartOf;
-
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'Ask what lift or movement they are working on right now.'**
-  String get eventSuccessEventSuccessConversationCueCopyBodyAskWhatLiftOr;
-
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
-  ///
-  /// In en, this message translates to:
   /// **'Ask which round they wanted more questions from.'**
   String get eventSuccessEventSuccessConversationCueCopyBodyAskWhichRoundThey;
-
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'Ask which stop they would come back to with friends.'**
-  String get eventSuccessEventSuccessConversationCueCopyBodyAskWhichStopThey;
 
   /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
   ///
@@ -12590,35 +12671,53 @@ abstract class AppLocalizations {
   /// **'Ask what made them say yes to this event.'**
   String get eventSuccessEventSuccessConversationCueCopyBodyAskWhatMadeThem;
 
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (title).
+  /// Title for a light-disclosure social mission.
   ///
   /// In en, this message translates to:
-  /// **'First live cue'**
-  String get eventSuccessEventSuccessConversationCueCopyTitleFirstLiveCue;
+  /// **'Easy start'**
+  String get eventSuccessSocialMissionTitleLight;
 
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
+  /// Title for a personal-disclosure social mission.
   ///
   /// In en, this message translates to:
-  /// **'Swap one practical tip before the next round or cooldown.'**
-  String get eventSuccessEventSuccessConversationCueCopyBodySwapOnePracticalTip;
+  /// **'A little more personal'**
+  String get eventSuccessSocialMissionTitlePersonal;
 
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
+  /// Title for a reflective-disclosure social mission.
   ///
   /// In en, this message translates to:
-  /// **'Find one person you have not spoken to and ask one specific follow-up.'**
-  String get eventSuccessEventSuccessConversationCueCopyBodyFindOnePersonYou;
+  /// **'One level deeper'**
+  String get eventSuccessSocialMissionTitleReflective;
 
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (title).
+  /// Reciprocal personal-disclosure social mission.
   ///
   /// In en, this message translates to:
-  /// **'Second touch'**
-  String get eventSuccessEventSuccessConversationCueCopyTitleSecondTouch;
+  /// **'Take turns sharing something you changed your mind about recently and what shifted it.'**
+  String get eventSuccessSocialMissionBodyPersonal;
 
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (visibleCopy).
+  /// Reciprocal reflective-disclosure social mission.
   ///
   /// In en, this message translates to:
-  /// **'Optional'**
-  String get eventSuccessEventSuccessConversationCueCopyVisiblecopyOptional;
+  /// **'Take turns answering: what do you hope the people close to you understand about you?'**
+  String get eventSuccessSocialMissionBodyReflective;
+
+  /// Label for a light-disclosure social mission.
+  ///
+  /// In en, this message translates to:
+  /// **'Light disclosure'**
+  String get eventSuccessSocialMissionLevelLight;
+
+  /// Label for a personal-disclosure social mission.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal disclosure'**
+  String get eventSuccessSocialMissionLevelPersonal;
+
+  /// Label for a reflective-disclosure social mission.
+  ///
+  /// In en, this message translates to:
+  /// **'Reflective disclosure'**
+  String get eventSuccessSocialMissionLevelReflective;
 
   /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
   ///
@@ -12635,33 +12734,8 @@ abstract class AppLocalizations {
   /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
   ///
   /// In en, this message translates to:
-  /// **'That session had real energy. What kind of ride do you usually like?'**
-  String get eventSuccessEventSuccessConversationCueCopyBodyThatSessionHadReal;
-
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'That class was a good reset. Do you usually go for flow or stretch?'**
-  String get eventSuccessEventSuccessConversationCueCopyBodyThatClassWasA;
-
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'Nice training with you today. What are you building toward right now?'**
-  String get eventSuccessEventSuccessConversationCueCopyBodyNiceTrainingWithYou;
-
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
-  ///
-  /// In en, this message translates to:
   /// **'I liked being on a quiz night with you. Which round was your favorite?'**
   String get eventSuccessEventSuccessConversationCueCopyBodyILikedBeingOn;
-
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'Fun meeting you tonight. Which stop won for you?'**
-  String
-  get eventSuccessEventSuccessConversationCueCopyBodyFunMeetingYouTonight;
 
   /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
   ///
@@ -13164,6 +13238,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'self-check-in'**
   String get eventSuccessEventSuccessCompanionBodyScreenVisiblecopySelfCheckIn;
+
+  /// Attendee title for a Host-resolved late-arrival outcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Your next round'**
+  String get eventSuccessEventSuccessCompanionBodyScreenTitleLateArrival;
 
   /// Product copy used by lib/event_success/presentation/event_success_companion_body_screen.dart (visibleCopy).
   ///
@@ -15928,6 +16008,58 @@ abstract class AppLocalizations {
     required int total,
     required String stage,
   });
+
+  /// Numbered transition label for a continuous run of show.
+  ///
+  /// In en, this message translates to:
+  /// **'Beat {number}'**
+  String eventSuccessEventSuccessHostLiveLabelBeatNumber({required int number});
+
+  /// Numbered transition label for a round-based run of show.
+  ///
+  /// In en, this message translates to:
+  /// **'Round {number}'**
+  String eventSuccessEventSuccessHostLiveLabelRoundNumber({
+    required int number,
+  });
+
+  /// First transition label for a course-based run of show.
+  ///
+  /// In en, this message translates to:
+  /// **'First course'**
+  String get eventSuccessEventSuccessHostLiveLabelFirstCourse;
+
+  /// Second transition label for a course-based run of show.
+  ///
+  /// In en, this message translates to:
+  /// **'Second course'**
+  String get eventSuccessEventSuccessHostLiveLabelSecondCourse;
+
+  /// Third transition label for a course-based run of show.
+  ///
+  /// In en, this message translates to:
+  /// **'Third course'**
+  String get eventSuccessEventSuccessHostLiveLabelThirdCourse;
+
+  /// Fourth transition label for a course-based run of show.
+  ///
+  /// In en, this message translates to:
+  /// **'Fourth course'**
+  String get eventSuccessEventSuccessHostLiveLabelFourthCourse;
+
+  /// Fallback numbered transition label for later courses.
+  ///
+  /// In en, this message translates to:
+  /// **'Course {number}'**
+  String eventSuccessEventSuccessHostLiveLabelCourseNumber({
+    required int number,
+  });
+
+  /// Numbered transition label for a segmented run of show.
+  ///
+  /// In en, this message translates to:
+  /// **'Leg {number}'**
+  String eventSuccessEventSuccessHostLiveLabelLegNumber({required int number});
 
   /// Kicker above the next live-guide step in Control Room.
   ///
@@ -20115,6 +20247,75 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No checked-in events yet.'**
   String get hostCustomersNoAttendance;
+
+  /// Host accountability sweep heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Return sweep'**
+  String get eventSuccessAccountabilityTitle;
+
+  /// Explains the non-alarmist accountability sweep boundary.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark each checked-in guest as returned or departed. People may leave quietly; this is a safety aid, not a checkout requirement.'**
+  String get eventSuccessAccountabilitySubtitle;
+
+  /// Resolved attendee count in the Host sweep.
+  ///
+  /// In en, this message translates to:
+  /// **'{resolved} of {total} marked'**
+  String eventSuccessAccountabilityProgress({
+    required int resolved,
+    required int total,
+  });
+
+  /// Empty accountability sweep state.
+  ///
+  /// In en, this message translates to:
+  /// **'No checked-in guests to review.'**
+  String get eventSuccessAccountabilityEmpty;
+
+  /// Unresolved accountability choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Not marked'**
+  String get eventSuccessAccountabilityUnresolved;
+
+  /// Returned accountability choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Returned'**
+  String get eventSuccessAccountabilityReturned;
+
+  /// Departed accountability choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Departed'**
+  String get eventSuccessAccountabilityDeparted;
+
+  /// Completion warning title for an unresolved sweep.
+  ///
+  /// In en, this message translates to:
+  /// **'Some guests aren’t marked yet'**
+  String get eventSuccessAccountabilityWarningTitle;
+
+  /// Normalizes quiet departures while warning before completion.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 checked-in guest isn’t marked returned or departed.} other{{count} checked-in guests aren’t marked returned or departed.}} People sometimes leave without checking out. Review the list if useful, or finish anyway.'**
+  String eventSuccessAccountabilityWarningMessage({required int count});
+
+  /// Dismisses completion to review unresolved guests.
+  ///
+  /// In en, this message translates to:
+  /// **'Review sweep'**
+  String get eventSuccessAccountabilityReviewAction;
+
+  /// Acknowledges unresolved guests and completes the event.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish anyway'**
+  String get eventSuccessAccountabilityFinishAnywayAction;
 }
 
 class _AppLocalizationsDelegate

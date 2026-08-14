@@ -528,12 +528,14 @@
         "importEventAttendees",
         "markEventAttendeeAttendance",
         "setEventAttendeeAttendance",
+        "setEventSuccessAccountabilityResolution",
         "registerPublicEvent",
         "onEventParticipationRosterProjected",
         "onOrganizerContactEventEdgeInviteAttributed"
       ],
       "migrationNotes": [
-        "Private event-scoped operational roster across Catch bookings, Host imports/manual rows, and web OTP registration; linkedUid is optional and never synthetic."
+        "Private event-scoped operational roster across Catch bookings, Host imports/manual rows, and web OTP registration; linkedUid is optional and never synthetic.",
+        "Accountability resolution is valid only for the exact checkedInAt timestamp recorded alongside it, so a later check-in reopens the sweep without deleting audit context first."
       ]
     },
     {
@@ -775,6 +777,41 @@
       "migrationNotes": ["Thirty-day TTL receipt prevents duplicate sync operations and records bounded counts without retaining provider payloads."]
     },
     {
+      "id": "eventVenueSessions",
+      "path": "eventVenueSessions/{sessionId}",
+      "rulesMatch": "/eventVenueSessions/{sessionId}",
+      "typescriptInterface": "EventVenueSessionDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "createEventVenueSession callable",
+      "read": "server only; signed token is returned by the callable",
+      "write": "server only",
+      "exportedFunctions": ["createEventVenueSession"],
+      "migrationNotes": [
+        "Short TTL documents back the live Host QR and cannot be used as printable attendance authority."
+      ]
+    },
+    {
+      "id": "eventVenueSessionRedemptions",
+      "path": "eventVenueSessionRedemptions/{redemptionId}",
+      "rulesMatch": "/eventVenueSessionRedemptions/{redemptionId}",
+      "typescriptInterface": "EventVenueSessionRedemptionDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "attendance and First Hello callables",
+      "read": "server only; callers receive bounded callable results",
+      "write": "server only",
+      "exportedFunctions": [
+        "selfCheckInAttendance",
+        "checkInEventRuntime",
+        "startEventSuccessFirstHelloMission",
+        "completeEventSuccessFirstHelloMission"
+      ],
+      "migrationNotes": [
+        "A session is multi-attendee, but each authenticated attendee may redeem it only once."
+      ]
+    },
+    {
       "id": "eventRuntimeParticipants",
       "path": "eventRuntimeParticipants/{participantId}",
       "rulesMatch": "/eventRuntimeParticipants/{participantId}",
@@ -791,6 +828,39 @@
       ],
       "migrationNotes": [
         "Event-scoped runtime identity only; it does not imply a Consumer profile, event participation, dating match, or marketing grant."
+      ]
+    },
+    {
+      "id": "eventSuccessPresence",
+      "path": "eventSuccessPresence/{presenceId}",
+      "rulesMatch": "/eventSuccessPresence/{presenceId}",
+      "typescriptInterface": "EventSuccessPresenceDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "Event Success attendee heartbeat callable",
+      "read": "server only; Hosts receive a derived callable summary",
+      "write": "server only",
+      "exportedFunctions": [
+        "heartbeatEventSuccessPresence",
+        "getEventSuccessPresenceSummary"
+      ],
+      "migrationNotes": [
+        "Presence state is derived from heartbeatAt with deployment-configured windows; it is never persisted as a stale enum."
+      ]
+    },
+    {
+      "id": "eventSuccessLateArrivals",
+      "path": "eventSuccessLateArrivals/{resolutionId}",
+      "rulesMatch": "/eventSuccessLateArrivals/{resolutionId}",
+      "typescriptInterface": "EventSuccessLateArrivalDocument",
+      "dartModel": "lib/event_success/domain/event_success_presence.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "Event Success Host late-arrival callable",
+      "read": "attendee own deterministic eventId_uid document or authorized event Host; no list",
+      "write": "server only",
+      "exportedFunctions": ["resolveEventSuccessLateArrival"],
+      "migrationNotes": [
+        "The resolution may patch only a Host-only unpublished draft; published assignments are immutable."
       ]
     },
     {

@@ -75,6 +75,8 @@ mixin _EventSuccessPlanRepository on _EventSuccessRepositoryCore {
           'contextualOpenersEnabled': plan.contextualOpenersEnabled,
           'compatibilityAffectsRanking': plan.compatibilityAffectsRanking,
           'questionnaireConfig': plan.questionnaireConfig.toJson(),
+          'conversationGraphConsentMode':
+              plan.conversationGraphConsentMode.name,
           'attendeePrompt': plan.attendeePrompt,
           'updatedAt': FieldValue.serverTimestamp(),
         });
@@ -172,12 +174,14 @@ mixin _EventSuccessPlanRepository on _EventSuccessRepositoryCore {
   Future<void> completePlan({
     required String eventId,
     required int expectedRevision,
+    required bool accountabilityAcknowledged,
   }) => withBackendErrorContext(
     () => _callLiveAction(
       EventSuccessLiveActionCallableRequest(
         eventId: eventId,
         expectedRevision: expectedRevision,
         action: 'complete',
+        accountabilityAcknowledged: accountabilityAcknowledged,
       ),
     ),
     context: const BackendErrorContext(

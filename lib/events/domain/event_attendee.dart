@@ -21,6 +21,8 @@ enum EventAttendeeStatus {
   cancelled,
 }
 
+enum EventSuccessAccountabilityResolution { returned, departed }
+
 enum EventAttendeeImportFormat { csv, xlsx, manual }
 
 @freezed
@@ -59,6 +61,10 @@ abstract class EventAttendee with _$EventAttendee {
     @NullableTimestampConverter() DateTime? linkedAt,
     @Default(0) int attendanceRevision,
     EventAttendeeStatus? preCheckInStatus,
+    EventSuccessAccountabilityResolution? accountabilityResolution,
+    @NullableTimestampConverter() DateTime? accountabilityResolvedForCheckInAt,
+    @NullableTimestampConverter() DateTime? accountabilityResolvedAt,
+    String? accountabilityResolvedBy,
   }) = _EventAttendee;
 
   factory EventAttendee.fromJson(Map<String, dynamic> json) =>
@@ -66,6 +72,15 @@ abstract class EventAttendee with _$EventAttendee {
 
   bool get isCheckedIn => status == EventAttendeeStatus.checkedIn;
   bool get hasEventIdentity => linkedUid != null;
+
+  EventSuccessAccountabilityResolution? get currentAccountabilityResolution {
+    final checkIn = checkedInAt;
+    final resolvedFor = accountabilityResolvedForCheckInAt;
+    if (checkIn == null || resolvedFor == null) return null;
+    return checkIn.isAtSameMomentAs(resolvedFor)
+        ? accountabilityResolution
+        : null;
+  }
 }
 
 class EventAttendeeImportRow {

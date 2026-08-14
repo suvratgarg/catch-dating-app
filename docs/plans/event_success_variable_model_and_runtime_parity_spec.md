@@ -1,7 +1,7 @@
 ---
 doc_id: event_success_variable_model_and_runtime_parity_spec
-version: 1.4.0
-updated: 2026-08-13
+version: 1.11.0
+updated: 2026-08-14
 owner: event_success
 status: active
 ---
@@ -228,11 +228,13 @@ variable only adds grouping and labelling semantics.
 | --- | --- |
 | `none` | no end-of-event body count |
 | `rollCall` | host confirms each attendee is present at a declared beat |
-| `sweep` | host must resolve every checked-in attendee to returned/departed before the event can be completed |
+| `sweep` | host resolves checked-in attendees to returned/departed and explicitly acknowledges any unresolved guests before completion |
 
-`sweep` blocks event completion until every checked-in attendee is explicitly
-resolved. This is the run-club and outdoor-activity safety obligation and it is
-currently carried in an organizer's head.
+`sweep` raises a loud Host warning while any checked-in attendee is unresolved,
+but it does not hard-block completion. The Host can review the list or choose
+`Finish anyway` with explicit acknowledgement. This preserves the run-club and
+outdoor-activity safety aid without treating a quiet or unannounced departure
+as an incident.
 
 Departure resolution also feeds A.9.
 
@@ -443,6 +445,27 @@ same input values. If the spike fails, fall back to Lottie for playback-only
 motifs plus contracted CSS transforms for the driven countdown; the Layer 1
 contract makes that fallback acceptable rather than a rewrite.
 
+### T13 spike result — fallback selected
+
+The 2026-08-14 production-bundle spike rejected Rive for this venue-network
+surface. Against a minimal React baseline of 59.63 KB gzip, the current
+`@rive-app/react-canvas-lite` path added 49.13 KB gzip of JavaScript, a
+326.40 KB gzip canvas-lite WASM runtime, and a 58.79 KB sample `.riv` artboard:
+about 434 KB of incremental compressed transfer before Catch page content. The
+current Event Runtime route chunk was 10.21 KB gzip. That cost fails the
+congested-network gate, so the conjunctive same-artboard rendering comparison
+did not proceed after the cost failure.
+
+The specified fallback is therefore authoritative: three checked-in Lottie
+vector assets (`theatrical`, `pulse`, `sunrise`) cover the playback-only stage,
+arrival, and reveal roles, while Flutter widget transforms and CSS transforms
+drive the countdown from the generated Layer 1 timeline, seed, progress, and
+participant count. `lottie-web`'s light player is dynamically imported only on
+the Event Runtime surface; the measured minimal spike added 47.57 KB gzip of
+code-splittable JavaScript and no WASM transfer. Flutter uses the same asset
+documents through `lottie`. This resolves the Rive-versus-Lottie decision
+without adding an event-format fork or web audio.
+
 ## B.4 Layer 3 — allow divergence below the marquee
 
 Chip bounce, press springs, idle breathing, and ink-replacement
@@ -638,8 +661,9 @@ exclusion, never who named whom.
 ## D.4 Roll call and sweep
 
 The `accountability` variable's runtime surface. Generic mechanism, deep utility
-for run clubs and outdoor formats. Blocks event completion until every
-checked-in attendee is resolved.
+for run clubs and outdoor formats. Unresolved checked-in attendees produce a
+Host warning and explicit completion acknowledgement, never an inescapable
+completion lock.
 
 ## D.5 Live standings
 
@@ -706,14 +730,14 @@ docs are updated. Update this table in the same commit as the tranche.
 - [x] T5 Spatial layout model and control room
 - [x] T6 `resourceCapacity` and `sequence` topology
 - [x] T7 `unitOutcome` and live standings
-- [ ] T8 Presence and late arrivals
-- [ ] T9 Signed venue session replaces GPS
-- [ ] T10 Conversation graph
-- [ ] T11 `accountability` sweep
-- [ ] T12 Presentation contract and parity foundation
-- [ ] T13 Marquee visual parity
-- [ ] T14 `durationShape` and format-first setup
-- [ ] T15 Pre-event moment and escalating disclosure
+- [x] T8 Presence and late arrivals
+- [x] T9 Signed venue session replaces GPS
+- [x] T10 Conversation graph
+- [x] T11 `accountability` sweep
+- [x] T12 Presentation contract and parity foundation
+- [x] T13 Marquee visual parity
+- [x] T14 `durationShape` and format-first setup
+- [x] T15 Pre-event moment and escalating disclosure
 
 **T1 — `matchingObjective` and the `coverage` default.** `effort: high`
 Owner: `functions/src/eventSuccess/compatibilityPolicy.ts`, `assignmentOptimizer.ts`, `formatPrimitives.ts`, `lib/event_success/domain/event_success_activity_profile/`.
@@ -791,8 +815,9 @@ host-aggregate projection contains no name-to-name edges.
 
 **T11 — `accountability` sweep.** `effort: standard`
 Owner: control room, event completion path.
-A.8 and D.4. Tests: completion blocked while any checked-in attendee is
-unresolved.
+A.8 and D.4. Tests: unresolved checked-in attendees raise the completion
+warning; review does not complete; explicit `Finish anyway` acknowledgement
+does complete.
 
 **T12 — Presentation contract and parity foundation.** `effort: standard`
 Owner: `contracts/catalogs/`, `lib/event_success/presentation/event_success_companion_screen_state.dart`, `website/src/features/eventRuntime/`.
@@ -817,6 +842,18 @@ customization remains reachable and lossless.
 **T15 — Pre-event moment and escalating disclosure.** `effort: standard`
 Owner: `website/src/features/eventRuntime/`, `socialMissions` prompt data.
 D.6 and D.7.
+
+Implemented: the runtime profile now binds exactly one required pre-event field
+to the resolved `interactionModel`: pace band, skill band, dietary/seating
+notes, questionnaire answers, or quiz team/arrival group. The existing
+server-owned `needsInput`/`ready` transition remains the non-sensitive source
+for readiness counts. Pace and skill answers enter assignment attributes,
+mixer answers enter private compatibility responses, and quiz team names use
+the existing arrival-group constraint; dinner data does not make the still-
+unsupported `tableSeating` algorithm appear supported. `socialMissions` prompt
+ids and disclosure levels are authored in the generated cross-runtime catalog.
+Both runtimes resolve step 0 to light, step 1 to personal, and later steps to
+reflective disclosure without sampling or branching on `ActivityKind`.
 
 ---
 
@@ -865,11 +902,17 @@ D.6 and D.7.
 
 # Open Questions For The Owner
 
-1. Rive versus Lottie-plus-contracted-CSS, pending the B.3 spike result.
-2. Whether `sweep` should hard-block event completion or warn loudly.
+1. Resolved in T13: the measured Rive transfer cost failed the venue-network
+   spike, so both runtimes use the specified Lottie-plus-contracted-transforms
+   fallback.
+2. Resolved in T11: `sweep` warns loudly and requires explicit Host
+   acknowledgement, but never hard-blocks completion. Quiet departures are a
+   normal possibility, not automatic evidence of danger.
 3. Resolved in T3: the exclusion ledger is time-based for every format, with a
    configurable threshold and a 40-minute default.
-4. Whether the conversation graph is opt-in or opt-out for attendees.
+4. Resolved in T10: explicit opt-in is the default, with assigned attendees
+   suggested but unselected. Hosts may configure opt-out before setup freezes;
+   assigned attendees are then preselected and remain removable or skippable.
 5. Host analytics anonymity threshold (carried over from
    [docs/event_success.md](../event_success.md), still open): 3, 5, or dynamic
    by event size.
@@ -880,3 +923,8 @@ D.6 and D.7.
    not required.
 8. Resolved in T5: all five contracted shapes ship together: `round`, `rect`,
    `row`, `court`, and `zone`.
+9. Resolved in T8: checked-in companion sessions heartbeat every 30 seconds;
+   server-derived presence is `present` through 90 seconds, `idle` through five
+   minutes, and `likelyDeparted` after five minutes. These are bounded deployment
+   defaults rather than hard-coded client policy. Hosts explicitly confirm
+   regeneration or late placement, and published rounds remain immutable.

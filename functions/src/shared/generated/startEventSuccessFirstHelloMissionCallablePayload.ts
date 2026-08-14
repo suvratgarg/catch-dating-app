@@ -7,6 +7,5 @@
  */
 export interface StartEventSuccessFirstHelloMissionCallablePayload {
   eventId: string;
-  latitude?: number | null;
-  longitude?: number | null;
+  venueSessionToken: string;
 }

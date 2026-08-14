@@ -1,7 +1,7 @@
 ---
 doc_id: event_success
-version: 1.11.0
-updated: 2026-08-13
+version: 1.18.0
+updated: 2026-08-14
 owner: recursive_audit_loop
 status: active
 ---
@@ -144,6 +144,22 @@ complete ordering. Pace pods default to `completion`, team rotations to
 an explicit saved value wins. The Functions resolver enumerates this axis with
 the other primitives rather than branching on an event name.
 
+`accountability` is another saved, format-neutral primitive with `none`,
+`rollCall`, and `sweep`. `pacePods` defaults to `sweep`; every other interaction
+model defaults to `none`, and an explicit event-format value wins. Runtime code
+branches on that primitive only, never on `activityKind`. T11 implements the
+end-of-event `sweep`; `rollCall` remains a distinct value and does not silently
+inherit sweep completion behavior.
+
+`durationShape` gives the existing flat run-of-show list format-owned grouping
+and transition vocabulary without creating a second schedule model. The four
+values are `continuous`, `rounds`, `courses`, and `segments`; saved format
+primitives may override the playbook default. Pace-pod formats default to
+segments, paired/team/free-form formats to rounds, seated-table formats to
+courses, and host-led/open formats to continuous. The Host control room labels
+the same next-step transition as a Beat, Round, course, or Leg from this
+primitive. Screens do not branch on `activityKind` to choose that language.
+
 V1 supports set-based pair rotations and generic micro-pods, plus
 capacity-aware `sequence` scheduling for pair rotations. Sequence scheduling
 uses the saved `resourceCapacity.concurrentUnits` value rather than a
@@ -206,13 +222,18 @@ rather than embedded in event-type logic.
 |---|---|
 | `eventSuccessPlans/{eventId}` | Host-owned setup plus backend-owned live state. `liveControlRevision`, draft revision, and published rotation/reveal indexes are callable-owned. Setup fields freeze once participant activity/start/live status begins; active participants can read through event-success rules. |
 | `eventSuccessFeedback/{eventId_uid}` | Attendee-owned decomposed post-event feedback. Raw notes and safety details are private to attendee/backend. |
+| `eventSuccessConversationGraphs/{eventId_uid}` | Server-written post-event conversation edges. Only the subject attendee may get the deterministic document; Hosts, other attendees, lists, and every direct client write are denied. |
 | `eventSafetyReports/{feedbackId}` | Backend-owned Catch-private safety mirror for concerning feedback. |
 | `eventSuccessPreferences/{eventId_uid}` | Attendee-owned live-guidance opt-outs. |
 | `eventSuccessCompatibilityResponses/{eventId_uid}` | Attendee-owned compatibility answers. Hosts cannot read individual answers. |
 | `eventSuccessWingmanRequests/{eventId_uid}` | Attendee consent document for host-visible introduction help. Target is not notified by this surface. |
 | `eventSuccessArrivalMissions/{eventId_uid}` | Server-owned First Hello mission. Attendee can read only their own mission; clients cannot create, update, list, or delete. |
+| `eventVenueSessions/{sessionId}` | Short-lived server-owned Host venue authority. Direct client reads/writes are denied; TTL uses `expiresAt`. |
+| `eventVenueSessionRedemptions/{sha256(eventId_sessionId_uid)}` | Server-only single-use receipt. One live session may admit multiple attendees, but the same authenticated attendee cannot replay it. TTL uses `expiresAt`. |
 | `eventSuccessAssignments/{eventId_moduleId_uid}` | Server-owned assignment docs for micro-pods/guided rotations. |
 | `eventSuccessAssignmentDrafts/{eventId_moduleId_uid}` | Server-owned, Host-readable next-round rotation drafts. Participants cannot read or write this collection. |
+| `eventSuccessPresence/{eventId_uid}` | Server-owned heartbeat timestamps for checked-in Flutter and no-download runtime attendees. Every direct read/write is denied; Host summaries are callable-derived. |
+| `eventSuccessLateArrivals/{eventId_uid}` | Server-owned Host resolution for one checked-in late attendee. The attendee and event Host may get the deterministic document; list and every direct write are denied. |
 | `eventSuccessUnitOutcomes/{eventId}` | Server-owned complete round facts for completion, score, or rank outcomes. Hosts may get the event document; attendee reads, list access, and every direct write are denied. |
 | `eventSuccessStandings/{eventId}` | Server-owned score/rank snapshots through each recorded round. Authorized Hosts, active participants, and ready external runtime identities may get the event document; list and direct writes are denied. |
 | `organizerEventSuccessLayouts/{organizerId_layoutId}` | Reusable organizer-owned parametric room-layout assets. Organizer managers may read their assets; all writes use the validated callable. Participants receive only the selected layout's timestamp-free projection through an authorized callable/runtime bootstrap. |
@@ -222,13 +243,76 @@ Schemas live under `contracts/firestore/` and generated outputs under
 `functions/src/shared/generated/`, `lib/core/schema_contracts/generated/`, and
 `tool/contracts/generated/`.
 
+### Presence and late arrivals
+
+An open checked-in companion sends `heartbeatEventSuccessPresence` from both
+Flutter and `website/src/features/eventRuntime/`. The server stores only the
+latest timestamp and derives `present`, `idle`, or `likelyDeparted` from its own
+clock. Deployment configuration owns the bounded policy:
+
+- `EVENT_SUCCESS_HEARTBEAT_INTERVAL_SECONDS` defaults to 30;
+- `EVENT_SUCCESS_PRESENCE_PRESENT_SECONDS` defaults to 90;
+- `EVENT_SUCCESS_PRESENCE_LIKELY_DEPARTED_SECONDS` defaults to 300.
+
+Invalid, out-of-order configuration fails back to the reviewed defaults.
+Attendees without any monitored heartbeat are not inferred to have departed.
+`getEventSuccessPresenceSummary` is Host-only and supplies the liveness prompt
+and newly checked-in late-arrival candidates. A Host explicitly regenerates the
+next draft after reviewing likely departures; the server never silently edits a
+live round.
+
+`resolveEventSuccessLateArrival` is Host-confirmed and shares the live revision
+fence. It may replace a `likelyDeparted` draft slot, turn a prepared sit-out into
+an open pair, extend an unpublished group up to its declared unit size, or hold
+the attendee for the next round with a visible reason. It writes only
+`eventSuccessAssignmentDrafts` and `eventSuccessLateArrivals`. Published
+`eventSuccessAssignments` are immutable through this operation.
+
+### Accountability sweep
+
+For `accountability: sweep`, the Host control room lists every currently
+checked-in `eventAttendees` row, including imported or unlinked guests. A Host
+may mark each row `returned` or `departed`. The server stores the exact
+`checkedInAt` timestamp beside the resolution; checking in again makes the old
+resolution stale and reopens that attendee without requiring a destructive
+history rewrite.
+
+Unresolved rows raise a completion warning. `Review sweep` returns to the list;
+`Finish anyway` sends an explicit acknowledgement and completes normally. This
+is intentionally a safety aid rather than a checkout mandate: guests may leave
+quietly, and unresolved state is not evidence of an incident. `none` and
+`rollCall` never inherit the sweep warning.
+
 First Hello check-in is modeled as an optional arrival module with server-owned
 mission assignment/completion. `startEventSuccessFirstHelloMission` verifies the
-attendee is signed up, the check-in window is open, the caller is within the
-tighter First Hello venue radius, the module is selected, and a compatible
-checked-in target exists. `completeEventSuccessFirstHelloMission` verifies the
-active mission and answer, rechecks location/block state, records only the
-observer's answer on the mission, and marks attendance.
+attendee is signed up, the check-in window is open, a current signed Host venue
+session is redeemed, the module is selected, and a compatible checked-in target
+exists. The mission persists that venue proof. `completeEventSuccessFirstHelloMission`
+verifies the active mission, unconsumed proof, answer, and block state, records
+only the observer's answer on the mission, consumes the proof, and marks
+attendance without a second location or QR claim.
+
+### Conversation graph
+
+After the event ends, a checked-in attendee sees one roster-chip prompt in the
+no-download runtime. Assigned attendees are shown first and the label is
+derived from the saved interaction primitive (running partners, teammates,
+tablemates, or opponents/partners); the screen and submission mechanism do not
+fork by activity kind. The server excludes the caller and every blocked
+relationship before returning candidates.
+
+The per-event `conversationGraphConsentMode` is configurable during Host setup.
+The reviewed default is `optIn`: assigned attendees are suggested but no chip
+is selected. `optOut` preselects only visible assigned attendees, and the
+attendee can remove selections or skip. Missing legacy configuration resolves
+to `optIn`.
+
+`getEventSuccessConversationGraph` and
+`submitEventSuccessConversationGraph` require an attended unified-roster edge
+and an ended event. Submission is idempotent and stores the raw UID edges only
+in the attendee-private conversation-graph document. The Host scorecard
+receives numeric response, conversation, assignment-opportunity, and exclusion
+counts. It never receives who named whom.
 
 ### Live Control Robustness
 
@@ -238,6 +322,11 @@ compares `expectedRevision` with `liveControlRevision`. Reveal publication is
 monotonic: an expired countdown is already published according to its persisted
 server anchor, and neither cancellation nor a later action can move the
 published reveal index backwards.
+
+For a sweep event, completion also reads the bounded operational roster. An
+unresolved row requires `accountabilityAcknowledged: true`; acknowledgement is
+the warning override, not a hard block. Already-complete actions remain
+idempotent.
 
 Guided rotations use a two-stage boundary. `generateEventSuccessRotations` and
 Host overrides write only `eventSuccessAssignmentDrafts`; the Firestore trigger
@@ -434,7 +523,12 @@ shape is:
     "gender": null,
     "interestedInGenders": [],
     "relationshipGoal": null,
-    "dateOfBirth": null
+    "dateOfBirth": null,
+    "paceBand": null,
+    "skillBand": null,
+    "dietaryAndSeatingNotes": null,
+    "questionnaireAnswerIds": [],
+    "teamName": null
   },
   "consents": {
     "runtimeTermsVersion": "event-runtime-v1",
@@ -459,9 +553,20 @@ gender-interest, relationship-goal or compatibility answers.
 `eventSuccessPlans/{eventId}` owns a server-compiled participant-requirements
 projection: questionnaire version; required and sensitive field ids from
 `displayName`, `gender`, `interestedInGenders`, `relationshipGoal`, and
-`dateOfBirth`; whether module opt-out is allowed; and module disclosure
-versions. Clients cannot widen or narrow requirements. Do not collect a
-sensitive value unless an enabled algorithm consumes it.
+`dateOfBirth`, plus exactly one resolved pre-event payload when the format
+requires it: `paceBand`, `skillBand`, `dietaryAndSeatingNotes`,
+`questionnaireAnswerIds`, or `teamName`; whether module opt-out is allowed; and
+module disclosure versions. Clients cannot widen or narrow requirements. Do
+not collect a sensitive value unless an enabled algorithm consumes it.
+
+The pre-event field is selected from the effective interaction model rather
+than `ActivityKind`. It is part of the ordinary required/completed-field state,
+so `accessStatus: ready` and `readyAt` remain the countable, non-sensitive Host
+readiness source. Pace/skill values are assignment attributes, mixer answers
+also update the private compatibility-response edge, and quiz team names update
+the existing operational `arrivalGroup`. Dinner constraints remain private and
+event-scoped; they do not enable or imitate `tableSeating`, and Host surfaces
+must not expose the answer while that engine remains unsupported.
 
 Existing private Consumer values may prefill the event form but must be
 confirmed. Event answers never overwrite `users/{uid}`. When the participant
@@ -497,14 +602,20 @@ window, capability, hidden safety state and deterministic ids.
 | `getEventRuntimeBootstrap` | Accept opaque public runtime id; return sanitized event, required fields, auth/claim/readiness state and current moment. Never return roster or raw contacts. |
 | `claimEventRuntimeAccess` | Link/reuse exactly one attendee row, create/update runtime participant, and return `ready`, `needsInput` or `hostApprovalPending`. |
 | `submitEventRuntimeProfile` | Accept only required fields, validate consent/version, recompute completeness and optionally fill missing onboarding draft fields. |
+| `heartbeatEventSuccessPresence` | Accept only a checked-in caller and record a server-timestamped liveness heartbeat. Return the active configurable cadence and thresholds. |
+| `setEventSuccessAccountabilityResolution` | Organizer-manager-only returned/departed/unresolved write for one currently checked-in operational attendee on a `sweep` event. Bind the result to that exact check-in timestamp. |
 | `setEventRuntimeModuleOptOut` | Purpose-scoped opt-out that does not cancel attendance or identity. |
-| `checkInEventRuntimeParticipant` | Apply absolute desired attendance after Host approval, valid venue session or allowed self-check-in; never a blind toggle. |
+| `checkInEventRuntime` | Redeem a current signed Host venue session after identity/profile readiness and apply absolute attendance; never a blind toggle. |
 | `approveEventRuntimeClaim` | Host approves one pending UID-to-attendee claim or rejects it with a bounded reason. |
 
 Static join URLs use opaque `publicRuntimeId`, never event id plus phone. An
 attendee token is random, single-purpose, revocable and hashed at rest. A venue
-check-in QR uses a short-lived signed session; a printable join QR cannot prove
-physical attendance.
+check-in QR uses a configurable, bounded short-lived signed session and refreshes
+automatically on the Host screen. The token travels in the guest URL fragment,
+is cleared after route intake, and is verified against a server-owned session
+row inside the attendance transaction. A printable or shared join QR has no
+token and cannot prove physical attendance. Location fields are rejected by all
+three attendee attendance schemas.
 
 ### Unified Event Success participant resolver
 
@@ -534,12 +645,19 @@ Consumer Flutter router.
 
 ```text
 /e/:publicRuntimeId -> bootstrap -> phone -> OTP -> claim/approval
-  -> minimum required fields -> event moment -> completed/feedback
+  -> name + one format-bound pre-event answer
+  -> event moment -> completed/feedback
 ```
 
 The shell is mobile-first, noindex, accessible, refresh-safe and low-bandwidth.
 It caches only its shell and sanitized latest moment. OTP, claim and sensitive
 writes require connectivity. Retryable actions are idempotent.
+
+When `social_missions` is enabled, the generated moment catalog also owns one
+three-level prompt sequence per interaction model. The live run-of-show selects
+light disclosure at step 0, personal disclosure at step 1, and reflective
+disclosure from step 2 onward. Flutter and web resolve the same prompt id and
+level; neither samples a stage bucket or branches on `ActivityKind`.
 
 ### Roster adapters and ingestion
 
@@ -644,10 +762,10 @@ Current theatrical implementation state:
 - the attendee companion stage redesign, invite loop, and private afterglow
   recap are implemented for visual review;
 - First Hello check-in is implemented as an optional arrival module with
-  server-owned mission assignment/completion, production Host/attendee coverage,
-  and a 100m venue radius;
-- QR check-in now has a host QR surface and attendee scanner entry point; the
-  existing GPS self-check-in callable remains the attendance write path;
+  server-owned mission assignment/completion and signed venue-session proof;
+- the Host check-in QR is live, signed, short-lived, and auto-refreshing;
+  printable/static join links grant no attendance, and Consumer plus guest-web
+  attendance callables reject GPS/location claims;
 - invite sharing now routes through shared event-invite copy across event
   detail, payment confirmation, and host private-link surfaces;
 - post-event companion follow-up now starts with a private in-app afterglow
@@ -752,6 +870,12 @@ wizard with a compact shared form. Durable outcomes:
   setup widget consumed by both `EventSuccessDefaultsPanel` (create-event last
   step) and the Host Manage setup tab. The two surfaces stay in sync
   automatically — no copy or behaviour drift.
+- **Format-first disclosure.** The saved `EventFormatSnapshot` remains the
+  event-format authority and is the first setup row. The host sees the format
+  and playbook summary before detailed tools; an explicit `Customize` action
+  reveals the module rows. Closing and reopening that disclosure never
+  rewrites the draft, so customized module, cadence, reveal, questionnaire, and
+  grouping values remain lossless.
 - **Stage-based live guide.** The shared body groups selectable tools by their
   domain stage: Before the event, When people arrive, During the event, and
   After the event. Catalog order remains stable inside each stage, and
@@ -779,14 +903,15 @@ wizard with a compact shared form. Durable outcomes:
   the active playbook contains, while untouched legacy JSON remains unchanged.
   The two legacy boolean fields stay serialized as `true` until a later schema
   migration. First Hello remains the only Event Success arrival ritual.
-- **Gated Phase 4 prototype.** Widgetbook contains an owner-review-only
+- **Phase 4 owner-review prototype.** Widgetbook contains an owner-review-only
   `EventSuccessModuleConsolidationPrototype` under
   `Event Success / Phase 4 owner review`. It demonstrates the proposed single
   How people mix choice, conditional size/count/cadence/repeat row order,
-  recommendation copy, and a five-decision visible tool set. Its grouping
-  derivation exists as an explicit draft projection, but the prototype has no
-  writer and production still uses the pair-only backend-safe interaction.
-  Wiring the composite control remains blocked on explicit owner approval.
+  recommendation copy, and a five-decision visible tool set. Production now
+  owns the prerequisite format-first disclosure and lossless Customize path.
+  The prototype still has no writer, and its composite grouping control remains
+  an owner-review surface until it can preserve the pair-only backend-safe
+  interaction honestly.
 - **Guarded persistence.** Setup saves are transactionally revision checked,
   reject frozen or stale plans, and update only setup-owned fields. A newer
   remote snapshot never silently replaces local unsaved edits.
@@ -808,17 +933,28 @@ wizard with a compact shared form. Durable outcomes:
 The 2026-05-24 kinetic pass turned the companion stage from a static gradient
 into a perpetually-moving cinematic surface with audio, co-presence, and a
 marquee reveal moment. The vibe is moment-keyed: theatrical for arrival,
-pulse for live event beats, sunrise for afterglow. Architecturally, the
-existing `_CompanionStageTheme.forMoment` carries the palette + motif per
-beat — Phase 5 added motion, audio, and co-presence layers on top of that
-foundation.
+pulse for live event beats, sunrise for afterglow. The generated presentation
+contract now selects the palette and motif ids per beat, while
+`_CompanionStageTheme.forMoment` maps those ids into Flutter design tokens.
 
-- **Animated motifs.** `_StageMotifPainter` now takes a `phase` parameter
-  driven by a 16s Ticker (gated on `Platform.environment['FLUTTER_TEST']`
-  so widget tests don't deadlock `pumpAndSettle`). Orbits rotate, sparks
-  drift with independent sine phases + alpha shimmer, rhythm waves swell
-  and recede, path filaments scroll diagonally, reveal spokes accelerate,
-  afterglow gets a breathing halo.
+The durable choreography source is now
+`contracts/catalogs/event_success_moment_presentations.json`, generated into
+typed Dart and TypeScript. `EventSuccessMomentPresentation.forMoment` continues
+to own localized copy and icons, but it resolves palette, accent policy, motif,
+phase durations, tempo, idle-pulse period, particle density, deterministic
+seed rule, server-clock reference, and ambient bed from that catalog. Flutter
+and the no-download runtime both resolve the reveal from the same
+`revealStartedAt` server anchor and saved reveal countdown. The shared seed is
+derived from event id, moment kind, reveal round, and that anchor. This is one
+moment model for every event format; there is no event-type presentation fork.
+Web retains the metadata for parity and ships no per-attendee audio.
+
+- **Portable marquee assets.** Three checked-in Lottie vector documents under
+  `assets/motion/event_success/` own theatrical, pulse, and sunrise art for the
+  Flutter companion and React guest runtime. The generated motif id selects
+  one asset, and the catalog's idle-pulse period drives playback. The former
+  stage, arrival-ring, and reveal `CustomPainter` implementations are deleted;
+  they are not retained as a parallel path.
 - **Idle pulse + touch microinteractions.** `_StagePanel` breathes on a 6s
   sine border-glow. `_StageGlyph` runs an entry spring tween then a
   continuous 4s breath modulating scale + accent glow blur. `_StageBouncyPress`
@@ -829,28 +965,27 @@ foundation.
   controller in `event_success_live_effects_controller.dart`. One persistent
   ambient bed player (looped) and one reusable low-latency one-shot player
   (effects). `EventSuccessAmbientBed` enum (theatrical / pulse / sunrise /
-  silent) is mapped per-moment in `EventSuccessMomentPresentation.forMoment`.
+  silent) is selected through the generated per-moment presentation contract.
   Per-kind volume tuning — reveal lands at 0.95, taps at 0.48. Missing
   assets are caught + memoized so the UI never blocks on the sound designer.
   Six curated stock sounds to source are documented in
   `assets/audio/event_success/README.md`.
-- **Reveal cinematic (the marquee).** New `_RevealCinematicOverlay` runs
-  three phases over the full stage when the reveal moment is active:
+- **Reveal cinematic (the marquee).** `_RevealCinematicOverlay` composes the
+  portable vector assets with ordinary Flutter widgets over the full stage:
   anticipation (vignette darkens 0.18→0.6, 14 gold spokes rotate with
-  acceleration `pow(anticipation, 1.4) × 2π × 1.8`, 72-particle field
-  drifts inward), climax 1.5s (white flash, particle field bursts on a
-  deterministic seed so every viewer sees the same explosion), settle
-  700ms (vignette releases, particles dissipate, sunrise vibe pack takes
-  over). All phases server-anchored to the existing countdown clock so
-  every attendee sees the same beat.
+  acceleration `pow(anticipation, 1.4) × 2π × 1.8`, and the contracted particle
+  field drifts inward), climax (white flash and seeded particle burst), then
+  settle (vignette release and sunrise art). A configurable 100ms clock samples
+  the generated timeline, so phase entry does not wait for a Firestore status
+  transition and remains inside the 250ms cross-runtime gate.
 - **Co-presence layer.** Three surfaces wired off the existing
   `Event.checkedInCount` (denormalized + maintained by Cloud Functions — no
   new Firestore listeners): `_LiveArrivalRing` on arrival moments (140×140
-  ring with 24 anonymous dot slots, big tabular numeral in center,
+  Lottie-backed ring with 24 anonymous dot slots, big tabular numeral in center,
   scale-pulse on increment), `_LiveOthersInRoomLine` on the questionnaire
   progress rail (pill with chip pulse on count climb), and a shared
   anonymous-dot ring inside the reveal cinematic pulsing on the same
-  `tickPhase` clock so every attendee's screen pulses on the *same* shared
+  server-derived tick clock so every attendee's screen pulses on the *same* shared
   rhythm during the countdown.
 - **First Hello completion celebration.** When the answer submits, the
   card overlays a sunrise gradient sweep (triangle-wave alpha to 0.62 over
@@ -862,7 +997,7 @@ foundation.
   optional `countValue` (the "X people remembered" beat uses it) — the
   first run of digits in the value string animates 0→countValue over 600ms
   on an easeOutCubic curve.
-- **Test-mode animation gate.** All repeating Tickers (motif background,
+- **Test-mode animation gate.** All repeating Tickers (portable motif playback,
   panel pulse, glyph breath, cinematic tick, arrival ring pulse, others-in-
   room pulse) check `_kStageAnimationsEnabled =
   !Platform.environment.containsKey('FLUTTER_TEST')` before `.repeat()`.

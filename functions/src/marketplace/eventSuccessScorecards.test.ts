@@ -6,6 +6,7 @@ import {
 } from "../shared/generated/firestoreAdminTypes";
 import {
   buildEventHostFunnelMetrics,
+  buildEventSuccessConversationGraphAggregate,
   buildEventSuccessScorecard,
   onEventInviteLinkWrittenHandler,
   refreshEventSuccessScorecard,
@@ -74,6 +75,15 @@ test("buildEventSuccessScorecard computes event aggregates", () => {
     averageWelcomeRating: 4,
     averageStructureRating: 3,
     safetyIncidentCount: 0,
+    conversationGraph: {
+      responseCount: 0,
+      skippedCount: 0,
+      conversationCount: 0,
+      attendeesWithTwoPlusConversations: 0,
+      excludedAttendeeCount: 0,
+      assignedConversationCount: 0,
+      assignedOpportunityCount: 0,
+    },
     funnel: {
       inviteLinkCount: 0,
       inviteOpenCount: 0,
@@ -105,6 +115,44 @@ test("buildEventSuccessScorecard computes event aggregates", () => {
     },
     updatedAt: "SERVER_TIMESTAMP",
   });
+});
+
+test("conversation graph host aggregate contains no name-to-name edges", () => {
+  const aggregate = buildEventSuccessConversationGraphAggregate([
+    {
+      status: "submitted",
+      selectedUids: ["runner-2", "runner-3"],
+      assignedSelectedCount: 1,
+      assignedCandidateCount: 2,
+    },
+    {
+      status: "submitted",
+      selectedUids: [],
+      assignedSelectedCount: 0,
+      assignedCandidateCount: 1,
+    },
+    {
+      status: "skipped",
+      selectedUids: [],
+      assignedSelectedCount: 0,
+      assignedCandidateCount: 3,
+    },
+  ]);
+
+  assert.deepEqual(aggregate, {
+    responseCount: 3,
+    skippedCount: 1,
+    conversationCount: 2,
+    attendeesWithTwoPlusConversations: 1,
+    excludedAttendeeCount: 1,
+    assignedConversationCount: 1,
+    assignedOpportunityCount: 3,
+  });
+  assert.deepEqual(
+    Object.keys(aggregate).filter((key) => /uid|name|edge/iu.test(key)),
+    []
+  );
+  assert.equal(JSON.stringify(aggregate).includes("runner-"), false);
 });
 
 test("buildEventSuccessScorecard exposes safety count after sample", () => {
@@ -342,6 +390,15 @@ test(
       averageWelcomeRating: 0,
       averageStructureRating: 0,
       safetyIncidentCount: 0,
+      conversationGraph: {
+        responseCount: 0,
+        skippedCount: 0,
+        conversationCount: 0,
+        attendeesWithTwoPlusConversations: 0,
+        excludedAttendeeCount: 0,
+        assignedConversationCount: 0,
+        assignedOpportunityCount: 0,
+      },
       funnel: {
         inviteLinkCount: 0,
         inviteOpenCount: 0,

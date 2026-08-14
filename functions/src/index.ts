@@ -70,6 +70,7 @@ export {
   onEventParticipationRosterProjected,
 } from "./events/eventAttendeeProjection";
 export {selfCheckInAttendance} from "./events/selfCheckInAttendance";
+export {createEventVenueSession} from "./events/venueSessions";
 export {
   createEvent,
   updateEvent,
@@ -187,10 +188,15 @@ export {onMessageCreated} from "./matching/onMessageCreated";
 export {
   onEventInviteLinkWritten,
   onEventParticipationWritten,
+  onEventSuccessConversationGraphWritten,
   onEventSuccessFeedbackWritten,
   onEventWaitlistOfferWritten,
   onPaymentWritten,
 } from "./marketplace/eventSuccessScorecards";
+export {
+  getEventSuccessConversationGraph,
+  submitEventSuccessConversationGraph,
+} from "./eventSuccess/conversationGraph";
 export {
   generateEventSuccessPods,
   overrideEventSuccessGroups,
@@ -203,6 +209,14 @@ export {
   controlEventSuccessLive,
   publishEventSuccessRotationRound,
 } from "./eventSuccess/liveControl";
+export {setEventSuccessAccountabilityResolution} from
+  "./eventSuccess/accountability";
+export {
+  getEventSuccessPresenceSummary,
+  heartbeatEventSuccessPresence,
+} from "./eventSuccess/presence";
+export {resolveEventSuccessLateArrival} from
+  "./eventSuccess/lateArrivals";
 export {recordEventSuccessUnitOutcomes} from
   "./eventSuccess/unitOutcomes";
 export {onEventSuccessPlanLiveControlUpdated} from

@@ -357,6 +357,7 @@
         "event_success_companion_rotation_opted_out",
         "event_success_companion_rotation_opt_out_pending",
         "event_success_companion_live_reveal_countdown",
+        "event_success_companion_motion_parity",
         "event_success_companion_live_reveal_unlocked",
         "event_success_companion_wingman_request",
         "event_success_companion_wingman_pending",
@@ -366,7 +367,7 @@
         "event_success_companion_text_scale_2",
         "event_success_companion_reduced_motion"
       ],
-      "reason": "Deterministic attendee companion captures now cover route loading/error/access/offline states, default live guide, paired light/dark, self-check-in, pending actions, runtime moments, assignment/rotation/reveal/wingman/afterglow variants, text-scale, and reduced-motion states; stage-specific reference comparisons remain open in the design parity tracker."
+      "reason": "Deterministic attendee companion captures now cover route loading/error/access/offline states, default live guide, paired light/dark, self-check-in, pending actions, runtime moments, assignment/rotation/reveal/motion-parity/wingman/afterglow variants, text-scale, and reduced-motion states; stage-specific reference comparisons remain open in the design parity tracker."
     },
     {
       "routeId": "swipeHubScreen",

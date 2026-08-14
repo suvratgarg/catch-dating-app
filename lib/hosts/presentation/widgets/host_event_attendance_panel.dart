@@ -1090,6 +1090,14 @@ class HostEventCheckInQrPanel extends ConsumerStatefulWidget {
       _HostEventCheckInQrPanelState();
 }
 
+String hostEventVenueQrData({
+  required Event event,
+  required String venueSessionToken,
+}) => EventVenueSessionQrPayload(
+  eventId: event.id,
+  venueSessionToken: venueSessionToken,
+).encode(runtimeJoinUri: event.runtimeJoinUri());
+
 class _HostEventCheckInQrPanelState
     extends ConsumerState<HostEventCheckInQrPanel> {
   bool _sharing = false;
@@ -1123,24 +1131,42 @@ class _HostEventCheckInQrPanelState
   @override
   Widget build(BuildContext context) {
     final runtimeLink = widget.event.runtimeJoinUri();
-    final payload =
-        runtimeLink?.toString() ??
-        EventCheckInQrPayload(eventId: widget.event.id).encode();
+    final venueSessionAsync = ref.watch(
+      eventVenueSessionProvider(widget.event.id),
+    );
     return Align(
       alignment: Alignment.centerLeft,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchSurface(
-            radius: CatchRadius.sm,
-            backgroundColor: CatchTokens.editorialWhite,
-            borderWidth: 0,
-            padding: CatchInsets.iconChipContent,
-            child: QrImageView(
-              data: payload,
-              size: 168,
-              padding: EdgeInsets.zero,
+          venueSessionAsync.when(
+            data: (session) => CatchSurface(
+              radius: CatchRadius.sm,
               backgroundColor: CatchTokens.editorialWhite,
+              borderWidth: 0,
+              padding: CatchInsets.iconChipContent,
+              child: QrImageView(
+                key: ValueKey('host_event_live_qr_${session.expiresAtMillis}'),
+                data: hostEventVenueQrData(
+                  event: widget.event,
+                  venueSessionToken: session.venueSessionToken,
+                ),
+                size: CatchLayout.eventSuccessVenueQrExtent,
+                padding: EdgeInsets.zero,
+                backgroundColor: CatchTokens.editorialWhite,
+              ),
+            ),
+            loading: () => const SizedBox.square(
+              dimension: CatchLayout.eventSuccessVenueQrExtent,
+              child: Center(child: CircularProgressIndicator()),
+            ),
+            error: (error, _) => SizedBox(
+              width: CatchLayout.eventSuccessVenueQrErrorMaxWidth,
+              child: CatchInlineErrorState.fromError(
+                error,
+                onRetry: () =>
+                    ref.invalidate(eventVenueSessionProvider(widget.event.id)),
+              ),
             ),
           ),
           if (runtimeLink != null) ...[

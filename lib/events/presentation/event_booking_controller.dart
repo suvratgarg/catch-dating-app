@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
-import 'package:catch_dating_app/events/data/event_check_in_location_service.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
@@ -154,27 +153,17 @@ class EventBookingController extends _$EventBookingController {
         .declineWaitlistOffer(eventId: event.id);
   }
 
-  /// Self-check-in for the signed-in user via GPS-verified proximity.
-  ///
-  /// Reads the device's current location and passes it to the
-  /// [selfCheckInAttendance] Cloud Function, which validates that the user
-  /// is within the shared business-rules proximity and check-in window around
-  /// the event start time.
-  Future<void> selfCheckIn({required String eventId}) async {
+  /// Redeems the signed session carried by the Host's live venue QR.
+  Future<void> selfCheckIn({
+    required String eventId,
+    required String venueSessionToken,
+  }) async {
     _requireSignedIn(action: 'check in to an event');
-
-    // On failure (permission denied, GPS off, location services disabled), let
-    // the error propagate into the mutation error state so the UI can display it.
-    final position = await ref
-        .read(eventCheckInLocationServiceProvider)
-        .getCurrentLocation();
-
     await ref
         .read(eventRepositoryProvider)
         .selfCheckInAttendance(
           eventId: eventId,
-          latitude: position.latitude,
-          longitude: position.longitude,
+          venueSessionToken: venueSessionToken,
         );
   }
 

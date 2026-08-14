@@ -3,12 +3,16 @@ import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
-import {appCheckCallableOptions} from "../shared/callableOptions";
+import {
+  appCheckCallableOptions,
+  appCheckCallableOptionsWithSecrets,
+} from "../shared/callableOptions";
 import {
   EventAttendeeDocument,
   EventDocument,
   EventRuntimeClaimRequestDocument,
   EventRuntimeParticipantDocument,
+  EventSuccessCompatibilityResponseDocument,
   EventSuccessPlanDocument,
   OrganizerEventSuccessLayoutDocument,
   OnboardingDraftDocument,
@@ -54,6 +58,15 @@ import {
   onboardingDraftSeed,
 } from "../events/eventAttendees";
 import {resolveInviteAttributionToken} from "../events/inviteLinks";
+import {
+  assertEventCheckInWindow,
+  eventVenueSessionRedemptionDocument,
+  eventVenueSessionRedemptionId,
+  eventVenueSessionSigningKey,
+  rejectVenueSessionReplay,
+  requireEventVenueSessionDocument,
+  verifyEventVenueSessionToken,
+} from "../events/venueSessions";
 import {eventSuccessPrimitivesFor} from "./formatPrimitives";
 import {
   organizerEventSuccessLayoutDocumentId,
@@ -69,6 +82,7 @@ interface EventRuntimeDeps {
   checkRateLimit: typeof checkRateLimit;
   timestamp: () => FirebaseFirestore.Timestamp;
   timestampFromMillis: (millis: number) => FirebaseFirestore.Timestamp;
+  verifyVenueSessionToken?: typeof verifyEventVenueSessionToken;
 }
 
 const defaultDeps: EventRuntimeDeps = {
@@ -77,6 +91,7 @@ const defaultDeps: EventRuntimeDeps = {
   timestamp: () => admin.firestore.Timestamp.now(),
   timestampFromMillis: (millis) =>
     admin.firestore.Timestamp.fromMillis(millis),
+  verifyVenueSessionToken: verifyEventVenueSessionToken,
 };
 
 const PREFERENCE_AWARE_MODULE_IDS = new Set([
@@ -128,7 +143,7 @@ export async function getEventRuntimeBootstrapHandler(
     participant = await reconcileRuntimeParticipantRequirements({
       participant,
       participantRef,
-      requiredFieldIds: requiredRuntimeFieldIds(plan),
+      requiredFieldIds: requiredRuntimeFieldIds(resolved.event, plan),
       now: deps.timestamp(),
     });
   }
@@ -227,7 +242,7 @@ export async function claimEventRuntimeAccessHandler(
       planSnap,
       "EventSuccessPlanDocument"
     ) : null;
-    const requiredFieldIds = requiredRuntimeFieldIds(plan);
+    const requiredFieldIds = requiredRuntimeFieldIds(resolved.event, plan);
     const now = deps.timestamp();
     let attendee = attendeeSnap.exists ? requireDoc<EventAttendeeDocument>(
       attendeeSnap,
@@ -383,7 +398,8 @@ export async function submitEventRuntimeProfileHandler(
       planSnap,
       "EventSuccessPlanDocument"
     ) : null;
-    const requiredFieldIds = requiredRuntimeFieldIds(plan);
+    const requiredFieldIds = requiredRuntimeFieldIds(resolved.event, plan);
+    assertFormatProfilePayload(resolved.event, payload.fields);
     const profile = mergeRuntimeProfile(
       participant.runtimeProfile,
       payload.fields,
@@ -404,6 +420,28 @@ export async function submitEventRuntimeProfileHandler(
       );
     }
     const now = deps.timestamp();
+    if (profile.questionnaireAnswerIds.length > 0) {
+      const responseRef = db.collection("eventSuccessCompatibilityResponses")
+        .doc(eventRuntimeParticipantId(resolved.eventId, uid));
+      const response: EventSuccessCompatibilityResponseDocument = {
+        eventId: resolved.eventId,
+        clubId: participant.clubId,
+        organizerId: participant.organizerId ?? participant.clubId,
+        uid,
+        answerIds: profile.questionnaireAnswerIds,
+        createdAt: participant.claimedAt,
+        updatedAt: now,
+      };
+      tx.set(responseRef, response, {merge: true});
+    }
+    if (profile.teamName && participant.eventAttendeeId) {
+      tx.update(db.collection("eventAttendees").doc(
+        participant.eventAttendeeId
+      ), {
+        arrivalGroup: profile.teamName,
+        updatedAt: now,
+      });
+    }
     tx.update(participantRef, {
       requiredFieldIds,
       completedFieldIds,
@@ -445,12 +483,37 @@ export async function checkInEventRuntimeHandler(
   const db = deps.firestore();
   await deps.checkRateLimit(db, uid, "checkInEventRuntime");
   const resolved = await resolveRuntimeEvent(db, payload.publicRuntimeId);
+  const now = deps.timestamp();
+  const claims = (deps.verifyVenueSessionToken ??
+    verifyEventVenueSessionToken)({
+    token: payload.venueSessionToken,
+    eventId: resolved.eventId,
+    nowMillis: now.toMillis(),
+  });
   const participantRef = db.collection("eventRuntimeParticipants")
     .doc(eventRuntimeParticipantId(resolved.eventId, uid));
   const eventRef = db.collection("events").doc(resolved.eventId);
+  const sessionRef = db.collection("eventVenueSessions")
+    .doc(claims.sessionId);
+  const redemptionRef = db.collection("eventVenueSessionRedemptions")
+    .doc(eventVenueSessionRedemptionId({
+      eventId: resolved.eventId,
+      sessionId: claims.sessionId,
+      uid,
+    }));
 
   return db.runTransaction(async (tx) => {
-    const participantSnap = await tx.get(participantRef);
+    const [participantSnap, eventSnap, sessionSnap, redemptionSnap] =
+      await Promise.all([
+        tx.get(participantRef),
+        tx.get(eventRef),
+        tx.get(sessionRef),
+        tx.get(redemptionRef),
+      ]);
+    if (!eventSnap.exists) {
+      throw new HttpsError("not-found", "Event not found.");
+    }
+    const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
     const participant = requireRuntimeParticipant(
       participantSnap,
       resolved.eventId,
@@ -482,10 +545,19 @@ export async function checkInEventRuntimeHandler(
         "This guest-list entry cannot be checked in."
       );
     }
+    rejectVenueSessionReplay(redemptionSnap);
     if (attendee.status === "checkedIn") {
       return {status: "checkedIn", alreadyCheckedIn: true};
     }
-    const now = deps.timestamp();
+    assertEventCheckInWindow(event, now.toMillis());
+    requireEventVenueSessionDocument(sessionSnap, claims, now.toMillis());
+    tx.create(redemptionRef, eventVenueSessionRedemptionDocument({
+      claims,
+      uid,
+      purpose: "attendance",
+      now,
+      retentionBaseMillis: now.toMillis(),
+    }));
     tx.update(attendeeRef, {
       status: "checkedIn",
       checkedInAt: now,
@@ -645,10 +717,33 @@ export function eventRuntimeParticipantId(
 }
 
 export function requiredRuntimeFieldIds(
+  event: EventDocument,
   _plan?: EventSuccessPlanDocument | null
 ): RuntimeFieldId[] {
   void _plan;
-  return ["displayName"];
+  const preEventFieldId = preEventRuntimeFieldId(event);
+  return preEventFieldId ? ["displayName", preEventFieldId] : ["displayName"];
+}
+
+/** Selects the single pre-event payload from resolved format variables. */
+export function preEventRuntimeFieldId(
+  event: EventDocument
+): RuntimeFieldId | null {
+  switch (eventSuccessPrimitivesFor(event.eventFormat).interactionModel) {
+  case "pacePods":
+    return "paceBand";
+  case "pairedRotations":
+    return "skillBand";
+  case "seatedTable":
+    return "dietaryAndSeatingNotes";
+  case "freeFormMixer":
+    return "questionnaireAnswerIds";
+  case "teamRotations":
+    return "teamName";
+  case "hostLedProgram":
+  case "openFormat":
+    return null;
+  }
 }
 
 /** Sensitive preference fields offered by this plan, but never required. */
@@ -676,6 +771,15 @@ export function completedRuntimeFieldIds(
   }
   if (profile.relationshipGoal !== null) fields.push("relationshipGoal");
   if (profile.dateOfBirth !== null) fields.push("dateOfBirth");
+  if (profile.paceBand != null) fields.push("paceBand");
+  if (profile.skillBand != null) fields.push("skillBand");
+  if (profile.dietaryAndSeatingNotes != null) {
+    fields.push("dietaryAndSeatingNotes");
+  }
+  if ((profile.questionnaireAnswerIds?.length ?? 0) > 0) {
+    fields.push("questionnaireAnswerIds");
+  }
+  if (profile.teamName != null) fields.push("teamName");
   return fields;
 }
 
@@ -765,6 +869,7 @@ function publicRuntimeEventProjection(
   layout: GetEventRuntimeBootstrapCallableResponse["event"]["layout"]
 ): GetEventRuntimeBootstrapCallableResponse["event"] {
   const customLabel = event.eventFormat.customActivityLabel?.trim();
+  const primitives = eventSuccessPrimitivesFor(event.eventFormat);
   return {
     eventId,
     publicRuntimeId,
@@ -772,10 +877,12 @@ function publicRuntimeEventProjection(
     startTimeMillis: event.startTime.toMillis(),
     endTimeMillis: event.endTime.toMillis(),
     locationName: event.meetingLocation.name || event.meetingPoint,
+    checkedInCount: event.checkedInCount ?? 0,
     runtimeTermsVersion: event.runtimeAccess!.termsVersion,
     moduleIds: plan?.selectedModuleIds ?? [],
+    interactionModel: primitives.interactionModel,
     layout,
-    requiredFieldIds: requiredRuntimeFieldIds(plan),
+    requiredFieldIds: requiredRuntimeFieldIds(event, plan),
     optionalFieldIds: optionalRuntimeFieldIds(event, plan),
     questionnaireConfig: plan?.questionnaireConfig ?? null,
   };
@@ -877,6 +984,11 @@ function emptyRuntimeProfile(displayName: string): RuntimeProfile {
     interestedInGenders: [],
     relationshipGoal: null,
     dateOfBirth: null,
+    paceBand: null,
+    skillBand: null,
+    dietaryAndSeatingNotes: null,
+    questionnaireAnswerIds: [],
+    teamName: null,
   };
 }
 
@@ -896,6 +1008,16 @@ function mergeRuntimeProfile(
       existing.dateOfBirth :
       fields.dateOfBirthMillis === null ? null :
         timestampFromMillis(fields.dateOfBirthMillis),
+    paceBand: fields.paceBand === undefined ?
+      existing.paceBand ?? null : fields.paceBand,
+    skillBand: fields.skillBand === undefined ?
+      existing.skillBand ?? null : fields.skillBand,
+    dietaryAndSeatingNotes: fields.dietaryAndSeatingNotes === undefined ?
+      existing.dietaryAndSeatingNotes ?? null : fields.dietaryAndSeatingNotes,
+    questionnaireAnswerIds: fields.questionnaireAnswerIds ??
+      existing.questionnaireAnswerIds ?? [],
+    teamName: fields.teamName === undefined ?
+      existing.teamName ?? null : fields.teamName,
   };
 }
 
@@ -990,6 +1112,11 @@ function runtimeProfileResponse(
     interestedInGenders: profile.interestedInGenders,
     relationshipGoal: profile.relationshipGoal,
     dateOfBirthMillis: profile.dateOfBirth?.toMillis() ?? null,
+    paceBand: profile.paceBand ?? null,
+    skillBand: profile.skillBand ?? null,
+    dietaryAndSeatingNotes: profile.dietaryAndSeatingNotes ?? null,
+    questionnaireAnswerIds: profile.questionnaireAnswerIds ?? [],
+    teamName: profile.teamName ?? null,
   };
 }
 
@@ -1041,6 +1168,8 @@ function normalizeProfilePayload(data: unknown): unknown {
   if (isRecord(normalized.fields)) {
     normalized.fields = normalizeStringFields(normalized.fields, [
       "displayName",
+      "dietaryAndSeatingNotes",
+      "teamName",
     ]);
   }
   return normalized;
@@ -1063,13 +1192,34 @@ function normalizeStringFields(
   const normalized = {...data};
   for (const field of fields) {
     if (typeof normalized[field] === "string") {
-      normalized[field] = normalized[field].trim().replace(
-        field === "displayName" ? /\s+/g : /$^/,
-        field === "displayName" ? " " : ""
-      );
+      const trimmed = normalized[field].trim();
+      normalized[field] = field === "displayName" || field === "teamName" ?
+        trimmed.replace(/\s+/g, " ") : trimmed;
     }
   }
   return normalized;
+}
+
+function assertFormatProfilePayload(
+  event: EventDocument,
+  fields: SubmitEventRuntimeProfileCallablePayload["fields"]
+): void {
+  const selected = preEventRuntimeFieldId(event);
+  const candidates = [
+    "paceBand",
+    "skillBand",
+    "dietaryAndSeatingNotes",
+    "questionnaireAnswerIds",
+    "teamName",
+  ] as const;
+  for (const field of candidates) {
+    if (field !== selected && fields[field] !== undefined) {
+      throw new HttpsError(
+        "invalid-argument",
+        `The ${field} answer does not belong to this event format.`
+      );
+    }
+  }
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -1096,7 +1246,7 @@ export const submitEventRuntimeProfile = onCall(
 );
 
 export const checkInEventRuntime = onCall(
-  appCheckCallableOptions,
+  appCheckCallableOptionsWithSecrets([eventVenueSessionSigningKey]),
   (request) => checkInEventRuntimeHandler(request)
 );
 

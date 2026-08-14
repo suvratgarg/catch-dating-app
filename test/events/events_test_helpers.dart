@@ -391,6 +391,7 @@ class FakeEventRepository extends Fake implements EventRepository {
   String? markedAttendanceEventId;
   String? markedAttendanceUserId;
   String? selfCheckedInEventId;
+  String? selfCheckedInVenueSessionToken;
   Event? fetchedEvent;
   EventSuccessDefaults? createdEventSuccessDefaults;
   ExternalEventOriginInput? createdExternalOrigin;
@@ -645,13 +646,13 @@ class FakeEventRepository extends Fake implements EventRepository {
   @override
   Future<void> selfCheckInAttendance({
     required String eventId,
-    required double? latitude,
-    required double? longitude,
+    required String venueSessionToken,
   }) async {
     if (selfCheckInError != null) {
       throw selfCheckInError!;
     }
     selfCheckedInEventId = eventId;
+    selfCheckedInVenueSessionToken = venueSessionToken;
   }
 }
 
