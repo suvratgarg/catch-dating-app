@@ -1,5 +1,5 @@
 {
-  "version": "1.12.0",
+  "version": "1.12.1",
   "updated": "2026-08-14",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Defines architecture reference exhibits, adopter files, candidate status, and back-propagation obligations enforced by architecture checks.",
@@ -793,8 +793,14 @@
           "status": "aligned"
         },
         {
+          "path": "lib/hosts/presentation/host_event_entry_state.dart",
+          "role": "provider-free Host event-entry capability adapter for organizer availability, organizer-scoped drafts and repeat source, ordered continue-versus-start intents, and shared mobile or larger-screen presentation inputs",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
           "path": "test/hosts/host_events_screen_state_test.dart",
-          "role": "Host Events lifecycle, grouping, featured-event exclusion, attention-task, and async display-state behavior coverage",
+          "role": "Host Events lifecycle, grouping, featured-event exclusion, attention-task, async display-state, and contextual event-entry capability behavior coverage",
           "status": "aligned"
         },
         {
