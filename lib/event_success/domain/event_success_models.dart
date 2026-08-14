@@ -46,6 +46,8 @@ enum EventSuccessStage {
   final String label;
 }
 
+enum EventSuccessDurationShape { continuous, rounds, courses, segments }
+
 enum EventSuccessModuleType {
   formatTemplate,
   crowdBalance,
@@ -198,6 +200,7 @@ class EventSuccessPlaybook {
     required this.title,
     required this.activityType,
     required this.socialIntensity,
+    required this.durationShape,
     required this.summary,
     required this.attendeePromise,
     required this.hostPromise,
@@ -214,6 +217,7 @@ class EventSuccessPlaybook {
   final String title;
   final ActivityKind activityType;
   final EventSocialIntensity socialIntensity;
+  final EventSuccessDurationShape durationShape;
   final String summary;
   final String attendeePromise;
   final String hostPromise;

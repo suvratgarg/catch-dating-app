@@ -250,6 +250,10 @@
       "type": "string",
       "enum": ["none", "rollCall", "sweep"]
     },
+    "eventSuccessDurationShape": {
+      "type": "string",
+      "enum": ["continuous", "rounds", "courses", "segments"]
+    },
     "eventSuccessFormatPrimitives": {
       "type": "object",
       "additionalProperties": false,
@@ -275,6 +279,9 @@
         },
         "accountability": {
           "$ref": "#/definitions/eventSuccessAccountability"
+        },
+        "durationShape": {
+          "$ref": "#/definitions/eventSuccessDurationShape"
         }
       }
     },

@@ -77,6 +77,7 @@ import {
   eventSuccessPrimitivesFor,
   isEventSuccessAssignmentAlgorithm,
   isEventSuccessCompatibilityPolicy,
+  isEventSuccessDurationShape,
   isEventSuccessMatchingObjective,
   isEventSuccessPhoneAvailability,
   isEventSuccessRotationSuitability,
@@ -1322,6 +1323,9 @@ function normalizeEventSuccessFormatPrimitives(
   }
   if (isEventSuccessUnitOutcome(raw?.unitOutcome)) {
     normalized.unitOutcome = raw.unitOutcome;
+  }
+  if (isEventSuccessDurationShape(raw?.durationShape)) {
+    normalized.durationShape = raw.durationShape;
   }
   return Object.keys(normalized).length > 0 ? normalized : null;
 }

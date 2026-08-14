@@ -6,6 +6,7 @@ class EventSuccessActivityProfile {
     required this.formatLabel,
     required this.interactionModel,
     required this.playbook,
+    required this.durationShape,
     required this.structureConfig,
     required this.phoneAvailability,
     required this.rotationSuitability,
@@ -54,6 +55,7 @@ class EventSuccessActivityProfile {
       interactionModel,
       compatibilityPolicy,
     );
+    final durationShape = _durationShapeFor(format, interactionModel);
     final structureConfig =
         EventSuccessStructureConfig.defaultForInteractionModel(
           interactionModel,
@@ -80,6 +82,7 @@ class EventSuccessActivityProfile {
       formatLabel: format.label,
       interactionModel: interactionModel,
       playbook: playbook,
+      durationShape: durationShape,
       structureConfig: structureConfig,
       phoneAvailability: _phoneAvailabilityFor(format, interactionModel),
       rotationSuitability: _rotationSuitabilityFor(format),
@@ -101,6 +104,7 @@ class EventSuccessActivityProfile {
   final String formatLabel;
   final EventInteractionModel interactionModel;
   final EventSuccessPlaybook playbook;
+  final EventSuccessDurationShape durationShape;
   final EventSuccessStructureConfig structureConfig;
   final EventSuccessPhoneAvailability phoneAvailability;
   final EventSuccessRotationSuitability rotationSuitability;

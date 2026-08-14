@@ -1363,6 +1363,24 @@ abstract class AppLocalizations {
   /// **'Reset'**
   String get eventSuccessEventSuccessSetupBodyLabelReset;
 
+  /// Primary saved event-format row in Event Success setup.
+  ///
+  /// In en, this message translates to:
+  /// **'Format'**
+  String get eventSuccessEventSuccessSetupBodyTitleFormat;
+
+  /// Opens the advanced Event Success module controls after the format summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Customize'**
+  String get eventSuccessEventSuccessSetupBodyLabelCustomizeTools;
+
+  /// Closes the Event Success module controls without changing their values.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get eventSuccessEventSuccessSetupBodyLabelDoneCustomizing;
+
   /// Product copy used by lib/event_success/presentation/event_success_setup_body.dart (Text).
   ///
   /// In en, this message translates to:
@@ -16021,6 +16039,58 @@ abstract class AppLocalizations {
     required int total,
     required String stage,
   });
+
+  /// Numbered transition label for a continuous run of show.
+  ///
+  /// In en, this message translates to:
+  /// **'Beat {number}'**
+  String eventSuccessEventSuccessHostLiveLabelBeatNumber({required int number});
+
+  /// Numbered transition label for a round-based run of show.
+  ///
+  /// In en, this message translates to:
+  /// **'Round {number}'**
+  String eventSuccessEventSuccessHostLiveLabelRoundNumber({
+    required int number,
+  });
+
+  /// First transition label for a course-based run of show.
+  ///
+  /// In en, this message translates to:
+  /// **'First course'**
+  String get eventSuccessEventSuccessHostLiveLabelFirstCourse;
+
+  /// Second transition label for a course-based run of show.
+  ///
+  /// In en, this message translates to:
+  /// **'Second course'**
+  String get eventSuccessEventSuccessHostLiveLabelSecondCourse;
+
+  /// Third transition label for a course-based run of show.
+  ///
+  /// In en, this message translates to:
+  /// **'Third course'**
+  String get eventSuccessEventSuccessHostLiveLabelThirdCourse;
+
+  /// Fourth transition label for a course-based run of show.
+  ///
+  /// In en, this message translates to:
+  /// **'Fourth course'**
+  String get eventSuccessEventSuccessHostLiveLabelFourthCourse;
+
+  /// Fallback numbered transition label for later courses.
+  ///
+  /// In en, this message translates to:
+  /// **'Course {number}'**
+  String eventSuccessEventSuccessHostLiveLabelCourseNumber({
+    required int number,
+  });
+
+  /// Numbered transition label for a segmented run of show.
+  ///
+  /// In en, this message translates to:
+  /// **'Leg {number}'**
+  String eventSuccessEventSuccessHostLiveLabelLegNumber({required int number});
 
   /// Kicker above the next live-guide step in Control Room.
   ///

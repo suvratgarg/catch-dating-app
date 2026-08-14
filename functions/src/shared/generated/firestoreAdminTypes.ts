@@ -247,6 +247,7 @@ export interface EventSuccessFormatPrimitives {
     | "spread";
   unitOutcome?: "none" | "completion" | "score" | "rank";
   accountability?: "none" | "rollCall" | "sweep";
+  durationShape?: "continuous" | "rounds" | "courses" | "segments";
 }
 
 export type EventSuccessStructureConfig = {

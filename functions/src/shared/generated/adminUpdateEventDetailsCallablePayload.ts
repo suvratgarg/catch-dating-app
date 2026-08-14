@@ -79,6 +79,7 @@ export interface AdminUpdateEventDetailsCallablePayload {
           | "spread";
         unitOutcome?: "none" | "completion" | "score" | "rank";
         accountability?: "none" | "rollCall" | "sweep";
+        durationShape?: "continuous" | "rounds" | "courses" | "segments";
       };
       activityDetails?: {
         [k: string]: unknown;

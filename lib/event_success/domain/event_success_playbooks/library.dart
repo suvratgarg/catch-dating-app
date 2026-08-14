@@ -12,6 +12,7 @@ abstract final class EventSuccessPlaybookLibrary {
     title: 'Social Event Lite',
     activityType: ActivityKind.socialRun,
     socialIntensity: EventSocialIntensity.light,
+    durationShape: EventSuccessDurationShape.segments,
     summary:
         'An event-first format that adds arrival structure, pace pods, optional prompts, and post-event Catches follow-up.',
     attendeePromise:
@@ -105,6 +106,7 @@ abstract final class EventSuccessPlaybookLibrary {
     title: 'Pickleball Partner Rotations',
     activityType: ActivityKind.pickleball,
     socialIntensity: EventSocialIntensity.structured,
+    durationShape: EventSuccessDurationShape.rounds,
     summary:
         'A court-based mixer with rotating partners, skill-aware teams, and a post-game interest loop.',
     attendeePromise:
@@ -185,6 +187,7 @@ abstract final class EventSuccessPlaybookLibrary {
     title: 'Pub Quiz Team Mixer',
     activityType: ActivityKind.pubQuiz,
     socialIntensity: EventSocialIntensity.guided,
+    durationShape: EventSuccessDurationShape.rounds,
     summary:
         'A team-based format that uses role prompts and team reshuffles to make conversation easy.',
     attendeePromise:
@@ -259,6 +262,7 @@ abstract final class EventSuccessPlaybookLibrary {
     title: 'Dinner Table Mixer',
     activityType: ActivityKind.dinner,
     socialIntensity: EventSocialIntensity.structured,
+    durationShape: EventSuccessDurationShape.courses,
     summary:
         'A seated format that uses table assignments, optional course changes, prompts, and a private follow-up loop.',
     attendeePromise:
@@ -344,6 +348,7 @@ abstract final class EventSuccessPlaybookLibrary {
     title: 'Host-led Social',
     activityType: ActivityKind.openActivity,
     socialIntensity: EventSocialIntensity.light,
+    durationShape: EventSuccessDurationShape.continuous,
     summary:
         'A simple wrapper for classes, bar crawls, open activities, and host-led formats where the activity stays primary.',
     attendeePromise:
@@ -432,6 +437,7 @@ abstract final class EventSuccessPlaybookLibrary {
     title: 'Singles Mixer',
     activityType: ActivityKind.singlesMixer,
     socialIntensity: EventSocialIntensity.algorithmic,
+    durationShape: EventSuccessDurationShape.rounds,
     summary:
         'A mixer format with short questions, clues, reveal moments, host help, and explanations.',
     attendeePromise:

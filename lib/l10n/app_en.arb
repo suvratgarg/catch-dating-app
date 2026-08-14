@@ -1552,6 +1552,27 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_setup_body"
   },
+  "eventSuccessEventSuccessSetupBodyTitleFormat": "Format",
+  "@eventSuccessEventSuccessSetupBodyTitleFormat": {
+    "description": "Primary saved event-format row in Event Success setup.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_success_setup_body"
+  },
+  "eventSuccessEventSuccessSetupBodyLabelCustomizeTools": "Customize",
+  "@eventSuccessEventSuccessSetupBodyLabelCustomizeTools": {
+    "description": "Opens the advanced Event Success module controls after the format summary.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_success_setup_body"
+  },
+  "eventSuccessEventSuccessSetupBodyLabelDoneCustomizing": "Done",
+  "@eventSuccessEventSuccessSetupBodyLabelDoneCustomizing": {
+    "description": "Closes the Event Success module controls without changing their values.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_success_setup_body"
+  },
   "eventSuccessEventSuccessSetupBodyTextMatchClueQuestions": "Match clue questions",
   "@eventSuccessEventSuccessSetupBodyTextMatchClueQuestions": {
     "description": "Product copy used by lib/event_success/presentation/event_success_setup_body.dart (Text).",
@@ -18731,6 +18752,66 @@
       "total": {"type": "int"},
       "stage": {"type": "String"}
     },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessEventSuccessHostLiveLabelBeatNumber": "Beat {number}",
+  "@eventSuccessEventSuccessHostLiveLabelBeatNumber": {
+    "description": "Numbered transition label for a continuous run of show.",
+    "placeholders": {"number": {"type": "int"}},
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessEventSuccessHostLiveLabelRoundNumber": "Round {number}",
+  "@eventSuccessEventSuccessHostLiveLabelRoundNumber": {
+    "description": "Numbered transition label for a round-based run of show.",
+    "placeholders": {"number": {"type": "int"}},
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessEventSuccessHostLiveLabelFirstCourse": "First course",
+  "@eventSuccessEventSuccessHostLiveLabelFirstCourse": {
+    "description": "First transition label for a course-based run of show.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessEventSuccessHostLiveLabelSecondCourse": "Second course",
+  "@eventSuccessEventSuccessHostLiveLabelSecondCourse": {
+    "description": "Second transition label for a course-based run of show.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessEventSuccessHostLiveLabelThirdCourse": "Third course",
+  "@eventSuccessEventSuccessHostLiveLabelThirdCourse": {
+    "description": "Third transition label for a course-based run of show.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessEventSuccessHostLiveLabelFourthCourse": "Fourth course",
+  "@eventSuccessEventSuccessHostLiveLabelFourthCourse": {
+    "description": "Fourth transition label for a course-based run of show.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessEventSuccessHostLiveLabelCourseNumber": "Course {number}",
+  "@eventSuccessEventSuccessHostLiveLabelCourseNumber": {
+    "description": "Fallback numbered transition label for later courses.",
+    "placeholders": {"number": {"type": "int"}},
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessEventSuccessHostLiveLabelLegNumber": "Leg {number}",
+  "@eventSuccessEventSuccessHostLiveLabelLegNumber": {
+    "description": "Numbered transition label for a segmented run of show.",
+    "placeholders": {"number": {"type": "int"}},
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
