@@ -75,13 +75,15 @@ class _HostEventEntryRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchField.action(
-      key: ValueKey<String>('host-event-entry-${intent.name}'),
-      title: _title(context),
-      body: _body(context),
-      icon: _icon,
-      emphasis: CatchFieldEmphasis.title,
-      onTap: onTap,
+    return CatchFieldLanes.single(
+      child: CatchField.action(
+        key: ValueKey<String>('host-event-entry-${intent.name}'),
+        title: _title(context),
+        body: _body(context),
+        icon: _icon,
+        emphasis: CatchFieldEmphasis.title,
+        onTap: onTap,
+      ),
     );
   }
 
