@@ -208,21 +208,13 @@ jobs:
 
       - run: flutter pub get
 
-      - name: Verify stable Host v2 full-shell regression baselines
+      - name: Validate Host design reference manifest
         if: ${{ matrix.role == 'host' }}
         run: |
-          # Today and the pre-consolidation Events list remain historical design
-          # evidence until DP-HOST-HOME-004 gains an approved consolidated reference.
-          node tool/ui_capture/run_captures.mjs \
-            --ids host_inbox_queries,host_clubs_management \
-            --output-dir build/host-shell-reference-captures \
-            --output-layout capture-first
-          node tool/design/check_reference_screens.mjs \
-            --compare \
-            --capture-dir build/host-shell-reference-captures \
-            --capture-layout capture-first \
-            --ids host_inbox_queries,host_clubs_management \
-            --strict
+          # Today, the pre-consolidation Events list, Inbox, and Organizer remain
+          # historical evidence until DP-HOST-HOME-004 and the Host Messaging /
+          # Organizer parity debts gain approved references for the current shell.
+          node tool/design/check_reference_screens.mjs --check --summary
 
       - name: Write Consumer dev iOS Maps key
         if: ${{ matrix.role == 'consumer' }}
