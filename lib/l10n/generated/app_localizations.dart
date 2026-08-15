@@ -20328,6 +20328,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Event report'**
   String get eventSuccessHostResourceEventReport;
+
+  /// Reason the Live workspace is disabled for an ended event.
+  ///
+  /// In en, this message translates to:
+  /// **'Live controls close when the event ends.'**
+  String get hostsHostEventManageLiveUnavailableAfterEvent;
+
+  /// Reason the Report workspace is disabled before an event ends.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports are available after the event ends.'**
+  String get hostsHostEventManageReportUnavailableBeforeEvent;
 }
 
 class _AppLocalizationsDelegate

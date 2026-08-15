@@ -7,10 +7,10 @@ class ReportTab extends StatelessWidget {
     required this.plan,
     required this.planIsPersisted,
     this.scorecard,
-    required this.assignments,
-    required this.rotationAssignments,
-    required this.preferences,
-    required this.wingmanRequests,
+    this.assignments,
+    this.rotationAssignments,
+    this.preferences,
+    this.wingmanRequests,
     required this.resourceFailures,
     required this.onRetryResource,
     required this.embedded,
@@ -20,10 +20,10 @@ class ReportTab extends StatelessWidget {
   final EventSuccessPlan plan;
   final bool planIsPersisted;
   final EventSuccessScorecard? scorecard;
-  final List<EventSuccessAssignment> assignments;
-  final List<EventSuccessAssignment> rotationAssignments;
-  final List<EventSuccessPreference> preferences;
-  final List<EventSuccessWingmanRequest> wingmanRequests;
+  final List<EventSuccessAssignment>? assignments;
+  final List<EventSuccessAssignment>? rotationAssignments;
+  final List<EventSuccessPreference>? preferences;
+  final List<EventSuccessWingmanRequest>? wingmanRequests;
   final List<EventSuccessHostResourceFailure> resourceFailures;
   final ValueChanged<EventSuccessHostRetryIntent>? onRetryResource;
   final bool embedded;

@@ -263,17 +263,19 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
   EventSuccessBrief buildBriefFromScorecard({
     required Event event,
     required EventSuccessScorecard scorecard,
-    List<EventSuccessAssignment> assignments = const [],
-    List<EventSuccessAssignment> rotationAssignments = const [],
-    List<EventSuccessPreference> preferences = const [],
-    List<EventSuccessWingmanRequest> wingmanRequests = const [],
+    List<EventSuccessAssignment>? assignments,
+    List<EventSuccessAssignment>? rotationAssignments,
+    List<EventSuccessPreference>? preferences,
+    List<EventSuccessWingmanRequest>? wingmanRequests,
   }) {
-    final assignedUids = _assignmentParticipantUids([
-      ...assignments,
-      ...rotationAssignments,
-    ]);
+    final assignedUids = assignments == null && rotationAssignments == null
+        ? null
+        : _assignmentParticipantUids([
+            ...?assignments,
+            ...?rotationAssignments,
+          ]);
     final optedOutUids = preferences
-        .where(
+        ?.where(
           (preference) =>
               preference.microPodsOptedOut ||
               preference.guidedRotationsOptedOut,
@@ -285,10 +287,10 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
       scorecard: scorecard.copyWith(
         bookedCount: event.signedUpCount,
         checkedInCount: event.attendedCount,
-        assignmentParticipantCount: assignedUids.length,
-        assignmentOptOutCount: optedOutUids.length,
+        assignmentParticipantCount: assignedUids?.length,
+        assignmentOptOutCount: optedOutUids?.length,
         wingmanRequestCount: wingmanRequests
-            .where((request) => request.isActive)
+            ?.where((request) => request.isActive)
             .length,
       ),
     );

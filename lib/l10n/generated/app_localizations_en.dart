@@ -13055,4 +13055,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventSuccessHostResourceEventReport => 'Event report';
+
+  @override
+  String get hostsHostEventManageLiveUnavailableAfterEvent =>
+      'Live controls close when the event ends.';
+
+  @override
+  String get hostsHostEventManageReportUnavailableBeforeEvent =>
+      'Reports are available after the event ends.';
 }

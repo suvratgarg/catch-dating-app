@@ -882,6 +882,22 @@ void main() {
         find.byType(CatchOptionGroup<HostEventManageSection>),
         findsOneWidget,
       );
+      final sectionGroup = tester
+          .widget<CatchOptionGroup<HostEventManageSection>>(
+            find.byType(CatchOptionGroup<HostEventManageSection>),
+          );
+      final liveOption = sectionGroup.options.singleWhere(
+        (option) => option.value == HostEventManageSection.live,
+      );
+      final reportOption = sectionGroup.options.singleWhere(
+        (option) => option.value == HostEventManageSection.report,
+      );
+      expect(liveOption.enabled, isTrue);
+      expect(reportOption.enabled, isFalse);
+      expect(
+        reportOption.disabledReason,
+        'Reports are available after the event ends.',
+      );
       expect(find.byType(CatchTabRail<HostEventManageSection>), findsOneWidget);
       expect(find.text('Event success'), findsNothing);
       expect(find.text('Open event success'), findsNothing);

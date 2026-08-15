@@ -2109,6 +2109,8 @@ Widget _hostEventManagePreviewFor(BuildContext context, String focus) {
     ),
     'HostManageMetaRow' => HostManageMetaRow(event: event),
     'HostManageSectionPicker' => HostManageSectionPicker(
+      event: event,
+      now: event.startTime,
       selectedSection: HostEventManageSection.setup,
       onChanged: (_) {},
     ),

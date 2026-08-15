@@ -21160,5 +21160,9 @@
   "eventSuccessHostResourceHostHelpProfiles": "Host-help attendee profiles",
   "@eventSuccessHostResourceHostHelpProfiles": {"description": "Event Success Host-help profile enrichment resource name.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_screen"},
   "eventSuccessHostResourceEventReport": "Event report",
-  "@eventSuccessHostResourceEventReport": {"description": "Event Success aggregate scorecard resource name.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_screen"}
+  "@eventSuccessHostResourceEventReport": {"description": "Event Success aggregate scorecard resource name.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_screen"},
+  "hostsHostEventManageLiveUnavailableAfterEvent": "Live controls close when the event ends.",
+  "@hostsHostEventManageLiveUnavailableAfterEvent": {"description": "Reason the Live workspace is disabled for an ended event.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_event_manage_screen"},
+  "hostsHostEventManageReportUnavailableBeforeEvent": "Reports are available after the event ends.",
+  "@hostsHostEventManageReportUnavailableBeforeEvent": {"description": "Reason the Report workspace is disabled before an event ends.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_event_manage_screen"}
 }

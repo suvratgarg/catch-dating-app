@@ -167,12 +167,15 @@ class _EventSuccessHostSectionState
     );
     final persistedPlan = planAsync.asData?.value;
     final hasSavedGuide = persistedPlan != null;
-    final shouldLoadRoster =
-        hasSavedGuide && (showTabs || initialTab == EventSuccessHostTab.live);
+    final eventEnded = !event.endTime.isAfter(DateTime.now());
+    final shouldLoadLiveResources =
+        hasSavedGuide &&
+        !eventEnded &&
+        (showTabs || initialTab == EventSuccessHostTab.live);
+    final shouldLoadRoster = shouldLoadLiveResources;
     final shouldLoadScorecard =
         hasSavedGuide && (showTabs || initialTab == EventSuccessHostTab.report);
-    final shouldLoadAssignments =
-        hasSavedGuide && (showTabs || initialTab == EventSuccessHostTab.live);
+    final shouldLoadAssignments = shouldLoadLiveResources;
     final shouldLoadPreferences = shouldLoadAssignments;
     final shouldLoadWingmanRequests = shouldLoadAssignments;
     final eventSuccessProfile = EventSuccessActivityProfile.forFormat(
@@ -390,6 +393,7 @@ class _EventSuccessHostSectionState
           : null,
       wingmanRequests: state.wingmanRequests,
       wingmanProfiles: state.wingmanProfiles,
+      liveResourcesLoaded: shouldLoadLiveResources,
       resourceFailures: state.resourceFailures,
       onRetryResource: (retryIntent) => _retryEventSuccessHostSection(
         eventId: event.id,
@@ -1115,6 +1119,7 @@ class EventSuccessHostPanel extends StatefulWidget {
     this.lateArrivalError,
     this.wingmanRequests = const [],
     this.wingmanProfiles = const [],
+    this.liveResourcesLoaded = true,
     this.resourceFailures = const [],
     this.onRetryResource,
     this.initialTab = EventSuccessHostTab.setup,
@@ -1178,6 +1183,7 @@ class EventSuccessHostPanel extends StatefulWidget {
   final Object? lateArrivalError;
   final List<EventSuccessWingmanRequest> wingmanRequests;
   final List<PublicProfile> wingmanProfiles;
+  final bool liveResourcesLoaded;
   final List<EventSuccessHostResourceFailure> resourceFailures;
   final ValueChanged<EventSuccessHostRetryIntent>? onRetryResource;
   final EventSuccessHostTab initialTab;
@@ -1339,10 +1345,14 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         plan: widget.plan,
         planIsPersisted: widget.planIsPersisted,
         scorecard: widget.scorecard,
-        assignments: widget.assignments,
-        rotationAssignments: widget.rotationAssignments,
-        preferences: widget.preferences,
-        wingmanRequests: widget.wingmanRequests,
+        assignments: widget.liveResourcesLoaded ? widget.assignments : null,
+        rotationAssignments: widget.liveResourcesLoaded
+            ? widget.rotationAssignments
+            : null,
+        preferences: widget.liveResourcesLoaded ? widget.preferences : null,
+        wingmanRequests: widget.liveResourcesLoaded
+            ? widget.wingmanRequests
+            : null,
         resourceFailures: widget.resourceFailures,
         onRetryResource: widget.onRetryResource,
         embedded: widget.embedded,
