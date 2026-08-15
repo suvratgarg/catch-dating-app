@@ -21,6 +21,8 @@
  *
  *   - `users/{uid}/photos/{fileName}` — profile photos
  *   - `users/{uid}/hostedMedia/{fileName}` — legacy hosted club/event media
+ *   - `organizers/{organizerId}/photos/{fileName}` — organizer gallery photos
+ *   - `organizers/{organizerId}/logo/{fileName}` — organizer logos
  *   - `clubs/{clubId}/photos/{fileName}` — club gallery photos
  *   - `clubs/{clubId}/logo/{fileName}` — club logos
  *   - `events/{eventId}/photos/{fileName}` — event photos
@@ -47,6 +49,7 @@ import * as vision from "@google-cloud/vision";
 import type {
   ModerationFlagDocument,
 } from "../shared/generated/firestoreAdminTypes";
+import {isModeratedPhotoPath} from "./moderatedPhotoPath";
 
 // ── Client ─────────────────────────────────────────────────────────────────
 
@@ -213,24 +216,12 @@ export const moderatePhotoOnUpload = onObjectFinalized(
     const filePath = event.data.name;
     if (!filePath) return;
 
-    // Only moderate recognized image paths.
+    // Profile and chat classification also controls the moderation flag source.
     const isProfilePhoto = filePath.startsWith("users/") &&
-      filePath.includes("/photos/");
-    const isHostedMedia = filePath.startsWith("users/") &&
-      filePath.includes("/hostedMedia/");
-    const isClubMedia = filePath.startsWith("clubs/") &&
-      (filePath.includes("/photos/") || filePath.includes("/logo/"));
-    const isEventMedia = filePath.startsWith("events/") &&
       filePath.includes("/photos/");
     const isChatImage = filePath.startsWith("matches/");
 
-    if (
-      !isProfilePhoto &&
-      !isHostedMedia &&
-      !isClubMedia &&
-      !isEventMedia &&
-      !isChatImage
-    ) return;
+    if (!isModeratedPhotoPath(filePath)) return;
 
     const bucket = admin.storage().bucket(event.data.bucket);
     const file = bucket.file(filePath);
