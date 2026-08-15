@@ -44,6 +44,39 @@ enum HostCustomerFilter {
   };
 }
 
+enum HostCustomerFilterGroup { attendance, reliability, advocacy, reachable }
+
+@immutable
+class HostCustomerSegmentCountRequest {
+  const HostCustomerSegmentCountRequest({
+    required this.organizerId,
+    required this.filter,
+    this.search,
+  });
+
+  final String organizerId;
+  final HostCustomerFilter filter;
+  final String? search;
+
+  @override
+  bool operator ==(Object other) =>
+      other is HostCustomerSegmentCountRequest &&
+      other.organizerId == organizerId &&
+      other.filter == filter &&
+      other.search == search;
+
+  @override
+  int get hashCode => Object.hash(organizerId, filter, search);
+}
+
+@immutable
+class HostCustomerSegmentCount {
+  const HostCustomerSegmentCount({required this.count, required this.coverage});
+
+  final int count;
+  final HostCustomerMatchCountCoverage coverage;
+}
+
 @immutable
 class HostCustomersDirectoryRequest {
   const HostCustomersDirectoryRequest({

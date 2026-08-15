@@ -20074,6 +20074,96 @@ abstract class AppLocalizations {
   /// **'Filter by tag'**
   String get hostCustomersFilterByTag;
 
+  /// Active customer segment and its server-backed match count.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} · {countLabel}'**
+  String hostCustomersFilterSummary({
+    required String label,
+    required String countLabel,
+  });
+
+  /// Opens the grouped customer filter sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get hostCustomersFilters;
+
+  /// Clears the active customer segment filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get hostCustomersClearFilter;
+
+  /// Grouped customer filter sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter customers'**
+  String get hostCustomersFilterSheetTitle;
+
+  /// Explains the scope of counts shown in the grouped customer filter sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose one audience segment. Counts follow the current name search.'**
+  String get hostCustomersFilterSheetSubtitle;
+
+  /// Customer segment group for attendance lifecycle filters.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendance'**
+  String get hostCustomersFilterGroupAttendance;
+
+  /// Customer segment group for attendance reliability filters.
+  ///
+  /// In en, this message translates to:
+  /// **'Reliability'**
+  String get hostCustomersFilterGroupReliability;
+
+  /// Customer segment group for advocacy filters.
+  ///
+  /// In en, this message translates to:
+  /// **'Advocacy'**
+  String get hostCustomersFilterGroupAdvocacy;
+
+  /// Customer segment group for sender-backed reachable channels.
+  ///
+  /// In en, this message translates to:
+  /// **'Reachable'**
+  String get hostCustomersFilterGroupReachable;
+
+  /// Customer filter chip with its server-backed match count.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} · {countLabel}'**
+  String hostCustomersFilterOption({
+    required String label,
+    required String countLabel,
+  });
+
+  /// Exact number of people matching a customer audience query.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 person} other{{count} people}}'**
+  String hostCustomersPeopleCount({required int count});
+
+  /// Lower-bound number of people matching a customer audience query.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}+ people'**
+  String hostCustomersPeopleCountAtLeast({required int count});
+
+  /// Temporary customer segment count state.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading count'**
+  String get hostCustomersCountLoading;
+
+  /// Customer segment count failure state.
+  ///
+  /// In en, this message translates to:
+  /// **'Count unavailable'**
+  String get hostCustomersCountUnavailable;
+
   /// Explainable alias for the versioned lapsed-regular segment.
   ///
   /// In en, this message translates to:

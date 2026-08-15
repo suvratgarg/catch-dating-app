@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_customers_controller.g.dart';
@@ -59,6 +60,27 @@ class HostCustomersDirectoryController
   }
 }
 
+final hostCustomerSegmentCountProvider = FutureProvider.autoDispose
+    .family<HostCustomerSegmentCount, HostCustomerSegmentCountRequest>((
+      ref,
+      request,
+    ) async {
+      final page = await ref
+          .read(hostCrmRepositoryProvider)
+          .listContacts(
+            request.organizerId,
+            query: HostAudienceQuery(
+              search: request.search,
+              segment: hostAudienceSegmentForCustomerFilter(request.filter),
+            ),
+            limit: 1,
+          );
+      return HostCustomerSegmentCount(
+        count: page.matchCount,
+        coverage: _matchCountCoverage(page.matchCountCoverage),
+      );
+    });
+
 HostAudienceQuery _queryFor(
   HostCustomersDirectoryRequest request, {
   String? cursor,
@@ -96,6 +118,32 @@ List<HostCustomerFilter> hostCustomerFiltersForSmsReadiness(
         hostCrmSmsReachableAvailable(smsReadiness))
       filter,
 ];
+
+Map<HostCustomerFilterGroup, List<HostCustomerFilter>>
+hostCustomerFilterGroupsForSmsReadiness(HostCrmChannelReadiness? smsReadiness) {
+  final filters = hostCustomerFiltersForSmsReadiness(smsReadiness).toSet();
+  return {
+    HostCustomerFilterGroup.attendance: [
+      HostCustomerFilter.newToOrganizer,
+      HostCustomerFilter.firstTime,
+      HostCustomerFilter.repeat,
+      HostCustomerFilter.regular,
+      HostCustomerFilter.atRisk,
+    ].where(filters.contains).toList(growable: false),
+    HostCustomerFilterGroup.reliability: [
+      HostCustomerFilter.reliable,
+      HostCustomerFilter.needsConfirmation,
+    ].where(filters.contains).toList(growable: false),
+    HostCustomerFilterGroup.advocacy: [
+      HostCustomerFilter.advocate,
+      HostCustomerFilter.highImpactAdvocate,
+    ].where(filters.contains).toList(growable: false),
+    HostCustomerFilterGroup.reachable: [
+      HostCustomerFilter.whatsappReachable,
+      HostCustomerFilter.smsReachable,
+    ].where(filters.contains).toList(growable: false),
+  };
+}
 
 HostCustomersDirectoryState _directoryStateFromPage(HostAudiencePage page) =>
     HostCustomersDirectoryState.fromPageData(

@@ -55,6 +55,63 @@ void main() {
     );
   });
 
+  test('customer filters are grouped without losing SMS readiness', () {
+    final unavailable = hostCustomerFilterGroupsForSmsReadiness(
+      HostCrmChannelReadiness.providerAndDltSetupRequired,
+    );
+
+    expect(unavailable.keys, HostCustomerFilterGroup.values);
+    expect(unavailable[HostCustomerFilterGroup.attendance], [
+      HostCustomerFilter.newToOrganizer,
+      HostCustomerFilter.firstTime,
+      HostCustomerFilter.repeat,
+      HostCustomerFilter.regular,
+      HostCustomerFilter.atRisk,
+    ]);
+    expect(unavailable[HostCustomerFilterGroup.reliability], [
+      HostCustomerFilter.reliable,
+      HostCustomerFilter.needsConfirmation,
+    ]);
+    expect(unavailable[HostCustomerFilterGroup.advocacy], [
+      HostCustomerFilter.advocate,
+      HostCustomerFilter.highImpactAdvocate,
+    ]);
+    expect(unavailable[HostCustomerFilterGroup.reachable], [
+      HostCustomerFilter.whatsappReachable,
+    ]);
+    expect(
+      hostCustomerFilterGroupsForSmsReadiness(
+        HostCrmChannelReadiness.currentEventOnly,
+      )[HostCustomerFilterGroup.reachable],
+      [HostCustomerFilter.whatsappReachable, HostCustomerFilter.smsReachable],
+    );
+  });
+
+  test(
+    'segment count requests retain organizer, search and filter identity',
+    () {
+      const first = HostCustomerSegmentCountRequest(
+        organizerId: 'organizer-1',
+        search: 'asha',
+        filter: HostCustomerFilter.atRisk,
+      );
+      const same = HostCustomerSegmentCountRequest(
+        organizerId: 'organizer-1',
+        search: 'asha',
+        filter: HostCustomerFilter.atRisk,
+      );
+      const different = HostCustomerSegmentCountRequest(
+        organizerId: 'organizer-1',
+        search: 'asha',
+        filter: HostCustomerFilter.reliable,
+      );
+
+      expect(first, same);
+      expect(first.hashCode, same.hashCode);
+      expect(first, isNot(different));
+    },
+  );
+
   test('conversation requires an unambiguous linked customer identity', () {
     expect(
       customerConversationAvailability(
