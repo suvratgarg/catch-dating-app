@@ -13,6 +13,7 @@ import {
   StripeClient,
   StripeCheckoutSessionCreateInput,
 } from "./stripe";
+import {catchNativeEventOrigin} from "../shared/testUtils";
 
 test("createStripeCheckoutSessionHandler creates trusted destination checkout",
   async () => {
@@ -187,6 +188,7 @@ function buildEventDoc(
 ): EventDocument {
   return {
     clubId: "club-1",
+    eventOrigin: catchNativeEventOrigin(),
     startTime: timestamp("2026-05-02T01:30:00.000Z"),
     endTime: timestamp("2026-05-02T02:30:00.000Z"),
     meetingPoint: "Prospect Park",

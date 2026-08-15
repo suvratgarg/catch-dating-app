@@ -1,4 +1,21 @@
 import assert from "node:assert/strict";
+import type {EventOrigin} from "./generated/eventOrigin";
+
+/** Returns the canonical provenance written for a Catch-native event. */
+export function catchNativeEventOrigin(): EventOrigin {
+  return {
+    mode: "catchNative",
+    bookingAuthority: "catch",
+    rosterAuthority: "catchProjection",
+    provider: "catch",
+    externalEventId: null,
+    externalEventUrl: null,
+    sourceExternalEventId: null,
+    adapterVersion: null,
+    connectedAt: null,
+    connectedBy: null,
+  };
+}
 
 /**
  * Asserts that an error is an HttpsError with the expected code and message.

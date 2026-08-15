@@ -6,10 +6,12 @@ import {createRazorpayOrderHandler} from "./createRazorpayOrder";
 import {
   EventDocument,
 } from "../shared/generated/firestoreAdminTypes";
+import {catchNativeEventOrigin} from "../shared/testUtils";
 
 function buildEventDoc(overrides: Partial<EventDocument> = {}): EventDocument {
   return {
     clubId: "club-1",
+    eventOrigin: catchNativeEventOrigin(),
     startTime: timestamp("2026-05-02T01:30:00.000Z"),
     endTime: timestamp("2026-05-02T02:30:00.000Z"),
     meetingPoint: "Carter Road",
