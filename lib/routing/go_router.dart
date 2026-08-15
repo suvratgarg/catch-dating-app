@@ -104,10 +104,14 @@ HostInboxScreen hostInboxScreenForUri(Uri uri, {String? initialOrganizerId}) {
       uri.queryParameters['compose'] == '1' && campaignSegment != null
       ? {campaignSegment}
       : const <HostAudienceSegment>{};
+  final requestedSearch = uri.queryParameters['search']?.trim();
   return HostInboxScreen(
     initialScope: initialScope,
     initialWorkspace: initialWorkspace,
     initialCampaignSegments: initialCampaignSegments,
+    initialCampaignSearch: requestedSearch == null || requestedSearch.isEmpty
+        ? null
+        : requestedSearch,
     initialOrganizerId: initialOrganizerId,
   );
 }

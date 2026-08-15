@@ -156,13 +156,14 @@ void main() {
   test('host inbox route restores the campaigns composer segment', () {
     final screen = app_router.hostInboxScreenForUri(
       Uri.parse(
-        '/host/inbox?workspace=campaigns&compose=1&segment=lapsed_regular',
+        '/host/inbox?workspace=campaigns&compose=1&segment=lapsed_regular&search=asha',
       ),
       initialOrganizerId: 'organizer-2',
     );
 
     expect(screen.initialWorkspace, HostMessagingWorkspace.campaigns);
     expect(screen.initialCampaignSegments, {HostAudienceSegment.lapsedRegular});
+    expect(screen.initialCampaignSearch, 'asha');
     expect(screen.initialOrganizerId, 'organizer-2');
   });
 
@@ -173,6 +174,7 @@ void main() {
 
     expect(screen.initialWorkspace, HostMessagingWorkspace.campaigns);
     expect(screen.initialCampaignSegments, isEmpty);
+    expect(screen.initialCampaignSearch, isNull);
   });
 
   testWidgets(

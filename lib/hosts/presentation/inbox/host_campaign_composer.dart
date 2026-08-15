@@ -17,6 +17,7 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/foundation.dart';
@@ -96,11 +97,13 @@ class HostCampaignComposer extends ConsumerStatefulWidget {
     super.key,
     required this.club,
     this.initialSegments = const {HostAudienceSegment.whatsappReachable},
+    this.initialSearch,
     this.onBusyChanged,
   });
 
   final Club club;
   final Set<HostAudienceSegment> initialSegments;
+  final String? initialSearch;
   final ValueChanged<bool>? onBusyChanged;
 
   @override
@@ -130,7 +133,8 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
   void didUpdateWidget(covariant HostCampaignComposer oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.club.id != widget.club.id ||
-        !setEquals(oldWidget.initialSegments, widget.initialSegments)) {
+        !setEquals(oldWidget.initialSegments, widget.initialSegments) ||
+        oldWidget.initialSearch != widget.initialSearch) {
       _campaign = null;
       _selectedTemplate = null;
       _campaignSegments = _initialSegments();
@@ -247,7 +251,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                       key: ValueKey(
                         'host-campaign-segment-${segment.wireValue}',
                       ),
-                      label: _segmentLabel(context, segment),
+                      label: _segmentLabelWithCount(context, segment),
                       selected: selectedEligibleSegments.contains(segment),
                       enabled: _campaign == null,
                       contract: CatchContractConstraints
@@ -372,6 +376,35 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
       },
     ),
   );
+
+  String _segmentLabelWithCount(
+    BuildContext context,
+    HostAudienceSegment segment,
+  ) {
+    final count = ref.watch(
+      hostCustomerSegmentCountProvider(
+        HostCustomerSegmentCountRequest(
+          organizerId: widget.club.id,
+          search: widget.initialSearch,
+          filter: hostCustomerFilterForAudienceSegment(segment),
+        ),
+      ),
+    );
+    final countLabel = count.when(
+      data: (value) => switch (value.coverage) {
+        HostCustomerMatchCountCoverage.exact =>
+          context.l10n.hostCustomersPeopleCount(count: value.count),
+        HostCustomerMatchCountCoverage.atLeast =>
+          context.l10n.hostCustomersPeopleCountAtLeast(count: value.count),
+      },
+      loading: () => context.l10n.hostCustomersCountLoading,
+      error: (_, _) => context.l10n.hostCustomersCountUnavailable,
+    );
+    return context.l10n.hostCustomersFilterOption(
+      label: _segmentLabel(context, segment),
+      countLabel: countLabel,
+    );
+  }
 
   Future<void> _saveAndPreview(
     HostWhatsappConnection connection,

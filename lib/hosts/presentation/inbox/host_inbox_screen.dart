@@ -50,6 +50,7 @@ class HostInboxScreen extends ConsumerStatefulWidget {
     this.initialSegment = HostInboxAudienceSegment.booked,
     this.initialWorkspace = HostMessagingWorkspace.inbox,
     this.initialCampaignSegments = const {},
+    this.initialCampaignSearch,
     this.initialOrganizerId,
     this.broadcastEnabled,
     this.syncSelectionToRoute = true,
@@ -60,6 +61,7 @@ class HostInboxScreen extends ConsumerStatefulWidget {
   final HostInboxAudienceSegment initialSegment;
   final HostMessagingWorkspace initialWorkspace;
   final Set<HostAudienceSegment> initialCampaignSegments;
+  final String? initialCampaignSearch;
   final String? initialOrganizerId;
   final bool? broadcastEnabled;
   final bool syncSelectionToRoute;
@@ -145,6 +147,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
             clubsAsync: clubsAsync,
             selectedClub: selectedClub,
             initialSegments: widget.initialCampaignSegments,
+            initialSearch: widget.initialCampaignSearch,
             onRetry: _retry,
             onBusyChanged: _setCampaignBusy,
           );
@@ -397,6 +400,7 @@ class _HostCampaignWorkspaceSliver extends StatelessWidget {
     required this.clubsAsync,
     required this.selectedClub,
     required this.initialSegments,
+    required this.initialSearch,
     required this.onRetry,
     required this.onBusyChanged,
   });
@@ -406,6 +410,7 @@ class _HostCampaignWorkspaceSliver extends StatelessWidget {
   final AsyncValue<List<Club>> clubsAsync;
   final Club? selectedClub;
   final Set<HostAudienceSegment> initialSegments;
+  final String? initialSearch;
   final ValueChanged<String?> onRetry;
   final ValueChanged<bool> onBusyChanged;
 
@@ -435,6 +440,7 @@ class _HostCampaignWorkspaceSliver extends StatelessWidget {
               HostCampaignComposer(
                 club: club,
                 initialSegments: initialSegments,
+                initialSearch: initialSearch,
                 onBusyChanged: onBusyChanged,
               ),
             ],

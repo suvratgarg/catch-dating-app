@@ -107,6 +107,23 @@ HostAudienceSegment? hostAudienceSegmentForCustomerFilter(
   HostCustomerTag.smsReachable => HostAudienceSegment.smsReachable,
 };
 
+HostCustomerFilter hostCustomerFilterForAudienceSegment(
+  HostAudienceSegment segment,
+) => switch (segment) {
+  HostAudienceSegment.newToOrganizer => HostCustomerFilter.newToOrganizer,
+  HostAudienceSegment.firstTimeAttendee => HostCustomerFilter.firstTime,
+  HostAudienceSegment.repeatAttendee => HostCustomerFilter.repeat,
+  HostAudienceSegment.regular => HostCustomerFilter.regular,
+  HostAudienceSegment.lapsedRegular => HostCustomerFilter.atRisk,
+  HostAudienceSegment.reliableAttendee => HostCustomerFilter.reliable,
+  HostAudienceSegment.needsConfirmation => HostCustomerFilter.needsConfirmation,
+  HostAudienceSegment.advocate => HostCustomerFilter.advocate,
+  HostAudienceSegment.highImpactAdvocate =>
+    HostCustomerFilter.highImpactAdvocate,
+  HostAudienceSegment.whatsappReachable => HostCustomerFilter.whatsappReachable,
+  HostAudienceSegment.smsReachable => HostCustomerFilter.smsReachable,
+};
+
 bool hostCrmSmsReachableAvailable(HostCrmChannelReadiness? readiness) =>
     readiness == HostCrmChannelReadiness.currentEventOnly;
 

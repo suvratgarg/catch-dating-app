@@ -34,6 +34,16 @@ void main() {
           ),
       isTrue,
     );
+    expect(
+      HostAudienceSegment.values.every(
+        (segment) =>
+            hostAudienceSegmentForCustomerFilter(
+              hostCustomerFilterForAudienceSegment(segment),
+            ) ==
+            segment,
+      ),
+      isTrue,
+    );
   });
 
   test('customer SMS filters render only when SMS is available', () {

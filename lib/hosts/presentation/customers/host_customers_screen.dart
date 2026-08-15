@@ -349,6 +349,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
           'workspace': HostMessagingWorkspace.campaigns.name,
           'compose': '1',
           'segment': segment.wireValue,
+          'search': ?_search,
         },
         extra: club,
       );

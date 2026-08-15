@@ -14,6 +14,8 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
@@ -317,6 +319,12 @@ Widget _app({
       hostCrmSummaryProvider(
         club.id,
       ).overrideWithValue(AsyncData(_crmSummary(club.id))),
+      hostCustomerSegmentCountProvider.overrideWith(
+        (ref, request) async => const HostCustomerSegmentCount(
+          count: 12,
+          coverage: HostCustomerMatchCountCoverage.exact,
+        ),
+      ),
       if (event != null)
         watchEventParticipationsForEventProvider(
           event.id,
