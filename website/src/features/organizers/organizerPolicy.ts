@@ -108,36 +108,23 @@ const verificationStatuses = new Set<OrganizerVerificationStatus>([
   "ownerVerified",
 ]);
 
-/**
- * Derives action and presentation policy from the canonical listing projection.
- * The compatibility branch is deliberately explicit so old generated fixtures
- * remain readable while authority/capability fields roll out.
- */
+/** Derives fail-closed policy from the canonical listing projection. */
 export function organizerPolicyForListing(listing: HostListing): OrganizerListingPolicy {
   const projected = listing as HostListing & PolicyAwareListing;
   const hasAuthorityProjection = projected.authority !== undefined;
-  const hasCapabilityProjection = projected.capabilities !== undefined;
   const ownershipState = normalizedOwnershipState(
-    projected.authority?.ownershipState,
-    listing,
-    !hasAuthorityProjection
+    projected.authority?.ownershipState
   );
   const claimState = normalizedClaimState(
-    projected.authority?.claimState,
-    listing,
-    !hasAuthorityProjection
+    projected.authority?.claimState
   );
   const verificationStatus = normalizedVerificationStatus(
-    projected.authority?.verificationStatus,
-    listing,
-    !hasAuthorityProjection
+    projected.authority?.verificationStatus
   );
-  const isCatchCreated = ownershipState === "userCreated" ||
-    (!hasAuthorityProjection && listing.listingVariant === "appCreatedClub");
+  const isCatchCreated = ownershipState === "userCreated";
   const publishStatus = projected.authority?.publishStatus;
-  const isPubliclyReadable = hasAuthorityProjection ?
-    publishStatus === "published" && claimState !== "suppressed" :
-    true;
+  const isPubliclyReadable = hasAuthorityProjection &&
+    publishStatus === "published" && claimState !== "suppressed";
   const trustState = trustStateFor({
     claimState,
     isCatchCreated,
@@ -149,15 +136,12 @@ export function organizerPolicyForListing(listing: HostListing): OrganizerListin
   const claimStateCanBeClaimed = claimState === "unclaimed";
   const claimCapability = projected.capabilities?.claimRequest;
   const supply = projected.capabilities?.supply;
-  const legacyPublicApiEnabled = listing.publicApi.state === "enabled";
-  const claimCapabilityEnabled = claimCapability ?
-    capabilityEnabled(claimCapability.state) :
-    !hasCapabilityProjection && legacyPublicApiEnabled;
+  const claimCapabilityEnabled = capabilityEnabled(claimCapability?.state);
   const canRequestClaim = isPubliclyReadable &&
     ownershipCanBeClaimed &&
     claimStateCanBeClaimed &&
     claimCapabilityEnabled &&
-    (supply ? supply.claimable === true : !hasCapabilityProjection);
+    supply?.claimable === true;
   const claimRequestReason = canRequestClaim ? "" : firstReason([
     !isPubliclyReadable ? "This organizer listing is not publicly available." : "",
     claimStateReason(claimState),
@@ -168,17 +152,14 @@ export function organizerPolicyForListing(listing: HostListing): OrganizerListin
   ]);
 
   const publicReviews = projected.capabilities?.publicReviews;
-  const publicReviewTargetEnabled = publicReviews ?
-    capabilityEnabled(publicReviews.targetState) :
-    !hasCapabilityProjection && legacyPublicApiEnabled;
-  const canReadPublicReviews = isPubliclyReadable && publicReviewTargetEnabled && (publicReviews ?
-    capabilityEnabled(publicReviews.readState) :
-    !hasCapabilityProjection && legacyPublicApiEnabled);
+  const publicReviewTargetEnabled = capabilityEnabled(publicReviews?.targetState);
+  const canReadPublicReviews = isPubliclyReadable &&
+    publicReviewTargetEnabled &&
+    capabilityEnabled(publicReviews?.readState);
   const reviewPolicy = normalizedReviewPolicy(supply?.reviewPolicy);
   const canWritePublicReview = canReadPublicReviews &&
-    reviewPolicy !== "after_event_end" && (publicReviews ?
-    capabilityEnabled(publicReviews.writeState) :
-    !hasCapabilityProjection && legacyPublicApiEnabled);
+    reviewPolicy !== "after_event_end" &&
+    capabilityEnabled(publicReviews?.writeState);
   const publicReviewReason = canWritePublicReview ? "" : firstReason([
     !isPubliclyReadable ? "Reviews are unavailable for this organizer listing." : "",
     !publicReviewTargetEnabled ?
@@ -218,49 +199,29 @@ function normalizedReviewPolicy(
 }
 
 function normalizedOwnershipState(
-  value: string | undefined,
-  listing: HostListing,
-  useLegacyFallback: boolean
+  value: string | undefined
 ): OrganizerOwnershipState {
   if (ownershipStates.has(value as OrganizerOwnershipState)) {
     return value as OrganizerOwnershipState;
   }
-  if (!useLegacyFallback) return "unknown";
-  if (listing.listingVariant === "appCreatedClub") return "userCreated";
-  if (listing.status === "claimed" || listing.status === "verified") return "claimed";
-  return listing.listingVariant === "unclaimedScraped" ? "programmatic" : "unknown";
+  return "unknown";
 }
 
 function normalizedClaimState(
-  value: string | undefined,
-  listing: HostListing,
-  useLegacyFallback: boolean
+  value: string | undefined
 ): OrganizerClaimState {
   if (claimStates.has(value as OrganizerClaimState)) {
     return value as OrganizerClaimState;
-  }
-  if (!useLegacyFallback) return "unknown";
-  const legacyState = listing.status.trim();
-  if (claimStates.has(legacyState as OrganizerClaimState)) {
-    return legacyState as OrganizerClaimState;
   }
   return "unknown";
 }
 
 function normalizedVerificationStatus(
-  value: string | undefined,
-  listing: HostListing,
-  useLegacyFallback: boolean
+  value: string | undefined
 ): OrganizerVerificationStatus {
   if (verificationStatuses.has(value as OrganizerVerificationStatus)) {
     return value as OrganizerVerificationStatus;
   }
-  if (!useLegacyFallback) return "unknown";
-  if (listing.listingVariant === "appCreatedClub" || listing.sourceConfidence === "first_party") {
-    return "ownerVerified";
-  }
-  if (["high", "medium"].includes(listing.sourceConfidence)) return "sourceBacked";
-  if (listing.sourceConfidence === "low") return "unverified";
   return "unknown";
 }
 

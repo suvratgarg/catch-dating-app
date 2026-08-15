@@ -119,7 +119,7 @@ void main() {
   });
 
   group('OrganizerSupplyCapabilities', () {
-    test('keeps legacy owned organizer documents managed', () {
+    test('does not derive capabilities from legacy ownership', () {
       final capabilities = OrganizerSupplyCapabilities.fromJson(
         readOrganizerSupplyCapabilities({
               'hostUserId': 'host-1',
@@ -127,10 +127,10 @@ void main() {
             as Map<String, dynamic>,
       );
 
-      expect(capabilities, const OrganizerSupplyCapabilities.claimedManaged());
+      expect(capabilities, const OrganizerSupplyCapabilities.denied());
     });
 
-    test('keeps ownerless legacy organizer documents fail closed', () {
+    test('does not derive capabilities from claim authority', () {
       final capabilities = OrganizerSupplyCapabilities.fromJson(
         readOrganizerSupplyCapabilities({
               'claim': {'state': 'unclaimed'},
@@ -138,10 +138,19 @@ void main() {
             as Map<String, dynamic>,
       );
 
-      expect(
-        capabilities,
-        const OrganizerSupplyCapabilities.unclaimedReadOnly(),
+      expect(capabilities, const OrganizerSupplyCapabilities.denied());
+    });
+
+    test('accepts only a complete canonical capability projection', () {
+      final managed = OrganizerSupplyCapabilities.fromJson(
+        const OrganizerSupplyCapabilities.claimedManaged().toJson(),
       );
+      final incomplete = OrganizerSupplyCapabilities.fromJson({
+        'mode': 'claimed_managed',
+      });
+
+      expect(managed, const OrganizerSupplyCapabilities.claimedManaged());
+      expect(incomplete, const OrganizerSupplyCapabilities.denied());
     });
   });
 }
