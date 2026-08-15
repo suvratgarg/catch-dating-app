@@ -210,6 +210,65 @@ test("finish refuses uncommitted, upstream-less, and unpushed unique work", (con
   assert.equal(fs.existsSync(execution.result.claimPath), true);
 });
 
+test("finish abandon releases clean unpushed out-of-scope work with an attributable record", (context) => {
+  const fixture = createRepository(context);
+  const execution = start(fixture, "abandon-clean", ["owned"]);
+  const worktree = execution.result.worktreePath;
+  fs.appendFileSync(path.join(worktree, "outside.txt"), "committed outside scope\n");
+  commitAll(worktree, "unpushable proposal");
+
+  const normalFinish = guard(worktree, ["finish"]);
+  assert.equal(normalFinish.status, 1);
+  assert.ok(normalFinish.result.blockers.includes("branch_has_no_upstream"));
+  assert.ok(normalFinish.result.blockers.includes("out_of_scope_changes"));
+
+  const abandonedAt = new Date("2026-08-15T09:30:00.000Z");
+  const abandoned = guard(worktree, [
+    "finish",
+    "--abandon",
+    "--reason", "Superseded by the integrated host fix",
+    "--by", "release-owner@catch.local",
+  ], {now: () => abandonedAt});
+
+  assert.equal(abandoned.status, 0);
+  assert.equal(abandoned.result.finished, true);
+  assert.equal(abandoned.result.abandoned, true);
+  assert.equal(fs.existsSync(execution.result.claimPath), false);
+  assert.equal(fs.existsSync(worktree), true);
+  assert.equal(fs.existsSync(abandoned.result.abandonRecordPath), true);
+  const record = JSON.parse(fs.readFileSync(abandoned.result.abandonRecordPath, "utf8"));
+  assert.equal(record.taskId, "abandon-clean");
+  assert.equal(record.abandonedAt, abandonedAt.toISOString());
+  assert.equal(record.abandonedBy, "release-owner@catch.local");
+  assert.equal(record.reason, "Superseded by the integrated host fix");
+  assert.deepEqual(record.outOfScopePaths, ["outside.txt"]);
+  assert.ok(record.ignoredInspectionBlockers.includes("out_of_scope_changes"));
+});
+
+test("finish abandon requires a reason and refuses a dirty worktree", (context) => {
+  const fixture = createRepository(context);
+  const execution = start(fixture, "abandon-dirty", ["owned"]);
+  const worktree = execution.result.worktreePath;
+
+  assert.throws(
+    () => guard(worktree, ["finish", "--abandon"]),
+    (error) => error instanceof TaskUsageError && /--reason is required/u.test(error.message),
+  );
+
+  fs.appendFileSync(path.join(worktree, "owned", "allowed.txt"), "uncommitted\n");
+  const abandoned = guard(worktree, [
+    "finish",
+    "--abandon",
+    "--reason", "No longer needed",
+  ]);
+  assert.equal(abandoned.status, 1);
+  assert.equal(abandoned.result.finished, false);
+  assert.equal(abandoned.result.abandoned, false);
+  assert.deepEqual(abandoned.result.blockers, ["uncommitted_changes"]);
+  assert.equal(fs.existsSync(execution.result.claimPath), true);
+  assert.deepEqual(abandonmentFiles(fixture.root), []);
+});
+
 test("finish permits an unchanged branch without an upstream and removes only its claim", (context) => {
   const fixture = createRepository(context);
   const execution = start(fixture, "no-op-finish", ["owned"]);
@@ -355,6 +414,14 @@ function claimFiles(root) {
   const claimsRoot = path.join(root, ".git", "catch-worktree-claims");
   if (!fs.existsSync(claimsRoot)) return [];
   return fs.readdirSync(claimsRoot)
+    .filter((name) => name.endsWith(".json"))
+    .sort();
+}
+
+function abandonmentFiles(root) {
+  const recordsRoot = path.join(root, ".git", "catch-worktree-claims", "abandoned");
+  if (!fs.existsSync(recordsRoot)) return [];
+  return fs.readdirSync(recordsRoot)
     .filter((name) => name.endsWith(".json"))
     .sort();
 }

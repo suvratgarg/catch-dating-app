@@ -18,12 +18,14 @@ Commands:
           [--branch <branch>] [--worktree <path>]
   doctor  [--worktree <path>]
   finish  [--worktree <path>]
+          [--abandon --reason <why> [--by <identity>]]
   stale   [--stale-days <days>]
 
 The guard stores one disposable scope claim under Git's common directory for
-each active worktree. Claims are removed on successful finish. The guard never
-installs dependencies, runs checks, pushes branches, removes worktrees, or
-deletes stale state.`;
+each active worktree. Claims are removed on successful finish. Explicit
+abandonment removes a clean worktree's claim and keeps a local record of who
+abandoned it and why. The guard never installs dependencies, runs checks,
+pushes branches, removes worktrees, or deletes stale state.`;
 }
 
 export function executeTaskCommand({
@@ -185,6 +187,12 @@ export function finishTask({
   return withClaimsLock(repository, () => {
     const claim = claimForWorktree(repository, worktreePath);
     const inspection = inspectClaim({repository, claim, runner});
+    if (options.abandon === true) {
+      return abandonClaim({repository, claim, inspection, options, now, runner});
+    }
+    if (options.reason != null || options.by != null) {
+      throw new TaskUsageError("--reason and --by require --abandon.");
+    }
     const blockers = [...inspection.blockers];
     if (inspection.dirtyPaths.length > 0) blockers.push("uncommitted_changes");
     if (inspection.outOfScopePaths.length > 0) blockers.push("out_of_scope_changes");
@@ -243,6 +251,61 @@ export function finishTask({
       },
     };
   });
+}
+
+function abandonClaim({repository, claim, inspection, options, now, runner}) {
+  const reason = requireRecordedValue(options.reason, "--reason", 500);
+  const abandonedBy = options.by == null
+    ? resolveGitIdentity({repository, claim, runner})
+    : requireRecordedValue(options.by, "--by", 200);
+
+  if (inspection.dirtyPaths.length > 0) {
+    return {
+      status: 1,
+      result: {
+        operation: "finish",
+        ...inspection,
+        blockers: ["uncommitted_changes"],
+        finished: false,
+        abandoned: false,
+      },
+    };
+  }
+
+  const abandonedAt = now().toISOString();
+  const record = {
+    schemaVersion: 1,
+    taskId: claim.taskId,
+    baseSha: claim.baseSha,
+    headSha: inspection.headSha,
+    branch: claim.branch,
+    worktreePath: claim.worktreePath,
+    claimedPaths: claim.claimedPaths,
+    createdAt: claim.createdAt,
+    abandonedAt,
+    abandonedBy,
+    reason,
+    committedPaths: inspection.committedPaths,
+    outOfScopePaths: inspection.outOfScopePaths,
+    ignoredInspectionBlockers: inspection.blockers,
+  };
+  const abandonRecordPath = writeAbandonRecord(repository, record);
+  fs.unlinkSync(claim.claimPath);
+  return {
+    status: 0,
+    result: {
+      operation: "finish",
+      ...inspection,
+      blockers: [],
+      finished: true,
+      abandoned: true,
+      abandonedAt,
+      abandonedBy,
+      reason,
+      abandonRecordPath,
+      note: "Clean claim abandoned. Review or remove the worktree explicitly with Git.",
+    },
+  };
 }
 
 export function staleTasks({repository, options, now = () => new Date(), runner = runGit}) {
@@ -440,10 +503,16 @@ function parseTaskOptions(args) {
     ["--branch", "branch"],
     ["--worktree", "worktree"],
     ["--stale-days", "staleDays"],
+    ["--reason", "reason"],
+    ["--by", "by"],
   ]);
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
     if (arg === "--json") continue;
+    if (arg === "--abandon") {
+      options.abandon = true;
+      continue;
+    }
     const key = values.get(arg);
     if (key == null) throw new TaskUsageError(`Unknown task option: ${arg}`);
     const value = args[index + 1];
@@ -455,6 +524,34 @@ function parseTaskOptions(args) {
     else options[key] = value;
   }
   return options;
+}
+
+function requireRecordedValue(value, flag, maxLength) {
+  if (typeof value !== "string" || value.trim() === "") {
+    throw new TaskUsageError(`${flag} is required with --abandon.`);
+  }
+  const normalized = value.trim();
+  if (normalized.length > maxLength || /[\u0000-\u001f\u007f]/u.test(normalized)) {
+    throw new TaskUsageError(
+      `${flag} must be at most ${maxLength} characters without control characters.`,
+    );
+  }
+  return normalized;
+}
+
+function resolveGitIdentity({repository, claim, runner}) {
+  const cwd = fs.existsSync(claim.worktreePath)
+    ? claim.worktreePath
+    : repository.primaryRoot;
+  for (const key of ["user.email", "user.name"]) {
+    const result = runner({cwd, args: ["config", "--get", key]});
+    if (result.status === 0 && result.stdout.trim() !== "") {
+      return requireRecordedValue(result.stdout, `git config ${key}`, 200);
+    }
+  }
+  throw new TaskUsageError(
+    "--by is required when Git user.email and user.name are unavailable.",
+  );
 }
 
 function requireOption(options, key, flag) {
@@ -528,6 +625,27 @@ function writeNewClaim(repository, claim) {
     fs.closeSync(descriptor);
   }
   return claimPath;
+}
+
+function writeAbandonRecord(repository, record) {
+  ensureClaimsRoot(repository);
+  const recordsRoot = path.join(repository.claimsRoot, "abandoned");
+  if (fs.existsSync(recordsRoot) && fs.lstatSync(recordsRoot).isSymbolicLink()) {
+    throw new TaskUsageError(`Refusing symlinked abandonment directory: ${recordsRoot}`);
+  }
+  fs.mkdirSync(recordsRoot, {recursive: true, mode: 0o700});
+  const digest = createHash("sha256")
+    .update(`${record.taskId}\0${record.worktreePath}\0${record.abandonedAt}\0${record.reason}`)
+    .digest("hex")
+    .slice(0, 24);
+  const recordPath = path.join(recordsRoot, `${digest}.json`);
+  const descriptor = fs.openSync(recordPath, "wx", 0o600);
+  try {
+    fs.writeFileSync(descriptor, `${JSON.stringify(record, null, 2)}\n`, "utf8");
+  } finally {
+    fs.closeSync(descriptor);
+  }
+  return recordPath;
 }
 
 function readClaims(repository) {

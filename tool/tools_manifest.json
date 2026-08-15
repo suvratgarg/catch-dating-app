@@ -202,7 +202,7 @@
       "impactPaths": [
         "tool/git/worktree_guard.test.mjs"
       ],
-      "description": "Adds a thin local safety boundary around ordinary Git worktrees: exact bases, disjoint claimed paths, dirty/out-of-scope diagnosis, and refusal to close unpushed unique work. It never installs, validates, pushes, deletes, or keeps completed-task history.",
+      "description": "Adds a thin local safety boundary around ordinary Git worktrees: exact bases, disjoint claimed paths, dirty/out-of-scope diagnosis, protected closeout, and attributable clean-only abandonment. It never installs, validates, pushes, or deletes worktrees.",
       "checks": [
         "node --check tool/git/worktree_guard.mjs",
         "node --test tool/git/worktree_guard.test.mjs",
@@ -219,6 +219,8 @@
           "start refuses overlapping claims and permits disjoint worktrees",
           "doctor detects committed out-of-scope changes while keeping committed in-scope work clean",
           "finish refuses uncommitted, upstream-less, and unpushed unique work",
+          "finish abandon releases clean unpushed out-of-scope work with an attributable record",
+          "finish abandon requires a reason and refuses a dirty worktree",
           "stale reports old claims and unclaimed worktrees without deleting either"
         ]
       }

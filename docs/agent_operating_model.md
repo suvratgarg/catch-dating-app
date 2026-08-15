@@ -1,6 +1,6 @@
 ---
 doc_id: agent_operating_model
-version: 3.0.3
+version: 3.0.4
 updated: 2026-08-07
 owner: agent_operating_model
 status: active
@@ -212,6 +212,8 @@ node tool/git/worktree_guard.mjs start \
   --paths <claimed-path[,claimed-path...]>
 node tool/git/worktree_guard.mjs doctor --worktree <path>
 node tool/git/worktree_guard.mjs finish --worktree <path>
+node tool/git/worktree_guard.mjs finish --worktree <path> \
+  --abandon --reason <why> [--by <identity>]
 node tool/git/worktree_guard.mjs stale --stale-days 7
 ```
 
@@ -220,7 +222,11 @@ records a disposable local claimed-path set. It refuses overlap with another
 active local claim. `doctor` reports registration, branch, dirty-state, and
 out-of-scope problems. `finish` removes only the local claim after the branch
 is clean and any unique commits are pushed. `stale` reports candidates and
-never deletes anything.
+never deletes anything. When a task is deliberately superseded and pushing its
+commits is inappropriate, `finish --abandon` releases the claim only if the
+worktree is clean. It requires a reason, records `--by` or the local Git
+identity in a disposable file under Git's common directory, and leaves the
+branch and worktree untouched.
 
 The guard does not install dependencies, run checks, push, merge, remove a
 worktree, or authorize commands. A contributor can use ordinary Git directly
@@ -237,8 +243,10 @@ when local claims are unnecessary.
    commit SHA, changed files, checks, and blockers.
 4. The parent reviews the Git diff and imports only accepted commits. The
    parent then runs integration checks and reviews the final diff.
-5. When using the guard, run `finish` after clean, pushed closeout. Remove the
-   disposable worktree separately with an explicit Git command when desired.
+5. When using the guard, run `finish` after clean, pushed closeout. If the task
+   was superseded, use the explicit clean-only `finish --abandon` path. Remove
+   the disposable worktree separately with an explicit Git command when
+   desired.
 
 If a child appears on the parent's worktree or edits an overlapping file set,
 stop it and preserve only a reviewed Git diff. If the parent base advances,

@@ -739,13 +739,18 @@ Third, `tool/git/worktree_guard.mjs` is a thin optional wrapper around ordinary
 Git worktrees. `start` creates from an exact commit and rejects overlap with
 another active local claimed-path set. `doctor` reports dirty and out-of-scope
 work. `finish` refuses to drop the local claim while unique work is uncommitted
-or unpushed. `stale` reports candidates and never deletes them.
+or unpushed. `finish --abandon --reason <why>` releases a deliberately
+superseded claim only when its worktree is clean, retaining an attributable
+local record under Git's common directory. `stale` reports candidates and
+never deletes them.
 
 ```sh
 node tool/git/worktree_guard.mjs start \
   --task-id <task-id> --base-sha <40-character-sha> --paths <paths>
 node tool/git/worktree_guard.mjs doctor --worktree <path>
 node tool/git/worktree_guard.mjs finish --worktree <path>
+node tool/git/worktree_guard.mjs finish --worktree <path> \
+  --abandon --reason <why> [--by <identity>]
 node tool/git/worktree_guard.mjs stale --stale-days 7
 ```
 
