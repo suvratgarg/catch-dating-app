@@ -20095,6 +20095,18 @@ abstract class AppLocalizations {
   /// **'Clear'**
   String get hostCustomersClearFilter;
 
+  /// Starts a campaign for the exact number of customers in the active segment.
+  ///
+  /// In en, this message translates to:
+  /// **'Message these {count}'**
+  String hostCustomersMessageThese({required int count});
+
+  /// Starts a campaign for a lower-bound number of customers in the active segment.
+  ///
+  /// In en, this message translates to:
+  /// **'Message these {count}+'**
+  String hostCustomersMessageTheseAtLeast({required int count});
+
   /// Grouped customer filter sheet title.
   ///
   /// In en, this message translates to:

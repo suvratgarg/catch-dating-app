@@ -58,6 +58,39 @@ List<HostAudienceSegment> hostCampaignEligibleSegmentsForSmsReadiness(
     HostAudienceSegment.smsReachable,
 ];
 
+abstract final class HostCampaignBlockers {
+  static const providerSetupRequired = 'providerSetupRequired';
+  static const senderInactive = 'senderInactive';
+  static const templateMissing = 'templateMissing';
+  static const templateUnapproved = 'templateUnapproved';
+  static const noReachableRecipients = 'noReachableRecipients';
+  static const audienceCoveragePartial = 'audienceCoveragePartial';
+  static const audienceTooLarge = 'audienceTooLarge';
+  static const eventMissing = 'eventMissing';
+  static const eventUnavailable = 'eventUnavailable';
+  static const scheduleInPast = 'scheduleInPast';
+}
+
+String? hostCampaignBridgeBlocker({
+  required HostAudienceSegment? segment,
+  required HostCrmChannelReadiness? smsReadiness,
+  required HostMessagingSetup? messagingSetup,
+}) {
+  if (segment == null ||
+      !hostCampaignEligibleSegmentsForSmsReadiness(
+        smsReadiness,
+      ).contains(segment)) {
+    return HostCampaignBlockers.noReachableRecipients;
+  }
+  if (messagingSetup?.providerConfigured == false) {
+    return HostCampaignBlockers.providerSetupRequired;
+  }
+  if (messagingSetup?.connection?.isActive != true) {
+    return HostCampaignBlockers.senderInactive;
+  }
+  return null;
+}
+
 class HostCampaignComposer extends ConsumerStatefulWidget {
   const HostCampaignComposer({
     super.key,
@@ -531,7 +564,7 @@ class _HostCampaignReview extends StatelessWidget {
           gapH8,
           Text(
             campaign.blockers
-                .map((value) => _campaignBlockerLabel(context, value))
+                .map((value) => hostCampaignBlockerLabel(context, value))
                 .join(' · '),
             style: CatchTextStyles.supporting(
               context,
@@ -665,19 +698,25 @@ String _inviteDestinationLabel(
     context.l10n.hostsHostAudienceDestinationExternal,
 };
 
-String _campaignBlockerLabel(
-  BuildContext context,
-  String value,
-) => switch (value) {
-  'providerSetupRequired' => context.l10n.hostsHostAudienceBlockerProvider,
-  'senderInactive' => context.l10n.hostsHostAudienceBlockerSender,
-  'templateMissing' ||
-  'templateUnapproved' => context.l10n.hostsHostAudienceBlockerTemplate,
-  'noReachableRecipients' => context.l10n.hostsHostAudienceBlockerNoRecipients,
-  'audienceCoveragePartial' => context.l10n.hostsHostAudienceBlockerCoverage,
-  'audienceTooLarge' => context.l10n.hostsHostAudienceBlockerTooLarge,
-  'eventMissing' ||
-  'eventUnavailable' => context.l10n.hostsHostAudienceBlockerEvent,
-  'scheduleInPast' => context.l10n.hostsHostAudienceBlockerSchedule,
-  _ => value,
-};
+String hostCampaignBlockerLabel(BuildContext context, String value) =>
+    switch (value) {
+      HostCampaignBlockers.providerSetupRequired =>
+        context.l10n.hostsHostAudienceBlockerProvider,
+      HostCampaignBlockers.senderInactive =>
+        context.l10n.hostsHostAudienceBlockerSender,
+      HostCampaignBlockers.templateMissing ||
+      HostCampaignBlockers.templateUnapproved =>
+        context.l10n.hostsHostAudienceBlockerTemplate,
+      HostCampaignBlockers.noReachableRecipients =>
+        context.l10n.hostsHostAudienceBlockerNoRecipients,
+      HostCampaignBlockers.audienceCoveragePartial =>
+        context.l10n.hostsHostAudienceBlockerCoverage,
+      HostCampaignBlockers.audienceTooLarge =>
+        context.l10n.hostsHostAudienceBlockerTooLarge,
+      HostCampaignBlockers.eventMissing ||
+      HostCampaignBlockers.eventUnavailable =>
+        context.l10n.hostsHostAudienceBlockerEvent,
+      HostCampaignBlockers.scheduleInPast =>
+        context.l10n.hostsHostAudienceBlockerSchedule,
+      _ => value,
+    };

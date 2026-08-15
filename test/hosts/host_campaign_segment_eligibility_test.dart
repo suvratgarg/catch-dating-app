@@ -23,4 +23,65 @@ void main() {
       contains(HostAudienceSegment.smsReachable),
     );
   });
+
+  test('campaign bridge requires an eligible segment and active sender', () {
+    expect(
+      hostCampaignBridgeBlocker(
+        segment: HostAudienceSegment.lapsedRegular,
+        smsReadiness: HostCrmChannelReadiness.providerAndDltSetupRequired,
+        messagingSetup: _messagingSetup(),
+      ),
+      isNull,
+    );
+    expect(
+      hostCampaignBridgeBlocker(
+        segment: HostAudienceSegment.newToOrganizer,
+        smsReadiness: HostCrmChannelReadiness.currentEventOnly,
+        messagingSetup: _messagingSetup(),
+      ),
+      HostCampaignBlockers.noReachableRecipients,
+    );
+    expect(
+      hostCampaignBridgeBlocker(
+        segment: HostAudienceSegment.lapsedRegular,
+        smsReadiness: HostCrmChannelReadiness.currentEventOnly,
+        messagingSetup: _messagingSetup(providerConfigured: false),
+      ),
+      HostCampaignBlockers.providerSetupRequired,
+    );
+    expect(
+      hostCampaignBridgeBlocker(
+        segment: HostAudienceSegment.lapsedRegular,
+        smsReadiness: HostCrmChannelReadiness.currentEventOnly,
+        messagingSetup: _messagingSetup(connectionStatus: 'pending'),
+      ),
+      HostCampaignBlockers.senderInactive,
+    );
+  });
 }
+
+HostMessagingSetup _messagingSetup({
+  bool providerConfigured = true,
+  String connectionStatus = 'active',
+}) => HostMessagingSetup(
+  organizerId: 'organizer-1',
+  providerConfigured: providerConfigured,
+  embeddedSignup: const HostWhatsappEmbeddedSignupConfig(
+    appId: 'app-id',
+    configId: 'config-id',
+    graphVersion: 'v24.0',
+  ),
+  connection: HostWhatsappConnection(
+    connectionId: 'connection-1',
+    status: connectionStatus,
+    displayPhoneNumber: '+91 98765 43210',
+    verifiedName: 'Catch Social',
+    qualityRating: 'GREEN',
+    messagingLimitTier: 'TIER_1K',
+    templateSyncStatus: 'ready',
+    webhookStatus: 'healthy',
+    testStatus: 'verified',
+    revision: 1,
+  ),
+  templates: const [],
+);

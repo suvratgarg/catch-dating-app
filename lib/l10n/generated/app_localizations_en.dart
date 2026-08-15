@@ -12907,6 +12907,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersClearFilter => 'Clear';
 
   @override
+  String hostCustomersMessageThese({required int count}) {
+    return 'Message these $count';
+  }
+
+  @override
+  String hostCustomersMessageTheseAtLeast({required int count}) {
+    return 'Message these $count+';
+  }
+
+  @override
   String get hostCustomersFilterSheetTitle => 'Filter customers';
 
   @override
