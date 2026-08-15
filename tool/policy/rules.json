@@ -118,7 +118,9 @@
         "docs/agent_skills/**",
         "tool/agent/**",
         "tool/harness.mjs",
-        "tool/harness/**"
+        "tool/harness/**",
+        "tool/lib/repository_snapshot.mjs",
+        "tool/lib/repository_snapshot.test.mjs"
       ],
       "instruction": "For broad work, inspect the Git diff and use the read-only Catch planner to explain affected components and checks. Run the selected checks and preserve proof in Git and CI. Do not write registry receipts, readiness metrics, or regression ledgers.",
       "sunset_when": [

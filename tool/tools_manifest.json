@@ -821,13 +821,15 @@
         "tool/agent/lib/context_plan.mjs",
         "tool/agent/context_plan.test.mjs",
         "tool/lib/path_glob.mjs",
-        "tool/lib/path_glob.test.mjs"
+        "tool/lib/path_glob.test.mjs",
+        "tool/lib/repository_snapshot.mjs",
+        "tool/lib/repository_snapshot.test.mjs"
       ],
       "description": "Prints optional read-only guidance from the current Git SHA and source-owned scope, skills, rules, owner docs, and locally safe checks. It grants no execution or write authority and stores no receipt.",
       "checks": [
         "node --check tool/agent/context_pack.mjs",
         "node --check tool/agent/lib/context_plan.mjs",
-        "node --test tool/agent/context_plan.test.mjs",
+        "node --test tool/agent/context_plan.test.mjs tool/lib/repository_snapshot.test.mjs",
         "node tool/agent/context_pack.mjs --task agent-guidance --paths AGENTS.md,docs/agent_operating_model.md --json"
       ],
       "role": "finder"

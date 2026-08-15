@@ -9,7 +9,38 @@ import {
   parseBatchBlobs,
   parseIndexEntries,
   parseNulPaths,
+  parseWorktreePaths,
 } from "./repository_snapshot.mjs";
+
+test("registered nested worktrees are excluded before repository path normalization", (context) => {
+  const root = createFixtureRepository(context);
+  const nestedWorktree = path.join(root, ".codex", "worktrees", "nested");
+  git(root, [
+    "worktree",
+    "add",
+    "-q",
+    "-b",
+    "nested-worktree-fixture",
+    nestedWorktree,
+  ]);
+  const rawUntracked = gitBuffer(root, [
+    "ls-files",
+    "-z",
+    "--others",
+    "--exclude-standard",
+    "--full-name",
+    "--",
+  ]);
+  assert.match(rawUntracked.toString("utf8"), /\.codex\/worktrees\/nested\//u);
+
+  const snapshot = createRepositorySnapshot({root});
+  assert.equal(
+    snapshot.listPaths().some((relativePath) =>
+      relativePath.startsWith(".codex/worktrees/nested")),
+    false,
+  );
+  assert.equal(snapshot.readText("tracked.txt", {required: true}), "tracked\n");
+});
 
 test("working-tree edits and untracked files override the stage-0 index", (context) => {
   const root = createFixtureRepository(context);
@@ -120,6 +151,9 @@ test("readTexts hydrates a readiness-sized closure with one cached batch process
       if (args.includes("--others")) {
         return {status: 0, stdout: Buffer.alloc(0), stderr: Buffer.alloc(0)};
       }
+      if (args[0] === "worktree") {
+        return {status: 0, stdout: Buffer.alloc(0), stderr: Buffer.alloc(0)};
+      }
       if (args[0] === "cat-file") {
         batchCalls += 1;
         batchInput = options.input.toString("utf8");
@@ -163,6 +197,9 @@ test("missing gitlinks remain visible metadata but are never text", (context) =>
       if (args.includes("--others")) {
         return {status: 0, stdout: Buffer.alloc(0), stderr: Buffer.alloc(0)};
       }
+      if (args[0] === "worktree") {
+        return {status: 0, stdout: Buffer.alloc(0), stderr: Buffer.alloc(0)};
+      }
       throw new Error(`Unexpected Git call: ${args.join(" ")}`);
     },
   });
@@ -192,6 +229,20 @@ test("unmerged stages and malformed NUL output fail closed", () => {
   assert.throws(
     () => parseNulPaths(Buffer.from("not-terminated")),
     /not NUL terminated/,
+  );
+  assert.deepEqual(
+    parseWorktreePaths(Buffer.from(
+      "worktree /repo\0HEAD abc\0\0worktree /repo/nested\0detached\0\0",
+    )),
+    ["/repo", "/repo/nested"],
+  );
+  assert.deepEqual(
+    parseNulPaths(
+      Buffer.from(".codex/worktrees/nested/\0kept.txt\0"),
+      "fixture",
+      {excludedPrefixes: [".codex/worktrees/nested"]},
+    ),
+    ["kept.txt"],
   );
 });
 
@@ -245,6 +296,9 @@ test("sparse index reads refuse hidden lazy network fetches", (context) => {
         };
       }
       if (args.includes("--others")) {
+        return {status: 0, stdout: Buffer.alloc(0), stderr: Buffer.alloc(0)};
+      }
+      if (args[0] === "worktree") {
         return {status: 0, stdout: Buffer.alloc(0), stderr: Buffer.alloc(0)};
       }
       if (args[0] === "cat-file") {
@@ -305,5 +359,15 @@ function createEmptyRoot(context) {
 function git(root, args) {
   const result = spawnSync("git", args, {cwd: root, encoding: "utf8"});
   assert.equal(result.status, 0, result.stderr || `git ${args.join(" ")} failed`);
+  return result.stdout;
+}
+
+function gitBuffer(root, args) {
+  const result = spawnSync("git", args, {cwd: root});
+  assert.equal(
+    result.status,
+    0,
+    result.stderr?.toString() || `git ${args.join(" ")} failed`,
+  );
   return result.stdout;
 }

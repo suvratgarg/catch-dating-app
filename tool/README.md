@@ -727,6 +727,9 @@ node tool/harness.mjs plan --base origin/main --head HEAD --json
 Second, `tool/agent/context_pack.mjs` is optional, read-only orientation for
 broad work. It prints owner docs, matching project skills, source rules, and
 suggested checks to stdout. It does not write a context artifact or gate work.
+Its logical repository snapshot excludes paths owned by registered nested
+worktrees using `git worktree list --porcelain`; those separate checkouts never
+become malformed untracked paths in the current checkout.
 
 ```sh
 node tool/agent/context_pack.mjs --task <label> --paths <path[,path...]>
