@@ -67,7 +67,7 @@
     },
     "eventOrigin": {
       "$ref": "../embedded/event_origin.schema.json",
-      "description": "Immutable operational booking/roster provenance. Missing legacy values read as Catch-native.",
+      "description": "Immutable operational booking/roster provenance. Missing values deny Catch booking authority.",
       "x-catch-ownership": "callable-owned"
     },
     "runtimeAccess": {

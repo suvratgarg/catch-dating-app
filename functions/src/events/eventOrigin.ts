@@ -3,7 +3,7 @@ import {EventDocument} from "../shared/generated/firestoreAdminTypes";
 
 /** Prevents Catch booking flows from acting on companion-only events. */
 export function requireCatchBookingAuthority(event: EventDocument): void {
-  if (event.eventOrigin?.bookingAuthority === "external") {
+  if (event.eventOrigin?.bookingAuthority !== "catch") {
     throw new HttpsError(
       "failed-precondition",
       "Booking for this event stays with the Host's original platform."

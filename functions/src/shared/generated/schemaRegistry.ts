@@ -17687,7 +17687,7 @@ export const eventDocumentSchema: Record<string, unknown> = {
     },
     "eventOrigin": {
       "title": "EventOrigin",
-      "description": "Immutable operational booking/roster provenance. Missing legacy values read as Catch-native.",
+      "description": "Immutable operational booking/roster provenance. Missing values deny Catch booking authority.",
       "type": "object",
       "additionalProperties": false,
       "required": [
