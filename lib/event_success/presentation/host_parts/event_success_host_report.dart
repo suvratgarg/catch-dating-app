@@ -90,8 +90,7 @@ class ReportTab extends StatelessWidget {
         .toList(growable: false);
     final errorStates = [
       for (final failure in reportFailures)
-        _eventSuccessHostResourceError(
-          context,
+        EventSuccessHostResourceError(
           failure: failure,
           onRetry: onRetryResource == null
               ? null

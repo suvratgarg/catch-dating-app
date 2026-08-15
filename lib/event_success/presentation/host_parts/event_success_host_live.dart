@@ -493,8 +493,7 @@ class LiveTab extends StatelessWidget {
     final errorBanners = <Widget>[
       for (final failure in resourceFailures)
         if (failure.retryIntent != EventSuccessHostRetryIntent.scorecard)
-          _eventSuccessHostResourceError(
-            context,
+          EventSuccessHostResourceError(
             failure: failure,
             onRetry: onRetryResource == null
                 ? null

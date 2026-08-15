@@ -341,8 +341,7 @@ class _EventSuccessHostSectionState
       case EventSuccessHostSectionStatus.error:
         final retryIntent = state.retryIntent!;
         return frameCompactLiveState(
-          _eventSuccessHostResourceError(
-            context,
+          EventSuccessHostResourceError(
             failure: EventSuccessHostResourceFailure(
               retryIntent: retryIntent,
               error: state.error!,
@@ -862,52 +861,61 @@ AppErrorContext _eventSuccessHostRetryContext(
   };
 }
 
-Widget _eventSuccessHostResourceError(
-  BuildContext context, {
-  required EventSuccessHostResourceFailure failure,
-  VoidCallback? onRetry,
-  bool compact = false,
-}) {
-  final errorContext = _eventSuccessHostRetryContext(failure.retryIntent);
-  final descriptor = appErrorDescriptor(
-    failure.error,
-    l10n: context.l10n,
-    context: errorContext,
-  );
-  final resource = switch (failure.retryIntent) {
-    EventSuccessHostRetryIntent.plan =>
-      context.l10n.eventSuccessHostResourceLiveGuide,
-    EventSuccessHostRetryIntent.roster =>
-      context.l10n.eventSuccessHostResourceGuestRoster,
-    EventSuccessHostRetryIntent.assignments =>
-      context.l10n.eventSuccessHostResourceMicroPodAssignments,
-    EventSuccessHostRetryIntent.rotationAssignments =>
-      context.l10n.eventSuccessHostResourcePublishedRotations,
-    EventSuccessHostRetryIntent.rotationDrafts =>
-      context.l10n.eventSuccessHostResourceRotationDrafts,
-    EventSuccessHostRetryIntent.assignmentParticipantProfiles =>
-      context.l10n.eventSuccessHostResourceMicroPodProfiles,
-    EventSuccessHostRetryIntent.rotationParticipantProfiles =>
-      context.l10n.eventSuccessHostResourceRotationProfiles,
-    EventSuccessHostRetryIntent.preferences =>
-      context.l10n.eventSuccessHostResourceAttendeePreferences,
-    EventSuccessHostRetryIntent.wingmanRequests =>
-      context.l10n.eventSuccessHostResourceHostHelpRequests,
-    EventSuccessHostRetryIntent.wingmanProfiles =>
-      context.l10n.eventSuccessHostResourceHostHelpProfiles,
-    EventSuccessHostRetryIntent.scorecard =>
-      context.l10n.eventSuccessHostResourceEventReport,
-  };
-  return CatchInlineErrorState(
-    title: context.l10n.eventSuccessHostResourceUnavailableTitle(
-      resource: resource,
-    ),
-    message: descriptor.message,
-    icon: descriptor.icon,
-    retryLabel: descriptor.retryLabel,
-    onRetry: onRetry,
-    compact: compact,
-  );
+class EventSuccessHostResourceError extends StatelessWidget {
+  const EventSuccessHostResourceError({
+    super.key,
+    required this.failure,
+    this.onRetry,
+    this.compact = false,
+  });
+
+  final EventSuccessHostResourceFailure failure;
+  final VoidCallback? onRetry;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    final errorContext = _eventSuccessHostRetryContext(failure.retryIntent);
+    final descriptor = appErrorDescriptor(
+      failure.error,
+      l10n: context.l10n,
+      context: errorContext,
+    );
+    final resource = switch (failure.retryIntent) {
+      EventSuccessHostRetryIntent.plan =>
+        context.l10n.eventSuccessHostResourceLiveGuide,
+      EventSuccessHostRetryIntent.roster =>
+        context.l10n.eventSuccessHostResourceGuestRoster,
+      EventSuccessHostRetryIntent.assignments =>
+        context.l10n.eventSuccessHostResourceMicroPodAssignments,
+      EventSuccessHostRetryIntent.rotationAssignments =>
+        context.l10n.eventSuccessHostResourcePublishedRotations,
+      EventSuccessHostRetryIntent.rotationDrafts =>
+        context.l10n.eventSuccessHostResourceRotationDrafts,
+      EventSuccessHostRetryIntent.assignmentParticipantProfiles =>
+        context.l10n.eventSuccessHostResourceMicroPodProfiles,
+      EventSuccessHostRetryIntent.rotationParticipantProfiles =>
+        context.l10n.eventSuccessHostResourceRotationProfiles,
+      EventSuccessHostRetryIntent.preferences =>
+        context.l10n.eventSuccessHostResourceAttendeePreferences,
+      EventSuccessHostRetryIntent.wingmanRequests =>
+        context.l10n.eventSuccessHostResourceHostHelpRequests,
+      EventSuccessHostRetryIntent.wingmanProfiles =>
+        context.l10n.eventSuccessHostResourceHostHelpProfiles,
+      EventSuccessHostRetryIntent.scorecard =>
+        context.l10n.eventSuccessHostResourceEventReport,
+    };
+    return CatchInlineErrorState(
+      title: context.l10n.eventSuccessHostResourceUnavailableTitle(
+        resource: resource,
+      ),
+      message: descriptor.message,
+      icon: descriptor.icon,
+      retryLabel: descriptor.retryLabel,
+      onRetry: onRetry,
+      compact: compact,
+    );
+  }
 }
 
 class EventSuccessHostSectionSkeleton extends StatelessWidget {
