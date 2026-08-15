@@ -1,6 +1,6 @@
 ---
 doc_id: agent_operating_model
-version: 3.0.1
+version: 3.0.2
 updated: 2026-08-07
 owner: agent_operating_model
 status: active
@@ -160,6 +160,29 @@ node tool/docs/check_doc_metadata.mjs --base origin/main
 
 After a squash or merge is proven on `origin/main`, remove its disposable
 worktree and prune its single-use branch. Do not reuse it for another slice.
+
+## Repo-Managed Pre-Commit Hook
+
+Install the repository hook for this clone only; do not use `--global`:
+
+```sh
+git config core.hooksPath tool/git/hooks
+git config --get core.hooksPath
+```
+
+`core.hooksPath` is stored in the repository's common Git config, so linked
+worktrees inherit it. The hook reads the source-owned compile-codegen catalog.
+Staged localization ARB changes regenerate and explicitly stage the declared
+Flutter outputs; staged Dart files are formatted and explicitly re-staged; all
+seven committed compile-critical generator families run their declared
+freshness checks when an input or output is staged. Contract changes therefore
+check both schema projections and, for `contracts/callables/**`, Admin callable
+validators. A failure prints the exact write command to run.
+
+The hook does not run the analyzer or broad test suites. It refuses partially
+staged Dart files because formatting and re-staging one would otherwise absorb
+unstaged work into the commit. Bootstrap a fresh worktree before using the hook
+so its pinned Flutter, Dart, root npm, and Functions npm dependencies exist.
 
 ## Parallel Worktrees
 

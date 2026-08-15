@@ -222,6 +222,45 @@
       }
     },
     {
+      "id": "git:pre-commit-generated-artifacts",
+      "category": "git",
+      "path": "tool/git/pre_commit_generated_artifacts.mjs",
+      "command": "node --test tool/git/pre_commit_generated_artifacts.test.mjs",
+      "safety": "local-writes-staged-generated",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "docs/agent_operating_model.md",
+        "tool/git/hooks/pre-commit",
+        "tool/git/pre_commit_generated_artifacts.test.mjs",
+        "tool/harness/component_graph.json"
+      ],
+      "description": "Keeps staged Dart formatting and every catalogued committed compile-codegen output synchronized without running broad analysis.",
+      "checks": [
+        "node --check tool/git/pre_commit_generated_artifacts.mjs",
+        "bash -n tool/git/hooks/pre-commit",
+        "node --test tool/git/pre_commit_generated_artifacts.test.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "GENERATED-ARTIFACT-DRIFT-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/git/pre_commit_generated_artifacts.test.mjs",
+        "contains": [
+          "every catalogued committed compile generator has a staged-source trigger",
+          "partially staged Dart fails before formatting can stage unrelated work",
+          "contract drift reports both exact regeneration commands"
+        ]
+      }
+    },
+    {
       "id": "git:branch-hygiene",
       "category": "git",
       "path": "tool/git/branch_hygiene.mjs",

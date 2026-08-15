@@ -750,6 +750,13 @@ The guard does not install dependencies, execute checks, push, merge, remove
 worktrees, or authorize commands. Its local claims are disposable; Git branches
 and commits remain authoritative.
 
+The repo-managed hook at `tool/git/hooks/pre-commit` is installed per clone with
+`git config core.hooksPath tool/git/hooks`. Its Node guard consumes
+`component_graph.json#compileCodegen`, regenerates staged localization inputs,
+formats staged Dart, and runs only the triggered committed-output freshness
+checks. It never runs the analyzer or a broad test lane, and it refuses to
+re-stage partially staged Dart files.
+
 The following legacy evidence paths were deleted and must remain absent:
 
 - `docs/audit_registry/files.jsonl`
