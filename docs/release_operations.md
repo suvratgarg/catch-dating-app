@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.1.0
+version: 2.1.1
 updated: 2026-08-13
 owner: recursive_audit_loop
 status: active
@@ -63,6 +63,34 @@ non-zero results block deployment. Add a requirement in the same change that
 introduces a new `defineSecret`, TTL-dependent capability, or deploy-time
 project prerequisite. A missing prerequisite must fail before dependency
 installation; do not move this gate into Firebase predeploy hooks.
+
+## Firebase Rules Deployment Drift
+
+Emulator tests prove the checked-out Firestore and Storage rules, not the rules
+currently enforced by a Firebase project. Compare the active releases with an
+explicit environment or project:
+
+```sh
+node tool/run.mjs check firebase:rules-deployment-drift
+node tool/firebase/check_rules_deployment_drift.mjs --env staging
+node tool/firebase/check_rules_deployment_drift.mjs --env prod
+```
+
+The check lists active Rules releases, fetches their immutable ruleset source,
+and compares `firestore.rules` plus every active bucket release using a
+normalized SHA-256. Normalization removes a UTF-8 BOM, line-ending differences,
+trailing horizontal whitespace, and extra final blank lines. It deliberately
+does not discard comments or parse and rewrite the Rules language: a transparent
+content comparison is deterministic, while a home-grown semantic parser could
+hide a meaningful source change.
+
+Authentication uses `FIREBASE_RULES_ACCESS_TOKEN`,
+`GOOGLE_OAUTH_ACCESS_TOKEN`, or an authenticated `gcloud` session. A machine
+with no credentials prints a clear skip and exits zero so untrusted CI remains
+usable. Once credentials exist, API/authorization errors, missing releases, and
+content drift fail. The authenticated backend promotion runs the same check
+against the exact CI-approved source after its ordered deploy stages, with a
+bounded retry window for Rules release propagation.
 
 ## Storage Rules Cross-Service Readiness
 

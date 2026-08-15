@@ -444,6 +444,10 @@ test("promotion is ordered dev to staging to protected prod", () => {
   assert.match(promotion, /name: firebase-checkpoint-[\s\S]*retention-days: 90/);
   assert.match(promotion, /checkpoint_scope=firebase:\$\{DEPLOY_ENVIRONMENT\}:\$\{project_id\}/);
   assert.match(promotion, /--config "\$PACKAGE_DIR\/firebase\.json"/);
+  assert.match(
+    promotion,
+    /Resume ordered backend stages[\s\S]*Verify active rules match the exact approved source[\s\S]*check_rules_deployment_drift\.mjs[\s\S]*--project "\$PROJECT_ID"[\s\S]*--repo-root build\/delivery\/source-checkout/,
+  );
   assert.doesNotMatch(promotion, /npm (?:--prefix \S+ )?(?:test|run lint|run build)|emulators:exec/);
 });
 

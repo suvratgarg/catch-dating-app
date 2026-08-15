@@ -4,14 +4,18 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import {execFileSync} from "node:child_process";
+import {fileURLToPath} from "node:url";
 import {
   checkRepository,
   classify,
+  directoryOnlyIgnorePatterns,
   matchesPattern,
   portableLinkViolations,
   rootManifestViolations,
   retiredEvidenceViolations,
 } from "./check_repository_root_hygiene.mjs";
+
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 test("glob matching covers dynamic root logs without widening paths", () => {
   assert.equal(matchesPattern("flutter_12.log", "flutter_*.log"), true);
@@ -27,6 +31,46 @@ test("classification reports an unknown and an ambiguous entry", () => {
 
 test("portable links reject machine paths but accept repository links", () => {
   assert.deepEqual(portableLinkViolations("[bad](/Users/person/repo/a.md) [ok](docs/a.md)"), ["/Users/person/repo/a.md"]);
+});
+
+test("positive ignore patterns never rely on directory-only trailing slashes", () => {
+  const source = fs.readFileSync(path.join(repoRoot, ".gitignore"), "utf8");
+  assert.deepEqual(directoryOnlyIgnorePatterns(source), []);
+  assert.deepEqual(
+    directoryOnlyIgnorePatterns("**/node_modules/\n!kept/\n# build/\ncoverage\n"),
+    ["**/node_modules/"],
+  );
+});
+
+test("generated artifact patterns ignore symlinks as well as directories", (context) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-ignore-symlinks-"));
+  const target = fs.mkdtempSync(path.join(os.tmpdir(), "catch-ignore-target-"));
+  context.after(() => {
+    fs.rmSync(root, {recursive: true, force: true});
+    fs.rmSync(target, {recursive: true, force: true});
+  });
+  fs.copyFileSync(path.join(repoRoot, ".gitignore"), path.join(root, ".gitignore"));
+  git(root, ["init", "-q"]);
+  const links = [
+    ".audit_work",
+    ".dart_tool",
+    ".firebase",
+    "build",
+    "coverage",
+    "emulator-data",
+    "node_modules",
+    "nested/build",
+    "nested/coverage",
+    "nested/node_modules",
+  ];
+  fs.mkdirSync(path.join(root, "nested"));
+  for (const relativePath of links) {
+    fs.symlinkSync(target, path.join(root, relativePath), "dir");
+    execFileSync("git", ["check-ignore", "-q", "--", relativePath], {
+      cwd: root,
+      stdio: "pipe",
+    });
+  }
 });
 
 test("retired tracked governance evidence cannot return", () => {

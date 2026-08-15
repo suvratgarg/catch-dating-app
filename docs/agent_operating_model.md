@@ -1,6 +1,6 @@
 ---
 doc_id: agent_operating_model
-version: 3.0.1
+version: 3.0.4
 updated: 2026-08-07
 owner: agent_operating_model
 status: active
@@ -161,12 +161,46 @@ node tool/docs/check_doc_metadata.mjs --base origin/main
 After a squash or merge is proven on `origin/main`, remove its disposable
 worktree and prune its single-use branch. Do not reuse it for another slice.
 
+## Repo-Managed Pre-Commit Hook
+
+Install the repository hook for this clone only; do not use `--global`:
+
+```sh
+git config core.hooksPath tool/git/hooks
+git config --get core.hooksPath
+```
+
+`core.hooksPath` is stored in the repository's common Git config, so linked
+worktrees inherit it. The hook reads the source-owned compile-codegen catalog.
+Staged localization ARB changes regenerate and explicitly stage the declared
+Flutter outputs; staged Dart files are formatted and explicitly re-staged; all
+seven committed compile-critical generator families run their declared
+freshness checks when an input or output is staged. Contract changes therefore
+check both schema projections and, for `contracts/callables/**`, Admin callable
+validators. A failure prints the exact write command to run.
+
+The hook does not run the analyzer or broad test suites. It refuses partially
+staged Dart files because formatting and re-staging one would otherwise absorb
+unstaged work into the commit. Bootstrap a fresh worktree before using the hook
+so its pinned Flutter, Dart, root npm, and Functions npm dependencies exist.
+
 ## Parallel Worktrees
 
 Parallel agents are useful only when one parent remains responsible for the
 integrated result. Assign disjoint file sets. Keep shared architecture
 decisions, canonical owner documents, common manifests, and final verification
 with the parent unless a child is explicitly assigned the whole file set.
+
+After creating a worktree, bootstrap its own pinned dependencies with one
+repository command:
+
+```sh
+bash tool/git/bootstrap_worktree.sh
+```
+
+The command runs root `npm ci`, Functions `npm ci`, and `flutter pub get` in
+that worktree. Keep these installs local to the worktree; do not symlink
+another checkout's `node_modules` or invent `NODE_PATH` overrides.
 
 The worktree guard is optional. Use it when several local tasks need an
 overlap check or when safe closeout is easy to forget:
@@ -178,6 +212,8 @@ node tool/git/worktree_guard.mjs start \
   --paths <claimed-path[,claimed-path...]>
 node tool/git/worktree_guard.mjs doctor --worktree <path>
 node tool/git/worktree_guard.mjs finish --worktree <path>
+node tool/git/worktree_guard.mjs finish --worktree <path> \
+  --abandon --reason <why> [--by <identity>]
 node tool/git/worktree_guard.mjs stale --stale-days 7
 ```
 
@@ -186,7 +222,11 @@ records a disposable local claimed-path set. It refuses overlap with another
 active local claim. `doctor` reports registration, branch, dirty-state, and
 out-of-scope problems. `finish` removes only the local claim after the branch
 is clean and any unique commits are pushed. `stale` reports candidates and
-never deletes anything.
+never deletes anything. When a task is deliberately superseded and pushing its
+commits is inappropriate, `finish --abandon` releases the claim only if the
+worktree is clean. It requires a reason, records `--by` or the local Git
+identity in a disposable file under Git's common directory, and leaves the
+branch and worktree untouched.
 
 The guard does not install dependencies, run checks, push, merge, remove a
 worktree, or authorize commands. A contributor can use ordinary Git directly
@@ -203,8 +243,10 @@ when local claims are unnecessary.
    commit SHA, changed files, checks, and blockers.
 4. The parent reviews the Git diff and imports only accepted commits. The
    parent then runs integration checks and reviews the final diff.
-5. When using the guard, run `finish` after clean, pushed closeout. Remove the
-   disposable worktree separately with an explicit Git command when desired.
+5. When using the guard, run `finish` after clean, pushed closeout. If the task
+   was superseded, use the explicit clean-only `finish --abandon` path. Remove
+   the disposable worktree separately with an explicit Git command when
+   desired.
 
 If a child appears on the parent's worktree or edits an overlapping file set,
 stop it and preserve only a reviewed Git diff. If the parent base advances,

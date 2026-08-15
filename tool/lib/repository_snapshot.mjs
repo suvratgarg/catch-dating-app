@@ -45,9 +45,14 @@ export function createRepositorySnapshot({
   const indexEntries = parseIndexEntries(
     runGit(["ls-files", "-z", "-t", "--stage", "--full-name", "--"]),
   );
+  const nestedWorktreePrefixes = nestedRegisteredWorktreePrefixes(
+    absoluteRoot,
+    parseWorktreePaths(runGit(["worktree", "list", "--porcelain", "-z"])),
+  );
   const untrackedPaths = new Set(parseNulPaths(
     runGit(["ls-files", "-z", "--others", "--exclude-standard", "--full-name", "--"]),
     "untracked Git path output",
+    {excludedPrefixes: nestedWorktreePrefixes},
   ));
   const blobCache = new Map();
   const pathRecords = capturePathRecords(absoluteRoot, indexEntries, untrackedPaths);
@@ -231,8 +236,31 @@ export function parseIndexEntries(output) {
   return entries;
 }
 
-export function parseNulPaths(output, label = "Git path output") {
-  return parseNulRecords(output, label).map(normalizeRepositoryPath);
+export function parseNulPaths(
+  output,
+  label = "Git path output",
+  {excludedPrefixes = []} = {},
+) {
+  const prefixes = excludedPrefixes.map(normalizeRepositoryPath);
+  return parseNulRecords(output, label)
+    .filter((relativePath) => {
+      const comparable = relativePath.replace(/\/+$/u, "");
+      return !prefixes.some((prefix) =>
+        comparable === prefix || comparable.startsWith(`${prefix}/`));
+    })
+    .map(normalizeRepositoryPath);
+}
+
+export function parseWorktreePaths(output) {
+  return parseNulRecords(output, "Git worktree porcelain output")
+    .filter((record) => record.startsWith("worktree "))
+    .map((record) => {
+      const worktreePath = record.slice("worktree ".length);
+      if (worktreePath === "") {
+        throw new Error("Git worktree porcelain output contains an empty path.");
+      }
+      return worktreePath;
+    });
 }
 
 export function parseBatchBlobs(output, requestedOids) {
@@ -339,6 +367,34 @@ function capturePathRecords(root, indexEntries, untrackedPaths) {
     }
   }
   return records;
+}
+
+function nestedRegisteredWorktreePrefixes(root, worktreePaths) {
+  const canonicalRoot = canonicalFilesystemPath(root);
+  const prefixes = [];
+  for (const worktreePath of worktreePaths) {
+    const relativePath = path.relative(
+      canonicalRoot,
+      canonicalFilesystemPath(worktreePath),
+    );
+    if (
+      relativePath === "" ||
+      relativePath.startsWith("..") ||
+      path.isAbsolute(relativePath)
+    ) continue;
+    prefixes.push(normalizeRepositoryPath(relativePath.split(path.sep).join("/")));
+  }
+  return [...new Set(prefixes)].sort();
+}
+
+function canonicalFilesystemPath(value) {
+  const absolutePath = path.resolve(value);
+  try {
+    return fs.realpathSync.native(absolutePath);
+  } catch (error) {
+    if (error?.code === "ENOENT" || error?.code === "ENOTDIR") return absolutePath;
+    throw error;
+  }
 }
 
 function captureRootEntries(root, capturedPaths, pathRecords) {

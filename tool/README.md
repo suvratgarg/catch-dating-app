@@ -520,6 +520,14 @@ fails empty plans before any remote command runs. The deploy wrapper
 synchronizes live callable Cloud Run invoker bindings during the Functions
 stage, after index readiness and before either rules stage.
 
+`tool/firebase/check_rules_deployment_drift.mjs` is the read-only postcondition
+for those rules stages. It compares normalized SHA-256 hashes of the exact
+committed Firestore and Storage sources with the immutable ruleset source named
+by each applicable active release. Missing credentials skip explicitly; once a
+credential is present, authorization failures, missing releases, and drift fail.
+The promotion workflow checks the exact approved source checkout rather than the
+newer control-plane checkout.
+
 `tool/firebase/client_callable_dependencies.json` declares production client
 features that require a callable. The static checker reconciles the Dart define,
 `AppConfig`, and Functions export. Release workflows add `--verify-live` so an
@@ -719,6 +727,9 @@ node tool/harness.mjs plan --base origin/main --head HEAD --json
 Second, `tool/agent/context_pack.mjs` is optional, read-only orientation for
 broad work. It prints owner docs, matching project skills, source rules, and
 suggested checks to stdout. It does not write a context artifact or gate work.
+Its logical repository snapshot excludes paths owned by registered nested
+worktrees using `git worktree list --porcelain`; those separate checkouts never
+become malformed untracked paths in the current checkout.
 
 ```sh
 node tool/agent/context_pack.mjs --task <label> --paths <path[,path...]>
@@ -728,19 +739,38 @@ Third, `tool/git/worktree_guard.mjs` is a thin optional wrapper around ordinary
 Git worktrees. `start` creates from an exact commit and rejects overlap with
 another active local claimed-path set. `doctor` reports dirty and out-of-scope
 work. `finish` refuses to drop the local claim while unique work is uncommitted
-or unpushed. `stale` reports candidates and never deletes them.
+or unpushed. `finish --abandon --reason <why>` releases a deliberately
+superseded claim only when its worktree is clean, retaining an attributable
+local record under Git's common directory. `stale` reports candidates and
+never deletes them.
 
 ```sh
 node tool/git/worktree_guard.mjs start \
   --task-id <task-id> --base-sha <40-character-sha> --paths <paths>
 node tool/git/worktree_guard.mjs doctor --worktree <path>
 node tool/git/worktree_guard.mjs finish --worktree <path>
+node tool/git/worktree_guard.mjs finish --worktree <path> \
+  --abandon --reason <why> [--by <identity>]
 node tool/git/worktree_guard.mjs stale --stale-days 7
 ```
 
 The guard does not install dependencies, execute checks, push, merge, remove
 worktrees, or authorize commands. Its local claims are disposable; Git branches
 and commits remain authoritative.
+
+A newly created worktree contains tracked files only. Give it independent root
+npm, Functions npm, and Flutter dependencies before building:
+
+```sh
+bash tool/git/bootstrap_worktree.sh
+```
+
+The repo-managed hook at `tool/git/hooks/pre-commit` is installed per clone with
+`git config core.hooksPath tool/git/hooks`. Its Node guard consumes
+`component_graph.json#compileCodegen`, regenerates staged localization inputs,
+formats staged Dart, and runs only the triggered committed-output freshness
+checks. It never runs the analyzer or a broad test lane, and it refuses to
+re-stage partially staged Dart files.
 
 The following legacy evidence paths were deleted and must remain absent:
 

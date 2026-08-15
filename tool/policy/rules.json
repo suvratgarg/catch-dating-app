@@ -118,7 +118,9 @@
         "docs/agent_skills/**",
         "tool/agent/**",
         "tool/harness.mjs",
-        "tool/harness/**"
+        "tool/harness/**",
+        "tool/lib/repository_snapshot.mjs",
+        "tool/lib/repository_snapshot.test.mjs"
       ],
       "instruction": "For broad work, inspect the Git diff and use the read-only Catch planner to explain affected components and checks. Run the selected checks and preserve proof in Git and CI. Do not write registry receipts, readiness metrics, or regression ledgers.",
       "sunset_when": [
@@ -157,7 +159,7 @@
         "lib/**",
         "test/**"
       ],
-      "instruction": "Use an exact-base Git worktree for parallel tasks, declare disjoint claimed paths, reject overlap with active local tasks, review commits before integration, refuse close while unique work is uncommitted or unpushed, and run final verification in the integration branch. Keep coordination state local and disposable; do not write delegation metrics or receipts.",
+      "instruction": "Use an exact-base Git worktree for parallel tasks, declare disjoint claimed paths, reject overlap with active local tasks, review commits before integration, refuse ordinary close while unique work is uncommitted or unpushed, and run final verification in the integration branch. A deliberately superseded claim may be abandoned only from a clean worktree with an attributable local reason record. Keep coordination state local and disposable; do not write delegation metrics or tracked receipts.",
       "sunset_when": [
         "The thin guard enforces exact base, overlap refusal, scope cleanliness, and unpushed-work protection without a task orchestration layer"
       ],
@@ -171,6 +173,39 @@
           "tool": "git:worktree-guard",
           "stage": "scanner-gate",
           "docAnchor": "docs/agent_operating_model.md#parallel-worktrees"
+        }
+      ]
+    },
+    "GENERATED-ARTIFACT-DRIFT-001": {
+      "title": "Keep committed generated artifacts synchronized before review",
+      "status": "active",
+      "kind": "process",
+      "introduced_in": {
+        "doc_id": "agent_operating_model",
+        "version": "3.0.2"
+      },
+      "applies_to": [
+        "contracts/**",
+        "copy/**",
+        "lib/l10n/**",
+        "tool/git/hooks/**",
+        "tool/git/pre_commit_generated_artifacts.mjs",
+        "tool/harness/component_graph.json"
+      ],
+      "instruction": "Install the repository-local pre-commit hook. Regenerate localization inputs, format staged Dart without absorbing partial work, and run the source-owned freshness check for every triggered committed compile-codegen output before review.",
+      "sunset_when": [
+        "Git natively runs repository-owned generated-output freshness and safe staged-file formatting across linked worktrees"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "git:pre-commit-generated-artifacts",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/agent_operating_model.md#repo-managed-pre-commit-hook"
         }
       ]
     },
@@ -733,6 +768,38 @@
         {
           "stage": "manual",
           "docAnchor": "tool/policy/rules.json"
+        }
+      ]
+    },
+    "FIREBASE-RULES-DRIFT-001": {
+      "title": "Keep active Firebase rules releases synchronized with committed rules",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "release_operations",
+        "version": "2.1.1"
+      },
+      "applies_to": [
+        "firestore.rules",
+        "storage.rules",
+        "firebase.json",
+        "tool/firebase/check_rules_deployment_drift.mjs",
+        ".github/workflows/_firebase-promote.yml"
+      ],
+      "instruction": "Compare the active Firestore and Storage Rules releases with the exact committed sources after authenticated backend promotion. Missing credentials may skip local or untrusted CI checks; present but insufficient credentials, missing releases, and normalized-content drift fail closed.",
+      "sunset_when": [
+        "Firebase deployment natively proves the active release source against the exact CI-approved repository source"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "firebase:rules-deployment-drift",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/release_operations.md#firebase-rules-deployment-drift"
         }
       ]
     },

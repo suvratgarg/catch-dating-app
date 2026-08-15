@@ -160,6 +160,8 @@
         ]
       },
       "impactPaths": [
+        ".gitignore",
+        "tool/check_repository_root_hygiene.test.mjs",
         "tool/lib/path_glob.mjs",
         "tool/lib/path_glob.test.mjs"
       ],
@@ -200,7 +202,7 @@
       "impactPaths": [
         "tool/git/worktree_guard.test.mjs"
       ],
-      "description": "Adds a thin local safety boundary around ordinary Git worktrees: exact bases, disjoint claimed paths, dirty/out-of-scope diagnosis, and refusal to close unpushed unique work. It never installs, validates, pushes, deletes, or keeps completed-task history.",
+      "description": "Adds a thin local safety boundary around ordinary Git worktrees: exact bases, disjoint claimed paths, dirty/out-of-scope diagnosis, protected closeout, and attributable clean-only abandonment. It never installs, validates, pushes, or deletes worktrees.",
       "checks": [
         "node --check tool/git/worktree_guard.mjs",
         "node --test tool/git/worktree_guard.test.mjs",
@@ -217,7 +219,76 @@
           "start refuses overlapping claims and permits disjoint worktrees",
           "doctor detects committed out-of-scope changes while keeping committed in-scope work clean",
           "finish refuses uncommitted, upstream-less, and unpushed unique work",
+          "finish abandon releases clean unpushed out-of-scope work with an attributable record",
+          "finish abandon requires a reason and refuses a dirty worktree",
           "stale reports old claims and unclaimed worktrees without deleting either"
+        ]
+      }
+    },
+    {
+      "id": "git:worktree-bootstrap",
+      "category": "git",
+      "path": "tool/git/bootstrap_worktree.sh",
+      "command": "bash tool/git/bootstrap_worktree.sh",
+      "safety": "local-writes-dependencies",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "package-lock.json",
+        "functions/package-lock.json",
+        "pubspec.yaml",
+        "tool/git/bootstrap_worktree.test.mjs",
+        "docs/agent_operating_model.md"
+      ],
+      "description": "Bootstraps a fresh Git worktree with isolated root npm, Functions npm, and Flutter dependencies from committed lockfiles.",
+      "checks": [
+        "bash -n tool/git/bootstrap_worktree.sh",
+        "node --test tool/git/bootstrap_worktree.test.mjs",
+        "bash tool/git/bootstrap_worktree.sh --help"
+      ],
+      "role": "operator"
+    },
+    {
+      "id": "git:pre-commit-generated-artifacts",
+      "category": "git",
+      "path": "tool/git/pre_commit_generated_artifacts.mjs",
+      "command": "node --test tool/git/pre_commit_generated_artifacts.test.mjs",
+      "safety": "local-writes-staged-generated",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "docs/agent_operating_model.md",
+        "tool/git/hooks/pre-commit",
+        "tool/git/pre_commit_generated_artifacts.test.mjs",
+        "tool/harness/component_graph.json"
+      ],
+      "description": "Keeps staged Dart formatting and every catalogued committed compile-codegen output synchronized without running broad analysis.",
+      "checks": [
+        "node --check tool/git/pre_commit_generated_artifacts.mjs",
+        "bash -n tool/git/hooks/pre-commit",
+        "node --test tool/git/pre_commit_generated_artifacts.test.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "GENERATED-ARTIFACT-DRIFT-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/git/pre_commit_generated_artifacts.test.mjs",
+        "contains": [
+          "every catalogued committed compile generator has a staged-source trigger",
+          "partially staged Dart fails before formatting can stage unrelated work",
+          "contract drift reports both exact regeneration commands"
         ]
       }
     },
@@ -780,13 +851,15 @@
         "tool/agent/lib/context_plan.mjs",
         "tool/agent/context_plan.test.mjs",
         "tool/lib/path_glob.mjs",
-        "tool/lib/path_glob.test.mjs"
+        "tool/lib/path_glob.test.mjs",
+        "tool/lib/repository_snapshot.mjs",
+        "tool/lib/repository_snapshot.test.mjs"
       ],
       "description": "Prints optional read-only guidance from the current Git SHA and source-owned scope, skills, rules, owner docs, and locally safe checks. It grants no execution or write authority and stores no receipt.",
       "checks": [
         "node --check tool/agent/context_pack.mjs",
         "node --check tool/agent/lib/context_plan.mjs",
-        "node --test tool/agent/context_plan.test.mjs",
+        "node --test tool/agent/context_plan.test.mjs tool/lib/repository_snapshot.test.mjs",
         "node tool/agent/context_pack.mjs --task agent-guidance --paths AGENTS.md,docs/agent_operating_model.md --json"
       ],
       "role": "finder"
@@ -2505,6 +2578,47 @@
       "checks": [
         "node --check tool/firebase/validate_google_maps_config.mjs"
       ]
+    },
+    {
+      "id": "firebase:rules-deployment-drift",
+      "category": "firebase",
+      "path": "tool/firebase/check_rules_deployment_drift.mjs",
+      "command": "node tool/firebase/check_rules_deployment_drift.mjs --env dev",
+      "safety": "local-with-optional-remote-readonly",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/workflows/_firebase-promote.yml",
+        "firebase.json",
+        "firestore.rules",
+        "storage.rules",
+        "tool/ci/firebase_delivery_workflow.test.mjs",
+        "tool/firebase/check_rules_deployment_drift.test.mjs"
+      ],
+      "description": "Compares normalized committed Firestore and Storage rules with every applicable active Firebase Rules release, skipping only when no read credential is available.",
+      "checks": [
+        "node --check tool/firebase/check_rules_deployment_drift.mjs",
+        "node --test tool/firebase/check_rules_deployment_drift.test.mjs tool/ci/firebase_delivery_workflow.test.mjs",
+        "node tool/firebase/check_rules_deployment_drift.mjs --env dev"
+      ],
+      "role": "gate",
+      "rules": [
+        "FIREBASE-RULES-DRIFT-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/firebase/check_rules_deployment_drift.test.mjs",
+        "contains": [
+          "active Firestore and every active Storage release match normalized committed content",
+          "semantic source changes and missing active releases fail closed",
+          "missing credentials skip clearly without touching the Rules API"
+        ]
+      }
     },
     {
       "id": "firebase:environment-readiness",
