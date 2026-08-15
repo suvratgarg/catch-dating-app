@@ -1,6 +1,6 @@
 ---
 doc_id: agent_operating_model
-version: 3.0.2
+version: 3.0.3
 updated: 2026-08-07
 owner: agent_operating_model
 status: active
@@ -190,6 +190,17 @@ Parallel agents are useful only when one parent remains responsible for the
 integrated result. Assign disjoint file sets. Keep shared architecture
 decisions, canonical owner documents, common manifests, and final verification
 with the parent unless a child is explicitly assigned the whole file set.
+
+After creating a worktree, bootstrap its own pinned dependencies with one
+repository command:
+
+```sh
+bash tool/git/bootstrap_worktree.sh
+```
+
+The command runs root `npm ci`, Functions `npm ci`, and `flutter pub get` in
+that worktree. Keep these installs local to the worktree; do not symlink
+another checkout's `node_modules` or invent `NODE_PATH` overrides.
 
 The worktree guard is optional. Use it when several local tasks need an
 overlap check or when safe closeout is easy to forget:

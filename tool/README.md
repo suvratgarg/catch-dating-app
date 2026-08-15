@@ -753,6 +753,13 @@ The guard does not install dependencies, execute checks, push, merge, remove
 worktrees, or authorize commands. Its local claims are disposable; Git branches
 and commits remain authoritative.
 
+A newly created worktree contains tracked files only. Give it independent root
+npm, Functions npm, and Flutter dependencies before building:
+
+```sh
+bash tool/git/bootstrap_worktree.sh
+```
+
 The repo-managed hook at `tool/git/hooks/pre-commit` is installed per clone with
 `git config core.hooksPath tool/git/hooks`. Its Node guard consumes
 `component_graph.json#compileCodegen`, regenerates staged localization inputs,
