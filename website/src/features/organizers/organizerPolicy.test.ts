@@ -154,7 +154,7 @@ describe("organizerPolicyForListing", () => {
     expect(policy.canWritePublicReview).toBe(false);
   });
 
-  it("adapts old unclaimed projections through the legacy public API flag", () => {
+  it("denies public access when authority and capabilities are missing", () => {
     const legacyListing = Object.fromEntries(
       Object.entries(hostListings[0]).filter(
         ([key]) => !["authority", "capabilities"].includes(key)
@@ -167,9 +167,18 @@ describe("organizerPolicyForListing", () => {
     } as HostListing;
     const policy = organizerPolicyForListing(listing);
 
-    expect(policy.canRequestClaim).toBe(true);
-    expect(policy.canReadPublicReviews).toBe(true);
-    expect(policy.canWritePublicReview).toBe(true);
+    expect(policy).toMatchObject({
+      ownershipState: "unknown",
+      claimState: "unknown",
+      verificationStatus: "unknown",
+      isPubliclyReadable: false,
+      canBook: false,
+      canContactHost: false,
+      canJoinWaitlist: false,
+      canRequestClaim: false,
+      canReadPublicReviews: false,
+      canWritePublicReview: false,
+    });
   });
 
   it("fails public routes closed for stale published suppression", () => {

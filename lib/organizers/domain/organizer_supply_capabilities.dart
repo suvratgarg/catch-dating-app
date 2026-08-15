@@ -1,6 +1,6 @@
-enum OrganizerSupplyCapabilityMode { unclaimedReadOnly, claimedManaged }
+enum OrganizerSupplyCapabilityMode { denied, unclaimedReadOnly, claimedManaged }
 
-enum OrganizerReviewPolicy { afterEventEnd, attendedEventOnly }
+enum OrganizerReviewPolicy { unavailable, afterEventEnd, attendedEventOnly }
 
 class OrganizerSupplyCapabilities {
   const OrganizerSupplyCapabilities({
@@ -12,6 +12,15 @@ class OrganizerSupplyCapabilities {
     required this.claimable,
     required this.reviewPolicy,
   });
+
+  const OrganizerSupplyCapabilities.denied()
+    : mode = OrganizerSupplyCapabilityMode.denied,
+      bookable = false,
+      paymentsEnabled = false,
+      waitlistEnabled = false,
+      hostContactEnabled = false,
+      claimable = false,
+      reviewPolicy = OrganizerReviewPolicy.unavailable;
 
   const OrganizerSupplyCapabilities.unclaimedReadOnly({this.claimable = true})
     : mode = OrganizerSupplyCapabilityMode.unclaimedReadOnly,
@@ -31,15 +40,27 @@ class OrganizerSupplyCapabilities {
       reviewPolicy = OrganizerReviewPolicy.attendedEventOnly;
 
   factory OrganizerSupplyCapabilities.fromJson(Map<String, dynamic> json) {
-    final mode = json['mode'] == 'claimed_managed'
-        ? OrganizerSupplyCapabilityMode.claimedManaged
-        : OrganizerSupplyCapabilityMode.unclaimedReadOnly;
-    if (mode == OrganizerSupplyCapabilityMode.claimedManaged) {
+    if (json['mode'] == 'claimed_managed' &&
+        json['bookable'] == true &&
+        json['paymentsEnabled'] == true &&
+        json['waitlistEnabled'] == true &&
+        json['hostContactEnabled'] == true &&
+        json['claimable'] == false &&
+        json['reviewPolicy'] == 'attended_event_only') {
       return const OrganizerSupplyCapabilities.claimedManaged();
     }
-    return OrganizerSupplyCapabilities.unclaimedReadOnly(
-      claimable: json['claimable'] == true,
-    );
+    if (json['mode'] == 'unclaimed_read_only' &&
+        json['bookable'] == false &&
+        json['paymentsEnabled'] == false &&
+        json['waitlistEnabled'] == false &&
+        json['hostContactEnabled'] == false &&
+        json['claimable'] is bool &&
+        json['reviewPolicy'] == 'after_event_end') {
+      return OrganizerSupplyCapabilities.unclaimedReadOnly(
+        claimable: json['claimable'] as bool,
+      );
+    }
+    return const OrganizerSupplyCapabilities.denied();
   }
 
   final OrganizerSupplyCapabilityMode mode;
@@ -81,6 +102,9 @@ class OrganizerSupplyCapabilities {
 
   Map<String, dynamic> toJson() => {
     'mode': switch (mode) {
+      OrganizerSupplyCapabilityMode.denied => throw StateError(
+        'Denied organizer capabilities are not a persisted projection.',
+      ),
       OrganizerSupplyCapabilityMode.unclaimedReadOnly => 'unclaimed_read_only',
       OrganizerSupplyCapabilityMode.claimedManaged => 'claimed_managed',
     },
@@ -90,6 +114,9 @@ class OrganizerSupplyCapabilities {
     'hostContactEnabled': hostContactEnabled,
     'claimable': claimable,
     'reviewPolicy': switch (reviewPolicy) {
+      OrganizerReviewPolicy.unavailable => throw StateError(
+        'Unavailable organizer review policy is not persisted.',
+      ),
       OrganizerReviewPolicy.afterEventEnd => 'after_event_end',
       OrganizerReviewPolicy.attendedEventOnly => 'attended_event_only',
     },
@@ -101,29 +128,5 @@ Object? readOrganizerSupplyCapabilities(
   String key,
 ) {
   final stored = json[key];
-  if (stored != null) return stored;
-  final ownership = json['ownership'];
-  final claim = json['claim'];
-  final ownershipState = ownership is Map ? ownership['state'] : null;
-  final claimState = claim is Map ? claim['state'] : null;
-  final hasLegacyOwner =
-      json['ownerUserId'] != null ||
-      json['hostUserId'] != null ||
-      (json['hostUserIds'] is List &&
-          (json['hostUserIds'] as List).isNotEmpty) ||
-      (json['hostProfiles'] is List &&
-          (json['hostProfiles'] as List).isNotEmpty);
-  final managed =
-      hasLegacyOwner ||
-      const {
-        'userCreated',
-        'claimed',
-        'transferred',
-      }.contains(ownershipState) ||
-      const {'claimed', 'verified'}.contains(claimState);
-  return managed
-      ? const OrganizerSupplyCapabilities.claimedManaged().toJson()
-      : OrganizerSupplyCapabilities.unclaimedReadOnly(
-          claimable: claimState == 'unclaimed',
-        ).toJson();
+  return stored is Map<String, dynamic> ? stored : const <String, dynamic>{};
 }

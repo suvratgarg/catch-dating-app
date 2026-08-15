@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import * as admin from "firebase-admin";
 import {signUpUserForEvent} from "./signUpUserForEvent";
+import {catchNativeEventOrigin} from "../shared/testUtils";
 
 type FakeData = Record<string, unknown>;
 
@@ -169,6 +170,7 @@ function firestore(initialDocs: Record<string, FakeData | undefined>) {
 function event(overrides: FakeData = {}): FakeData {
   return {
     clubId: "club-1",
+    eventOrigin: catchNativeEventOrigin(),
     startTime: admin.firestore.Timestamp.fromMillis(
       Date.parse("2026-05-02T01:30:00.000Z")
     ),

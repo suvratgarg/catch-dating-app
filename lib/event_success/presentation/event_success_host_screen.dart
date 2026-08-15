@@ -257,8 +257,12 @@ class _EventSuccessHostSectionState
         shouldLoadAssignments
         ? ref.watch(watchEventSuccessRotationAssignmentsProvider(event.id))
         : const AsyncData(<EventSuccessAssignment>[]);
+    final shouldLoadRotationDrafts =
+        shouldLoadAssignments &&
+        persistedPlan.hasModule(EventSuccessModuleCatalog.guidedRotations.id) &&
+        persistedPlan.structureConfig.rotates;
     final AsyncValue<List<EventSuccessAssignmentDraft>> rotationDraftsAsync =
-        shouldLoadAssignments
+        shouldLoadRotationDrafts
         ? ref.watch(watchEventSuccessRotationDraftsProvider(event.id))
         : const AsyncData(<EventSuccessAssignmentDraft>[]);
     final rotationAssignmentsPreview =

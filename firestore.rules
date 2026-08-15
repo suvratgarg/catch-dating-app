@@ -51,18 +51,6 @@ service cloud.firestore {
         || data[field] in values;
     }
 
-    function optionalList(data, field) {
-      return !hasField(data, field)
-        || data[field] == null
-        || data[field] is list;
-    }
-
-    function optionalListMax(data, field, maxSize) {
-      return !hasField(data, field)
-        || data[field] == null
-        || (data[field] is list && data[field].size() <= maxSize);
-    }
-
     function isDefaultCity(city) {
       return city in [
         'in-mh-mumbai',
@@ -1677,35 +1665,6 @@ service cloud.firestore {
         && data.answerIds is list
         && data.answerIds.size() >= 1
         && data.answerIds.size() <= 8
-        && data.createdAt is timestamp
-        && data.updatedAt is timestamp;
-    }
-
-    function isValidEventSuccessWingmanRequest(requestId, data) {
-      return data.keys().hasOnly([
-          'eventId', 'clubId', 'requesterUid', 'targetUid', 'status',
-          'hostVisibleConsent', 'note', 'createdAt', 'updatedAt'
-        ])
-        && data.keys().hasAll([
-          'eventId', 'clubId', 'requesterUid', 'targetUid', 'status',
-          'hostVisibleConsent', 'createdAt', 'updatedAt'
-        ])
-        && exists(/databases/$(database)/documents/events/$(data.eventId))
-        && requestId == eventSuccessWingmanRequestDocId(
-          data.eventId,
-          data.requesterUid
-        )
-        && data.requesterUid == request.auth.uid
-        && data.targetUid is string
-        && data.targetUid != data.requesterUid
-        && data.clubId == get(/databases/$(database)/documents/events/$(data.eventId)).data.clubId
-        && hasCheckedInEventSuccessAccess(data.eventId, data.requesterUid)
-        && hasCheckedInEventSuccessAccess(data.eventId, data.targetUid)
-        && !hasBlockBetween(data.requesterUid, data.targetUid)
-        && data.status in ['active', 'withdrawn']
-        && data.hostVisibleConsent == true
-        && optionalString(data, 'note')
-        && (!hasField(data, 'note') || data.note == null || data.note.size() <= 240)
         && data.createdAt is timestamp
         && data.updatedAt is timestamp;
     }

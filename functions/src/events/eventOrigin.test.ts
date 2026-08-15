@@ -4,7 +4,7 @@ import {HttpsError} from "firebase-functions/v2/https";
 import {EventDocument} from "../shared/generated/firestoreAdminTypes";
 import {requireCatchBookingAuthority} from "./eventOrigin";
 
-test("Catch booking fails closed for external companion events", () => {
+test("Catch booking requires explicit Catch authority", () => {
   assert.throws(
     () => requireCatchBookingAuthority({
       eventOrigin: {bookingAuthority: "external"},
@@ -15,5 +15,9 @@ test("Catch booking fails closed for external companion events", () => {
   assert.doesNotThrow(() => requireCatchBookingAuthority({
     eventOrigin: {bookingAuthority: "catch"},
   } as EventDocument));
-  assert.doesNotThrow(() => requireCatchBookingAuthority({} as EventDocument));
+  assert.throws(
+    () => requireCatchBookingAuthority({} as EventDocument),
+    (error) => error instanceof HttpsError &&
+      error.code === "failed-precondition"
+  );
 });
