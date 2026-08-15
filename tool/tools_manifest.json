@@ -160,6 +160,8 @@
         ]
       },
       "impactPaths": [
+        ".gitignore",
+        "tool/check_repository_root_hygiene.test.mjs",
         "tool/lib/path_glob.mjs",
         "tool/lib/path_glob.test.mjs"
       ],

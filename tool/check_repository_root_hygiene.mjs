@@ -34,6 +34,17 @@ export function portableLinkViolations(markdown) {
   return violations;
 }
 
+export function directoryOnlyIgnorePatterns(source) {
+  return String(source)
+    .split(/\r?\n/u)
+    .map((line) => line.trim())
+    .filter((line) =>
+      line !== "" &&
+      !line.startsWith("#") &&
+      !line.startsWith("!") &&
+      line.endsWith("/"));
+}
+
 export function rootManifestViolations({manifest}) {
   const errors = [];
   if (Object.hasOwn(manifest, "relationships")) {
@@ -77,6 +88,13 @@ export function checkRepository({
   const manifest = snapshot.readJson("tool/repository_root_manifest.json", {required: true});
   const errors = [];
   errors.push(...retiredEvidenceViolations(snapshot));
+  for (const pattern of directoryOnlyIgnorePatterns(
+    snapshot.readText(".gitignore") ?? "",
+  )) {
+    errors.push(
+      `.gitignore pattern ${pattern} is directory-only and misses a symlink with the same name`,
+    );
+  }
   const rootNames = snapshot.listRootEntries().map(({name}) => name);
   for (const name of rootNames) {
     const matches = classify(name, manifest);
