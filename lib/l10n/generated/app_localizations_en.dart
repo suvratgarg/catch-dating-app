@@ -13011,4 +13011,48 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventSuccessAccountabilityFinishAnywayAction => 'Finish anyway';
+
+  @override
+  String eventSuccessHostResourceUnavailableTitle({required String resource}) {
+    return '$resource unavailable';
+  }
+
+  @override
+  String get eventSuccessHostResourceLiveGuide => 'Live guide';
+
+  @override
+  String get eventSuccessHostResourceGuestRoster => 'Guest roster';
+
+  @override
+  String get eventSuccessHostResourceMicroPodAssignments =>
+      'Micro-pod assignments';
+
+  @override
+  String get eventSuccessHostResourcePublishedRotations =>
+      'Published rotations';
+
+  @override
+  String get eventSuccessHostResourceRotationDrafts => 'Rotation drafts';
+
+  @override
+  String get eventSuccessHostResourceMicroPodProfiles =>
+      'Micro-pod attendee profiles';
+
+  @override
+  String get eventSuccessHostResourceRotationProfiles =>
+      'Rotation attendee profiles';
+
+  @override
+  String get eventSuccessHostResourceAttendeePreferences =>
+      'Attendee preferences';
+
+  @override
+  String get eventSuccessHostResourceHostHelpRequests => 'Host-help requests';
+
+  @override
+  String get eventSuccessHostResourceHostHelpProfiles =>
+      'Host-help attendee profiles';
+
+  @override
+  String get eventSuccessHostResourceEventReport => 'Event report';
 }

@@ -66,6 +66,69 @@ void _registerEventSuccessHostLiveTests() {
       expect(rotationDraftsController.hasListener, isFalse);
     },
   );
+  test('host section retains local provider failures', () {
+    final planError = StateError('plan failed');
+    final failedPlan = resolve(
+      planState: CatchAsyncState<EventSuccessPlan?>.error(planError),
+    );
+    expect(failedPlan.status, EventSuccessHostSectionStatus.error);
+    expect(failedPlan.retryIntent, EventSuccessHostRetryIntent.plan);
+    expect(failedPlan.error, same(planError));
+
+    expect(rosterState.status, EventSuccessHostSectionStatus.ready);
+    expect(rosterState.retryIntent, isNull);
+    expect(rosterState.error, isNull);
+    expect(rosterState.resourceFailures, hasLength(1));
+    expect(
+      rosterState.resourceFailures.single.retryIntent,
+      EventSuccessHostRetryIntent.roster,
+    );
+    expect(rosterState.resourceFailures.single.error, same(rosterError));
+      ).resourceFailures.single.retryIntent,
+      ).resourceFailures.single.retryIntent,
+  testWidgets('host live keeps running and names a failed local resource', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(430, 1800);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final event = buildEvent(id: 'event-host-local-error');
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
+    final retries = <EventSuccessHostRetryIntent>[];
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: EventSuccessHostPanel(
+              event: event,
+              plan: plan,
+              planIsPersisted: true,
+              roster: EventParticipationRoster.empty(),
+              initialTab: EventSuccessHostTab.live,
+              showTabs: false,
+              resourceFailures: [
+                EventSuccessHostResourceFailure(
+                  retryIntent: EventSuccessHostRetryIntent.roster,
+                  error: StateError('roster failed'),
+                ),
+              ],
+              onRetryResource: retries.add,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('Guest roster unavailable'), findsOneWidget);
+    expect(find.textContaining('LIVE NOW'), findsOneWidget);
+
+    await tester.tap(find.text('Reload event'));
+    expect(retries, [EventSuccessHostRetryIntent.roster]);
+  });
 
   testWidgets('host confirms presence changes before the next round', (
     tester,

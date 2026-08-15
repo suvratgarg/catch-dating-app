@@ -338,9 +338,12 @@ class _EventSuccessHostSectionState
       case EventSuccessHostSectionStatus.error:
         final retryIntent = state.retryIntent!;
         return frameCompactLiveState(
-          CatchInlineErrorState.fromError(
-            state.error!,
-            context: _eventSuccessHostRetryContext(retryIntent),
+          _eventSuccessHostResourceError(
+            context,
+            failure: EventSuccessHostResourceFailure(
+              retryIntent: retryIntent,
+              error: state.error!,
+            ),
             onRetry: () => _retryEventSuccessHostSection(
               eventId: event.id,
               retryIntent: retryIntent,
@@ -387,6 +390,14 @@ class _EventSuccessHostSectionState
           : null,
       wingmanRequests: state.wingmanRequests,
       wingmanProfiles: state.wingmanProfiles,
+      resourceFailures: state.resourceFailures,
+      onRetryResource: (retryIntent) => _retryEventSuccessHostSection(
+        eventId: event.id,
+        retryIntent: retryIntent,
+        assignmentParticipantUidsKey: assignmentParticipantUidsKey,
+        rotationParticipantUidsKey: rotationParticipantUidsKey,
+        wingmanProfilesKey: wingmanProfilesKey,
+      ),
       initialTab: initialTab,
       showTabs: showTabs,
       embedded: true,
@@ -847,6 +858,54 @@ AppErrorContext _eventSuccessHostRetryContext(
   };
 }
 
+Widget _eventSuccessHostResourceError(
+  BuildContext context, {
+  required EventSuccessHostResourceFailure failure,
+  VoidCallback? onRetry,
+  bool compact = false,
+}) {
+  final errorContext = _eventSuccessHostRetryContext(failure.retryIntent);
+  final descriptor = appErrorDescriptor(
+    failure.error,
+    l10n: context.l10n,
+    context: errorContext,
+  );
+  final resource = switch (failure.retryIntent) {
+    EventSuccessHostRetryIntent.plan =>
+      context.l10n.eventSuccessHostResourceLiveGuide,
+    EventSuccessHostRetryIntent.roster =>
+      context.l10n.eventSuccessHostResourceGuestRoster,
+    EventSuccessHostRetryIntent.assignments =>
+      context.l10n.eventSuccessHostResourceMicroPodAssignments,
+    EventSuccessHostRetryIntent.rotationAssignments =>
+      context.l10n.eventSuccessHostResourcePublishedRotations,
+    EventSuccessHostRetryIntent.rotationDrafts =>
+      context.l10n.eventSuccessHostResourceRotationDrafts,
+    EventSuccessHostRetryIntent.assignmentParticipantProfiles =>
+      context.l10n.eventSuccessHostResourceMicroPodProfiles,
+    EventSuccessHostRetryIntent.rotationParticipantProfiles =>
+      context.l10n.eventSuccessHostResourceRotationProfiles,
+    EventSuccessHostRetryIntent.preferences =>
+      context.l10n.eventSuccessHostResourceAttendeePreferences,
+    EventSuccessHostRetryIntent.wingmanRequests =>
+      context.l10n.eventSuccessHostResourceHostHelpRequests,
+    EventSuccessHostRetryIntent.wingmanProfiles =>
+      context.l10n.eventSuccessHostResourceHostHelpProfiles,
+    EventSuccessHostRetryIntent.scorecard =>
+      context.l10n.eventSuccessHostResourceEventReport,
+  };
+  return CatchInlineErrorState(
+    title: context.l10n.eventSuccessHostResourceUnavailableTitle(
+      resource: resource,
+    ),
+    message: descriptor.message,
+    icon: descriptor.icon,
+    retryLabel: descriptor.retryLabel,
+    onRetry: onRetry,
+    compact: compact,
+  );
+}
+
 class EventSuccessHostSectionSkeleton extends StatelessWidget {
   const EventSuccessHostSectionSkeleton({
     super.key,
@@ -1056,6 +1115,8 @@ class EventSuccessHostPanel extends StatefulWidget {
     this.lateArrivalError,
     this.wingmanRequests = const [],
     this.wingmanProfiles = const [],
+    this.resourceFailures = const [],
+    this.onRetryResource,
     this.initialTab = EventSuccessHostTab.setup,
     this.showTabs = true,
     this.embedded = false,
@@ -1117,6 +1178,8 @@ class EventSuccessHostPanel extends StatefulWidget {
   final Object? lateArrivalError;
   final List<EventSuccessWingmanRequest> wingmanRequests;
   final List<PublicProfile> wingmanProfiles;
+  final List<EventSuccessHostResourceFailure> resourceFailures;
+  final ValueChanged<EventSuccessHostRetryIntent>? onRetryResource;
   final EventSuccessHostTab initialTab;
   final bool showTabs;
   final bool embedded;
@@ -1223,6 +1286,8 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         lateArrivalError: widget.lateArrivalError,
         wingmanRequests: widget.wingmanRequests,
         wingmanProfiles: widget.wingmanProfiles,
+        resourceFailures: widget.resourceFailures,
+        onRetryResource: widget.onRetryResource,
         compactLiveControls: widget.compactLiveControls,
         operationalRosterSummary: widget.operationalRosterSummary,
         onOpenGuests: widget.onOpenGuests,
@@ -1278,6 +1343,8 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         rotationAssignments: widget.rotationAssignments,
         preferences: widget.preferences,
         wingmanRequests: widget.wingmanRequests,
+        resourceFailures: widget.resourceFailures,
+        onRetryResource: widget.onRetryResource,
         embedded: widget.embedded,
       ),
     };
