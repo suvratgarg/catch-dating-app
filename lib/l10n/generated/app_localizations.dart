@@ -20256,6 +20256,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Finish anyway'**
   String get eventSuccessAccountabilityFinishAnywayAction;
+
+  /// Names the Event Success resource whose local area could not load.
+  ///
+  /// In en, this message translates to:
+  /// **'{resource} unavailable'**
+  String eventSuccessHostResourceUnavailableTitle({required String resource});
+
+  /// Load-bearing Event Success plan resource name.
+  ///
+  /// In en, this message translates to:
+  /// **'Live guide'**
+  String get eventSuccessHostResourceLiveGuide;
+
+  /// Event Success operational roster resource name.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest roster'**
+  String get eventSuccessHostResourceGuestRoster;
+
+  /// Event Success micro-pod assignment resource name.
+  ///
+  /// In en, this message translates to:
+  /// **'Micro-pod assignments'**
+  String get eventSuccessHostResourceMicroPodAssignments;
+
+  /// Event Success published rotation resource name.
+  ///
+  /// In en, this message translates to:
+  /// **'Published rotations'**
+  String get eventSuccessHostResourcePublishedRotations;
+
+  /// Event Success Host-only rotation draft resource name.
+  ///
+  /// In en, this message translates to:
+  /// **'Rotation drafts'**
+  String get eventSuccessHostResourceRotationDrafts;
+
+  /// Event Success micro-pod profile enrichment resource name.
+  ///
+  /// In en, this message translates to:
+  /// **'Micro-pod attendee profiles'**
+  String get eventSuccessHostResourceMicroPodProfiles;
+
+  /// Event Success rotation profile enrichment resource name.
+  ///
+  /// In en, this message translates to:
+  /// **'Rotation attendee profiles'**
+  String get eventSuccessHostResourceRotationProfiles;
+
+  /// Event Success attendee preference resource name.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendee preferences'**
+  String get eventSuccessHostResourceAttendeePreferences;
+
+  /// Event Success attendee Host-help request resource name.
+  ///
+  /// In en, this message translates to:
+  /// **'Host-help requests'**
+  String get eventSuccessHostResourceHostHelpRequests;
+
+  /// Event Success Host-help profile enrichment resource name.
+  ///
+  /// In en, this message translates to:
+  /// **'Host-help attendee profiles'**
+  String get eventSuccessHostResourceHostHelpProfiles;
+
+  /// Event Success aggregate scorecard resource name.
+  ///
+  /// In en, this message translates to:
+  /// **'Event report'**
+  String get eventSuccessHostResourceEventReport;
+
+  /// Reason the Live workspace is disabled for an ended event.
+  ///
+  /// In en, this message translates to:
+  /// **'Live controls close when the event ends.'**
+  String get hostsHostEventManageLiveUnavailableAfterEvent;
+
+  /// Reason the Report workspace is disabled before an event ends.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports are available after the event ends.'**
+  String get hostsHostEventManageReportUnavailableBeforeEvent;
 }
 
 class _AppLocalizationsDelegate

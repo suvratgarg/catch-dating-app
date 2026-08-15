@@ -131,12 +131,18 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
     final t = CatchTokens.of(context);
     final club = widget.club;
     final event = widget.event;
+    final now = DateTime.now();
+    final selectedSection = hostEventManageEffectiveSection(
+      requested: _selectedSection,
+      event: event,
+      now: now,
+    );
     final onBackToSuccess = widget.onBackToSuccess;
     final rosterAsync = ref.watch(
       watchEventParticipationRosterProvider(event.id),
     );
     final roster = rosterAsync.asData?.value;
-    final operationalAttendees = _selectedSection == HostEventManageSection.live
+    final operationalAttendees = selectedSection == HostEventManageSection.live
         ? ref.watch(watchEventAttendeesProvider(event.id)).asData?.value
         : null;
     final operationalRosterSummary = _operationalRosterSummary(
@@ -174,7 +180,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
     final screenState = HostEventManageScreenState.resolve(
       club: club,
       event: event,
-      selectedSection: _selectedSection,
+      selectedSection: selectedSection,
       textScale: textScale,
     );
     final actionState = HostEventActionDisplayState.resolve(
@@ -416,6 +422,8 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             ],
           ),
           bottom: HostManageSectionPicker(
+            event: event,
+            now: now,
             selectedSection: screenState.selectedSection,
             onChanged: _selectSection,
           ),
@@ -778,10 +786,14 @@ class HostManageSectionPicker extends StatelessWidget
     implements PreferredSizeWidget {
   const HostManageSectionPicker({
     super.key,
+    required this.event,
+    required this.now,
     required this.selectedSection,
     required this.onChanged,
   });
 
+  final Event event;
+  final DateTime now;
   final HostEventManageSection selectedSection;
   final ValueChanged<HostEventManageSection> onChanged;
 
@@ -793,14 +805,29 @@ class HostManageSectionPicker extends StatelessWidget
     return CatchTabRail<HostEventManageSection>(
       options: [
         for (final section in HostEventManageSection.values)
-          CatchOption(
-            value: section,
-            label: section.label(context.l10n).toUpperCase(),
-          ),
+          _optionFor(context, section),
       ],
       selected: selectedSection,
       onChanged: onChanged,
       variant: CatchOptionGroupVariant.mono,
+    );
+  }
+
+  CatchOption<HostEventManageSection> _optionFor(
+    BuildContext context,
+    HostEventManageSection section,
+  ) {
+    final access = HostEventManageSectionAccess.resolve(
+      section: section,
+      event: event,
+      now: now,
+      l10n: context.l10n,
+    );
+    return CatchOption(
+      value: section,
+      label: section.label(context.l10n).toUpperCase(),
+      enabled: access.enabled,
+      disabledReason: access.disabledReason,
     );
   }
 }

@@ -11,6 +11,53 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 
 enum HostEventManageSection { setup, guests, live, report }
 
+class HostEventManageSectionAccess {
+  const HostEventManageSectionAccess({
+    required this.enabled,
+    this.disabledReason,
+  }) : assert(enabled || disabledReason != null);
+
+  factory HostEventManageSectionAccess.resolve({
+    required HostEventManageSection section,
+    required Event event,
+    required DateTime now,
+    required AppLocalizations l10n,
+  }) {
+    final eventEnded = !event.endTime.isAfter(now);
+    return switch (section) {
+      HostEventManageSection.live when eventEnded =>
+        HostEventManageSectionAccess(
+          enabled: false,
+          disabledReason: l10n.hostsHostEventManageLiveUnavailableAfterEvent,
+        ),
+      HostEventManageSection.report when !eventEnded =>
+        HostEventManageSectionAccess(
+          enabled: false,
+          disabledReason: l10n.hostsHostEventManageReportUnavailableBeforeEvent,
+        ),
+      _ => const HostEventManageSectionAccess(enabled: true),
+    };
+  }
+
+  final bool enabled;
+  final String? disabledReason;
+}
+
+HostEventManageSection hostEventManageEffectiveSection({
+  required HostEventManageSection requested,
+  required Event event,
+  required DateTime now,
+}) {
+  final eventEnded = !event.endTime.isAfter(now);
+  if (requested == HostEventManageSection.live && eventEnded) {
+    return HostEventManageSection.report;
+  }
+  if (requested == HostEventManageSection.report && !eventEnded) {
+    return HostEventManageSection.setup;
+  }
+  return requested;
+}
+
 enum HostEventManageActionIntent { editEvent, cancelEvent, deleteEvent }
 
 enum HostEventManageActionDestination {

@@ -33,6 +33,8 @@ class LiveTab extends StatelessWidget {
     this.lateArrivalError,
     required this.wingmanRequests,
     required this.wingmanProfiles,
+    required this.resourceFailures,
+    required this.onRetryResource,
     required this.compactLiveControls,
     required this.operationalRosterSummary,
     required this.onOpenGuests,
@@ -87,6 +89,8 @@ class LiveTab extends StatelessWidget {
   final Object? lateArrivalError;
   final List<EventSuccessWingmanRequest> wingmanRequests;
   final List<PublicProfile> wingmanProfiles;
+  final List<EventSuccessHostResourceFailure> resourceFailures;
+  final ValueChanged<EventSuccessHostRetryIntent>? onRetryResource;
   final bool compactLiveControls;
   final EventSuccessOperationalRosterSummary? operationalRosterSummary;
   final VoidCallback? onOpenGuests;
@@ -487,6 +491,15 @@ class LiveTab extends StatelessWidget {
           : null,
     );
     final errorBanners = <Widget>[
+      for (final failure in resourceFailures)
+        if (failure.retryIntent != EventSuccessHostRetryIntent.scorecard)
+          EventSuccessHostResourceError(
+            failure: failure,
+            onRetry: onRetryResource == null
+                ? null
+                : () => onRetryResource!(failure.retryIntent),
+            compact: compactLiveControls,
+          ),
       if (actionState.stepError != null)
         CatchErrorBanner.fromError(
           actionState.stepError!,

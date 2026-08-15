@@ -10,10 +10,17 @@ export 'package:catch_dating_app/core/schema_contracts/generated/field_constrain
 enum CatchOptionGroupVariant { label, mono }
 
 class CatchOption<T> {
-  const CatchOption({required this.value, required this.label});
+  const CatchOption({
+    required this.value,
+    required this.label,
+    this.enabled = true,
+    this.disabledReason,
+  }) : assert(enabled || disabledReason != null);
 
   final T value;
   final String label;
+  final bool enabled;
+  final String? disabledReason;
 }
 
 /// Design-system OptionGroup: an underline selection row for tabs, lenses, and
@@ -166,7 +173,7 @@ class _CatchOptionGroupState<T> extends State<CatchOptionGroup<T>> {
               variant: widget.variant,
               showIndicator: false,
               labelKey: _labelKeys[index],
-              onTap: widget.onChanged == null
+              onTap: widget.onChanged == null || !options[index].enabled
                   ? null
                   : () => widget.onChanged!(options[index].value),
             )
@@ -180,7 +187,7 @@ class _CatchOptionGroupState<T> extends State<CatchOptionGroup<T>> {
                 variant: widget.variant,
                 showIndicator: false,
                 labelKey: _labelKeys[index],
-                onTap: widget.onChanged == null
+                onTap: widget.onChanged == null || !options[index].enabled
                     ? null
                     : () => widget.onChanged!(options[index].value),
               ),
@@ -283,7 +290,11 @@ class CatchOptionGroupItem<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final foreground = selected ? t.ink : t.ink3;
+    final foreground = !option.enabled
+        ? t.ink3.withValues(alpha: CatchOpacity.disabledControl)
+        : selected
+        ? t.ink
+        : t.ink3;
     final selectedRuleColor = selectedRule ?? t.ink;
     final style = switch (variant) {
       CatchOptionGroupVariant.label => CatchTextStyles.labelL(
@@ -299,8 +310,10 @@ class CatchOptionGroupItem<T> extends StatelessWidget {
         ? option.label.toUpperCase()
         : option.label;
 
-    return Semantics(
+    final item = Semantics(
       button: onTap != null,
+      enabled: option.enabled,
+      hint: option.disabledReason,
       selected: selected,
       child: Material(
         color: Colors.transparent,
@@ -335,5 +348,8 @@ class CatchOptionGroupItem<T> extends StatelessWidget {
         ),
       ),
     );
+    final disabledReason = option.disabledReason;
+    if (option.enabled || disabledReason == null) return item;
+    return Tooltip(message: disabledReason, child: item);
   }
 }

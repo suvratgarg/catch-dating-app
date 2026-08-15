@@ -59,6 +59,72 @@ void main() {
     );
   });
 
+  test('Host Event Manage sections follow the event lifecycle', () {
+    final now = DateTime(2026, 8, 15, 12);
+    final upcoming = buildEvent(
+      startTime: now.add(const Duration(hours: 1)),
+      endTime: now.add(const Duration(hours: 2)),
+    );
+    final ended = buildEvent(
+      startTime: now.subtract(const Duration(hours: 2)),
+      endTime: now,
+    );
+
+    final upcomingLive = HostEventManageSectionAccess.resolve(
+      section: HostEventManageSection.live,
+      event: upcoming,
+      now: now,
+      l10n: _l10n,
+    );
+    final upcomingReport = HostEventManageSectionAccess.resolve(
+      section: HostEventManageSection.report,
+      event: upcoming,
+      now: now,
+      l10n: _l10n,
+    );
+    final endedLive = HostEventManageSectionAccess.resolve(
+      section: HostEventManageSection.live,
+      event: ended,
+      now: now,
+      l10n: _l10n,
+    );
+    final endedReport = HostEventManageSectionAccess.resolve(
+      section: HostEventManageSection.report,
+      event: ended,
+      now: now,
+      l10n: _l10n,
+    );
+
+    expect(upcomingLive.enabled, isTrue);
+    expect(upcomingReport.enabled, isFalse);
+    expect(
+      upcomingReport.disabledReason,
+      'Reports are available after the event ends.',
+    );
+    expect(endedLive.enabled, isFalse);
+    expect(
+      endedLive.disabledReason,
+      'Live controls close when the event ends.',
+    );
+    expect(endedReport.enabled, isTrue);
+    expect(
+      hostEventManageEffectiveSection(
+        requested: HostEventManageSection.report,
+        event: upcoming,
+        now: now,
+      ),
+      HostEventManageSection.setup,
+    );
+    expect(
+      hostEventManageEffectiveSection(
+        requested: HostEventManageSection.live,
+        event: ended,
+        now: now,
+      ),
+      HostEventManageSection.report,
+    );
+  });
+
   test('HostEventManageActionEffect maps action destinations', () {
     final event = buildEvent(id: 'event-action', clubId: 'club-action');
 

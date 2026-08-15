@@ -7,10 +7,12 @@ class ReportTab extends StatelessWidget {
     required this.plan,
     required this.planIsPersisted,
     this.scorecard,
-    required this.assignments,
-    required this.rotationAssignments,
-    required this.preferences,
-    required this.wingmanRequests,
+    this.assignments,
+    this.rotationAssignments,
+    this.preferences,
+    this.wingmanRequests,
+    required this.resourceFailures,
+    required this.onRetryResource,
     required this.embedded,
   });
 
@@ -18,10 +20,12 @@ class ReportTab extends StatelessWidget {
   final EventSuccessPlan plan;
   final bool planIsPersisted;
   final EventSuccessScorecard? scorecard;
-  final List<EventSuccessAssignment> assignments;
-  final List<EventSuccessAssignment> rotationAssignments;
-  final List<EventSuccessPreference> preferences;
-  final List<EventSuccessWingmanRequest> wingmanRequests;
+  final List<EventSuccessAssignment>? assignments;
+  final List<EventSuccessAssignment>? rotationAssignments;
+  final List<EventSuccessPreference>? preferences;
+  final List<EventSuccessWingmanRequest>? wingmanRequests;
+  final List<EventSuccessHostResourceFailure> resourceFailures;
+  final ValueChanged<EventSuccessHostRetryIntent>? onRetryResource;
   final bool embedded;
 
   @override
@@ -72,22 +76,48 @@ class ReportTab extends StatelessWidget {
     }
 
     final reportScorecard = scorecard;
+    final reportFailures = resourceFailures
+        .where(
+          (failure) => switch (failure.retryIntent) {
+            EventSuccessHostRetryIntent.assignments ||
+            EventSuccessHostRetryIntent.rotationAssignments ||
+            EventSuccessHostRetryIntent.preferences ||
+            EventSuccessHostRetryIntent.wingmanRequests ||
+            EventSuccessHostRetryIntent.scorecard => true,
+            _ => false,
+          },
+        )
+        .toList(growable: false);
+    final errorStates = [
+      for (final failure in reportFailures)
+        EventSuccessHostResourceError(
+          failure: failure,
+          onRetry: onRetryResource == null
+              ? null
+              : () => onRetryResource!(failure.retryIntent),
+        ),
+    ];
     if (reportScorecard == null) {
       return EventSuccessHostTabBody(
         embedded: embedded,
         children: [
-          CatchEmptyState(
-            icon: CatchIcons.insightsOutlined,
-            title: context
-                .l10n
-                .eventSuccessEventSuccessHostReportTitleWaitingForAttendeeFeedback,
-            message: context
-                .l10n
-                .eventSuccessEventSuccessHostReportBodyThePostEventReport,
-            layout: CatchEmptyStateLayout.inline,
-            surface: true,
-            padding: CatchInsets.content,
-          ),
+          ...errorStates.expand((error) => [error, gapH16]),
+          if (!reportFailures.any(
+            (failure) =>
+                failure.retryIntent == EventSuccessHostRetryIntent.scorecard,
+          ))
+            CatchEmptyState(
+              icon: CatchIcons.insightsOutlined,
+              title: context
+                  .l10n
+                  .eventSuccessEventSuccessHostReportTitleWaitingForAttendeeFeedback,
+              message: context
+                  .l10n
+                  .eventSuccessEventSuccessHostReportBodyThePostEventReport,
+              layout: CatchEmptyStateLayout.inline,
+              surface: true,
+              padding: CatchInsets.content,
+            ),
         ],
       );
     }
@@ -105,6 +135,7 @@ class ReportTab extends StatelessWidget {
     return EventSuccessHostTabBody(
       embedded: embedded,
       children: [
+        ...errorStates.expand((error) => [error, gapH16]),
         CatchSurface.message(
           messageIcon: CatchIcons.assignmentTurnedInOutlined,
           title: context.l10n

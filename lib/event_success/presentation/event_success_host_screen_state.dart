@@ -27,6 +27,16 @@ enum EventSuccessHostRetryIntent {
   scorecard,
 }
 
+class EventSuccessHostResourceFailure {
+  const EventSuccessHostResourceFailure({
+    required this.retryIntent,
+    required this.error,
+  });
+
+  final EventSuccessHostRetryIntent retryIntent;
+  final Object error;
+}
+
 class EventSuccessSetupActionState {
   const EventSuccessSetupActionState({this.isSaving = false, this.error});
 
@@ -138,6 +148,7 @@ class EventSuccessHostSectionState {
     required this.preferences,
     required this.wingmanRequests,
     required this.wingmanProfiles,
+    required this.resourceFailures,
     this.error,
     this.retryIntent,
   });
@@ -175,45 +186,7 @@ class EventSuccessHostSectionState {
             )
             .map((draft) => draft.assignment)
             .toList(growable: false);
-    final fallback = EventSuccessHostSectionState._(
-      status: EventSuccessHostSectionStatus.ready,
-      plan: plan,
-      planIsPersisted:
-          planState.status == CatchAsyncStatus.data && persistedPlan != null,
-      roster: rosterState.value ?? EventParticipationRoster.empty(),
-      scorecard: scorecardState.value,
-      assignments: assignmentsState.value ?? const <EventSuccessAssignment>[],
-      assignmentParticipantProfiles:
-          assignmentParticipantProfilesState.value ?? const <PublicProfile>[],
-      rotationAssignments:
-          rotationAssignmentsState.value ?? const <EventSuccessAssignment>[],
-      rotationDraftAssignments: matchingDraftAssignments,
-      rotationParticipantProfiles:
-          rotationParticipantProfilesState.value ?? const <PublicProfile>[],
-      preferences: preferencesState.value ?? const <EventSuccessPreference>[],
-      wingmanRequests:
-          wingmanRequestsState.value ?? const <EventSuccessWingmanRequest>[],
-      wingmanProfiles: wingmanProfilesState.value ?? const <PublicProfile>[],
-    );
-
-    if (_hasLoadingEventSuccessHostState([
-      planState,
-      rosterState,
-      scorecardState,
-      assignmentsState,
-      assignmentParticipantProfilesState,
-      rotationAssignmentsState,
-      rotationDraftsState,
-      rotationParticipantProfilesState,
-      preferencesState,
-      wingmanRequestsState,
-      wingmanProfilesState,
-    ])) {
-      return fallback.copyWith(status: EventSuccessHostSectionStatus.loading);
-    }
-
-    final error = _firstEventSuccessHostError([
-      (planState, EventSuccessHostRetryIntent.plan),
+    final resourceFailures = _eventSuccessHostResourceFailures([
       (rosterState, EventSuccessHostRetryIntent.roster),
       (assignmentsState, EventSuccessHostRetryIntent.assignments),
       (
@@ -234,11 +207,37 @@ class EventSuccessHostSectionState {
       (wingmanProfilesState, EventSuccessHostRetryIntent.wingmanProfiles),
       (scorecardState, EventSuccessHostRetryIntent.scorecard),
     ]);
-    if (error != null) {
+    final fallback = EventSuccessHostSectionState._(
+      status: EventSuccessHostSectionStatus.ready,
+      plan: plan,
+      planIsPersisted:
+          planState.status == CatchAsyncStatus.data && persistedPlan != null,
+      roster: rosterState.value ?? EventParticipationRoster.empty(),
+      scorecard: scorecardState.value,
+      assignments: assignmentsState.value ?? const <EventSuccessAssignment>[],
+      assignmentParticipantProfiles:
+          assignmentParticipantProfilesState.value ?? const <PublicProfile>[],
+      rotationAssignments:
+          rotationAssignmentsState.value ?? const <EventSuccessAssignment>[],
+      rotationDraftAssignments: matchingDraftAssignments,
+      rotationParticipantProfiles:
+          rotationParticipantProfilesState.value ?? const <PublicProfile>[],
+      preferences: preferencesState.value ?? const <EventSuccessPreference>[],
+      wingmanRequests:
+          wingmanRequestsState.value ?? const <EventSuccessWingmanRequest>[],
+      wingmanProfiles: wingmanProfilesState.value ?? const <PublicProfile>[],
+      resourceFailures: resourceFailures,
+    );
+
+    if (planState.status == CatchAsyncStatus.loading) {
+      return fallback.copyWith(status: EventSuccessHostSectionStatus.loading);
+    }
+
+    if (planState.status == CatchAsyncStatus.error && planState.error != null) {
       return fallback.copyWith(
         status: EventSuccessHostSectionStatus.error,
-        error: error.$1,
-        retryIntent: error.$2,
+        error: planState.error,
+        retryIntent: EventSuccessHostRetryIntent.plan,
       );
     }
 
@@ -258,6 +257,7 @@ class EventSuccessHostSectionState {
   final List<EventSuccessPreference> preferences;
   final List<EventSuccessWingmanRequest> wingmanRequests;
   final List<PublicProfile> wingmanProfiles;
+  final List<EventSuccessHostResourceFailure> resourceFailures;
   final Object? error;
   final EventSuccessHostRetryIntent? retryIntent;
 
@@ -280,25 +280,26 @@ class EventSuccessHostSectionState {
       preferences: preferences,
       wingmanRequests: wingmanRequests,
       wingmanProfiles: wingmanProfiles,
+      resourceFailures: resourceFailures,
       error: error ?? this.error,
       retryIntent: retryIntent ?? this.retryIntent,
     );
   }
 }
 
-bool _hasLoadingEventSuccessHostState(
-  Iterable<CatchAsyncState<dynamic>> states,
-) {
-  return states.any((state) => state.status == CatchAsyncStatus.loading);
-}
-
-(Object, EventSuccessHostRetryIntent)? _firstEventSuccessHostError(
+List<EventSuccessHostResourceFailure> _eventSuccessHostResourceFailures(
   Iterable<(CatchAsyncState<dynamic>, EventSuccessHostRetryIntent)> values,
 ) {
+  final failures = <EventSuccessHostResourceFailure>[];
   for (final (value, intent) in values) {
     if (value.status == CatchAsyncStatus.error && value.error != null) {
-      return (value.error!, intent);
+      failures.add(
+        EventSuccessHostResourceFailure(
+          retryIntent: intent,
+          error: value.error!,
+        ),
+      );
     }
   }
-  return null;
+  return List.unmodifiable(failures);
 }

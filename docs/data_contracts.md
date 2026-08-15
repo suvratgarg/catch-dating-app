@@ -376,7 +376,7 @@ Run Firestore and Storage rules tests through emulators unless those emulators
 are already running:
 
 ```bash
-firebase emulators:exec --only firestore,storage "npm --prefix functions run test:rules"
+firebase emulators:exec --project demo-catch-rules --only firestore,storage "npm --prefix functions run test:rules"
 ```
 
 A direct `npm --prefix functions run test:rules` expects Firestore on

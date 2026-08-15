@@ -381,6 +381,112 @@ void _registerEventSuccessHostSetupTests() {
     expect(find.text('Live host mode'), findsNothing);
   });
 
+  testWidgets('ended host report skips live streams and keeps scorecard data', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(430, 2600);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final now = DateTime.now();
+    final event = buildEvent(
+      id: 'event-ended-host-report',
+      startTime: now.subtract(const Duration(hours: 2)),
+      endTime: now.subtract(const Duration(hours: 1)),
+      bookedCount: 6,
+      checkedInCount: 5,
+    );
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
+    var rosterWatched = false;
+    var assignmentsWatched = false;
+    var rotationAssignmentsWatched = false;
+    var rotationDraftsWatched = false;
+    var preferencesWatched = false;
+    var wingmanRequestsWatched = false;
+    var scorecardWatched = false;
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          watchEventSuccessPlanProvider(
+            event.id,
+          ).overrideWith((ref) => Stream.value(plan)),
+          watchEventParticipationRosterProvider(event.id).overrideWith((ref) {
+            rosterWatched = true;
+            return Stream.value(EventParticipationRoster.empty());
+          }),
+          watchEventSuccessAssignmentsProvider(event.id).overrideWith((ref) {
+            assignmentsWatched = true;
+            return Stream.value(const <EventSuccessAssignment>[]);
+          }),
+          watchEventSuccessRotationAssignmentsProvider(event.id).overrideWith((
+            ref,
+          ) {
+            rotationAssignmentsWatched = true;
+            return Stream.value(const <EventSuccessAssignment>[]);
+          }),
+          watchEventSuccessRotationDraftsProvider(event.id).overrideWith((ref) {
+            rotationDraftsWatched = true;
+            return Stream.value(const <EventSuccessAssignmentDraft>[]);
+          }),
+          watchEventSuccessPreferencesProvider(event.id).overrideWith((ref) {
+            preferencesWatched = true;
+            return Stream.value(const <EventSuccessPreference>[]);
+          }),
+          watchEventSuccessWingmanRequestsProvider(event.id).overrideWith((
+            ref,
+          ) {
+            wingmanRequestsWatched = true;
+            return Stream.value(const <EventSuccessWingmanRequest>[]);
+          }),
+          watchEventSuccessScorecardProvider(event.id).overrideWith((ref) {
+            scorecardWatched = true;
+            return Stream.value(
+              const EventSuccessScorecard(
+                bookedCount: 6,
+                checkedInCount: 5,
+                attendeesWhoMetTwoPlusPeople: 3,
+                mutualMatchCount: 2,
+                chatStartedCount: 1,
+                averageWelcomeRating: 4.5,
+                averageStructureRating: 4.2,
+                safetyIncidentCount: 0,
+                feedbackResponseCount: 4,
+                assignmentParticipantCount: 3,
+                assignmentOptOutCount: 1,
+                wingmanRequestCount: 2,
+              ),
+            );
+          }),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: EventSuccessHostSection(
+              event: event,
+              initialTab: EventSuccessHostTab.report,
+              showTabs: false,
+            ),
+          ),
+        ),
+      ),
+    );
+    await pumpFeatureUi(tester);
+
+    expect(scorecardWatched, isTrue);
+    expect(rosterWatched, isFalse);
+    expect(assignmentsWatched, isFalse);
+    expect(rotationAssignmentsWatched, isFalse);
+    expect(rotationDraftsWatched, isFalse);
+    expect(preferencesWatched, isFalse);
+    expect(wingmanRequestsWatched, isFalse);
+    expect(find.text('POST-EVENT HOST REPORT'), findsOneWidget);
+    expect(find.text('3 assigned'), findsOneWidget);
+    expect(find.text('1 opted out'), findsOneWidget);
+    expect(find.text('2 host-help requests'), findsOneWidget);
+  });
+
   testWidgets('host section renders tab-shaped skeleton while guide loads', (
     tester,
   ) async {
@@ -414,7 +520,7 @@ void _registerEventSuccessHostSetupTests() {
     expect(find.byType(CircularProgressIndicator), findsNothing);
   });
 
-  test('host section state maps provider waves to status and retry intent', () {
+  test('host section retains local provider failures', () {
     final event = buildEvent(id: 'event-host-section-state');
     final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
     const roster = EventParticipationRoster(
@@ -483,13 +589,27 @@ void _registerEventSuccessHostSetupTests() {
     expect(unsaved.planIsPersisted, isFalse);
     expect(unsaved.plan.eventId, event.id);
 
+    final planError = StateError('plan failed');
+    final failedPlan = resolve(
+      planState: CatchAsyncState<EventSuccessPlan?>.error(planError),
+    );
+    expect(failedPlan.status, EventSuccessHostSectionStatus.error);
+    expect(failedPlan.retryIntent, EventSuccessHostRetryIntent.plan);
+    expect(failedPlan.error, same(planError));
+
     final rosterError = StateError('roster failed');
     final rosterState = resolve(
       rosterState: CatchAsyncState<EventParticipationRoster>.error(rosterError),
     );
-    expect(rosterState.status, EventSuccessHostSectionStatus.error);
-    expect(rosterState.retryIntent, EventSuccessHostRetryIntent.roster);
-    expect(rosterState.error, same(rosterError));
+    expect(rosterState.status, EventSuccessHostSectionStatus.ready);
+    expect(rosterState.retryIntent, isNull);
+    expect(rosterState.error, isNull);
+    expect(rosterState.resourceFailures, hasLength(1));
+    expect(
+      rosterState.resourceFailures.single.retryIntent,
+      EventSuccessHostRetryIntent.roster,
+    );
+    expect(rosterState.resourceFailures.single.error, same(rosterError));
 
     final profileError = StateError('profiles failed');
     expect(
@@ -497,7 +617,7 @@ void _registerEventSuccessHostSetupTests() {
         assignmentProfilesState: CatchAsyncState<List<PublicProfile>>.error(
           profileError,
         ),
-      ).retryIntent,
+      ).resourceFailures.single.retryIntent,
       EventSuccessHostRetryIntent.assignmentParticipantProfiles,
     );
 
@@ -507,7 +627,7 @@ void _registerEventSuccessHostSetupTests() {
         scorecardState: CatchAsyncState<EventSuccessScorecard?>.error(
           scorecardError,
         ),
-      ).retryIntent,
+      ).resourceFailures.single.retryIntent,
       EventSuccessHostRetryIntent.scorecard,
     );
   });
