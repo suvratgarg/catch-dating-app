@@ -404,6 +404,16 @@ jobs:
             fi
           done
 
+      - name: Verify active rules match the exact approved source
+        env:
+          PROJECT_ID: ${{ steps.verify.outputs.project_id }}
+        run: >-
+          node tool/firebase/check_rules_deployment_drift.mjs
+          --project "$PROJECT_ID"
+          --repo-root build/delivery/source-checkout
+          --wait-seconds 180
+          --poll-seconds 10
+
       - name: Upload resumable checkpoint
         if: ${{ always() && hashFiles('build/delivery/checkpoint/checkpoint.json') != '' }}
         uses: actions/upload-artifact@v7

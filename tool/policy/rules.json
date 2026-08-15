@@ -736,6 +736,38 @@
         }
       ]
     },
+    "FIREBASE-RULES-DRIFT-001": {
+      "title": "Keep active Firebase rules releases synchronized with committed rules",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "release_operations",
+        "version": "2.1.1"
+      },
+      "applies_to": [
+        "firestore.rules",
+        "storage.rules",
+        "firebase.json",
+        "tool/firebase/check_rules_deployment_drift.mjs",
+        ".github/workflows/_firebase-promote.yml"
+      ],
+      "instruction": "Compare the active Firestore and Storage Rules releases with the exact committed sources after authenticated backend promotion. Missing credentials may skip local or untrusted CI checks; present but insufficient credentials, missing releases, and normalized-content drift fail closed.",
+      "sunset_when": [
+        "Firebase deployment natively proves the active release source against the exact CI-approved repository source"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "firebase:rules-deployment-drift",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/release_operations.md#firebase-rules-deployment-drift"
+        }
+      ]
+    },
     "DESIGN-PRIMITIVES-001": {
       "title": "Prefer shared design primitives over repeated local shells",
       "status": "active",

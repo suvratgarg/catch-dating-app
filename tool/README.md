@@ -520,6 +520,14 @@ fails empty plans before any remote command runs. The deploy wrapper
 synchronizes live callable Cloud Run invoker bindings during the Functions
 stage, after index readiness and before either rules stage.
 
+`tool/firebase/check_rules_deployment_drift.mjs` is the read-only postcondition
+for those rules stages. It compares normalized SHA-256 hashes of the exact
+committed Firestore and Storage sources with the immutable ruleset source named
+by each applicable active release. Missing credentials skip explicitly; once a
+credential is present, authorization failures, missing releases, and drift fail.
+The promotion workflow checks the exact approved source checkout rather than the
+newer control-plane checkout.
+
 `tool/firebase/client_callable_dependencies.json` declares production client
 features that require a callable. The static checker reconciles the Dart define,
 `AppConfig`, and Functions export. Release workflows add `--verify-live` so an

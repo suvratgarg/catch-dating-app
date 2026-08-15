@@ -2507,6 +2507,47 @@
       ]
     },
     {
+      "id": "firebase:rules-deployment-drift",
+      "category": "firebase",
+      "path": "tool/firebase/check_rules_deployment_drift.mjs",
+      "command": "node tool/firebase/check_rules_deployment_drift.mjs --env dev",
+      "safety": "local-with-optional-remote-readonly",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/workflows/_firebase-promote.yml",
+        "firebase.json",
+        "firestore.rules",
+        "storage.rules",
+        "tool/ci/firebase_delivery_workflow.test.mjs",
+        "tool/firebase/check_rules_deployment_drift.test.mjs"
+      ],
+      "description": "Compares normalized committed Firestore and Storage rules with every applicable active Firebase Rules release, skipping only when no read credential is available.",
+      "checks": [
+        "node --check tool/firebase/check_rules_deployment_drift.mjs",
+        "node --test tool/firebase/check_rules_deployment_drift.test.mjs tool/ci/firebase_delivery_workflow.test.mjs",
+        "node tool/firebase/check_rules_deployment_drift.mjs --env dev"
+      ],
+      "role": "gate",
+      "rules": [
+        "FIREBASE-RULES-DRIFT-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/firebase/check_rules_deployment_drift.test.mjs",
+        "contains": [
+          "active Firestore and every active Storage release match normalized committed content",
+          "semantic source changes and missing active releases fail closed",
+          "missing credentials skip clearly without touching the Rules API"
+        ]
+      }
+    },
+    {
       "id": "firebase:environment-readiness",
       "category": "firebase",
       "path": "tool/firebase/check_environment_readiness.mjs",
