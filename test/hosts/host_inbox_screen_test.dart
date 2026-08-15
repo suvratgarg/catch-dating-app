@@ -14,6 +14,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
@@ -144,7 +145,8 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.text('Messaging'), findsOneWidget);
-    expect(find.byType(HostCustomerMessagingPane), findsOneWidget);
+    expect(find.byType(HostWhatsappSetupPane), findsOneWidget);
+    expect(find.byType(HostCampaignComposer), findsOneWidget);
     expect(find.text('WHATSAPP BUSINESS SENDER'), findsOneWidget);
     expect(find.text('MESSAGE PAST ATTENDEES'), findsOneWidget);
     expect(find.byType(HostInboxScopeSelector), findsNothing);

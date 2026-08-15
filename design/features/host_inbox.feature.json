@@ -27,7 +27,8 @@
           {"id": "search_query", "language": "dart", "file": "lib/chats/presentation/inbox/chats_list_view_model.dart", "symbol": "ChatSearchQuery"},
           {"id": "broadcast_composer", "language": "dart", "file": "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart", "symbol": "HostBroadcastComposerSheet"},
           {"id": "broadcast_controller", "language": "dart", "file": "lib/hosts/presentation/inbox/host_inbox_broadcast_controller.dart", "symbol": "HostInboxBroadcastController"},
-          {"id": "campaign_workspace", "language": "dart", "file": "lib/hosts/presentation/host_operations/host_audience.dart", "symbol": "HostCustomerMessagingPane"},
+          {"id": "whatsapp_setup", "language": "dart", "file": "lib/hosts/presentation/host_operations/host_audience.dart", "symbol": "HostWhatsappSetupPane"},
+          {"id": "campaign_composer", "language": "dart", "file": "lib/hosts/presentation/inbox/host_campaign_composer.dart", "symbol": "HostCampaignComposer"},
           {"id": "campaign_controller", "language": "dart", "file": "lib/hosts/presentation/host_audience_controller.dart", "symbol": "HostAudienceController"}
         ],
         "componentContracts": ["catch.button", "catch.chip", "catch.empty_state", "catch.error_state", "catch.field", "catch.menu", "catch.notice", "catch.option_card", "catch.option_group", "catch.person_row", "catch.search_field", "catch.section", "catch.skeleton", "catch.surface", "catch.top_bar"],
@@ -172,8 +173,8 @@
         },
         {
           "id": "manage_whatsapp_sender",
-          "owner": "campaign_workspace",
-          "codeValue": "HostCustomerMessagingPane",
+          "owner": "whatsapp_setup",
+          "codeValue": "HostWhatsappSetupPane",
           "cardinality": "singleton",
           "scopeKeys": ["viewerUid", "organizerId", "connectionId", "mutation"],
           "outcomes": [

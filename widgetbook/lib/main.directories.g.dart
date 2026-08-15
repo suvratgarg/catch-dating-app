@@ -7948,7 +7948,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Messaging',
             children: [
               _widgetbook.WidgetbookComponent(
-                name: 'HostCustomerMessagingPane',
+                name: 'HostCampaignComposer',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Campaign and sender states',

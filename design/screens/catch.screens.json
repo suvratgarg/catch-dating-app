@@ -15058,7 +15058,7 @@
         "symbol": "HostInboxScreen"
       },
       "stateController": {
-        "primary": "hostOrganizerSelectionProvider + HostMessagingWorkspace + HostInboxViewModel.compose + resolveHostInboxScope + chatsListViewModelProvider + hostMessagingSetupProvider + chatSearchQueryProvider",
+        "primary": "hostOrganizerSelectionProvider + HostMessagingWorkspace + HostInboxViewModel.compose + HostCampaignComposer + resolveHostInboxScope + chatsListViewModelProvider + hostMessagingSetupProvider + chatSearchQueryProvider",
         "files": [
           {
             "file": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
@@ -15122,7 +15122,11 @@
           },
           {
             "file": "lib/hosts/presentation/host_operations/host_audience.dart",
-            "symbol": "HostCustomerMessagingPane"
+            "symbol": "HostWhatsappSetupPane"
+          },
+          {
+            "file": "lib/hosts/presentation/inbox/host_campaign_composer.dart",
+            "symbol": "HostCampaignComposer"
           },
           {
             "file": "lib/hosts/data/host_crm_repository.dart",
@@ -15446,33 +15450,33 @@
           "id": "customer_messaging_provider_unavailable",
           "kind": "permission",
           "status": "implemented",
-          "source": "HostCustomerMessagingPane provider notice in the Messaging Campaigns workspace.",
+          "source": "HostWhatsappSetupPane provider notice in the Messaging Campaigns workspace.",
           "nextAction": "Keep provider-gate copy aligned with backend capability state.",
-          "previewIds": ["HostCustomerMessagingPane/Campaign and sender states"]
+          "previewIds": ["HostCampaignComposer/Campaign and sender states"]
         },
         {
           "id": "customer_messaging_disconnected",
           "kind": "empty",
           "status": "implemented",
-          "source": "HostCustomerMessagingPane sender connection setup in the Messaging Campaigns workspace.",
+          "source": "HostWhatsappSetupPane sender connection setup in the Messaging Campaigns workspace.",
           "nextAction": "Add connect handoff widget coverage.",
-          "previewIds": ["HostCustomerMessagingPane/Campaign and sender states"]
+          "previewIds": ["HostCampaignComposer/Campaign and sender states"]
         },
         {
           "id": "customer_messaging_connecting",
           "kind": "mutation",
           "status": "implemented",
-          "source": "HostCustomerMessagingPane pending sender mutation freezes workspace switching and request-defining controls.",
+          "source": "HostWhatsappSetupPane pending sender mutation freezes workspace switching and request-defining controls.",
           "nextAction": "Add a deterministic pending capture."
         },
         {
           "id": "customer_messaging_ready",
           "kind": "populated",
           "status": "captured",
-          "source": "HostCustomerMessagingPane renders the selected organizer's connected WhatsApp sender and approved templates inside the Campaigns workspace.",
+          "source": "HostWhatsappSetupPane renders the selected organizer's connected WhatsApp sender and approved templates inside the Campaigns workspace.",
           "nextAction": "Keep sender mutation coverage and the full-shell Campaigns capture aligned with the HostCrmRepository contract.",
           "previewIds": [
-            "HostCustomerMessagingPane/Campaign and sender states"
+            "HostCampaignComposer/Campaign and sender states"
           ],
           "captureIds": [
             "host_messaging_campaigns"
@@ -15486,25 +15490,25 @@
           "id": "customer_campaign_draft",
           "kind": "mutation",
           "status": "implemented",
-          "source": "HostCustomerMessagingPane campaign composer in the Messaging Campaigns workspace.",
+          "source": "HostCampaignComposer in the Messaging Campaigns workspace.",
           "nextAction": "Add rendered draft variable validation coverage.",
-          "previewIds": ["HostCustomerMessagingPane/Campaign and sender states"]
+          "previewIds": ["HostCampaignComposer/Campaign and sender states"]
         },
         {
           "id": "customer_campaign_previewed",
           "kind": "mutation",
           "status": "implemented",
-          "source": "HostCustomerMessagingPane campaign preview in the Messaging Campaigns workspace.",
+          "source": "HostCampaignComposer campaign preview in the Messaging Campaigns workspace.",
           "nextAction": "Add a deterministic preview capture."
         },
         {
           "id": "customer_campaign_active",
           "kind": "mutation",
           "status": "tested",
-          "source": "HostCustomerMessagingPane and HostAudienceController own revision-checked campaign lifecycle controls in Messaging.",
+          "source": "HostCampaignComposer and HostAudienceController own revision-checked campaign lifecycle controls in Messaging.",
           "nextAction": "Add focused dispatch and cancel rendered coverage when the campaign lifecycle fixture is expanded.",
           "previewIds": [
-            "HostCustomerMessagingPane/Campaign and sender states"
+            "HostCampaignComposer/Campaign and sender states"
           ],
           "tests": [
             "test/hosts/host_crm_repository_test.dart"
@@ -15960,14 +15964,14 @@
             ]
           },
           {
-            "id": "section.host.messaging_campaigns",
-            "name": "WhatsApp sender setup and campaign lifecycle",
+            "id": "section.host.messaging_whatsapp_setup",
+            "name": "WhatsApp sender setup",
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [],
             "flutter": {
               "file": "lib/hosts/presentation/host_operations/host_audience.dart",
-              "symbol": "HostCustomerMessagingPane"
+              "symbol": "HostWhatsappSetupPane"
             },
             "currentOwner": "hosts.presentation.inbox",
             "targetOwner": "hosts.presentation.inbox",
@@ -15975,22 +15979,46 @@
               "catch.button",
               "catch.field",
               "catch.notice",
-              "catch.option_group",
-              "catch.section",
-              "catch.surface"
+              "catch.section"
             ],
             "states": [
               "customer_messaging_provider_unavailable",
               "customer_messaging_disconnected",
               "customer_messaging_connecting",
-              "customer_messaging_ready",
+              "customer_messaging_ready"
+            ],
+            "migration": "Remains in the host-operations audience library and is composed by the selected-organizer Messaging Campaigns workspace.",
+            "previewIds": [
+              "HostCampaignComposer/Campaign and sender states"
+            ]
+          },
+          {
+            "id": "section.host.messaging_campaign_composer",
+            "name": "Campaign composer and lifecycle",
+            "status": "implemented_local",
+            "layer": "section",
+            "claudeComponents": [],
+            "flutter": {
+              "file": "lib/hosts/presentation/inbox/host_campaign_composer.dart",
+              "symbol": "HostCampaignComposer"
+            },
+            "currentOwner": "hosts.presentation.inbox",
+            "targetOwner": "hosts.presentation.inbox",
+            "dependencies": [
+              "catch.button",
+              "catch.chip",
+              "catch.field",
+              "catch.notice",
+              "catch.section"
+            ],
+            "states": [
               "customer_campaign_draft",
               "customer_campaign_previewed",
               "customer_campaign_active"
             ],
-            "migration": "Moved intact from Customers into the selected-organizer Messaging Campaigns workspace; the same HostCrmRepository commands and revision gates remain authoritative.",
+            "migration": "Extracted into a standalone composer with initialSegments support; HostAudienceController and revision gates remain authoritative.",
             "previewIds": [
-              "HostCustomerMessagingPane/Campaign and sender states"
+              "HostCampaignComposer/Campaign and sender states"
             ]
           },
           {

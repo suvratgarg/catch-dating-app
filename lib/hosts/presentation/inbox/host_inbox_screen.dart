@@ -32,6 +32,7 @@ import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_broadcast_composer_sheet.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_broadcast_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -417,7 +418,13 @@ class _HostCampaignWorkspaceSliver extends StatelessWidget {
       padding: CatchInsets.pageBody.copyWith(top: CatchSpacing.s3),
       sliver: SliverList.list(
         children: [
-          HostCustomerMessagingPane(club: club, onBusyChanged: onBusyChanged),
+          CatchSectionList(
+            emptyStateOmitted: true,
+            children: [
+              HostWhatsappSetupPane(club: club, onBusyChanged: onBusyChanged),
+              HostCampaignComposer(club: club, onBusyChanged: onBusyChanged),
+            ],
+          ),
         ],
       ),
     );

@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/host_inbox.feature.json",
   "generatedFor": "2026-08-15",
-  "sourceDigest": "sha256:3c733f0b5938b53c8270db023aa61ed5ec832d31c8357fc2bac25548d8a13c4a",
-  "resolvedDigest": "sha256:8f7906be1c3061efb66835984fbece8e816551242da400059c246d05e42b6913",
+  "sourceDigest": "sha256:ad4a969c87fd53e8b5b7ecab1f548730e375c70f73810f6e3352c4f24bb371e5",
+  "resolvedDigest": "sha256:969fb36e05173862f6ace516eb670ec9da24488f23b19326d759031492b54655",
   "feature": {
     "id": "feature.host_inbox",
     "name": "Host Messaging",
@@ -75,10 +75,16 @@
             "symbol": "HostInboxBroadcastController"
           },
           {
-            "id": "campaign_workspace",
+            "id": "whatsapp_setup",
             "language": "dart",
             "file": "lib/hosts/presentation/host_operations/host_audience.dart",
-            "symbol": "HostCustomerMessagingPane"
+            "symbol": "HostWhatsappSetupPane"
+          },
+          {
+            "id": "campaign_composer",
+            "language": "dart",
+            "file": "lib/hosts/presentation/inbox/host_campaign_composer.dart",
+            "symbol": "HostCampaignComposer"
           },
           {
             "id": "campaign_controller",
@@ -502,8 +508,8 @@
         },
         {
           "id": "manage_whatsapp_sender",
-          "owner": "campaign_workspace",
-          "codeValue": "HostCustomerMessagingPane",
+          "owner": "whatsapp_setup",
+          "codeValue": "HostWhatsappSetupPane",
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
@@ -1538,7 +1544,7 @@
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "HostCustomerMessagingPane/Campaign and sender states"
+              "HostCampaignComposer/Campaign and sender states"
             ],
             "tests": []
           },
@@ -1605,7 +1611,7 @@
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "HostCustomerMessagingPane/Campaign and sender states"
+              "HostCampaignComposer/Campaign and sender states"
             ],
             "tests": []
           },
@@ -1737,7 +1743,7 @@
               "host_messaging_campaigns"
             ],
             "previewIds": [
-              "HostCustomerMessagingPane/Campaign and sender states"
+              "HostCampaignComposer/Campaign and sender states"
             ],
             "tests": [
               "test/hosts/host_inbox_screen_test.dart",
@@ -1806,7 +1812,7 @@
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "HostCustomerMessagingPane/Campaign and sender states"
+              "HostCampaignComposer/Campaign and sender states"
             ],
             "tests": []
           },
@@ -1936,7 +1942,7 @@
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "HostCustomerMessagingPane/Campaign and sender states"
+              "HostCampaignComposer/Campaign and sender states"
             ],
             "tests": [
               "test/hosts/host_crm_repository_test.dart"
@@ -3153,7 +3159,7 @@
         ],
         "previews": [
           "HostBroadcastComposerSheet/Lifecycle states",
-          "HostCustomerMessagingPane/Campaign and sender states",
+          "HostCampaignComposer/Campaign and sender states",
           "HostInboxScreen/Event-scoped states"
         ]
       }
