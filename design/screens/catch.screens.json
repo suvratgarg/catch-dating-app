@@ -14902,7 +14902,7 @@
         "mutationOwners": [
           {"file": "lib/hosts/presentation/customers/host_customers_controller.dart", "symbol": "HostCustomersController"}
         ],
-        "notes": "Customers is the sole organizer CRM destination and follows the shell-selected organizer. The direct screen owns normalized search, every supported CRM segment, server cursor, id de-duplication, export and contact administration without an extra People workspace. Customer detail keeps identity confidence and revenue coverage explicit, manual contact creation never implies a Catch account, and conversation creation remains server-authorized. Messaging owns sender setup and campaigns."
+        "notes": "Customers is the sole organizer CRM destination and follows the shell-selected organizer. The direct screen owns normalized search, every supported CRM segment, server cursor, id de-duplication, export and contact administration without an extra People workspace. Its counted filter summary deep-links eligible segments into Messaging Campaigns. Customer detail keeps identity confidence and revenue coverage explicit, manual contact creation never implies a Catch account, and conversation creation remains server-authorized."
       },
       "designRefs": [
         {
@@ -14957,7 +14957,7 @@
         {"id": "light_dark", "kind": "theme", "status": "planned", "source": "Catch token primitives", "nextAction": "Capture directory and detail in light and dark themes."}
       ],
       "composition": {
-        "currentLayout": "A dedicated Host tab follows the shell-selected organizer and directly presents CRM summary, export, manual add, search, the complete segment set and a paginated directory. A nested route presents customer administration, identity, complete event history, attendance, revenue and conversation eligibility. Campaigns live in Messaging.",
+        "currentLayout": "A dedicated Host tab follows the shell-selected organizer and directly presents CRM summary, export, manual add, search, the grouped counted segment filter, a segment-to-Messaging bridge and a paginated directory. A nested route presents customer administration, identity, complete event history, attendance, revenue and conversation eligibility. Campaigns live in Messaging.",
         "targetLayout": "Keep Customers as the sole CRM owner without a redundant People/Campaigns switch. Organizer remains focused on organizer configuration, insights and public preview; Messaging owns first-class communication workspaces.",
         "sections": [
           {
@@ -15017,7 +15017,7 @@
       "openGaps": [
         {"id": "HOST-CUSTOMERS-001", "status": "blocked", "nextAction": "Add High spender only after payment writes maintain an indexed, versioned organizer-contact trait projection; do not scan payment history in the directory."},
         {"id": "HOST-CUSTOMERS-002", "status": "open", "nextAction": "Add Widgetbook and deterministic capture coverage for the directory, manual identity, revenue coverage, and conversation-gate states."},
-        {"id": "HOST-CUSTOMERS-003", "status": "closed", "nextAction": "Customers owns export, suppression, rename and removal; Messaging owns provider administration and campaigns. Keep the legacy Organizer Audience redirect covered while old links age out."}
+        {"id": "HOST-CUSTOMERS-003", "status": "closed", "nextAction": "Customers owns CRM directory actions and the segment-to-Messaging bridge; Messaging owns provider administration and campaigns. Keep the legacy Organizer Audience redirect covered while old links age out."}
       ]
     },
     {
@@ -15145,7 +15145,7 @@
             "symbol": "HostAudienceController"
           }
         ],
-        "notes": "HostInboxScreen is the Host-owned Messaging surface and follows the shell-selected organizer. Inbox selects that organizer's live or nearest-upcoming event, keeps General explicit, scopes personal inquiry threads by organizer and event, classifies Booked and Prospective rows, and derives broadcast counts from eventParticipations rather than conversation count. Campaigns owns the same organizer's WhatsApp sender setup and complete campaign lifecycle. Event broadcasts create Activity plus preference-gated push and never create chat fan-out."
+        "notes": "HostInboxScreen is the Host-owned Messaging surface and follows the shell-selected organizer. Inbox selects that organizer's live or nearest-upcoming event, keeps General explicit, scopes personal inquiry threads by organizer and event, classifies Booked and Prospective rows, and derives broadcast counts from eventParticipations rather than conversation count. Campaigns owns the same organizer's WhatsApp sender setup and complete campaign lifecycle, including route-restored initial segments. Event broadcasts create Activity plus preference-gated push and never create chat fan-out."
       },
       "designRefs": [
         {
@@ -15449,6 +15449,17 @@
           ]
         },
         {
+          "id": "campaign_compose_deep_link",
+          "kind": "mutation",
+          "status": "tested",
+          "source": "hostInboxScreenForUri + HostInboxScreen initialCampaignSegments",
+          "tests": [
+            "test/routing/router_widgets_test.dart",
+            "test/hosts/host_inbox_screen_test.dart"
+          ],
+          "nextAction": "Keep workspace, compose, organizer, and segment query parsing aligned with the Campaigns workspace wire value."
+        },
+        {
           "id": "customer_messaging_provider_unavailable",
           "kind": "permission",
           "status": "implemented",
@@ -15491,10 +15502,11 @@
         {
           "id": "customer_campaign_draft",
           "kind": "mutation",
-          "status": "implemented",
+          "status": "tested",
           "source": "HostCampaignComposer in the Messaging Campaigns workspace.",
           "nextAction": "Add rendered draft variable validation coverage.",
-          "previewIds": ["HostCampaignComposer/Campaign and sender states"]
+          "previewIds": ["HostCampaignComposer/Campaign and sender states"],
+          "tests": ["test/hosts/host_campaign_composer_test.dart", "test/hosts/host_inbox_screen_test.dart"]
         },
         {
           "id": "customer_campaign_previewed",
@@ -15716,7 +15728,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "HostInboxScreen presents the product title Messaging and follows the shell-selected organizer. Its Inbox workspace watches that organizer's events, personal inquiry previews, selected-event roster, and search; its Campaigns workspace mounts the same organizer's WhatsApp sender and campaign lifecycle. HostInboxViewModel keeps organizer, Event/General, Booked/Prospective, roster-count, and thread-count boundaries explicit.",
+        "currentLayout": "HostInboxScreen presents the product title Messaging and follows the shell-selected organizer. Its Inbox workspace watches that organizer's events, personal inquiry previews, selected-event roster, and search; its Campaigns workspace mounts the same organizer's WhatsApp sender and campaign lifecycle, including route-restored initial segments. HostInboxViewModel keeps organizer, Event/General, Booked/Prospective, roster-count, and thread-count boundaries explicit.",
         "targetLayout": "Keep Messaging as a Host-owned communication area with first-class Inbox and Campaigns workspaces. Preserve organizer and event provenance, reuse shared header and row primitives, and keep event broadcasts as Activity plus push rather than chat fan-out. Visual closure for the Inbox reference remains separate from the new Campaigns capture.",
         "sections": [
           {

@@ -3,25 +3,25 @@
   "version": 2,
   "generatedFrom": "design/features/host_inbox.feature.json",
   "generatedFor": "2026-08-15",
-  "sourceDigest": "sha256:ad4a969c87fd53e8b5b7ecab1f548730e375c70f73810f6e3352c4f24bb371e5",
-  "resolvedDigest": "sha256:969fb36e05173862f6ace516eb670ec9da24488f23b19326d759031492b54655",
+  "sourceDigest": "sha256:ec40a7750ccf81172dd61a0e90b69478a7f763725723afce9494121d1fb147f6",
+  "resolvedDigest": "sha256:5a8204ffa6ff09b3b28dbee83513533739410deaaad231c5ee5f84fbf09a3586",
   "feature": {
     "id": "feature.host_inbox",
     "name": "Host Messaging",
     "owner": "hosts",
     "status": "pilot",
-    "description": "Orchestrates organizer-scoped Host messaging through an Inbox for inquiries and event broadcasts plus Campaigns for WhatsApp sender setup and cross-event audience messaging."
+    "description": "Orchestrates organizer-scoped Host messaging through an Inbox for inquiries and event broadcasts plus Campaigns for WhatsApp sender setup and cross-event audience messaging, including deep-linked customer segments."
   },
   "coverage": {
     "surfaces": 1,
-    "states": 32,
-    "scenarios": 32,
-    "actionCases": 35,
+    "states": 33,
+    "scenarios": 33,
+    "actionCases": 36,
     "actions": 13,
     "captures": 19,
     "previews": 3,
-    "testFiles": 7,
-    "evidenceExceptions": 25
+    "testFiles": 9,
+    "evidenceExceptions": 26
   },
   "surfaces": [
     {
@@ -32,7 +32,7 @@
         "id": "screen.host.inbox"
       },
       "actionScope": {
-        "included": "Messaging workspace switching; Inbox retry, search, event/general scope, booked/prospective audience selection, conversation routing, and event-broadcast lifecycle; WhatsApp sender setup; and campaign create, preview, approve, dispatch, cancel, and report controls.",
+        "included": "Messaging workspace switching; Inbox retry, search, event/general scope, booked/prospective audience selection, conversation routing, and event-broadcast lifecycle; WhatsApp sender setup; and deep-linked campaign create, preview, approve, dispatch, cancel, and report controls.",
         "excluded": [
           "Raw broadcast body edits are form data; the contract cardinalizes template/audience decisions and the send mutation instead of individual keystrokes.",
           "Conversation thread behavior and safety actions retain the shared chat-thread contract."
@@ -112,6 +112,7 @@
         ],
         "dataContracts": [
           "contracts/callable_responses/organizer_campaign_response.schema.json",
+          "contracts/callable_responses/organizer_messaging_setup_response.schema.json",
           "contracts/callable_responses/send_event_broadcast_response.schema.json",
           "contracts/callables/complete_organizer_whatsapp_connection_payload.schema.json",
           "contracts/callables/organizer_campaign_action_payload.schema.json",
@@ -128,9 +129,17 @@
           "contracts/firestore/organizer_campaigns.schema.json"
         ],
         "testEvidence": {
+          "campaign_compose_deep_link": [
+            "test/routing/router_widgets_test.dart",
+            "test/hosts/host_inbox_screen_test.dart"
+          ],
           "customer_messaging_ready": [
             "test/hosts/host_inbox_screen_test.dart",
             "test/hosts/host_crm_repository_test.dart"
+          ],
+          "customer_campaign_draft": [
+            "test/hosts/host_campaign_composer_test.dart",
+            "test/hosts/host_inbox_screen_test.dart"
           ],
           "customer_campaign_active": [
             "test/hosts/host_crm_repository_test.dart"
@@ -138,14 +147,14 @@
         }
       },
       "coverage": {
-        "states": 32,
-        "scenarios": 32,
-        "actionCases": 35,
+        "states": 33,
+        "scenarios": 33,
+        "actionCases": 36,
         "actions": 13,
         "captures": 19,
         "previews": 3,
-        "testFiles": 7,
-        "evidenceExceptions": 25
+        "testFiles": 9,
+        "evidenceExceptions": 26
       },
       "dimensions": {
         "workspace": {
@@ -596,6 +605,7 @@
         },
         {
           "stateIds": [
+            "campaign_compose_deep_link",
             "customer_messaging_provider_unavailable",
             "customer_messaging_disconnected",
             "customer_messaging_connecting",
@@ -607,24 +617,24 @@
             "captures"
           ],
           "debtId": "HOST-MESSAGING-EVIDENCE-001",
-          "reason": "The production Campaigns workspace, ready sender capture, focused screen test, and repository tests establish the moved ownership; remaining sender and campaign lifecycle captures are explicit follow-up evidence."
+          "reason": "The deep-linked Campaigns workspace has focused route, screen, composer, and repository tests; dedicated capture variants remain follow-up evidence."
         },
         {
           "stateIds": [
             "customer_messaging_provider_unavailable",
             "customer_messaging_disconnected",
             "customer_messaging_connecting",
-            "customer_campaign_draft",
             "customer_campaign_previewed"
           ],
           "evidence": [
             "tests"
           ],
           "debtId": "HOST-MESSAGING-EVIDENCE-001",
-          "reason": "The ready Campaigns workspace has a focused screen test and repository mapping coverage; the remaining sender and campaign lifecycle states need focused rendered tests."
+          "reason": "The ready sender and initial campaign route are tested; remaining sender and campaign lifecycle variants need focused rendered tests."
         },
         {
           "stateIds": [
+            "campaign_compose_deep_link",
             "customer_messaging_connecting",
             "customer_campaign_previewed"
           ],
@@ -632,7 +642,7 @@
             "previews"
           ],
           "debtId": "HOST-MESSAGING-EVIDENCE-001",
-          "reason": "The Widgetbook Campaigns workspace covers connected sender and draft composition; pending and previewed mutation variants remain explicit preview debt."
+          "reason": "Existing campaign previews cover ready sender and draft states; deep-linked, connecting, and previewed variants remain explicit preview debt."
         }
       ],
       "scenarios": [
@@ -1523,6 +1533,73 @@
           ]
         },
         {
+          "id": "campaign_compose_deep_link",
+          "stateId": "campaign_compose_deep_link",
+          "kind": "mutation",
+          "status": "tested",
+          "dimensions": {
+            "workspace": "campaigns",
+            "load": "ready",
+            "scope": "event",
+            "segment": "booked",
+            "content": "populated",
+            "search": "collapsed",
+            "profile": "ready",
+            "broadcast": "idle",
+            "messaging": "ready",
+            "campaign": "draft",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "test/routing/router_widgets_test.dart",
+              "test/hosts/host_inbox_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "routed_segment",
+              "dimensions": {
+                "workspace": "campaigns",
+                "load": "ready",
+                "scope": "event",
+                "segment": "booked",
+                "content": "populated",
+                "search": "collapsed",
+                "profile": "ready",
+                "broadcast": "idle",
+                "messaging": "ready",
+                "campaign": "draft",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "select_workspace",
+                  "manage_campaign"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_inbox",
+                  "toggle_search",
+                  "search_inquiries",
+                  "select_scope",
+                  "select_audience_segment",
+                  "open_conversation",
+                  "open_broadcast_composer",
+                  "select_broadcast_audience",
+                  "select_broadcast_template",
+                  "send_broadcast",
+                  "manage_whatsapp_sender"
+                ]
+              }
+            }
+          ]
+        },
+        {
           "id": "customer_messaging_provider_unavailable",
           "stateId": "customer_messaging_provider_unavailable",
           "kind": "permission",
@@ -1794,7 +1871,7 @@
           "id": "customer_campaign_draft",
           "stateId": "customer_campaign_draft",
           "kind": "mutation",
-          "status": "implemented",
+          "status": "tested",
           "dimensions": {
             "workspace": "campaigns",
             "load": "ready",
@@ -1814,7 +1891,10 @@
             "previewIds": [
               "HostCampaignComposer/Campaign and sender states"
             ],
-            "tests": []
+            "tests": [
+              "test/hosts/host_campaign_composer_test.dart",
+              "test/hosts/host_inbox_screen_test.dart"
+            ]
           },
           "actionCases": [
             {

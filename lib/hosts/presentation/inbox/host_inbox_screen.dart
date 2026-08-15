@@ -49,6 +49,8 @@ class HostInboxScreen extends ConsumerStatefulWidget {
     this.initialScope,
     this.initialSegment = HostInboxAudienceSegment.booked,
     this.initialWorkspace = HostMessagingWorkspace.inbox,
+    this.initialCampaignSegments = const {},
+    this.initialOrganizerId,
     this.broadcastEnabled,
     this.syncSelectionToRoute = true,
     this.now,
@@ -57,6 +59,8 @@ class HostInboxScreen extends ConsumerStatefulWidget {
   final HostInboxScope? initialScope;
   final HostInboxAudienceSegment initialSegment;
   final HostMessagingWorkspace initialWorkspace;
+  final Set<HostAudienceSegment> initialCampaignSegments;
+  final String? initialOrganizerId;
   final bool? broadcastEnabled;
   final bool syncSelectionToRoute;
   final DateTime? now;
@@ -112,6 +116,9 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
         : resolveSelectedHostOrganizer(
             clubs,
             selectedOrganizerId: selectedOrganizerId,
+            preferredOrganizerId: selectedOrganizerId == null
+                ? widget.initialOrganizerId
+                : null,
           );
     final query = ref.watch(chatSearchQueryProvider);
     final isInbox = _workspace == HostMessagingWorkspace.inbox;
@@ -137,6 +144,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
             uid: uid,
             clubsAsync: clubsAsync,
             selectedClub: selectedClub,
+            initialSegments: widget.initialCampaignSegments,
             onRetry: _retry,
             onBusyChanged: _setCampaignBusy,
           );
@@ -388,6 +396,7 @@ class _HostCampaignWorkspaceSliver extends StatelessWidget {
     required this.uid,
     required this.clubsAsync,
     required this.selectedClub,
+    required this.initialSegments,
     required this.onRetry,
     required this.onBusyChanged,
   });
@@ -396,6 +405,7 @@ class _HostCampaignWorkspaceSliver extends StatelessWidget {
   final String? uid;
   final AsyncValue<List<Club>> clubsAsync;
   final Club? selectedClub;
+  final Set<HostAudienceSegment> initialSegments;
   final ValueChanged<String?> onRetry;
   final ValueChanged<bool> onBusyChanged;
 
@@ -422,7 +432,11 @@ class _HostCampaignWorkspaceSliver extends StatelessWidget {
             emptyStateOmitted: true,
             children: [
               HostWhatsappSetupPane(club: club, onBusyChanged: onBusyChanged),
-              HostCampaignComposer(club: club, onBusyChanged: onBusyChanged),
+              HostCampaignComposer(
+                club: club,
+                initialSegments: initialSegments,
+                onBusyChanged: onBusyChanged,
+              ),
             ],
           ),
         ],

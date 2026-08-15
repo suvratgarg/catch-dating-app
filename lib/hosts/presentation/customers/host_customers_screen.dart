@@ -33,6 +33,7 @@ import 'package:catch_dating_app/hosts/presentation/customers/host_customers_scr
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
@@ -345,7 +346,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
       context.goNamed(
         Routes.hostInboxScreen.name,
         queryParameters: {
-          'workspace': 'campaigns',
+          'workspace': HostMessagingWorkspace.campaigns.name,
           'compose': '1',
           'segment': segment.wireValue,
         },

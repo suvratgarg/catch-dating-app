@@ -3,14 +3,14 @@
   "version": 2,
   "generatedFrom": "design/features/host_customers.feature.json",
   "generatedFor": "2026-08-15",
-  "sourceDigest": "sha256:f4934a48b8cae0322aa717e93eff6c35ddecc3748255400833ff455b1e265896",
+  "sourceDigest": "sha256:26ef6eae7a84e3b70c0b08b2bad9c6dac559898f090a3c779088f7f18d5a1b58",
   "resolvedDigest": "sha256:45756b0b5c2344dd86222afae2c42135c4059937fc1c7c96bab6fe9478def979",
   "feature": {
     "id": "feature.host_customers",
     "name": "Host Customers",
     "owner": "hosts",
     "status": "active",
-    "description": "Makes Customers the sole Host CRM directory for the complete audience segment set, pagination, export, contact administration, customer detail, identity-gated conversations, and the bridge into Messaging campaigns."
+    "description": "Makes Customers the sole Host CRM directory for the complete audience segment set, pagination, export, contact administration, customer detail, identity-gated conversations, and a deep-linked segment bridge into Messaging campaigns."
   },
   "coverage": {
     "surfaces": 1,
@@ -32,7 +32,7 @@
         "id": "screen.host.customers"
       },
       "actionScope": {
-        "included": "Customer directory recovery, shared organizer selection, debounced name search, exact-or-qualified result counts, grouped readiness-visible server-backed CRM segment filters, pagination, header-menu export, organizer-only manual contact creation, rename/suppression/removal controls, complete event evidence, customer and event detail routing, verified-account direct conversation creation, and routing an eligible active-sender segment into Messaging campaigns.",
+        "included": "Customer directory recovery, shared organizer selection, debounced name search, exact-or-qualified result counts, grouped readiness-visible server-backed CRM segment filters, pagination, header-menu export, organizer-only manual contact creation, rename/suppression/removal controls, complete event evidence, customer and event detail routing, verified-account direct conversation creation, and routing an eligible active-sender segment into the Messaging campaign composer.",
         "excluded": [
           "Merge and unmerge controls remain backend-only until a reviewed conflict-resolution UI exists; the deprecated Audience tab did not expose them.",
           "High-spender segmentation remains excluded until completed non-refunded payment totals are projected into indexed organizer-contact traits."
@@ -364,7 +364,7 @@
               }
             }
           ],
-          "description": "Routes an eligible active-sender segment toward the Messaging campaign composer with that segment encoded in the route; otherwise keeps the control disabled beside its campaign blocker reason.",
+          "description": "Routes an eligible active-sender segment into the Messaging Campaigns composer with that segment preselected; otherwise keeps the control disabled beside its campaign blocker reason.",
           "implementationStatus": "implemented"
         },
         {
