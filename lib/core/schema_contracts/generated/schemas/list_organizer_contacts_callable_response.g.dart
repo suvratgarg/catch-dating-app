@@ -15,6 +15,8 @@ const schemaListOrganizerContactsCallableResponseSchema = <String, Object?>{
     'organizerId',
     'contacts',
     'nextCursor',
+    'matchCount',
+    'matchCountCoverage',
     'sourceCoverage',
     'projectionVersion',
   ],
@@ -174,6 +176,18 @@ const schemaListOrganizerContactsCallableResponseSchema = <String, Object?>{
         'null',
       ],
       'maxLength': 1000,
+    },
+    'matchCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 1000000,
+    },
+    'matchCountCoverage': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'exact',
+        'atLeast',
+      ],
     },
     'sourceCoverage': <String, Object?>{
       'type': 'string',

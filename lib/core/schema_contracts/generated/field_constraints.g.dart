@@ -23503,6 +23503,21 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['unknown', 'optedIn', 'optedOut'],
   );
 
+  static const listOrganizerContactsCallableResponseMatchCount = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.matchCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const listOrganizerContactsCallableResponseMatchCountCoverage = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.matchCountCoverage',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['exact', 'atLeast'],
+  );
+
   static const listOrganizerContactsCallableResponseNextCursor = CatchContractFieldConstraints(
     path: 'listOrganizerContactsCallableResponse.nextCursor',
     maxLength: 1000,
@@ -44284,6 +44299,8 @@ abstract final class CatchContractConstraints {
     'listOrganizerContactsCallableResponse.contacts.items.sourceCoverage': listOrganizerContactsCallableResponseContactsItemsSourceCoverage,
     'listOrganizerContactsCallableResponse.contacts.items.whatsappAdminSuppressed': listOrganizerContactsCallableResponseContactsItemsWhatsappAdminSuppressed,
     'listOrganizerContactsCallableResponse.contacts.items.whatsappStatus': listOrganizerContactsCallableResponseContactsItemsWhatsappStatus,
+    'listOrganizerContactsCallableResponse.matchCount': listOrganizerContactsCallableResponseMatchCount,
+    'listOrganizerContactsCallableResponse.matchCountCoverage': listOrganizerContactsCallableResponseMatchCountCoverage,
     'listOrganizerContactsCallableResponse.nextCursor': listOrganizerContactsCallableResponseNextCursor,
     'listOrganizerContactsCallableResponse.organizerId': listOrganizerContactsCallableResponseOrganizerId,
     'listOrganizerContactsCallableResponse.projectionVersion': listOrganizerContactsCallableResponseProjectionVersion,

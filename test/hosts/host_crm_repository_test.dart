@@ -113,6 +113,8 @@ void main() {
           },
         ],
         'nextCursor': 'contact-1',
+        'matchCount': 37,
+        'matchCountCoverage': 'atLeast',
         'sourceCoverage': 'exact',
         'projectionVersion': 1,
       });
@@ -127,6 +129,8 @@ void main() {
       expect(contact.segments, contains(HostAudienceSegment.needsConfirmation));
       expect(contact.segments, contains(HostAudienceSegment.smsReachable));
       expect(page.nextCursor, 'contact-1');
+      expect(page.matchCount, 37);
+      expect(page.matchCountCoverage, HostAudienceMatchCountCoverage.atLeast);
     },
   );
 

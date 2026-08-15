@@ -16,6 +16,8 @@ enum HostCrmChannelReadiness {
 
 enum HostAudienceSourceCoverage { exact, partial, insufficientData }
 
+enum HostAudienceMatchCountCoverage { exact, atLeast }
+
 enum HostAudienceIdentityState { unlinked, verified, ambiguous }
 
 enum HostAudiencePermissionStatus { unknown, optedIn, optedOut }
@@ -543,6 +545,8 @@ class HostAudiencePage {
     required this.organizerId,
     required this.contacts,
     required this.nextCursor,
+    required this.matchCount,
+    required this.matchCountCoverage,
     required this.sourceCoverage,
     required this.projectionVersion,
   });
@@ -556,6 +560,12 @@ class HostAudiencePage {
         'contacts',
       ).map(HostAudienceContact.fromMap).toList(growable: false),
       nextCursor: _nullableString(map['nextCursor']),
+      matchCount: _requiredInt(map, 'matchCount'),
+      matchCountCoverage: _enumByName(
+        HostAudienceMatchCountCoverage.values,
+        _requiredString(map, 'matchCountCoverage'),
+        'matchCountCoverage',
+      ),
       sourceCoverage: _enumByName(
         HostAudienceSourceCoverage.values,
         _requiredString(map, 'sourceCoverage'),
@@ -568,6 +578,8 @@ class HostAudiencePage {
   final String organizerId;
   final List<HostAudienceContact> contacts;
   final String? nextCursor;
+  final int matchCount;
+  final HostAudienceMatchCountCoverage matchCountCoverage;
   final HostAudienceSourceCoverage sourceCoverage;
   final int projectionVersion;
 }

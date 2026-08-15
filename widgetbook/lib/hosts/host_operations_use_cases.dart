@@ -644,6 +644,8 @@ Widget hostCustomersStates(BuildContext context) {
       ),
     ],
     nextCursor: null,
+    matchCount: 1,
+    matchCountCoverage: HostCustomerMatchCountCoverage.exact,
     sourceCoverage: HostCustomerDirectoryCoverage.exact,
     projectionVersion: 1,
   );

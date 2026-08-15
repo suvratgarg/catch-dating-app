@@ -394,6 +394,8 @@ List _hostClubOverrides({
             organizerId: organizerId,
             contacts: const [],
             nextCursor: null,
+            matchCount: 0,
+            matchCountCoverage: HostAudienceMatchCountCoverage.exact,
             sourceCoverage: HostAudienceSourceCoverage.exact,
             projectionVersion: 1,
           ),
@@ -488,6 +490,8 @@ class _EmptyHostCustomersDirectoryController
     return const HostCustomersDirectoryState(
       contacts: [],
       nextCursor: null,
+      matchCount: 0,
+      matchCountCoverage: HostCustomerMatchCountCoverage.exact,
       sourceCoverage: HostCustomerDirectoryCoverage.exact,
       projectionVersion: 1,
     );

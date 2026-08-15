@@ -39,6 +39,14 @@ class HostCustomersDirectoryController
         HostCustomersDirectoryState(
           contacts: List.unmodifiable(byId.values),
           nextCursor: page.nextCursor,
+          matchCount:
+              current.matchCountCoverage ==
+                  HostCustomerMatchCountCoverage.atLeast
+              ? byId.length > current.matchCount
+                    ? byId.length
+                    : current.matchCount
+              : current.matchCount,
+          matchCountCoverage: current.matchCountCoverage,
           sourceCoverage: _directoryCoverage(page.sourceCoverage),
           projectionVersion: page.projectionVersion,
         ),
@@ -93,9 +101,19 @@ HostCustomersDirectoryState _directoryStateFromPage(HostAudiencePage page) =>
     HostCustomersDirectoryState.fromPageData(
       contacts: page.contacts.map(_directoryContact),
       nextCursor: page.nextCursor,
+      matchCount: page.matchCount,
+      matchCountCoverage: _matchCountCoverage(page.matchCountCoverage),
       sourceCoverage: _directoryCoverage(page.sourceCoverage),
       projectionVersion: page.projectionVersion,
     );
+
+HostCustomerMatchCountCoverage _matchCountCoverage(
+  HostAudienceMatchCountCoverage coverage,
+) => switch (coverage) {
+  HostAudienceMatchCountCoverage.exact => HostCustomerMatchCountCoverage.exact,
+  HostAudienceMatchCountCoverage.atLeast =>
+    HostCustomerMatchCountCoverage.atLeast,
+};
 
 HostCustomerDirectoryContact _directoryContact(HostAudienceContact contact) =>
     HostCustomerDirectoryContact(

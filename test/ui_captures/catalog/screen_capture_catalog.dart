@@ -4757,6 +4757,8 @@ List<Object> _hostCustomersProviderOverrides() {
           ),
         ],
         nextCursor: null,
+        matchCount: 2,
+        matchCountCoverage: HostCustomerMatchCountCoverage.exact,
         sourceCoverage: HostCustomerDirectoryCoverage.exact,
         projectionVersion: 1,
       ),

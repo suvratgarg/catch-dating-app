@@ -44,6 +44,8 @@ export interface ListOrganizerContactsCallableResponse {
     revision: number;
   }[];
   nextCursor: string | null;
+  matchCount: number;
+  matchCountCoverage: "exact" | "atLeast";
   sourceCoverage: "exact" | "partial";
   projectionVersion: number;
 }

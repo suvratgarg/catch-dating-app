@@ -72,6 +72,8 @@ class HostCustomersDirectoryState {
   const HostCustomersDirectoryState({
     required this.contacts,
     required this.nextCursor,
+    required this.matchCount,
+    required this.matchCountCoverage,
     required this.sourceCoverage,
     required this.projectionVersion,
     this.loadingMore = false,
@@ -81,17 +83,23 @@ class HostCustomersDirectoryState {
   factory HostCustomersDirectoryState.fromPageData({
     required Iterable<HostCustomerDirectoryContact> contacts,
     required String? nextCursor,
+    required int matchCount,
+    required HostCustomerMatchCountCoverage matchCountCoverage,
     required HostCustomerDirectoryCoverage sourceCoverage,
     required int projectionVersion,
   }) => HostCustomersDirectoryState(
     contacts: List.unmodifiable(contacts),
     nextCursor: nextCursor,
+    matchCount: matchCount,
+    matchCountCoverage: matchCountCoverage,
     sourceCoverage: sourceCoverage,
     projectionVersion: projectionVersion,
   );
 
   final List<HostCustomerDirectoryContact> contacts;
   final String? nextCursor;
+  final int matchCount;
+  final HostCustomerMatchCountCoverage matchCountCoverage;
   final HostCustomerDirectoryCoverage sourceCoverage;
   final int projectionVersion;
   final bool loadingMore;
@@ -103,12 +111,16 @@ class HostCustomersDirectoryState {
     List<HostCustomerDirectoryContact>? contacts,
     String? nextCursor,
     bool clearNextCursor = false,
+    int? matchCount,
+    HostCustomerMatchCountCoverage? matchCountCoverage,
     bool? loadingMore,
     Object? loadMoreError,
     bool clearLoadMoreError = false,
   }) => HostCustomersDirectoryState(
     contacts: contacts ?? this.contacts,
     nextCursor: clearNextCursor ? null : nextCursor ?? this.nextCursor,
+    matchCount: matchCount ?? this.matchCount,
+    matchCountCoverage: matchCountCoverage ?? this.matchCountCoverage,
     sourceCoverage: sourceCoverage,
     projectionVersion: projectionVersion,
     loadingMore: loadingMore ?? this.loadingMore,
@@ -119,6 +131,8 @@ class HostCustomersDirectoryState {
 }
 
 enum HostCustomerDirectoryCoverage { exact, partial, insufficientData }
+
+enum HostCustomerMatchCountCoverage { exact, atLeast }
 
 @immutable
 class HostCustomerDirectoryContact {
