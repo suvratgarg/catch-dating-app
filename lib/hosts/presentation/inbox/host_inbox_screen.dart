@@ -343,7 +343,6 @@ class _HostInboxWorkspaceGroup extends ConsumerWidget {
       eventsAsync,
       inboxAsync,
       participationsAsync,
-      whatsappAsync,
     ];
     final failed = asyncValues.where((value) => value.hasError).firstOrNull;
     if (failed != null) {
@@ -371,11 +370,11 @@ class _HostInboxWorkspaceGroup extends ConsumerWidget {
             query: query,
             now: now,
           );
-    if (loading || workspace == null || whatsappPage == null) {
+    if (loading || workspace == null) {
       return const ChatsListSkeleton();
     }
     final normalizedQuery = query.trim().toLowerCase();
-    final whatsappThreads = whatsappPage.threads
+    final whatsappThreads = (whatsappPage?.threads ?? const [])
         .where((thread) {
           final inScope = scope.isGeneral
               ? thread.eventIds.isEmpty

@@ -374,6 +374,53 @@ void main() {
     }
   });
 
+  testWidgets('large-text selected tab label stays inside its pill', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light.copyWith(platform: TargetPlatform.iOS),
+        home: const MediaQuery(
+          data: MediaQueryData(
+            size: Size(393, 852),
+            padding: EdgeInsets.only(bottom: 34),
+            viewPadding: EdgeInsets.only(bottom: 34),
+            textScaler: TextScaler.linear(1.6),
+          ),
+          child: Scaffold(
+            body: SizedBox.expand(),
+            bottomNavigationBar: CatchTabBar<int>(
+              active: 1,
+              items: [
+                CatchTabBarItem(
+                  id: 0,
+                  icon: Icons.confirmation_num,
+                  label: 'Events',
+                ),
+                CatchTabBarItem(id: 1, icon: Icons.people, label: 'Customers'),
+                CatchTabBarItem(
+                  id: 2,
+                  icon: Icons.chat_bubble,
+                  label: 'Messaging',
+                ),
+                CatchTabBarItem(id: 3, icon: Icons.person, label: 'Organizer'),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final label = find.text('Customers');
+    final labelRect = tester.getRect(label);
+    final clipRect = tester.getRect(
+      find.ancestor(of: label, matching: find.byType(ClipRect)).first,
+    );
+
+    expect(labelRect.left, greaterThanOrEqualTo(clipRect.left - 0.5));
+    expect(labelRect.right, lessThanOrEqualTo(clipRect.right + 0.5));
+  });
+
   testWidgets('iOS floating navigation keeps selected end tab close to edge', (
     tester,
   ) async {

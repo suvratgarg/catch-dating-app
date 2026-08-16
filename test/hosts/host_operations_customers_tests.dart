@@ -149,6 +149,53 @@ void _registerHostOperationsCustomersTests() {
     expect(find.text('WhatsApp ready'), findsOneWidget);
   });
 
+  testWidgets('compact customer header preserves its title at large text', (
+    tester,
+  ) async {
+    final club = buildClub(id: 'compact-header-club', ownerUserId: _hostUid);
+    await _pumpHostScreen(
+      tester,
+      const MediaQuery(
+        data: MediaQueryData(
+          size: Size(393, 852),
+          textScaler: TextScaler.linear(1.6),
+        ),
+        child: HostCustomersScreen(),
+      ),
+      overrides: [
+        ..._hostClubOverrides(owned: [club]),
+        hostCustomersDirectoryControllerProvider.overrideWith2(
+          (_) => _FixedHostCustomersDirectoryController(
+            [],
+            _emptyCustomerDirectoryState(),
+          ),
+        ),
+      ],
+    );
+
+    final header = find.byType(CatchScreenHeaderTitle);
+    final titleFinder = find.descendant(
+      of: header,
+      matching: find.text('Customers'),
+    );
+    final title = tester.widget<Text>(titleFinder);
+    final intrinsicTitle = TextPainter(
+      text: TextSpan(text: title.data, style: title.style),
+      textDirection: TextDirection.ltr,
+      textScaler: const TextScaler.linear(1.6),
+    )..layout();
+
+    expect(
+      tester.getSize(titleFinder).width,
+      greaterThanOrEqualTo(intrinsicTitle.width - 0.5),
+    );
+    expect(
+      find.descendant(of: header, matching: find.byType(CatchIconAction)),
+      findsOneWidget,
+    );
+    expect(find.byTooltip('Add customer'), findsOneWidget);
+  });
+
   testWidgets('customer event history opens the host event detail route', (
     tester,
   ) async {

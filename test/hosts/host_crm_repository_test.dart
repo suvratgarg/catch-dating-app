@@ -1,5 +1,35 @@
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+class _TestFirebaseFunctions extends Fake implements FirebaseFunctions {
+  final callables = <String, _TestHttpsCallable>{};
+
+  @override
+  HttpsCallable httpsCallable(String name, {HttpsCallableOptions? options}) =>
+      callables.putIfAbsent(name, _TestHttpsCallable.new);
+}
+
+class _TestHttpsCallable extends Fake implements HttpsCallable {
+  final calls = <Object?>[];
+  Object? resultData;
+
+  @override
+  Future<HttpsCallableResult<T>> call<T>([dynamic parameters]) async {
+    calls.add(parameters);
+    return _TestHttpsCallableResult<T>(resultData as T);
+  }
+}
+
+class _TestHttpsCallableResult<T> extends Fake
+    implements HttpsCallableResult<T> {
+  _TestHttpsCallableResult(this.dataValue);
+
+  final T dataValue;
+
+  @override
+  T get data => dataValue;
+}
 
 void main() {
   test('audience query identity and copies retain the server sort order', () {
@@ -28,6 +58,40 @@ void main() {
       query.copyWith(sort: HostAudienceSort.name, clearCursor: true),
       const HostAudienceQuery(search: 'asha', sort: HostAudienceSort.name),
     );
+  });
+
+  test(
+    'default contact ordering omits sort for rolling deploy compatibility',
+    () async {
+      final functions = _TestFirebaseFunctions();
+      final callable =
+          functions.httpsCallable('listOrganizerContacts')
+              as _TestHttpsCallable;
+      callable.resultData = _emptyAudiencePageData();
+      final repository = HostCrmRepository(functions);
+
+      await repository.listContacts('organizer-1');
+
+      final payload = callable.calls.single as Map<Object?, Object?>;
+      expect(payload['organizerId'], 'organizer-1');
+      expect(payload, isNot(contains('sort')));
+    },
+  );
+
+  test('non-default contact ordering remains explicit', () async {
+    final functions = _TestFirebaseFunctions();
+    final callable =
+        functions.httpsCallable('listOrganizerContacts') as _TestHttpsCallable;
+    callable.resultData = _emptyAudiencePageData();
+    final repository = HostCrmRepository(functions);
+
+    await repository.listContacts(
+      'organizer-1',
+      query: const HostAudienceQuery(sort: HostAudienceSort.mostAttended),
+    );
+
+    final payload = callable.calls.single as Map<Object?, Object?>;
+    expect(payload['sort'], 'mostAttended');
   });
 
   test('parses privacy-bounded CRM counts and delivery readiness', () {
@@ -428,3 +492,13 @@ void main() {
     expect(detail.serviceWindowOpen, isFalse);
   });
 }
+
+Map<String, Object?> _emptyAudiencePageData() => {
+  'organizerId': 'organizer-1',
+  'contacts': const <Object?>[],
+  'nextCursor': null,
+  'matchCount': 0,
+  'matchCountCoverage': 'exact',
+  'sourceCoverage': 'exact',
+  'projectionVersion': 1,
+};

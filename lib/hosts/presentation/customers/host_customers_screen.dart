@@ -5,6 +5,7 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_share.dart';
+import 'package:catch_dating_app/core/responsive/breakpoints.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -142,6 +143,9 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
       messagingSetup: messagingSetup.asData?.value,
     );
     final t = CatchTokens.of(context);
+    final compactHeader = ScreenSize.fromWidth(
+      MediaQuery.sizeOf(context).width,
+    ).isCompact;
 
     return Scaffold(
       backgroundColor: t.bg,
@@ -153,16 +157,28 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
               child: CatchScreenHeaderTitle.block(
                 title: context.l10n.hostNavigationCustomers,
                 actions: [
-                  CatchButton(
-                    key: const ValueKey<String>('host-customers-add-customer'),
-                    label: context.l10n.hostCustomersAdd,
-                    icon: Icon(
-                      CatchIcons.personAddAlt1Rounded,
-                      size: CatchIcon.sm,
+                  if (compactHeader)
+                    CatchIconAction(
+                      key: const ValueKey<String>(
+                        'host-customers-add-customer',
+                      ),
+                      icon: CatchIcons.personAddAlt1Rounded,
+                      tooltip: context.l10n.hostCustomersAdd,
+                      onPressed: () => _addCustomer(selectedClub, request),
+                    )
+                  else
+                    CatchButton(
+                      key: const ValueKey<String>(
+                        'host-customers-add-customer',
+                      ),
+                      label: context.l10n.hostCustomersAdd,
+                      icon: Icon(
+                        CatchIcons.personAddAlt1Rounded,
+                        size: CatchIcon.sm,
+                      ),
+                      size: CatchButtonSize.sm,
+                      onPressed: () => _addCustomer(selectedClub, request),
                     ),
-                    size: CatchButtonSize.sm,
-                    onPressed: () => _addCustomer(selectedClub, request),
-                  ),
                   CatchTopBarMenuAction<_HostCustomersHeaderAction>(
                     tooltip: context.l10n.hostsHostAudienceExport,
                     items: _hostCustomersHeaderActions(
