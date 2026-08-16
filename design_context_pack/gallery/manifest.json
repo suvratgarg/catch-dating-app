@@ -3,12 +3,12 @@
   "source": "test/ui_captures/catalog/screen_capture_catalog.dart",
   "coverage": {
     "routes": 53,
-    "captures": 623,
+    "captures": 624,
     "statusCounts": {
       "excluded": 2,
-      "captured": 38,
+      "captured": 39,
       "alias": 8,
-      "planned": 5
+      "planned": 4
     }
   },
   "profile": {
@@ -8705,6 +8705,23 @@
         "dark": "dark/host_customers_populated.png"
       },
       "whatItIs": "Host Customers Populated",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_customer_detail_memory",
+      "routes": [
+        "hostCustomerDetailScreen"
+      ],
+      "device": "claude-phone-390x812",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_customer_detail_memory.png",
+        "dark": "dark/host_customer_detail_memory.png"
+      },
+      "whatItIs": "Host Customer Detail Memory",
       "keepChangeNotes": ""
     },
     {

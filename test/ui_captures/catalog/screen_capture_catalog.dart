@@ -133,8 +133,8 @@ import 'package:catch_dating_app/hosts/presentation/club_management/create/creat
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_club_edit_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_team_management_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
@@ -4839,7 +4839,6 @@ HostAudienceContactDetail _hostCustomerMemoryDetail() {
         revision: 1,
       ),
     ],
-    notesTruncated: false,
     sends: [
       HostCustomerSend(
         campaignId: 'capture-campaign-1',
@@ -4851,7 +4850,6 @@ HostAudienceContactDetail _hostCustomerMemoryDetail() {
         updatedAt: DateTime(2026, 8, 14, 9, 6),
       ),
     ],
-    sendsTruncated: false,
     revision: 3,
   );
 }

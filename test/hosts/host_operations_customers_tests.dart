@@ -367,7 +367,6 @@ HostAudienceContactDetail _customerDetail() => HostAudienceContactDetail(
       revision: 1,
     ),
   ],
-  notesTruncated: false,
   sends: [
     HostCustomerSend(
       campaignId: 'campaign-1',
@@ -379,7 +378,6 @@ HostAudienceContactDetail _customerDetail() => HostAudienceContactDetail(
       updatedAt: DateTime(2026, 8, 14),
     ),
   ],
-  sendsTruncated: false,
   revision: 1,
 );
 
