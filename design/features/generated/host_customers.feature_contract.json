@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/host_customers.feature.json",
   "generatedFor": "2026-08-15",
-  "sourceDigest": "sha256:73a717f281fd58fdfb6957e16f29e277555d7f54d324bb3fe816fd73724c305a",
-  "resolvedDigest": "sha256:a5e422e44a323c1b8f0dee225c59d9ee0e22cbf7b356346061bc0cde308dd09d",
+  "sourceDigest": "sha256:839ccdec8dc8cf0bc50fc324e88e366b9f3e5583d8fe8709a7ee5f016dbd618f",
+  "resolvedDigest": "sha256:7a7fc157f27c69ee4b134ea85032ab90e1e197106c090ee32e30de59bc22e68d",
   "feature": {
     "id": "feature.host_customers",
     "name": "Host Customers",
@@ -17,10 +17,10 @@
     "states": 24,
     "scenarios": 24,
     "actionCases": 24,
-    "actions": 11,
+    "actions": 12,
     "captures": 1,
     "previews": 1,
-    "testFiles": 2,
+    "testFiles": 3,
     "evidenceExceptions": 35
   },
   "surfaces": [
@@ -32,7 +32,7 @@
         "id": "screen.host.customers"
       },
       "actionScope": {
-        "included": "Customer directory recovery, organizer switching, name search, every supported CRM segment, pagination, export, organizer-only manual contact creation, rename/suppression/removal controls, complete event evidence, detail routing, and verified-account direct conversation creation.",
+        "included": "Customer directory recovery, shared organizer selection, debounced name search, readiness-visible server-backed CRM segments, pagination, header-menu export, organizer-only manual contact creation, rename/suppression/removal controls, complete event evidence, customer and event detail routing, and verified-account direct conversation creation.",
         "excluded": [
           "Merge and unmerge controls remain backend-only until a reviewed conflict-resolution UI exists; the deprecated Audience tab did not expose them.",
           "High-spender segmentation remains excluded until completed non-refunded payment totals are projected into indexed organizer-contact traits."
@@ -138,10 +138,10 @@
         "states": 24,
         "scenarios": 24,
         "actionCases": 24,
-        "actions": 11,
+        "actions": 12,
         "captures": 1,
         "previews": 1,
-        "testFiles": 2,
+        "testFiles": 3,
         "evidenceExceptions": 35
       },
       "dimensions": {
@@ -271,7 +271,7 @@
               ]
             }
           ],
-          "description": "Searches the organizer customer directory by normalized display name.",
+          "description": "Debounces text input before searching the organizer customer directory by normalized display name.",
           "implementationStatus": "implemented"
         },
         {
@@ -293,7 +293,7 @@
               ]
             }
           ],
-          "description": "Filters the directory by existing versioned attendance and lifecycle traits, including an explainable At risk alias for lapsed regulars.",
+          "description": "Filters the directory by server-backed versioned lifecycle traits visible for the current CRM channel readiness, including an explainable At risk alias for lapsed regulars.",
           "implementationStatus": "implemented"
         },
         {
@@ -393,6 +393,29 @@
             }
           ],
           "description": "Opens the nested route-level customer detail surface for the selected contact.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_customer_event",
+          "owner": "customer_detail",
+          "codeValue": "pushNamed",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "organizerId",
+            "contactId",
+            "eventId"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.event.detail"
+              }
+            }
+          ],
+          "description": "Opens the host event detail route from one customer event-history row.",
           "implementationStatus": "implemented"
         },
         {
@@ -574,6 +597,7 @@
                   "export_customers",
                   "create_customer",
                   "open_customer",
+                  "open_customer_event",
                   "manage_customer",
                   "retry_customer_detail",
                   "start_conversation"
@@ -626,6 +650,7 @@
                   "export_customers",
                   "create_customer",
                   "open_customer",
+                  "open_customer_event",
                   "manage_customer",
                   "retry_customer_detail",
                   "start_conversation"
@@ -678,6 +703,7 @@
                   "load_more",
                   "export_customers",
                   "open_customer",
+                  "open_customer_event",
                   "manage_customer",
                   "retry_customer_detail",
                   "start_conversation"
@@ -708,7 +734,8 @@
               "hostCustomersStates"
             ],
             "tests": [
-              "test/hosts/host_customers_screen_state_test.dart"
+              "test/hosts/host_customers_screen_state_test.dart",
+              "test/hosts/host_operations_screen_test.dart"
             ]
           },
           "actionCases": [
@@ -737,6 +764,7 @@
                 "disabled": [],
                 "notAllowed": [
                   "retry_directory",
+                  "open_customer_event",
                   "retry_customer_detail",
                   "start_conversation"
                 ]
@@ -790,6 +818,7 @@
                   "export_customers",
                   "create_customer",
                   "open_customer",
+                  "open_customer_event",
                   "manage_customer",
                   "retry_customer_detail",
                   "start_conversation"
@@ -842,6 +871,7 @@
                   "export_customers",
                   "create_customer",
                   "open_customer",
+                  "open_customer_event",
                   "manage_customer",
                   "retry_customer_detail",
                   "start_conversation"
@@ -894,6 +924,7 @@
                   "load_more",
                   "export_customers",
                   "open_customer",
+                  "open_customer_event",
                   "manage_customer",
                   "retry_customer_detail",
                   "start_conversation"
@@ -946,6 +977,7 @@
                   "load_more",
                   "create_customer",
                   "open_customer",
+                  "open_customer_event",
                   "manage_customer",
                   "retry_customer_detail",
                   "start_conversation"
@@ -1001,6 +1033,7 @@
                   "export_customers",
                   "create_customer",
                   "open_customer",
+                  "open_customer_event",
                   "retry_customer_detail",
                   "start_conversation"
                 ]
@@ -1053,6 +1086,7 @@
                   "export_customers",
                   "create_customer",
                   "open_customer",
+                  "open_customer_event",
                   "retry_customer_detail",
                   "start_conversation"
                 ]
@@ -1103,6 +1137,7 @@
                   "export_customers",
                   "create_customer",
                   "open_customer",
+                  "open_customer_event",
                   "manage_customer",
                   "retry_customer_detail",
                   "start_conversation"
@@ -1156,6 +1191,7 @@
                   "export_customers",
                   "create_customer",
                   "open_customer",
+                  "open_customer_event",
                   "manage_customer",
                   "start_conversation"
                 ]
@@ -1201,7 +1237,8 @@
               },
               "actions": {
                 "enabled": [
-                  "start_conversation"
+                  "start_conversation",
+                  "open_customer_event"
                 ],
                 "disabled": [],
                 "notAllowed": [
@@ -1254,7 +1291,9 @@
                 "theme": "standard"
               },
               "actions": {
-                "enabled": [],
+                "enabled": [
+                  "open_customer_event"
+                ],
                 "disabled": [
                   "start_conversation"
                 ],
@@ -1308,7 +1347,9 @@
                 "theme": "standard"
               },
               "actions": {
-                "enabled": [],
+                "enabled": [
+                  "open_customer_event"
+                ],
                 "disabled": [
                   "start_conversation"
                 ],
@@ -1375,6 +1416,7 @@
                   "export_customers",
                   "create_customer",
                   "open_customer",
+                  "open_customer_event",
                   "manage_customer",
                   "retry_customer_detail",
                   "start_conversation"
@@ -1426,6 +1468,7 @@
                   "export_customers",
                   "create_customer",
                   "open_customer",
+                  "open_customer_event",
                   "manage_customer",
                   "retry_customer_detail",
                   "start_conversation"
@@ -1477,6 +1520,7 @@
                   "export_customers",
                   "create_customer",
                   "open_customer",
+                  "open_customer_event",
                   "manage_customer",
                   "retry_customer_detail",
                   "start_conversation"
@@ -1534,6 +1578,7 @@
                   "export_customers",
                   "create_customer",
                   "open_customer",
+                  "open_customer_event",
                   "manage_customer",
                   "retry_customer_detail"
                 ]
@@ -1588,6 +1633,7 @@
                   "export_customers",
                   "create_customer",
                   "open_customer",
+                  "open_customer_event",
                   "manage_customer",
                   "retry_customer_detail"
                 ]
@@ -1640,6 +1686,7 @@
                   "export_customers",
                   "create_customer",
                   "open_customer",
+                  "open_customer_event",
                   "manage_customer",
                   "start_conversation"
                 ]
@@ -1690,6 +1737,7 @@
                   "export_customers",
                   "create_customer",
                   "open_customer",
+                  "open_customer_event",
                   "manage_customer",
                   "retry_customer_detail",
                   "start_conversation"
@@ -1741,6 +1789,7 @@
                   "export_customers",
                   "create_customer",
                   "open_customer",
+                  "open_customer_event",
                   "manage_customer",
                   "retry_customer_detail",
                   "start_conversation"
@@ -1792,6 +1841,7 @@
                   "export_customers",
                   "create_customer",
                   "open_customer",
+                  "open_customer_event",
                   "manage_customer",
                   "retry_customer_detail",
                   "start_conversation"

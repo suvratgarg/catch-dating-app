@@ -20,7 +20,9 @@ enum _HostInviteDestination {
   final String wireValue;
 }
 
-const _hostCampaignEligibleSegments = <HostAudienceSegment>[
+List<HostAudienceSegment> hostCampaignEligibleSegmentsForSmsReadiness(
+  HostCrmChannelReadiness? smsReadiness,
+) => [
   HostAudienceSegment.firstTimeAttendee,
   HostAudienceSegment.repeatAttendee,
   HostAudienceSegment.regular,
@@ -29,6 +31,8 @@ const _hostCampaignEligibleSegments = <HostAudienceSegment>[
   HostAudienceSegment.advocate,
   HostAudienceSegment.highImpactAdvocate,
   HostAudienceSegment.whatsappReachable,
+  if (hostCrmSmsReachableAvailable(smsReadiness))
+    HostAudienceSegment.smsReachable,
 ];
 
 class HostCustomerMessagingPane extends ConsumerStatefulWidget {
@@ -83,11 +87,12 @@ class _HostCustomerMessagingPaneState
   @override
   Widget build(BuildContext context) {
     final messaging = ref.watch(hostMessagingSetupProvider(widget.club.id));
+    final crmSummary = ref.watch(hostCrmSummaryProvider(widget.club.id));
     return CatchSectionList(
       emptyStateOmitted: true,
       children: [
         _buildWhatsappSetup(context, messaging),
-        _buildCampaignComposer(context, messaging),
+        _buildCampaignComposer(context, messaging, crmSummary),
       ],
     );
   }
@@ -209,6 +214,7 @@ class _HostCustomerMessagingPaneState
   CatchSection _buildCampaignComposer(
     BuildContext context,
     AsyncValue<HostMessagingSetup> messaging,
+    AsyncValue<HostCrmSummary> crmSummary,
   ) => CatchSection.divided(
     title: context.l10n.hostsHostAudienceCampaign,
     child: CatchAsyncValueView<HostMessagingSetup>(
@@ -253,6 +259,12 @@ class _HostCustomerMessagingPaneState
           );
         }
         final template = _selectedTemplate ?? approved.first;
+        final eligibleSegments = hostCampaignEligibleSegmentsForSmsReadiness(
+          crmSummary.asData?.value.smsReadiness,
+        );
+        final selectedEligibleSegments = _campaignSegments
+            .where(eligibleSegments.contains)
+            .toSet();
         return CatchFieldLanes.custom(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -289,18 +301,19 @@ class _HostCustomerMessagingPaneState
                 spacing: CatchSpacing.s2,
                 runSpacing: CatchSpacing.s2,
                 children: [
-                  for (final segment in _hostCampaignEligibleSegments)
+                  for (final segment in eligibleSegments)
                     CatchChip.selectable(
                       label: _segmentLabel(context, segment),
-                      selected: _campaignSegments.contains(segment),
+                      selected: selectedEligibleSegments.contains(segment),
                       enabled: _campaign == null,
                       contract: CatchContractConstraints
                           .upsertOrganizerCampaignCallablePayloadSegmentIds,
                       contractValue: segment.wireValue,
                       onChanged: (selected) => setState(() {
-                        if (selected && _campaignSegments.length < 5) {
+                        if (selected && selectedEligibleSegments.length < 5) {
                           _campaignSegments.add(segment);
-                        } else if (!selected && _campaignSegments.length > 1) {
+                        } else if (!selected &&
+                            selectedEligibleSegments.length > 1) {
                           _campaignSegments.remove(segment);
                         }
                       }),
@@ -388,7 +401,11 @@ class _HostCustomerMessagingPaneState
                   label: context.l10n.hostsHostAudiencePreviewCampaign,
                   onPressed: _busy
                       ? null
-                      : () => _saveAndPreview(connection, template),
+                      : () => _saveAndPreview(
+                          connection,
+                          template,
+                          eligibleSegments,
+                        ),
                   isLoading: _busy,
                 )
               else
@@ -483,7 +500,11 @@ class _HostCustomerMessagingPaneState
   Future<void> _saveAndPreview(
     HostWhatsappConnection connection,
     HostWhatsappTemplate template,
+    List<HostAudienceSegment> eligibleSegments,
   ) => _run(() async {
+    final selectedSegments = _campaignSegments
+        .where(eligibleSegments.contains)
+        .toSet();
     final variables = {
       for (final entry in _variableControllers.entries)
         if (template.variableNames.contains(entry.key) &&
@@ -492,6 +513,7 @@ class _HostCustomerMessagingPaneState
     };
     final needsInvite = _templateUsesInvite(template);
     if (_campaignNameController.text.trim().isEmpty ||
+        selectedSegments.isEmpty ||
         variables.values.any((value) => value.isEmpty) ||
         (needsInvite && _selectedEvent == null)) {
       throw StateError(context.l10n.hostsHostAudienceCompleteCampaign);
@@ -504,7 +526,7 @@ class _HostCustomerMessagingPaneState
             requestId: '${DateTime.now().microsecondsSinceEpoch}-host',
             name: _campaignNameController.text.trim(),
             messageClass: _messageClass.wireValue,
-            segments: _campaignSegments,
+            segments: selectedSegments,
             connectionId: connection.connectionId,
             templateId: template.templateId,
             templateVariables: variables,

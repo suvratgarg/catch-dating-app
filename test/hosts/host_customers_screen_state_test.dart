@@ -10,7 +10,6 @@ void main() {
       HostCustomerFilter.needsConfirmation.tag,
       HostCustomerTag.needsConfirmation,
     );
-    expect(HostCustomerFilter.attended.tag, isNull);
     expect(
       hostAudienceSegmentForCustomerFilter(HostCustomerFilter.reliable),
       HostAudienceSegment.reliableAttendee,
@@ -29,15 +28,30 @@ void main() {
     );
     expect(
       HostCustomerFilter.values
-          .where(
-            (filter) =>
-                filter != HostCustomerFilter.all &&
-                filter != HostCustomerFilter.attended,
-          )
+          .where((filter) => filter != HostCustomerFilter.all)
           .every(
             (filter) => hostAudienceSegmentForCustomerFilter(filter) != null,
           ),
       isTrue,
+    );
+  });
+
+  test('customer SMS filters render only when SMS is available', () {
+    expect(
+      hostCustomerFiltersForSmsReadiness(null),
+      isNot(contains(HostCustomerFilter.smsReachable)),
+    );
+    expect(
+      hostCustomerFiltersForSmsReadiness(
+        HostCrmChannelReadiness.providerAndDltSetupRequired,
+      ),
+      isNot(contains(HostCustomerFilter.smsReachable)),
+    );
+    expect(
+      hostCustomerFiltersForSmsReadiness(
+        HostCrmChannelReadiness.currentEventOnly,
+      ),
+      contains(HostCustomerFilter.smsReachable),
     );
   });
 

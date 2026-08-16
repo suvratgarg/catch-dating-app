@@ -7796,17 +7796,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostCustomerDirectoryRow',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Row states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostCustomerDirectoryRowStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostCustomerIdentityCard',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -7825,6 +7814,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
                             .hostCustomerRevenueStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerRow',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Row states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostCustomerDirectoryRowStates,
                   ),
                 ],
               ),

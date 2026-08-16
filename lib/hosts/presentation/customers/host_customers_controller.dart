@@ -77,6 +77,18 @@ HostAudienceSegment? hostAudienceSegmentForCustomerFilter(
   HostCustomerTag.smsReachable => HostAudienceSegment.smsReachable,
 };
 
+bool hostCrmSmsReachableAvailable(HostCrmChannelReadiness? readiness) =>
+    readiness == HostCrmChannelReadiness.currentEventOnly;
+
+List<HostCustomerFilter> hostCustomerFiltersForSmsReadiness(
+  HostCrmChannelReadiness? smsReadiness,
+) => [
+  for (final filter in HostCustomerFilter.values)
+    if (filter != HostCustomerFilter.smsReachable ||
+        hostCrmSmsReachableAvailable(smsReadiness))
+      filter,
+];
+
 HostCustomersDirectoryState _directoryStateFromPage(HostAudiencePage page) =>
     HostCustomersDirectoryState.fromPageData(
       contacts: page.contacts.map(_directoryContact),

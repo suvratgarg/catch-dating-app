@@ -73,6 +73,7 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_team_management_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_row.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
@@ -756,7 +757,7 @@ Widget hostCustomersDirectoryStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Row states',
-  type: HostCustomerDirectoryRow,
+  type: HostCustomerRow,
   path: '[P1 product surfaces]/Host operations/Customers',
 )
 Widget hostCustomerDirectoryRowStates(BuildContext context) =>
