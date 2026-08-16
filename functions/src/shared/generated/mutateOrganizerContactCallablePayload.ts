@@ -3,7 +3,7 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Manager-only organizer-scoped contact correction, suppression, or hiding request.
+ * Manager-only organizer-scoped contact correction, manual identity detail update, suppression, or hiding request.
  */
 export type MutateOrganizerContactCallablePayload = {
   [k: string]: unknown;
@@ -12,6 +12,8 @@ export type MutateOrganizerContactCallablePayload = {
   contactId: string;
   expectedRevision: number;
   displayNameOverride?: string | null;
+  phoneE164?: string | null;
+  email?: string | null;
   whatsappAdminSuppressed?: boolean;
   hidden?: boolean;
   /**

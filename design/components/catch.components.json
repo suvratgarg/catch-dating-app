@@ -9259,15 +9259,15 @@
     },
     {
       "id": "catch.tab_bar",
-        "waiver": {
-          "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-          "owner": "design_system",
-          "expires": "2026-09-30"
-        },
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchTabBar",
       "status": "active",
       "kind": "composite",
-      "summary": "Adaptive bottom navigation bar with icon-only unselected tabs, selected icon-label pill reveal, badges, and platform-specific chrome.",
+      "summary": "Adaptive bottom navigation with stable keyed destination slots, equal compact allocations, a measured selected icon-label pill, badges, and platform-specific chrome.",
       "dart": {
         "symbol": "CatchTabBar",
         "file": "lib/core/widgets/catch_tab_bar.dart",
@@ -9321,7 +9321,10 @@
           "safe-area",
           "text-scale",
           "reduced-motion",
-          "with-four-tabs"
+          "with-four-tabs",
+          "first-selected",
+          "last-selected",
+          "selection-transition"
         ],
         "slots": [],
         "tokens": [
@@ -9339,7 +9342,11 @@
           "CatchTabBarItem",
           "CatchTextStyles.buttonSm",
           "CatchLayout.tabBarBlurSigma",
-          "CatchLayout.tabBarIconSize"
+          "CatchLayout.tabBarIconSize",
+          "CatchLayout.tabBarMinimumTapExtent",
+          "CatchLayout.tabBarIconBoxExtent",
+          "CatchLayout.tabBarPillLeadingPadding",
+          "CatchLayout.tabBarPillTrailingPadding"
         ],
         "goldens": [],
         "members": [
@@ -9347,7 +9354,7 @@
             "id": "catch.tab_bar.button",
             "symbol": "CatchTabBarButton",
             "file": "lib/core/widgets/catch_tab_bar.dart",
-            "summary": "Direct tab-bar button renderer with selected-label reveal semantics.",
+            "summary": "Stable tab-bar button renderer with selected-label reveal semantics and unchanged element identity across selection.",
             "states": [
               "selected",
               "unselected",
@@ -9365,7 +9372,7 @@
             "id": "catch.tab_bar.icon",
             "symbol": "CatchTabBarIcon",
             "file": "lib/core/widgets/catch_tab_bar.dart",
-            "summary": "Direct tab-bar icon/count renderer.",
+            "summary": "Vertically centered square tab-bar icon and count renderer with badge clearance.",
             "states": [
               "plain",
               "badge",
@@ -9399,7 +9406,9 @@
           "catch.badge"
         ],
         "notes": [
-          "Use for Catch bottom navigation. Platform adaptation belongs inside this widget; do not fork native/custom tab bars in shells."
+          "Use for Catch bottom navigation. Platform adaptation belongs inside this widget; do not fork native/custom tab bars in shells.",
+          "Keep every destination in one stable keyed slot. Animate geometry and pill reveal without replacing fixed and expanded subtrees on selection.",
+          "Use optical leading and trailing pill insets because the square icon box reserves transparent badge clearance."
         ]
       },
       "governance": {

@@ -58,14 +58,13 @@ export async function getOrganizerCrmSummaryHandler(
   const projectedSummarySnap = await db.collection("organizerAudienceSummaries")
     .doc(data.organizerId)
     .get();
-  if (projectedSummarySnap.exists) {
-    const summary = requireDoc<OrganizerAudienceSummaryDocument>(
+  const projectedSummary = projectedSummarySnap.exists ?
+    requireDoc<OrganizerAudienceSummaryDocument>(
       projectedSummarySnap,
       "OrganizerAudienceSummaryDocument"
-    );
-    if (summary.sourceCoverage === "exact") {
-      return projectedOrganizerCrmSummary(summary);
-    }
+    ) : null;
+  if (projectedSummary?.sourceCoverage === "exact") {
+    return projectedOrganizerCrmSummary(projectedSummary);
   }
   const [rosterSnap, preferenceSnap] = await Promise.all([
     db.collection("eventAttendees")
@@ -87,12 +86,45 @@ export async function getOrganizerCrmSummaryHandler(
     .slice(0, maxRosterDocuments)
     .map((doc) => doc.data() as OrganizerCommunicationPreferenceDocument);
 
-  return summarizeOrganizerCrm({
+  const rosterSummary = summarizeOrganizerCrm({
     organizerId: data.organizerId,
     attendees,
     preferences,
     truncated,
   });
+  return projectedSummary === null ? rosterSummary :
+    mergeOrganizerCrmSummaries(projectedSummary, rosterSummary);
+}
+
+/**
+ * Keeps incomplete projection counts truthful without dropping manual CRM
+ * contacts that have no attendee row. Each source is a lower bound while
+ * coverage is partial, so the larger dimension is the safest visible count.
+ */
+export function mergeOrganizerCrmSummaries(
+  projected: OrganizerAudienceSummaryDocument,
+  roster: GetOrganizerCrmSummaryCallableResponse
+): GetOrganizerCrmSummaryCallableResponse {
+  const projectedResponse = projectedOrganizerCrmSummary(projected);
+  const maximum = (
+    key: keyof Pick<GetOrganizerCrmSummaryCallableResponse,
+      "contactCount" | "pastAttendeeCount" | "repeatAttendeeCount" |
+      "advocateCount" | "highImpactAdvocateCount" | "linkedAccountCount" |
+      "importedContactCount" | "whatsappOptInCount" | "smsOptInCount">
+  ) => Math.max(projectedResponse[key], roster[key]);
+  return {
+    ...roster,
+    contactCount: maximum("contactCount"),
+    pastAttendeeCount: maximum("pastAttendeeCount"),
+    repeatAttendeeCount: maximum("repeatAttendeeCount"),
+    advocateCount: maximum("advocateCount"),
+    highImpactAdvocateCount: maximum("highImpactAdvocateCount"),
+    linkedAccountCount: maximum("linkedAccountCount"),
+    importedContactCount: maximum("importedContactCount"),
+    whatsappOptInCount: maximum("whatsappOptInCount"),
+    smsOptInCount: maximum("smsOptInCount"),
+    truncated: true,
+  };
 }
 
 /** Preserves the existing callable response while reading scalable counts. */

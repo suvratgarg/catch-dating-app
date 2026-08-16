@@ -94,6 +94,67 @@ void main() {
     expect(payload['sort'], 'mostAttended');
   });
 
+  test(
+    'manual contact creation sends identity details and initial note',
+    () async {
+      final functions = _TestFirebaseFunctions();
+      final callable =
+          functions.httpsCallable('createOrganizerContact')
+              as _TestHttpsCallable;
+      callable.resultData = {
+        'organizerId': 'organizer-1',
+        'contactId': 'contact-1',
+        'displayName': 'Asha Rao',
+        'revision': 1,
+      };
+      final repository = HostCrmRepository(functions);
+
+      await repository.createContact(
+        organizerId: 'organizer-1',
+        displayName: 'Asha Rao',
+        phoneE164: '+919876543210',
+        email: 'asha@example.com',
+        initialNote: 'Prefers the Friday event.',
+      );
+
+      expect(callable.calls.single, {
+        'organizerId': 'organizer-1',
+        'displayName': 'Asha Rao',
+        'phoneE164': '+919876543210',
+        'email': 'asha@example.com',
+        'initialNote': 'Prefers the Friday event.',
+      });
+    },
+  );
+
+  test(
+    'manual contact mutation explicitly serializes endpoint clears',
+    () async {
+      final functions = _TestFirebaseFunctions();
+      final callable =
+          functions.httpsCallable('mutateOrganizerContact')
+              as _TestHttpsCallable;
+      callable.resultData = null;
+      final repository = HostCrmRepository(functions);
+
+      await repository.mutateContact(
+        organizerId: 'organizer-1',
+        contactId: 'contact-1',
+        expectedRevision: 3,
+        updatePhoneE164: true,
+        updateEmail: true,
+      );
+
+      expect(callable.calls.single, {
+        'organizerId': 'organizer-1',
+        'contactId': 'contact-1',
+        'expectedRevision': 3,
+        'phoneE164': null,
+        'email': null,
+      });
+    },
+  );
+
   test('parses privacy-bounded CRM counts and delivery readiness', () {
     final summary = HostCrmSummary.fromCallableData({
       'organizerId': 'organizer-1',
@@ -281,6 +342,7 @@ void main() {
       'linkedAccount': true,
       'identityState': 'verified',
       'identityConfidence': 'verified',
+      'contactDetailsEditable': false,
       'ambiguousCandidateContactIds': <String>[],
       'whatsappAdminSuppressed': true,
       'traits': {
@@ -327,6 +389,7 @@ void main() {
     });
 
     expect(detail.displayName, 'Asha');
+    expect(detail.contactDetailsEditable, isFalse);
     expect(detail.whatsappAdminSuppressed, isTrue);
     expect(detail.traits.attendanceRate, 0.75);
     expect(detail.revenue.amounts.single.amountMinor, 450000);

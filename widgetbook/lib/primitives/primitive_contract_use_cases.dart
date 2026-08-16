@@ -6165,6 +6165,7 @@ Widget catchBrandedSheetHeaderContractStates(BuildContext context) {
   path: '[Core primitives]/Navigation',
 )
 Widget catchTabDockContractStates(BuildContext context) {
+  var transitionActive = 'clubs';
   return _ContractScreen(
     title: 'CatchTabBar',
     contractId: 'catch.tab_bar',
@@ -6178,6 +6179,9 @@ Widget catchTabDockContractStates(BuildContext context) {
       'text-scale',
       'reduced-motion',
       'with-four-tabs',
+      'first-selected',
+      'last-selected',
+      'selection-transition',
     ],
     children: [
       _StateCard(
@@ -6283,6 +6287,41 @@ Widget catchTabDockContractStates(BuildContext context) {
             items: _contractFourTabBarItems,
             active: 'explore',
             onChanged: _ignoreString,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'first-selected',
+        child: SizedBox(
+          width: WidgetbookPreviewLayout.wideContractWidth,
+          child: CatchTabBar<String>(
+            items: _contractFourTabBarItems,
+            active: _contractFourTabBarItems.first.id,
+            onChanged: _ignoreString,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'last-selected',
+        child: SizedBox(
+          width: WidgetbookPreviewLayout.wideContractWidth,
+          child: CatchTabBar<String>(
+            items: _contractFourTabBarItems,
+            active: _contractFourTabBarItems.last.id,
+            onChanged: _ignoreString,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'selection-transition',
+        child: SizedBox(
+          width: WidgetbookPreviewLayout.wideContractWidth,
+          child: StatefulBuilder(
+            builder: (context, setState) => CatchTabBar<String>(
+              items: _contractFourTabBarItems,
+              active: transitionActive,
+              onChanged: (next) => setState(() => transitionActive = next),
+            ),
           ),
         ),
       ),

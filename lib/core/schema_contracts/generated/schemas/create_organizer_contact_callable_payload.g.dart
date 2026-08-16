@@ -8,7 +8,7 @@ const schemaCreateOrganizerContactCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/callables/create_organizer_contact_payload.schema.json',
   'title': 'CreateOrganizerContactCallablePayload',
-  'description': 'Manager-only creation of a name-only organizer CRM contact. It does not create an attendee, Consumer account, or messaging permission.',
+  'description': 'Manager-only creation of an organizer CRM contact with optional unverified contact details and an initial private note. It does not create an attendee, Consumer account, or messaging permission.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
@@ -25,6 +25,20 @@ const schemaCreateOrganizerContactCallablePayloadSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 120,
+    },
+    'phoneE164': <String, Object?>{
+      'type': 'string',
+      'pattern': '^\\+[1-9][0-9]{7,14}\$',
+    },
+    'email': <String, Object?>{
+      'type': 'string',
+      'format': 'email',
+      'maxLength': 320,
+    },
+    'initialNote': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 2000,
     },
   },
 };

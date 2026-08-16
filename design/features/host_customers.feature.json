@@ -193,7 +193,7 @@
             {"kind": "surface_state", "stateIds": ["manual_add_pending", "customers_populated"]},
             {"kind": "side_effect", "id": "host_customers.organizer_contact_created"}
           ],
-          "description": "Creates a name-only organizer CRM contact without creating a Catch identity or granting messaging permission."
+          "description": "Creates an organizer CRM contact with a required name, optional unverified phone/email evidence, and an optional private note without creating a Catch identity or granting messaging permission."
         },
         {
           "id": "open_customer",

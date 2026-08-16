@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-08-13",
+  "updated": "2026-08-16",
   "sourceOfTruth": {
     "behavior": "Flutter sources named by design/components/catch.components.json",
     "componentContracts": "design/components/catch.components.json",
@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "d70b3b7f3eed5d57c1ed15e99088cd11390f17ada7806f6a9ba543d83125c02f",
+  "sourceDigest": "da0f17e0a1d6bb4593956ad4843e4514798b058192650926c01189668e6a2761",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "d70b3b7f3eed5d57c1ed15e99088cd11390f17ada7806f6a9ba543d83125c02f",
-    "contractDigest": "d70b3b7f3eed5d57c1ed15e99088cd11390f17ada7806f6a9ba543d83125c02f"
+    "digest": "da0f17e0a1d6bb4593956ad4843e4514798b058192650926c01189668e6a2761",
+    "contractDigest": "da0f17e0a1d6bb4593956ad4843e4514798b058192650926c01189668e6a2761"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "d7e2ee937b9e7d2c0cec124577806057575dc9bedf66f5001c57f6d215c9faa0",
+    "handoffRequestDigest": "8f75f785876e7f576bbca055a8469eeb28c192e7dbff4f7ef01dbf6e966e71db",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -1956,7 +1956,7 @@
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
       "figmaExpectedPropertyCount": 1,
-      "figmaExpectedPropertyDigest": "a98afece2b542e6d198f316c0c9c6e9b0f7fd1cca2d76ce5e8f4f32d6c15d7e0",
+      "figmaExpectedPropertyDigest": "122f3b71410d879f3696d865b55cd87b2922fd5e2ed5eabbc678cffb26788795",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -1964,7 +1964,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "TabDock",
       "claudeAllowed": true,
-      "contractDigest": "3e931baed4436bf1e3eb0416aeb1bd6252bdcdf88250433925604277f9a30af0"
+      "contractDigest": "54a8c6c784676017bfef8744a578a74fe6ab09df3455a3c05d22b012b7423cec"
     },
     {
       "contractId": "catch.bottom_dock",

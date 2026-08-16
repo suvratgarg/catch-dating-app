@@ -12,6 +12,7 @@ enum AppErrorContext {
   profile,
   event,
   club,
+  customer,
   chat,
   swipes,
   payments,
@@ -265,6 +266,7 @@ String _contextTitle(AppLocalizations l10n, AppErrorContext context) {
     AppErrorContext.event =>
       l10n.coreAppErrorMessageVisiblecopyEventUnavailable,
     AppErrorContext.club => l10n.coreAppErrorMessageVisiblecopyClubUnavailable,
+    AppErrorContext.customer => l10n.hostCustomersDetailUnavailable,
     AppErrorContext.chat =>
       l10n.coreAppErrorMessageVisiblecopyMessagesUnavailable,
     AppErrorContext.swipes =>
@@ -333,6 +335,7 @@ String _retryLabelFor(
     AppErrorContext.profile => l10n.coreAppErrorMessageVisiblecopyReloadProfile,
     AppErrorContext.event => l10n.coreAppErrorMessageVisiblecopyReloadEvent,
     AppErrorContext.club => l10n.coreAppErrorMessageVisiblecopyReloadClub,
+    AppErrorContext.customer => l10n.hostCustomersReloadDetail,
     AppErrorContext.swipes => l10n.coreAppErrorMessageVisiblecopyReloadCatches,
     AppErrorContext.payments =>
       l10n.coreAppErrorMessageVisiblecopyReloadPayments,
@@ -382,6 +385,7 @@ String _notFoundTitle(AppLocalizations l10n, AppErrorContext context) {
       l10n.coreAppErrorMessageVisiblecopyExploreItemNotFound,
     AppErrorContext.event => l10n.coreAppErrorMessageVisiblecopyEventNotFound,
     AppErrorContext.club => l10n.coreAppErrorMessageVisiblecopyClubNotFound,
+    AppErrorContext.customer => l10n.hostCustomersDetailNotFound,
     AppErrorContext.chat => l10n.coreAppErrorMessageVisiblecopyChatNotFound,
     AppErrorContext.swipes =>
       l10n.coreAppErrorMessageVisiblecopyCatchesNotFound,

@@ -99,6 +99,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/widgets/whe
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_roster_drawer.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_edit_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
@@ -2076,11 +2077,6 @@ Widget _hostEventManagePreviewFor(BuildContext context, String focus) {
       detail: 'Schedule / location',
       onTap: () {},
     ),
-    'HostCapacityTile' => const HostCapacityTile(
-      value: '11',
-      suffix: '/12',
-      label: 'Booked',
-    ),
     'HostEventActionsSection' => HostEventActionsSection(
       club: club,
       event: event,
@@ -2145,6 +2141,37 @@ Widget _hostEventManagePreviewFor(BuildContext context, String focus) {
       mode: HostEventParticipantsMode.setup,
     ),
     'HostEventCheckInQrPanel' => HostEventCheckInQrPanel(event: event),
+    'HostEventRosterHandle' => Center(
+      child: SizedBox(
+        width: CatchLayout.hostRosterDrawerHandleWidth,
+        height: CatchLayout.hostRosterDrawerHandleHeight,
+        child: HostEventRosterHandle(
+          open: false,
+          bookedCount: roster.bookedCount,
+          onTap: () {},
+          onHorizontalDragEnd: (_) {},
+        ),
+      ),
+    ),
+    'HostEventRosterPanel' => SizedBox(
+      width: 360,
+      height: 520,
+      child: HostEventRosterPanel(
+        bookedCount: roster.bookedCount,
+        onClose: () {},
+        child: const Center(child: Text('Guest roster content')),
+      ),
+    ),
+    'HostEventRosterDrawer' => SizedBox(
+      height: 620,
+      child: HostEventRosterDrawer(
+        open: true,
+        bookedCount: roster.bookedCount,
+        onOpenChanged: (_) {},
+        body: const Center(child: Text('Live operations stay mounted')),
+        roster: const Center(child: Text('Guest roster content')),
+      ),
+    ),
     'HostEventSummaryCard' => HostEventSummaryCard(club: club, event: event),
     'HostEventSummaryRow' => HostEventSummaryRow(
       icon: CatchIcons.locationOnOutlined,
@@ -2180,13 +2207,6 @@ Widget _hostEventManagePreviewFor(BuildContext context, String focus) {
       onCreateInviteLink: (_) async {},
       onCopyInviteLink: (_) {},
       onDisableInviteLink: (_) {},
-    ),
-    'HostManageMetaRow' => HostManageMetaRow(event: event),
-    'HostManageSectionPicker' => HostManageSectionPicker(
-      event: event,
-      now: event.startTime,
-      selectedSection: HostEventManageSection.setup,
-      onChanged: (_) {},
     ),
     'HostParticipationLifecycleBoard' => HostParticipationLifecycleBoard(
       viewModel: viewModel,
@@ -4842,11 +4862,6 @@ Widget readOnlyHostedEventScheduleCardCatalogStates(BuildContext context) {
   type: HostEventManageScreen,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
-@widgetbook.UseCase(
-  name: 'Covered by host event manage route states',
-  type: HostManageMetaRow,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
 // Exact host coverage entries. These point narrow promoted classes at the
 // catalog route/component state that renders the owning workflow.
 @widgetbook.UseCase(
@@ -4965,11 +4980,27 @@ Widget hostStrictHostAuthRequiredScreenCatalogStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostCapacityTile,
+  type: HostEventRosterDrawer,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
-Widget hostStrictHostCapacityTileCatalogStates(BuildContext context) =>
-    _hostEventManageExactCatalog(context, 'HostCapacityTile');
+Widget hostStrictHostEventRosterDrawerCatalogStates(BuildContext context) =>
+    _hostEventManageExactCatalog(context, 'HostEventRosterDrawer');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostEventRosterHandle,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostEventRosterHandleCatalogStates(BuildContext context) =>
+    _hostEventManageExactCatalog(context, 'HostEventRosterHandle');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostEventRosterPanel,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostEventRosterPanelCatalogStates(BuildContext context) =>
+    _hostEventManageExactCatalog(context, 'HostEventRosterPanel');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -7609,6 +7640,14 @@ class _HostManageRouteScope extends StatelessWidget {
   Widget build(BuildContext context) {
     final effectiveClub = club ?? _club;
     final effectiveEvent = event ?? _privateEvent;
+    final referenceNow = switch (initialSection) {
+      HostEventManageSection.setup || HostEventManageSection.guests =>
+        effectiveEvent.startTime.subtract(const Duration(hours: 1)),
+      HostEventManageSection.live => effectiveEvent.startTime,
+      HostEventManageSection.report => effectiveEvent.endTime.add(
+        const Duration(minutes: 1),
+      ),
+    };
     final effectiveParticipations =
         participations ?? HostOperationsFixtures.participations;
     final roster = EventParticipationRoster.fromParticipations(
@@ -7734,6 +7773,7 @@ class _HostManageRouteScope extends StatelessWidget {
                 initialEvent: _initialManageEvent(eventValue, effectiveEvent),
                 initialSection: initialSection,
                 initialParticipantSearchQuery: initialParticipantSearchQuery,
+                referenceNow: referenceNow,
               ),
         ),
       ),

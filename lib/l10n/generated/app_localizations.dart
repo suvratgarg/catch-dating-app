@@ -18852,13 +18852,13 @@ abstract class AppLocalizations {
   /// Partial audience coverage notice title.
   ///
   /// In en, this message translates to:
-  /// **'Some history is still being reconciled'**
+  /// **'Customer history is still syncing'**
   String get hostsHostAudienceCoveragePartial;
 
   /// Partial audience coverage explanation.
   ///
   /// In en, this message translates to:
-  /// **'Counts may omit older roster changes. Messaging stays blocked until the projection is exact, so nobody receives an accidental blast.'**
+  /// **'Older roster changes may be missing. Messaging stays off until the sync is complete.'**
   String get hostsHostAudienceCoveragePartialBody;
 
   /// WhatsApp sender section title.
@@ -19330,7 +19330,7 @@ abstract class AppLocalizations {
   /// Campaign recipient blocker.
   ///
   /// In en, this message translates to:
-  /// **'No selected contacts are both verified and opted in'**
+  /// **'None of these customers are both verified and opted in'**
   String get hostsHostAudienceBlockerNoRecipients;
 
   /// Campaign coverage blocker.
@@ -20149,8 +20149,26 @@ abstract class AppLocalizations {
   /// Opens organizer-owned customer identity and delivery controls.
   ///
   /// In en, this message translates to:
-  /// **'Manage customer'**
+  /// **'Manage'**
   String get hostCustomersManage;
+
+  /// Customer detail section for organizer-visible phone and email evidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get hostCustomersContactDetails;
+
+  /// Opens editable organizer-entered customer contact details.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit details'**
+  String get hostCustomersEditDetails;
+
+  /// Empty organizer-visible customer contact details.
+  ///
+  /// In en, this message translates to:
+  /// **'No phone or email saved yet.'**
+  String get hostCustomersNoContactDetails;
 
   /// Customer event-history status for a completed check-in.
   ///
@@ -20158,7 +20176,7 @@ abstract class AppLocalizations {
   /// **'Checked in'**
   String get hostCustomersCheckedIn;
 
-  /// Adds a name-only organizer CRM contact.
+  /// Adds an organizer CRM contact with optional contact details and a private note.
   ///
   /// In en, this message translates to:
   /// **'Add customer'**
@@ -20179,8 +20197,86 @@ abstract class AppLocalizations {
   /// Manual CRM identity boundary.
   ///
   /// In en, this message translates to:
-  /// **'This creates an organizer-only contact. It does not create a Catch account or grant messaging permission.'**
+  /// **'Add the details you know. Phone and email stay unverified and never grant messaging permission.'**
   String get hostCustomersAddHelp;
+
+  /// Required manual customer name validation.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the customer’s name.'**
+  String get hostCustomersNameRequired;
+
+  /// Organizer-owned customer phone field.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile number'**
+  String get hostCustomersPhone;
+
+  /// E.164 guidance for a manual customer phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Include the country code, for example +919876543210.'**
+  String get hostCustomersPhoneHelp;
+
+  /// Manual customer phone validation.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid number with country code.'**
+  String get hostCustomersPhoneInvalid;
+
+  /// Organizer-owned customer email field.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get hostCustomersEmail;
+
+  /// Manual customer email validation.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email address.'**
+  String get hostCustomersEmailInvalid;
+
+  /// Optional organizer-private note created with a customer.
+  ///
+  /// In en, this message translates to:
+  /// **'Private note'**
+  String get hostCustomersInitialNote;
+
+  /// Saves the organizer-owned customer name and editable contact details.
+  ///
+  /// In en, this message translates to:
+  /// **'Save details'**
+  String get hostCustomersSaveDetails;
+
+  /// Boundary for verified linked customer identity details.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified contact details come from the linked Catch account and cannot be edited here.'**
+  String get hostCustomersVerifiedDetailsManagedByCatch;
+
+  /// Labels manually entered customer endpoints as unverified.
+  ///
+  /// In en, this message translates to:
+  /// **'Added by your team · not verified by Catch'**
+  String get hostCustomersUnverifiedContactDetails;
+
+  /// Customer-detail load failure title.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer details unavailable'**
+  String get hostCustomersDetailUnavailable;
+
+  /// Missing customer-detail title.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer not found'**
+  String get hostCustomersDetailNotFound;
+
+  /// Customer-detail retry action.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload customer'**
+  String get hostCustomersReloadDetail;
 
   /// Active customer segment and its server-backed match count.
   ///
@@ -20671,6 +20767,18 @@ abstract class AppLocalizations {
   /// **'Only the 100 newest notes are shown.'**
   String get hostCustomersNotesTruncated;
 
+  /// Localized optional note-history failure title.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes could not be loaded'**
+  String get hostCustomersNotesUnavailableTitle;
+
+  /// Localized optional note-history failure guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'The customer details are available. Try reloading to restore note history.'**
+  String get hostCustomersNotesUnavailableBody;
+
   /// System-computed customer activity group heading.
   ///
   /// In en, this message translates to:
@@ -20694,6 +20802,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Only the 100 newest campaign deliveries are shown.'**
   String get hostCustomersSendsTruncated;
+
+  /// Localized optional send-history failure title.
+  ///
+  /// In en, this message translates to:
+  /// **'Message history could not be loaded'**
+  String get hostCustomersSendsUnavailableTitle;
+
+  /// Localized optional send-history failure guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'The customer details are available. Try reloading to restore message history.'**
+  String get hostCustomersSendsUnavailableBody;
 
   /// Organizer campaign delivery state shown on contact detail.
   ///
@@ -20883,6 +21003,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reports are available after the event ends.'**
   String get hostsHostEventManageReportUnavailableBeforeEvent;
+
+  /// Concise lifecycle subtitle for a hosted event before check-in opens.
+  ///
+  /// In en, this message translates to:
+  /// **'Event preparation'**
+  String get hostsHostEventManageWorkspacePreparation;
+
+  /// Concise lifecycle subtitle while Host runtime controls are relevant.
+  ///
+  /// In en, this message translates to:
+  /// **'Live operations'**
+  String get hostsHostEventManageWorkspaceRuntime;
+
+  /// Concise lifecycle subtitle after Host runtime closes.
+  ///
+  /// In en, this message translates to:
+  /// **'Event recap'**
+  String get hostsHostEventManageWorkspaceRecap;
+
+  /// Concise lifecycle subtitle for a cancelled hosted event.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled event'**
+  String get hostsHostEventManageWorkspaceCancelled;
+
+  /// Post-event disclosure title for secondary event and Event Success configuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Review event setup'**
+  String get hostsHostEventManageReviewSetupTitle;
+
+  /// Explains the secondary post-event setup audit disclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'Event details, Host actions, and Event Success configuration remain available for audit.'**
+  String get hostsHostEventManageReviewSetupBody;
+
+  /// Title for the pull-out Host event roster.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest roster'**
+  String get hostsHostEventRosterDrawerTitle;
+
+  /// Booked guest count in the pull-out roster header.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No booked guests} =1{1 booked guest} other{{count} booked guests}}'**
+  String hostsHostEventRosterDrawerCount({required int count});
+
+  /// Accessible label for the closed roster pull tab.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Open guest roster} =1{Open guest roster, 1 booked guest} other{Open guest roster, {count} booked guests}}'**
+  String hostsHostEventRosterDrawerOpen({required int count});
+
+  /// Accessible label for closing the pull-out roster.
+  ///
+  /// In en, this message translates to:
+  /// **'Close guest roster'**
+  String get hostsHostEventRosterDrawerClose;
 }
 
 class _AppLocalizationsDelegate

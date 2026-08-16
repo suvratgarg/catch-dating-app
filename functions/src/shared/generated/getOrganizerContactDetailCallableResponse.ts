@@ -17,6 +17,10 @@ export interface GetOrganizerContactDetailCallableResponse {
   identityState: "unlinked" | "verified" | "ambiguous";
   identityConfidence: "eventOnly" | "proposed" | "verified";
   /**
+   * True only for an unlinked organizer-created contact whose proposed phone/email evidence the manager may edit.
+   */
+  contactDetailsEditable?: boolean;
+  /**
    * @maxItems 20
    */
   ambiguousCandidateContactIds: string[];
@@ -110,6 +114,7 @@ export interface GetOrganizerContactDetailCallableResponse {
     revision: number;
   }[];
   notesTruncated?: boolean;
+  notesCoverage?: "exact" | "unavailable";
   /**
    * @maxItems 100
    */
@@ -149,6 +154,7 @@ export interface GetOrganizerContactDetailCallableResponse {
       }
   )[];
   sendsTruncated?: boolean;
+  sendsCoverage?: "exact" | "unavailable";
   /**
    * @maxItems 50
    */

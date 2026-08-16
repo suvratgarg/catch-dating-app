@@ -12,116 +12,91 @@ import '../events/events_test_helpers.dart';
 final _l10n = AppLocalizationsEn();
 
 void main() {
-  test('HostEventManageScreenState resolves chrome display state', () {
-    final club = buildClub();
-    final event = buildEvent();
+  test(
+    'HostEventManageScreenState resolves lifecycle workspace and roster',
+    () {
+      final now = DateTime(2026, 8, 15, 12);
+      final upcoming = buildEvent(
+        startTime: now.add(const Duration(hours: 2)),
+        endTime: now.add(const Duration(hours: 3)),
+      );
+      final runtime = buildEvent(
+        startTime: now.add(const Duration(minutes: 5)),
+        endTime: now.add(const Duration(hours: 2)),
+      );
+      final past = buildEvent(
+        startTime: now.subtract(const Duration(hours: 5)),
+        endTime: now.subtract(const Duration(hours: 3)),
+      );
 
-    final regular = HostEventManageScreenState.resolve(
-      club: club,
-      event: event,
-      selectedSection: HostEventManageSection.setup,
-      textScale: 1,
-    );
-    final collapsed = HostEventManageScreenState.resolve(
-      club: club,
-      event: event,
-      selectedSection: HostEventManageSection.guests,
-      textScale: 1.4,
-    );
+      final preparation = HostEventManageScreenState.resolve(
+        event: upcoming,
+        requestedSection: HostEventManageSection.setup,
+        now: now,
+      );
+      final liveRoster = HostEventManageScreenState.resolve(
+        event: runtime,
+        requestedSection: HostEventManageSection.guests,
+        now: now,
+      );
+      final recap = HostEventManageScreenState.resolve(
+        event: past,
+        requestedSection: HostEventManageSection.live,
+        now: now,
+      );
 
-    expect(regular.selectedSection, HostEventManageSection.setup);
-    expect(regular.eventTitle, event.title);
-    expect(regular.collapseHeaderCopy, isFalse);
-    expect(regular.collapsedTitleSemanticsLabel, isNull);
-    expect(collapsed.selectedSection, HostEventManageSection.guests);
-    expect(collapsed.collapseHeaderCopy, isTrue);
-    expect(
-      collapsed.collapsedTitleSemanticsLabel,
-      '${club.name}. ${event.title}',
-    );
-  });
+      expect(preparation.phase, HostEventWorkspacePhase.preparation);
+      expect(preparation.eventTitle, upcoming.title);
+      expect(preparation.openRosterInitially, isFalse);
+      expect(liveRoster.phase, HostEventWorkspacePhase.runtime);
+      expect(liveRoster.openRosterInitially, isTrue);
+      expect(recap.phase, HostEventWorkspacePhase.recap);
+      expect(recap.openRosterInitially, isFalse);
+    },
+  );
 
-  test('HostEventManageScreenState maps section labels and transitions', () {
-    const state = HostEventManageScreenState(
-      selectedSection: HostEventManageSection.setup,
-      eventTitle: 'Morning Run',
-      collapseHeaderCopy: false,
-      collapsedTitleSemanticsLabel: null,
-    );
-
+  test('legacy Host Event Manage route sections keep stable labels', () {
     expect(HostEventManageSection.setup.label(_l10n), 'Setup');
     expect(HostEventManageSection.guests.label(_l10n), 'Guests');
     expect(HostEventManageSection.live.label(_l10n), 'Live');
     expect(HostEventManageSection.report.label(_l10n), 'Report');
-    expect(
-      state.selectSection(HostEventManageSection.report).selectedSection,
-      HostEventManageSection.report,
-    );
   });
 
-  test('Host Event Manage sections follow the event lifecycle', () {
+  test('Host Event Manage renders exactly one lifecycle workspace', () {
     final now = DateTime(2026, 8, 15, 12);
     final upcoming = buildEvent(
-      startTime: now.add(const Duration(hours: 1)),
+      startTime: now.add(const Duration(hours: 2)),
+      endTime: now.add(const Duration(hours: 3)),
+    );
+    final runtime = buildEvent(
+      startTime: now.add(const Duration(minutes: 5)),
       endTime: now.add(const Duration(hours: 2)),
     );
     final ended = buildEvent(
-      startTime: now.subtract(const Duration(hours: 2)),
-      endTime: now,
+      startTime: now.subtract(const Duration(hours: 5)),
+      endTime: now.subtract(const Duration(hours: 3)),
+    );
+    final cancelled = buildEvent(
+      startTime: now.add(const Duration(days: 1)),
+      endTime: now.add(const Duration(days: 1, hours: 2)),
+      status: EventLifecycleStatus.cancelled,
     );
 
-    final upcomingLive = HostEventManageSectionAccess.resolve(
-      section: HostEventManageSection.live,
-      event: upcoming,
-      now: now,
-      l10n: _l10n,
-    );
-    final upcomingReport = HostEventManageSectionAccess.resolve(
-      section: HostEventManageSection.report,
-      event: upcoming,
-      now: now,
-      l10n: _l10n,
-    );
-    final endedLive = HostEventManageSectionAccess.resolve(
-      section: HostEventManageSection.live,
-      event: ended,
-      now: now,
-      l10n: _l10n,
-    );
-    final endedReport = HostEventManageSectionAccess.resolve(
-      section: HostEventManageSection.report,
-      event: ended,
-      now: now,
-      l10n: _l10n,
-    );
-
-    expect(upcomingLive.enabled, isTrue);
-    expect(upcomingReport.enabled, isFalse);
     expect(
-      upcomingReport.disabledReason,
-      'Reports are available after the event ends.',
-    );
-    expect(endedLive.enabled, isFalse);
-    expect(
-      endedLive.disabledReason,
-      'Live controls close when the event ends.',
-    );
-    expect(endedReport.enabled, isTrue);
-    expect(
-      hostEventManageEffectiveSection(
-        requested: HostEventManageSection.report,
-        event: upcoming,
-        now: now,
-      ),
-      HostEventManageSection.setup,
+      hostEventWorkspacePhaseFor(event: upcoming, now: now),
+      HostEventWorkspacePhase.preparation,
     );
     expect(
-      hostEventManageEffectiveSection(
-        requested: HostEventManageSection.live,
-        event: ended,
-        now: now,
-      ),
-      HostEventManageSection.report,
+      hostEventWorkspacePhaseFor(event: runtime, now: now),
+      HostEventWorkspacePhase.runtime,
+    );
+    expect(
+      hostEventWorkspacePhaseFor(event: ended, now: now),
+      HostEventWorkspacePhase.recap,
+    );
+    expect(
+      hostEventWorkspacePhaseFor(event: cancelled, now: now),
+      HostEventWorkspacePhase.recap,
     );
   });
 

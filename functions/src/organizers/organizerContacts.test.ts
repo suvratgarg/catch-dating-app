@@ -7,6 +7,7 @@ import {
   decodeContactCursor,
   encodeContactCursor,
   listContactsMatchCountResult,
+  manualContactDetailsEditable,
   resolveManualTags,
   summarizeContactRevenue,
 } from "./organizerContacts";
@@ -151,6 +152,21 @@ test("manual tag caps fail with explicit organizer and contact errors", () => {
       error.code === "failed-precondition" &&
       error.message === "An organizer can have at most 20 manual tags."
   );
+});
+
+test("only unlinked organizer-created contacts expose endpoint editing", () => {
+  assert.equal(manualContactDetailsEditable({
+    primarySource: "hostManual",
+    identityState: "unlinked",
+  }), true);
+  assert.equal(manualContactDetailsEditable({
+    primarySource: "hostImport",
+    identityState: "unlinked",
+  }), false);
+  assert.equal(manualContactDetailsEditable({
+    primarySource: "hostManual",
+    identityState: "verified",
+  }), false);
 });
 
 test("CRM CSV cells neutralize spreadsheet formulas and quote safely", () => {

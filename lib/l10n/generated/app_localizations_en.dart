@@ -12110,11 +12110,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostAudienceCoveragePartial =>
-      'Some history is still being reconciled';
+      'Customer history is still syncing';
 
   @override
   String get hostsHostAudienceCoveragePartialBody =>
-      'Counts may omit older roster changes. Messaging stays blocked until the projection is exact, so nobody receives an accidental blast.';
+      'Older roster changes may be missing. Messaging stays off until the sync is complete.';
 
   @override
   String get hostsHostAudienceWhatsappSender => 'WhatsApp Business sender';
@@ -12412,7 +12412,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostAudienceBlockerNoRecipients =>
-      'No selected contacts are both verified and opted in';
+      'None of these customers are both verified and opted in';
 
   @override
   String get hostsHostAudienceBlockerCoverage =>
@@ -12935,7 +12935,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostSendsClearSchedule => 'Send after approval';
 
   @override
-  String get hostCustomersManage => 'Manage customer';
+  String get hostCustomersManage => 'Manage';
+
+  @override
+  String get hostCustomersContactDetails => 'Details';
+
+  @override
+  String get hostCustomersEditDetails => 'Edit details';
+
+  @override
+  String get hostCustomersNoContactDetails => 'No phone or email saved yet.';
 
   @override
   String get hostCustomersCheckedIn => 'Checked in';
@@ -12951,7 +12960,50 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersAddHelp =>
-      'This creates an organizer-only contact. It does not create a Catch account or grant messaging permission.';
+      'Add the details you know. Phone and email stay unverified and never grant messaging permission.';
+
+  @override
+  String get hostCustomersNameRequired => 'Enter the customer’s name.';
+
+  @override
+  String get hostCustomersPhone => 'Mobile number';
+
+  @override
+  String get hostCustomersPhoneHelp =>
+      'Include the country code, for example +919876543210.';
+
+  @override
+  String get hostCustomersPhoneInvalid =>
+      'Enter a valid number with country code.';
+
+  @override
+  String get hostCustomersEmail => 'Email';
+
+  @override
+  String get hostCustomersEmailInvalid => 'Enter a valid email address.';
+
+  @override
+  String get hostCustomersInitialNote => 'Private note';
+
+  @override
+  String get hostCustomersSaveDetails => 'Save details';
+
+  @override
+  String get hostCustomersVerifiedDetailsManagedByCatch =>
+      'Verified contact details come from the linked Catch account and cannot be edited here.';
+
+  @override
+  String get hostCustomersUnverifiedContactDetails =>
+      'Added by your team · not verified by Catch';
+
+  @override
+  String get hostCustomersDetailUnavailable => 'Customer details unavailable';
+
+  @override
+  String get hostCustomersDetailNotFound => 'Customer not found';
+
+  @override
+  String get hostCustomersReloadDetail => 'Reload customer';
 
   @override
   String hostCustomersFilterSummary({
@@ -13271,6 +13323,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Only the 100 newest notes are shown.';
 
   @override
+  String get hostCustomersNotesUnavailableTitle => 'Notes could not be loaded';
+
+  @override
+  String get hostCustomersNotesUnavailableBody =>
+      'The customer details are available. Try reloading to restore note history.';
+
+  @override
   String get hostCustomersActivity => 'Activity';
 
   @override
@@ -13282,6 +13341,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostCustomersSendsTruncated =>
       'Only the 100 newest campaign deliveries are shown.';
+
+  @override
+  String get hostCustomersSendsUnavailableTitle =>
+      'Message history could not be loaded';
+
+  @override
+  String get hostCustomersSendsUnavailableBody =>
+      'The customer details are available. Try reloading to restore message history.';
 
   @override
   String hostCustomersSendStatus({required String status}) {
@@ -13416,4 +13483,53 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsHostEventManageReportUnavailableBeforeEvent =>
       'Reports are available after the event ends.';
+
+  @override
+  String get hostsHostEventManageWorkspacePreparation => 'Event preparation';
+
+  @override
+  String get hostsHostEventManageWorkspaceRuntime => 'Live operations';
+
+  @override
+  String get hostsHostEventManageWorkspaceRecap => 'Event recap';
+
+  @override
+  String get hostsHostEventManageWorkspaceCancelled => 'Cancelled event';
+
+  @override
+  String get hostsHostEventManageReviewSetupTitle => 'Review event setup';
+
+  @override
+  String get hostsHostEventManageReviewSetupBody =>
+      'Event details, Host actions, and Event Success configuration remain available for audit.';
+
+  @override
+  String get hostsHostEventRosterDrawerTitle => 'Guest roster';
+
+  @override
+  String hostsHostEventRosterDrawerCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count booked guests',
+      one: '1 booked guest',
+      zero: 'No booked guests',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostsHostEventRosterDrawerOpen({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Open guest roster, $count booked guests',
+      one: 'Open guest roster, 1 booked guest',
+      zero: 'Open guest roster',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostsHostEventRosterDrawerClose => 'Close guest roster';
 }

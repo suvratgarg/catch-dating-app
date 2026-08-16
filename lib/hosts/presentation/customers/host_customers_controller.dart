@@ -266,9 +266,15 @@ class HostCustomersController {
   Future<HostCreatedCustomer> createCustomer({
     required String organizerId,
     required String displayName,
+    String? phoneE164,
+    String? email,
+    String? initialNote,
   }) => _repository.createContact(
     organizerId: organizerId,
     displayName: displayName,
+    phoneE164: phoneE164,
+    email: email,
+    initialNote: initialNote,
   );
 
   Future<String> startConversation({
@@ -290,6 +296,10 @@ class HostCustomersController {
     required int expectedRevision,
     String? displayNameOverride,
     bool clearDisplayNameOverride = false,
+    String? phoneE164,
+    bool updatePhoneE164 = false,
+    String? email,
+    bool updateEmail = false,
     bool? whatsappAdminSuppressed,
     bool? hidden,
     List<String>? manualTags,
@@ -299,6 +309,10 @@ class HostCustomersController {
     expectedRevision: expectedRevision,
     displayNameOverride: displayNameOverride,
     clearDisplayNameOverride: clearDisplayNameOverride,
+    phoneE164: phoneE164,
+    updatePhoneE164: updatePhoneE164,
+    email: email,
+    updateEmail: updateEmail,
     whatsappAdminSuppressed: whatsappAdminSuppressed,
     hidden: hidden,
     manualTags: manualTags,

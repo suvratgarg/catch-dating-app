@@ -25,7 +25,7 @@ void _registerHostOperationsCustomersTests() {
       find.descendant(of: row, matching: find.text('8 events attended')),
       findsOne,
     );
-    expect(find.descendant(of: row, matching: find.text('REGULARS')), findsOne);
+    expect(find.descendant(of: row, matching: find.text('Regulars')), findsOne);
     expect(
       find.descendant(of: row, matching: find.byType(CatchField)),
       findsNothing,
@@ -97,19 +97,105 @@ void _registerHostOperationsCustomersTests() {
       ],
     );
 
-    final search = tester.widget<CatchField>(find.byType(CatchField).first);
-    expect(search.showLabel, isFalse);
-    expect(search.inputHint, 'Search by name');
+    final searchFinder = find.byKey(const ValueKey('host-customers-search'));
+    final search = tester.widget<CatchSearchField>(searchFinder);
+    expect(search.mode, CatchSearchFieldMode.expanded);
+    expect(search.placeholder, 'Search by name');
     expect(find.text('SMS reachable'), findsNothing);
     expect(requests.last.search, isNull);
 
-    await tester.enterText(find.byType(TextField), '  ananya  ');
+    await tester.enterText(
+      find.descendant(of: searchFinder, matching: find.byType(TextField)),
+      '  ananya  ',
+    );
     await pumpFeatureUiFor(tester, const Duration(milliseconds: 299));
     expect(requests.last.search, isNull);
 
     await pumpFeatureUiFor(tester, const Duration(milliseconds: 1));
     await pumpFeatureUi(tester);
     expect(requests.last.search, 'ananya');
+  });
+
+  testWidgets('manual customer form captures useful identity and memory', (
+    tester,
+  ) async {
+    await _pumpHostScreen(
+      tester,
+      const Scaffold(body: HostAddCustomerSheet(organizerId: 'organizer-1')),
+    );
+
+    expect(
+      tester
+          .widget<CatchBottomSheetScaffold>(
+            find.byType(CatchBottomSheetScaffold),
+          )
+          .keyboardSafe,
+      isTrue,
+    );
+    expect(
+      tester
+          .widget<CatchField>(
+            find.byKey(const ValueKey('host-add-customer-name')),
+          )
+          .title,
+      'Customer name',
+    );
+    expect(
+      tester
+          .widget<CatchField>(
+            find.byKey(const ValueKey('host-add-customer-phone')),
+          )
+          .title,
+      'Mobile number',
+    );
+    expect(
+      tester
+          .widget<CatchField>(
+            find.byKey(const ValueKey('host-add-customer-email')),
+          )
+          .title,
+      'Email',
+    );
+    expect(
+      tester
+          .widget<CatchField>(
+            find.byKey(const ValueKey('host-add-customer-note')),
+          )
+          .title,
+      'Private note',
+    );
+    expect(
+      find.textContaining('never grant messaging permission'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('customer detail failure names the customer, not organizer', (
+    tester,
+  ) async {
+    await _pumpHostScreen(
+      tester,
+      const HostCustomerDetailScreen(
+        organizerId: 'organizer-1',
+        contactId: 'contact-1',
+      ),
+      overrides: [
+        uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
+        hostAudienceContactDetailProvider(
+          'organizer-1',
+          'contact-1',
+        ).overrideWithValue(
+          AsyncError<HostAudienceContactDetail>(
+            StateError('detail failed'),
+            StackTrace.current,
+          ),
+        ),
+      ],
+    );
+
+    expect(find.text('Customer details unavailable'), findsOneWidget);
+    expect(find.text('Reload customer'), findsOneWidget);
+    expect(find.text('Organizer unavailable'), findsNothing);
   });
 
   testWidgets('customer header compresses stats and export into overflow', (

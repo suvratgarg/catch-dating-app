@@ -11,8 +11,9 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_notice.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -86,12 +87,13 @@ class HostCustomerMemorySection extends StatelessWidget {
             onAction: onAddNote,
           ),
           gapH8,
-          if (customer.notes.isEmpty)
+          if (customer.notes.isEmpty &&
+              customer.notesCoverage == HostCustomerHistoryCoverage.exact)
             Text(
               context.l10n.hostCustomersNoNotes,
               style: CatchTextStyles.supporting(context),
             )
-          else
+          else if (customer.notes.isNotEmpty)
             CatchFieldLanes.single(
               child: Column(
                 children: [
@@ -102,25 +104,33 @@ class HostCustomerMemorySection extends StatelessWidget {
                       body: _noteAttribution(context, note, currentUid),
                       titleMaxLines: 6,
                       bodyMaxLines: 2,
-                      action: IconButton(
+                      action: CatchIconButton.icon(
                         tooltip: context.l10n.hostCustomersEditNote,
-                        icon: Icon(CatchIcons.edit),
-                        onPressed: () => onEditNote(note),
+                        icon: CatchIcons.edit,
+                        variant: CatchIconButtonVariant.plain,
+                        onTap: () => onEditNote(note),
                       ),
                       divider: index < customer.notes.length - 1,
                     ),
                 ],
               ),
             ),
-          if (customer.notesTruncated) ...[
+          if (customer.notesCoverage ==
+              HostCustomerHistoryCoverage.unavailable) ...[
             gapH12,
-            CatchNotice(
-              notice: CatchNoticeData(
-                id: 'host.customers.notes.truncated',
-                title: context.l10n.hostCustomersNotes,
-                message: context.l10n.hostCustomersNotesTruncated,
-                tone: CatchNoticeTone.warning,
-              ),
+            CatchSurface.message(
+              title: context.l10n.hostCustomersNotesUnavailableTitle,
+              message: context.l10n.hostCustomersNotesUnavailableBody,
+              messageIcon: CatchIcons.infoOutlineRounded,
+              messageTone: CatchSurfaceMessageTone.warning,
+            ),
+          ] else if (customer.notesTruncated) ...[
+            gapH12,
+            CatchSurface.message(
+              title: context.l10n.hostCustomersNotes,
+              message: context.l10n.hostCustomersNotesTruncated,
+              messageIcon: CatchIcons.infoOutlineRounded,
+              messageTone: CatchSurfaceMessageTone.warning,
             ),
           ],
         ],
@@ -170,12 +180,13 @@ class HostCustomerSendHistory extends StatelessWidget {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (customer.sends.isEmpty)
+        if (customer.sends.isEmpty &&
+            customer.sendsCoverage == HostCustomerHistoryCoverage.exact)
           Text(
             context.l10n.hostCustomersNoSends,
             style: CatchTextStyles.supporting(context),
           )
-        else
+        else if (customer.sends.isNotEmpty)
           CatchFieldLanes.single(
             child: Column(
               children: [
@@ -201,15 +212,22 @@ class HostCustomerSendHistory extends StatelessWidget {
               ],
             ),
           ),
-        if (customer.sendsTruncated) ...[
+        if (customer.sendsCoverage ==
+            HostCustomerHistoryCoverage.unavailable) ...[
           gapH12,
-          CatchNotice(
-            notice: CatchNoticeData(
-              id: 'host.customers.sends.truncated',
-              title: context.l10n.hostCustomersSendHistory,
-              message: context.l10n.hostCustomersSendsTruncated,
-              tone: CatchNoticeTone.warning,
-            ),
+          CatchSurface.message(
+            title: context.l10n.hostCustomersSendsUnavailableTitle,
+            message: context.l10n.hostCustomersSendsUnavailableBody,
+            messageIcon: CatchIcons.infoOutlineRounded,
+            messageTone: CatchSurfaceMessageTone.warning,
+          ),
+        ] else if (customer.sendsTruncated) ...[
+          gapH12,
+          CatchSurface.message(
+            title: context.l10n.hostCustomersSendHistory,
+            message: context.l10n.hostCustomersSendsTruncated,
+            messageIcon: CatchIcons.infoOutlineRounded,
+            messageTone: CatchSurfaceMessageTone.warning,
           ),
         ],
       ],

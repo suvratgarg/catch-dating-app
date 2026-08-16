@@ -13073,6 +13073,10 @@
             "symbol": "HostEventManageScreenState"
           },
           {
+            "file": "lib/hosts/presentation/widgets/host_event_roster_drawer.dart",
+            "symbol": "HostEventRosterDrawer"
+          },
+          {
             "file": "lib/hosts/presentation/host_event_manage_screen_state.dart",
             "symbol": "HostInviteLinkRowDisplayState"
           },
@@ -13143,7 +13147,7 @@
             "symbol": "EventSuccessController"
           }
         ],
-        "notes": "HostEventManageRouteScreen is the defined ARCH-SCREEN-001C host workspace route boundary: it resolves uid, club, and event route state, gates access to hosts of the club, and delegates loaded state to HostEventManageScreen. HostEventManageScreenState now owns selected Setup / Guests / Live / Report section state, section labels, host manage event title copy, and collapsed-header semantics. HostEventActionDisplayState owns known-activity policy, cancel/delete pending copy, delete visibility, cancelled-event action rows, and shared host roster count helpers. HostPrivateLinkActionState owns share-private-link invite code/link derivation, loading/error/count detail copy, and share-enabled policy. HostPrivateAccessDisplayState owns private-access card missing-code/listed-copy policy and code/link row visibility. HostInviteLinksListDisplayState owns named invite-link mutation mode, create-loading flag, disabled-action policy, and empty copy. HostInviteLinkRowDisplayState owns named invite-link row URL derivation, stat copy, disabled badge visibility, disable-action visibility, and actions-disabled policy. HostRosterDisplayState owns setup/live/report roster filter specs, active-filter fallback, searched row ids, empty-state copy, and waitlist bulk-offer eligibility. HostSetupRosterRowDisplayState, HostLiveRosterRowDisplayState, and HostReportRosterRowDisplayState own setup/live/report row meta, signal, tone, payment copy, and row action policy flags. HostParticipantsMutationDisplayState owns attendance, approval/decline, waitlist-offer, ops-export, and revenue-export pending/error display policy. HostParticipantLifecycleActions owns profile, approval, decline, attendance, waitlist-offer, ops-export, and revenue-export callback injection for HostParticipationLifecycleBoard. HostReportSummaryDisplayState owns gross estimate, checked/no-show/waitlist counts, and report summary copy. HostParticipantProfilesLookupState owns attendee-profile lookup empty, loading, ready, error, and retry-target policy. HostEventManageScreen uses the shared CatchSegmentedControl in the top-bar bottom slot, renders setup as capacity metrics plus compact host action rows before deeper private-access/details/Event Success setup content, and owns host edit/cancel/delete routing, dialogs, mutation execution, snackbars, and callbacks. hostAppAttendanceSheet and hostAppEventSuccessScreen remain route aliases to this canonical surface instead of separate contracts. Continue loaded-workspace adapters for Event Success host state and section retry intents without moving solved route loading/access gates out of HostEventManageRouteScreen. HostEventManageActionEffect owns edit/cancel/delete action destinations, edit route parameters, and event payload so HostEventManageScreen only executes Navigator/dialog/controller side effects. HostEventActionsSection receives HostPrivateLinkActionState and a typed share callback from the screen edge instead of watching private-link providers directly. HostParticipationLifecycleBoard receives HostParticipantLifecycleActions instead of reading Riverpod mutations/routes directly."
+        "notes": "HostEventManageRouteScreen is the defined ARCH-SCREEN-001C host workspace route boundary: it resolves uid, club, and event route state, gates access to hosts of the club, and delegates loaded state to HostEventManageScreen. HostEventManageScreenState resolves one lifecycle workspace from event time and status: Preparation before check-in opens, Live Operations while the event is running, and Recap once it ends or is cancelled. Legacy Setup / Guests / Live / Report route aliases remain stable; Guests opens HostEventRosterDrawer while other aliases cannot override lifecycle relevance. The shared CatchTopBar contains only event title and lifecycle subtitle. Preparation uses canonical field rows before access, staff, summary, actions, and Event Success setup; Live owns compact Event Success controls; Recap owns reviews and reporting with existing configuration under Review event setup. HostEventRosterDrawer is a lazy overlay that preserves the underlying workspace element and exposes the roster in every phase. Existing Host action, private-link, invite-link, participant mutation, report export, Event Success, and controller ownership seams remain authoritative. hostAppAttendanceSheet and hostAppEventSuccessScreen remain route aliases to this canonical surface rather than separate contracts."
       },
       "designRefs": [
         {
@@ -13328,13 +13332,13 @@
           "captureIds": [
             "host_manage_route_loading"
           ],
-          "notes": "HostEventManageRouteScreen route loading is now captured with uid/club/event provider waves resolving through HostRouteLoadingBody(showTabRail: true)."
+          "notes": "HostEventManageRouteScreen route loading is now captured with uid/club/event provider waves resolving through HostRouteLoadingBody(showTabRail: false), matching the lifecycle workspace without flashing the retired section rail."
         },
         {
           "id": "club_fetch_loading",
           "kind": "loading",
           "status": "captured",
-          "source": "fetchClubProvider loading renders HostRouteLoadingBody(showTabRail: true) on the host background.",
+          "source": "fetchClubProvider loading renders HostRouteLoadingBody(showTabRail: false) on the host background.",
           "nextAction": "Add host-shell loading capture and decide whether route loading should use a named host loading section.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
@@ -13418,14 +13422,14 @@
           ]
         },
         {
-          "id": "section_picker",
+          "id": "lifecycle_workspace",
           "kind": "populated",
           "status": "captured",
-          "source": "HostEventManageScreen renders Setup / Guests / Live / Report through CatchOptionGroup and accepts initialSection from route aliases or query state.",
+          "source": "HostEventManageScreen renders one Preparation, Live Operations, or Recap workspace from event lifecycle. Legacy initialSection values remain route aliases; Guests opens the roster drawer.",
           "tests": [
             "test/hosts/host_create_event_screen_test.dart"
           ],
-          "nextAction": "Captured by setup, guests, live, and report route captures; move selected section into HostEventManageScreenState as part of DP-HOST-EVENT-MANAGE-002.",
+          "nextAction": "Refresh deterministic captures for preparation, live operations, recap, closed roster edge, and open roster overlay.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
           ],
@@ -13435,7 +13439,7 @@
             "host_live_console",
             "host_post_event_report"
           ],
-          "notes": "Setup, Guests, Live, and Report selected section states now have deterministic Widgetbook and route capture coverage.",
+          "notes": "Lifecycle-owned workspaces replace the top-level section picker. Legacy aliases remain covered for deep-link compatibility.",
           "widgetbook": [
             "HostEventManageRouteScreen/Route and section states"
           ]
@@ -13444,7 +13448,7 @@
           "id": "setup_workspace",
           "kind": "populated",
           "status": "captured",
-          "source": "Setup mode composes capacity metrics, compact host action rows, optional private access, event summary, and Event Success setup; host_manage_setup_private_access captures the top setup/private-access workspace.",
+          "source": "Preparation composes canonical capacity/revenue/policy field rows, compact host actions, optional private access, staff, event summary, and Event Success setup without a mode picker.",
           "tests": [
             "test/hosts/host_create_event_screen_test.dart"
           ],
@@ -13460,7 +13464,7 @@
           "id": "full_event_waitlist_apron",
           "kind": "populated",
           "status": "captured",
-          "source": "Full events render a compact full-capacity/waitlist apron below the top bar before section content.",
+          "source": "Full events render a compact capacity notice followed by the same canonical field-row summary used by all preparation states.",
           "nextAction": "Captured by host_manage_full_waitlist_apron with a manifest-registered full/waitlist apron reference; remaining work is mutation pending/error, Event Success substates, deeper offline variants, and private-access/invite reference variants.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
@@ -13477,11 +13481,11 @@
           "id": "attendance_setup_roster",
           "kind": "populated",
           "status": "captured",
-          "source": "HostEventParticipantsPanel setup mode renders lifecycle filter tiles and public profile-backed participant rows from the Guests section, matching the Claude template's Guests mode.",
+          "source": "HostEventRosterDrawer opens over the lifecycle workspace and renders setup-mode filters and public-profile-backed participant rows without resetting the underlying event workspace.",
           "tests": [
             "test/hosts/host_create_event_screen_test.dart"
           ],
-          "nextAction": "Attendance roster now renders from the Guests section and has a manifest-registered Claude guests reference plus deterministic capture within advisory threshold. Add Widgetbook edge states for booked, waitlist, manual requests, slots, profile rows, and long participant names.",
+          "nextAction": "The roster drawer and its handle/panel anatomy have deterministic Widgetbook coverage. Continue roster-content edge states for booked, waitlist, manual requests, slots, profile rows, and long participant names without restoring a full-page Guests mode.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
           ],
@@ -13629,7 +13633,7 @@
           "captureIds": [
             "host_live_console"
           ],
-          "source": "Live mode renders EventSuccessHostSection with initialTab live inside the canonical Host Event Manage route. Direction 3 fills the bounded route body with the Quiet Command Console, moves the roster behind Guests, derives counts from eventAttendees, and keeps the primary action pinned while Previous remains an explicit prior-step action rather than claiming revisioned undo.",
+          "source": "Live Operations renders EventSuccessHostSection with initialTab live inside the canonical route. Direction 3 fills the bounded route body with the Quiet Command Console, keeps the roster behind the persistent edge drawer, derives counts from eventAttendees, and keeps the primary action pinned while Previous remains an explicit prior-step action rather than claiming revisioned undo.",
           "tests": [
             "test/hosts/host_create_event_screen_test.dart"
           ],
@@ -13889,11 +13893,11 @@
           "captureIds": [
             "host_post_event_report"
           ],
-          "source": "Report mode leads with HostEventParticipantsPanel in report mode and then EventSuccessHostSection with initialTab report.",
+          "source": "Recap begins as soon as the event ends or is cancelled, leads with reviews and EventSuccessHostSection report state, exposes the read-only report roster through the edge drawer, and retains configuration/actions under Review event setup.",
           "tests": [
             "test/hosts/host_create_event_screen_test.dart"
           ],
-          "nextAction": "Host Event Manage report workspace now has a manifest-registered design reference and deterministic capture within advisory threshold: mismatch 12.61%, meanDelta 15.52, maxDelta 240. Continue hidden analytics, signal quality, sparse feedback, long recommendation copy, deeper offline, and reference-specific variants if the contract needs them.",
+          "nextAction": "The deterministic Recap capture covers reviews, report content, and the roster edge affordance. Continue hidden analytics, signal quality, sparse feedback, long recommendation copy, deeper offline, and reference-specific variants if the contract needs them; retain the previous report image as historical evidence.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
           ]
@@ -14301,15 +14305,15 @@
           "id": "text_scale_2",
           "kind": "accessibility",
           "status": "captured",
-          "source": "host_manage_text_scale_2 captures Host Manage top bar, section picker, stats, roster table, and setup cards at TextScaler 2.0.",
-          "nextAction": "Add text-scale capture for top bar title, section picker, roster table, invite links, Event Success live/report, and host action buttons.",
+          "source": "host_manage_text_scale_2 captures the text-aware Host Manage back/title header, preparation field rows, host actions, and roster edge affordance at TextScaler 2.0.",
+          "nextAction": "Continue text-scale coverage for an open roster drawer, long invite links, and Event Success live/recap content without restoring the retired section picker.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
           ],
           "captureIds": [
             "host_manage_text_scale_2"
           ],
-          "notes": "Host Manage text-scale 2.0 now has the deterministic host_manage_text_scale_2 capture covering the top bar, section picker, stats, roster table, and setup cards."
+          "notes": "Host Manage text-scale 2.0 now has a deterministic capture with a visible back action and unclipped title row; lifecycle content and the roster edge affordance remain reachable."
         },
         {
           "id": "reduced_motion",
@@ -14341,8 +14345,8 @@
         }
       ],
       "composition": {
-        "currentLayout": "HostEventManageRouteScreen reads uid, club, and event providers, then HostEventManageScreen owns selected Setup / Guests / Live / Report section state. Setup leads with capacity metrics and compact host action rows before deeper invite/private access, summary, and Event Success setup content; Guests owns the participant roster; Live and Report compose Event Success and report sections.",
-        "targetLayout": "HostEventManageRouteScreen remains the ARCH-SCREEN-001C route shell for aliases, loading/access/error, and initial-section inputs. A HostEventManageScreenState or split loaded-workspace adapters should own selected section, roster/private-access/invite-link/Event Success/report display state, host action display state, mutation display state, section retry intents, and typed callbacks, then compose provider-free setup, guests, live, report, private access, invite-link, and host action sections.",
+        "currentLayout": "HostEventManageRouteScreen reads uid, club, and event providers, then HostEventManageScreenState resolves one Preparation, Live Operations, or Recap workspace. CatchTopBar shows only event title and lifecycle subtitle. HostEventRosterDrawer overlays the setup/live/report roster without replacing the workspace. Preparation owns configuration and host actions, Live owns the compact Event Success console, and Recap owns reviews/reporting with configuration available under Review event setup.",
+        "targetLayout": "Keep HostEventManageRouteScreen as the ARCH-SCREEN-001C route shell for aliases, loading/access/error, and deep-link inputs. Continue moving roster/private-access/invite-link/Event Success/report display waves and typed callbacks into provider-free adapters without reintroducing a persistent section picker or duplicating the lifecycle resolver.",
         "sections": [
           {
             "id": "section.host.event_manage_route_adapter",
@@ -14377,32 +14381,31 @@
           },
           {
             "id": "section.host.event_manage_chrome",
-            "name": "Host manage top bar and section picker",
+            "name": "Host manage lifecycle chrome",
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "HostManageChrome",
-              "HostManageSectionPicker"
+              "HostManageChrome"
             ],
             "flutter": {
               "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-              "symbol": "HostManageSectionPicker"
+              "symbol": "HostEventManageScreen"
             },
             "currentOwner": "HostEventManageScreen",
-            "targetOwner": "provider-free host manage chrome section",
+            "targetOwner": "HostEventManageScreenState lifecycle chrome",
             "dependencies": [
-              "catch.top_bar",
-              "catch.option_group"
+              "catch.top_bar"
             ],
             "states": [
-              "setup",
-              "live",
-              "report",
+              "preparation",
+              "runtime",
+              "recap",
+              "cancelled",
               "long_event_title",
               "alias_initial_section",
               "text_scale"
             ],
-            "migration": "HostEventManageScreenState now owns selected section, section labels, title copy, collapsed-header semantics, and section-change transitions. Continue by moving alias-specific section intent fixtures and broader loaded-workspace display state into adapters.",
+            "migration": "HostEventManageScreenState owns lifecycle phase, event title, and old-Guests drawer intent. Keep aliases stable while preventing them from overriding lifecycle relevance.",
             "previewIds": [
               "HostEventManageRouteScreen/Route and section states"
             ]
@@ -14420,9 +14423,9 @@
               "symbol": "HostEventManageScreen"
             },
             "currentOwner": "HostEventManageScreen",
-            "targetOwner": "provider-free host event status apron",
+            "targetOwner": "canonical CatchSection field-row status summary",
             "dependencies": [
-              "catch.surface"
+              "catch.field"
             ],
             "states": [
               "not_full",
@@ -14430,14 +14433,14 @@
               "long_copy",
               "theme"
             ],
-            "migration": "Move capacity/waitlist display data into the adapter and add preview/capture states for full event pressure.",
+            "migration": "Capacity, waitlist, revenue, and policy now share one field-row primitive; refresh full-event and text-scale captures without restoring the four-card grid.",
             "previewIds": [
               "HostEventManageRouteScreen/Route and section states"
             ]
           },
           {
             "id": "section.host.event_manage_participants",
-            "name": "Host manage lifecycle participants panel",
+            "name": "Host manage guest roster drawer",
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
@@ -14446,11 +14449,11 @@
               "HostReportTable"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
-              "symbol": "HostEventParticipantsPanel"
+              "file": "lib/hosts/presentation/widgets/host_event_roster_drawer.dart",
+              "symbol": "HostEventRosterDrawer"
             },
-            "currentOwner": "HostEventParticipantsPanel",
-            "targetOwner": "provider-free roster section fed by AttendanceSheetViewModel adapter data",
+            "currentOwner": "HostEventRosterDrawer + HostOperationalRosterPanel + HostEventParticipantsPanel",
+            "targetOwner": "stable overlay drawer fed by provider-free roster adapters",
             "dependencies": [
               "catch.badge",
               "catch.button",
@@ -14462,6 +14465,8 @@
               "setup",
               "live",
               "report",
+              "closed_edge",
+              "open_overlay",
               "loading",
               "error",
               "event_not_found",
@@ -14471,7 +14476,7 @@
               "profile_error",
               "mutation_error"
             ],
-            "migration": "HostRosterDisplayState now owns lifecycle filter specs, active-filter fallback, searched row ids, empty-state copy, and waitlist bulk-offer eligibility while preserving batched profile lookup. HostSetupRosterRowDisplayState, HostLiveRosterRowDisplayState, and HostReportRosterRowDisplayState own row meta, signal, tone, payment copy, and row action policy flags. HostParticipantProfilesLookupState owns attendee-profile lookup empty/loading/ready/error branch policy and retry target identity. HostParticipantLifecycleActions injects profile, approval, decline, attendance, waitlist-offer, and report-export callbacks so HostParticipationLifecycleBoard stays provider-free while HostEventParticipantsList owns provider/navigation side effects.",
+            "migration": "HostEventRosterDrawer owns lazy overlay presentation and preserves the underlying workspace element. Existing roster display states own lifecycle filters, search, rows, mutations, profile lookup, and report exports. Add compact/wide, swipe, long-name, and text-scale capture coverage without moving provider ownership into the drawer.",
             "previewIds": [
               "HostEventManageRouteScreen/Route and section states"
             ]
@@ -21342,7 +21347,7 @@
           "id": "route_loading",
           "kind": "loading",
           "status": "captured",
-          "source": "Club/event provider loading renders a tokenized Scaffold with HostRouteLoadingBody(showTabRail: true).",
+          "source": "Club/event provider loading renders a tokenized Scaffold with HostRouteLoadingBody(showTabRail: false).",
           "previewIds": [
             "EditHostedEventRouteScreen/Route and section states"
           ],

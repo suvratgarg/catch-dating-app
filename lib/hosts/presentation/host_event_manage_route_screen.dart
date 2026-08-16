@@ -10,6 +10,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
     this.initialEvent,
     this.initialSection = HostEventManageSection.setup,
     this.initialParticipantSearchQuery = '',
+    this.referenceNow,
   });
 
   final String clubId;
@@ -17,6 +18,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
   final Event? initialEvent;
   final HostEventManageSection initialSection;
   final String initialParticipantSearchQuery;
+  final DateTime? referenceNow;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -42,7 +44,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
           title: context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
           divider: scrolledUnder,
         ),
-        body: const SafeArea(child: HostRouteLoadingBody(showTabRail: true)),
+        body: const SafeArea(child: HostRouteLoadingBody()),
       ),
       errorBuilder: (_, error, _) => CatchErrorScaffold.fromError(
         error,
@@ -86,6 +88,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
           onBackToSuccess: () => Navigator.of(context).maybePop(),
           initialSection: initialSection,
           initialParticipantSearchQuery: initialParticipantSearchQuery,
+          referenceNow: referenceNow,
         );
       },
     );

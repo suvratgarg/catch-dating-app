@@ -752,9 +752,13 @@ The directory accepts `lastSeen`, `mostAttended`, or `name`; every opaque cursor
 is versioned and bound to its query plan, filters, and ordering. Filtered sorts
 are computed over a bounded complete candidate set rather than sorting one
 already-paginated page, and an over-limit candidate set fails explicitly.
-`createOrganizerContact` may add a name-only contact and its zero-history trait,
-but creates no attendee, endpoint evidence, UID, Consumer profile, or messaging
-grant. The Customer detail revenue block joins only a verified linked UID to
+`createOrganizerContact` may add a contact name, optional organizer-entered
+phone/email evidence, an optional first private note, and its zero-history
+trait. Organizer-entered endpoints remain `proposed`, organizer-scoped evidence:
+they create no attendee, verified identity, UID, Consumer profile, opt-in, or
+messaging grant. Only unlinked contacts whose primary source is `hostManual`
+may later edit or clear those endpoints. The Customer detail revenue block
+joins only a verified linked UID to
 completed, non-refunded Catch payments whose event ids already occur in that
 contact's organizer event edges. It reports partial coverage when either the
 bounded event timeline or linked-UID payment scan truncates, and unavailable

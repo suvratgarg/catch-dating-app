@@ -2405,9 +2405,15 @@ abstract final class CatchLayout {
   static const double tabBarFloatingHorizontalInset = CatchSpacing.s4;
   static const double tabBarFloatingBottomInset = CatchSpacing.s3;
   static const double tabBarCompactItemExtent = 48.0;
+  static const double tabBarMinimumTapExtent = 44.0;
+  static const double tabBarMinimumSelectedExtent = 88.0;
   static const double tabBarPillMinHeight = 42.0;
-  static const double tabBarPillHorizontalPadding = CatchSpacing.s3;
-  static const double tabBarLabelGap = CatchSpacing.s1;
+  // The icon box owns a small amount of transparent badge clearance. These
+  // asymmetric geometric insets produce equal optical pill padding.
+  static const double tabBarPillLeadingPadding = CatchSpacing.s2;
+  static const double tabBarPillTrailingPadding = CatchSpacing.s3;
+  static const double tabBarLabelGap = CatchSpacing.micro6;
+  static const double tabBarIconBoxExtent = 30.0;
   static const double tabBarIconSize = 22.0;
   static const double appShellNavigationIdentityExtent = CatchSpacing.s7;
   static const double appShellRailWidth = 96.0;
@@ -2419,6 +2425,9 @@ abstract final class CatchLayout {
   static const double topBarLargeHeight = 104.0;
   static const double hostEventManageTopBarHeight =
       topBarLargeHeight + CatchSpacing.s4;
+  static const double hostRosterDrawerMaxWidth = 440.0;
+  static const double hostRosterDrawerHandleWidth = 48.0;
+  static const double hostRosterDrawerHandleHeight = 88.0;
   static const double topBarTabHeight = CatchSpacing.s12;
   static const double topBarCollapsedFadeExtent = 72.0;
   static const double topBarCompactSearchBottomHeight = 68.0;

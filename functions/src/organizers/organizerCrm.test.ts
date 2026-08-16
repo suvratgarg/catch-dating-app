@@ -5,6 +5,7 @@ import {OrganizerCommunicationPreferenceDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {
   OrganizerCrmAttendeeRow,
+  mergeOrganizerCrmSummaries,
   projectedOrganizerCrmSummary,
   summarizeOrganizerCrm,
 } from "./organizerCrm";
@@ -109,6 +110,47 @@ test("projected CRM summary preserves compatibility and coverage", () => {
   assert.equal(summary.truncated, true);
   assert.equal(summary.readiness.whatsapp, "providerSetupRequired");
 });
+
+test(
+  "partial summaries retain manual contacts missing from attendee history",
+  () => {
+    const merged = mergeOrganizerCrmSummaries({
+      organizerId: "organizer-1",
+      contactCount: 1,
+      pastAttendeeCount: 0,
+      repeatAttendeeCount: 0,
+      advocateCount: 0,
+      highImpactAdvocateCount: 0,
+      linkedAccountCount: 0,
+      importedContactCount: 0,
+      whatsappOptInCount: 0,
+      smsOptInCount: 0,
+      sourceCoverage: "partial",
+      projectionVersion: 1,
+      computedAt: timestamp,
+    }, {
+      organizerId: "organizer-1",
+      contactCount: 0,
+      pastAttendeeCount: 0,
+      repeatAttendeeCount: 0,
+      advocateCount: 0,
+      highImpactAdvocateCount: 0,
+      linkedAccountCount: 0,
+      importedContactCount: 0,
+      whatsappOptInCount: 0,
+      smsOptInCount: 0,
+      truncated: false,
+      readiness: {
+        inApp: "currentEventOnly",
+        whatsapp: "providerSetupRequired",
+        sms: "providerAndDltSetupRequired",
+      },
+    });
+
+    assert.equal(merged.contactCount, 1);
+    assert.equal(merged.truncated, true);
+  }
+);
 
 function attendee(overrides: Partial<OrganizerCrmAttendeeRow> & {
   id: string;

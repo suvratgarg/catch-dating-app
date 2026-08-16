@@ -192,10 +192,49 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
       ),
     );
 
+    final originalElements = <String, Element>{
+      for (final id in const ['home', 'explore', 'chats', 'profile'])
+        id: tester.element(
+          find.byKey(ValueKey<Object>('catch_tab_bar.slot.$id')),
+        ),
+    };
     await tester.tap(find.bySemanticsLabel('Explore'));
     await pumpFeatureUi(tester);
     expect(tester.takeException(), isNull);
     expect(find.text('Explore'), findsOneWidget);
+    for (final entry in originalElements.entries) {
+      expect(
+        identical(
+          entry.value,
+          tester.element(
+            find.byKey(ValueKey<Object>('catch_tab_bar.slot.${entry.key}')),
+          ),
+        ),
+        isTrue,
+        reason: '${entry.key} should keep its element while selection moves',
+      );
+    }
+
+    final iconRect = tester.getRect(
+      find.descendant(
+        of: find.byKey(const ValueKey<Object>('catch_tab_bar.pill.explore')),
+        matching: find.byIcon(Icons.explore),
+      ),
+    );
+    final labelRect = tester.getRect(find.text('Explore'));
+    expect(iconRect.center.dy, closeTo(labelRect.center.dy, 0.5));
+
+    await tester.tap(find.bySemanticsLabel('You'));
+    await pumpFeatureUi(tester);
+    final compactWidths = const ['home', 'explore', 'chats']
+        .map(
+          (id) => tester
+              .getRect(find.byKey(ValueKey<Object>('catch_tab_bar.slot.$id')))
+              .width,
+        )
+        .toList();
+    expect(compactWidths[0], closeTo(compactWidths[1], 0.5));
+    expect(compactWidths[1], closeTo(compactWidths[2], 0.5));
   });
 
   testWidgets('CatchHorizontalRail is embedded and chromeless by default', (

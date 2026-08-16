@@ -24,6 +24,8 @@ enum HostAudiencePermissionStatus { unknown, optedIn, optedOut }
 
 enum HostCustomerRevenueCoverage { exact, partial, unavailable }
 
+enum HostCustomerHistoryCoverage { exact, unavailable }
+
 enum HostContactMergeMatchKind {
   sameVerifiedUid,
   sameVerifiedPhone,
@@ -913,6 +915,7 @@ class HostAudienceContactDetail {
     required this.linkedAccount,
     required this.identityState,
     required this.identityConfidence,
+    this.contactDetailsEditable = false,
     required this.ambiguousCandidateCount,
     required this.whatsappAdminSuppressed,
     required this.traits,
@@ -923,8 +926,10 @@ class HostAudienceContactDetail {
     this.manualTagVocabulary = const [],
     this.notes = const [],
     this.notesTruncated = false,
+    this.notesCoverage = HostCustomerHistoryCoverage.exact,
     this.sends = const [],
     this.sendsTruncated = false,
+    this.sendsCoverage = HostCustomerHistoryCoverage.exact,
     this.activeMerges = const [],
     required this.revision,
   });
@@ -946,6 +951,9 @@ class HostAudienceContactDetail {
         'identityState',
       ),
       identityConfidence: _requiredString(map, 'identityConfidence'),
+      contactDetailsEditable: map['contactDetailsEditable'] == null
+          ? false
+          : _requiredBool(map, 'contactDetailsEditable'),
       ambiguousCandidateCount: _stringList(
         map['ambiguousCandidateContactIds'],
       ).length,
@@ -976,6 +984,13 @@ class HostAudienceContactDetail {
       notesTruncated: map['notesTruncated'] == null
           ? false
           : _requiredBool(map, 'notesTruncated'),
+      notesCoverage: map['notesCoverage'] == null
+          ? HostCustomerHistoryCoverage.exact
+          : _enumByName(
+              HostCustomerHistoryCoverage.values,
+              _requiredString(map, 'notesCoverage'),
+              'notes coverage',
+            ),
       sends: _optionalMapList(
         map['sends'],
         'contact sends',
@@ -983,6 +998,13 @@ class HostAudienceContactDetail {
       sendsTruncated: map['sendsTruncated'] == null
           ? false
           : _requiredBool(map, 'sendsTruncated'),
+      sendsCoverage: map['sendsCoverage'] == null
+          ? HostCustomerHistoryCoverage.exact
+          : _enumByName(
+              HostCustomerHistoryCoverage.values,
+              _requiredString(map, 'sendsCoverage'),
+              'sends coverage',
+            ),
       activeMerges: _optionalMapList(
         map['activeMerges'],
         'active contact merges',
@@ -1001,6 +1023,7 @@ class HostAudienceContactDetail {
   final bool linkedAccount;
   final HostAudienceIdentityState identityState;
   final String identityConfidence;
+  final bool contactDetailsEditable;
   final int ambiguousCandidateCount;
   final bool whatsappAdminSuppressed;
   final HostCustomerTraits traits;
@@ -1011,8 +1034,10 @@ class HostAudienceContactDetail {
   final List<HostManualTag> manualTagVocabulary;
   final List<HostCustomerNote> notes;
   final bool notesTruncated;
+  final HostCustomerHistoryCoverage notesCoverage;
   final List<HostCustomerSend> sends;
   final bool sendsTruncated;
+  final HostCustomerHistoryCoverage sendsCoverage;
   final List<HostActiveContactMerge> activeMerges;
   final int revision;
 }
@@ -1604,11 +1629,17 @@ class HostCrmRepository {
   Future<HostCreatedCustomer> createContact({
     required String organizerId,
     required String displayName,
+    String? phoneE164,
+    String? email,
+    String? initialNote,
   }) => _call(
     name: 'createOrganizerContact',
     payload: CreateOrganizerContactCallableRequest(
       organizerId: organizerId,
       displayName: displayName,
+      phoneE164: phoneE164,
+      email: email,
+      initialNote: initialNote,
     ).toJson(),
     action: 'create organizer customer',
     parse: HostCreatedCustomer.fromCallableData,
@@ -1634,6 +1665,10 @@ class HostCrmRepository {
     required int expectedRevision,
     String? displayNameOverride,
     bool clearDisplayNameOverride = false,
+    String? phoneE164,
+    bool updatePhoneE164 = false,
+    String? email,
+    bool updateEmail = false,
     bool? whatsappAdminSuppressed,
     bool? hidden,
     List<String>? manualTags,
@@ -1645,6 +1680,8 @@ class HostCrmRepository {
       'expectedRevision': expectedRevision,
       if (displayNameOverride != null || clearDisplayNameOverride)
         'displayNameOverride': displayNameOverride,
+      if (updatePhoneE164) 'phoneE164': phoneE164,
+      if (updateEmail) 'email': email,
       'whatsappAdminSuppressed': ?whatsappAdminSuppressed,
       'hidden': ?hidden,
       'manualTags': ?manualTags,

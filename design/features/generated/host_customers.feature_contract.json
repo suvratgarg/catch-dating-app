@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/host_customers.feature.json",
   "generatedFor": "2026-08-16",
-  "sourceDigest": "sha256:32adcebc96bf3f6ecb4533866a282f09415e40c25268db6ffe2478c38b5f0551",
+  "sourceDigest": "sha256:07a496bd6a0670da5b92bb638e729fe3f064fff8ec34204c2dd5be2df172c659",
   "resolvedDigest": "sha256:91654e30f0cd1c7f8b7d66c9028541c8d32f494fe28aebb27eb72cebe93d8353",
   "feature": {
     "id": "feature.host_customers",
@@ -559,7 +559,7 @@
               "id": "host_customers.organizer_contact_created"
             }
           ],
-          "description": "Creates a name-only organizer CRM contact without creating a Catch identity or granting messaging permission.",
+          "description": "Creates an organizer CRM contact with a required name, optional unverified phone/email evidence, and an optional private note without creating a Catch identity or granting messaging permission.",
           "implementationStatus": "implemented"
         },
         {

@@ -1,9 +1,13 @@
 import {createHash} from "crypto";
 import * as admin from "firebase-admin";
+import {logger} from "firebase-functions";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
-import {appCheckCallableOptionsWithLimits} from
+import {
+  appCheckCallableOptionsWithLimits,
+  appCheckCallableOptionsWithSecrets,
+} from
   "../shared/callableOptions";
 import {GetOrganizerContactDetailCallablePayload} from
   "../shared/generated/getOrganizerContactDetailCallablePayload";
@@ -35,6 +39,7 @@ import {
   OrganizerContactDocument,
   OrganizerContactChannelStateDocument,
   OrganizerContactEventEdgeDocument,
+  OrganizerContactIdentityLinkDocument,
   OrganizerContactMergeReceiptDocument,
   OrganizerContactNoteDocument,
   OrganizerContactTagVocabularyDocument,
@@ -59,6 +64,11 @@ import {requireOrganizerManager} from
 import {checkRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {organizerContactChannelStateId} from "./organizerCampaignModel";
+import {
+  organizerIdentityEvidenceId,
+  organizerIdentityHash,
+} from "./organizerAudienceModel";
+import {organizerContactIdentityKey} from "./organizerAudienceSecrets";
 
 const defaultContactPageSize = 50;
 const maxDetailEvents = 100;
@@ -76,11 +86,13 @@ type ContactSort = NonNullable<ListOrganizerContactsCallablePayload["sort"]>;
 interface OrganizerContactsDeps {
   firestore: () => FirebaseFirestore.Firestore;
   checkRateLimit: typeof checkRateLimit;
+  identitySecret: () => string;
 }
 
 const defaultDeps: OrganizerContactsDeps = {
   firestore: () => admin.firestore(),
   checkRateLimit,
+  identitySecret: () => organizerContactIdentityKey.value(),
 };
 
 interface ContactCursor {
@@ -262,7 +274,7 @@ async function exactListContactsMatchCount(params: {
   return snapshot.data().count;
 }
 
-/** Creates a name-only organizer CRM contact without inventing identity. */
+/** Creates an organizer CRM contact without inventing identity or consent. */
 export async function createOrganizerContactHandler(
   request: CallableRequest<unknown>,
   deps: OrganizerContactsDeps = defaultDeps
@@ -282,6 +294,9 @@ export async function createOrganizerContactHandler(
   const traitRef = db.collection("organizerContactTraits").doc(contactRef.id);
   const summaryRef = db.collection("organizerAudienceSummaries")
     .doc(data.organizerId);
+  const manualEvidenceAttendeeId = manualContactEvidenceAttendeeId(
+    contactRef.id
+  );
   const revision = Math.max(1, now.toMillis());
   const trait: OrganizerContactTraitDocument = {
     organizerId: data.organizerId,
@@ -314,10 +329,11 @@ export async function createOrganizerContactHandler(
     displayNameOverride: null,
     searchName: data.displayName.toLocaleLowerCase("en"),
     linkedUid: null,
-    phoneE164: null,
-    email: null,
+    phoneE164: data.phoneE164 ?? null,
+    email: data.email ?? null,
     identityState: "unlinked",
-    identityConfidence: "eventOnly",
+    identityConfidence: data.phoneE164 || data.email ? "proposed" :
+      "eventOnly",
     primarySource: "hostManual",
     ambiguousCandidateContactIds: [],
     firstSeenAt: now,
@@ -335,11 +351,35 @@ export async function createOrganizerContactHandler(
     hiddenBy: null,
     hiddenTraitSnapshot: null,
   };
+  const identityLinks = manualContactIdentityLinks({
+    db,
+    organizerId: data.organizerId,
+    contactId: contactRef.id,
+    attendeeId: manualEvidenceAttendeeId,
+    phoneE164: data.phoneE164 ?? null,
+    email: data.email ?? null,
+    secret: data.phoneE164 || data.email ? deps.identitySecret() : null,
+    now,
+  });
+  const initialNoteRef = data.initialNote ?
+    db.collection("organizerContactNotes").doc() : null;
+  const initialNote: OrganizerContactNoteDocument | null = data.initialNote ? {
+    organizerId: data.organizerId,
+    contactId: contactRef.id,
+    authorUid: actorUid,
+    body: data.initialNote,
+    revision,
+    createdAt: now,
+    updatedAt: now,
+    updatedByUid: actorUid,
+  } : null;
 
   await db.runTransaction(async (tx) => {
     const summarySnap = await tx.get(summaryRef);
     tx.create(contactRef, contact);
     tx.create(traitRef, trait);
+    for (const link of identityLinks) tx.create(link.ref, link.data);
+    if (initialNoteRef && initialNote) tx.create(initialNoteRef, initialNote);
     tx.set(summaryRef, summaryWithTrait(
       data.organizerId,
       summarySnap.data() as OrganizerAudienceSummaryDocument | undefined,
@@ -399,23 +439,38 @@ export async function getOrganizerContactDetailHandler(
       .limit(maxDetailEvents + 1)
       .get(),
     channelRef.get(),
-    db.collection("organizerContactNotes")
-      .where("organizerId", "==", data.organizerId)
-      .where("contactId", "==", data.contactId)
-      .orderBy("createdAt", "desc")
-      .orderBy(admin.firestore.FieldPath.documentId(), "desc")
-      .limit(maxDetailNotes + 1)
-      .get(),
-    db.collection("organizerCampaignRecipients")
-      .where("organizerId", "==", data.organizerId)
-      .where("contactId", "==", data.contactId)
-      .orderBy("createdAt", "desc")
-      .orderBy(admin.firestore.FieldPath.documentId(), "desc")
-      .limit(maxDetailSends + 1)
-      .get(),
-    db.collection("organizerBroadcastSummaries")
-      .where("recipientContactIds", "array-contains", data.contactId)
-      .get(),
+    optionalContactQuery(
+      db.collection("organizerContactNotes")
+        .where("organizerId", "==", data.organizerId)
+        .where("contactId", "==", data.contactId)
+        .orderBy("createdAt", "desc")
+        .orderBy(admin.firestore.FieldPath.documentId(), "desc")
+        .limit(maxDetailNotes + 1)
+        .get(),
+      "notes",
+      data.organizerId,
+      data.contactId
+    ),
+    optionalContactQuery(
+      db.collection("organizerCampaignRecipients")
+        .where("organizerId", "==", data.organizerId)
+        .where("contactId", "==", data.contactId)
+        .orderBy("createdAt", "desc")
+        .orderBy(admin.firestore.FieldPath.documentId(), "desc")
+        .limit(maxDetailSends + 1)
+        .get(),
+      "campaign sends",
+      data.organizerId,
+      data.contactId
+    ),
+    optionalContactQuery(
+      db.collection("organizerBroadcastSummaries")
+        .where("recipientContactIds", "array-contains", data.contactId)
+        .get(),
+      "announcement sends",
+      data.organizerId,
+      data.contactId
+    ),
     db.collection("organizerContactTagVocabularies")
       .doc(data.organizerId).get(),
     db.collection("organizerContactMergeReceipts")
@@ -454,26 +509,33 @@ export async function getOrganizerContactDetailHandler(
   const manualTagsById = new Map(
     tagVocabulary.map((tag) => [tag.tagId, tag])
   );
-  const notes = noteSnap.docs.slice(0, maxDetailNotes)
+  const notes = (noteSnap?.docs ?? []).slice(0, maxDetailNotes)
     .map((doc) => noteDetailRow(
       doc.id,
       doc.data() as OrganizerContactNoteDocument
     ))
     .filter((note): note is NonNullable<typeof note> => note !== null);
-  const campaignSends = await contactCampaignSendHistory({
-    db,
-    organizerId: data.organizerId,
-    recipientDocuments: recipientSnap.docs.slice(0, maxDetailSends).map(
-      (doc) => ({
-        id: doc.id,
-        data: doc.data() as OrganizerCampaignRecipientDocument,
-      })
-    ),
-  });
+  const campaignSendsResult = recipientSnap === null ? null :
+    await optionalContactHistory(
+      contactCampaignSendHistory({
+        db,
+        organizerId: data.organizerId,
+        recipientDocuments: recipientSnap.docs.slice(0, maxDetailSends).map(
+          (doc) => ({
+            id: doc.id,
+            data: doc.data() as OrganizerCampaignRecipientDocument,
+          })
+        ),
+      }),
+      "campaign send hydration",
+      data.organizerId,
+      data.contactId
+    );
+  const campaignSends = campaignSendsResult ?? [];
   const broadcastSends = contactBroadcastSendHistory({
     organizerId: data.organizerId,
     contactId: data.contactId,
-    summaries: broadcastSnap.docs.map((doc) =>
+    summaries: (broadcastSnap?.docs ?? []).map((doc) =>
       doc.data() as OrganizerBroadcastSummaryDocument),
   });
   const allSends = [...campaignSends, ...broadcastSends].sort(
@@ -499,6 +561,7 @@ export async function getOrganizerContactDetailHandler(
     linkedAccount: contact.linkedUid !== null,
     identityState: activeIdentityState(contact.identityState),
     identityConfidence: contact.identityConfidence,
+    contactDetailsEditable: manualContactDetailsEditable(contact),
     ambiguousCandidateContactIds: contact.ambiguousCandidateContactIds,
     whatsappAdminSuppressed:
       (channelSnap.data() as OrganizerContactChannelStateDocument | undefined)
@@ -521,10 +584,15 @@ export async function getOrganizerContactDetailHandler(
     manualTags: manualTagsForContact(contact, manualTagsById),
     manualTagVocabulary: tagVocabulary,
     notes,
-    notesTruncated: noteSnap.size > maxDetailNotes,
+    notesTruncated: (noteSnap?.size ?? 0) > maxDetailNotes,
+    notesCoverage: noteSnap === null ? "unavailable" : "exact",
     sends,
     sendsTruncated:
-      recipientSnap.size > maxDetailSends || allSends.length > maxDetailSends,
+      (recipientSnap?.size ?? 0) > maxDetailSends ||
+      allSends.length > maxDetailSends,
+    sendsCoverage:
+      recipientSnap === null || broadcastSnap === null ||
+      campaignSendsResult === null ? "unavailable" : "exact",
     activeMerges,
     revision: contact.revision,
   };
@@ -683,6 +751,39 @@ export async function mutateOrganizerContactHandler(
       patch.displayNameOverride = data.displayNameOverride ?? null;
       patch.searchName = (data.displayNameOverride ?? contact.displayName)
         .toLocaleLowerCase("en");
+    }
+    const updatesPhone = Object.prototype.hasOwnProperty.call(
+      data,
+      "phoneE164"
+    );
+    const updatesEmail = Object.prototype.hasOwnProperty.call(data, "email");
+    if ((updatesPhone || updatesEmail) &&
+        !manualContactDetailsEditable(contact)) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Only unlinked contacts added by your team can change contact details."
+      );
+    }
+    const nextPhone = updatesPhone ? data.phoneE164 ?? null :
+      contact.phoneE164;
+    const nextEmail = updatesEmail ? data.email ?? null : contact.email;
+    if (updatesPhone) patch.phoneE164 = nextPhone;
+    if (updatesEmail) patch.email = nextEmail;
+    if (updatesPhone || updatesEmail) {
+      patch.identityConfidence = nextPhone || nextEmail ? "proposed" :
+        "eventOnly";
+      updateManualContactIdentityLinks({
+        tx,
+        db,
+        organizerId: data.organizerId,
+        contactId: data.contactId,
+        priorPhoneE164: contact.phoneE164,
+        nextPhoneE164: nextPhone,
+        priorEmail: contact.email,
+        nextEmail,
+        secret: deps.identitySecret(),
+        now,
+      });
     }
     const existingTagVocabulary = tagVocabularySnap.data() as
       OrganizerContactTagVocabularyDocument | undefined;
@@ -1601,6 +1702,12 @@ function normalizeContactMutationPayload(data: unknown): unknown {
     normalized.displayNameOverride = normalized.displayNameOverride
       .trim().replace(/\s+/g, " ");
   }
+  if (typeof normalized.phoneE164 === "string") {
+    normalized.phoneE164 = normalizeManualPhone(normalized.phoneE164);
+  }
+  if (typeof normalized.email === "string") {
+    normalized.email = normalizeManualEmail(normalized.email);
+  }
   if (Array.isArray(normalized.manualTags)) {
     normalized.manualTags = normalized.manualTags.map((tag) =>
       typeof tag === "string" ? normalizeManualTagLabel(tag) : tag
@@ -1647,7 +1754,186 @@ function normalizeCreateContactPayload(data: unknown): unknown {
   if (typeof normalized.displayName === "string") {
     normalized.displayName = normalized.displayName.trim().replace(/\s+/g, " ");
   }
+  if (typeof normalized.phoneE164 === "string") {
+    normalized.phoneE164 = normalizeManualPhone(normalized.phoneE164);
+  }
+  if (typeof normalized.email === "string") {
+    normalized.email = normalizeManualEmail(normalized.email);
+  }
+  if (typeof normalized.initialNote === "string") {
+    normalized.initialNote = normalized.initialNote.trim();
+  }
   return normalized;
+}
+
+function normalizeManualPhone(value: string): string {
+  return value.trim().replace(/[()\s-]+/g, "");
+}
+
+function normalizeManualEmail(value: string): string {
+  return value.trim().toLocaleLowerCase("en");
+}
+
+export function manualContactDetailsEditable(
+  contact: Pick<OrganizerContactDocument, "primarySource" | "identityState">
+): boolean {
+  return contact.primarySource === "hostManual" &&
+    contact.identityState === "unlinked";
+}
+
+function manualContactEvidenceAttendeeId(contactId: string): string {
+  return `manual_${contactId}`;
+}
+
+interface ManualIdentityLink {
+  ref: FirebaseFirestore.DocumentReference;
+  data: OrganizerContactIdentityLinkDocument;
+}
+
+function manualContactIdentityLinks(params: {
+  db: FirebaseFirestore.Firestore;
+  organizerId: string;
+  contactId: string;
+  attendeeId: string;
+  phoneE164: string | null;
+  email: string | null;
+  secret: string | null;
+  now: FirebaseFirestore.Timestamp;
+}): ManualIdentityLink[] {
+  const endpoints = [
+    {kind: "phone" as const, value: params.phoneE164},
+    {kind: "email" as const, value: params.email},
+  ].filter((item): item is {kind: "phone" | "email"; value: string} =>
+    item.value !== null
+  );
+  if (endpoints.length === 0) return [];
+  if (!params.secret) {
+    throw new Error("Manual contact identity evidence requires a secret.");
+  }
+  return endpoints.map((endpoint) => {
+    const identityHash = organizerIdentityHash(
+      params.secret!,
+      params.organizerId,
+      endpoint.kind,
+      endpoint.value
+    );
+    const identityLinkId = organizerIdentityEvidenceId({
+      attendeeId: params.attendeeId,
+      kind: endpoint.kind,
+      identityHash,
+    });
+    return {
+      ref: params.db.collection("organizerContactIdentityLinks")
+        .doc(identityLinkId),
+      data: {
+        organizerId: params.organizerId,
+        contactId: params.contactId,
+        originContactId: params.contactId,
+        attendeeId: params.attendeeId,
+        kind: endpoint.kind,
+        identityHash,
+        hashVersion: "hmac-sha256-v1",
+        confidence: "proposed",
+        source: "hostManual",
+        createdAt: params.now,
+        updatedAt: params.now,
+      },
+    };
+  });
+}
+
+function updateManualContactIdentityLinks(params: {
+  tx: FirebaseFirestore.Transaction;
+  db: FirebaseFirestore.Firestore;
+  organizerId: string;
+  contactId: string;
+  priorPhoneE164: string | null;
+  nextPhoneE164: string | null;
+  priorEmail: string | null;
+  nextEmail: string | null;
+  secret: string;
+  now: FirebaseFirestore.Timestamp;
+}): void {
+  const attendeeId = manualContactEvidenceAttendeeId(params.contactId);
+  const changed = [
+    {
+      kind: "phone" as const,
+      prior: params.priorPhoneE164,
+      next: params.nextPhoneE164,
+    },
+    {kind: "email" as const, prior: params.priorEmail, next: params.nextEmail},
+  ].filter((item) => item.prior !== item.next);
+  for (const item of changed) {
+    if (item.prior) {
+      const priorHash = organizerIdentityHash(
+        params.secret,
+        params.organizerId,
+        item.kind,
+        item.prior
+      );
+      params.tx.delete(params.db.collection("organizerContactIdentityLinks")
+        .doc(organizerIdentityEvidenceId({
+          attendeeId,
+          kind: item.kind,
+          identityHash: priorHash,
+        })));
+    }
+    if (item.next) {
+      const identityHash = organizerIdentityHash(
+        params.secret,
+        params.organizerId,
+        item.kind,
+        item.next
+      );
+      const ref = params.db.collection("organizerContactIdentityLinks")
+        .doc(organizerIdentityEvidenceId({
+          attendeeId,
+          kind: item.kind,
+          identityHash,
+        }));
+      params.tx.create(ref, {
+        organizerId: params.organizerId,
+        contactId: params.contactId,
+        originContactId: params.contactId,
+        attendeeId,
+        kind: item.kind,
+        identityHash,
+        hashVersion: "hmac-sha256-v1",
+        confidence: "proposed",
+        source: "hostManual",
+        createdAt: params.now,
+        updatedAt: params.now,
+      } satisfies OrganizerContactIdentityLinkDocument);
+    }
+  }
+}
+
+async function optionalContactQuery<T>(
+  operation: Promise<T>,
+  section: string,
+  organizerId: string,
+  contactId: string
+): Promise<T | null> {
+  try {
+    return await operation;
+  } catch (error) {
+    logger.warn("Optional organizer contact history was unavailable.", {
+      section,
+      organizerId,
+      contactId,
+      code: error instanceof Error ? error.name : "unknown",
+    });
+    return null;
+  }
+}
+
+async function optionalContactHistory<T>(
+  operation: Promise<T[]>,
+  section: string,
+  organizerId: string,
+  contactId: string
+): Promise<T[] | null> {
+  return optionalContactQuery(operation, section, organizerId, contactId);
 }
 
 function normalizeExportPayload(data: unknown): unknown {
@@ -1771,12 +2057,18 @@ export function decodeContactCursor(
 }
 
 export const mutateOrganizerContact = onCall(
-  appCheckCallableOptionsWithLimits({timeoutSeconds: 60, maxInstances: 20}),
+  appCheckCallableOptionsWithSecrets(
+    [organizerContactIdentityKey],
+    {timeoutSeconds: 60, maxInstances: 20}
+  ),
   (request) => mutateOrganizerContactHandler(request)
 );
 
 export const createOrganizerContact = onCall(
-  appCheckCallableOptionsWithLimits({timeoutSeconds: 60, maxInstances: 20}),
+  appCheckCallableOptionsWithSecrets(
+    [organizerContactIdentityKey],
+    {timeoutSeconds: 60, maxInstances: 20}
+  ),
   (request) => createOrganizerContactHandler(request)
 );
 
