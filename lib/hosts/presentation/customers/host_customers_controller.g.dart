@@ -58,7 +58,7 @@ final class HostCustomersDirectoryControllerProvider
 }
 
 String _$hostCustomersDirectoryControllerHash() =>
-    r'3eee98f7d7cc8408f3daf42a44989a8a86cb36df';
+    r'0c010c00c0311b603ae4be8560056bf918cc4eed';
 
 final class HostCustomersDirectoryControllerFamily extends $Family
     with
@@ -117,6 +117,90 @@ abstract class _$HostCustomersDirectoryController
             >;
     return element.handleCreate(ref, () => build(_$args));
   }
+}
+
+@ProviderFor(hostCustomerSegmentCount)
+final hostCustomerSegmentCountProvider = HostCustomerSegmentCountFamily._();
+
+final class HostCustomerSegmentCountProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<HostCustomerSegmentCount>,
+          HostCustomerSegmentCount,
+          FutureOr<HostCustomerSegmentCount>
+        >
+    with
+        $FutureModifier<HostCustomerSegmentCount>,
+        $FutureProvider<HostCustomerSegmentCount> {
+  HostCustomerSegmentCountProvider._({
+    required HostCustomerSegmentCountFamily super.from,
+    required HostCustomerSegmentCountRequest super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostCustomerSegmentCountProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostCustomerSegmentCountHash();
+
+  @override
+  String toString() {
+    return r'hostCustomerSegmentCountProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<HostCustomerSegmentCount> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<HostCustomerSegmentCount> create(Ref ref) {
+    final argument = this.argument as HostCustomerSegmentCountRequest;
+    return hostCustomerSegmentCount(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostCustomerSegmentCountProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostCustomerSegmentCountHash() =>
+    r'8cade970e71907daec9f49efda2a2b1215bd6443';
+
+final class HostCustomerSegmentCountFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<HostCustomerSegmentCount>,
+          HostCustomerSegmentCountRequest
+        > {
+  HostCustomerSegmentCountFamily._()
+    : super(
+        retry: null,
+        name: r'hostCustomerSegmentCountProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  HostCustomerSegmentCountProvider call(
+    HostCustomerSegmentCountRequest request,
+  ) => HostCustomerSegmentCountProvider._(argument: request, from: this);
+
+  @override
+  String toString() => r'hostCustomerSegmentCountProvider';
 }
 
 @ProviderFor(hostCustomersController)

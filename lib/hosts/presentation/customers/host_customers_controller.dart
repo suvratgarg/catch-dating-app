@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_customers_controller.g.dart';
@@ -60,26 +59,26 @@ class HostCustomersDirectoryController
   }
 }
 
-final hostCustomerSegmentCountProvider = FutureProvider.autoDispose
-    .family<HostCustomerSegmentCount, HostCustomerSegmentCountRequest>((
-      ref,
-      request,
-    ) async {
-      final page = await ref
-          .read(hostCrmRepositoryProvider)
-          .listContacts(
-            request.organizerId,
-            query: HostAudienceQuery(
-              search: request.search,
-              segment: hostAudienceSegmentForCustomerFilter(request.filter),
-            ),
-            limit: 1,
-          );
-      return HostCustomerSegmentCount(
-        count: page.matchCount,
-        coverage: _matchCountCoverage(page.matchCountCoverage),
+@riverpod
+Future<HostCustomerSegmentCount> hostCustomerSegmentCount(
+  Ref ref,
+  HostCustomerSegmentCountRequest request,
+) async {
+  final page = await ref
+      .read(hostCrmRepositoryProvider)
+      .listContacts(
+        request.organizerId,
+        query: HostAudienceQuery(
+          search: request.search,
+          segment: hostAudienceSegmentForCustomerFilter(request.filter),
+        ),
+        limit: 1,
       );
-    });
+  return HostCustomerSegmentCount(
+    count: page.matchCount,
+    coverage: _matchCountCoverage(page.matchCountCoverage),
+  );
+}
 
 HostAudienceQuery _queryFor(
   HostCustomersDirectoryRequest request, {
