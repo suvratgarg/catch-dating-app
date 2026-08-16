@@ -29,7 +29,8 @@ Origin: 2026-08-15 owner + Claude audit of the Host Customers and Host
 Messaging tabs. Every finding below was verified against the repo; evidence is
 cited inline.
 
-Items marked `⚠ OWNER` need explicit go-ahead. Everything else is ratified.
+All owner decisions are settled as of 2026-08-16; see §8. Everything in this
+document is ratified.
 Proposed renders for every affected screen accompany this spec.
 
 ---
@@ -371,14 +372,18 @@ on a composer that already says 12.
 The phase that turns the directory into a CRM.
 
 1. **Notes** — `organizerContactNotes`, organizer-scoped, author-stamped,
-   append-with-edit, `audience.readPii` gated, excluded from export by default
-   ⚠ OWNER (see §8.1). Callables: `createOrganizerContactNote`,
+   append-with-edit, gated by `requireOrganizerManager` (the same authority
+   every other organizer contact callable uses — **not** `audience.readPii`,
+   which does not exist; see the correction table in §5), and **excluded from
+   export** (§8.1, settled). Callables: `createOrganizerContactNote`,
    `mutateOrganizerContactNote`, and notes returned with contact detail
    (bounded, newest first, `notesTruncated` like `eventsTruncated`).
-2. **Manual tags** — a separate namespace from computed segments, and rendered
+2. **Manual tags** (cap: 20 per organizer, 5 per contact — §8.2, settled) — a separate namespace from computed segments, and rendered
    differently, so an organizer-authored `Brings friends` can never be mistaken
    for the versioned `high_impact_advocate`. Organizer-level tag vocabulary
-   with a cap ⚠ OWNER (§8.2); assignment via `mutateOrganizerContact`.
+   with a cap of 20 per organizer and 5 per contact (§8.2, settled); assignment
+   via `mutateOrganizerContact`, whose payload schema must be extended to accept
+   them.
    Manual tags are filterable in Phase 1's sheet under a fourth group,
    **Your tags**.
 3. **Per-person send history** — contact detail lists campaigns and broadcasts
@@ -396,7 +401,8 @@ The phase that turns the directory into a CRM.
    counts, `scheduledAt`, `dispatchedAt`).
 2. A broadcast index readable by the host: either an organizer-scoped
    collection-group query over `eventBroadcasts` or a projection written on
-   send ⚠ OWNER (§8.3). Rows carry event, audience, recipient count, sent time,
+   send — **settled: a projection written on send** (§8.3). Rows carry event,
+   audience, recipient count, sent time,
    and the partial-failure flag already returned by
    `SendEventBroadcastCallableResponse`.
 3. The **Sends** workspace replaces **Campaigns**: one reverse-chronological
@@ -458,9 +464,11 @@ The phase that makes Messaging honest.
 
 1. Persist inbound message bodies from `processInbound` into an
    organizer-scoped thread model, retained under the same access and retention
-   controls as contact PII ⚠ OWNER (§8.4 — retention window).
+   controls as contact PII, retained **12 months** (§8.4, settled; time-based
+   expiry only — per-thread and per-contact deletion are out of scope).
 2. Surface them in the Inbox as a third scope alongside event and general, or
-   as a channel facet on existing threads ⚠ OWNER (§8.5).
+   as a **channel facet on existing threads** (§8.5, settled) rather than a third
+   Inbox scope.
 3. Replies are subject to the WhatsApp customer-service window; the composer
    must show the window state rather than failing at send time.
 4. Only after this ships may Inbox copy stop qualifying what it contains (§6).
@@ -519,17 +527,33 @@ delivery plan. No hand-built client writes.
 
 ---
 
-## 8. Owner decisions ⚠
+## 8. Owner decisions — all settled 2026-08-16
 
-1. **Notes in export** — default is to exclude host notes from
-   `exportOrganizerContacts`. Confirm, or specify an opt-in with a warning.
-2. **Manual tag cap** — proposal: 20 per organizer, 5 per contact, to keep tags
-   a vocabulary rather than a second notes field.
-3. **Broadcast index** — collection-group query over `eventBroadcasts` (cheaper
-   to build, needs an index and a rules review) versus a projection written on
-   send (more work, cleaner reads).
-4. **Inbound WhatsApp retention** — how long message bodies are kept, and
-   whether deletion is per-thread, per-contact, or time-based only.
-5. **Inbound surfacing** — third Inbox scope versus a channel facet on existing
-   threads.
-6. **`Most attended` sort** — accept a new Firestore index, or ship two sorts.
+1. **Notes in export** — ✅ **Excluded.** Host notes never leave via
+   `exportOrganizerContacts`, and there is no opt-in. Notes are the host's
+   private record of a person, not part of the contact dataset.
+2. **Manual tag cap** — ✅ **20 per organizer, 5 per contact**, enforced
+   server-side with a clear error. The cap is what keeps tags a vocabulary
+   rather than a second notes field.
+3. **Broadcast index** — ✅ **Projection written on send.** An organizer-scoped
+   summary row is written when a broadcast is sent, rather than reading through
+   a collection-group query over `eventBroadcasts`. More work at write time, but
+   reads stay simple and cheap, no composite index or cross-organizer rules
+   review is needed, and it matches the pre-launch preference for clean schemas
+   over query-time reconstruction.
+4. **Inbound WhatsApp retention** — ✅ **12 months.** No opinion recorded on the
+   deletion axis, so implement time-based expiry and leave per-thread and
+   per-contact deletion out until asked for.
+5. **Inbound surfacing** — ✅ **Channel facet on existing threads.** Inbound
+   WhatsApp appears as a channel on the Inbox threads that already exist, not as
+   a third scope. One list to learn, and a reply stays next to the rest of that
+   person's activity instead of being stranded in a separate queue.
+6. **`Most attended` sort** — ✅ **Accept the new Firestore composite index**, so
+   all three orderings ship. `Most attended` is the ordering a host actually
+   wants for spotting regulars, and the index cost is small at current volumes.
+
+   Note that this decision alone does not make sort buildable:
+   `contracts/callables/list_organizer_contacts_payload.schema.json` accepts
+   only `organizerId, limit, cursor, query, segmentId` and has **no sort
+   field**. Shipping sort means extending that payload and giving each ordering
+   its own cursor semantics.
