@@ -23,6 +23,7 @@ import {
   verifyMetaWebhookSignature,
 } from "./organizerCampaignModel";
 import {metaWhatsappAppSecret} from "./organizerMessagingSetup";
+import {persistInboundWhatsappMessage} from "./organizerWhatsappThreads";
 
 export const metaWhatsappWebhookVerifyToken = defineSecret(
   "META_WHATSAPP_WEBHOOK_VERIFY_TOKEN"
@@ -39,6 +40,7 @@ interface ParsedWebhookEvent {
   endpointHash: string | null;
   isStop: boolean;
   hasReply: boolean;
+  inboundBody: string | null;
   providerErrorCode: number | null;
   providerOccurredAt: FirebaseFirestore.Timestamp | null;
   payloadHash: string;
@@ -83,6 +85,7 @@ export function parseMetaWhatsappWebhook(
           endpointHash: endpointHashFromProviderPhone(status.recipient_id),
           isStop: false,
           hasReply: false,
+          inboundBody: null,
           providerErrorCode,
           providerOccurredAt: timestamp,
           payloadHash,
@@ -104,6 +107,7 @@ export function parseMetaWhatsappWebhook(
           endpointHash: endpointHashFromProviderPhone(message.from),
           isStop: isWhatsappStopCommand(body),
           hasReply: true,
+          inboundBody: body.trim().slice(0, 4096) || null,
           providerErrorCode: null,
           providerOccurredAt: timestampValue(message.timestamp),
           payloadHash,
@@ -182,6 +186,7 @@ export async function ingestMetaWhatsappWebhook(params: {
         endpointHash: event.endpointHash,
         isStop: event.isStop,
         hasReply: event.hasReply,
+        inboundBody: event.inboundBody,
         providerErrorCode: event.providerErrorCode,
         providerOccurredAt: event.providerOccurredAt,
         processingStatus: "pending",
@@ -260,6 +265,7 @@ async function processStatus(
     });
   }
   const recipientSnap = await db.collection("organizerCampaignRecipients")
+    .where("organizerId", "==", event.organizerId)
     .where("providerMessageId", "==", event.providerMessageId)
     .limit(1).get();
   if (recipientSnap.empty) return;
@@ -309,6 +315,7 @@ async function processInbound(
   let recipientDoc: FirebaseFirestore.QueryDocumentSnapshot | null = null;
   if (event.contextProviderMessageId) {
     const snap = await db.collection("organizerCampaignRecipients")
+      .where("organizerId", "==", event.organizerId)
       .where("providerMessageId", "==", event.contextProviderMessageId)
       .limit(1).get();
     recipientDoc = snap.docs[0] ?? null;
@@ -330,7 +337,8 @@ async function processInbound(
     [(recipientDoc.data() as OrganizerCampaignRecipientDocument).contactId] :
     stateDocs.map((doc) =>
       (doc.data() as OrganizerContactChannelStateDocument).contactId);
-  for (const contactId of [...new Set(contactIds)]) {
+  const uniqueContactIds = [...new Set(contactIds)];
+  for (const contactId of uniqueContactIds) {
     const stateRef = db.collection("organizerContactChannelStates")
       .doc(organizerContactChannelStateId(event.organizerId!, contactId));
     const contactRef = db.collection("organizerContacts").doc(contactId);
@@ -364,6 +372,17 @@ async function processInbound(
     if (event.isStop && contact.linkedUid) {
       await optOutPreference(db, event.organizerId!, contact.linkedUid, now);
     }
+  }
+  if (uniqueContactIds.length === 1 && event.inboundBody &&
+      event.providerMessageId && event.connectionId && event.endpointHash) {
+    await persistInboundWhatsappMessage({
+      db,
+      event,
+      contactId: uniqueContactIds[0],
+      recipient: recipientDoc?.data() as
+        OrganizerCampaignRecipientDocument | undefined,
+      now,
+    });
   }
 }
 

@@ -163,6 +163,11 @@ export {
   dispatchScheduledOrganizerCampaigns,
 } from "./organizers/organizerCampaignDispatcher";
 export {
+  getOrganizerWhatsappThread,
+  listOrganizerWhatsappThreads,
+  sendOrganizerWhatsappReply,
+} from "./organizers/organizerWhatsappThreads";
+export {
   completeOrganizerWhatsappConnection,
   disconnectOrganizerWhatsappConnection,
   getOrganizerMessagingSetup,

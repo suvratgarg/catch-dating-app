@@ -272,6 +272,38 @@ export class MetaWhatsappProvider {
     return {providerMessageId};
   }
 
+  async sendText(params: {
+    accessToken: string;
+    phoneNumberId: string;
+    toE164: string;
+    body: string;
+  }): Promise<MetaSendResult> {
+    const response = await this.authorizedRequest(
+      `${params.phoneNumberId}/messages`,
+      params.accessToken,
+      {
+        method: "POST",
+        body: {
+          messaging_product: "whatsapp",
+          recipient_type: "individual",
+          to: params.toE164.slice(1),
+          type: "text",
+          text: {preview_url: false, body: params.body},
+        },
+      },
+    );
+    const message = recordValue(arrayValue(response.messages)[0]);
+    const providerMessageId = stringValue(message.id);
+    if (!providerMessageId) {
+      throw new MetaProviderError(
+        "Meta accepted no message identifier.",
+        null,
+        null,
+      );
+    }
+    return {providerMessageId};
+  }
+
   async unsubscribe(params: {
     accessToken: string;
     wabaId: string;

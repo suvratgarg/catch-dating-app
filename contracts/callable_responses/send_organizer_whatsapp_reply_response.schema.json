@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/send_organizer_whatsapp_reply_response.schema.json",
+  "title": "SendOrganizerWhatsappReplyCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["organizerId", "threadId", "messageId", "providerMessageId", "sentAtMillis", "replayed"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "threadId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "messageId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "providerMessageId": {"type": "string", "minLength": 1, "maxLength": 240},
+    "sentAtMillis": {"type": "integer", "minimum": 0},
+    "replayed": {"type": "boolean"}
+  }
+}

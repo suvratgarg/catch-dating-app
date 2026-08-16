@@ -529,3 +529,81 @@ final class HostSendsFamily extends $Family
   @override
   String toString() => r'hostSendsProvider';
 }
+
+@ProviderFor(hostWhatsappThreads)
+final hostWhatsappThreadsProvider = HostWhatsappThreadsFamily._();
+
+final class HostWhatsappThreadsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<HostWhatsappThreadPage>,
+          HostWhatsappThreadPage,
+          FutureOr<HostWhatsappThreadPage>
+        >
+    with
+        $FutureModifier<HostWhatsappThreadPage>,
+        $FutureProvider<HostWhatsappThreadPage> {
+  HostWhatsappThreadsProvider._({
+    required HostWhatsappThreadsFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostWhatsappThreadsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostWhatsappThreadsHash();
+
+  @override
+  String toString() {
+    return r'hostWhatsappThreadsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<HostWhatsappThreadPage> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<HostWhatsappThreadPage> create(Ref ref) {
+    final argument = this.argument as String;
+    return hostWhatsappThreads(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostWhatsappThreadsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostWhatsappThreadsHash() =>
+    r'94980382783113c79fa563ea06d95660f383459e';
+
+final class HostWhatsappThreadsFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<HostWhatsappThreadPage>, String> {
+  HostWhatsappThreadsFamily._()
+    : super(
+        retry: null,
+        name: r'hostWhatsappThreadsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  HostWhatsappThreadsProvider call(String organizerId) =>
+      HostWhatsappThreadsProvider._(argument: organizerId, from: this);
+
+  @override
+  String toString() => r'hostWhatsappThreadsProvider';
+}

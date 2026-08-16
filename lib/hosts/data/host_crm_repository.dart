@@ -1768,6 +1768,52 @@ class HostCrmRepository {
     action: 'load WhatsApp setup',
   );
 
+  Future<HostWhatsappThreadPage> listWhatsappThreads(
+    String organizerId, {
+    String? cursor,
+    int limit = ReadLimitPolicy.historyPage,
+  }) => _call(
+    name: 'listOrganizerWhatsappThreads',
+    payload: ListOrganizerWhatsappThreadsCallableRequest(
+      organizerId: organizerId,
+      limit: limit > 50 ? 50 : limit,
+      cursor: cursor,
+    ).toJson(),
+    action: 'load organizer WhatsApp inbox',
+    parse: HostWhatsappThreadPage.fromCallableData,
+  );
+
+  Future<HostWhatsappThreadDetail> getWhatsappThread({
+    required String organizerId,
+    required String threadId,
+  }) => _call(
+    name: 'getOrganizerWhatsappThread',
+    payload: GetOrganizerWhatsappThreadCallableRequest(
+      organizerId: organizerId,
+      threadId: threadId,
+    ).toJson(),
+    action: 'load organizer WhatsApp conversation',
+    parse: HostWhatsappThreadDetail.fromCallableData,
+  );
+
+  Future<void> sendWhatsappReply({
+    required String organizerId,
+    required HostWhatsappThreadDetail thread,
+    required String body,
+    required String idempotencyKey,
+  }) => _call<Object?>(
+    name: 'sendOrganizerWhatsappReply',
+    payload: SendOrganizerWhatsappReplyCallableRequest(
+      organizerId: organizerId,
+      threadId: thread.threadId,
+      body: body,
+      expectedLastInboundAtMillis: thread.lastInboundAt.millisecondsSinceEpoch,
+      idempotencyKey: idempotencyKey,
+    ).toJson(),
+    action: 'reply in organizer WhatsApp conversation',
+    parse: (value) => value,
+  );
+
   Future<HostMessagingSetup> completeWhatsappConnection(
     String organizerId,
     HostWhatsappSignupResult result,
@@ -1984,6 +2030,12 @@ Future<HostMessagingSetup> hostMessagingSetup(Ref ref, String organizerId) =>
 @riverpod
 Future<HostSendsPage> hostSends(Ref ref, String organizerId) =>
     ref.read(hostCrmRepositoryProvider).listCampaigns(organizerId);
+
+@riverpod
+Future<HostWhatsappThreadPage> hostWhatsappThreads(
+  Ref ref,
+  String organizerId,
+) => ref.read(hostCrmRepositoryProvider).listWhatsappThreads(organizerId);
 
 Map<Object?, Object?> _requiredMap(Object? value, String label) {
   if (value is Map<Object?, Object?>) return value;

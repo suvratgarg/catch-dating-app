@@ -96,4 +96,29 @@ class HostAudienceController {
     required String organizerId,
     required String campaignId,
   }) => _repository.getCampaignReport(organizerId, campaignId);
+
+  Future<HostSendsPage> listSends({
+    required String organizerId,
+    String? cursor,
+  }) => _repository.listCampaigns(organizerId, cursor: cursor);
+
+  Future<HostWhatsappThreadDetail> getWhatsappThread({
+    required String organizerId,
+    required String threadId,
+  }) => _repository.getWhatsappThread(
+    organizerId: organizerId,
+    threadId: threadId,
+  );
+
+  Future<void> sendWhatsappReply({
+    required String organizerId,
+    required HostWhatsappThreadDetail thread,
+    required String body,
+    required String idempotencyKey,
+  }) => _repository.sendWhatsappReply(
+    organizerId: organizerId,
+    thread: thread,
+    body: body,
+    idempotencyKey: idempotencyKey,
+  );
 }

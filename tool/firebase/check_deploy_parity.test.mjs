@@ -129,3 +129,41 @@ test("live metadata failures fail closed instead of reporting parity", () => {
       /authentication required/u.test(error.message),
   );
 });
+
+test("Functions deployment checks live parity against the exact source checkout", () => {
+  const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "deploy-parity-"));
+  fs.mkdirSync(path.join(repoRoot, "functions/src"), {recursive: true});
+  fs.writeFileSync(
+    path.join(repoRoot, ".firebaserc"),
+    JSON.stringify({projects: {prod: "catchdates-prod"}}),
+  );
+  fs.writeFileSync(
+    path.join(repoRoot, "functions/src/index.ts"),
+    'export {sourceCheckoutCallable} from "./callable";\n',
+  );
+  fs.writeFileSync(
+    path.join(repoRoot, "functions/src/callable.ts"),
+    "export const sourceCheckoutCallable = true;\n",
+  );
+
+  const report = runDeployParity({
+    environment: "prod",
+    repoRoot,
+    runCommand: ({command}) => command === "firebase" ? {
+      status: 0,
+      stdout: JSON.stringify({
+        status: "success",
+        result: [{id: "sourceCheckoutCallable", callableTrigger: {}}],
+      }),
+      stderr: "",
+    } : {
+      status: 0,
+      stdout: "[]",
+      stderr: "",
+    },
+  });
+
+  assert.equal(report.ok, true);
+  assert.equal(report.repoFunctionCount, 1);
+  assert.equal(report.projectId, "catchdates-prod");
+});

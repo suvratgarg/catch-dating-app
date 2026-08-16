@@ -350,10 +350,53 @@ void main() {
       isTrue,
     );
     expect(page.sends.last, isA<HostCampaignSendSummary>());
-    expect(
-      (page.sends.last as HostCampaignSendSummary).scheduledAt,
-      isNotNull,
-    );
+    expect((page.sends.last as HostCampaignSendSummary).scheduledAt, isNotNull);
     expect(page.nextCursor, 'next-page');
+  });
+
+  test('parses WhatsApp channel facets and service-window state', () {
+    final page = HostWhatsappThreadPage.fromCallableData({
+      'organizerId': 'organizer-1',
+      'threads': [
+        {
+          'threadId': 'owt_${List.filled(48, 'a').join()}',
+          'contactId': 'contact-1',
+          'displayName': 'Asha Rao',
+          'eventIds': ['event-1'],
+          'lastMessageBody': 'Where is the entrance?',
+          'lastMessageDirection': 'inbound',
+          'lastMessageAtMillis': 1700000000000,
+          'lastInboundAtMillis': 1700000000000,
+          'serviceWindowExpiresAtMillis': 1700086400000,
+          'serviceWindowOpen': true,
+        },
+      ],
+      'nextCursor': null,
+    });
+    final thread = page.threads.single;
+    expect(thread.eventIds, ['event-1']);
+    expect(thread.lastMessageDirection, HostWhatsappMessageDirection.inbound);
+    expect(thread.serviceWindowOpen, isTrue);
+
+    final detail = HostWhatsappThreadDetail.fromCallableData({
+      'organizerId': 'organizer-1',
+      'threadId': thread.threadId,
+      'contactId': thread.contactId,
+      'displayName': thread.displayName,
+      'lastInboundAtMillis': 1700000000000,
+      'serviceWindowExpiresAtMillis': 1700086400000,
+      'serviceWindowOpen': false,
+      'messages': [
+        {
+          'messageId': 'owm_${List.filled(48, 'b').join()}',
+          'direction': 'inbound',
+          'body': 'Where is the entrance?',
+          'occurredAtMillis': 1700000000000,
+        },
+      ],
+      'messagesTruncated': false,
+    });
+    expect(detail.messages.single.body, 'Where is the entrance?');
+    expect(detail.serviceWindowOpen, isFalse);
   });
 }

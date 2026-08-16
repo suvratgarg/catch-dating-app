@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_whatsapp_reply_operations.schema.json",
+  "title": "OrganizerWhatsappReplyOperationDocument",
+  "description": "Server-only at-most-once reservation for one organizer WhatsApp reply attempt.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerWhatsappReplyOperations",
+  "x-firestore-path": "organizerWhatsappReplyOperations/{operationId}",
+  "x-document-id-field": "operationId",
+  "x-owner": "sendOrganizerWhatsappReply callable",
+  "required": ["schemaVersion", "operationId", "organizerId", "threadId", "contactId", "messageId", "bodyHash", "expectedLastInboundAtMillis", "actorUid", "state", "providerMessageId", "createdAt", "updatedAt", "expiresAt"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "operationId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "threadId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "contactId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "messageId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "bodyHash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "expectedLastInboundAtMillis": {"type": "integer", "minimum": 0},
+    "actorUid": {"type": "string", "minLength": 1, "maxLength": 180},
+    "state": {"type": "string", "enum": ["pending", "completed", "unknown"]},
+    "providerMessageId": {"type": ["string", "null"], "minLength": 1, "maxLength": 240},
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "expiresAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-firestore-ttl": true}
+  }
+}

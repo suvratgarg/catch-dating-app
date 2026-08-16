@@ -3,7 +3,7 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Sanitized durable provider event queued after signature verification. Message bodies and phone numbers are not retained.
+ * Sanitized durable provider event queued after signature verification. Inbound text is retained here for at most 30 days and copied into the organizer thread store for at most 12 months.
  */
 export interface OrganizerMessagingWebhookEventDocument {
   provider: "metaCloudApi";
@@ -23,6 +23,7 @@ export interface OrganizerMessagingWebhookEventDocument {
   endpointHash: string | null;
   isStop: boolean;
   hasReply: boolean;
+  inboundBody: string | null;
   providerErrorCode: number | null;
   providerOccurredAt: {
     _seconds: number;

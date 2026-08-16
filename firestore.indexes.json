@@ -261,6 +261,64 @@
       "queryScope": "COLLECTION",
       "fields": [
         {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "attendedEventCount", "mode": "DESCENDING"},
+        {"fieldPath": "__name__", "mode": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerContactIdentityClaims",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "state", "mode": "ASCENDING"},
+        {"fieldPath": "updatedAt", "mode": "DESCENDING"},
+        {"fieldPath": "__name__", "mode": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerContactIdentityLinks",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "confidence", "mode": "ASCENDING"},
+        {"fieldPath": "updatedAt", "mode": "DESCENDING"},
+        {"fieldPath": "__name__", "mode": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerContactMergeReceipts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "survivorContactId", "mode": "ASCENDING"},
+        {"fieldPath": "createdAt", "mode": "DESCENDING"},
+        {"fieldPath": "__name__", "mode": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerWhatsappThreads",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "lastMessageAt", "mode": "DESCENDING"},
+        {"fieldPath": "__name__", "mode": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerWhatsappMessages",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "threadId", "mode": "ASCENDING"},
+        {"fieldPath": "occurredAt", "mode": "ASCENDING"},
+        {"fieldPath": "__name__", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerContactTraits",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
         {"fieldPath": "segmentIds", "arrayConfig": "CONTAINS"},
         {"fieldPath": "__name__", "mode": "ASCENDING"}
       ]
@@ -364,6 +422,14 @@
         {"fieldPath": "contactId", "mode": "ASCENDING"},
         {"fieldPath": "createdAt", "mode": "DESCENDING"},
         {"fieldPath": "__name__", "mode": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerCampaignRecipients",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "providerMessageId", "mode": "ASCENDING"}
       ]
     },
     {
@@ -1088,6 +1154,36 @@
     },
     {
       "collectionGroup": "organizerMessagingWebhookEvents",
+      "fieldPath": "expiresAt",
+      "ttl": true,
+      "indexes": [
+        {"order": "ASCENDING", "queryScope": "COLLECTION"},
+        {"order": "DESCENDING", "queryScope": "COLLECTION"},
+        {"arrayConfig": "CONTAINS", "queryScope": "COLLECTION"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerWhatsappThreads",
+      "fieldPath": "expiresAt",
+      "ttl": true,
+      "indexes": [
+        {"order": "ASCENDING", "queryScope": "COLLECTION"},
+        {"order": "DESCENDING", "queryScope": "COLLECTION"},
+        {"arrayConfig": "CONTAINS", "queryScope": "COLLECTION"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerWhatsappMessages",
+      "fieldPath": "expiresAt",
+      "ttl": true,
+      "indexes": [
+        {"order": "ASCENDING", "queryScope": "COLLECTION"},
+        {"order": "DESCENDING", "queryScope": "COLLECTION"},
+        {"arrayConfig": "CONTAINS", "queryScope": "COLLECTION"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerWhatsappReplyOperations",
       "fieldPath": "expiresAt",
       "ttl": true,
       "indexes": [

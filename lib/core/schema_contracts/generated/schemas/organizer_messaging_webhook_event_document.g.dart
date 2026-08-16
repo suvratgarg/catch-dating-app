@@ -8,7 +8,7 @@ const schemaOrganizerMessagingWebhookEventDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/firestore/organizer_messaging_webhook_events.schema.json',
   'title': 'OrganizerMessagingWebhookEventDocument',
-  'description': 'Sanitized durable provider event queued after signature verification. Message bodies and phone numbers are not retained.',
+  'description': 'Sanitized durable provider event queued after signature verification. Inbound text is retained here for at most 30 days and copied into the organizer thread store for at most 12 months.',
   'type': 'object',
   'additionalProperties': false,
   'x-firestore-collection': 'organizerMessagingWebhookEvents',
@@ -27,6 +27,7 @@ const schemaOrganizerMessagingWebhookEventDocumentSchema = <String, Object?>{
     'endpointHash',
     'isStop',
     'hasReply',
+    'inboundBody',
     'providerErrorCode',
     'providerOccurredAt',
     'processingStatus',
@@ -112,6 +113,14 @@ const schemaOrganizerMessagingWebhookEventDocumentSchema = <String, Object?>{
     },
     'hasReply': <String, Object?>{
       'type': 'boolean',
+    },
+    'inboundBody': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 4096,
     },
     'providerErrorCode': <String, Object?>{
       'type': <Object?>[

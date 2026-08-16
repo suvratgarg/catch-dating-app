@@ -760,6 +760,61 @@
       ]
     },
     {
+      "id": "organizerContactMergeReviewDecisions",
+      "path": "organizerContactMergeReviewDecisions/{decisionId}",
+      "rulesMatch": "/organizerContactMergeReviewDecisions/{decisionId}",
+      "typescriptInterface": "OrganizerContactMergeReviewDecisionDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "organizer contact merge review callables",
+      "read": "server only; authorized managers receive sanitized candidate decisions",
+      "write": "server only",
+      "exportedFunctions": [
+        "listOrganizerContactMergeCandidates",
+        "reviewOrganizerContactMergeCandidate"
+      ],
+      "migrationNotes": [
+        "The latest deterministic pair decision suppresses a different-people candidate until the same reviewing manager reopens it."
+      ]
+    },
+    {
+      "id": "organizerWhatsappThreads",
+      "path": "organizerWhatsappThreads/{threadId}",
+      "rulesMatch": "/organizerWhatsappThreads/{threadId}",
+      "typescriptInterface": "OrganizerWhatsappThreadDocument",
+      "dartModel": "lib/hosts/data/host_crm_repository.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "organizer WhatsApp inbox and reply callables",
+      "read": "server only; managers receive a sanitized callable projection",
+      "write": "server only",
+      "exportedFunctions": [
+        "listOrganizerWhatsappThreads",
+        "getOrganizerWhatsappThread",
+        "sendOrganizerWhatsappReply"
+      ],
+      "migrationNotes": [
+        "Thread summaries use a rolling 12-month TTL and are never directly readable by clients."
+      ]
+    },
+    {
+      "id": "organizerWhatsappMessages",
+      "path": "organizerWhatsappMessages/{messageId}",
+      "rulesMatch": "/organizerWhatsappMessages/{messageId}",
+      "typescriptInterface": "OrganizerWhatsappMessageDocument",
+      "dartModel": "lib/hosts/data/host_crm_repository.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "organizer WhatsApp inbox and reply callables",
+      "read": "server only; managers receive bounded retained bodies through a callable",
+      "write": "server only",
+      "exportedFunctions": [
+        "getOrganizerWhatsappThread",
+        "sendOrganizerWhatsappReply"
+      ],
+      "migrationNotes": [
+        "Inbound and outbound bodies expire after 12 months; per-thread and per-contact deletion are intentionally out of scope."
+      ]
+    },
+    {
       "id": "organizerAudienceProjectionReceipts",
       "path": "organizerAudienceProjectionReceipts/{eventId}",
       "rulesMatch": "/organizerAudienceProjectionReceipts/{eventId}",
