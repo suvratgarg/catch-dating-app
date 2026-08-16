@@ -16,7 +16,6 @@ import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
-import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
@@ -73,7 +72,7 @@ void main() {
 
     expect(find.text('Messaging'), findsOneWidget);
     expect(find.text('Inbox'), findsOneWidget);
-    expect(find.text('Campaigns'), findsOneWidget);
+    expect(find.text('Sends'), findsOneWidget);
     expect(find.byType(HostInboxScopeSelector), findsOneWidget);
     expect(find.text('BOOKED · 1'), findsOneWidget);
     expect(find.text('PROSPECTIVE · 1'), findsOneWidget);
@@ -126,7 +125,7 @@ void main() {
     );
   });
 
-  testWidgets('moves campaigns and sender setup into Messaging', (
+  testWidgets('shows Sends history before opening the campaign composer', (
     tester,
   ) async {
     final event = event_test.buildEvent(
@@ -144,16 +143,78 @@ void main() {
     );
     await pumpFeatureUi(tester);
 
-    await tester.tap(find.text('Campaigns'));
+    await tester.tap(find.text('Sends'));
     await pumpFeatureUi(tester);
 
     expect(find.text('Messaging'), findsOneWidget);
-    expect(find.byType(HostWhatsappSetupPane), findsOneWidget);
+    expect(find.text('New message'), findsOneWidget);
+    expect(find.text('WhatsApp settings'), findsOneWidget);
+    expect(find.byType(HostCampaignComposer), findsNothing);
+
+    await tester.tap(find.text('New message'));
+    await pumpFeatureUi(tester);
+
     expect(find.byType(HostCampaignComposer), findsOneWidget);
-    expect(find.text('WHATSAPP BUSINESS SENDER'), findsOneWidget);
     expect(find.text('MESSAGE PAST ATTENDEES'), findsOneWidget);
     expect(find.byType(HostInboxScopeSelector), findsNothing);
     expect(find.byType(HostInboxAudienceRail), findsNothing);
+  });
+
+  testWidgets('Sends history renders Campaign and Announcement rows', (
+    tester,
+  ) async {
+    final event = event_test.buildEvent(
+      startTime: now.add(const Duration(hours: 1)),
+      endTime: now.add(const Duration(hours: 2)),
+    );
+    final sends = <HostSendSummary>[
+      HostAnnouncementSendSummary(
+        broadcastId: 'announcement-1',
+        eventId: event.id,
+        eventName: 'Doors open update',
+        audience: 'booked',
+        recipientCount: 18,
+        sentAt: now,
+        partialFailure: false,
+        activityAt: now,
+      ),
+      HostCampaignSendSummary(
+        campaignId: 'campaign-1',
+        name: 'Bring regulars back',
+        status: 'sent',
+        segments: const {HostAudienceSegment.lapsedRegular},
+        templateId: 'returning_guests',
+        templateName: 'Returning guests',
+        audienceCounts: const HostCampaignCounts({'eligible': 24}),
+        deliveryCounts: const HostCampaignCounts({'sent': 24}),
+        scheduledAt: null,
+        dispatchedAt: now.subtract(const Duration(days: 1)),
+        activityAt: now.subtract(const Duration(days: 1)),
+      ),
+    ];
+
+    await tester.pumpWidget(
+      _app(
+        event: event,
+        previews: const [],
+        participations: const [],
+        sends: sends,
+        now: now,
+      ),
+    );
+    await pumpFeatureUi(tester);
+
+    await tester.tap(find.text('Sends'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Doors open update'), findsOneWidget);
+    expect(find.text('Bring regulars back'), findsOneWidget);
+    expect(find.textContaining('Announcement'), findsOneWidget);
+    expect(find.textContaining('Campaign'), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.text('Doors open update')).dy,
+      lessThan(tester.getTopLeft(find.text('Bring regulars back')).dy),
+    );
   });
 
   testWidgets('compact scope label opens the shared event menu', (
@@ -298,6 +359,7 @@ Widget _app({
   HostInboxScope? initialScope,
   HostMessagingWorkspace initialWorkspace = HostMessagingWorkspace.inbox,
   Set<HostAudienceSegment> initialCampaignSegments = const {},
+  List<HostSendSummary> sends = const [],
 }) {
   final club = club_test.buildClub(id: event?.clubId ?? 'club-1');
   final inbox = ChatsListViewModel(
@@ -319,6 +381,11 @@ Widget _app({
       hostCrmSummaryProvider(
         club.id,
       ).overrideWithValue(AsyncData(_crmSummary(club.id))),
+      hostSendsProvider(club.id).overrideWithValue(
+        AsyncData(
+          HostSendsPage(organizerId: club.id, sends: sends, nextCursor: null),
+        ),
+      ),
       hostCustomerSegmentCountProvider.overrideWith(
         (ref, request) async => const HostCustomerSegmentCount(
           count: 12,

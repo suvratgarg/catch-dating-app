@@ -250,6 +250,12 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/organizerCampaignDocument.ts",
   },
   {
+    name: "OrganizerBroadcastSummaryDocument",
+    source: "firestore/organizer_broadcast_summaries.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerBroadcastSummaryDocument.ts",
+  },
+  {
     name: "OrganizerCampaignRecipientDocument",
     source: "firestore/organizer_campaign_recipients.schema.json",
     typeOutput:
@@ -1274,6 +1280,18 @@ const schemaSpecs = [
     source: "callable_responses/organizer_campaign_response.schema.json",
     typeOutput:
       "functions/src/shared/generated/organizerCampaignCallableResponse.ts",
+  },
+  {
+    name: "ListOrganizerCampaignsCallablePayload",
+    source: "callables/list_organizer_campaigns_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/listOrganizerCampaignsCallablePayload.ts",
+  },
+  {
+    name: "ListOrganizerCampaignsCallableResponse",
+    source: "callable_responses/list_organizer_campaigns_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/listOrganizerCampaignsCallableResponse.ts",
   },
   {
     name: "OrganizerMessagingSetupCallableResponse",

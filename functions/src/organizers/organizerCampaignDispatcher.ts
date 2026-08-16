@@ -172,6 +172,7 @@ export async function dispatchCampaign(params: {
     }
     tx.update(campaignRef, {
       status: "resolving",
+      dispatchedAt: campaign.dispatchedAt ?? now,
       leaseOwner,
       leaseExpiresAt: admin.firestore.Timestamp.fromMillis(
         now.toMillis() + campaignLeaseMillis,

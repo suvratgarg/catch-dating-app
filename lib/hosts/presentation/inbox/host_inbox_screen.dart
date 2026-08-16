@@ -29,12 +29,11 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
-import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_broadcast_composer_sheet.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_broadcast_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_sends_workspace.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
@@ -429,24 +428,11 @@ class _HostCampaignWorkspaceSliver extends StatelessWidget {
     }
     final club = selectedClub;
     if (club == null) return const _HostNoOrganizerSliver();
-    return SliverPadding(
-      padding: CatchInsets.pageBody.copyWith(top: CatchSpacing.s3),
-      sliver: SliverList.list(
-        children: [
-          CatchSectionList(
-            emptyStateOmitted: true,
-            children: [
-              HostWhatsappSetupPane(club: club, onBusyChanged: onBusyChanged),
-              HostCampaignComposer(
-                club: club,
-                initialSegments: initialSegments,
-                initialSearch: initialSearch,
-                onBusyChanged: onBusyChanged,
-              ),
-            ],
-          ),
-        ],
-      ),
+    return HostSendsWorkspaceSliver(
+      club: club,
+      initialSegments: initialSegments,
+      initialSearch: initialSearch,
+      onBusyChanged: onBusyChanged,
     );
   }
 }
@@ -490,7 +476,7 @@ class HostMessagingWorkspaceRail extends StatelessWidget {
           ),
           CatchOption(
             value: HostMessagingWorkspace.campaigns,
-            label: context.l10n.hostMessagingWorkspaceCampaigns,
+            label: context.l10n.hostMessagingWorkspaceSends,
           ),
         ],
         onChanged: onChanged,

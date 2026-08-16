@@ -454,3 +454,78 @@ final class HostMessagingSetupFamily extends $Family
   @override
   String toString() => r'hostMessagingSetupProvider';
 }
+
+@ProviderFor(hostSends)
+final hostSendsProvider = HostSendsFamily._();
+
+final class HostSendsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<HostSendsPage>,
+          HostSendsPage,
+          FutureOr<HostSendsPage>
+        >
+    with $FutureModifier<HostSendsPage>, $FutureProvider<HostSendsPage> {
+  HostSendsProvider._({
+    required HostSendsFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostSendsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostSendsHash();
+
+  @override
+  String toString() {
+    return r'hostSendsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<HostSendsPage> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<HostSendsPage> create(Ref ref) {
+    final argument = this.argument as String;
+    return hostSends(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostSendsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostSendsHash() => r'ec7157dc5067f83cfd1a42565826821987b7b472';
+
+final class HostSendsFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<HostSendsPage>, String> {
+  HostSendsFamily._()
+    : super(
+        retry: null,
+        name: r'hostSendsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  HostSendsProvider call(String organizerId) =>
+      HostSendsProvider._(argument: organizerId, from: this);
+
+  @override
+  String toString() => r'hostSendsProvider';
+}

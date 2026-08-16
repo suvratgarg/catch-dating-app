@@ -15034,7 +15034,7 @@
             "targetOwner": "hosts.presentation.customers",
             "dependencies": ["catch.section", "catch.surface"],
             "states": ["customer_send_history", "customer_revenue_exact", "customer_revenue_partial", "customer_revenue_unavailable"],
-            "migration": "Revenue is limited to completed, non-refunded Catch payments for the organizer's event set; send history contains campaign recipient delivery rows and deliberately omits broadcasts until Phase 4."
+            "migration": "Revenue is limited to completed, non-refunded Catch payments for the organizer's event set; send history combines campaign recipient rows with organizer-scoped Announcement summaries without exposing raw broadcast receipts."
           }
         ]
       },
@@ -15084,7 +15084,7 @@
         "symbol": "HostInboxScreen"
       },
       "stateController": {
-        "primary": "hostOrganizerSelectionProvider + HostMessagingWorkspace + HostInboxViewModel.compose + HostCampaignComposer + resolveHostInboxScope + chatsListViewModelProvider + hostMessagingSetupProvider + chatSearchQueryProvider",
+        "primary": "hostOrganizerSelectionProvider + HostMessagingWorkspace + HostInboxViewModel.compose + HostSendsWorkspaceSliver + HostCampaignComposer + resolveHostInboxScope + chatsListViewModelProvider + hostSendsProvider + hostMessagingSetupProvider + chatSearchQueryProvider",
         "files": [
           {
             "file": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
@@ -15155,6 +15155,14 @@
             "symbol": "HostCampaignComposer"
           },
           {
+            "file": "lib/hosts/presentation/inbox/host_sends_workspace.dart",
+            "symbol": "HostSendsWorkspaceSliver"
+          },
+          {
+            "file": "lib/hosts/presentation/inbox/host_messaging_setup_screen.dart",
+            "symbol": "HostMessagingSetupScreen"
+          },
+          {
             "file": "lib/hosts/data/host_crm_repository.dart",
             "symbol": "hostMessagingSetup"
           }
@@ -15169,7 +15177,7 @@
             "symbol": "HostAudienceController"
           }
         ],
-        "notes": "HostInboxScreen is the Host-owned Messaging surface and follows the shell-selected organizer. Inbox selects that organizer's live or nearest-upcoming event, keeps General explicit, scopes personal inquiry threads by organizer and event, classifies Booked and Prospective rows, and derives broadcast counts from eventParticipations rather than conversation count. Campaigns owns the same organizer's WhatsApp sender setup and complete campaign lifecycle, including route-restored initial segments. Event broadcasts create Activity plus preference-gated push and never create chat fan-out."
+        "notes": "HostInboxScreen is the Host-owned Messaging surface and follows the shell-selected organizer. Inbox selects that organizer's live or nearest-upcoming event, keeps General explicit, scopes personal inquiry threads by organizer and event, classifies Booked and Prospective rows, and derives broadcast counts from eventParticipations rather than conversation count. The user-facing Sends workspace owns mixed Campaign/Announcement history and the complete campaign lifecycle; its compatibility wire value remains campaigns. WhatsApp sender setup lives on the dedicated organizer messaging route. Event broadcasts create Activity plus preference-gated push and never create chat fan-out."
       },
       "designRefs": [
         {
@@ -15228,7 +15236,7 @@
         {
           "id": "host_messaging_campaigns",
           "status": "captured",
-          "notes": "Full-shell Messaging capture renders the selected organizer's Campaigns workspace with its WhatsApp Business sender and campaign composition controls."
+          "notes": "Historical full-shell capture of the former Campaigns workspace with embedded WhatsApp sender setup. Retained as prior-state evidence; it is not the active Sends baseline."
         },
         {
           "id": "host_inbox_prospective",
@@ -15487,7 +15495,7 @@
           "id": "customer_messaging_provider_unavailable",
           "kind": "permission",
           "status": "implemented",
-          "source": "HostWhatsappSetupPane provider notice in the Messaging Campaigns workspace.",
+          "source": "HostWhatsappSetupPane provider notice on the dedicated organizer messaging route.",
           "nextAction": "Keep provider-gate copy aligned with backend capability state.",
           "previewIds": ["HostCampaignComposer/Campaign and sender states"]
         },
@@ -15495,7 +15503,7 @@
           "id": "customer_messaging_disconnected",
           "kind": "empty",
           "status": "implemented",
-          "source": "HostWhatsappSetupPane sender connection setup in the Messaging Campaigns workspace.",
+          "source": "HostWhatsappSetupPane sender connection setup on the dedicated organizer messaging route.",
           "nextAction": "Add connect handoff widget coverage.",
           "previewIds": ["HostCampaignComposer/Campaign and sender states"]
         },
@@ -15510,8 +15518,8 @@
           "id": "customer_messaging_ready",
           "kind": "populated",
           "status": "captured",
-          "source": "HostWhatsappSetupPane renders the selected organizer's connected WhatsApp sender and approved templates inside the Campaigns workspace.",
-          "nextAction": "Keep sender mutation coverage and the full-shell Campaigns capture aligned with the HostCrmRepository contract.",
+          "source": "HostWhatsappSetupPane renders the selected organizer's connected WhatsApp sender and approved templates on the dedicated organizer messaging route.",
+          "nextAction": "Keep sender mutation coverage aligned with the HostCrmRepository contract and add a dedicated-route capture only after baseline approval.",
           "previewIds": [
             "HostCampaignComposer/Campaign and sender states"
           ],

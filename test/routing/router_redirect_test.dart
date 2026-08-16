@@ -184,12 +184,17 @@ void main() {
       );
       expect(Routes.hostClubTeamScreen.path, '/host/organizers/team');
       expect(Routes.hostClubPaymentsScreen.path, '/host/organizers/payments');
+      expect(
+        Routes.hostOrganizerMessagingScreen.path,
+        '/host/organizer/:clubId/messaging',
+      );
 
       for (final route in [
         Routes.hostClubEventDefaultsScreen,
         Routes.hostClubLiveGuideScreen,
         Routes.hostClubTeamScreen,
         Routes.hostClubPaymentsScreen,
+        Routes.hostOrganizerMessagingScreen,
       ]) {
         expect(route.audience, AppRouteAudience.host);
       }

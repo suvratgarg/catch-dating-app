@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
+import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
@@ -121,6 +122,8 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
   Event? _selectedEvent;
   _HostInviteDestination? _inviteDestination;
   HostCampaign? _campaign;
+  DateTime? _scheduledAt;
+  String? _scheduleError;
   bool _busy = false;
 
   @override
@@ -136,6 +139,8 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
         !setEquals(oldWidget.initialSegments, widget.initialSegments) ||
         oldWidget.initialSearch != widget.initialSearch) {
       _campaign = null;
+      _scheduledAt = null;
+      _scheduleError = null;
       _selectedTemplate = null;
       _campaignSegments = _initialSegments();
       _disposeVariableControllers();
@@ -236,6 +241,58 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                   if (value != null) setState(() => _messageClass = value);
                 },
               ),
+              gapH12,
+              Text(
+                context.l10n.hostSendsDeliveryTime,
+                style: CatchTextStyles.fieldRowTitle(context),
+              ),
+              gapH8,
+              Text(
+                _scheduledAt == null
+                    ? context.l10n.hostSendsSendNow
+                    : AppTimeFormatters.dateTime(_scheduledAt!),
+                style: CatchTextStyles.supporting(
+                  context,
+                  color: CatchTokens.of(context).ink2,
+                ),
+              ),
+              gapH8,
+              Wrap(
+                spacing: CatchSpacing.s2,
+                runSpacing: CatchSpacing.s2,
+                children: [
+                  CatchButton(
+                    label: context.l10n.hostSendsSchedule,
+                    variant: CatchButtonVariant.secondary,
+                    size: CatchButtonSize.sm,
+                    onPressed: _campaign == null && !_busy
+                        ? _pickSchedule
+                        : null,
+                  ),
+                  if (_scheduledAt != null)
+                    CatchButton(
+                      label: context.l10n.hostSendsClearSchedule,
+                      variant: CatchButtonVariant.ghost,
+                      size: CatchButtonSize.sm,
+                      onPressed: _campaign == null && !_busy
+                          ? () => setState(() {
+                              _scheduledAt = null;
+                              _scheduleError = null;
+                            })
+                          : null,
+                    ),
+                ],
+              ),
+              if (_scheduleError case final error?) ...[
+                gapH8,
+                Text(
+                  error,
+                  style: CatchTextStyles.supporting(
+                    context,
+                    color: CatchTokens.of(context).warning,
+                  ),
+                ),
+              ],
               gapH12,
               Text(
                 context.l10n.hostsHostAudienceRecipients,
@@ -356,7 +413,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                   isLoading: _busy,
                 )
               else
-                _HostCampaignReview(
+                HostCampaignReport(
                   campaign: _campaign!,
                   busy: _busy,
                   onApprove: _campaign!.canApprove ? _approveCampaign : null,
@@ -421,6 +478,12 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
           entry.key: entry.value.text.trim(),
     };
     final needsInvite = _templateUsesInvite(template);
+    if (_scheduledAt != null && !_scheduledAt!.isAfter(DateTime.now())) {
+      setState(() {
+        _scheduleError = context.l10n.hostsHostAudienceBlockerSchedule;
+      });
+      return;
+    }
     if (_campaignNameController.text.trim().isEmpty ||
         selectedSegments.isEmpty ||
         variables.values.any((value) => value.isEmpty) ||
@@ -445,6 +508,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                           _destinationsFor(_selectedEvent!).first)
                       .wireValue
                 : null,
+            scheduledAt: _scheduledAt,
           ),
         );
     if (mounted) setState(() => _campaign = preview);
@@ -491,6 +555,40 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
       _campaignNameController.clear();
       _selectedEvent = null;
       _inviteDestination = null;
+      _scheduledAt = null;
+      _scheduleError = null;
+    });
+  }
+
+  Future<void> _pickSchedule() async {
+    final now = DateTime.now();
+    final initial = _scheduledAt ?? now.add(const Duration(hours: 1));
+    final date = await showCatchDatePicker(
+      context: context,
+      initialDate: initial,
+      firstDate: DateUtils.dateOnly(now),
+      lastDate: DateUtils.dateOnly(now.add(const Duration(days: 365))),
+      title: context.l10n.hostSendsSchedule,
+    );
+    if (date == null || !mounted) return;
+    final time = await showCatchTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(initial),
+      title: context.l10n.hostSendsSchedule,
+    );
+    if (time == null || !mounted) return;
+    final scheduledAt = DateTime(
+      date.year,
+      date.month,
+      date.day,
+      time.hour,
+      time.minute,
+    );
+    setState(() {
+      _scheduledAt = scheduledAt;
+      _scheduleError = scheduledAt.isAfter(DateTime.now())
+          ? null
+          : context.l10n.hostsHostAudienceBlockerSchedule;
     });
   }
 
@@ -550,8 +648,9 @@ bool _templateUsesInvite(HostWhatsappTemplate template) =>
 bool _isInviteVariable(String name) =>
     name == 'invite_url' || name == 'invite_token';
 
-class _HostCampaignReview extends StatelessWidget {
-  const _HostCampaignReview({
+class HostCampaignReport extends StatelessWidget {
+  const HostCampaignReport({
+    super.key,
     required this.campaign,
     required this.busy,
     required this.onApprove,

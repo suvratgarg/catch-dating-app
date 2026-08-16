@@ -39,6 +39,9 @@ function cloneFake<T>(value: T): T {
 
 class FakeDocSnapshot {
   constructor(readonly ref: FakeDocRef, private readonly value?: FakeData) {}
+  get id() {
+    return this.ref.id;
+  }
   get exists() {
     return this.value !== undefined;
   }
@@ -272,6 +275,18 @@ function baseDocs(
       fcmToken: "token-3",
       prefsRunStatusUpdates: true,
     },
+    "organizerContacts/contact-1": {
+      organizerId: "club-1",
+      linkedUid: "user-1",
+      identityState: "verified",
+      deletedAt: null,
+    },
+    "organizerContacts/contact-2": {
+      organizerId: "club-1",
+      linkedUid: "user-2",
+      identityState: "verified",
+      deletedAt: null,
+    },
     ...overrides,
   };
 }
@@ -358,6 +373,19 @@ test("sendEventBroadcast sends booked Activity and preference-gated push",
       deliveries[eventBroadcastDeliveryKey("user-1")].pushStatus,
       "accepted"
     );
+    const summary = h.firestore.get(
+      `organizerBroadcastSummaries/${expectedId}`
+    )!;
+    assert.equal(summary.organizerId, "club-1");
+    assert.equal(summary.eventId, "event-1");
+    assert.equal(summary.audience, "booked");
+    assert.equal(summary.recipientCount, 2);
+    assert.equal(summary.partialFailure, false);
+    assert.deepEqual(summary.recipientContactIds, ["contact-1", "contact-2"]);
+    assert.deepEqual(summary.recipientDeliveryStates, {
+      "contact-1": "available",
+      "contact-2": "available",
+    });
   });
 
 test("prospective audience excludes blocks, deleted users, and missing users",

@@ -19,6 +19,8 @@ import {
 import {
   EventDocument,
   EventParticipationDocument,
+  OrganizerBroadcastSummaryDocument,
+  OrganizerContactDocument,
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {SendEventBroadcastCallablePayload} from
@@ -78,6 +80,9 @@ interface BroadcastReceiptData {
   leaseOwner?: string;
   leaseExpiresAt?: FirebaseFirestore.Timestamp;
   deliveries?: Record<string, DeliveryEvidence>;
+  createdAt?: FirebaseFirestore.Timestamp;
+  updatedAt?: FirebaseFirestore.Timestamp;
+  completedAt?: FirebaseFirestore.Timestamp;
 }
 
 interface SendEventBroadcastDeps {
@@ -107,6 +112,8 @@ const defaultDeps: SendEventBroadcastDeps = {
 
 interface BroadcastClaim {
   broadcastId: string;
+  eventId: string;
+  audience: BroadcastAudience;
   leaseOwner: string;
   isNewLogicalRequest: boolean;
   title: string;
@@ -114,6 +121,7 @@ interface BroadcastClaim {
   club: EventOrganizerDocument;
   targetUids: string[];
   priorDeliveries: Record<string, DeliveryEvidence>;
+  completedAt?: FirebaseFirestore.Timestamp;
   replay?: SendEventBroadcastCallableResponse;
 }
 
@@ -152,7 +160,21 @@ export async function sendEventBroadcastHandler(
 
   const db = deps.firestore();
   const claim = await claimBroadcast({db, deps, data, actorUid});
-  if (claim.replay) return claim.replay;
+  if (claim.replay) {
+    const contactIdsByUid = await resolveBroadcastContactIds({
+      db,
+      organizerId: claim.event.organizerId ?? claim.event.clubId,
+      targetUids: claim.targetUids,
+    });
+    await ensureReplayBroadcastSummary({
+      db,
+      deps,
+      claim,
+      response: claim.replay,
+      contactIdsByUid,
+    });
+    return claim.replay;
+  }
   if (claim.isNewLogicalRequest) {
     try {
       await deps.checkRateLimit(db, actorUid, "sendEventBroadcast");
@@ -184,7 +206,18 @@ export async function sendEventBroadcastHandler(
     for (const result of deliveryResults) {
       deliveries[result.key] = result.evidence;
     }
-    return await finalizeBroadcast({db, deps, claim, deliveries});
+    const contactIdsByUid = await resolveBroadcastContactIds({
+      db,
+      organizerId: claim.event.organizerId ?? claim.event.clubId,
+      targetUids: claim.targetUids,
+    });
+    return await finalizeBroadcast({
+      db,
+      deps,
+      claim,
+      deliveries,
+      contactIdsByUid,
+    });
   } catch (error) {
     await markBroadcastFailed({db, deps, claim});
     throw error;
@@ -281,6 +314,8 @@ async function claimBroadcast(params: {
       if (isReplayableReceipt(existing)) {
         return {
           broadcastId,
+          eventId: params.data.eventId,
+          audience: params.data.audience,
           leaseOwner: existing.leaseOwner ?? invocationId,
           isNewLogicalRequest: false,
           title,
@@ -288,6 +323,8 @@ async function claimBroadcast(params: {
           club,
           targetUids: parseTargetUids(existing.targetUids),
           priorDeliveries: existing.deliveries ?? {},
+          completedAt: existing.completedAt ?? existing.updatedAt ??
+            existing.createdAt,
           replay: responseFromReceipt(broadcastId, existing),
         };
       }
@@ -359,6 +396,8 @@ async function claimBroadcast(params: {
     }
     return {
       broadcastId,
+      eventId: params.data.eventId,
+      audience: params.data.audience,
       leaseOwner: invocationId,
       isNewLogicalRequest: existing === undefined,
       title,
@@ -432,6 +471,7 @@ async function finalizeBroadcast(params: {
   deps: SendEventBroadcastDeps;
   claim: BroadcastClaim;
   deliveries: Record<string, DeliveryEvidence>;
+  contactIdsByUid: ReadonlyMap<string, string>;
 }): Promise<SendEventBroadcastCallableResponse> {
   const ref = params.db
     .collection("eventBroadcasts")
@@ -469,6 +509,7 @@ async function finalizeBroadcast(params: {
       .filter((code): code is string => code !== undefined))]
       .sort()
       .slice(0, 20);
+    const sentAt = params.deps.timestampFromDate(params.deps.now());
     tx.update(ref, {
       status: response.status,
       recipientCount: response.recipientCount,
@@ -480,11 +521,109 @@ async function finalizeBroadcast(params: {
       pushUnknownCount: response.pushUnknownCount,
       pushErrorCodes,
       deliveries,
-      updatedAt: params.deps.serverTimestamp(),
-      completedAt: params.deps.serverTimestamp(),
+      updatedAt: sentAt,
+      completedAt: sentAt,
     });
+    tx.set(
+      params.db.collection("organizerBroadcastSummaries")
+        .doc(params.claim.broadcastId),
+      broadcastSummary({
+        claim: params.claim,
+        response,
+        deliveries,
+        contactIdsByUid: params.contactIdsByUid,
+        sentAt,
+      }),
+    );
     return response;
   });
+}
+
+async function ensureReplayBroadcastSummary(params: {
+  db: FirebaseFirestore.Firestore;
+  deps: SendEventBroadcastDeps;
+  claim: BroadcastClaim;
+  response: SendEventBroadcastCallableResponse;
+  contactIdsByUid: ReadonlyMap<string, string>;
+}): Promise<void> {
+  const ref = params.db.collection("organizerBroadcastSummaries")
+    .doc(params.claim.broadcastId);
+  if ((await ref.get()).exists) return;
+  const sentAt = params.claim.completedAt ??
+    params.deps.timestampFromDate(params.deps.now());
+  await ref.set(broadcastSummary({
+    claim: params.claim,
+    response: params.response,
+    deliveries: params.claim.priorDeliveries,
+    contactIdsByUid: params.contactIdsByUid,
+    sentAt,
+  }));
+}
+
+function broadcastSummary(params: {
+  claim: BroadcastClaim;
+  response: SendEventBroadcastCallableResponse;
+  deliveries: Record<string, DeliveryEvidence>;
+  contactIdsByUid: ReadonlyMap<string, string>;
+  sentAt: FirebaseFirestore.Timestamp;
+}): OrganizerBroadcastSummaryDocument {
+  const recipientDeliveryStates: Record<string, "available" | "failed"> = {};
+  for (const uid of params.claim.targetUids) {
+    const delivery = params.deliveries[eventBroadcastDeliveryKey(uid)];
+    const contactId = params.contactIdsByUid.get(uid);
+    if (!contactId || delivery?.excluded === true) continue;
+    recipientDeliveryStates[contactId] = delivery &&
+      ["created", "existing"].includes(delivery.activityStatus) ?
+      "available" : "failed";
+  }
+  return {
+    organizerId: params.claim.event.organizerId ?? params.claim.event.clubId,
+    broadcastId: params.claim.broadcastId,
+    eventId: params.claim.eventId,
+    eventName: broadcastEventName(params.claim.event),
+    audience: params.claim.audience,
+    recipientCount: params.response.recipientCount,
+    sentAt: params.sentAt,
+    partialFailure: params.response.status === "partial",
+    recipientContactIds: Object.keys(recipientDeliveryStates).sort(),
+    recipientDeliveryStates,
+    createdAt: params.sentAt,
+    updatedAt: params.sentAt,
+  };
+}
+
+async function resolveBroadcastContactIds(params: {
+  db: FirebaseFirestore.Firestore;
+  organizerId: string;
+  targetUids: string[];
+}): Promise<Map<string, string>> {
+  const resolved = new Map<string, string>();
+  for (let start = 0; start < params.targetUids.length; start += 30) {
+    const batch = params.targetUids.slice(start, start + 30);
+    if (batch.length === 0) continue;
+    const snapshot = await params.db.collection("organizerContacts")
+      .where("linkedUid", "in", batch)
+      .get();
+    for (const document of snapshot.docs) {
+      const contact = document.data() as OrganizerContactDocument;
+      if (contact.organizerId !== params.organizerId ||
+          contact.identityState !== "verified" ||
+          contact.deletedAt !== null) continue;
+      if (contact.linkedUid) resolved.set(contact.linkedUid, document.id);
+    }
+  }
+  return resolved;
+}
+
+function broadcastEventName(event: EventDocument): string {
+  const custom = event.eventFormat?.customActivityLabel?.trim();
+  if (custom) return custom.slice(0, 160);
+  const activityKind = event.eventFormat?.activityKind;
+  if (!activityKind) return "Event announcement";
+  const words = activityKind
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .toLocaleLowerCase("en");
+  return `${words.charAt(0).toLocaleUpperCase("en")}${words.slice(1)}`;
 }
 
 function deliveriesForTargets(

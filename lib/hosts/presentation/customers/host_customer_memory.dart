@@ -182,15 +182,20 @@ class HostCustomerSendHistory extends StatelessWidget {
                 for (final (index, send) in customer.sends.indexed)
                   CatchField.read(
                     key: ValueKey(
-                      'host-customer-campaign-send-${send.campaignId}',
+                      'host-customer-${send.kind.name}-send-${send.campaignId}',
                     ),
                     title: send.name,
                     body: AppTimeFormatters.shortDate(
                       send.sentAt ?? send.createdAt,
                     ),
-                    valueText: context.l10n.hostCustomersSendStatus(
-                      status: send.deliveryStatus.name,
-                    ),
+                    valueText: [
+                      send.kind == HostCustomerSendKind.announcement
+                          ? context.l10n.hostSendsAnnouncementType
+                          : context.l10n.hostSendsCampaignType,
+                      context.l10n.hostCustomersSendStatus(
+                        status: send.deliveryStatus.name,
+                      ),
+                    ].join(' · '),
                     divider: index < customer.sends.length - 1,
                   ),
               ],

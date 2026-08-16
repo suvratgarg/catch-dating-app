@@ -46,6 +46,7 @@ import {ProviderSyncRunDocument} from "./providerSyncRunDocument";
 import {OrganizerMessageTemplateDocument} from "./organizerMessageTemplateDocument";
 import {OrganizerContactChannelStateDocument} from "./organizerContactChannelStateDocument";
 import {OrganizerCampaignDocument} from "./organizerCampaignDocument";
+import {OrganizerBroadcastSummaryDocument} from "./organizerBroadcastSummaryDocument";
 import {OrganizerCampaignRecipientDocument} from "./organizerCampaignRecipientDocument";
 import {OrganizerCampaignWebhookReceiptDocument} from "./organizerCampaignWebhookReceiptDocument";
 import {OrganizerMessagingWebhookEventDocument} from "./organizerMessagingWebhookEventDocument";
@@ -213,6 +214,8 @@ import {CompleteOrganizerWhatsappConnectionCallablePayload} from "./completeOrga
 import {OrganizerSenderConnectionActionCallablePayload} from "./organizerSenderConnectionActionCallablePayload";
 import {SendOrganizerWhatsappTestCallablePayload} from "./sendOrganizerWhatsappTestCallablePayload";
 import {OrganizerCampaignCallableResponse} from "./organizerCampaignCallableResponse";
+import {ListOrganizerCampaignsCallablePayload} from "./listOrganizerCampaignsCallablePayload";
+import {ListOrganizerCampaignsCallableResponse} from "./listOrganizerCampaignsCallableResponse";
 import {OrganizerMessagingSetupCallableResponse} from "./organizerMessagingSetupCallableResponse";
 import {GetOrganizerProviderSetupCallablePayload} from "./getOrganizerProviderSetupCallablePayload";
 import {ConnectOrganizerLumaProviderCallablePayload} from "./connectOrganizerLumaProviderCallablePayload";
@@ -407,6 +410,7 @@ import {
   organizerMessageTemplateDocumentSchema,
   organizerContactChannelStateDocumentSchema,
   organizerCampaignDocumentSchema,
+  organizerBroadcastSummaryDocumentSchema,
   organizerCampaignRecipientDocumentSchema,
   organizerCampaignWebhookReceiptDocumentSchema,
   organizerMessagingWebhookEventDocumentSchema,
@@ -574,6 +578,8 @@ import {
   organizerSenderConnectionActionCallablePayloadSchema,
   sendOrganizerWhatsappTestCallablePayloadSchema,
   organizerCampaignCallableResponseSchema,
+  listOrganizerCampaignsCallablePayloadSchema,
+  listOrganizerCampaignsCallableResponseSchema,
   organizerMessagingSetupCallableResponseSchema,
   getOrganizerProviderSetupCallablePayloadSchema,
   connectOrganizerLumaProviderCallablePayloadSchema,
@@ -898,6 +904,10 @@ export const validateOrganizerCampaignDocument:
   ValidateFunction<OrganizerCampaignDocument> =
     ajv.compile(organizerCampaignDocumentSchema) as
       ValidateFunction<OrganizerCampaignDocument>;
+export const validateOrganizerBroadcastSummaryDocument:
+  ValidateFunction<OrganizerBroadcastSummaryDocument> =
+    ajv.compile(organizerBroadcastSummaryDocumentSchema) as
+      ValidateFunction<OrganizerBroadcastSummaryDocument>;
 export const validateOrganizerCampaignRecipientDocument:
   ValidateFunction<OrganizerCampaignRecipientDocument> =
     ajv.compile(organizerCampaignRecipientDocumentSchema) as
@@ -1566,6 +1576,14 @@ export const validateOrganizerCampaignCallableResponse:
   ValidateFunction<OrganizerCampaignCallableResponse> =
     ajv.compile(organizerCampaignCallableResponseSchema) as
       ValidateFunction<OrganizerCampaignCallableResponse>;
+export const validateListOrganizerCampaignsCallablePayload:
+  ValidateFunction<ListOrganizerCampaignsCallablePayload> =
+    ajv.compile(listOrganizerCampaignsCallablePayloadSchema) as
+      ValidateFunction<ListOrganizerCampaignsCallablePayload>;
+export const validateListOrganizerCampaignsCallableResponse:
+  ValidateFunction<ListOrganizerCampaignsCallableResponse> =
+    ajv.compile(listOrganizerCampaignsCallableResponseSchema) as
+      ValidateFunction<ListOrganizerCampaignsCallableResponse>;
 export const validateOrganizerMessagingSetupCallableResponse:
   ValidateFunction<OrganizerMessagingSetupCallableResponse> =
     ajv.compile(organizerMessagingSetupCallableResponseSchema) as

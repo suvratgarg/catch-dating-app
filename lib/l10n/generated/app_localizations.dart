@@ -20032,6 +20032,90 @@ abstract class AppLocalizations {
   /// **'Campaigns'**
   String get hostMessagingWorkspaceCampaigns;
 
+  /// Messaging workspace label for outbound history and composing.
+  ///
+  /// In en, this message translates to:
+  /// **'Sends'**
+  String get hostMessagingWorkspaceSends;
+
+  /// Primary action in the Host Sends workspace.
+  ///
+  /// In en, this message translates to:
+  /// **'New message'**
+  String get hostSendsNewMessage;
+
+  /// Opens organizer WhatsApp sender setup.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp settings'**
+  String get hostSendsSettings;
+
+  /// Loads the next page of organizer Sends history.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more'**
+  String get hostSendsLoadMore;
+
+  /// Empty Sends history title.
+  ///
+  /// In en, this message translates to:
+  /// **'No messages sent yet.'**
+  String get hostSendsEmpty;
+
+  /// Empty Sends history guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Campaigns and event announcements will appear here after you send them.'**
+  String get hostSendsEmptyHelp;
+
+  /// Typed label for a WhatsApp campaign row.
+  ///
+  /// In en, this message translates to:
+  /// **'Campaign'**
+  String get hostSendsCampaignType;
+
+  /// Typed label for an event announcement row.
+  ///
+  /// In en, this message translates to:
+  /// **'Announcement'**
+  String get hostSendsAnnouncementType;
+
+  /// Recipient count in a Sends row.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} people'**
+  String hostSendsRecipients({required int count});
+
+  /// Announcement partial failure status.
+  ///
+  /// In en, this message translates to:
+  /// **'Some deliveries need attention'**
+  String get hostSendsPartial;
+
+  /// Campaign scheduling field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery'**
+  String get hostSendsDeliveryTime;
+
+  /// Immediate campaign delivery choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Send after approval'**
+  String get hostSendsSendNow;
+
+  /// Campaign schedule picker action.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule'**
+  String get hostSendsSchedule;
+
+  /// Clears a campaign schedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Send after approval'**
+  String get hostSendsClearSchedule;
+
   /// Opens organizer-owned customer identity and delivery controls.
   ///
   /// In en, this message translates to:

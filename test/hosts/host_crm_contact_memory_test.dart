@@ -2,7 +2,7 @@ import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('contact detail parses manual tags, notes, and campaign sends', () {
+  test('contact detail parses memory and typed campaign/announcement sends', () {
     final detail = HostAudienceContactDetail.fromCallableData({
       'organizerId': 'organizer-1',
       'contactId': 'contact-1',
@@ -67,6 +67,16 @@ void main() {
           'sentAtMillis': 4000,
           'updatedAtMillis': 5000,
         },
+        {
+          'kind': 'announcement',
+          'broadcastId': 'broadcast-1',
+          'eventId': 'event-1',
+          'eventName': 'Friday run',
+          'audience': 'booked',
+          'deliveryStatus': 'available',
+          'sentAtMillis': 6000,
+          'partialFailure': false,
+        },
       ],
       'sendsTruncated': false,
       'revision': 4,
@@ -76,8 +86,14 @@ void main() {
     expect(detail.manualTagVocabulary, hasLength(2));
     expect(detail.notes.single.wasEdited, isTrue);
     expect(
-      detail.sends.single.deliveryStatus,
+      detail.sends.first.deliveryStatus,
       HostCustomerSendDeliveryStatus.delivered,
+    );
+    expect(detail.sends.last.kind, HostCustomerSendKind.announcement);
+    expect(detail.sends.last.eventId, 'event-1');
+    expect(
+      detail.sends.last.deliveryStatus,
+      HostCustomerSendDeliveryStatus.available,
     );
   });
 

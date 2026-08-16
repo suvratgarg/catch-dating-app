@@ -9,7 +9,7 @@
   "x-firestore-path": "organizerCampaigns/{campaignId}",
   "x-document-id-field": "campaignId",
   "x-owner": "organizer campaign callables and dispatcher",
-  "required": ["organizerId", "createdByUid", "messageClass", "channel", "status", "name", "segmentIds", "connectionId", "templateId", "templateVariables", "eventId", "inviteDestinationKind", "scheduledAt", "recipientSnapshotHash", "contentHash", "audienceCounts", "deliveryCounts", "revision", "leaseOwner", "leaseExpiresAt", "createdAt", "updatedAt", "approvedAt", "completedAt", "cancelledAt"],
+  "required": ["organizerId", "createdByUid", "messageClass", "channel", "status", "name", "segmentIds", "connectionId", "templateId", "templateVariables", "eventId", "inviteDestinationKind", "scheduledAt", "recipientSnapshotHash", "contentHash", "audienceCounts", "deliveryCounts", "revision", "leaseOwner", "leaseExpiresAt", "createdAt", "updatedAt", "approvedAt", "dispatchedAt", "completedAt", "cancelledAt"],
   "properties": {
     "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "createdByUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
@@ -34,6 +34,7 @@
     "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
     "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
     "approvedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+    "dispatchedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
     "completedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
     "cancelledAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"}
   },

@@ -249,4 +249,50 @@ void main() {
     expect(campaign.deliveryCounts['delivered'], 8);
     expect(campaign.blockers, {'audience_changed'});
   });
+
+  test('parses mixed reverse-chronological Sends rows', () {
+    final page = HostSendsPage.fromCallableData({
+      'organizerId': 'organizer-1',
+      'sends': <Object?>[
+        {
+          'kind': 'announcement',
+          'broadcastId': 'broadcast-1',
+          'eventId': 'event-1',
+          'eventName': 'Friday run',
+          'audience': 'booked',
+          'recipientCount': 18,
+          'sentAtMillis': 3000,
+          'partialFailure': true,
+          'activityAtMillis': 3000,
+        },
+        {
+          'kind': 'campaign',
+          'campaignId': 'campaign-1',
+          'name': 'Regulars invite',
+          'status': 'scheduled',
+          'segmentIds': <Object?>['regular'],
+          'templateId': 'template-1',
+          'templateName': 'Event invite',
+          'audienceCounts': {'total': 12, 'reachable': 10},
+          'deliveryCounts': {'pending': 10},
+          'scheduledAtMillis': 5000,
+          'dispatchedAtMillis': null,
+          'activityAtMillis': 2000,
+        },
+      ],
+      'nextCursor': 'next-page',
+    });
+
+    expect(page.sends.first, isA<HostAnnouncementSendSummary>());
+    expect(
+      (page.sends.first as HostAnnouncementSendSummary).partialFailure,
+      isTrue,
+    );
+    expect(page.sends.last, isA<HostCampaignSendSummary>());
+    expect(
+      (page.sends.last as HostCampaignSendSummary).scheduledAt,
+      isNotNull,
+    );
+    expect(page.nextCursor, 'next-page');
+  });
 }

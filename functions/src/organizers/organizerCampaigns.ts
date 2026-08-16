@@ -167,6 +167,7 @@ export async function upsertOrganizerCampaignHandler(
       createdAt: existing?.createdAt ?? now,
       updatedAt: now,
       approvedAt: null,
+      dispatchedAt: null,
       completedAt: null,
       cancelledAt: null,
     };

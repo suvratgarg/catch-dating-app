@@ -98,6 +98,7 @@ export 'callables/grant_event_staff_callable_request.g.dart';
 export 'callables/heartbeat_event_success_presence_callable_request.g.dart';
 export 'callables/host_analytics_query_callable_request.g.dart';
 export 'callables/import_event_attendees_callable_request.g.dart';
+export 'callables/list_organizer_campaigns_callable_request.g.dart';
 export 'callables/list_organizer_contacts_callable_request.g.dart';
 export 'callables/list_organizer_luma_events_callable_request.g.dart';
 export 'callables/list_public_club_reviews_callable_request.g.dart';

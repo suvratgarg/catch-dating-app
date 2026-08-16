@@ -45,6 +45,7 @@ import {
   organizerMessageTemplateDocumentSchema,
   organizerContactChannelStateDocumentSchema,
   organizerCampaignDocumentSchema,
+  organizerBroadcastSummaryDocumentSchema,
   organizerCampaignRecipientDocumentSchema,
   organizerCampaignWebhookReceiptDocumentSchema,
   organizerMessagingWebhookEventDocumentSchema,
@@ -212,6 +213,8 @@ import {
   organizerSenderConnectionActionCallablePayloadSchema,
   sendOrganizerWhatsappTestCallablePayloadSchema,
   organizerCampaignCallableResponseSchema,
+  listOrganizerCampaignsCallablePayloadSchema,
+  listOrganizerCampaignsCallableResponseSchema,
   organizerMessagingSetupCallableResponseSchema,
   getOrganizerProviderSetupCallablePayloadSchema,
   connectOrganizerLumaProviderCallablePayloadSchema,
@@ -429,6 +432,7 @@ export const validateProviderSyncRunDocument = ajv.compile(providerSyncRunDocume
 export const validateOrganizerMessageTemplateDocument = ajv.compile(organizerMessageTemplateDocumentSchema);
 export const validateOrganizerContactChannelStateDocument = ajv.compile(organizerContactChannelStateDocumentSchema);
 export const validateOrganizerCampaignDocument = ajv.compile(organizerCampaignDocumentSchema);
+export const validateOrganizerBroadcastSummaryDocument = ajv.compile(organizerBroadcastSummaryDocumentSchema);
 export const validateOrganizerCampaignRecipientDocument = ajv.compile(organizerCampaignRecipientDocumentSchema);
 export const validateOrganizerCampaignWebhookReceiptDocument = ajv.compile(organizerCampaignWebhookReceiptDocumentSchema);
 export const validateOrganizerMessagingWebhookEventDocument = ajv.compile(organizerMessagingWebhookEventDocumentSchema);
@@ -596,6 +600,8 @@ export const validateCompleteOrganizerWhatsappConnectionCallablePayload = ajv.co
 export const validateOrganizerSenderConnectionActionCallablePayload = ajv.compile(organizerSenderConnectionActionCallablePayloadSchema);
 export const validateSendOrganizerWhatsappTestCallablePayload = ajv.compile(sendOrganizerWhatsappTestCallablePayloadSchema);
 export const validateOrganizerCampaignCallableResponse = ajv.compile(organizerCampaignCallableResponseSchema);
+export const validateListOrganizerCampaignsCallablePayload = ajv.compile(listOrganizerCampaignsCallablePayloadSchema);
+export const validateListOrganizerCampaignsCallableResponse = ajv.compile(listOrganizerCampaignsCallableResponseSchema);
 export const validateOrganizerMessagingSetupCallableResponse = ajv.compile(organizerMessagingSetupCallableResponseSchema);
 export const validateGetOrganizerProviderSetupCallablePayload = ajv.compile(getOrganizerProviderSetupCallablePayloadSchema);
 export const validateConnectOrganizerLumaProviderCallablePayload = ajv.compile(connectOrganizerLumaProviderCallablePayloadSchema);

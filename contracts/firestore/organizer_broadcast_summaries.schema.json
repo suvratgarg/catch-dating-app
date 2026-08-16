@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_broadcast_summaries.schema.json",
+  "title": "OrganizerBroadcastSummaryDocument",
+  "description": "Server-owned organizer-scoped index of one completed event announcement, including bounded contact delivery state for CRM history.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerBroadcastSummaries",
+  "x-firestore-path": "organizerBroadcastSummaries/{broadcastId}",
+  "x-document-id-field": "broadcastId",
+  "x-owner": "sendEventBroadcast callable",
+  "required": ["organizerId", "broadcastId", "eventId", "eventName", "audience", "recipientCount", "sentAt", "partialFailure", "recipientContactIds", "recipientDeliveryStates", "createdAt", "updatedAt"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "broadcastId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "eventName": {"type": "string", "minLength": 1, "maxLength": 160},
+    "audience": {"type": "string", "enum": ["booked", "prospective", "everyone"]},
+    "recipientCount": {"type": "integer", "minimum": 0, "maximum": 500},
+    "sentAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "partialFailure": {"type": "boolean"},
+    "recipientContactIds": {"type": "array", "maxItems": 500, "uniqueItems": true, "items": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}},
+    "recipientDeliveryStates": {
+      "type": "object",
+      "maxProperties": 500,
+      "additionalProperties": {"type": "string", "enum": ["available", "failed"]}
+    },
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+  }
+}

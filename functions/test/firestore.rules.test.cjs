@@ -1508,13 +1508,19 @@ describe("firestore.rules", () => {
       ), exposure));
     });
 
-    it("keeps event broadcast delivery receipts server-only", async () => {
+    it("keeps event broadcast receipts and organizer summaries server-only", async () => {
       await seed(["eventBroadcasts", "broadcast-1"], {
         eventId: "event-1",
         clubId: "club-1",
         actorUid: "host-1",
         targetUids: ["runner-1"],
         deliveries: {hashed: {pushStatus: "accepted"}},
+      });
+      await seed(["organizerBroadcastSummaries", "broadcast-1"], {
+        organizerId: "club-1",
+        broadcastId: "broadcast-1",
+        eventId: "event-1",
+        recipientContactIds: ["contact-1"],
       });
 
       await assertFails(
@@ -1526,6 +1532,15 @@ describe("firestore.rules", () => {
       await assertFails(
         getDocs(collection(authedDb("host-1"), "eventBroadcasts")),
       );
+      await assertFails(getDoc(doc(
+        authedDb("host-1"),
+        "organizerBroadcastSummaries",
+        "broadcast-1",
+      )));
+      await assertFails(getDocs(collection(
+        authedDb("host-1"),
+        "organizerBroadcastSummaries",
+      )));
       await assertFails(
         setDoc(
           doc(authedDb("host-1"), "eventBroadcasts", "broadcast-2"),
@@ -1543,6 +1558,11 @@ describe("firestore.rules", () => {
           doc(authedDb("host-1"), "eventBroadcasts", "broadcast-1"),
         ),
       );
+      await assertFails(setDoc(doc(
+        authedDb("host-1"),
+        "organizerBroadcastSummaries",
+        "broadcast-2",
+      ), {organizerId: "club-1"}));
     });
 
     it("keeps invite secrets, touches, share intents, and attribution server-only", async () => {
