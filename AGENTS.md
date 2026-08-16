@@ -81,6 +81,38 @@ repository ledger.
 - Do not add a new tracked evidence registry or generated history snapshot to
   replace the removed evidence.
 
+## Measure, Don't Assume
+
+Every delivery incident in this repository so far has the same shape: something
+trusted a *representation* of the system instead of the system. A branch named
+`main` that was 17 commits behind origin. A rules file in the repo that did not
+match the deployed ruleset. A migration receipt claiming completion while a live
+dry-run showed five blockers. A spec citing a capability that exists nowhere in
+the code. Each was resolved by measuring the thing itself.
+
+- **Verify against the source, not a description of it.** Before acting on a
+  claim about deployed config, remote state, data, or a symbol's existence,
+  query it. `git rev-list --left-right origin/main...HEAD` before anything that
+  publishes; the live API before trusting a checked-in rules file.
+- **Read whole units.** A `grep -A 12` of a 32-line function, or the first 60
+  lines of a 90-line report, has produced a confidently wrong conclusion more
+  than once. Read the whole function, the whole report, the whole file.
+- **Derive the gates; do not recall them.** Run
+  `node tool/harness/verify_local.mjs --base origin/main --list` to see exactly
+  what CI will run for your change. Do not work from a remembered or
+  copy-pasted gate list — every such list has drifted at least once.
+  `flutter analyze` passing is not evidence CI will pass; CI uses
+  `--fatal-infos` via `node tool/ci/check_flutter_workspace_analysis.mjs`.
+- **Report pre-existing failures; do not inherit them.** A failure described as
+  "known" in a prompt may have been fixed upstream and be failing only on your
+  stale base. Check against the merge base before working around anything.
+- **A prompt's diagnosis is a hypothesis.** If an instruction does not survive
+  your own reading of the code, say so and stop rather than implementing it.
+  Implementing an incorrect diagnosis has cost more here than asking has.
+- **Commit incrementally.** Commit each coherent piece as it builds. Committed
+  work survives an interrupted run; uncommitted work does not. Stage explicit
+  paths — `git add -u` has silently dropped new files.
+
 ## Completion Standard
 
 A task is complete when its intended source and contract changes are present,
