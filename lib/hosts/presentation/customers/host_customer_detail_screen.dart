@@ -4,6 +4,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -14,6 +15,7 @@ import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_contact_merge_review.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_memory.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
@@ -109,6 +111,13 @@ class _HostCustomerDetailScreenState
               HostCustomerAttendanceHistory(customer: customer),
               gapH16,
               HostCustomerSendHistory(customer: customer),
+              if (customer.activeMerges.isNotEmpty) ...[
+                gapH16,
+                HostCustomerActiveMergesSection(
+                  merges: customer.activeMerges,
+                  onUndo: _undoMerge,
+                ),
+              ],
               gapH24,
               CatchSection.divided(
                 key: const ValueKey('host-customer-controls'),
@@ -125,6 +134,9 @@ class _HostCustomerDetailScreenState
                     HostCustomerConversationCard(
                       customer: customer,
                       loading: _openingConversation,
+                      onReview: customer.ambiguousCandidateCount > 0
+                          ? _reviewDuplicates
+                          : null,
                       onOpen:
                           customerConversationAvailability(
                                 linkedAccount: customer.linkedAccount,
@@ -176,6 +188,49 @@ class _HostCustomerDetailScreenState
     hostAudienceContactDetailProvider(widget.organizerId, widget.contactId),
   );
 
+  Future<void> _reviewDuplicates() async {
+    final changed = await showCatchBottomSheet<bool>(
+      context: context,
+      builder: (_) =>
+          HostContactMergeReviewSheet(organizerId: widget.organizerId),
+    );
+    if (!mounted || changed != true) return;
+    ref.invalidate(hostCustomersDirectoryControllerProvider);
+    ref.invalidate(hostCrmSummaryProvider(widget.organizerId));
+    _refreshDetail();
+  }
+
+  Future<void> _undoMerge(HostActiveContactMerge merge) async {
+    final confirmed = await showCatchConfirmDialog(
+      context: context,
+      title: context.l10n.hostCustomersUndoMergeTitle,
+      message: context.l10n.hostCustomersUndoMergeBody,
+      confirmLabel: context.l10n.hostCustomersUndoMerge,
+      danger: true,
+    );
+    if (confirmed != true || !mounted) return;
+    try {
+      await ref
+          .read(hostCustomersControllerProvider)
+          .unmergeCustomers(
+            organizerId: widget.organizerId,
+            mergeReceiptId: merge.mergeReceiptId,
+          );
+      if (!mounted) return;
+      ref.invalidate(hostCustomersDirectoryControllerProvider);
+      ref.invalidate(hostCrmSummaryProvider(widget.organizerId));
+      _refreshDetail();
+    } on Object catch (error) {
+      if (mounted) {
+        showCatchErrorSnackBar(
+          context,
+          error,
+          errorContext: AppErrorContext.club,
+        );
+      }
+    }
+  }
+
   Future<void> _manageCustomer(HostAudienceContactDetail customer) async {
     final result = await showCatchBottomSheet<HostCustomerManageResult>(
       context: context,
@@ -220,4 +275,43 @@ class _HostCustomerDetailScreenState
       if (mounted) setState(() => _openingConversation = false);
     }
   }
+}
+
+class HostCustomerActiveMergesSection extends StatelessWidget {
+  const HostCustomerActiveMergesSection({
+    super.key,
+    required this.merges,
+    required this.onUndo,
+  });
+
+  final List<HostActiveContactMerge> merges;
+  final ValueChanged<HostActiveContactMerge> onUndo;
+
+  @override
+  Widget build(BuildContext context) => CatchSection.divided(
+    key: const ValueKey('host-customer-active-merges'),
+    title: context.l10n.hostCustomersMergedHistory,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final (index, merge) in merges.indexed) ...[
+          Text(
+            context.l10n.hostCustomersMergedHistoryRow(
+              name: merge.sourceDisplayName,
+              count: merge.movedFactCount,
+            ),
+            style: CatchTextStyles.proseM(context),
+          ),
+          gapH8,
+          CatchButton(
+            label: context.l10n.hostCustomersUndoMerge,
+            variant: CatchButtonVariant.secondary,
+            size: CatchButtonSize.sm,
+            onPressed: () => onUndo(merge),
+          ),
+          if (index < merges.length - 1) gapH16,
+        ],
+      ],
+    ),
+  );
 }

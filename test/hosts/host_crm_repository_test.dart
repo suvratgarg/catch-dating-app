@@ -220,6 +220,17 @@ void main() {
         },
       ],
       'eventsTruncated': false,
+      'activeMerges': [
+        {
+          'mergeReceiptId': 'receipt-1',
+          'sourceContactId': 'contact-2',
+          'sourceDisplayName': 'Asha R.',
+          'evidence': ['sameVerifiedPhone', 'managerConfirmed'],
+          'conflicts': <String>[],
+          'movedFactCount': 4,
+          'mergedAtMillis': 1700000001000,
+        },
+      ],
       'revision': 7,
     });
 
@@ -228,6 +239,56 @@ void main() {
     expect(detail.traits.attendanceRate, 0.75);
     expect(detail.revenue.amounts.single.amountMinor, 450000);
     expect(detail.events.single.checkedIn, isTrue);
+    expect(detail.activeMerges.single.sourceContactId, 'contact-2');
+    expect(detail.activeMerges.single.movedFactCount, 4);
+  });
+
+  test('parses evidence-bearing and dismissed merge candidates', () {
+    Map<String, Object?> candidate({required bool dismissed}) => {
+      'candidateId': 'ocmc_${List.filled(48, 'a').join()}',
+      'contacts': [
+        {
+          'contactId': 'contact-1',
+          'displayName': 'Asha Rao',
+          'phoneE164': '+919876543210',
+          'email': null,
+          'linkedAccount': true,
+          'primarySource': 'catchBooking',
+          'revision': 2,
+        },
+        {
+          'contactId': 'contact-2',
+          'displayName': 'Asha R.',
+          'phoneE164': '+919876543210',
+          'email': null,
+          'linkedAccount': false,
+          'primarySource': 'hostImport',
+          'revision': 3,
+        },
+      ],
+      'matchKinds': ['sameVerifiedPhone'],
+      'confidence': 'verified',
+      'sourceKinds': ['catchBooking', 'hostImport'],
+      'sharedEventIds': ['event-1'],
+      'sharedEventCount': 1,
+      'updatedAtMillis': 1700000000000,
+      'decisionState': dismissed ? 'differentPeople' : 'none',
+      'decisionRevision': dismissed ? 4 : null,
+      'canReopen': dismissed,
+    };
+    final page = HostContactMergeCandidatePage.fromCallableData({
+      'organizerId': 'organizer-1',
+      'candidates': [candidate(dismissed: false)],
+      'dismissedCandidates': [candidate(dismissed: true)],
+      'nextCursor': null,
+      'truncated': false,
+    });
+
+    expect(page.candidates.single.matchKinds, {
+      HostContactMergeMatchKind.sameVerifiedPhone,
+    });
+    expect(page.candidates.single.sharedEventCount, 1);
+    expect(page.dismissedCandidates.single.canReopen, isTrue);
   });
 
   test('parses campaign blockers and aggregate delivery counts', () {

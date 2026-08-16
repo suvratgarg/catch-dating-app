@@ -35,6 +35,7 @@ import {
   OrganizerContactDocument,
   OrganizerContactChannelStateDocument,
   OrganizerContactEventEdgeDocument,
+  OrganizerContactMergeReceiptDocument,
   OrganizerContactNoteDocument,
   OrganizerContactTagVocabularyDocument,
   OrganizerContactTraitDocument,
@@ -63,6 +64,7 @@ const defaultContactPageSize = 50;
 const maxDetailEvents = 100;
 const maxDetailNotes = 100;
 const maxDetailSends = 100;
+const maxDetailMergeReceipts = 500;
 const maxExportContacts = 2500;
 const maxContactPayments = 500;
 const maxOrganizerManualTags = 20;
@@ -395,6 +397,7 @@ export async function getOrganizerContactDetailHandler(
     recipientSnap,
     broadcastSnap,
     tagVocabularySnap,
+    mergeReceiptSnap,
   ] = await Promise.all([
     contactRef.get(),
     traitRef.get(),
@@ -423,6 +426,13 @@ export async function getOrganizerContactDetailHandler(
       .get(),
     db.collection("organizerContactTagVocabularies")
       .doc(data.organizerId).get(),
+    db.collection("organizerContactMergeReceipts")
+      .where("organizerId", "==", data.organizerId)
+      .where("survivorContactId", "==", data.contactId)
+      .orderBy("createdAt", "desc")
+      .orderBy(admin.firestore.FieldPath.documentId(), "desc")
+      .limit(maxDetailMergeReceipts)
+      .get(),
   ]);
   const contact = contactSnap.data() as OrganizerContactDocument | undefined;
   const traits = traitSnap.data() as OrganizerContactTraitDocument | undefined;
@@ -478,6 +488,14 @@ export async function getOrganizerContactDetailHandler(
     (left, right) => sendHistoryMillis(right) - sendHistoryMillis(left),
   );
   const sends = allSends.slice(0, maxDetailSends);
+  const activeMerges = await activeMergeRows({
+    db,
+    organizerId: data.organizerId,
+    receipts: mergeReceiptSnap.docs.map((document) => ({
+      id: document.id,
+      data: document.data() as OrganizerContactMergeReceiptDocument,
+    })),
+  });
   return {
     organizerId: data.organizerId,
     contactId: data.contactId,
@@ -515,8 +533,47 @@ export async function getOrganizerContactDetailHandler(
     sends,
     sendsTruncated:
       recipientSnap.size > maxDetailSends || allSends.length > maxDetailSends,
+    activeMerges,
     revision: contact.revision,
   };
+}
+
+async function activeMergeRows(params: {
+  db: FirebaseFirestore.Firestore;
+  organizerId: string;
+  receipts: Array<{
+    id: string;
+    data: OrganizerContactMergeReceiptDocument;
+  }>;
+}): Promise<GetOrganizerContactDetailCallableResponse["activeMerges"]> {
+  const reversedReceiptIds = new Set(params.receipts
+    .filter((receipt) => receipt.data.organizerId === params.organizerId &&
+      receipt.data.operation === "unmerge" &&
+      receipt.data.reversalOfReceiptId !== null)
+    .map((receipt) => receipt.data.reversalOfReceiptId!));
+  const activeReceipts = params.receipts.filter((receipt) =>
+    receipt.data.organizerId === params.organizerId &&
+    receipt.data.operation === "merge" &&
+    !reversedReceiptIds.has(receipt.id)
+  ).slice(0, 50);
+  return Promise.all(activeReceipts.map(async (receipt) => {
+    const sourceSnapshot = await params.db.collection("organizerContacts")
+      .doc(receipt.data.sourceContactId).get();
+    const source = sourceSnapshot.data() as
+      OrganizerContactDocument | undefined;
+    return {
+      mergeReceiptId: receipt.id,
+      sourceContactId: receipt.data.sourceContactId,
+      sourceDisplayName: source?.organizerId === params.organizerId ?
+        effectiveDisplayName(source) : "Merged customer",
+      evidence: receipt.data.evidence,
+      conflicts: receipt.data.conflicts,
+      movedFactCount: receipt.data.movedEdgeCount +
+        receipt.data.movedIdentityEvidenceCount +
+        receipt.data.movedClaimCount,
+      mergedAtMillis: receipt.data.createdAt.toMillis(),
+    };
+  }));
 }
 
 async function contactRevenue(params: {

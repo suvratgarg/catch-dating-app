@@ -147,6 +147,10 @@ export {
   unmergeOrganizerContacts,
 } from "./organizers/organizerContactMerges";
 export {
+  listOrganizerContactMergeCandidates,
+  reviewOrganizerContactMergeCandidate,
+} from "./organizers/organizerContactMergeReview";
+export {
   approveOrganizerCampaign,
   cancelOrganizerCampaign,
   getOrganizerCampaignReport,

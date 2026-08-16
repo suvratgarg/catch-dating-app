@@ -28,6 +28,7 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
     'revenue',
     'events',
     'eventsTruncated',
+    'activeMerges',
     'revision',
   ],
   'properties': <String, Object?>{
@@ -591,6 +592,73 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
     'sendsTruncated': <String, Object?>{
       'type': 'boolean',
     },
+    'activeMerges': <String, Object?>{
+      'type': 'array',
+      'maxItems': 50,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'mergeReceiptId',
+          'sourceContactId',
+          'sourceDisplayName',
+          'evidence',
+          'conflicts',
+          'movedFactCount',
+          'mergedAtMillis',
+        ],
+        'properties': <String, Object?>{
+          'mergeReceiptId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'sourceContactId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'sourceDisplayName': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 120,
+          },
+          'evidence': <String, Object?>{
+            'type': 'array',
+            'maxItems': 20,
+            'uniqueItems': true,
+            'items': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'sameVerifiedUid',
+                'sameVerifiedPhone',
+                'sameImportedPhone',
+                'sameEmail',
+                'managerConfirmed',
+              ],
+            },
+          },
+          'conflicts': <String, Object?>{
+            'type': 'array',
+            'maxItems': 20,
+            'uniqueItems': true,
+            'items': <String, Object?>{
+              'type': 'string',
+              'maxLength': 120,
+            },
+          },
+          'movedFactCount': <String, Object?>{
+            'type': 'integer',
+            'minimum': 0,
+            'maximum': 400,
+          },
+          'mergedAtMillis': <String, Object?>{
+            'type': 'integer',
+            'minimum': 0,
+          },
+        },
+      },
+    },
     'revision': <String, Object?>{
       'type': 'integer',
       'minimum': 1,
@@ -598,6 +666,69 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
     },
   },
   'definitions': <String, Object?>{
+    'activeMerge': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'mergeReceiptId',
+        'sourceContactId',
+        'sourceDisplayName',
+        'evidence',
+        'conflicts',
+        'movedFactCount',
+        'mergedAtMillis',
+      ],
+      'properties': <String, Object?>{
+        'mergeReceiptId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'sourceContactId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'sourceDisplayName': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 120,
+        },
+        'evidence': <String, Object?>{
+          'type': 'array',
+          'maxItems': 20,
+          'uniqueItems': true,
+          'items': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'sameVerifiedUid',
+              'sameVerifiedPhone',
+              'sameImportedPhone',
+              'sameEmail',
+              'managerConfirmed',
+            ],
+          },
+        },
+        'conflicts': <String, Object?>{
+          'type': 'array',
+          'maxItems': 20,
+          'uniqueItems': true,
+          'items': <String, Object?>{
+            'type': 'string',
+            'maxLength': 120,
+          },
+        },
+        'movedFactCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 400,
+        },
+        'mergedAtMillis': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+      },
+    },
     'manualTag': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,
