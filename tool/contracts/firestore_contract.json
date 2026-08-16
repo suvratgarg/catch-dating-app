@@ -595,7 +595,48 @@
       ],
       "migrationNotes": [
         "Contacts are organizer-scoped operational records, never Consumer profiles.",
-        "Imported phone and email values are duplicate candidates rather than verified merge evidence."
+        "Imported phone and email values are duplicate candidates rather than verified merge evidence.",
+        "manualTagIds is a bounded organizer-authored namespace and never aliases computed segmentIds. Legacy documents may omit it and read as an empty assignment."
+      ]
+    },
+    {
+      "id": "organizerContactNotes",
+      "path": "organizerContactNotes/{noteId}",
+      "rulesMatch": "/organizerContactNotes/{noteId}",
+      "typescriptInterface": "OrganizerContactNoteDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "manager-only organizer contact note callables",
+      "read": "server only; bounded manager access is embedded in contact detail",
+      "write": "server only",
+      "exportedFunctions": [
+        "createOrganizerContactNote",
+        "mutateOrganizerContactNote",
+        "getOrganizerContactDetail"
+      ],
+      "migrationNotes": [
+        "Notes are organizer-scoped operational memory, author-stamped, and excluded from exportOrganizerContacts without an opt-in path.",
+        "Existing contacts require no backfill because notes are separate append-only records with optimistic edits."
+      ]
+    },
+    {
+      "id": "organizerContactTagVocabularies",
+      "path": "organizerContactTagVocabularies/{organizerId}",
+      "rulesMatch": "/organizerContactTagVocabularies/{organizerId}",
+      "typescriptInterface": "OrganizerContactTagVocabularyDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "manager-only organizer contact mutation callable",
+      "read": "server only; sanitized vocabulary labels are returned by CRM callables",
+      "write": "server only",
+      "exportedFunctions": [
+        "listOrganizerContacts",
+        "getOrganizerContactDetail",
+        "mutateOrganizerContact"
+      ],
+      "migrationNotes": [
+        "The vocabulary is capped at 20 tags and contact assignment is capped at 5 tags.",
+        "Deterministic tag ids are separate from versioned computed audience segment values."
       ]
     },
     {

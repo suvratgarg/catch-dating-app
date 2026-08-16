@@ -963,6 +963,14 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /organizerContactNotes/{noteId} {
+      allow read, write: if false;
+    }
+
+    match /organizerContactTagVocabularies/{organizerId} {
+      allow read, write: if false;
+    }
+
     match /organizerContactIdentityLinks/{identityLinkId} {
       allow read, write: if false;
     }

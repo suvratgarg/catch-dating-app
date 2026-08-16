@@ -14,6 +14,7 @@ final class MutateOrganizerContactCallableRequest {
     this.displayNameOverride,
     this.whatsappAdminSuppressed,
     this.hidden,
+    this.manualTags,
   });
 
   final String organizerId;
@@ -22,6 +23,7 @@ final class MutateOrganizerContactCallableRequest {
   final String? displayNameOverride;
   final bool? whatsappAdminSuppressed;
   final bool? hidden;
+  final List<String>? manualTags;
 
   Map<String, Object?> toJson() => {
     'organizerId': organizerId,
@@ -30,5 +32,6 @@ final class MutateOrganizerContactCallableRequest {
     'displayNameOverride': ?displayNameOverride,
     'whatsappAdminSuppressed': ?whatsappAdminSuppressed,
     'hidden': ?hidden,
+    'manualTags': ?manualTags,
   };
 }

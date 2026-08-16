@@ -30,6 +30,8 @@ import {OrganizerTeamMembershipDocument} from "./organizerTeamMembershipDocument
 import {OrganizerFollowDocument} from "./organizerFollowDocument";
 import {OrganizerCommunicationPreferenceDocument} from "./organizerCommunicationPreferenceDocument";
 import {OrganizerContactDocument} from "./organizerContactDocument";
+import {OrganizerContactNoteDocument} from "./organizerContactNoteDocument";
+import {OrganizerContactTagVocabularyDocument} from "./organizerContactTagVocabularyDocument";
 import {OrganizerContactIdentityLinkDocument} from "./organizerContactIdentityLinkDocument";
 import {OrganizerContactIdentityClaimDocument} from "./organizerContactIdentityClaimDocument";
 import {OrganizerContactEventEdgeDocument} from "./organizerContactEventEdgeDocument";
@@ -269,6 +271,9 @@ import {GetOrganizerContactDetailCallablePayload} from "./getOrganizerContactDet
 import {GetOrganizerContactDetailCallableResponse} from "./getOrganizerContactDetailCallableResponse";
 import {MutateOrganizerContactCallablePayload} from "./mutateOrganizerContactCallablePayload";
 import {MutateOrganizerContactCallableResponse} from "./mutateOrganizerContactCallableResponse";
+import {CreateOrganizerContactNoteCallablePayload} from "./createOrganizerContactNoteCallablePayload";
+import {MutateOrganizerContactNoteCallablePayload} from "./mutateOrganizerContactNoteCallablePayload";
+import {OrganizerContactNoteCallableResponse} from "./organizerContactNoteCallableResponse";
 import {ExportOrganizerContactsCallablePayload} from "./exportOrganizerContactsCallablePayload";
 import {ExportOrganizerContactsCallableResponse} from "./exportOrganizerContactsCallableResponse";
 import {MergeOrganizerContactsCallablePayload} from "./mergeOrganizerContactsCallablePayload";
@@ -386,6 +391,8 @@ import {
   organizerFollowDocumentSchema,
   organizerCommunicationPreferenceDocumentSchema,
   organizerContactDocumentSchema,
+  organizerContactNoteDocumentSchema,
+  organizerContactTagVocabularyDocumentSchema,
   organizerContactIdentityLinkDocumentSchema,
   organizerContactIdentityClaimDocumentSchema,
   organizerContactEventEdgeDocumentSchema,
@@ -625,6 +632,9 @@ import {
   getOrganizerContactDetailCallableResponseSchema,
   mutateOrganizerContactCallablePayloadSchema,
   mutateOrganizerContactCallableResponseSchema,
+  createOrganizerContactNoteCallablePayloadSchema,
+  mutateOrganizerContactNoteCallablePayloadSchema,
+  organizerContactNoteCallableResponseSchema,
   exportOrganizerContactsCallablePayloadSchema,
   exportOrganizerContactsCallableResponseSchema,
   mergeOrganizerContactsCallablePayloadSchema,
@@ -824,6 +834,14 @@ export const validateOrganizerContactDocument:
   ValidateFunction<OrganizerContactDocument> =
     ajv.compile(organizerContactDocumentSchema) as
       ValidateFunction<OrganizerContactDocument>;
+export const validateOrganizerContactNoteDocument:
+  ValidateFunction<OrganizerContactNoteDocument> =
+    ajv.compile(organizerContactNoteDocumentSchema) as
+      ValidateFunction<OrganizerContactNoteDocument>;
+export const validateOrganizerContactTagVocabularyDocument:
+  ValidateFunction<OrganizerContactTagVocabularyDocument> =
+    ajv.compile(organizerContactTagVocabularyDocumentSchema) as
+      ValidateFunction<OrganizerContactTagVocabularyDocument>;
 export const validateOrganizerContactIdentityLinkDocument:
   ValidateFunction<OrganizerContactIdentityLinkDocument> =
     ajv.compile(organizerContactIdentityLinkDocumentSchema) as
@@ -1780,6 +1798,18 @@ export const validateMutateOrganizerContactCallableResponse:
   ValidateFunction<MutateOrganizerContactCallableResponse> =
     ajv.compile(mutateOrganizerContactCallableResponseSchema) as
       ValidateFunction<MutateOrganizerContactCallableResponse>;
+export const validateCreateOrganizerContactNoteCallablePayload:
+  ValidateFunction<CreateOrganizerContactNoteCallablePayload> =
+    ajv.compile(createOrganizerContactNoteCallablePayloadSchema) as
+      ValidateFunction<CreateOrganizerContactNoteCallablePayload>;
+export const validateMutateOrganizerContactNoteCallablePayload:
+  ValidateFunction<MutateOrganizerContactNoteCallablePayload> =
+    ajv.compile(mutateOrganizerContactNoteCallablePayloadSchema) as
+      ValidateFunction<MutateOrganizerContactNoteCallablePayload>;
+export const validateOrganizerContactNoteCallableResponse:
+  ValidateFunction<OrganizerContactNoteCallableResponse> =
+    ajv.compile(organizerContactNoteCallableResponseSchema) as
+      ValidateFunction<OrganizerContactNoteCallableResponse>;
 export const validateExportOrganizerContactsCallablePayload:
   ValidateFunction<ExportOrganizerContactsCallablePayload> =
     ajv.compile(exportOrganizerContactsCallablePayloadSchema) as

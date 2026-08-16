@@ -13,6 +13,8 @@ import {CreateOrganizerContactCallablePayload} from
   "../shared/generated/createOrganizerContactCallablePayload";
 import {CreateOrganizerContactCallableResponse} from
   "../shared/generated/createOrganizerContactCallableResponse";
+import {CreateOrganizerContactNoteCallablePayload} from
+  "../shared/generated/createOrganizerContactNoteCallablePayload";
 import {ExportOrganizerContactsCallablePayload} from
   "../shared/generated/exportOrganizerContactsCallablePayload";
 import {ExportOrganizerContactsCallableResponse} from
@@ -21,11 +23,19 @@ import {MutateOrganizerContactCallablePayload} from
   "../shared/generated/mutateOrganizerContactCallablePayload";
 import {MutateOrganizerContactCallableResponse} from
   "../shared/generated/mutateOrganizerContactCallableResponse";
+import {MutateOrganizerContactNoteCallablePayload} from
+  "../shared/generated/mutateOrganizerContactNoteCallablePayload";
+import {OrganizerContactNoteCallableResponse} from
+  "../shared/generated/organizerContactNoteCallableResponse";
 import {
   OrganizerAudienceSummaryDocument,
+  OrganizerCampaignDocument,
+  OrganizerCampaignRecipientDocument,
   OrganizerContactDocument,
   OrganizerContactChannelStateDocument,
   OrganizerContactEventEdgeDocument,
+  OrganizerContactNoteDocument,
+  OrganizerContactTagVocabularyDocument,
   OrganizerContactTraitDocument,
   PaymentDocument,
 } from "../shared/generated/firestoreAdminTypes";
@@ -35,10 +45,12 @@ import {ListOrganizerContactsCallableResponse} from
   "../shared/generated/listOrganizerContactsCallableResponse";
 import {
   validateExportOrganizerContactsCallablePayload,
+  validateCreateOrganizerContactNoteCallablePayload,
   validateCreateOrganizerContactCallablePayload,
   validateGetOrganizerContactDetailCallablePayload,
   validateListOrganizerContactsCallablePayload,
   validateMutateOrganizerContactCallablePayload,
+  validateMutateOrganizerContactNoteCallablePayload,
 } from "../shared/generated/schemaValidators";
 import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
@@ -48,8 +60,12 @@ import {organizerContactChannelStateId} from "./organizerCampaignModel";
 
 const defaultContactPageSize = 50;
 const maxDetailEvents = 100;
+const maxDetailNotes = 100;
+const maxDetailSends = 100;
 const maxExportContacts = 2500;
 const maxContactPayments = 500;
+const maxOrganizerManualTags = 20;
+const maxContactManualTags = 5;
 
 interface OrganizerContactsDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -62,10 +78,11 @@ const defaultDeps: OrganizerContactsDeps = {
 };
 
 interface ContactCursor {
-  plan: "people" | "search" | "segment";
+  plan: "people" | "search" | "segment" | "manualTag";
   value: string;
   contactId: string;
   segmentId: string | null;
+  manualTagId: string | null;
 }
 
 /** Lists one manager's organizer contacts with indexed, opaque pagination. */
@@ -86,10 +103,28 @@ export async function listOrganizerContactsHandler(
     organizerId: data.organizerId,
     actorUid,
   });
-  const summarySnap = await db.collection("organizerAudienceSummaries")
-    .doc(data.organizerId).get();
+  if (data.segmentId && data.manualTagId) {
+    throw new HttpsError(
+      "invalid-argument",
+      "Choose either a computed segment or a manual tag, not both."
+    );
+  }
+  const [summarySnap, tagVocabularySnap] = await Promise.all([
+    db.collection("organizerAudienceSummaries").doc(data.organizerId).get(),
+    db.collection("organizerContactTagVocabularies")
+      .doc(data.organizerId).get(),
+  ]);
   const summary = summarySnap.data() as
     OrganizerAudienceSummaryDocument | undefined;
+  const tagVocabulary = tagVocabularySnap.data() as
+    OrganizerContactTagVocabularyDocument | undefined;
+  const manualTagVocabulary = safeManualTagVocabulary(
+    data.organizerId,
+    tagVocabulary
+  );
+  const manualTagsById = new Map(
+    manualTagVocabulary.map((tag) => [tag.tagId, tag])
+  );
   const limit = data.limit ?? defaultContactPageSize;
   const search = normalizeSearch(data.query ?? null);
   const cursor = decodeContactCursor(data.cursor ?? null);
@@ -97,6 +132,7 @@ export async function listOrganizerContactsHandler(
     db,
     organizerId: data.organizerId,
     segmentId: data.segmentId ?? null,
+    manualTagId: data.manualTagId ?? null,
     search,
     summary,
   });
@@ -108,7 +144,15 @@ export async function listOrganizerContactsHandler(
     cursor,
     limit,
   }) : null;
-  const contactIds = traitRows?.contactIds ?? null;
+  const manualTagRows = data.manualTagId ? await listManualTagContactRows({
+    db,
+    organizerId: data.organizerId,
+    manualTagId: data.manualTagId,
+    cursor,
+    limit,
+  }) : null;
+  const contactIds = traitRows?.contactIds ??
+    manualTagRows?.contactIds ?? null;
   const contactPage = contactIds ? await getContactsById(db, contactIds) :
     await listContactDocuments({
       db,
@@ -144,21 +188,25 @@ export async function listOrganizerContactsHandler(
       item.id,
       item.data,
       traitsById.get(item.id),
-      channelByContactId.get(item.id)
+      channelByContactId.get(item.id),
+      manualTagsById
     ))
     .filter((item): item is NonNullable<typeof item> => item !== null);
-  const hasMore = traitRows?.hasMore ?? contactPage.length > limit;
+  const hasMore = traitRows?.hasMore ?? manualTagRows?.hasMore ??
+    contactPage.length > limit;
   const pageRows = rows.slice(0, limit);
   const finalContact = contacts.slice(0, limit).at(-1);
   const finalContactId = data.segmentId ? traitRows?.contactIds.at(-1) :
-    finalContact?.id;
+    data.manualTagId ? manualTagRows?.contactIds.at(-1) : finalContact?.id;
   const nextCursor = hasMore && finalContactId ? encodeContactCursor({
-    plan: data.segmentId ? "segment" : search ? "search" : "people",
-    value: data.segmentId ? finalContactId :
+    plan: data.segmentId ? "segment" :
+      data.manualTagId ? "manualTag" : search ? "search" : "people",
+    value: data.segmentId || data.manualTagId ? finalContactId :
       search ? finalContact!.data.searchName :
         String(finalContact!.data.lastSeenAt.toMillis()),
     contactId: finalContactId,
     segmentId: data.segmentId ?? null,
+    manualTagId: data.manualTagId ?? null,
   }) : null;
   const exactMatchCount = await exactMatchCountPromise;
   const countResult = listContactsMatchCountResult(
@@ -171,6 +219,7 @@ export async function listOrganizerContactsHandler(
     contacts: pageRows,
     nextCursor,
     ...countResult,
+    manualTagVocabulary,
     sourceCoverage: summary?.sourceCoverage ?? "partial",
     projectionVersion: summary?.projectionVersion ?? 1,
   };
@@ -194,10 +243,21 @@ async function exactListContactsMatchCount(params: {
   db: FirebaseFirestore.Firestore;
   organizerId: string;
   segmentId: OrganizerContactTraitDocument["segmentIds"][number] | null;
+  manualTagId: string | null;
   search: string | null;
   summary: OrganizerAudienceSummaryDocument | undefined;
 }): Promise<number | null> {
   if (params.search) return null;
+  if (params.manualTagId) {
+    const snapshot = await params.db.collection("organizerContacts")
+      .where("organizerId", "==", params.organizerId)
+      .where("deletedAt", "==", null)
+      .where("hiddenAt", "==", null)
+      .where("manualTagIds", "array-contains", params.manualTagId)
+      .count()
+      .get();
+    return snapshot.data().count;
+  }
   if (!params.segmentId) return params.summary?.contactCount ?? null;
   const snapshot = await params.db.collection("organizerContactTraits")
     .where("organizerId", "==", params.organizerId)
@@ -270,6 +330,7 @@ export async function createOrganizerContactHandler(
     sourceCount: 1,
     whatsappStatus: "unknown",
     smsStatus: "unknown",
+    manualTagIds: [],
     revision,
     mergedIntoContactId: null,
     createdAt: now,
@@ -324,7 +385,15 @@ export async function getOrganizerContactDetailHandler(
   const channelRef = db.collection("organizerContactChannelStates").doc(
     organizerContactChannelStateId(data.organizerId, data.contactId)
   );
-  const [contactSnap, traitSnap, eventSnap, channelSnap] = await Promise.all([
+  const [
+    contactSnap,
+    traitSnap,
+    eventSnap,
+    channelSnap,
+    noteSnap,
+    recipientSnap,
+    tagVocabularySnap,
+  ] = await Promise.all([
     contactRef.get(),
     traitRef.get(),
     db.collection("organizerContactEventEdges")
@@ -333,6 +402,22 @@ export async function getOrganizerContactDetailHandler(
       .limit(maxDetailEvents + 1)
       .get(),
     channelRef.get(),
+    db.collection("organizerContactNotes")
+      .where("organizerId", "==", data.organizerId)
+      .where("contactId", "==", data.contactId)
+      .orderBy("createdAt", "desc")
+      .orderBy(admin.firestore.FieldPath.documentId(), "desc")
+      .limit(maxDetailNotes + 1)
+      .get(),
+    db.collection("organizerCampaignRecipients")
+      .where("organizerId", "==", data.organizerId)
+      .where("contactId", "==", data.contactId)
+      .orderBy("createdAt", "desc")
+      .orderBy(admin.firestore.FieldPath.documentId(), "desc")
+      .limit(maxDetailSends + 1)
+      .get(),
+    db.collection("organizerContactTagVocabularies")
+      .doc(data.organizerId).get(),
   ]);
   const contact = contactSnap.data() as OrganizerContactDocument | undefined;
   const traits = traitSnap.data() as OrganizerContactTraitDocument | undefined;
@@ -353,6 +438,30 @@ export async function getOrganizerContactDetailHandler(
     contact,
     eventIds: new Set(eventDocuments.map((edge) => edge.eventId)),
     eventHistoryTruncated: eventSnap.size > maxDetailEvents,
+  });
+  const tagVocabulary = safeManualTagVocabulary(
+    data.organizerId,
+    tagVocabularySnap.data() as
+      OrganizerContactTagVocabularyDocument | undefined
+  );
+  const manualTagsById = new Map(
+    tagVocabulary.map((tag) => [tag.tagId, tag])
+  );
+  const notes = noteSnap.docs.slice(0, maxDetailNotes)
+    .map((doc) => noteDetailRow(
+      doc.id,
+      doc.data() as OrganizerContactNoteDocument
+    ))
+    .filter((note): note is NonNullable<typeof note> => note !== null);
+  const sends = await contactCampaignSendHistory({
+    db,
+    organizerId: data.organizerId,
+    recipientDocuments: recipientSnap.docs.slice(0, maxDetailSends).map(
+      (doc) => ({
+        id: doc.id,
+        data: doc.data() as OrganizerCampaignRecipientDocument,
+      })
+    ),
   });
   return {
     organizerId: data.organizerId,
@@ -384,6 +493,12 @@ export async function getOrganizerContactDetailHandler(
     revenue,
     events,
     eventsTruncated: eventSnap.size > maxDetailEvents,
+    manualTags: manualTagsForContact(contact, manualTagsById),
+    manualTagVocabulary: tagVocabulary,
+    notes,
+    notesTruncated: noteSnap.size > maxDetailNotes,
+    sends,
+    sendsTruncated: recipientSnap.size > maxDetailSends,
     revision: contact.revision,
   };
 }
@@ -448,6 +563,7 @@ export async function mutateOrganizerContactHandler(
   deps: OrganizerContactsDeps = defaultDeps
 ): Promise<MutateOrganizerContactCallableResponse> {
   const actorUid = requireAuth(request);
+  assertManualTagInputCap(request.data);
   const data = validateCallableWithAjv<MutateOrganizerContactCallablePayload>(
     request,
     validateMutateOrganizerContactCallablePayload,
@@ -465,12 +581,21 @@ export async function mutateOrganizerContactHandler(
       .doc(data.contactId);
     const summaryRef = db.collection("organizerAudienceSummaries")
       .doc(data.organizerId);
-    const [contactSnap, channelSnap, traitSnap, summarySnap] =
+    const tagVocabularyRef = db.collection("organizerContactTagVocabularies")
+      .doc(data.organizerId);
+    const [
+      contactSnap,
+      channelSnap,
+      traitSnap,
+      summarySnap,
+      tagVocabularySnap,
+    ] =
       await Promise.all([
         tx.get(contactRef),
         tx.get(channelRef),
         tx.get(traitRef),
         tx.get(summaryRef),
+        tx.get(tagVocabularyRef),
       ]);
     const contact = contactSnap.data() as OrganizerContactDocument | undefined;
     if (!contact || contact.organizerId !== data.organizerId ||
@@ -493,6 +618,27 @@ export async function mutateOrganizerContactHandler(
       patch.displayNameOverride = data.displayNameOverride ?? null;
       patch.searchName = (data.displayNameOverride ?? contact.displayName)
         .toLocaleLowerCase("en");
+    }
+    const existingTagVocabulary = tagVocabularySnap.data() as
+      OrganizerContactTagVocabularyDocument | undefined;
+    let manualTags = manualTagsForContact(
+      contact,
+      new Map(safeManualTagVocabulary(
+        data.organizerId,
+        existingTagVocabulary
+      ).map((tag) => [tag.tagId, tag]))
+    );
+    if (data.manualTags) {
+      const resolved = resolveManualTags({
+        organizerId: data.organizerId,
+        labels: data.manualTags,
+        vocabulary: existingTagVocabulary,
+        actorUid,
+        now,
+      });
+      patch.manualTagIds = resolved.manualTags.map((tag) => tag.tagId);
+      manualTags = resolved.manualTags;
+      tx.set(tagVocabularyRef, resolved.vocabulary);
     }
     if (typeof data.hidden === "boolean") {
       patch.hiddenAt = data.hidden ? now : null;
@@ -566,8 +712,101 @@ export async function mutateOrganizerContactHandler(
       displayNameOverride,
       whatsappAdminSuppressed,
       hidden,
+      manualTags,
       revision,
     };
+  });
+}
+
+/** Appends an author-stamped note to one active organizer contact. */
+export async function createOrganizerContactNoteHandler(
+  request: CallableRequest<unknown>,
+  deps: OrganizerContactsDeps = defaultDeps
+): Promise<OrganizerContactNoteCallableResponse> {
+  const actorUid = requireAuth(request);
+  const data = validateCallableWithAjv<
+    CreateOrganizerContactNoteCallablePayload
+  >(
+    request,
+    validateCreateOrganizerContactNoteCallablePayload,
+    normalizeContactNotePayload
+  );
+  const db = deps.firestore();
+  await deps.checkRateLimit(db, actorUid, "createOrganizerContactNote");
+  await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
+  const contactRef = db.collection("organizerContacts").doc(data.contactId);
+  const noteRef = db.collection("organizerContactNotes").doc();
+  const now = admin.firestore.Timestamp.now();
+  const note: OrganizerContactNoteDocument = {
+    organizerId: data.organizerId,
+    contactId: data.contactId,
+    authorUid: actorUid,
+    body: data.body,
+    revision: Math.max(1, now.toMillis()),
+    createdAt: now,
+    updatedAt: now,
+    updatedByUid: actorUid,
+  };
+  await db.runTransaction(async (tx) => {
+    const contactSnap = await tx.get(contactRef);
+    const contact = contactSnap.data() as OrganizerContactDocument | undefined;
+    assertActiveOrganizerContact(contact, data.organizerId);
+    tx.create(noteRef, note);
+  });
+  return organizerContactNoteResponse(noteRef.id, note);
+}
+
+/** Optimistically edits note text while retaining its original author stamp. */
+export async function mutateOrganizerContactNoteHandler(
+  request: CallableRequest<unknown>,
+  deps: OrganizerContactsDeps = defaultDeps
+): Promise<OrganizerContactNoteCallableResponse> {
+  const actorUid = requireAuth(request);
+  const data = validateCallableWithAjv<
+    MutateOrganizerContactNoteCallablePayload
+  >(
+    request,
+    validateMutateOrganizerContactNoteCallablePayload,
+    normalizeContactNotePayload
+  );
+  const db = deps.firestore();
+  await deps.checkRateLimit(db, actorUid, "mutateOrganizerContactNote");
+  await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
+  const contactRef = db.collection("organizerContacts").doc(data.contactId);
+  const noteRef = db.collection("organizerContactNotes").doc(data.noteId);
+  return db.runTransaction(async (tx) => {
+    const [contactSnap, noteSnap] = await Promise.all([
+      tx.get(contactRef),
+      tx.get(noteRef),
+    ]);
+    const contact = contactSnap.data() as OrganizerContactDocument | undefined;
+    assertActiveOrganizerContact(contact, data.organizerId);
+    const note = noteSnap.data() as OrganizerContactNoteDocument | undefined;
+    if (!note || note.organizerId !== data.organizerId ||
+        note.contactId !== data.contactId) {
+      throw new HttpsError("not-found", "Contact note not found.");
+    }
+    if (note.revision !== data.expectedRevision) {
+      throw new HttpsError(
+        "aborted",
+        "This note changed on another device. Reload it and try again."
+      );
+    }
+    const now = admin.firestore.Timestamp.now();
+    const updated: OrganizerContactNoteDocument = {
+      ...note,
+      body: data.body,
+      revision: Math.max(note.revision + 1, now.toMillis()),
+      updatedAt: now,
+      updatedByUid: actorUid,
+    };
+    tx.update(noteRef, {
+      body: updated.body,
+      revision: updated.revision,
+      updatedAt: updated.updatedAt,
+      updatedByUid: updated.updatedByUid,
+    });
+    return organizerContactNoteResponse(data.noteId, updated);
   });
 }
 
@@ -658,7 +897,7 @@ async function listContactDocuments(params: {
   limit: number;
 }): Promise<ContactDocumentRow[]> {
   const plan = params.search ? "search" : "people";
-  assertCursorPlan(params.cursor, plan, null);
+  assertCursorPlan(params.cursor, plan, null, null);
   let query: FirebaseFirestore.Query = params.db
     .collection("organizerContacts")
     .where("organizerId", "==", params.organizerId)
@@ -695,11 +934,34 @@ async function listSegmentTraitRows(params: {
   cursor: ContactCursor | null;
   limit: number;
 }): Promise<{contactIds: string[]; hasMore: boolean}> {
-  assertCursorPlan(params.cursor, "segment", params.segmentId);
+  assertCursorPlan(params.cursor, "segment", params.segmentId, null);
   let query: FirebaseFirestore.Query = params.db
     .collection("organizerContactTraits")
     .where("organizerId", "==", params.organizerId)
     .where("segmentIds", "array-contains", params.segmentId)
+    .orderBy(admin.firestore.FieldPath.documentId());
+  if (params.cursor) query = query.startAfter(params.cursor.contactId);
+  const snapshot = await query.limit(params.limit + 1).get();
+  return {
+    contactIds: snapshot.docs.slice(0, params.limit).map((doc) => doc.id),
+    hasMore: snapshot.size > params.limit,
+  };
+}
+
+async function listManualTagContactRows(params: {
+  db: FirebaseFirestore.Firestore;
+  organizerId: string;
+  manualTagId: string;
+  cursor: ContactCursor | null;
+  limit: number;
+}): Promise<{contactIds: string[]; hasMore: boolean}> {
+  assertCursorPlan(params.cursor, "manualTag", null, params.manualTagId);
+  let query: FirebaseFirestore.Query = params.db
+    .collection("organizerContacts")
+    .where("organizerId", "==", params.organizerId)
+    .where("deletedAt", "==", null)
+    .where("hiddenAt", "==", null)
+    .where("manualTagIds", "array-contains", params.manualTagId)
     .orderBy(admin.firestore.FieldPath.documentId());
   if (params.cursor) query = query.startAfter(params.cursor.contactId);
   const snapshot = await query.limit(params.limit + 1).get();
@@ -729,7 +991,8 @@ function safeContactRow(
   contactId: string,
   contact: OrganizerContactDocument,
   traits: OrganizerContactTraitDocument | undefined,
-  channelState?: OrganizerContactChannelStateDocument
+  channelState: OrganizerContactChannelStateDocument | undefined,
+  manualTagsById: ReadonlyMap<string, ManualTagRow>
 ): ListOrganizerContactsCallableResponse["contacts"][number] | null {
   if (!traits || traits.organizerId !== contact.organizerId ||
       contact.identityState === "merged" || contact.hiddenAt != null) {
@@ -747,6 +1010,7 @@ function safeContactRow(
     expectedEventCount: traits.expectedEventCount,
     lastAttendedAtMillis: traits.lastAttendedAt?.toMillis() ?? null,
     segmentIds: traits.segmentIds,
+    manualTags: manualTagsForContact(contact, manualTagsById),
     whatsappStatus: traits.whatsappStatus,
     whatsappAdminSuppressed:
       channelState?.adminSuppressed === true,
@@ -754,6 +1018,196 @@ function safeContactRow(
     sourceCoverage: traits.sourceCoverage,
     revision: contact.revision,
   };
+}
+
+type ManualTagRow = NonNullable<
+  GetOrganizerContactDetailCallableResponse["manualTags"]
+>[number];
+
+function safeManualTagVocabulary(
+  organizerId: string,
+  vocabulary: OrganizerContactTagVocabularyDocument | undefined
+): ManualTagRow[] {
+  if (!vocabulary || vocabulary.organizerId !== organizerId) return [];
+  return vocabulary.tags.slice(0, maxOrganizerManualTags).map((tag) => ({
+    tagId: tag.tagId,
+    label: tag.label,
+  }));
+}
+
+function manualTagsForContact(
+  contact: OrganizerContactDocument,
+  manualTagsById: ReadonlyMap<string, ManualTagRow>
+): ManualTagRow[] {
+  return (contact.manualTagIds ?? [])
+    .slice(0, maxContactManualTags)
+    .map((tagId) => manualTagsById.get(tagId))
+    .filter((tag): tag is ManualTagRow => tag !== undefined);
+}
+
+export function resolveManualTags(params: {
+  organizerId: string;
+  labels: string[];
+  vocabulary: OrganizerContactTagVocabularyDocument | undefined;
+  actorUid: string;
+  now: FirebaseFirestore.Timestamp;
+}): {
+  vocabulary: OrganizerContactTagVocabularyDocument;
+  manualTags: ManualTagRow[];
+} {
+  if (params.labels.length > maxContactManualTags) {
+    throw new HttpsError(
+      "invalid-argument",
+      "A contact can have at most 5 manual tags."
+    );
+  }
+  if (params.vocabulary &&
+      params.vocabulary.organizerId !== params.organizerId) {
+    throw new HttpsError(
+      "failed-precondition",
+      "The organizer tag vocabulary is invalid."
+    );
+  }
+  const tags = [...(params.vocabulary?.tags ?? [])];
+  const byNormalizedLabel = new Map(
+    tags.map((tag) => [tag.normalizedLabel, tag])
+  );
+  const desired = new Map<string, string>();
+  for (const rawLabel of params.labels) {
+    const label = normalizeManualTagLabel(rawLabel);
+    desired.set(label.toLocaleLowerCase("en"), label);
+  }
+  if (desired.size > maxContactManualTags) {
+    throw new HttpsError(
+      "invalid-argument",
+      "A contact can have at most 5 manual tags."
+    );
+  }
+  const manualTags = [...desired.entries()].map(([normalizedLabel, label]) => {
+    const existing = byNormalizedLabel.get(normalizedLabel);
+    if (existing) return {tagId: existing.tagId, label: existing.label};
+    const created = {
+      tagId: manualTagId(params.organizerId, normalizedLabel),
+      label,
+      normalizedLabel,
+      createdByUid: params.actorUid,
+      createdAt: params.now,
+    } satisfies OrganizerContactTagVocabularyDocument["tags"][number];
+    tags.push(created);
+    byNormalizedLabel.set(normalizedLabel, created);
+    return {tagId: created.tagId, label: created.label};
+  });
+  if (tags.length > maxOrganizerManualTags) {
+    throw new HttpsError(
+      "failed-precondition",
+      "An organizer can have at most 20 manual tags."
+    );
+  }
+  return {
+    vocabulary: {
+      organizerId: params.organizerId,
+      tags,
+      updatedAt: params.now,
+    },
+    manualTags,
+  };
+}
+
+function manualTagId(organizerId: string, normalizedLabel: string): string {
+  return createHash("sha256")
+    .update(`${organizerId}\u0000${normalizedLabel}`)
+    .digest("hex")
+    .slice(0, 32);
+}
+
+function normalizeManualTagLabel(value: string): string {
+  return value.trim().replace(/\s+/g, " ");
+}
+
+function noteDetailRow(
+  noteId: string,
+  note: OrganizerContactNoteDocument
+): NonNullable<GetOrganizerContactDetailCallableResponse["notes"]>[number] |
+  null {
+  if (!note.body.trim()) return null;
+  return {
+    noteId,
+    body: note.body,
+    authorUid: note.authorUid,
+    createdAtMillis: note.createdAt.toMillis(),
+    updatedAtMillis: note.updatedAt.toMillis(),
+    revision: note.revision,
+  };
+}
+
+async function contactCampaignSendHistory(params: {
+  db: FirebaseFirestore.Firestore;
+  organizerId: string;
+  recipientDocuments: Array<{
+    id: string;
+    data: OrganizerCampaignRecipientDocument;
+  }>;
+}): Promise<NonNullable<
+  GetOrganizerContactDetailCallableResponse["sends"]
+>> {
+  const recipients = params.recipientDocuments.filter(
+    (row) => row.data.organizerId === params.organizerId
+  );
+  if (recipients.length === 0) return [];
+  const campaignIds = [...new Set(
+    recipients.map((row) => row.data.campaignId)
+  )];
+  const campaignSnapshots = await params.db.getAll(
+    ...campaignIds.map((campaignId) => params.db
+      .collection("organizerCampaigns").doc(campaignId))
+  );
+  const campaigns = new Map(campaignSnapshots
+    .filter((snapshot) => snapshot.exists)
+    .map((snapshot) => [
+      snapshot.id,
+      snapshot.data() as OrganizerCampaignDocument,
+    ]));
+  return recipients.map(({data: recipient}) => {
+    const campaign = campaigns.get(recipient.campaignId);
+    if (!campaign || campaign.organizerId !== params.organizerId) return null;
+    return {
+      kind: "campaign" as const,
+      campaignId: recipient.campaignId,
+      name: campaign.name,
+      messageClass: campaign.messageClass,
+      deliveryStatus: recipient.status,
+      createdAtMillis: recipient.createdAt.toMillis(),
+      sentAtMillis: recipient.sentAt?.toMillis() ?? null,
+      updatedAtMillis: recipient.updatedAt.toMillis(),
+    };
+  }).filter((row): row is NonNullable<typeof row> => row !== null);
+}
+
+function organizerContactNoteResponse(
+  noteId: string,
+  note: OrganizerContactNoteDocument
+): OrganizerContactNoteCallableResponse {
+  return {
+    organizerId: note.organizerId,
+    contactId: note.contactId,
+    noteId,
+    body: note.body,
+    authorUid: note.authorUid,
+    createdAtMillis: note.createdAt.toMillis(),
+    updatedAtMillis: note.updatedAt.toMillis(),
+    revision: note.revision,
+  };
+}
+
+function assertActiveOrganizerContact(
+  contact: OrganizerContactDocument | undefined,
+  organizerId: string
+): asserts contact is OrganizerContactDocument {
+  if (!contact || contact.organizerId !== organizerId ||
+      contact.deletedAt !== null || contact.hiddenAt != null ||
+      contact.identityState === "merged") {
+    throw new HttpsError("not-found", "Audience contact not found.");
+  }
 }
 
 function eventDetailRow(
@@ -807,7 +1261,39 @@ function normalizeContactMutationPayload(data: unknown): unknown {
     normalized.displayNameOverride = normalized.displayNameOverride
       .trim().replace(/\s+/g, " ");
   }
+  if (Array.isArray(normalized.manualTags)) {
+    normalized.manualTags = normalized.manualTags.map((tag) =>
+      typeof tag === "string" ? normalizeManualTagLabel(tag) : tag
+    );
+  }
   return normalized;
+}
+
+function normalizeContactNotePayload(data: unknown): unknown {
+  if (typeof data !== "object" || data === null || Array.isArray(data)) {
+    return data;
+  }
+  const normalized = {...data} as Record<string, unknown>;
+  for (const field of ["organizerId", "contactId", "noteId"]) {
+    if (typeof normalized[field] === "string") {
+      normalized[field] = normalized[field].trim();
+    }
+  }
+  if (typeof normalized.body === "string") {
+    normalized.body = normalized.body.trim();
+  }
+  return normalized;
+}
+
+function assertManualTagInputCap(data: unknown): void {
+  if (typeof data !== "object" || data === null || Array.isArray(data)) return;
+  const manualTags = (data as Record<string, unknown>).manualTags;
+  if (Array.isArray(manualTags) && manualTags.length > maxContactManualTags) {
+    throw new HttpsError(
+      "invalid-argument",
+      "A contact can have at most 5 manual tags."
+    );
+  }
 }
 
 function normalizeCreateContactPayload(data: unknown): unknown {
@@ -922,13 +1408,16 @@ export function decodeContactCursor(
     const cursor = JSON.parse(
       Buffer.from(value, "base64url").toString("utf8")
     ) as Partial<ContactCursor>;
-    if (!cursor.plan || !["people", "search", "segment"]
+    if (!cursor.plan || !["people", "search", "segment", "manualTag"]
       .includes(cursor.plan) || typeof cursor.value !== "string" ||
       typeof cursor.contactId !== "string" || cursor.contactId.length === 0 ||
-      !(typeof cursor.segmentId === "string" || cursor.segmentId === null)) {
+      !(typeof cursor.segmentId === "string" || cursor.segmentId === null) ||
+      !(typeof cursor.manualTagId === "string" ||
+        cursor.manualTagId === null || cursor.manualTagId === undefined)) {
       throw new Error();
     }
-    return cursor as ContactCursor;
+    return {...cursor, manualTagId: cursor.manualTagId ?? null} as
+      ContactCursor;
   } catch {
     throw new HttpsError("invalid-argument", "Audience cursor is invalid.");
   }
@@ -944,6 +1433,16 @@ export const createOrganizerContact = onCall(
   (request) => createOrganizerContactHandler(request)
 );
 
+export const createOrganizerContactNote = onCall(
+  appCheckCallableOptionsWithLimits({timeoutSeconds: 60, maxInstances: 20}),
+  (request) => createOrganizerContactNoteHandler(request)
+);
+
+export const mutateOrganizerContactNote = onCall(
+  appCheckCallableOptionsWithLimits({timeoutSeconds: 60, maxInstances: 20}),
+  (request) => mutateOrganizerContactNoteHandler(request)
+);
+
 export const exportOrganizerContacts = onCall(
   appCheckCallableOptionsWithLimits({timeoutSeconds: 120, maxInstances: 10}),
   (request) => exportOrganizerContactsHandler(request)
@@ -952,9 +1451,11 @@ export const exportOrganizerContacts = onCall(
 function assertCursorPlan(
   cursor: ContactCursor | null,
   plan: ContactCursor["plan"],
-  segmentId: string | null
+  segmentId: string | null,
+  manualTagId: string | null
 ): void {
-  if (cursor && (cursor.plan !== plan || cursor.segmentId !== segmentId)) {
+  if (cursor && (cursor.plan !== plan || cursor.segmentId !== segmentId ||
+      cursor.manualTagId !== manualTagId)) {
     throw new HttpsError(
       "invalid-argument",
       "Audience cursor does not match the selected filters."
@@ -971,6 +1472,7 @@ function normalizeListContactsPayload(value: unknown): unknown {
     cursor: normalizeNullableString(input.cursor),
     query: normalizeNullableString(input.query),
     segmentId: normalizeNullableString(input.segmentId),
+    manualTagId: normalizeNullableString(input.manualTagId),
   };
 }
 

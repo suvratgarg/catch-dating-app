@@ -199,6 +199,17 @@ const schemaOrganizerContactDocumentSchema = <String, Object?>{
       ],
       'x-catch-ownership': 'server-only',
     },
+    'manualTagIds': <String, Object?>{
+      'type': 'array',
+      'maxItems': 5,
+      'uniqueItems': true,
+      'items': <String, Object?>{
+        'type': 'string',
+        'pattern': '^[a-f0-9]{32}\$',
+      },
+      'x-catch-ownership': 'server-only',
+      'description': 'Organizer-authored manual CRM tag ids. These are distinct from computed segment ids in organizerContactTraits.',
+    },
     'revision': <String, Object?>{
       'type': 'integer',
       'minimum': 1,

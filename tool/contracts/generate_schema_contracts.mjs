@@ -154,6 +154,19 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/organizerContactDocument.ts",
   },
   {
+    name: "OrganizerContactNoteDocument",
+    source: "firestore/organizer_contact_notes.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerContactNoteDocument.ts",
+  },
+  {
+    name: "OrganizerContactTagVocabularyDocument",
+    source: "firestore/organizer_contact_tag_vocabularies.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerContactTagVocabularyDocument.ts",
+  },
+  {
     name: "OrganizerContactIdentityLinkDocument",
     source: "firestore/organizer_contact_identity_links.schema.json",
     typeOutput:
@@ -1662,6 +1675,28 @@ const schemaSpecs = [
     source: "callable_responses/mutate_organizer_contact_response.schema.json",
     typeOutput:
       "functions/src/shared/generated/mutateOrganizerContactCallableResponse.ts",
+  },
+  {
+    name: "CreateOrganizerContactNoteCallablePayload",
+    source: "callables/create_organizer_contact_note_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "createOrganizerContactNoteCallablePayload.ts",
+  },
+  {
+    name: "MutateOrganizerContactNoteCallablePayload",
+    source: "callables/mutate_organizer_contact_note_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "mutateOrganizerContactNoteCallablePayload.ts",
+  },
+  {
+    name: "OrganizerContactNoteCallableResponse",
+    source:
+      "callable_responses/organizer_contact_note_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerContactNoteCallableResponse.ts",
   },
   {
     name: "ExportOrganizerContactsCallablePayload",

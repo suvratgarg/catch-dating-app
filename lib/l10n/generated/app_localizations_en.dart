@@ -12918,7 +12918,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersFilterSheetSubtitle =>
-      'Choose one audience segment. Counts follow the current name search.';
+      'Choose one computed segment or one of your tags. Counts follow the current name search.';
 
   @override
   String get hostCustomersFilterGroupAttendance => 'Attendance';
@@ -13028,6 +13028,122 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersNoAttendance => 'No checked-in events yet.';
+
+  @override
+  String get hostCustomersFilterGroupYourTags => 'Your tags';
+
+  @override
+  String get hostCustomersManualTagExportUnavailable =>
+      'Clear the manual tag filter to export.';
+
+  @override
+  String get hostCustomersMemory => 'Memory';
+
+  @override
+  String get hostCustomersMemoryHelp =>
+      'Notes and your tags are private to this organizer’s management team.';
+
+  @override
+  String get hostCustomersManualTags => 'Your tags';
+
+  @override
+  String get hostCustomersEditTags => 'Edit tags';
+
+  @override
+  String get hostCustomersNoManualTags => 'No organizer tags yet.';
+
+  @override
+  String get hostCustomersTagSheetTitle => 'Customer tags';
+
+  @override
+  String get hostCustomersTagSheetSubtitle =>
+      'Choose up to 5 of your organizer’s tags, or create a new one.';
+
+  @override
+  String get hostCustomersNewTag => 'New tag';
+
+  @override
+  String get hostCustomersAddTag => 'Add tag';
+
+  @override
+  String get hostCustomersSaveTags => 'Save tags';
+
+  @override
+  String get hostCustomersTagContactLimit =>
+      'A customer can have up to 5 tags.';
+
+  @override
+  String get hostCustomersTagVocabularyLimit =>
+      'Your organizer already has 20 tags. Choose an existing tag.';
+
+  @override
+  String get hostCustomersNotes => 'Notes';
+
+  @override
+  String get hostCustomersAddNote => 'Add note';
+
+  @override
+  String get hostCustomersEditNote => 'Edit note';
+
+  @override
+  String get hostCustomersNoteBody => 'Note';
+
+  @override
+  String get hostCustomersSaveNote => 'Save note';
+
+  @override
+  String get hostCustomersNoNotes => 'No notes yet.';
+
+  @override
+  String hostCustomersNoteByYou({required String date}) {
+    return 'You · $date';
+  }
+
+  @override
+  String hostCustomersNoteByTeam({required String date}) {
+    return 'Team member · $date';
+  }
+
+  @override
+  String get hostCustomersNoteEdited => 'edited';
+
+  @override
+  String get hostCustomersNotesTruncated =>
+      'Only the 100 newest notes are shown.';
+
+  @override
+  String get hostCustomersActivity => 'Activity';
+
+  @override
+  String get hostCustomersSendHistory => 'Messages sent';
+
+  @override
+  String get hostCustomersNoSends => 'No campaign messages sent yet.';
+
+  @override
+  String get hostCustomersSendsTruncated =>
+      'Only the 100 newest campaign deliveries are shown.';
+
+  @override
+  String hostCustomersSendStatus({required String status}) {
+    String _temp0 = intl.Intl.selectLogic(status, {
+      'pending': 'Pending',
+      'sending': 'Sending',
+      'suppressed': 'Suppressed',
+      'accepted': 'Accepted',
+      'sent': 'Sent',
+      'delivered': 'Delivered',
+      'read': 'Read',
+      'failed': 'Failed',
+      'replied': 'Replied',
+      'optedOut': 'Opted out',
+      'other': 'Unknown',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get hostCustomersControls => 'Controls';
 
   @override
   String get eventSuccessAccountabilityTitle => 'Return sweep';

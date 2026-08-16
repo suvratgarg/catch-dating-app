@@ -47,6 +47,12 @@ export interface OrganizerContactDocument {
   sourceCount: number;
   whatsappStatus: "unknown" | "optedIn" | "optedOut";
   smsStatus: "unknown" | "optedIn" | "optedOut";
+  /**
+   * Organizer-authored manual CRM tag ids. These are distinct from computed segment ids in organizerContactTraits.
+   *
+   * @maxItems 5
+   */
+  manualTagIds?: string[];
   revision: number;
   mergedIntoContactId: string | null;
   /**

@@ -656,9 +656,12 @@
     },
     {
       "routeId": "hostCustomerDetailScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "The nested production customer detail and linked exact-revenue Widgetbook fixture exist; deterministic identity, revenue-coverage, conversation-gate, accessibility, and theme captures remain planned."
+      "captureIds": [
+        "host_customer_detail_memory"
+      ],
+      "reason": "The nested production customer detail has a deterministic identity, organizer-memory, exact-revenue, event-history, campaign-delivery, and controls capture; alternate identity, coverage, accessibility, and theme variants remain planned."
     },
     {
       "routeId": "hostOperatorEventScreen",

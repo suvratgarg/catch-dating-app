@@ -202,21 +202,30 @@ enum HostAudienceSegment {
 }
 
 class HostAudienceQuery {
-  const HostAudienceQuery({this.search, this.segment, this.cursor});
+  const HostAudienceQuery({
+    this.search,
+    this.segment,
+    this.manualTagId,
+    this.cursor,
+  });
 
   final String? search;
   final HostAudienceSegment? segment;
+  final String? manualTagId;
   final String? cursor;
 
   HostAudienceQuery copyWith({
     String? search,
     HostAudienceSegment? segment,
+    String? manualTagId,
     String? cursor,
     bool clearSegment = false,
+    bool clearManualTag = false,
     bool clearCursor = false,
   }) => HostAudienceQuery(
     search: search ?? this.search,
     segment: clearSegment ? null : segment ?? this.segment,
+    manualTagId: clearManualTag ? null : manualTagId ?? this.manualTagId,
     cursor: clearCursor ? null : cursor ?? this.cursor,
   );
 
@@ -225,10 +234,30 @@ class HostAudienceQuery {
       other is HostAudienceQuery &&
       other.search == search &&
       other.segment == segment &&
+      other.manualTagId == manualTagId &&
       other.cursor == cursor;
 
   @override
-  int get hashCode => Object.hash(search, segment, cursor);
+  int get hashCode => Object.hash(search, segment, manualTagId, cursor);
+}
+
+class HostManualTag {
+  const HostManualTag({required this.tagId, required this.label});
+
+  factory HostManualTag.fromMap(Map<Object?, Object?> map) => HostManualTag(
+    tagId: _requiredString(map, 'tagId'),
+    label: _requiredString(map, 'label'),
+  );
+
+  final String tagId;
+  final String label;
+
+  @override
+  bool operator ==(Object other) =>
+      other is HostManualTag && other.tagId == tagId && other.label == label;
+
+  @override
+  int get hashCode => Object.hash(tagId, label);
 }
 
 class HostAudienceContact {
@@ -244,6 +273,7 @@ class HostAudienceContact {
     required this.expectedEventCount,
     required this.lastAttendedAt,
     required this.segments,
+    this.manualTags = const [],
     required this.whatsappStatus,
     required this.whatsappAdminSuppressed,
     required this.smsStatus,
@@ -271,6 +301,10 @@ class HostAudienceContact {
             .map(HostAudienceSegment.fromWireValue)
             .whereType<HostAudienceSegment>()
             .toSet(),
+        manualTags: _optionalMapList(
+          map['manualTags'],
+          'manual tags',
+        ).map(HostManualTag.fromMap).toList(growable: false),
         whatsappStatus: _enumByName(
           HostAudiencePermissionStatus.values,
           _requiredString(map, 'whatsappStatus'),
@@ -301,6 +335,7 @@ class HostAudienceContact {
   final int expectedEventCount;
   final DateTime? lastAttendedAt;
   final Set<HostAudienceSegment> segments;
+  final List<HostManualTag> manualTags;
   final HostAudiencePermissionStatus whatsappStatus;
   final bool whatsappAdminSuppressed;
   final HostAudiencePermissionStatus smsStatus;
@@ -416,6 +451,91 @@ class HostCustomerRevenue {
   final List<HostCustomerRevenueAmount> amounts;
 }
 
+class HostCustomerNote {
+  const HostCustomerNote({
+    required this.noteId,
+    required this.body,
+    required this.authorUid,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.revision,
+  });
+
+  factory HostCustomerNote.fromMap(Map<Object?, Object?> map) =>
+      HostCustomerNote(
+        noteId: _requiredString(map, 'noteId'),
+        body: _requiredString(map, 'body'),
+        authorUid: _requiredString(map, 'authorUid'),
+        createdAt: _requiredDateTimeFromMillis(map, 'createdAtMillis'),
+        updatedAt: _requiredDateTimeFromMillis(map, 'updatedAtMillis'),
+        revision: _requiredInt(map, 'revision'),
+      );
+
+  factory HostCustomerNote.fromCallableData(Object? data) =>
+      HostCustomerNote.fromMap(_requiredMap(data, 'organizer contact note'));
+
+  final String noteId;
+  final String body;
+  final String authorUid;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final int revision;
+
+  bool get wasEdited => updatedAt.isAfter(createdAt);
+}
+
+enum HostCustomerSendDeliveryStatus {
+  pending,
+  sending,
+  suppressed,
+  accepted,
+  sent,
+  delivered,
+  read,
+  failed,
+  replied,
+  optedOut,
+}
+
+class HostCustomerSend {
+  const HostCustomerSend({
+    required this.campaignId,
+    required this.name,
+    required this.messageClass,
+    required this.deliveryStatus,
+    required this.createdAt,
+    required this.sentAt,
+    required this.updatedAt,
+  });
+
+  factory HostCustomerSend.fromMap(Map<Object?, Object?> map) {
+    if (_requiredString(map, 'kind') != 'campaign') {
+      throw const FormatException('Contact send had an unsupported kind.');
+    }
+    return HostCustomerSend(
+      campaignId: _requiredString(map, 'campaignId'),
+      name: _requiredString(map, 'name'),
+      messageClass: _requiredString(map, 'messageClass'),
+      deliveryStatus: _enumByName(
+        HostCustomerSendDeliveryStatus.values,
+        _requiredString(map, 'deliveryStatus'),
+        'contact send delivery status',
+      ),
+      createdAt: _requiredDateTimeFromMillis(map, 'createdAtMillis'),
+      sentAt: _dateTimeFromMillis(map['sentAtMillis']),
+      updatedAt: _requiredDateTimeFromMillis(map, 'updatedAtMillis'),
+    );
+  }
+
+  final String campaignId;
+  final String name;
+  final String messageClass;
+  final HostCustomerSendDeliveryStatus deliveryStatus;
+  final DateTime createdAt;
+  final DateTime? sentAt;
+  final DateTime updatedAt;
+}
+
 class HostAudienceContactDetail {
   const HostAudienceContactDetail({
     required this.organizerId,
@@ -434,6 +554,12 @@ class HostAudienceContactDetail {
     required this.revenue,
     required this.events,
     required this.eventsTruncated,
+    this.manualTags = const [],
+    this.manualTagVocabulary = const [],
+    this.notes = const [],
+    this.notesTruncated = false,
+    this.sends = const [],
+    this.sendsTruncated = false,
     required this.revision,
   });
 
@@ -469,6 +595,28 @@ class HostAudienceContactDetail {
         'contact events',
       ).map(HostAudienceEventFact.fromMap).toList(growable: false),
       eventsTruncated: _requiredBool(map, 'eventsTruncated'),
+      manualTags: _optionalMapList(
+        map['manualTags'],
+        'manual tags',
+      ).map(HostManualTag.fromMap).toList(growable: false),
+      manualTagVocabulary: _optionalMapList(
+        map['manualTagVocabulary'],
+        'manual tag vocabulary',
+      ).map(HostManualTag.fromMap).toList(growable: false),
+      notes: _optionalMapList(
+        map['notes'],
+        'contact notes',
+      ).map(HostCustomerNote.fromMap).toList(growable: false),
+      notesTruncated: map['notesTruncated'] == null
+          ? false
+          : _requiredBool(map, 'notesTruncated'),
+      sends: _optionalMapList(
+        map['sends'],
+        'contact sends',
+      ).map(HostCustomerSend.fromMap).toList(growable: false),
+      sendsTruncated: map['sendsTruncated'] == null
+          ? false
+          : _requiredBool(map, 'sendsTruncated'),
       revision: _requiredInt(map, 'revision'),
     );
   }
@@ -489,6 +637,12 @@ class HostAudienceContactDetail {
   final HostCustomerRevenue revenue;
   final List<HostAudienceEventFact> events;
   final bool eventsTruncated;
+  final List<HostManualTag> manualTags;
+  final List<HostManualTag> manualTagVocabulary;
+  final List<HostCustomerNote> notes;
+  final bool notesTruncated;
+  final List<HostCustomerSend> sends;
+  final bool sendsTruncated;
   final int revision;
 }
 
@@ -547,6 +701,7 @@ class HostAudiencePage {
     required this.nextCursor,
     required this.matchCount,
     required this.matchCountCoverage,
+    this.manualTagVocabulary = const [],
     required this.sourceCoverage,
     required this.projectionVersion,
   });
@@ -566,6 +721,10 @@ class HostAudiencePage {
         _requiredString(map, 'matchCountCoverage'),
         'matchCountCoverage',
       ),
+      manualTagVocabulary: _optionalMapList(
+        map['manualTagVocabulary'],
+        'manual tag vocabulary',
+      ).map(HostManualTag.fromMap).toList(growable: false),
       sourceCoverage: _enumByName(
         HostAudienceSourceCoverage.values,
         _requiredString(map, 'sourceCoverage'),
@@ -580,6 +739,7 @@ class HostAudiencePage {
   final String? nextCursor;
   final int matchCount;
   final HostAudienceMatchCountCoverage matchCountCoverage;
+  final List<HostManualTag> manualTagVocabulary;
   final HostAudienceSourceCoverage sourceCoverage;
   final int projectionVersion;
 }
@@ -918,6 +1078,7 @@ class HostCrmRepository {
       cursor: query.cursor,
       query: query.search?.trim().isEmpty ?? true ? null : query.search?.trim(),
       segmentId: query.segment?.wireValue,
+      manualTagId: query.manualTagId,
     ).toJson(),
     action: 'load organizer audience',
     parse: HostAudiencePage.fromCallableData,
@@ -971,6 +1132,7 @@ class HostCrmRepository {
     bool clearDisplayNameOverride = false,
     bool? whatsappAdminSuppressed,
     bool? hidden,
+    List<String>? manualTags,
   }) => _call<Object?>(
     name: 'mutateOrganizerContact',
     payload: {
@@ -981,9 +1143,44 @@ class HostCrmRepository {
         'displayNameOverride': displayNameOverride,
       'whatsappAdminSuppressed': ?whatsappAdminSuppressed,
       'hidden': ?hidden,
+      'manualTags': ?manualTags,
     },
     action: 'update organizer contact controls',
     parse: (value) => value,
+  );
+
+  Future<HostCustomerNote> createContactNote({
+    required String organizerId,
+    required String contactId,
+    required String body,
+  }) => _call(
+    name: 'createOrganizerContactNote',
+    payload: CreateOrganizerContactNoteCallableRequest(
+      organizerId: organizerId,
+      contactId: contactId,
+      body: body,
+    ).toJson(),
+    action: 'add organizer contact note',
+    parse: HostCustomerNote.fromCallableData,
+  );
+
+  Future<HostCustomerNote> mutateContactNote({
+    required String organizerId,
+    required String contactId,
+    required String noteId,
+    required int expectedRevision,
+    required String body,
+  }) => _call(
+    name: 'mutateOrganizerContactNote',
+    payload: MutateOrganizerContactNoteCallableRequest(
+      organizerId: organizerId,
+      contactId: contactId,
+      noteId: noteId,
+      expectedRevision: expectedRevision,
+      body: body,
+    ).toJson(),
+    action: 'edit organizer contact note',
+    parse: HostCustomerNote.fromCallableData,
   );
 
   Future<HostAudienceExport> exportContacts(
@@ -1216,6 +1413,9 @@ List<Map<Object?, Object?>> _mapList(Object? value, String label) {
   if (value is! List<Object?>) throw FormatException('Invalid $label.');
   return value.map((item) => _requiredMap(item, label)).toList(growable: false);
 }
+
+List<Map<Object?, Object?>> _optionalMapList(Object? value, String label) =>
+    value == null ? const [] : _mapList(value, label);
 
 List<String> _stringList(Object? value) {
   if (value is! List<Object?> || value.any((item) => item is! String)) {

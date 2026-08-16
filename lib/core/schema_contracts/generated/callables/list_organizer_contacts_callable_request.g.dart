@@ -13,6 +13,7 @@ final class ListOrganizerContactsCallableRequest {
     this.cursor,
     this.query,
     this.segmentId,
+    this.manualTagId,
   });
 
   final String organizerId;
@@ -20,6 +21,7 @@ final class ListOrganizerContactsCallableRequest {
   final String? cursor;
   final String? query;
   final String? segmentId;
+  final String? manualTagId;
 
   Map<String, Object?> toJson() => {
     'organizerId': organizerId,
@@ -27,5 +29,6 @@ final class ListOrganizerContactsCallableRequest {
     'cursor': ?cursor,
     'query': ?query,
     'segmentId': ?segmentId,
+    'manualTagId': ?manualTagId,
   };
 }

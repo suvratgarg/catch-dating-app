@@ -84,5 +84,55 @@ export interface GetOrganizerContactDetailCallableResponse {
     checkedInAtMillis: number | null;
   }[];
   eventsTruncated: boolean;
+  /**
+   * @maxItems 5
+   */
+  manualTags?: {
+    tagId: string;
+    label: string;
+  }[];
+  /**
+   * @maxItems 20
+   */
+  manualTagVocabulary?: {
+    tagId: string;
+    label: string;
+  }[];
+  /**
+   * @maxItems 100
+   */
+  notes?: {
+    noteId: string;
+    body: string;
+    authorUid: string;
+    createdAtMillis: number;
+    updatedAtMillis: number;
+    revision: number;
+  }[];
+  notesTruncated?: boolean;
+  /**
+   * @maxItems 100
+   */
+  sends?: {
+    kind: "campaign";
+    campaignId: string;
+    name: string;
+    messageClass: "eventFollowUp" | "organizerUpdate" | "organizerPromotion";
+    deliveryStatus:
+      | "pending"
+      | "sending"
+      | "suppressed"
+      | "accepted"
+      | "sent"
+      | "delivered"
+      | "read"
+      | "failed"
+      | "replied"
+      | "optedOut";
+    createdAtMillis: number;
+    sentAtMillis: number | null;
+    updatedAtMillis: number;
+  }[];
+  sendsTruncated?: boolean;
   revision: number;
 }

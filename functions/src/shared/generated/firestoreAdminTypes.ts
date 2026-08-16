@@ -1611,6 +1611,12 @@ export interface OrganizerContactDocument {
   sourceCount: number;
   whatsappStatus: "unknown" | "optedIn" | "optedOut";
   smsStatus: "unknown" | "optedIn" | "optedOut";
+  /**
+   * Organizer-authored manual CRM tag ids. These are distinct from computed segment ids in organizerContactTraits.
+   *
+   * @maxItems 5
+   */
+  manualTagIds?: string[];
   revision: number;
   mergedIntoContactId: string | null;
   createdAt: FirebaseFirestore.Timestamp;
@@ -1625,6 +1631,38 @@ export interface OrganizerContactDocument {
    * Bounded organizer-audience contribution snapshot used only to restore a hidden contact without recomputing private event history.
    */
   hiddenTraitSnapshot?: OrganizerContactTraitDocument | null;
+}
+
+/**
+ * Organizer-scoped, author-stamped CRM note. Notes are exposed only through manager-authorized callables and are excluded from contact exports.
+ */
+export interface OrganizerContactNoteDocument {
+  organizerId: string;
+  contactId: string;
+  authorUid: string;
+  body: string;
+  revision: number;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  updatedByUid: string;
+}
+
+/**
+ * Organizer-authored manual CRM tag vocabulary. Tag ids are structurally distinct from computed audience segment ids.
+ */
+export interface OrganizerContactTagVocabularyDocument {
+  organizerId: string;
+  /**
+   * @maxItems 20
+   */
+  tags: {
+    tagId: string;
+    label: string;
+    normalizedLabel: string;
+    createdByUid: string;
+    createdAt: FirebaseFirestore.Timestamp;
+  }[];
+  updatedAt: FirebaseFirestore.Timestamp;
 }
 
 /**

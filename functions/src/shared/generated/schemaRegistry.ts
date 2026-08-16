@@ -12324,6 +12324,17 @@ export const organizerContactDocumentSchema: Record<string, unknown> = {
       ],
       "x-catch-ownership": "server-only"
     },
+    "manualTagIds": {
+      "type": "array",
+      "maxItems": 5,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{32}$"
+      },
+      "x-catch-ownership": "server-only",
+      "description": "Organizer-authored manual CRM tag ids. These are distinct from computed segment ids in organizerContactTraits."
+    },
     "revision": {
       "type": "integer",
       "minimum": 1,
@@ -12763,6 +12774,268 @@ export const organizerContactDocumentSchema: Record<string, unknown> = {
         "optedOut"
       ],
       "x-catch-ownership": "server-only"
+    }
+  }
+} as const;
+
+export const organizerContactNoteDocumentSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_contact_notes.schema.json",
+  "title": "OrganizerContactNoteDocument",
+  "description": "Organizer-scoped, author-stamped CRM note. Notes are exposed only through manager-authorized callables and are excluded from contact exports.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerContactNotes",
+  "x-firestore-path": "organizerContactNotes/{noteId}",
+  "x-document-id-field": "noteId",
+  "x-owner": "manager-only organizer contact note callables",
+  "required": [
+    "organizerId",
+    "contactId",
+    "authorUid",
+    "body",
+    "revision",
+    "createdAt",
+    "updatedAt",
+    "updatedByUid"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "authorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "body": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000,
+      "x-catch-ownership": "server-only"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "updatedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    }
+  }
+} as const;
+
+export const organizerContactTagVocabularyDocumentSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_contact_tag_vocabularies.schema.json",
+  "title": "OrganizerContactTagVocabularyDocument",
+  "description": "Organizer-authored manual CRM tag vocabulary. Tag ids are structurally distinct from computed audience segment ids.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerContactTagVocabularies",
+  "x-firestore-path": "organizerContactTagVocabularies/{organizerId}",
+  "x-document-id-field": "organizerId",
+  "x-owner": "manager-only organizer contact mutation callable",
+  "required": [
+    "organizerId",
+    "tags",
+    "updatedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "tags": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tagId",
+          "label",
+          "normalizedLabel",
+          "createdByUid",
+          "createdAt"
+        ],
+        "properties": {
+          "tagId": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          },
+          "normalizedLabel": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          },
+          "createdByUid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "createdAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          }
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    }
+  },
+  "definitions": {
+    "tag": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tagId",
+        "label",
+        "normalizedLabel",
+        "createdByUid",
+        "createdAt"
+      ],
+      "properties": {
+        "tagId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{32}$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "normalizedLabel": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "createdByUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "createdAt": {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        }
+      }
     }
   }
 } as const;
@@ -51772,6 +52045,13 @@ export const listOrganizerContactsCallablePayloadSchema: Record<string, unknown>
           "type": "null"
         }
       ]
+    },
+    "manualTagId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{32}$"
     }
   }
 } as const;
@@ -51969,6 +52249,30 @@ export const listOrganizerContactsCallableResponseSchema: Record<string, unknown
               ]
             }
           },
+          "manualTags": {
+            "type": "array",
+            "uniqueItems": true,
+            "maxItems": 5,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "tagId",
+                "label"
+              ],
+              "properties": {
+                "tagId": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{32}$"
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 40
+                }
+              }
+            }
+          },
           "whatsappStatus": {
             "type": "string",
             "enum": [
@@ -52022,6 +52326,30 @@ export const listOrganizerContactsCallableResponseSchema: Record<string, unknown
         "exact",
         "atLeast"
       ]
+    },
+    "manualTagVocabulary": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tagId",
+          "label"
+        ],
+        "properties": {
+          "tagId": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          }
+        }
+      }
     },
     "sourceCoverage": {
       "type": "string",
@@ -52141,6 +52469,30 @@ export const listOrganizerContactsCallableResponseSchema: Record<string, unknown
               "whatsapp_reachable",
               "sms_reachable"
             ]
+          }
+        },
+        "manualTags": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 5,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "tagId",
+              "label"
+            ],
+            "properties": {
+              "tagId": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{32}$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 40
+              }
+            }
           }
         },
         "whatsappStatus": {
@@ -52561,6 +52913,177 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
     "eventsTruncated": {
       "type": "boolean"
     },
+    "manualTags": {
+      "type": "array",
+      "maxItems": 5,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tagId",
+          "label"
+        ],
+        "properties": {
+          "tagId": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          }
+        }
+      }
+    },
+    "manualTagVocabulary": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tagId",
+          "label"
+        ],
+        "properties": {
+          "tagId": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          }
+        }
+      }
+    },
+    "notes": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "noteId",
+          "body",
+          "authorUid",
+          "createdAtMillis",
+          "updatedAtMillis",
+          "revision"
+        ],
+        "properties": {
+          "noteId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "body": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "authorUid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "createdAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "updatedAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          }
+        }
+      }
+    },
+    "notesTruncated": {
+      "type": "boolean"
+    },
+    "sends": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "campaignId",
+          "name",
+          "messageClass",
+          "deliveryStatus",
+          "createdAtMillis",
+          "sentAtMillis",
+          "updatedAtMillis"
+        ],
+        "properties": {
+          "kind": {
+            "const": "campaign"
+          },
+          "campaignId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "messageClass": {
+            "type": "string",
+            "enum": [
+              "eventFollowUp",
+              "organizerUpdate",
+              "organizerPromotion"
+            ]
+          },
+          "deliveryStatus": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "sending",
+              "suppressed",
+              "accepted",
+              "sent",
+              "delivered",
+              "read",
+              "failed",
+              "replied",
+              "optedOut"
+            ]
+          },
+          "createdAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "sentAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "updatedAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "sendsTruncated": {
+      "type": "boolean"
+    },
     "revision": {
       "type": "integer",
       "minimum": 1,
@@ -52568,6 +53091,134 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
     }
   },
   "definitions": {
+    "manualTag": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tagId",
+        "label"
+      ],
+      "properties": {
+        "tagId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{32}$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        }
+      }
+    },
+    "note": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "noteId",
+        "body",
+        "authorUid",
+        "createdAtMillis",
+        "updatedAtMillis",
+        "revision"
+      ],
+      "properties": {
+        "noteId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "body": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "authorUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "createdAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "updatedAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "send": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "campaignId",
+        "name",
+        "messageClass",
+        "deliveryStatus",
+        "createdAtMillis",
+        "sentAtMillis",
+        "updatedAtMillis"
+      ],
+      "properties": {
+        "kind": {
+          "const": "campaign"
+        },
+        "campaignId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "messageClass": {
+          "type": "string",
+          "enum": [
+            "eventFollowUp",
+            "organizerUpdate",
+            "organizerPromotion"
+          ]
+        },
+        "deliveryStatus": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "sending",
+            "suppressed",
+            "accepted",
+            "sent",
+            "delivered",
+            "read",
+            "failed",
+            "replied",
+            "optedOut"
+          ]
+        },
+        "createdAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sentAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "updatedAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
     "revenue": {
       "type": "object",
       "additionalProperties": false,
@@ -52870,6 +53521,11 @@ export const mutateOrganizerContactCallablePayloadSchema: Record<string, unknown
       "required": [
         "hidden"
       ]
+    },
+    {
+      "required": [
+        "manualTags"
+      ]
     }
   ],
   "properties": {
@@ -52901,6 +53557,16 @@ export const mutateOrganizerContactCallablePayloadSchema: Record<string, unknown
     },
     "hidden": {
       "type": "boolean"
+    },
+    "manualTags": {
+      "type": "array",
+      "maxItems": 5,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 40
+      }
     }
   }
 } as const;
@@ -52950,6 +53616,163 @@ export const mutateOrganizerContactCallableResponseSchema: Record<string, unknow
     },
     "hidden": {
       "type": "boolean"
+    },
+    "manualTags": {
+      "type": "array",
+      "maxItems": 5,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tagId",
+          "label"
+        ],
+        "properties": {
+          "tagId": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          }
+        }
+      }
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+} as const;
+
+export const createOrganizerContactNoteCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/create_organizer_contact_note_payload.schema.json",
+  "title": "CreateOrganizerContactNoteCallablePayload",
+  "description": "Manager-authorized request to append an organizer contact note.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "contactId",
+    "body"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "body": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    }
+  }
+} as const;
+
+export const mutateOrganizerContactNoteCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/mutate_organizer_contact_note_payload.schema.json",
+  "title": "MutateOrganizerContactNoteCallablePayload",
+  "description": "Manager-authorized optimistic edit of one organizer contact note.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "contactId",
+    "noteId",
+    "expectedRevision",
+    "body"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "noteId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "body": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    }
+  }
+} as const;
+
+export const organizerContactNoteCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/organizer_contact_note_response.schema.json",
+  "title": "OrganizerContactNoteCallableResponse",
+  "description": "Safe organizer contact note state returned after a create or edit.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "contactId",
+    "noteId",
+    "body",
+    "authorUid",
+    "createdAtMillis",
+    "updatedAtMillis",
+    "revision"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "noteId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "body": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "authorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0
     },
     "revision": {
       "type": "integer",

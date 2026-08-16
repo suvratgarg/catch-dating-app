@@ -135,10 +135,12 @@ export {getOrganizerCrmSummary} from "./organizers/organizerCrm";
 export {getEventRosterInsights} from "./organizers/eventRosterInsights";
 export {
   createOrganizerContact,
+  createOrganizerContactNote,
   exportOrganizerContacts,
   getOrganizerContactDetail,
   listOrganizerContacts,
   mutateOrganizerContact,
+  mutateOrganizerContactNote,
 } from "./organizers/organizerContacts";
 export {
   mergeOrganizerContacts,

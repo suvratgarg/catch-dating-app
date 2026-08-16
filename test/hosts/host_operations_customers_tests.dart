@@ -171,6 +171,103 @@ void _registerHostOperationsCustomersTests() {
     await pumpFeatureUi(tester);
     expect(find.text('Event organizer-1 event-1'), findsOneWidget);
   });
+
+  testWidgets('customer memory keeps manual tags separate and notes editable', (
+    tester,
+  ) async {
+    var tagEdits = 0;
+    var noteAdds = 0;
+    HostCustomerNote? editedNote;
+    await _pumpHostScreen(
+      tester,
+      Scaffold(
+        body: SingleChildScrollView(
+          child: HostCustomerMemorySection(
+            customer: _customerDetail(),
+            currentUid: _hostUid,
+            onEditTags: () => tagEdits += 1,
+            onAddNote: () => noteAdds += 1,
+            onEditNote: (note) => editedNote = note,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('MEMORY'), findsOneWidget);
+    expect(find.text('Brings friends'), findsOneWidget);
+    final manualTag = tester.widget<CatchChip>(
+      find.byKey(
+        const ValueKey(
+          'host-customer-manual-tag-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        ),
+      ),
+    );
+    expect(manualTag.tintColor, isNotNull);
+    expect(manualTag.leading, isNotNull);
+    expect(find.text('Introduced three friends.'), findsOneWidget);
+    expect(find.textContaining('You ·'), findsOneWidget);
+
+    await tester.tap(find.byKey(const ValueKey('host-customer-edit-tags')));
+    await tester.tap(find.byKey(const ValueKey('host-customer-add-note')));
+    await tester.tap(find.byTooltip('Edit note'));
+    expect(tagEdits, 1);
+    expect(noteAdds, 1);
+    expect(editedNote?.noteId, 'note-1');
+  });
+
+  testWidgets('customer activity shows campaign delivery history', (
+    tester,
+  ) async {
+    await _pumpHostScreen(
+      tester,
+      Scaffold(body: HostCustomerSendHistory(customer: _customerDetail())),
+    );
+
+    expect(find.text('MESSAGES SENT'), findsOneWidget);
+    expect(find.text('August invite'), findsOneWidget);
+    expect(find.text('Delivered'), findsOneWidget);
+  });
+
+  testWidgets('customer detail orders identity, memory, activity, controls', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 3600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final detail = _customerDetail();
+    await _pumpHostScreen(
+      tester,
+      const HostCustomerDetailScreen(
+        organizerId: 'organizer-1',
+        contactId: 'contact-1',
+      ),
+      overrides: [
+        uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
+        hostAudienceContactDetailProvider(
+          'organizer-1',
+          'contact-1',
+        ).overrideWithValue(AsyncData(detail)),
+      ],
+    );
+
+    final identityY = tester
+        .getTopLeft(find.byType(HostCustomerIdentityCard))
+        .dy;
+    final memoryY = tester
+        .getTopLeft(find.byType(HostCustomerMemorySection))
+        .dy;
+    final activityY = tester
+        .getTopLeft(find.byKey(const ValueKey('host-customer-activity')))
+        .dy;
+    final controlsY = tester
+        .getTopLeft(find.byKey(const ValueKey('host-customer-controls')))
+        .dy;
+
+    expect(identityY, lessThan(memoryY));
+    expect(memoryY, lessThan(activityY));
+    expect(activityY, lessThan(controlsY));
+  });
 }
 
 HostCustomerDirectoryContact _customerDirectoryContact({
@@ -244,6 +341,43 @@ HostAudienceContactDetail _customerDetail() => HostAudienceContactDetail(
     ),
   ],
   eventsTruncated: false,
+  manualTags: const [
+    HostManualTag(
+      tagId: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      label: 'Brings friends',
+    ),
+  ],
+  manualTagVocabulary: const [
+    HostManualTag(
+      tagId: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      label: 'Brings friends',
+    ),
+    HostManualTag(
+      tagId: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+      label: 'Prefers weekends',
+    ),
+  ],
+  notes: [
+    HostCustomerNote(
+      noteId: 'note-1',
+      body: 'Introduced three friends.',
+      authorUid: _hostUid,
+      createdAt: DateTime(2026, 8, 15),
+      updatedAt: DateTime(2026, 8, 15),
+      revision: 1,
+    ),
+  ],
+  sends: [
+    HostCustomerSend(
+      campaignId: 'campaign-1',
+      name: 'August invite',
+      messageClass: 'organizerPromotion',
+      deliveryStatus: HostCustomerSendDeliveryStatus.delivered,
+      createdAt: DateTime(2026, 8, 14),
+      sentAt: DateTime(2026, 8, 14),
+      updatedAt: DateTime(2026, 8, 14),
+    ),
+  ],
   revision: 1,
 );
 

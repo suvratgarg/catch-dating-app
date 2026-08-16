@@ -33,6 +33,7 @@
     "sourceCount": {"type": "integer", "minimum": 0, "maximum": 1000000, "x-catch-ownership": "server-only"},
     "whatsappStatus": {"$ref": "#/definitions/channelStatus"},
     "smsStatus": {"$ref": "#/definitions/channelStatus"},
+    "manualTagIds": {"type": "array", "maxItems": 5, "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-f0-9]{32}$"}, "x-catch-ownership": "server-only", "description": "Organizer-authored manual CRM tag ids. These are distinct from computed segment ids in organizerContactTraits."},
     "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991, "x-catch-ownership": "server-only"},
     "mergedIntoContactId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}], "x-catch-ownership": "server-only"},
     "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "server-only"},

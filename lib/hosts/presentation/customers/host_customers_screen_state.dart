@@ -70,6 +70,29 @@ class HostCustomerSegmentCountRequest {
 }
 
 @immutable
+class HostCustomerManualTagCountRequest {
+  const HostCustomerManualTagCountRequest({
+    required this.organizerId,
+    required this.manualTagId,
+    this.search,
+  });
+
+  final String organizerId;
+  final String manualTagId;
+  final String? search;
+
+  @override
+  bool operator ==(Object other) =>
+      other is HostCustomerManualTagCountRequest &&
+      other.organizerId == organizerId &&
+      other.manualTagId == manualTagId &&
+      other.search == search;
+
+  @override
+  int get hashCode => Object.hash(organizerId, manualTagId, search);
+}
+
+@immutable
 class HostCustomerSegmentCount {
   const HostCustomerSegmentCount({required this.count, required this.coverage});
 
@@ -83,21 +106,24 @@ class HostCustomersDirectoryRequest {
     required this.organizerId,
     this.search,
     this.filter = HostCustomerFilter.all,
+    this.manualTagId,
   });
 
   final String organizerId;
   final String? search;
   final HostCustomerFilter filter;
+  final String? manualTagId;
 
   @override
   bool operator ==(Object other) =>
       other is HostCustomersDirectoryRequest &&
       other.organizerId == organizerId &&
       other.search == search &&
-      other.filter == filter;
+      other.filter == filter &&
+      other.manualTagId == manualTagId;
 
   @override
-  int get hashCode => Object.hash(organizerId, search, filter);
+  int get hashCode => Object.hash(organizerId, search, filter, manualTagId);
 }
 
 @immutable
@@ -107,6 +133,7 @@ class HostCustomersDirectoryState {
     required this.nextCursor,
     required this.matchCount,
     required this.matchCountCoverage,
+    this.manualTagVocabulary = const [],
     required this.sourceCoverage,
     required this.projectionVersion,
     this.loadingMore = false,
@@ -118,6 +145,7 @@ class HostCustomersDirectoryState {
     required String? nextCursor,
     required int matchCount,
     required HostCustomerMatchCountCoverage matchCountCoverage,
+    Iterable<HostCustomerManualTag> manualTagVocabulary = const [],
     required HostCustomerDirectoryCoverage sourceCoverage,
     required int projectionVersion,
   }) => HostCustomersDirectoryState(
@@ -125,6 +153,7 @@ class HostCustomersDirectoryState {
     nextCursor: nextCursor,
     matchCount: matchCount,
     matchCountCoverage: matchCountCoverage,
+    manualTagVocabulary: List.unmodifiable(manualTagVocabulary),
     sourceCoverage: sourceCoverage,
     projectionVersion: projectionVersion,
   );
@@ -133,6 +162,7 @@ class HostCustomersDirectoryState {
   final String? nextCursor;
   final int matchCount;
   final HostCustomerMatchCountCoverage matchCountCoverage;
+  final List<HostCustomerManualTag> manualTagVocabulary;
   final HostCustomerDirectoryCoverage sourceCoverage;
   final int projectionVersion;
   final bool loadingMore;
@@ -146,6 +176,7 @@ class HostCustomersDirectoryState {
     bool clearNextCursor = false,
     int? matchCount,
     HostCustomerMatchCountCoverage? matchCountCoverage,
+    List<HostCustomerManualTag>? manualTagVocabulary,
     bool? loadingMore,
     Object? loadMoreError,
     bool clearLoadMoreError = false,
@@ -154,6 +185,7 @@ class HostCustomersDirectoryState {
     nextCursor: clearNextCursor ? null : nextCursor ?? this.nextCursor,
     matchCount: matchCount ?? this.matchCount,
     matchCountCoverage: matchCountCoverage ?? this.matchCountCoverage,
+    manualTagVocabulary: manualTagVocabulary ?? this.manualTagVocabulary,
     sourceCoverage: sourceCoverage,
     projectionVersion: projectionVersion,
     loadingMore: loadingMore ?? this.loadingMore,
@@ -161,6 +193,34 @@ class HostCustomersDirectoryState {
         ? null
         : loadMoreError ?? this.loadMoreError,
   );
+}
+
+@immutable
+class HostCustomerManualTag {
+  const HostCustomerManualTag({required this.tagId, required this.label});
+
+  final String tagId;
+  final String label;
+
+  @override
+  bool operator ==(Object other) =>
+      other is HostCustomerManualTag &&
+      other.tagId == tagId &&
+      other.label == label;
+
+  @override
+  int get hashCode => Object.hash(tagId, label);
+}
+
+@immutable
+class HostCustomerFilterSelection {
+  const HostCustomerFilterSelection.computed(this.filter) : manualTag = null;
+
+  const HostCustomerFilterSelection.manual(this.manualTag)
+    : filter = HostCustomerFilter.all;
+
+  final HostCustomerFilter filter;
+  final HostCustomerManualTag? manualTag;
 }
 
 enum HostCustomerDirectoryCoverage { exact, partial, insufficientData }
@@ -175,6 +235,7 @@ class HostCustomerDirectoryContact {
     required this.attendedEventCount,
     required this.lastAttendedAt,
     required this.tags,
+    this.manualTags = const [],
     required this.hasAmbiguousIdentity,
     required this.whatsappOptedIn,
     required this.whatsappAdminSuppressed,
@@ -185,6 +246,7 @@ class HostCustomerDirectoryContact {
   final int attendedEventCount;
   final DateTime? lastAttendedAt;
   final Set<HostCustomerTag> tags;
+  final List<HostCustomerManualTag> manualTags;
   final bool hasAmbiguousIdentity;
   final bool whatsappOptedIn;
   final bool whatsappAdminSuppressed;

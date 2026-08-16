@@ -58,7 +58,7 @@ final class HostCustomersDirectoryControllerProvider
 }
 
 String _$hostCustomersDirectoryControllerHash() =>
-    r'0c010c00c0311b603ae4be8560056bf918cc4eed';
+    r'cd33aac73a37debce8b2e67100c58fa76c5e4f0d';
 
 final class HostCustomersDirectoryControllerFamily extends $Family
     with
@@ -117,6 +117,90 @@ abstract class _$HostCustomersDirectoryController
             >;
     return element.handleCreate(ref, () => build(_$args));
   }
+}
+
+@ProviderFor(hostCustomerManualTagCount)
+final hostCustomerManualTagCountProvider = HostCustomerManualTagCountFamily._();
+
+final class HostCustomerManualTagCountProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<HostCustomerSegmentCount>,
+          HostCustomerSegmentCount,
+          FutureOr<HostCustomerSegmentCount>
+        >
+    with
+        $FutureModifier<HostCustomerSegmentCount>,
+        $FutureProvider<HostCustomerSegmentCount> {
+  HostCustomerManualTagCountProvider._({
+    required HostCustomerManualTagCountFamily super.from,
+    required HostCustomerManualTagCountRequest super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostCustomerManualTagCountProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostCustomerManualTagCountHash();
+
+  @override
+  String toString() {
+    return r'hostCustomerManualTagCountProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<HostCustomerSegmentCount> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<HostCustomerSegmentCount> create(Ref ref) {
+    final argument = this.argument as HostCustomerManualTagCountRequest;
+    return hostCustomerManualTagCount(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostCustomerManualTagCountProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostCustomerManualTagCountHash() =>
+    r'4935ca1367d2495b1c9669103e87edf88c1a0a35';
+
+final class HostCustomerManualTagCountFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<HostCustomerSegmentCount>,
+          HostCustomerManualTagCountRequest
+        > {
+  HostCustomerManualTagCountFamily._()
+    : super(
+        retry: null,
+        name: r'hostCustomerManualTagCountProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  HostCustomerManualTagCountProvider call(
+    HostCustomerManualTagCountRequest request,
+  ) => HostCustomerManualTagCountProvider._(argument: request, from: this);
+
+  @override
+  String toString() => r'hostCustomerManualTagCountProvider';
 }
 
 @ProviderFor(hostCustomerSegmentCount)

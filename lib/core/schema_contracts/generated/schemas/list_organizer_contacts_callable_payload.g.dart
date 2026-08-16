@@ -62,5 +62,12 @@ const schemaListOrganizerContactsCallablePayloadSchema = <String, Object?>{
         },
       ],
     },
+    'manualTagId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'pattern': '^[a-f0-9]{32}\$',
+    },
   },
 };

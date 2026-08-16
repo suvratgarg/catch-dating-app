@@ -25,4 +25,5 @@ export interface ListOrganizerContactsCallablePayload {
         | "sms_reachable"
       )
     | null;
+  manualTagId?: string | null;
 }

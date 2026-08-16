@@ -53,6 +53,33 @@ void main() {
     expect(button.onPressed, isNull);
     expect(find.text('Sender verification is incomplete'), findsOneWidget);
   });
+
+  testWidgets('manual tag summary never becomes a computed campaign segment', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _app(
+        HostCustomerFilterSummary(
+          filter: HostCustomerFilter.all,
+          manualTag: const HostCustomerManualTag(
+            tagId: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+            label: 'Brings friends',
+          ),
+          count: 4,
+          countCoverage: HostCustomerMatchCountCoverage.exact,
+          campaignBlocker: null,
+          onMessage: null,
+          onOpenFilters: () {},
+        ),
+      ),
+    );
+
+    expect(find.text('Brings friends · 4 people'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('host-customers-message-segment')),
+      findsNothing,
+    );
+  });
 }
 
 Widget _app(Widget child) => MaterialApp(

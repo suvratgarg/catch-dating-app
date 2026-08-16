@@ -20110,7 +20110,7 @@ abstract class AppLocalizations {
   /// Explains the scope of counts shown in the grouped customer filter sheet.
   ///
   /// In en, this message translates to:
-  /// **'Choose one audience segment. Counts follow the current name search.'**
+  /// **'Choose one computed segment or one of your tags. Counts follow the current name search.'**
   String get hostCustomersFilterSheetSubtitle;
 
   /// Customer segment group for attendance lifecycle filters.
@@ -20277,6 +20277,186 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No checked-in events yet.'**
   String get hostCustomersNoAttendance;
+
+  /// Organizer-authored manual-tag group, visually separate from computed audience segments.
+  ///
+  /// In en, this message translates to:
+  /// **'Your tags'**
+  String get hostCustomersFilterGroupYourTags;
+
+  /// Explains why the segment-based export is unavailable for an organizer-authored tag filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear the manual tag filter to export.'**
+  String get hostCustomersManualTagExportUnavailable;
+
+  /// Organizer-authored contact memory section heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Memory'**
+  String get hostCustomersMemory;
+
+  /// Privacy boundary for organizer-authored contact memory.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes and your tags are private to this organizer’s management team.'**
+  String get hostCustomersMemoryHelp;
+
+  /// Organizer-authored tags on one customer.
+  ///
+  /// In en, this message translates to:
+  /// **'Your tags'**
+  String get hostCustomersManualTags;
+
+  /// Opens manual tag assignment for one customer.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit tags'**
+  String get hostCustomersEditTags;
+
+  /// Empty manual-tag state on contact detail.
+  ///
+  /// In en, this message translates to:
+  /// **'No organizer tags yet.'**
+  String get hostCustomersNoManualTags;
+
+  /// Manual tag assignment sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer tags'**
+  String get hostCustomersTagSheetTitle;
+
+  /// Manual tag assignment and cap guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose up to 5 of your organizer’s tags, or create a new one.'**
+  String get hostCustomersTagSheetSubtitle;
+
+  /// Manual tag label input title.
+  ///
+  /// In en, this message translates to:
+  /// **'New tag'**
+  String get hostCustomersNewTag;
+
+  /// Adds a new label to the pending manual-tag assignment.
+  ///
+  /// In en, this message translates to:
+  /// **'Add tag'**
+  String get hostCustomersAddTag;
+
+  /// Persists manual tags for one customer.
+  ///
+  /// In en, this message translates to:
+  /// **'Save tags'**
+  String get hostCustomersSaveTags;
+
+  /// Server-enforced per-contact manual-tag cap.
+  ///
+  /// In en, this message translates to:
+  /// **'A customer can have up to 5 tags.'**
+  String get hostCustomersTagContactLimit;
+
+  /// Server-enforced organizer manual-tag vocabulary cap.
+  ///
+  /// In en, this message translates to:
+  /// **'Your organizer already has 20 tags. Choose an existing tag.'**
+  String get hostCustomersTagVocabularyLimit;
+
+  /// Organizer-authored contact notes heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get hostCustomersNotes;
+
+  /// Opens the append contact-note sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Add note'**
+  String get hostCustomersAddNote;
+
+  /// Opens an existing contact note for editing.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit note'**
+  String get hostCustomersEditNote;
+
+  /// Organizer contact note input title.
+  ///
+  /// In en, this message translates to:
+  /// **'Note'**
+  String get hostCustomersNoteBody;
+
+  /// Persists a new or edited contact note.
+  ///
+  /// In en, this message translates to:
+  /// **'Save note'**
+  String get hostCustomersSaveNote;
+
+  /// Empty organizer contact-note state.
+  ///
+  /// In en, this message translates to:
+  /// **'No notes yet.'**
+  String get hostCustomersNoNotes;
+
+  /// Contact note attribution for the current manager.
+  ///
+  /// In en, this message translates to:
+  /// **'You · {date}'**
+  String hostCustomersNoteByYou({required String date});
+
+  /// Contact note attribution for another organizer manager.
+  ///
+  /// In en, this message translates to:
+  /// **'Team member · {date}'**
+  String hostCustomersNoteByTeam({required String date});
+
+  /// Marks a contact note whose body was edited after creation.
+  ///
+  /// In en, this message translates to:
+  /// **'edited'**
+  String get hostCustomersNoteEdited;
+
+  /// Bounded contact-note history notice.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the 100 newest notes are shown.'**
+  String get hostCustomersNotesTruncated;
+
+  /// System-computed customer activity group heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get hostCustomersActivity;
+
+  /// Per-person campaign delivery history heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages sent'**
+  String get hostCustomersSendHistory;
+
+  /// Empty per-person campaign history state.
+  ///
+  /// In en, this message translates to:
+  /// **'No campaign messages sent yet.'**
+  String get hostCustomersNoSends;
+
+  /// Bounded per-person campaign history notice.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the 100 newest campaign deliveries are shown.'**
+  String get hostCustomersSendsTruncated;
+
+  /// Organizer campaign delivery state shown on contact detail.
+  ///
+  /// In en, this message translates to:
+  /// **'{status, select, pending{Pending} sending{Sending} suppressed{Suppressed} accepted{Accepted} sent{Sent} delivered{Delivered} read{Read} failed{Failed} replied{Replied} optedOut{Opted out} other{Unknown}}'**
+  String hostCustomersSendStatus({required String status});
+
+  /// Customer messaging, consent, and removal controls heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Controls'**
+  String get hostCustomersControls;
 
   /// Host accountability sweep heading.
   ///

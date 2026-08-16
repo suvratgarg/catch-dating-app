@@ -32,6 +32,11 @@ const schemaMutateOrganizerContactCallablePayloadSchema = <String, Object?>{
         'hidden',
       ],
     },
+    <String, Object?>{
+      'required': <Object?>[
+        'manualTags',
+      ],
+    },
   ],
   'properties': <String, Object?>{
     'organizerId': <String, Object?>{
@@ -62,6 +67,16 @@ const schemaMutateOrganizerContactCallablePayloadSchema = <String, Object?>{
     },
     'hidden': <String, Object?>{
       'type': 'boolean',
+    },
+    'manualTags': <String, Object?>{
+      'type': 'array',
+      'maxItems': 5,
+      'uniqueItems': true,
+      'items': <String, Object?>{
+        'type': 'string',
+        'minLength': 1,
+        'maxLength': 40,
+      },
     },
   },
 };

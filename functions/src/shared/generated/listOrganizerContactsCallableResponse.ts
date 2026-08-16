@@ -37,6 +37,13 @@ export interface ListOrganizerContactsCallableResponse {
       | "whatsapp_reachable"
       | "sms_reachable"
     )[];
+    /**
+     * @maxItems 5
+     */
+    manualTags?: {
+      tagId: string;
+      label: string;
+    }[];
     whatsappStatus: "unknown" | "optedIn" | "optedOut";
     whatsappAdminSuppressed: boolean;
     smsStatus: "unknown" | "optedIn" | "optedOut";
@@ -46,6 +53,13 @@ export interface ListOrganizerContactsCallableResponse {
   nextCursor: string | null;
   matchCount: number;
   matchCountCoverage: "exact" | "atLeast";
+  /**
+   * @maxItems 20
+   */
+  manualTagVocabulary?: {
+    tagId: string;
+    label: string;
+  }[];
   sourceCoverage: "exact" | "partial";
   projectionVersion: number;
 }
