@@ -243,6 +243,7 @@
       "fields": [
         {"fieldPath": "organizerId", "mode": "ASCENDING"},
         {"fieldPath": "deletedAt", "mode": "ASCENDING"},
+        {"fieldPath": "hiddenAt", "mode": "ASCENDING"},
         {"fieldPath": "manualTagIds", "arrayConfig": "CONTAINS"},
         {"fieldPath": "__name__", "mode": "ASCENDING"}
       ]

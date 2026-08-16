@@ -252,6 +252,7 @@ async function exactListContactsMatchCount(params: {
     const snapshot = await params.db.collection("organizerContacts")
       .where("organizerId", "==", params.organizerId)
       .where("deletedAt", "==", null)
+      .where("hiddenAt", "==", null)
       .where("manualTagIds", "array-contains", params.manualTagId)
       .count()
       .get();
@@ -959,6 +960,7 @@ async function listManualTagContactRows(params: {
     .collection("organizerContacts")
     .where("organizerId", "==", params.organizerId)
     .where("deletedAt", "==", null)
+    .where("hiddenAt", "==", null)
     .where("manualTagIds", "array-contains", params.manualTagId)
     .orderBy(admin.firestore.FieldPath.documentId());
   if (params.cursor) query = query.startAfter(params.cursor.contactId);
