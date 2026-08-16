@@ -173,6 +173,34 @@ void main() {
     expect(find.text('Event Guest'), findsNothing);
   });
 
+  testWidgets('keeps Catch Inbox usable when WhatsApp enrichment fails', (
+    tester,
+  ) async {
+    final preview = _preview(
+      uid: 'general-1',
+      name: 'Asha Guest',
+      eventIds: const [],
+    );
+
+    await tester.pumpWidget(
+      _app(
+        event: null,
+        previews: [preview],
+        participations: const [],
+        whatsappThreadsValue: AsyncError(
+          StateError('listOrganizerWhatsappThreads is not deployed'),
+          StackTrace.empty,
+        ),
+        now: now,
+      ),
+    );
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Asha Guest'), findsOneWidget);
+    expect(find.text('General inquiry · Can you help?'), findsOneWidget);
+    expect(find.text('Chat not found'), findsNothing);
+  });
+
   testWidgets('shows Sends history before opening the campaign composer', (
     tester,
   ) async {
@@ -409,6 +437,7 @@ Widget _app({
   Set<HostAudienceSegment> initialCampaignSegments = const {},
   List<HostSendSummary> sends = const [],
   List<HostWhatsappThreadSummary> whatsappThreads = const [],
+  AsyncValue<HostWhatsappThreadPage>? whatsappThreadsValue,
 }) {
   final club = club_test.buildClub(id: event?.clubId ?? 'club-1');
   final inbox = ChatsListViewModel(
@@ -436,13 +465,14 @@ Widget _app({
         ),
       ),
       hostWhatsappThreadsProvider(club.id).overrideWithValue(
-        AsyncData(
-          HostWhatsappThreadPage(
-            organizerId: club.id,
-            threads: whatsappThreads,
-            nextCursor: null,
-          ),
-        ),
+        whatsappThreadsValue ??
+            AsyncData(
+              HostWhatsappThreadPage(
+                organizerId: club.id,
+                threads: whatsappThreads,
+                nextCursor: null,
+              ),
+            ),
       ),
       hostCustomerSegmentCountProvider.overrideWith(
         (ref, request) async => const HostCustomerSegmentCount(

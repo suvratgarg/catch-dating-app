@@ -72,15 +72,25 @@ class CatchTabBar<T> extends StatelessWidget {
             : MainAxisAlignment.spaceAround,
         children: [
           for (final item in items)
-            Expanded(
-              flex: item.id == active ? 2 : 1,
-              child: CatchTabBarButton<T>(
-                item: item,
-                selected: item.id == active,
-                materialInk: !isFloating,
-                onTap: onChanged == null ? null : () => onChanged!(item.id),
+            if (item.id == active)
+              Expanded(
+                child: CatchTabBarButton<T>(
+                  item: item,
+                  selected: true,
+                  materialInk: !isFloating,
+                  onTap: onChanged == null ? null : () => onChanged!(item.id),
+                ),
+              )
+            else
+              SizedBox(
+                width: CatchLayout.tabBarCompactItemExtent,
+                child: CatchTabBarButton<T>(
+                  item: item,
+                  selected: false,
+                  materialInk: !isFloating,
+                  onTap: onChanged == null ? null : () => onChanged!(item.id),
+                ),
               ),
-            ),
         ],
       ),
     );
@@ -181,9 +191,7 @@ class CatchTabBarButton<T> extends StatelessWidget {
           minHeight: CatchLayout.tabBarPillMinHeight,
         ),
         padding: EdgeInsets.symmetric(
-          horizontal: selected
-              ? CatchLayout.tabBarPillHorizontalPadding
-              : CatchSpacing.s2,
+          horizontal: selected ? CatchLayout.tabBarPillHorizontalPadding : 0,
         ),
         decoration: ShapeDecoration(
           color: selected

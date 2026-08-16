@@ -1576,7 +1576,11 @@ class HostCrmRepository {
       limit: limit,
       cursor: query.cursor,
       query: query.search?.trim().isEmpty ?? true ? null : query.search?.trim(),
-      sort: query.sort.wireValue,
+      // The callable's canonical default is lastSeen. Omitting it keeps the
+      // default directory compatible during a rolling client/server rollout.
+      sort: query.sort == HostAudienceSort.lastSeen
+          ? null
+          : query.sort.wireValue,
       segmentId: query.segment?.wireValue,
       manualTagId: query.manualTagId,
     ).toJson(),
