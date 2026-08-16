@@ -623,6 +623,12 @@ Widget hostCustomersStates(BuildContext context) {
       HostAudienceSegment.regular,
       HostAudienceSegment.reliableAttendee,
     },
+    manualTags: const [
+      HostManualTag(
+        tagId: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        label: 'Brings friends',
+      ),
+    ],
     whatsappStatus: HostAudiencePermissionStatus.optedIn,
     whatsappAdminSuppressed: false,
     smsStatus: HostAudiencePermissionStatus.unknown,
@@ -640,6 +646,12 @@ Widget hostCustomersStates(BuildContext context) {
         attendedEventCount: contact.attendedEventCount,
         lastAttendedAt: contact.lastAttendedAt,
         tags: const {HostCustomerTag.repeat, HostCustomerTag.regular},
+        manualTags: const [
+          HostCustomerManualTag(
+            tagId: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+            label: 'Brings friends',
+          ),
+        ],
         hasAmbiguousIdentity: false,
         whatsappOptedIn: true,
         whatsappAdminSuppressed: false,
@@ -648,6 +660,16 @@ Widget hostCustomersStates(BuildContext context) {
     nextCursor: null,
     matchCount: 1,
     matchCountCoverage: HostCustomerMatchCountCoverage.exact,
+    manualTagVocabulary: const [
+      HostCustomerManualTag(
+        tagId: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        label: 'Brings friends',
+      ),
+      HostCustomerManualTag(
+        tagId: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+        label: 'Prefers weekends',
+      ),
+    ],
     sourceCoverage: HostCustomerDirectoryCoverage.exact,
     projectionVersion: 1,
   );
@@ -707,6 +729,45 @@ Widget hostCustomersStates(BuildContext context) {
       ),
     ],
     eventsTruncated: false,
+    manualTags: const [
+      HostManualTag(
+        tagId: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        label: 'Brings friends',
+      ),
+    ],
+    manualTagVocabulary: const [
+      HostManualTag(
+        tagId: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        label: 'Brings friends',
+      ),
+      HostManualTag(
+        tagId: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+        label: 'Prefers weekends',
+      ),
+    ],
+    notes: [
+      HostCustomerNote(
+        noteId: 'design-note-1',
+        body: 'Introduced three friends and prefers smaller weekend events.',
+        authorUid: HostOperationsFixtures.hostUid,
+        createdAt: DateTime(2030, 6, 19, 10),
+        updatedAt: DateTime(2030, 6, 19, 10),
+        revision: 1,
+      ),
+    ],
+    notesTruncated: false,
+    sends: [
+      HostCustomerSend(
+        campaignId: 'design-campaign-1',
+        name: 'June member invite',
+        messageClass: 'organizerPromotion',
+        deliveryStatus: HostCustomerSendDeliveryStatus.delivered,
+        createdAt: DateTime(2030, 6, 17, 9),
+        sentAt: DateTime(2030, 6, 17, 9, 5),
+        updatedAt: DateTime(2030, 6, 17, 9, 6),
+      ),
+    ],
+    sendsTruncated: false,
     revision: 3,
   );
   return _HostCatalog(

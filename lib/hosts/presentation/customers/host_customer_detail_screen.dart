@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -12,6 +14,7 @@ import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_memory.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
@@ -42,6 +45,7 @@ class _HostCustomerDetailScreenState
 
   @override
   Widget build(BuildContext context) {
+    final currentUid = ref.watch(uidProvider).asData?.value;
     final detail = ref.watch(
       hostAudienceContactDetailProvider(widget.organizerId, widget.contactId),
     );
@@ -83,35 +87,60 @@ class _HostCustomerDetailScreenState
             padding: CatchInsets.pageBody.copyWith(bottom: 0),
             children: [
               HostCustomerIdentityCard(customer: customer),
-              gapH12,
-              CatchButton(
-                label: context.l10n.hostCustomersManage,
-                variant: CatchButtonVariant.secondary,
-                onPressed: () => _manageCustomer(customer),
-              ),
               gapH16,
-              HostCustomerConversationCard(
+              HostCustomerMemorySection(
                 customer: customer,
-                loading: _openingConversation,
-                onOpen:
-                    customerConversationAvailability(
-                          linkedAccount: customer.linkedAccount,
-                          identityVerified:
-                              customer.identityState ==
-                              HostAudienceIdentityState.verified,
-                          ambiguousCandidateCount:
-                              customer.ambiguousCandidateCount,
-                        ) ==
-                        HostCustomerConversationAvailability.ready
-                    ? () => _startConversation(customer)
-                    : null,
+                currentUid: currentUid,
+                onEditTags: () => _editTags(customer),
+                onAddNote: () => _editNote(customer),
+                onEditNote: (note) => _editNote(customer, note: note),
               ),
-              gapH16,
+              gapH24,
+              Text(
+                context.l10n.hostCustomersActivity,
+                key: const ValueKey('host-customer-activity'),
+                style: CatchTextStyles.sectionTitle(context),
+              ),
+              gapH12,
               HostCustomerAttendanceCard(customer: customer),
               gapH16,
               HostCustomerRevenueCard(revenue: customer.revenue),
               gapH16,
               HostCustomerAttendanceHistory(customer: customer),
+              gapH16,
+              HostCustomerSendHistory(customer: customer),
+              gapH24,
+              CatchSection.divided(
+                key: const ValueKey('host-customer-controls'),
+                title: context.l10n.hostCustomersControls,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    CatchButton(
+                      label: context.l10n.hostCustomersManage,
+                      variant: CatchButtonVariant.secondary,
+                      onPressed: () => _manageCustomer(customer),
+                    ),
+                    gapH12,
+                    HostCustomerConversationCard(
+                      customer: customer,
+                      loading: _openingConversation,
+                      onOpen:
+                          customerConversationAvailability(
+                                linkedAccount: customer.linkedAccount,
+                                identityVerified:
+                                    customer.identityState ==
+                                    HostAudienceIdentityState.verified,
+                                ambiguousCandidateCount:
+                                    customer.ambiguousCandidateCount,
+                              ) ==
+                              HostCustomerConversationAvailability.ready
+                          ? () => _startConversation(customer)
+                          : null,
+                    ),
+                  ],
+                ),
+              ),
               const CatchScrollTerminalPadding(),
             ],
           ),
@@ -119,6 +148,33 @@ class _HostCustomerDetailScreenState
       ),
     );
   }
+
+  Future<void> _editTags(HostAudienceContactDetail customer) async {
+    final updated = await showCatchBottomSheet<bool>(
+      context: context,
+      builder: (context) => HostCustomerTagsSheet(customer: customer),
+    );
+    if (!mounted || updated != true) return;
+    ref.invalidate(hostCustomersDirectoryControllerProvider);
+    _refreshDetail();
+  }
+
+  Future<void> _editNote(
+    HostAudienceContactDetail customer, {
+    HostCustomerNote? note,
+  }) async {
+    final updated = await showCatchBottomSheet<bool>(
+      context: context,
+      builder: (context) =>
+          HostCustomerNoteSheet(customer: customer, note: note),
+    );
+    if (!mounted || updated != true) return;
+    _refreshDetail();
+  }
+
+  void _refreshDetail() => ref.invalidate(
+    hostAudienceContactDetailProvider(widget.organizerId, widget.contactId),
+  );
 
   Future<void> _manageCustomer(HostAudienceContactDetail customer) async {
     final result = await showCatchBottomSheet<HostCustomerManageResult>(

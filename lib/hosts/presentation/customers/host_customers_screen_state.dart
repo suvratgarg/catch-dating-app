@@ -212,6 +212,17 @@ class HostCustomerManualTag {
   int get hashCode => Object.hash(tagId, label);
 }
 
+@immutable
+class HostCustomerFilterSelection {
+  const HostCustomerFilterSelection.computed(this.filter) : manualTag = null;
+
+  const HostCustomerFilterSelection.manual(this.manualTag)
+    : filter = HostCustomerFilter.all;
+
+  final HostCustomerFilter filter;
+  final HostCustomerManualTag? manualTag;
+}
+
 enum HostCustomerDirectoryCoverage { exact, partial, insufficientData }
 
 enum HostCustomerMatchCountCoverage { exact, atLeast }

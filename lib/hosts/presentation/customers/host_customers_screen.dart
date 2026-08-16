@@ -58,6 +58,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
   Timer? _searchDebounce;
   String? _search;
   HostCustomerFilter _filter = HostCustomerFilter.all;
+  HostCustomerManualTag? _manualTag;
   bool _exporting = false;
 
   @override
@@ -117,7 +118,8 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     final request = HostCustomersDirectoryRequest(
       organizerId: selectedClub.id,
       search: _search,
-      filter: effectiveFilter,
+      filter: _manualTag == null ? effectiveFilter : HostCustomerFilter.all,
+      manualTagId: _manualTag?.tagId,
     );
     final directory = ref.watch(
       hostCustomersDirectoryControllerProvider(request),
@@ -155,7 +157,12 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                     items: _hostCustomersHeaderActions(
                       context,
                       summary.asData?.value,
-                      exportEnabled: !_exporting,
+                      exportEnabled: !_exporting && _manualTag == null,
+                      exportSublabel: _manualTag == null
+                          ? null
+                          : context
+                                .l10n
+                                .hostCustomersManualTagExportUnavailable,
                     ),
                     onSelected: (action) {
                       if (action == _HostCustomersHeaderAction.export) {
@@ -214,6 +221,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                       children: [
                         HostCustomerFilterSummary(
                           filter: effectiveFilter,
+                          manualTag: _manualTag,
                           count: state.matchCount,
                           countCoverage: state.matchCountCoverage,
                           campaignBlocker: campaignBridgeBlocker,
@@ -228,21 +236,26 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                           onOpenFilters: () => _openFilters(
                             selectedClub,
                             effectiveFilter,
+                            _manualTag,
                             state,
                             summary.asData?.value.smsReadiness,
                           ),
-                          onClear: effectiveFilter == HostCustomerFilter.all
+                          onClear:
+                              effectiveFilter == HostCustomerFilter.all &&
+                                  _manualTag == null
                               ? null
-                              : () => setState(
-                                  () => _filter = HostCustomerFilter.all,
-                                ),
+                              : () => setState(() {
+                                  _filter = HostCustomerFilter.all;
+                                  _manualTag = null;
+                                }),
                         ),
                         gapH16,
                         HostCustomersDirectory(
                           state: state,
                           hasActiveQuery:
                               _search != null ||
-                              effectiveFilter != HostCustomerFilter.all,
+                              effectiveFilter != HostCustomerFilter.all ||
+                              _manualTag != null,
                           onCustomerSelected: (contact) =>
                               _openCustomer(selectedClub, contact),
                           onLoadMore: state.canLoadMore
@@ -273,10 +286,12 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     BuildContext context,
     HostCrmSummary? summary, {
     required bool exportEnabled,
+    String? exportSublabel,
   }) => [
     CatchActionMenuItem(
       value: _HostCustomersHeaderAction.export,
       label: context.l10n.hostsHostAudienceExport,
+      sublabel: exportSublabel,
       icon: CatchIcons.downloadRounded,
       enabled: exportEnabled,
     ),
@@ -321,15 +336,18 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
   Future<void> _openFilters(
     Club club,
     HostCustomerFilter activeFilter,
+    HostCustomerManualTag? activeManualTag,
     HostCustomersDirectoryState directory,
     HostCrmChannelReadiness? smsReadiness,
   ) async {
-    final selected = await showCatchBottomSheet<HostCustomerFilter>(
+    final selected = await showCatchBottomSheet<HostCustomerFilterSelection>(
       context: context,
       builder: (_) => HostCustomerFilterSheet(
         organizerId: club.id,
         search: _search,
         selectedFilter: activeFilter,
+        selectedManualTag: activeManualTag,
+        manualTagVocabulary: directory.manualTagVocabulary,
         selectedCount: HostCustomerSegmentCount(
           count: directory.matchCount,
           coverage: directory.matchCountCoverage,
@@ -338,7 +356,10 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
       ),
     );
     if (selected != null && mounted) {
-      setState(() => _filter = selected);
+      setState(() {
+        _filter = selected.filter;
+        _manualTag = selected.manualTag;
+      });
     }
   }
 
@@ -449,6 +470,7 @@ class HostCustomerFilterSummary extends StatelessWidget {
   const HostCustomerFilterSummary({
     super.key,
     required this.filter,
+    this.manualTag,
     required this.count,
     required this.countCoverage,
     required this.campaignBlocker,
@@ -458,6 +480,7 @@ class HostCustomerFilterSummary extends StatelessWidget {
   });
 
   final HostCustomerFilter filter;
+  final HostCustomerManualTag? manualTag;
   final int count;
   final HostCustomerMatchCountCoverage countCoverage;
   final String? campaignBlocker;
@@ -477,7 +500,9 @@ class HostCustomerFilterSummary extends StatelessWidget {
               Expanded(
                 child: Text(
                   context.l10n.hostCustomersFilterSummary(
-                    label: _customerFilterLabel(context, filter),
+                    label:
+                        manualTag?.label ??
+                        _customerFilterLabel(context, filter),
                     countLabel: countLabel,
                   ),
                   style: CatchTextStyles.fieldRowTitle(context),
@@ -502,33 +527,35 @@ class HostCustomerFilterSummary extends StatelessWidget {
               ),
             ],
           ),
-          gapH12,
-          Wrap(
-            alignment: WrapAlignment.end,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s1,
-            children: [
-              if (campaignBlocker case final String blocker)
-                Text(
-                  hostCampaignBlockerLabel(context, blocker),
-                  style: CatchTextStyles.supporting(
-                    context,
-                    color: CatchTokens.of(context).warning,
+          if (manualTag == null) ...[
+            gapH12,
+            Wrap(
+              alignment: WrapAlignment.end,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: CatchSpacing.s2,
+              runSpacing: CatchSpacing.s1,
+              children: [
+                if (campaignBlocker case final String blocker)
+                  Text(
+                    hostCampaignBlockerLabel(context, blocker),
+                    style: CatchTextStyles.supporting(
+                      context,
+                      color: CatchTokens.of(context).warning,
+                    ),
                   ),
+                CatchButton(
+                  key: const ValueKey('host-customers-message-segment'),
+                  label: countCoverage == HostCustomerMatchCountCoverage.exact
+                      ? context.l10n.hostCustomersMessageThese(count: count)
+                      : context.l10n.hostCustomersMessageTheseAtLeast(
+                          count: count,
+                        ),
+                  size: CatchButtonSize.sm,
+                  onPressed: onMessage,
                 ),
-              CatchButton(
-                key: const ValueKey('host-customers-message-segment'),
-                label: countCoverage == HostCustomerMatchCountCoverage.exact
-                    ? context.l10n.hostCustomersMessageThese(count: count)
-                    : context.l10n.hostCustomersMessageTheseAtLeast(
-                        count: count,
-                      ),
-                size: CatchButtonSize.sm,
-                onPressed: onMessage,
-              ),
-            ],
-          ),
+              ],
+            ),
+          ],
         ],
       ),
     );
@@ -540,6 +567,8 @@ class HostCustomerFilterSheet extends ConsumerWidget {
     super.key,
     required this.organizerId,
     required this.selectedFilter,
+    required this.selectedManualTag,
+    required this.manualTagVocabulary,
     required this.selectedCount,
     required this.smsReadiness,
     this.search,
@@ -548,6 +577,8 @@ class HostCustomerFilterSheet extends ConsumerWidget {
   final String organizerId;
   final String? search;
   final HostCustomerFilter selectedFilter;
+  final HostCustomerManualTag? selectedManualTag;
+  final List<HostCustomerManualTag> manualTagVocabulary;
   final HostCustomerSegmentCount selectedCount;
   final HostCrmChannelReadiness? smsReadiness;
 
@@ -573,7 +604,27 @@ class HostCustomerFilterSheet extends ConsumerWidget {
                         organizerId: organizerId,
                         search: search,
                         filter: filter,
-                        selected: selectedFilter == filter,
+                        selected:
+                            selectedManualTag == null &&
+                            selectedFilter == filter,
+                        selectedCount: selectedCount,
+                      ),
+                  ],
+                ),
+              ),
+            if (manualTagVocabulary.isNotEmpty)
+              CatchSection.divided(
+                title: context.l10n.hostCustomersFilterGroupYourTags,
+                child: Wrap(
+                  spacing: CatchSpacing.s2,
+                  runSpacing: CatchSpacing.s2,
+                  children: [
+                    for (final tag in manualTagVocabulary)
+                      _HostCustomerManualTagCountChip(
+                        organizerId: organizerId,
+                        search: search,
+                        tag: tag,
+                        selected: selectedManualTag?.tagId == tag.tagId,
                         selectedCount: selectedCount,
                       ),
                   ],
@@ -628,7 +679,59 @@ class _HostCustomerFilterCountChip extends ConsumerWidget {
       ),
       selected: selected,
       contractExemption: 'Customer filters map to reviewed CRM segments.',
-      onChanged: (_) => Navigator.of(context).pop(filter),
+      onChanged: (_) => Navigator.of(
+        context,
+      ).pop(HostCustomerFilterSelection.computed(filter)),
+    );
+  }
+}
+
+class _HostCustomerManualTagCountChip extends ConsumerWidget {
+  const _HostCustomerManualTagCountChip({
+    required this.organizerId,
+    required this.search,
+    required this.tag,
+    required this.selected,
+    required this.selectedCount,
+  });
+
+  final String organizerId;
+  final String? search;
+  final HostCustomerManualTag tag;
+  final bool selected;
+  final HostCustomerSegmentCount selectedCount;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final count = selected
+        ? AsyncValue.data(selectedCount)
+        : ref.watch(
+            hostCustomerManualTagCountProvider(
+              HostCustomerManualTagCountRequest(
+                organizerId: organizerId,
+                manualTagId: tag.tagId,
+                search: search,
+              ),
+            ),
+          );
+    final countLabel = count.when(
+      data: (value) =>
+          _customerPeopleCountLabel(context, value.count, value.coverage),
+      loading: () => context.l10n.hostCustomersCountLoading,
+      error: (_, _) => context.l10n.hostCustomersCountUnavailable,
+    );
+    return CatchChip.selectable(
+      key: ValueKey('host-customer-manual-tag-${tag.tagId}'),
+      label: context.l10n.hostCustomersFilterOption(
+        label: tag.label,
+        countLabel: countLabel,
+      ),
+      leading: Icon(CatchIcons.editNoteOutlined),
+      selected: selected,
+      accent: CatchTokens.of(context).ink2,
+      contractExemption: 'Manual tags are organizer-owned CRM vocabulary.',
+      onChanged: (_) =>
+          Navigator.of(context).pop(HostCustomerFilterSelection.manual(tag)),
     );
   }
 }
