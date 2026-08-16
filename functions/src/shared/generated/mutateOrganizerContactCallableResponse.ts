@@ -12,5 +12,12 @@ export interface MutateOrganizerContactCallableResponse {
   displayNameOverride: string | null;
   whatsappAdminSuppressed: boolean;
   hidden: boolean;
+  /**
+   * @maxItems 5
+   */
+  manualTags?: {
+    tagId: string;
+    label: string;
+  }[];
   revision: number;
 }

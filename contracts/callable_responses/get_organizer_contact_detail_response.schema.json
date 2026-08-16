@@ -23,9 +23,48 @@
     "revenue": {"$ref": "#/definitions/revenue"},
     "events": {"type": "array", "maxItems": 100, "items": {"$ref": "#/definitions/event"}},
     "eventsTruncated": {"type": "boolean"},
+    "manualTags": {"type": "array", "maxItems": 5, "uniqueItems": true, "items": {"$ref": "#/definitions/manualTag"}},
+    "notes": {"type": "array", "maxItems": 100, "items": {"$ref": "#/definitions/note"}},
+    "notesTruncated": {"type": "boolean"},
+    "sends": {"type": "array", "maxItems": 100, "items": {"$ref": "#/definitions/send"}},
+    "sendsTruncated": {"type": "boolean"},
     "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991}
   },
   "definitions": {
+    "manualTag": {
+      "type": "object", "additionalProperties": false,
+      "required": ["tagId", "label"],
+      "properties": {
+        "tagId": {"type": "string", "pattern": "^[a-f0-9]{32}$"},
+        "label": {"type": "string", "minLength": 1, "maxLength": 40}
+      }
+    },
+    "note": {
+      "type": "object", "additionalProperties": false,
+      "required": ["noteId", "body", "authorUid", "createdAtMillis", "updatedAtMillis", "revision"],
+      "properties": {
+        "noteId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "body": {"type": "string", "minLength": 1, "maxLength": 2000},
+        "authorUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "createdAtMillis": {"type": "integer", "minimum": 0},
+        "updatedAtMillis": {"type": "integer", "minimum": 0},
+        "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991}
+      }
+    },
+    "send": {
+      "type": "object", "additionalProperties": false,
+      "required": ["kind", "campaignId", "name", "messageClass", "deliveryStatus", "createdAtMillis", "sentAtMillis", "updatedAtMillis"],
+      "properties": {
+        "kind": {"const": "campaign"},
+        "campaignId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "name": {"type": "string", "minLength": 1, "maxLength": 120},
+        "messageClass": {"type": "string", "enum": ["eventFollowUp", "organizerUpdate", "organizerPromotion"]},
+        "deliveryStatus": {"type": "string", "enum": ["pending", "sending", "suppressed", "accepted", "sent", "delivered", "read", "failed", "replied", "optedOut"]},
+        "createdAtMillis": {"type": "integer", "minimum": 0},
+        "sentAtMillis": {"type": ["integer", "null"], "minimum": 0},
+        "updatedAtMillis": {"type": "integer", "minimum": 0}
+      }
+    },
     "revenue": {
       "type": "object", "additionalProperties": false,
       "required": ["coverage", "amounts"],

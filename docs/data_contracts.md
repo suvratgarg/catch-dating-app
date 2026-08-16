@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.25.0
-updated: 2026-08-14
+version: 1.26.0
+updated: 2026-08-16
 owner: recursive_audit_loop
 status: active
 ---
@@ -749,7 +749,22 @@ absent until a provider supplies financially complete reconciled facts.
 Hosts currently retain event-scoped roster access through the existing
 authorized roster boundary. The Host Audience client consumes the directory,
 detail, export and contact-mutation callables; it never reads these collections
-directly. Campaign approval freezes a server-owned recipient snapshot and
+directly. Organizer-authored CRM memory remains structurally separate from
+computed traits: `organizerContacts.manualTagIds` references a maximum of five
+entries from the organizer's server-owned
+`organizerContactTagVocabularies/{organizerId}` document, whose vocabulary is
+capped at twenty. `organizerContactNotes` stores author-stamped note records;
+new notes append, edits use optimistic revisions, contact detail returns the
+newest bounded window, and exports never include note content. Existing contact
+documents may omit `manualTagIds` and read as an empty assignment, so neither
+feature requires a backfill.
+
+Contact detail also reads the bounded newest campaign-recipient window from
+`organizerCampaignRecipients` and joins safe campaign labels and delivery
+state. Broadcast history remains out of this contract until the separately
+owned organizer-readable broadcast index exists; the detail response uses a
+typed send-history seam that can add that source without exposing raw receipts.
+Campaign approval freezes a server-owned recipient snapshot and
 dispatch rechecks current permission, contact suppression, sender/template
 health and event state before each attempt. Meta provider tokens live in Secret
 Manager. Every environment pre-provisions one

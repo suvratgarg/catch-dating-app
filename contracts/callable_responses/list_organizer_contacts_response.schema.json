@@ -12,6 +12,7 @@
     "nextCursor": {"type": ["string", "null"], "maxLength": 1000},
     "matchCount": {"type": "integer", "minimum": 0, "maximum": 1000000},
     "matchCountCoverage": {"type": "string", "enum": ["exact", "atLeast"]},
+    "manualTagVocabulary": {"type": "array", "maxItems": 20, "uniqueItems": true, "items": {"$ref": "get_organizer_contact_detail_response.schema.json#/definitions/manualTag"}},
     "sourceCoverage": {"type": "string", "enum": ["exact", "partial"]},
     "projectionVersion": {"type": "integer", "minimum": 1, "maximum": 1000}
   },
@@ -32,6 +33,7 @@
         "expectedEventCount": {"type": "integer", "minimum": 0, "maximum": 1000000},
         "lastAttendedAtMillis": {"type": ["integer", "null"], "minimum": 0},
         "segmentIds": {"type": "array", "uniqueItems": true, "maxItems": 16, "items": {"$ref": "../firestore/organizer_contact_traits.schema.json#/definitions/segmentId"}},
+        "manualTags": {"type": "array", "uniqueItems": true, "maxItems": 5, "items": {"$ref": "get_organizer_contact_detail_response.schema.json#/definitions/manualTag"}},
         "whatsappStatus": {"type": "string", "enum": ["unknown", "optedIn", "optedOut"]},
         "whatsappAdminSuppressed": {"type": "boolean"},
         "smsStatus": {"type": "string", "enum": ["unknown", "optedIn", "optedOut"]},

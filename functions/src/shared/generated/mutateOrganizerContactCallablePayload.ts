@@ -14,4 +14,8 @@ export type MutateOrganizerContactCallablePayload = {
   displayNameOverride?: string | null;
   whatsappAdminSuppressed?: boolean;
   hidden?: boolean;
+  /**
+   * @maxItems 5
+   */
+  manualTags?: string[];
 };

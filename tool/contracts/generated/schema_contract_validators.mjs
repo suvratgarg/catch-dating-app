@@ -29,6 +29,8 @@ import {
   organizerFollowDocumentSchema,
   organizerCommunicationPreferenceDocumentSchema,
   organizerContactDocumentSchema,
+  organizerContactNoteDocumentSchema,
+  organizerContactTagVocabularyDocumentSchema,
   organizerContactIdentityLinkDocumentSchema,
   organizerContactIdentityClaimDocumentSchema,
   organizerContactEventEdgeDocumentSchema,
@@ -268,6 +270,9 @@ import {
   getOrganizerContactDetailCallableResponseSchema,
   mutateOrganizerContactCallablePayloadSchema,
   mutateOrganizerContactCallableResponseSchema,
+  createOrganizerContactNoteCallablePayloadSchema,
+  mutateOrganizerContactNoteCallablePayloadSchema,
+  organizerContactNoteCallableResponseSchema,
   exportOrganizerContactsCallablePayloadSchema,
   exportOrganizerContactsCallableResponseSchema,
   mergeOrganizerContactsCallablePayloadSchema,
@@ -408,6 +413,8 @@ export const validateOrganizerTeamMembershipDocument = ajv.compile(organizerTeam
 export const validateOrganizerFollowDocument = ajv.compile(organizerFollowDocumentSchema);
 export const validateOrganizerCommunicationPreferenceDocument = ajv.compile(organizerCommunicationPreferenceDocumentSchema);
 export const validateOrganizerContactDocument = ajv.compile(organizerContactDocumentSchema);
+export const validateOrganizerContactNoteDocument = ajv.compile(organizerContactNoteDocumentSchema);
+export const validateOrganizerContactTagVocabularyDocument = ajv.compile(organizerContactTagVocabularyDocumentSchema);
 export const validateOrganizerContactIdentityLinkDocument = ajv.compile(organizerContactIdentityLinkDocumentSchema);
 export const validateOrganizerContactIdentityClaimDocument = ajv.compile(organizerContactIdentityClaimDocumentSchema);
 export const validateOrganizerContactEventEdgeDocument = ajv.compile(organizerContactEventEdgeDocumentSchema);
@@ -647,6 +654,9 @@ export const validateGetOrganizerContactDetailCallablePayload = ajv.compile(getO
 export const validateGetOrganizerContactDetailCallableResponse = ajv.compile(getOrganizerContactDetailCallableResponseSchema);
 export const validateMutateOrganizerContactCallablePayload = ajv.compile(mutateOrganizerContactCallablePayloadSchema);
 export const validateMutateOrganizerContactCallableResponse = ajv.compile(mutateOrganizerContactCallableResponseSchema);
+export const validateCreateOrganizerContactNoteCallablePayload = ajv.compile(createOrganizerContactNoteCallablePayloadSchema);
+export const validateMutateOrganizerContactNoteCallablePayload = ajv.compile(mutateOrganizerContactNoteCallablePayloadSchema);
+export const validateOrganizerContactNoteCallableResponse = ajv.compile(organizerContactNoteCallableResponseSchema);
 export const validateExportOrganizerContactsCallablePayload = ajv.compile(exportOrganizerContactsCallablePayloadSchema);
 export const validateExportOrganizerContactsCallableResponse = ajv.compile(exportOrganizerContactsCallableResponseSchema);
 export const validateMergeOrganizerContactsCallablePayload = ajv.compile(mergeOrganizerContactsCallablePayloadSchema);

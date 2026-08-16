@@ -135,6 +135,30 @@ const schemaListOrganizerContactsCallableResponseSchema = <String, Object?>{
               ],
             },
           },
+          'manualTags': <String, Object?>{
+            'type': 'array',
+            'uniqueItems': true,
+            'maxItems': 5,
+            'items': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'tagId',
+                'label',
+              ],
+              'properties': <String, Object?>{
+                'tagId': <String, Object?>{
+                  'type': 'string',
+                  'pattern': '^[a-f0-9]{32}\$',
+                },
+                'label': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 40,
+                },
+              },
+            },
+          },
           'whatsappStatus': <String, Object?>{
             'type': 'string',
             'enum': <Object?>[
@@ -188,6 +212,30 @@ const schemaListOrganizerContactsCallableResponseSchema = <String, Object?>{
         'exact',
         'atLeast',
       ],
+    },
+    'manualTagVocabulary': <String, Object?>{
+      'type': 'array',
+      'maxItems': 20,
+      'uniqueItems': true,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'tagId',
+          'label',
+        ],
+        'properties': <String, Object?>{
+          'tagId': <String, Object?>{
+            'type': 'string',
+            'pattern': '^[a-f0-9]{32}\$',
+          },
+          'label': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 40,
+          },
+        },
+      },
     },
     'sourceCoverage': <String, Object?>{
       'type': 'string',
@@ -307,6 +355,30 @@ const schemaListOrganizerContactsCallableResponseSchema = <String, Object?>{
               'whatsapp_reachable',
               'sms_reachable',
             ],
+          },
+        },
+        'manualTags': <String, Object?>{
+          'type': 'array',
+          'uniqueItems': true,
+          'maxItems': 5,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'tagId',
+              'label',
+            ],
+            'properties': <String, Object?>{
+              'tagId': <String, Object?>{
+                'type': 'string',
+                'pattern': '^[a-f0-9]{32}\$',
+              },
+              'label': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 40,
+              },
+            },
           },
         },
         'whatsappStatus': <String, Object?>{

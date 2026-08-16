@@ -360,6 +360,153 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
     'eventsTruncated': <String, Object?>{
       'type': 'boolean',
     },
+    'manualTags': <String, Object?>{
+      'type': 'array',
+      'maxItems': 5,
+      'uniqueItems': true,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'tagId',
+          'label',
+        ],
+        'properties': <String, Object?>{
+          'tagId': <String, Object?>{
+            'type': 'string',
+            'pattern': '^[a-f0-9]{32}\$',
+          },
+          'label': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 40,
+          },
+        },
+      },
+    },
+    'notes': <String, Object?>{
+      'type': 'array',
+      'maxItems': 100,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'noteId',
+          'body',
+          'authorUid',
+          'createdAtMillis',
+          'updatedAtMillis',
+          'revision',
+        ],
+        'properties': <String, Object?>{
+          'noteId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'body': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 2000,
+          },
+          'authorUid': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'createdAtMillis': <String, Object?>{
+            'type': 'integer',
+            'minimum': 0,
+          },
+          'updatedAtMillis': <String, Object?>{
+            'type': 'integer',
+            'minimum': 0,
+          },
+          'revision': <String, Object?>{
+            'type': 'integer',
+            'minimum': 1,
+            'maximum': 9007199254740991,
+          },
+        },
+      },
+    },
+    'notesTruncated': <String, Object?>{
+      'type': 'boolean',
+    },
+    'sends': <String, Object?>{
+      'type': 'array',
+      'maxItems': 100,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'kind',
+          'campaignId',
+          'name',
+          'messageClass',
+          'deliveryStatus',
+          'createdAtMillis',
+          'sentAtMillis',
+          'updatedAtMillis',
+        ],
+        'properties': <String, Object?>{
+          'kind': <String, Object?>{
+            'const': 'campaign',
+          },
+          'campaignId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'name': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 120,
+          },
+          'messageClass': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'eventFollowUp',
+              'organizerUpdate',
+              'organizerPromotion',
+            ],
+          },
+          'deliveryStatus': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'pending',
+              'sending',
+              'suppressed',
+              'accepted',
+              'sent',
+              'delivered',
+              'read',
+              'failed',
+              'replied',
+              'optedOut',
+            ],
+          },
+          'createdAtMillis': <String, Object?>{
+            'type': 'integer',
+            'minimum': 0,
+          },
+          'sentAtMillis': <String, Object?>{
+            'type': <Object?>[
+              'integer',
+              'null',
+            ],
+            'minimum': 0,
+          },
+          'updatedAtMillis': <String, Object?>{
+            'type': 'integer',
+            'minimum': 0,
+          },
+        },
+      },
+    },
+    'sendsTruncated': <String, Object?>{
+      'type': 'boolean',
+    },
     'revision': <String, Object?>{
       'type': 'integer',
       'minimum': 1,
@@ -367,6 +514,134 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
     },
   },
   'definitions': <String, Object?>{
+    'manualTag': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'tagId',
+        'label',
+      ],
+      'properties': <String, Object?>{
+        'tagId': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[a-f0-9]{32}\$',
+        },
+        'label': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 40,
+        },
+      },
+    },
+    'note': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'noteId',
+        'body',
+        'authorUid',
+        'createdAtMillis',
+        'updatedAtMillis',
+        'revision',
+      ],
+      'properties': <String, Object?>{
+        'noteId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'body': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 2000,
+        },
+        'authorUid': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'createdAtMillis': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+        'updatedAtMillis': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+        'revision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+          'maximum': 9007199254740991,
+        },
+      },
+    },
+    'send': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'kind',
+        'campaignId',
+        'name',
+        'messageClass',
+        'deliveryStatus',
+        'createdAtMillis',
+        'sentAtMillis',
+        'updatedAtMillis',
+      ],
+      'properties': <String, Object?>{
+        'kind': <String, Object?>{
+          'const': 'campaign',
+        },
+        'campaignId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'name': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 120,
+        },
+        'messageClass': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'eventFollowUp',
+            'organizerUpdate',
+            'organizerPromotion',
+          ],
+        },
+        'deliveryStatus': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'pending',
+            'sending',
+            'suppressed',
+            'accepted',
+            'sent',
+            'delivered',
+            'read',
+            'failed',
+            'replied',
+            'optedOut',
+          ],
+        },
+        'createdAtMillis': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+        'sentAtMillis': <String, Object?>{
+          'type': <Object?>[
+            'integer',
+            'null',
+          ],
+          'minimum': 0,
+        },
+        'updatedAtMillis': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+      },
+    },
     'revenue': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,

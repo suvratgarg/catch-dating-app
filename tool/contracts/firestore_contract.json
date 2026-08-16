@@ -595,7 +595,8 @@
       ],
       "migrationNotes": [
         "Contacts are organizer-scoped operational records, never Consumer profiles.",
-        "Imported phone and email values are duplicate candidates rather than verified merge evidence."
+        "Imported phone and email values are duplicate candidates rather than verified merge evidence.",
+        "manualTagIds is a bounded organizer-authored namespace and never aliases computed segmentIds. Legacy documents may omit it and read as an empty assignment."
       ]
     },
     {

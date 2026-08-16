@@ -50,6 +50,30 @@ const schemaMutateOrganizerContactCallableResponseSchema = <String, Object?>{
     'hidden': <String, Object?>{
       'type': 'boolean',
     },
+    'manualTags': <String, Object?>{
+      'type': 'array',
+      'maxItems': 5,
+      'uniqueItems': true,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'tagId',
+          'label',
+        ],
+        'properties': <String, Object?>{
+          'tagId': <String, Object?>{
+            'type': 'string',
+            'pattern': '^[a-f0-9]{32}\$',
+          },
+          'label': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 40,
+          },
+        },
+      },
+    },
     'revision': <String, Object?>{
       'type': 'integer',
       'minimum': 1,
