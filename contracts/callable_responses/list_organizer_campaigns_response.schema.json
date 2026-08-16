@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_organizer_campaigns_response.schema.json",
+  "title": "ListOrganizerCampaignsCallableResponse",
+  "description": "Reverse-chronological organizer Sends rows mixing WhatsApp campaigns and event announcements.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["organizerId", "sends", "nextCursor"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "sends": {"type": "array", "maxItems": 50, "items": {"$ref": "#/definitions/send"}},
+    "nextCursor": {"type": ["string", "null"], "maxLength": 1000}
+  },
+  "definitions": {
+    "send": {
+      "oneOf": [
+        {"$ref": "#/definitions/campaign"},
+        {"$ref": "#/definitions/announcement"}
+      ]
+    },
+    "campaign": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "campaignId", "name", "status", "segmentIds", "templateId", "templateName", "audienceCounts", "deliveryCounts", "scheduledAtMillis", "dispatchedAtMillis", "activityAtMillis"],
+      "properties": {
+        "kind": {"const": "campaign"},
+        "campaignId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "name": {"type": "string", "minLength": 1, "maxLength": 120},
+        "status": {"$ref": "../firestore/organizer_campaigns.schema.json#/properties/status"},
+        "segmentIds": {"$ref": "../firestore/organizer_campaigns.schema.json#/properties/segmentIds"},
+        "templateId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "templateName": {"type": ["string", "null"], "minLength": 1, "maxLength": 120},
+        "audienceCounts": {"$ref": "../firestore/organizer_campaigns.schema.json#/definitions/audienceCounts"},
+        "deliveryCounts": {"$ref": "../firestore/organizer_campaigns.schema.json#/definitions/deliveryCounts"},
+        "scheduledAtMillis": {"type": ["integer", "null"], "minimum": 0},
+        "dispatchedAtMillis": {"type": ["integer", "null"], "minimum": 0},
+        "activityAtMillis": {"type": "integer", "minimum": 0}
+      }
+    },
+    "announcement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "broadcastId", "eventId", "eventName", "audience", "recipientCount", "sentAtMillis", "partialFailure", "activityAtMillis"],
+      "properties": {
+        "kind": {"const": "announcement"},
+        "broadcastId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "eventName": {"type": "string", "minLength": 1, "maxLength": 160},
+        "audience": {"type": "string", "enum": ["booked", "prospective", "everyone"]},
+        "recipientCount": {"type": "integer", "minimum": 0, "maximum": 500},
+        "sentAtMillis": {"type": "integer", "minimum": 0},
+        "partialFailure": {"type": "boolean"},
+        "activityAtMillis": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

@@ -12871,6 +12871,51 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostMessagingWorkspaceCampaigns => 'Campaigns';
 
   @override
+  String get hostMessagingWorkspaceSends => 'Sends';
+
+  @override
+  String get hostSendsNewMessage => 'New message';
+
+  @override
+  String get hostSendsSettings => 'WhatsApp settings';
+
+  @override
+  String get hostSendsLoadMore => 'Load more';
+
+  @override
+  String get hostSendsEmpty => 'No messages sent yet.';
+
+  @override
+  String get hostSendsEmptyHelp =>
+      'Campaigns and event announcements will appear here after you send them.';
+
+  @override
+  String get hostSendsCampaignType => 'Campaign';
+
+  @override
+  String get hostSendsAnnouncementType => 'Announcement';
+
+  @override
+  String hostSendsRecipients({required int count}) {
+    return '$count people';
+  }
+
+  @override
+  String get hostSendsPartial => 'Some deliveries need attention';
+
+  @override
+  String get hostSendsDeliveryTime => 'Delivery';
+
+  @override
+  String get hostSendsSendNow => 'Send after approval';
+
+  @override
+  String get hostSendsSchedule => 'Schedule';
+
+  @override
+  String get hostSendsClearSchedule => 'Send after approval';
+
+  @override
   String get hostCustomersManage => 'Manage customer';
 
   @override

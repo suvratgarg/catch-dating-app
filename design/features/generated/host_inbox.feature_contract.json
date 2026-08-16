@@ -2,15 +2,15 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/host_inbox.feature.json",
-  "generatedFor": "2026-08-15",
-  "sourceDigest": "sha256:ec40a7750ccf81172dd61a0e90b69478a7f763725723afce9494121d1fb147f6",
+  "generatedFor": "2026-08-16",
+  "sourceDigest": "sha256:90ec21d4ce25aa108a360a6900a510302350fb55ed6af269fe0a1f8d6cfdf071",
   "resolvedDigest": "sha256:5a8204ffa6ff09b3b28dbee83513533739410deaaad231c5ee5f84fbf09a3586",
   "feature": {
     "id": "feature.host_inbox",
     "name": "Host Messaging",
     "owner": "hosts",
     "status": "pilot",
-    "description": "Orchestrates organizer-scoped Host messaging through an Inbox for inquiries and event broadcasts plus Campaigns for WhatsApp sender setup and cross-event audience messaging, including deep-linked customer segments."
+    "description": "Orchestrates organizer-scoped Host messaging through an Inbox for inquiries and event broadcasts plus Sends for mixed outbound history and cross-event audience messaging, including deep-linked customer segments."
   },
   "coverage": {
     "surfaces": 1,
@@ -32,7 +32,7 @@
         "id": "screen.host.inbox"
       },
       "actionScope": {
-        "included": "Messaging workspace switching; Inbox retry, search, event/general scope, booked/prospective audience selection, conversation routing, and event-broadcast lifecycle; WhatsApp sender setup; and deep-linked campaign create, preview, approve, dispatch, cancel, and report controls.",
+        "included": "Messaging workspace switching; Inbox retry, search, event/general scope, booked/prospective audience selection, conversation routing, and event-broadcast lifecycle; reverse-chronological Campaign and Announcement history; dedicated WhatsApp sender setup; and deep-linked campaign create, schedule, preview, approve, dispatch, cancel, and report controls.",
         "excluded": [
           "Raw broadcast body edits are form data; the contract cardinalizes template/audience decisions and the send mutation instead of individual keystrokes.",
           "Conversation thread behavior and safety actions retain the shared chat-thread contract."
@@ -75,6 +75,18 @@
             "symbol": "HostInboxBroadcastController"
           },
           {
+            "id": "sends_workspace",
+            "language": "dart",
+            "file": "lib/hosts/presentation/inbox/host_sends_workspace.dart",
+            "symbol": "HostSendsWorkspaceSliver"
+          },
+          {
+            "id": "messaging_setup_screen",
+            "language": "dart",
+            "file": "lib/hosts/presentation/inbox/host_messaging_setup_screen.dart",
+            "symbol": "HostMessagingSetupScreen"
+          },
+          {
             "id": "whatsapp_setup",
             "language": "dart",
             "file": "lib/hosts/presentation/host_operations/host_audience.dart",
@@ -112,9 +124,11 @@
         ],
         "dataContracts": [
           "contracts/callable_responses/organizer_campaign_response.schema.json",
+          "contracts/callable_responses/list_organizer_campaigns_response.schema.json",
           "contracts/callable_responses/organizer_messaging_setup_response.schema.json",
           "contracts/callable_responses/send_event_broadcast_response.schema.json",
           "contracts/callables/complete_organizer_whatsapp_connection_payload.schema.json",
+          "contracts/callables/list_organizer_campaigns_payload.schema.json",
           "contracts/callables/organizer_campaign_action_payload.schema.json",
           "contracts/callables/send_organizer_whatsapp_test_payload.schema.json",
           "contracts/callables/send_event_broadcast_payload.schema.json",
@@ -125,6 +139,7 @@
           "contracts/firestore/events.schema.json",
           "contracts/firestore/matches.schema.json",
           "contracts/firestore/organizer_campaign_recipients.schema.json",
+          "contracts/firestore/organizer_broadcast_summaries.schema.json",
           "contracts/firestore/organizer_campaign_webhook_receipts.schema.json",
           "contracts/firestore/organizer_campaigns.schema.json"
         ],
@@ -278,7 +293,7 @@
               ]
             }
           ],
-          "description": "Switches the selected organizer's Messaging surface between Inbox and Campaigns.",
+          "description": "Switches the selected organizer's Messaging surface between Inbox and Sends; the wire value remains campaigns for deep-link compatibility.",
           "implementationStatus": "implemented"
         },
         {
@@ -539,7 +554,7 @@
               "id": "host_messaging.whatsapp_sender_updated"
             }
           ],
-          "description": "Connects, completes, syncs, tests, or disconnects the selected organizer's WhatsApp sender while freezing request-defining controls.",
+          "description": "Connects, completes, syncs, tests, or disconnects the selected organizer's WhatsApp sender on the dedicated organizer messaging route while freezing request-defining controls.",
           "implementationStatus": "implemented"
         },
         {
@@ -568,7 +583,7 @@
               "id": "host_messaging.campaign_updated"
             }
           ],
-          "description": "Creates, previews, approves, dispatches, cancels, and reports campaigns using explicit segment, template, event, destination, and variable inputs.",
+          "description": "Creates, schedules, previews, approves, dispatches, cancels, and reports campaigns using explicit segment, template, event, destination, and variable inputs.",
           "implementationStatus": "implemented"
         }
       ],

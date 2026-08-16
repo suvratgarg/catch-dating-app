@@ -2136,8 +2136,32 @@ export interface OrganizerCampaignDocument {
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   approvedAt: FirebaseFirestore.Timestamp | null;
+  dispatchedAt: FirebaseFirestore.Timestamp | null;
   completedAt: FirebaseFirestore.Timestamp | null;
   cancelledAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Server-owned organizer-scoped index of one completed event announcement, including bounded contact delivery state for CRM history.
+ */
+export interface OrganizerBroadcastSummaryDocument {
+  organizerId: string;
+  broadcastId: string;
+  eventId: string;
+  eventName: string;
+  audience: "booked" | "prospective" | "everyone";
+  recipientCount: number;
+  sentAt: FirebaseFirestore.Timestamp;
+  partialFailure: boolean;
+  /**
+   * @maxItems 500
+   */
+  recipientContactIds: string[];
+  recipientDeliveryStates: {
+    [k: string]: "available" | "failed";
+  };
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
 }
 
 /**

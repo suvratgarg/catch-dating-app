@@ -461,71 +461,131 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
       'type': 'array',
       'maxItems': 100,
       'items': <String, Object?>{
-        'type': 'object',
-        'additionalProperties': false,
-        'required': <Object?>[
-          'kind',
-          'campaignId',
-          'name',
-          'messageClass',
-          'deliveryStatus',
-          'createdAtMillis',
-          'sentAtMillis',
-          'updatedAtMillis',
+        'oneOf': <Object?>[
+          <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'kind',
+              'campaignId',
+              'name',
+              'messageClass',
+              'deliveryStatus',
+              'createdAtMillis',
+              'sentAtMillis',
+              'updatedAtMillis',
+            ],
+            'properties': <String, Object?>{
+              'kind': <String, Object?>{
+                'const': 'campaign',
+              },
+              'campaignId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'name': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 120,
+              },
+              'messageClass': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'eventFollowUp',
+                  'organizerUpdate',
+                  'organizerPromotion',
+                ],
+              },
+              'deliveryStatus': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'pending',
+                  'sending',
+                  'suppressed',
+                  'accepted',
+                  'sent',
+                  'delivered',
+                  'read',
+                  'failed',
+                  'replied',
+                  'optedOut',
+                ],
+              },
+              'createdAtMillis': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+              'sentAtMillis': <String, Object?>{
+                'type': <Object?>[
+                  'integer',
+                  'null',
+                ],
+                'minimum': 0,
+              },
+              'updatedAtMillis': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+            },
+          },
+          <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'kind',
+              'broadcastId',
+              'eventId',
+              'eventName',
+              'audience',
+              'deliveryStatus',
+              'sentAtMillis',
+              'partialFailure',
+            ],
+            'properties': <String, Object?>{
+              'kind': <String, Object?>{
+                'const': 'announcement',
+              },
+              'broadcastId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'eventId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'eventName': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 160,
+              },
+              'audience': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'booked',
+                  'prospective',
+                  'everyone',
+                ],
+              },
+              'deliveryStatus': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'available',
+                  'failed',
+                ],
+              },
+              'sentAtMillis': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+              'partialFailure': <String, Object?>{
+                'type': 'boolean',
+              },
+            },
+          },
         ],
-        'properties': <String, Object?>{
-          'kind': <String, Object?>{
-            'const': 'campaign',
-          },
-          'campaignId': <String, Object?>{
-            'type': 'string',
-            'minLength': 1,
-            'maxLength': 180,
-          },
-          'name': <String, Object?>{
-            'type': 'string',
-            'minLength': 1,
-            'maxLength': 120,
-          },
-          'messageClass': <String, Object?>{
-            'type': 'string',
-            'enum': <Object?>[
-              'eventFollowUp',
-              'organizerUpdate',
-              'organizerPromotion',
-            ],
-          },
-          'deliveryStatus': <String, Object?>{
-            'type': 'string',
-            'enum': <Object?>[
-              'pending',
-              'sending',
-              'suppressed',
-              'accepted',
-              'sent',
-              'delivered',
-              'read',
-              'failed',
-              'replied',
-              'optedOut',
-            ],
-          },
-          'createdAtMillis': <String, Object?>{
-            'type': 'integer',
-            'minimum': 0,
-          },
-          'sentAtMillis': <String, Object?>{
-            'type': <Object?>[
-              'integer',
-              'null',
-            ],
-            'minimum': 0,
-          },
-          'updatedAtMillis': <String, Object?>{
-            'type': 'integer',
-            'minimum': 0,
-          },
-        },
       },
     },
     'sendsTruncated': <String, Object?>{
@@ -600,6 +660,133 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
       },
     },
     'send': <String, Object?>{
+      'oneOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'campaignId',
+            'name',
+            'messageClass',
+            'deliveryStatus',
+            'createdAtMillis',
+            'sentAtMillis',
+            'updatedAtMillis',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'campaign',
+            },
+            'campaignId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'name': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 120,
+            },
+            'messageClass': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'eventFollowUp',
+                'organizerUpdate',
+                'organizerPromotion',
+              ],
+            },
+            'deliveryStatus': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'pending',
+                'sending',
+                'suppressed',
+                'accepted',
+                'sent',
+                'delivered',
+                'read',
+                'failed',
+                'replied',
+                'optedOut',
+              ],
+            },
+            'createdAtMillis': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+            },
+            'sentAtMillis': <String, Object?>{
+              'type': <Object?>[
+                'integer',
+                'null',
+              ],
+              'minimum': 0,
+            },
+            'updatedAtMillis': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'broadcastId',
+            'eventId',
+            'eventName',
+            'audience',
+            'deliveryStatus',
+            'sentAtMillis',
+            'partialFailure',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'announcement',
+            },
+            'broadcastId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'eventId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'eventName': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 160,
+            },
+            'audience': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'booked',
+                'prospective',
+                'everyone',
+              ],
+            },
+            'deliveryStatus': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'available',
+                'failed',
+              ],
+            },
+            'sentAtMillis': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+            },
+            'partialFailure': <String, Object?>{
+              'type': 'boolean',
+            },
+          },
+        },
+      ],
+    },
+    'campaignSend': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,
       'required': <Object?>[
@@ -663,6 +850,62 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
         'updatedAtMillis': <String, Object?>{
           'type': 'integer',
           'minimum': 0,
+        },
+      },
+    },
+    'announcementSend': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'kind',
+        'broadcastId',
+        'eventId',
+        'eventName',
+        'audience',
+        'deliveryStatus',
+        'sentAtMillis',
+        'partialFailure',
+      ],
+      'properties': <String, Object?>{
+        'kind': <String, Object?>{
+          'const': 'announcement',
+        },
+        'broadcastId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'eventId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'eventName': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 160,
+        },
+        'audience': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'booked',
+            'prospective',
+            'everyone',
+          ],
+        },
+        'deliveryStatus': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'available',
+            'failed',
+          ],
+        },
+        'sentAtMillis': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+        'partialFailure': <String, Object?>{
+          'type': 'boolean',
         },
       },
     },

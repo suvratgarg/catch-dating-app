@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.26.0
+version: 1.27.0
 updated: 2026-08-16
 owner: recursive_audit_loop
 status: active
@@ -554,6 +554,7 @@ Root-level edge/action documents are the source of truth for many-to-many state:
 | Short-lived invite open/share evidence | server-only `eventInviteTouches/{touchId}` and `eventShareIntents/{intentId}` |
 | Verified registration/check-in attribution | server-only immutable `eventInviteAttributions/{attributionId}` credit/reversal fact |
 | Organizer campaign and recipient snapshot | server-only `organizerCampaigns/{campaignId}` and `organizerCampaignRecipients/{recipientId}` |
+| Organizer Announcement history projection | server-only `organizerBroadcastSummaries/{broadcastId}`; manager clients use `listOrganizerCampaigns` and contact-detail callables |
 | Organizer WhatsApp sender/template state | server-only `organizerSenderConnections/{connectionId}`, `organizerMessageTemplates/{templateId}`, and webhook receipts/events |
 | External provider connection and event mapping | server-only `organizerProviderConnections/{connectionId}`, `externalEventMappings/{mappingId}`, and `providerSyncRuns/{runId}` |
 | Event-scoped staff authority | server-owned `eventStaffGrants/{eventId_uid}` with direct reads denied |
@@ -761,9 +762,12 @@ feature requires a backfill.
 
 Contact detail also reads the bounded newest campaign-recipient window from
 `organizerCampaignRecipients` and joins safe campaign labels and delivery
-state. Broadcast history remains out of this contract until the separately
-owned organizer-readable broadcast index exists; the detail response uses a
-typed send-history seam that can add that source without exposing raw receipts.
+state. `sendEventBroadcast` also writes one organizer-scoped
+`organizerBroadcastSummaries/{broadcastId}` projection after it finalizes the
+server-only operational receipt. Contact detail joins only summaries whose
+bounded `recipientContactIds` contains the contact and returns the sanitized
+Announcement label, audience, time and available/failed delivery state. It
+never exposes message bodies, raw receipt evidence or cross-organizer history.
 Campaign approval freezes a server-owned recipient snapshot and
 dispatch rechecks current permission, contact suppression, sender/template
 health and event state before each attempt. Meta provider tokens live in Secret
@@ -930,6 +934,16 @@ the receipt; account-deletion cleanup may delete a host-authored receipt or
 remove one recipient's identifiers and delivery evidence. Direct client reads
 and writes are denied. The Host client receives only the sanitized callable
 response counts.
+
+Finalization also upserts the durable, organizer-scoped
+`organizerBroadcastSummaries/{broadcastId}` history projection. It contains the
+event/activity label, audience, recipient count, send timestamp, partial-failure
+flag and bounded contact delivery states, but no message body, UID, endpoint or
+raw provider receipt. Direct client reads and writes are denied.
+`listOrganizerCampaigns` is the manager-authorized, rate-limited pagination
+boundary for the Host Sends workspace: it merges campaign summaries with these
+Announcement summaries in reverse chronological order using an opaque stable
+cursor. The query is organizer-scoped and never uses a collection-group scan.
 
 The callable verifies current event-host authority and freezes a server-resolved
 audience from `eventParticipations`. Booked means `signedUp` plus `attended`;

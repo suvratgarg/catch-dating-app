@@ -100,6 +100,10 @@ export interface OrganizerCampaignDocument {
     _seconds: number;
     _nanoseconds: number;
   } | null;
+  dispatchedAt: {
+    _seconds: number;
+    _nanoseconds: number;
+  } | null;
   completedAt: {
     _seconds: number;
     _nanoseconds: number;

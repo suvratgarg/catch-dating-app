@@ -59,6 +59,10 @@ enum Routes {
   hostCustomerDetailScreen('/host/customers/:contactId', AppRouteAudience.host),
   hostOperatorEventScreen('/host/operator/:eventId', AppRouteAudience.host),
   hostOrganizerScreen('/host/organizer', AppRouteAudience.host),
+  hostOrganizerMessagingScreen(
+    '/host/organizer/:clubId/messaging',
+    AppRouteAudience.host,
+  ),
   hostClubsScreen('/host/organizers', AppRouteAudience.host),
   hostClubEventDefaultsScreen(
     '/host/organizers/event-defaults',

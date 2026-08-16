@@ -29,6 +29,7 @@ import {OrganizerContactNoteCallableResponse} from
   "../shared/generated/organizerContactNoteCallableResponse";
 import {
   OrganizerAudienceSummaryDocument,
+  OrganizerBroadcastSummaryDocument,
   OrganizerCampaignDocument,
   OrganizerCampaignRecipientDocument,
   OrganizerContactDocument,
@@ -392,6 +393,7 @@ export async function getOrganizerContactDetailHandler(
     channelSnap,
     noteSnap,
     recipientSnap,
+    broadcastSnap,
     tagVocabularySnap,
   ] = await Promise.all([
     contactRef.get(),
@@ -415,6 +417,9 @@ export async function getOrganizerContactDetailHandler(
       .orderBy("createdAt", "desc")
       .orderBy(admin.firestore.FieldPath.documentId(), "desc")
       .limit(maxDetailSends + 1)
+      .get(),
+    db.collection("organizerBroadcastSummaries")
+      .where("recipientContactIds", "array-contains", data.contactId)
       .get(),
     db.collection("organizerContactTagVocabularies")
       .doc(data.organizerId).get(),
@@ -453,7 +458,7 @@ export async function getOrganizerContactDetailHandler(
       doc.data() as OrganizerContactNoteDocument
     ))
     .filter((note): note is NonNullable<typeof note> => note !== null);
-  const sends = await contactCampaignSendHistory({
+  const campaignSends = await contactCampaignSendHistory({
     db,
     organizerId: data.organizerId,
     recipientDocuments: recipientSnap.docs.slice(0, maxDetailSends).map(
@@ -463,6 +468,16 @@ export async function getOrganizerContactDetailHandler(
       })
     ),
   });
+  const broadcastSends = contactBroadcastSendHistory({
+    organizerId: data.organizerId,
+    contactId: data.contactId,
+    summaries: broadcastSnap.docs.map((doc) =>
+      doc.data() as OrganizerBroadcastSummaryDocument),
+  });
+  const allSends = [...campaignSends, ...broadcastSends].sort(
+    (left, right) => sendHistoryMillis(right) - sendHistoryMillis(left),
+  );
+  const sends = allSends.slice(0, maxDetailSends);
   return {
     organizerId: data.organizerId,
     contactId: data.contactId,
@@ -498,7 +513,8 @@ export async function getOrganizerContactDetailHandler(
     notes,
     notesTruncated: noteSnap.size > maxDetailNotes,
     sends,
-    sendsTruncated: recipientSnap.size > maxDetailSends,
+    sendsTruncated:
+      recipientSnap.size > maxDetailSends || allSends.length > maxDetailSends,
     revision: contact.revision,
   };
 }
@@ -1181,6 +1197,34 @@ async function contactCampaignSendHistory(params: {
       updatedAtMillis: recipient.updatedAt.toMillis(),
     };
   }).filter((row): row is NonNullable<typeof row> => row !== null);
+}
+
+function contactBroadcastSendHistory(params: {
+  organizerId: string;
+  contactId: string;
+  summaries: OrganizerBroadcastSummaryDocument[];
+}): NonNullable<GetOrganizerContactDetailCallableResponse["sends"]> {
+  return params.summaries
+    .filter((summary) =>
+      summary.organizerId === params.organizerId &&
+      summary.recipientContactIds.includes(params.contactId))
+    .map((summary) => ({
+      kind: "announcement" as const,
+      broadcastId: summary.broadcastId,
+      eventId: summary.eventId,
+      eventName: summary.eventName,
+      audience: summary.audience,
+      deliveryStatus: summary.recipientDeliveryStates[params.contactId] ??
+        "failed",
+      sentAtMillis: summary.sentAt.toMillis(),
+      partialFailure: summary.partialFailure,
+    }));
+}
+
+function sendHistoryMillis(
+  row: NonNullable<GetOrganizerContactDetailCallableResponse["sends"]>[number]
+): number {
+  return row.kind === "campaign" ? row.updatedAtMillis : row.sentAtMillis;
 }
 
 function organizerContactNoteResponse(

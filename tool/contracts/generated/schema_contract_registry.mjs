@@ -15711,6 +15711,7 @@ export const organizerCampaignDocumentSchema = {
     "createdAt",
     "updatedAt",
     "approvedAt",
+    "dispatchedAt",
     "completedAt",
     "cancelledAt"
   ],
@@ -16087,6 +16088,33 @@ export const organizerCampaignDocumentSchema = {
         }
       ]
     },
+    "dispatchedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "completedAt": {
       "anyOf": [
         {
@@ -16269,6 +16297,152 @@ export const organizerCampaignDocumentSchema = {
           "type": "integer",
           "minimum": 0,
           "maximum": 1000000
+        }
+      }
+    }
+  }
+};
+
+export const organizerBroadcastSummaryDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_broadcast_summaries.schema.json",
+  "title": "OrganizerBroadcastSummaryDocument",
+  "description": "Server-owned organizer-scoped index of one completed event announcement, including bounded contact delivery state for CRM history.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerBroadcastSummaries",
+  "x-firestore-path": "organizerBroadcastSummaries/{broadcastId}",
+  "x-document-id-field": "broadcastId",
+  "x-owner": "sendEventBroadcast callable",
+  "required": [
+    "organizerId",
+    "broadcastId",
+    "eventId",
+    "eventName",
+    "audience",
+    "recipientCount",
+    "sentAt",
+    "partialFailure",
+    "recipientContactIds",
+    "recipientDeliveryStates",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "broadcastId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "audience": {
+      "type": "string",
+      "enum": [
+        "booked",
+        "prospective",
+        "everyone"
+      ]
+    },
+    "recipientCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500
+    },
+    "sentAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "partialFailure": {
+      "type": "boolean"
+    },
+    "recipientContactIds": {
+      "type": "array",
+      "maxItems": 500,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
+    "recipientDeliveryStates": {
+      "type": "object",
+      "maxProperties": 500,
+      "additionalProperties": {
+        "type": "string",
+        "enum": [
+          "available",
+          "failed"
+        ]
+      }
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
         }
       }
     }
@@ -48290,6 +48464,922 @@ export const organizerCampaignCallableResponseSchema = {
   }
 };
 
+export const listOrganizerCampaignsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_organizer_campaigns_payload.schema.json",
+  "title": "ListOrganizerCampaignsCallablePayload",
+  "description": "Manager-authorized paginated organizer Sends query.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
+    },
+    "cursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    }
+  }
+};
+
+export const listOrganizerCampaignsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_organizer_campaigns_response.schema.json",
+  "title": "ListOrganizerCampaignsCallableResponse",
+  "description": "Reverse-chronological organizer Sends rows mixing WhatsApp campaigns and event announcements.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "sends",
+    "nextCursor"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "sends": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "campaignId",
+              "name",
+              "status",
+              "segmentIds",
+              "templateId",
+              "templateName",
+              "audienceCounts",
+              "deliveryCounts",
+              "scheduledAtMillis",
+              "dispatchedAtMillis",
+              "activityAtMillis"
+            ],
+            "properties": {
+              "kind": {
+                "const": "campaign"
+              },
+              "campaignId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "draft",
+                  "previewed",
+                  "approved",
+                  "scheduled",
+                  "resolving",
+                  "sending",
+                  "completed",
+                  "partiallyFailed",
+                  "cancelled",
+                  "blocked"
+                ]
+              },
+              "segmentIds": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 5,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "first_time_attendee",
+                    "repeat_attendee",
+                    "regular",
+                    "lapsed_regular",
+                    "reliable_attendee",
+                    "advocate",
+                    "high_impact_advocate",
+                    "whatsapp_reachable"
+                  ]
+                }
+              },
+              "templateId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "templateName": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "audienceCounts": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "total",
+                  "reachable",
+                  "optedOut",
+                  "invalid",
+                  "duplicate",
+                  "unsupported",
+                  "frequencyCapped",
+                  "providerBlocked",
+                  "unknown"
+                ],
+                "properties": {
+                  "total": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000000
+                  },
+                  "reachable": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000000
+                  },
+                  "optedOut": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000000
+                  },
+                  "invalid": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000000
+                  },
+                  "duplicate": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000000
+                  },
+                  "unsupported": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000000
+                  },
+                  "frequencyCapped": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000000
+                  },
+                  "providerBlocked": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000000
+                  },
+                  "unknown": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000000
+                  }
+                }
+              },
+              "deliveryCounts": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "pending",
+                  "suppressed",
+                  "accepted",
+                  "sent",
+                  "delivered",
+                  "read",
+                  "failed",
+                  "replied",
+                  "optedOut"
+                ],
+                "properties": {
+                  "pending": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000000
+                  },
+                  "suppressed": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000000
+                  },
+                  "accepted": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000000
+                  },
+                  "sent": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000000
+                  },
+                  "delivered": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000000
+                  },
+                  "read": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000000
+                  },
+                  "failed": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000000
+                  },
+                  "replied": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000000
+                  },
+                  "optedOut": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000000
+                  }
+                }
+              },
+              "scheduledAtMillis": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "dispatchedAtMillis": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "activityAtMillis": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "broadcastId",
+              "eventId",
+              "eventName",
+              "audience",
+              "recipientCount",
+              "sentAtMillis",
+              "partialFailure",
+              "activityAtMillis"
+            ],
+            "properties": {
+              "kind": {
+                "const": "announcement"
+              },
+              "broadcastId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "eventId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "eventName": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "audience": {
+                "type": "string",
+                "enum": [
+                  "booked",
+                  "prospective",
+                  "everyone"
+                ]
+              },
+              "recipientCount": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 500
+              },
+              "sentAtMillis": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "partialFailure": {
+                "type": "boolean"
+              },
+              "activityAtMillis": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        ]
+      }
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    }
+  },
+  "definitions": {
+    "send": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "campaignId",
+            "name",
+            "status",
+            "segmentIds",
+            "templateId",
+            "templateName",
+            "audienceCounts",
+            "deliveryCounts",
+            "scheduledAtMillis",
+            "dispatchedAtMillis",
+            "activityAtMillis"
+          ],
+          "properties": {
+            "kind": {
+              "const": "campaign"
+            },
+            "campaignId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "draft",
+                "previewed",
+                "approved",
+                "scheduled",
+                "resolving",
+                "sending",
+                "completed",
+                "partiallyFailed",
+                "cancelled",
+                "blocked"
+              ]
+            },
+            "segmentIds": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 5,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "first_time_attendee",
+                  "repeat_attendee",
+                  "regular",
+                  "lapsed_regular",
+                  "reliable_attendee",
+                  "advocate",
+                  "high_impact_advocate",
+                  "whatsapp_reachable"
+                ]
+              }
+            },
+            "templateId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "templateName": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "audienceCounts": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "total",
+                "reachable",
+                "optedOut",
+                "invalid",
+                "duplicate",
+                "unsupported",
+                "frequencyCapped",
+                "providerBlocked",
+                "unknown"
+              ],
+              "properties": {
+                "total": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000000
+                },
+                "reachable": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000000
+                },
+                "optedOut": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000000
+                },
+                "invalid": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000000
+                },
+                "duplicate": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000000
+                },
+                "unsupported": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000000
+                },
+                "frequencyCapped": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000000
+                },
+                "providerBlocked": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000000
+                },
+                "unknown": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000000
+                }
+              }
+            },
+            "deliveryCounts": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "pending",
+                "suppressed",
+                "accepted",
+                "sent",
+                "delivered",
+                "read",
+                "failed",
+                "replied",
+                "optedOut"
+              ],
+              "properties": {
+                "pending": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000000
+                },
+                "suppressed": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000000
+                },
+                "accepted": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000000
+                },
+                "sent": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000000
+                },
+                "delivered": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000000
+                },
+                "read": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000000
+                },
+                "failed": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000000
+                },
+                "replied": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000000
+                },
+                "optedOut": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000000
+                }
+              }
+            },
+            "scheduledAtMillis": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "dispatchedAtMillis": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "activityAtMillis": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "broadcastId",
+            "eventId",
+            "eventName",
+            "audience",
+            "recipientCount",
+            "sentAtMillis",
+            "partialFailure",
+            "activityAtMillis"
+          ],
+          "properties": {
+            "kind": {
+              "const": "announcement"
+            },
+            "broadcastId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "eventName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "audience": {
+              "type": "string",
+              "enum": [
+                "booked",
+                "prospective",
+                "everyone"
+              ]
+            },
+            "recipientCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 500
+            },
+            "sentAtMillis": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "partialFailure": {
+              "type": "boolean"
+            },
+            "activityAtMillis": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      ]
+    },
+    "campaign": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "campaignId",
+        "name",
+        "status",
+        "segmentIds",
+        "templateId",
+        "templateName",
+        "audienceCounts",
+        "deliveryCounts",
+        "scheduledAtMillis",
+        "dispatchedAtMillis",
+        "activityAtMillis"
+      ],
+      "properties": {
+        "kind": {
+          "const": "campaign"
+        },
+        "campaignId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "previewed",
+            "approved",
+            "scheduled",
+            "resolving",
+            "sending",
+            "completed",
+            "partiallyFailed",
+            "cancelled",
+            "blocked"
+          ]
+        },
+        "segmentIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "first_time_attendee",
+              "repeat_attendee",
+              "regular",
+              "lapsed_regular",
+              "reliable_attendee",
+              "advocate",
+              "high_impact_advocate",
+              "whatsapp_reachable"
+            ]
+          }
+        },
+        "templateId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "templateName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "audienceCounts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "total",
+            "reachable",
+            "optedOut",
+            "invalid",
+            "duplicate",
+            "unsupported",
+            "frequencyCapped",
+            "providerBlocked",
+            "unknown"
+          ],
+          "properties": {
+            "total": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "reachable": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "optedOut": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "invalid": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "duplicate": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "unsupported": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "frequencyCapped": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "providerBlocked": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "unknown": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            }
+          }
+        },
+        "deliveryCounts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "pending",
+            "suppressed",
+            "accepted",
+            "sent",
+            "delivered",
+            "read",
+            "failed",
+            "replied",
+            "optedOut"
+          ],
+          "properties": {
+            "pending": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "suppressed": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "accepted": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "sent": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "delivered": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "read": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "failed": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "replied": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "optedOut": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            }
+          }
+        },
+        "scheduledAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "dispatchedAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "activityAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "announcement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "broadcastId",
+        "eventId",
+        "eventName",
+        "audience",
+        "recipientCount",
+        "sentAtMillis",
+        "partialFailure",
+        "activityAtMillis"
+      ],
+      "properties": {
+        "kind": {
+          "const": "announcement"
+        },
+        "broadcastId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "eventName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "audience": {
+          "type": "string",
+          "enum": [
+            "booked",
+            "prospective",
+            "everyone"
+          ]
+        },
+        "recipientCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 500
+        },
+        "sentAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "partialFailure": {
+          "type": "boolean"
+        },
+        "activityAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+};
+
 export const organizerMessagingSetupCallableResponseSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/organizer_messaging_setup_response.schema.json",
@@ -53013,71 +54103,131 @@ export const getOrganizerContactDetailCallableResponseSchema = {
       "type": "array",
       "maxItems": 100,
       "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "kind",
-          "campaignId",
-          "name",
-          "messageClass",
-          "deliveryStatus",
-          "createdAtMillis",
-          "sentAtMillis",
-          "updatedAtMillis"
-        ],
-        "properties": {
-          "kind": {
-            "const": "campaign"
-          },
-          "campaignId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 180
-          },
-          "name": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 120
-          },
-          "messageClass": {
-            "type": "string",
-            "enum": [
-              "eventFollowUp",
-              "organizerUpdate",
-              "organizerPromotion"
-            ]
-          },
-          "deliveryStatus": {
-            "type": "string",
-            "enum": [
-              "pending",
-              "sending",
-              "suppressed",
-              "accepted",
-              "sent",
-              "delivered",
-              "read",
-              "failed",
-              "replied",
-              "optedOut"
-            ]
-          },
-          "createdAtMillis": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "sentAtMillis": {
-            "type": [
-              "integer",
-              "null"
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "campaignId",
+              "name",
+              "messageClass",
+              "deliveryStatus",
+              "createdAtMillis",
+              "sentAtMillis",
+              "updatedAtMillis"
             ],
-            "minimum": 0
+            "properties": {
+              "kind": {
+                "const": "campaign"
+              },
+              "campaignId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "messageClass": {
+                "type": "string",
+                "enum": [
+                  "eventFollowUp",
+                  "organizerUpdate",
+                  "organizerPromotion"
+                ]
+              },
+              "deliveryStatus": {
+                "type": "string",
+                "enum": [
+                  "pending",
+                  "sending",
+                  "suppressed",
+                  "accepted",
+                  "sent",
+                  "delivered",
+                  "read",
+                  "failed",
+                  "replied",
+                  "optedOut"
+                ]
+              },
+              "createdAtMillis": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "sentAtMillis": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "updatedAtMillis": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
           },
-          "updatedAtMillis": {
-            "type": "integer",
-            "minimum": 0
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "broadcastId",
+              "eventId",
+              "eventName",
+              "audience",
+              "deliveryStatus",
+              "sentAtMillis",
+              "partialFailure"
+            ],
+            "properties": {
+              "kind": {
+                "const": "announcement"
+              },
+              "broadcastId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "eventId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "eventName": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "audience": {
+                "type": "string",
+                "enum": [
+                  "booked",
+                  "prospective",
+                  "everyone"
+                ]
+              },
+              "deliveryStatus": {
+                "type": "string",
+                "enum": [
+                  "available",
+                  "failed"
+                ]
+              },
+              "sentAtMillis": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "partialFailure": {
+                "type": "boolean"
+              }
+            }
           }
-        }
+        ]
       }
     },
     "sendsTruncated": {
@@ -53152,6 +54302,133 @@ export const getOrganizerContactDetailCallableResponseSchema = {
       }
     },
     "send": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "campaignId",
+            "name",
+            "messageClass",
+            "deliveryStatus",
+            "createdAtMillis",
+            "sentAtMillis",
+            "updatedAtMillis"
+          ],
+          "properties": {
+            "kind": {
+              "const": "campaign"
+            },
+            "campaignId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "messageClass": {
+              "type": "string",
+              "enum": [
+                "eventFollowUp",
+                "organizerUpdate",
+                "organizerPromotion"
+              ]
+            },
+            "deliveryStatus": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "sending",
+                "suppressed",
+                "accepted",
+                "sent",
+                "delivered",
+                "read",
+                "failed",
+                "replied",
+                "optedOut"
+              ]
+            },
+            "createdAtMillis": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "sentAtMillis": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "updatedAtMillis": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "broadcastId",
+            "eventId",
+            "eventName",
+            "audience",
+            "deliveryStatus",
+            "sentAtMillis",
+            "partialFailure"
+          ],
+          "properties": {
+            "kind": {
+              "const": "announcement"
+            },
+            "broadcastId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "eventName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "audience": {
+              "type": "string",
+              "enum": [
+                "booked",
+                "prospective",
+                "everyone"
+              ]
+            },
+            "deliveryStatus": {
+              "type": "string",
+              "enum": [
+                "available",
+                "failed"
+              ]
+            },
+            "sentAtMillis": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "partialFailure": {
+              "type": "boolean"
+            }
+          }
+        }
+      ]
+    },
+    "campaignSend": {
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -53215,6 +54492,62 @@ export const getOrganizerContactDetailCallableResponseSchema = {
         "updatedAtMillis": {
           "type": "integer",
           "minimum": 0
+        }
+      }
+    },
+    "announcementSend": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "broadcastId",
+        "eventId",
+        "eventName",
+        "audience",
+        "deliveryStatus",
+        "sentAtMillis",
+        "partialFailure"
+      ],
+      "properties": {
+        "kind": {
+          "const": "announcement"
+        },
+        "broadcastId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "eventName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "audience": {
+          "type": "string",
+          "enum": [
+            "booked",
+            "prospective",
+            "everyone"
+          ]
+        },
+        "deliveryStatus": {
+          "type": "string",
+          "enum": [
+            "available",
+            "failed"
+          ]
+        },
+        "sentAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "partialFailure": {
+          "type": "boolean"
         }
       }
     },

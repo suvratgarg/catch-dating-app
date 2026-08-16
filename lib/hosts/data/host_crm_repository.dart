@@ -485,6 +485,7 @@ class HostCustomerNote {
 }
 
 enum HostCustomerSendDeliveryStatus {
+  available,
   pending,
   sending,
   suppressed,
@@ -497,8 +498,11 @@ enum HostCustomerSendDeliveryStatus {
   optedOut,
 }
 
+enum HostCustomerSendKind { campaign, announcement }
+
 class HostCustomerSend {
   const HostCustomerSend({
+    this.kind = HostCustomerSendKind.campaign,
     required this.campaignId,
     required this.name,
     required this.messageClass,
@@ -506,10 +510,37 @@ class HostCustomerSend {
     required this.createdAt,
     required this.sentAt,
     required this.updatedAt,
+    this.broadcastId,
+    this.eventId,
+    this.audience,
+    this.partialFailure = false,
   });
 
   factory HostCustomerSend.fromMap(Map<Object?, Object?> map) {
-    if (_requiredString(map, 'kind') != 'campaign') {
+    final kind = _requiredString(map, 'kind');
+    if (kind == 'announcement') {
+      final broadcastId = _requiredString(map, 'broadcastId');
+      final sentAt = _requiredDateTimeFromMillis(map, 'sentAtMillis');
+      return HostCustomerSend(
+        kind: HostCustomerSendKind.announcement,
+        campaignId: broadcastId,
+        name: _requiredString(map, 'eventName'),
+        messageClass: 'announcement',
+        deliveryStatus: _enumByName(
+          HostCustomerSendDeliveryStatus.values,
+          _requiredString(map, 'deliveryStatus'),
+          'announcement delivery status',
+        ),
+        createdAt: sentAt,
+        sentAt: sentAt,
+        updatedAt: sentAt,
+        broadcastId: broadcastId,
+        eventId: _requiredString(map, 'eventId'),
+        audience: _requiredString(map, 'audience'),
+        partialFailure: _requiredBool(map, 'partialFailure'),
+      );
+    }
+    if (kind != 'campaign') {
       throw const FormatException('Contact send had an unsupported kind.');
     }
     return HostCustomerSend(
@@ -527,6 +558,7 @@ class HostCustomerSend {
     );
   }
 
+  final HostCustomerSendKind kind;
   final String campaignId;
   final String name;
   final String messageClass;
@@ -534,6 +566,10 @@ class HostCustomerSend {
   final DateTime createdAt;
   final DateTime? sentAt;
   final DateTime updatedAt;
+  final String? broadcastId;
+  final String? eventId;
+  final String? audience;
+  final bool partialFailure;
 }
 
 class HostAudienceContactDetail {
@@ -1042,6 +1078,134 @@ class HostCampaign {
   final Set<String> blockers;
 }
 
+sealed class HostSendSummary {
+  const HostSendSummary({required this.activityAt});
+
+  factory HostSendSummary.fromMap(Map<Object?, Object?> map) =>
+      switch (_requiredString(map, 'kind')) {
+        'campaign' => HostCampaignSendSummary.fromMap(map),
+        'announcement' => HostAnnouncementSendSummary.fromMap(map),
+        _ => throw const FormatException('Send row had an unsupported kind.'),
+      };
+
+  final DateTime activityAt;
+  String get id;
+}
+
+final class HostCampaignSendSummary extends HostSendSummary {
+  const HostCampaignSendSummary({
+    required this.campaignId,
+    required this.name,
+    required this.status,
+    required this.segments,
+    required this.templateId,
+    required this.templateName,
+    required this.audienceCounts,
+    required this.deliveryCounts,
+    required this.scheduledAt,
+    required this.dispatchedAt,
+    required super.activityAt,
+  });
+
+  factory HostCampaignSendSummary.fromMap(Map<Object?, Object?> map) =>
+      HostCampaignSendSummary(
+        campaignId: _requiredString(map, 'campaignId'),
+        name: _requiredString(map, 'name'),
+        status: _requiredString(map, 'status'),
+        segments: _stringList(map['segmentIds'])
+            .map(HostAudienceSegment.fromWireValue)
+            .whereType<HostAudienceSegment>()
+            .toSet(),
+        templateId: _requiredString(map, 'templateId'),
+        templateName: _nullableString(map['templateName']),
+        audienceCounts: HostCampaignCounts.fromMap(
+          map['audienceCounts'],
+          'send audience counts',
+        ),
+        deliveryCounts: HostCampaignCounts.fromMap(
+          map['deliveryCounts'],
+          'send delivery counts',
+        ),
+        scheduledAt: _dateTimeFromMillis(map['scheduledAtMillis']),
+        dispatchedAt: _dateTimeFromMillis(map['dispatchedAtMillis']),
+        activityAt: _requiredDateTimeFromMillis(map, 'activityAtMillis'),
+      );
+
+  final String campaignId;
+  final String name;
+  final String status;
+  final Set<HostAudienceSegment> segments;
+  final String templateId;
+  final String? templateName;
+  final HostCampaignCounts audienceCounts;
+  final HostCampaignCounts deliveryCounts;
+  final DateTime? scheduledAt;
+  final DateTime? dispatchedAt;
+
+  @override
+  String get id => campaignId;
+}
+
+final class HostAnnouncementSendSummary extends HostSendSummary {
+  const HostAnnouncementSendSummary({
+    required this.broadcastId,
+    required this.eventId,
+    required this.eventName,
+    required this.audience,
+    required this.recipientCount,
+    required this.sentAt,
+    required this.partialFailure,
+    required super.activityAt,
+  });
+
+  factory HostAnnouncementSendSummary.fromMap(Map<Object?, Object?> map) =>
+      HostAnnouncementSendSummary(
+        broadcastId: _requiredString(map, 'broadcastId'),
+        eventId: _requiredString(map, 'eventId'),
+        eventName: _requiredString(map, 'eventName'),
+        audience: _requiredString(map, 'audience'),
+        recipientCount: _requiredInt(map, 'recipientCount'),
+        sentAt: _requiredDateTimeFromMillis(map, 'sentAtMillis'),
+        partialFailure: _requiredBool(map, 'partialFailure'),
+        activityAt: _requiredDateTimeFromMillis(map, 'activityAtMillis'),
+      );
+
+  final String broadcastId;
+  final String eventId;
+  final String eventName;
+  final String audience;
+  final int recipientCount;
+  final DateTime sentAt;
+  final bool partialFailure;
+
+  @override
+  String get id => broadcastId;
+}
+
+class HostSendsPage {
+  const HostSendsPage({
+    required this.organizerId,
+    required this.sends,
+    required this.nextCursor,
+  });
+
+  factory HostSendsPage.fromCallableData(Object? data) {
+    final map = _requiredMap(data, 'organizer Sends response');
+    return HostSendsPage(
+      organizerId: _requiredString(map, 'organizerId'),
+      sends: _mapList(
+        map['sends'],
+        'organizer Sends rows',
+      ).map(HostSendSummary.fromMap).toList(growable: false),
+      nextCursor: _nullableString(map['nextCursor']),
+    );
+  }
+
+  final String organizerId;
+  final List<HostSendSummary> sends;
+  final String? nextCursor;
+}
+
 class HostCrmRepository {
   const HostCrmRepository(this._functions);
 
@@ -1285,6 +1449,21 @@ class HostCrmRepository {
     parse: HostCampaign.fromCallableData,
   );
 
+  Future<HostSendsPage> listCampaigns(
+    String organizerId, {
+    String? cursor,
+    int limit = ReadLimitPolicy.historyPage,
+  }) => _call(
+    name: 'listOrganizerCampaigns',
+    payload: ListOrganizerCampaignsCallableRequest(
+      organizerId: organizerId,
+      limit: limit > 50 ? 50 : limit,
+      cursor: cursor,
+    ).toJson(),
+    action: 'load organizer Sends history',
+    parse: HostSendsPage.fromCallableData,
+  );
+
   Future<HostCampaign> previewCampaign(
     String organizerId,
     HostCampaign campaign,
@@ -1403,6 +1582,10 @@ Future<HostAudienceContactDetail> hostAudienceContactDetail(
 @riverpod
 Future<HostMessagingSetup> hostMessagingSetup(Ref ref, String organizerId) =>
     ref.read(hostCrmRepositoryProvider).getMessagingSetup(organizerId);
+
+@riverpod
+Future<HostSendsPage> hostSends(Ref ref, String organizerId) =>
+    ref.read(hostCrmRepositoryProvider).listCampaigns(organizerId);
 
 Map<Object?, Object?> _requiredMap(Object? value, String label) {
   if (value is Map<Object?, Object?>) return value;

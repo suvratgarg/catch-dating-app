@@ -36,6 +36,7 @@ import 'package:catch_dating_app/hosts/presentation/host_event_operator_screen.d
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_messaging_setup_screen.dart';
 import 'package:catch_dating_app/launch_access/presentation/launch_access_application_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
@@ -631,6 +632,12 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
       path: '/host/organizer/:clubId/insights',
       redirect: (context, state) =>
           hostInsightsLegacyRedirect(state.pathParameters['clubId']!),
+    ),
+    GoRoute(
+      path: Routes.hostOrganizerMessagingScreen.path,
+      name: Routes.hostOrganizerMessagingScreen.name,
+      builder: (context, state) =>
+          HostMessagingSetupScreen(clubId: state.pathParameters['clubId']!),
     ),
     GoRoute(
       path: Routes.hostClubEventDefaultsScreen.path,

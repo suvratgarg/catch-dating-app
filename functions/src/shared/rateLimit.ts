@@ -137,6 +137,7 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   },
   sendOrganizerWhatsappTest: {maxRequests: 5, windowMs: 60 * 60 * 1000},
   upsertOrganizerCampaign: {maxRequests: 30, windowMs: 60 * 1000},
+  listOrganizerCampaigns: {maxRequests: 60, windowMs: 60 * 1000},
   approveOrganizerCampaign: {maxRequests: 20, windowMs: 60 * 1000},
   dispatchOrganizerCampaign: {maxRequests: 3, windowMs: 60 * 60 * 1000},
   getOrganizerProviderSetup: {maxRequests: 60, windowMs: 60 * 1000},

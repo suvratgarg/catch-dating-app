@@ -113,26 +113,41 @@ export interface GetOrganizerContactDetailCallableResponse {
   /**
    * @maxItems 100
    */
-  sends?: {
-    kind: "campaign";
-    campaignId: string;
-    name: string;
-    messageClass: "eventFollowUp" | "organizerUpdate" | "organizerPromotion";
-    deliveryStatus:
-      | "pending"
-      | "sending"
-      | "suppressed"
-      | "accepted"
-      | "sent"
-      | "delivered"
-      | "read"
-      | "failed"
-      | "replied"
-      | "optedOut";
-    createdAtMillis: number;
-    sentAtMillis: number | null;
-    updatedAtMillis: number;
-  }[];
+  sends?: (
+    | {
+        kind: "campaign";
+        campaignId: string;
+        name: string;
+        messageClass:
+          | "eventFollowUp"
+          | "organizerUpdate"
+          | "organizerPromotion";
+        deliveryStatus:
+          | "pending"
+          | "sending"
+          | "suppressed"
+          | "accepted"
+          | "sent"
+          | "delivered"
+          | "read"
+          | "failed"
+          | "replied"
+          | "optedOut";
+        createdAtMillis: number;
+        sentAtMillis: number | null;
+        updatedAtMillis: number;
+      }
+    | {
+        kind: "announcement";
+        broadcastId: string;
+        eventId: string;
+        eventName: string;
+        audience: "booked" | "prospective" | "everyone";
+        deliveryStatus: "available" | "failed";
+        sentAtMillis: number;
+        partialFailure: boolean;
+      }
+  )[];
   sendsTruncated?: boolean;
   revision: number;
 }

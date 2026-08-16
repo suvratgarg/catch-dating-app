@@ -1030,6 +1030,10 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /organizerBroadcastSummaries/{broadcastId} {
+      allow read, write: if false;
+    }
+
     match /organizerCampaignRecipients/{recipientId} {
       allow read, write: if false;
     }

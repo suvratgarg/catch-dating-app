@@ -53,6 +53,12 @@
       }
     },
     "send": {
+      "oneOf": [
+        {"$ref": "#/definitions/campaignSend"},
+        {"$ref": "#/definitions/announcementSend"}
+      ]
+    },
+    "campaignSend": {
       "type": "object", "additionalProperties": false,
       "required": ["kind", "campaignId", "name", "messageClass", "deliveryStatus", "createdAtMillis", "sentAtMillis", "updatedAtMillis"],
       "properties": {
@@ -64,6 +70,20 @@
         "createdAtMillis": {"type": "integer", "minimum": 0},
         "sentAtMillis": {"type": ["integer", "null"], "minimum": 0},
         "updatedAtMillis": {"type": "integer", "minimum": 0}
+      }
+    },
+    "announcementSend": {
+      "type": "object", "additionalProperties": false,
+      "required": ["kind", "broadcastId", "eventId", "eventName", "audience", "deliveryStatus", "sentAtMillis", "partialFailure"],
+      "properties": {
+        "kind": {"const": "announcement"},
+        "broadcastId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "eventName": {"type": "string", "minLength": 1, "maxLength": 160},
+        "audience": {"type": "string", "enum": ["booked", "prospective", "everyone"]},
+        "deliveryStatus": {"type": "string", "enum": ["available", "failed"]},
+        "sentAtMillis": {"type": "integer", "minimum": 0},
+        "partialFailure": {"type": "boolean"}
       }
     },
     "revenue": {

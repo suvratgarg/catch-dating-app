@@ -153,6 +153,7 @@ export {
   previewOrganizerCampaign,
   upsertOrganizerCampaign,
 } from "./organizers/organizerCampaigns";
+export {listOrganizerCampaigns} from "./organizers/organizerSends";
 export {
   dispatchOrganizerCampaign,
   dispatchScheduledOrganizerCampaigns,
