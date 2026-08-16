@@ -13,6 +13,15 @@ shift 2
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
 
+# Refuse to publish a ref that is behind its remote. See the incident note in
+# check_deploy_ref.mjs: deploying from a stale local `main` silently removed
+# five match blocks from the live Firestore ruleset.
+deploy_ref_args=(--env "$environment")
+if [[ "${CATCH_DEPLOY_ALLOW_BEHIND:-0}" == "1" ]]; then
+  deploy_ref_args+=(--allow-behind)
+fi
+node "$repo_root/tool/firebase/check_deploy_ref.mjs" "${deploy_ref_args[@]}"
+
 deploy_target() {
   local phase="$1"
   local deploy_only="$2"

@@ -1,8 +1,18 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# NOTE: this script verifies that the Catch UI *lint rules fire* — it seeds
+# deliberately-violating fixtures below and asserts they are reported. It does
+# NOT analyse lib/. To check whether your own code is clean, run the gate CI
+# uses: `node tool/ci/check_flutter_workspace_analysis.mjs`.
+
 probe_parent="tool/catch_ui_lints_probe"
 mkdir -p "$probe_parent"
+# Sweep residue from runs that died before their EXIT trap could fire (SIGKILL,
+# a crashed shell, an interrupted agent). Left in place these are violating
+# Dart files inside the tree, so the next `dart analyze` reports this script's
+# own fixtures as findings in your code.
+rm -rf "${probe_parent:?}"/run.*
 probe_root="$(mktemp -d "$probe_parent/run.XXXXXX")"
 probe_path="$probe_root/lib/events/presentation/widgets/event_detail_lint_probe.dart"
 probe_output=""

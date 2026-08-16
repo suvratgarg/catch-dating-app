@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-08-12",
+  "updated": "2026-08-16",
   "ciImpact": {
     "mandatoryCheckIds": [
       "docs:metadata",
@@ -183,6 +183,34 @@
         "contains": [
           "bounded plan outputs contain no changed-path inventory",
           "plan CLI fails closed before writing outputs for an unknown path"
+        ]
+      }
+    },
+    {
+      "id": "agent:verify-local",
+      "category": "agent",
+      "path": "tool/harness/verify_local.mjs",
+      "command": "node tool/harness/verify_local.mjs",
+      "safety": "local",
+      "status": "active",
+      "impactPaths": [
+        "tool/harness/lib/workflow_steps.mjs",
+        "tool/harness/workflow_steps.test.mjs",
+        ".github/workflows/ci.yml"
+      ],
+      "description": "Derives the locally runnable CI gates for a change from the workflow definitions themselves, so pre-push verification cannot drift from what CI actually runs.",
+      "checks": [
+        "node --check tool/harness/verify_local.mjs",
+        "node --check tool/harness/lib/workflow_steps.mjs",
+        "node --test tool/harness/workflow_steps.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/harness/workflow_steps.test.mjs",
+        "contains": [
+          "the real flutter workflow yields its known gates",
+          "every ciTarget in the component graph resolves to a workflow"
         ]
       }
     },
@@ -2877,6 +2905,32 @@
       ]
     },
     {
+      "id": "firebase:check-deploy-ref",
+      "category": "firebase",
+      "path": "tool/firebase/check_deploy_ref.mjs",
+      "command": "node tool/firebase/check_deploy_ref.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "impactPaths": [
+        "tool/firebase/check_deploy_ref.test.mjs",
+        "tool/deploy_firebase_targets.sh"
+      ],
+      "description": "Refuses a Firebase deploy whose working ref is provably behind its remote, so a stale checkout cannot publish an older configuration than the remote records.",
+      "checks": [
+        "node --check tool/firebase/check_deploy_ref.mjs",
+        "node --test tool/firebase/check_deploy_ref.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/firebase/check_deploy_ref.test.mjs",
+        "contains": [
+          "reports behind when the remote has commits HEAD lacks",
+          "treats an unparseable count as unknown rather than current"
+        ]
+      }
+    },
+    {
       "id": "firebase:deploy-targets",
       "category": "firebase",
       "path": "tool/deploy_firebase_targets.sh",
@@ -2886,9 +2940,14 @@
       "description": "Deploys Firebase targets in safe order.",
       "checks": [
         "bash -n tool/deploy_firebase_targets.sh",
-        "node --test tool/firebase/plan_firebase_deploy_targets.test.mjs"
+        "node --test tool/firebase/plan_firebase_deploy_targets.test.mjs",
+        "node --test tool/firebase/check_deploy_ref.test.mjs"
       ],
-      "role": "generator"
+      "role": "generator",
+      "impactPaths": [
+        "tool/firebase/check_deploy_ref.mjs",
+        "tool/firebase/check_deploy_ref.test.mjs"
+      ]
     },
     {
       "id": "analytics:check-host-bigquery",
