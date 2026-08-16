@@ -205,6 +205,10 @@ does (§6).
 
 ### 2.6 `Add customer` creates a permanently uncontactable record
 
+> Note: in production `Add customer` does not complete at all — the callable is
+> not deployed (§2.10). This finding describes the record it creates once that
+> is fixed; both need addressing, and §2.10 first.
+
 `createOrganizerContact` accepts `organizerId` + `displayName` only
 ([`host_crm_repository.dart:927`](../../lib/hosts/data/host_crm_repository.dart#L927),
 mirrored by the callable). `mutateOrganizerContact` accepts
@@ -249,6 +253,66 @@ exists").
 | f | Tapping the person in a host thread opens the consumer dating profile | `_openOtherProfile` → `Routes.publicProfileScreen` ([`chat_screen.dart:196`](../../lib/chats/presentation/chat_screen.dart#L196)) |
 | g | Campaigns workspace has no search action, so the shared header changes shape when switching workspaces | `showSearch` is `isInbox && …` ([`host_inbox_screen.dart:141`](../../lib/hosts/presentation/inbox/host_inbox_screen.dart#L141)) |
 | h | ~60% of the first Customers viewport is chrome; two rows are visible on a phone | capture, §2.1 |
+
+### 2.10 `Add customer` fails in production: the callable is not deployed
+
+**Reported 2026-08-16 by the owner: the `Add customer` button does not work in
+the Host app.** Diagnosed the same day.
+
+This is **not** a code defect. The client, the payload schema, the handler and
+the transaction are all correct, and the flow works against dev. The callable
+simply **does not exist in production**.
+
+Measured against the live Firebase projects, not the repo:
+
+```
+firebase functions:list --project catch-dating-app-64e51   # prod
+```
+
+Production has seven organizer-contact callables —
+`listOrganizerContacts`, `getOrganizerContactDetail`, `mutateOrganizerContact`,
+`exportOrganizerContacts`, `mergeOrganizerContacts`, `unmergeOrganizerContacts`,
+`onOrganizerContactEventEdgeInviteAttributed` — and **not**
+`createOrganizerContact`. Dev has it. That asymmetry is the whole bug: every
+other Customers surface works, so the directory loads normally and only this one
+action fails, which is why it reads as "the button is broken" rather than "the
+backend is missing".
+
+`HostAddCustomerSheet._submit` catches the resulting error and shows an error
+snackbar
+([`host_customers_screen.dart:525`](../../lib/hosts/presentation/customers/host_customers_screen.dart#L525)),
+so the failure is surfaced but attributed to the form rather than to a missing
+deployment.
+
+**Two adjacent gaps found by the same measurement.** A full diff of deployed
+functions between dev and prod shows nine repo functions missing from
+production:
+
+| Missing in prod | Host-visible effect |
+| --- | --- |
+| `createOrganizerContact` | `Add customer` fails — the reported bug |
+| `startOrganizerContactConversation` | **Starting a conversation from a customer fails the same way**, not yet reported |
+| `controlEventSuccessLive`, `controlEventSuccessSpatial`, `getEventSuccessSpatialLayout`, `onEventSuccessPlanLiveControlUpdated`, `publishEventSuccessRotationRound`, `recordEventSuccessUnitOutcomes`, `upsertEventSuccessLayout` | The Event Success live and spatial runtime is undeployed in production |
+
+(The reverse direction — 32 functions in prod but not dev — is entirely
+BigQuery export extensions, which is expected and not drift.)
+
+**Fix.** Deploy the missing functions to production. That resolves the reported
+bug immediately and the unreported conversation one with it.
+
+**Then close the class, not the instance.** This is the second production
+incident in two days caused by *deployed state diverging from repo state* — the
+first was the LIVE-tab failure, where the deployed Firestore ruleset was missing
+five `match` blocks the repo had. Both were invisible to every gate in CI,
+because CI verifies the repository and never asks the live project what it
+actually has.
+
+The durable fix is a deployment-parity check that enumerates deployed callables
+for an environment and diffs them against the repo's exports, failing when a
+repo callable is absent — the same shape as
+`tool/firebase/check_deploy_ref.mjs`, which now refuses to deploy from a ref
+behind its remote. That guard prevents publishing *stale* config; this one would
+catch config that was never published at all.
 
 ---
 
