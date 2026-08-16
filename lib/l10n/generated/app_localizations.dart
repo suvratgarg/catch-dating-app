@@ -20068,12 +20068,6 @@ abstract class AppLocalizations {
   /// **'This creates an organizer-only contact. It does not create a Catch account or grant messaging permission.'**
   String get hostCustomersAddHelp;
 
-  /// Customer segment filter heading.
-  ///
-  /// In en, this message translates to:
-  /// **'Filter by tag'**
-  String get hostCustomersFilterByTag;
-
   /// Active customer segment and its server-backed match count.
   ///
   /// In en, this message translates to:

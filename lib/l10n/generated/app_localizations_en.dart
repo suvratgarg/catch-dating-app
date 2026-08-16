@@ -12890,9 +12890,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'This creates an organizer-only contact. It does not create a Catch account or grant messaging permission.';
 
   @override
-  String get hostCustomersFilterByTag => 'Filter by tag';
-
-  @override
   String hostCustomersFilterSummary({
     required String label,
     required String countLabel,

@@ -21075,8 +21075,6 @@
   "@hostCustomersName": {"description": "Manual CRM contact name field.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersAddHelp": "This creates an organizer-only contact. It does not create a Catch account or grant messaging permission.",
   "@hostCustomersAddHelp": {"description": "Manual CRM identity boundary.", "x-audience": "host", "x-owner": "legal", "x-surface": "hosts.presentation.customers"},
-  "hostCustomersFilterByTag": "Filter by tag",
-  "@hostCustomersFilterByTag": {"description": "Customer segment filter heading.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersFilterSummary": "{label} · {countLabel}",
   "@hostCustomersFilterSummary": {"description": "Active customer segment and its server-backed match count.", "placeholders": {"label": {"type": "String"}, "countLabel": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersFilters": "Filters",
