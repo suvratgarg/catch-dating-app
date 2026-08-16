@@ -2,15 +2,15 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/host_event_manage.feature.json",
-  "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:37d4cf0b1e8b6c5d890272ea653eb1e53e3ccb803867a4fcd88fb0cd14c02ef4",
-  "resolvedDigest": "sha256:c529e74b872aae9dc72da060d025db77110c7657ba772fa020dea04de134f8b0",
+  "generatedFor": "2026-08-17",
+  "sourceDigest": "sha256:e6a5b6845b3b92aa13537889825bdd345d2a0bc2a41803adea7d91fc6036fc8c",
+  "resolvedDigest": "sha256:c07a1728dc14d5367112309c5e9006791c581a8ca48e917990cb0da64f563c91",
   "feature": {
     "id": "feature.host_event_manage",
     "name": "Host Event Manage",
     "owner": "hosts",
     "status": "pilot",
-    "description": "Orchestrates the Host Event Manage workspace and its owner-edit projection without duplicating the owning screen, component, data, or Widgetbook registries."
+    "description": "Orchestrates lifecycle-owned Host Event Manage preparation, live operations, recap, and overlay-roster states plus the owner-edit projection without duplicating owning registries."
   },
   "coverage": {
     "surfaces": 2,
@@ -34,7 +34,7 @@
       "actionScope": {
         "included": "Primary event lifecycle action rows represented by HostEventManageActionIntent.",
         "excluded": [
-          "Section selection, private and named invite-link actions, participant lifecycle mutations, report exports, and Event Success actions retain their existing owners and verification paths."
+          "Legacy route-alias parsing, private and named invite-link actions, participant lifecycle mutations, report exports, and Event Success actions retain their existing owners and verification paths."
         ]
       },
       "bindings": {
@@ -55,7 +55,6 @@
           "catch.field",
           "catch.icon_button",
           "catch.option_card",
-          "catch.option_group",
           "catch.surface",
           "catch.top_bar"
         ],
@@ -97,13 +96,19 @@
             "offline"
           ]
         },
-        "section": {
-          "default": "setup",
+        "phase": {
+          "default": "preparation",
           "values": [
-            "setup",
-            "guests",
-            "live",
-            "report"
+            "preparation",
+            "runtime",
+            "recap"
+          ]
+        },
+        "roster": {
+          "default": "closed",
+          "values": [
+            "closed",
+            "open"
           ]
         },
         "content": {
@@ -269,7 +274,8 @@
           "status": "captured",
           "dimensions": {
             "route": "loading",
-            "section": "setup",
+            "phase": "preparation",
+            "roster": "closed",
             "content": "ready",
             "mutation": "idle",
             "activity": "known",
@@ -291,7 +297,8 @@
               "id": "default",
               "dimensions": {
                 "route": "loading",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "known",
@@ -318,7 +325,8 @@
           "status": "captured",
           "dimensions": {
             "route": "loading",
-            "section": "setup",
+            "phase": "preparation",
+            "roster": "closed",
             "content": "ready",
             "mutation": "idle",
             "activity": "known",
@@ -340,7 +348,8 @@
               "id": "default",
               "dimensions": {
                 "route": "loading",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "known",
@@ -367,7 +376,8 @@
           "status": "captured",
           "dimensions": {
             "route": "loading",
-            "section": "setup",
+            "phase": "preparation",
+            "roster": "closed",
             "content": "ready",
             "mutation": "idle",
             "activity": "known",
@@ -389,7 +399,8 @@
               "id": "default",
               "dimensions": {
                 "route": "loading",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "known",
@@ -416,7 +427,8 @@
           "status": "captured",
           "dimensions": {
             "route": "error",
-            "section": "setup",
+            "phase": "preparation",
+            "roster": "closed",
             "content": "ready",
             "mutation": "idle",
             "activity": "known",
@@ -438,7 +450,8 @@
               "id": "default",
               "dimensions": {
                 "route": "error",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "known",
@@ -465,7 +478,8 @@
           "status": "captured",
           "dimensions": {
             "route": "not_found",
-            "section": "setup",
+            "phase": "preparation",
+            "roster": "closed",
             "content": "ready",
             "mutation": "idle",
             "activity": "known",
@@ -487,7 +501,8 @@
               "id": "default",
               "dimensions": {
                 "route": "not_found",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "known",
@@ -514,7 +529,8 @@
           "status": "captured",
           "dimensions": {
             "route": "unauthorized",
-            "section": "setup",
+            "phase": "preparation",
+            "roster": "closed",
             "content": "ready",
             "mutation": "idle",
             "activity": "known",
@@ -536,7 +552,8 @@
               "id": "default",
               "dimensions": {
                 "route": "unauthorized",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "known",
@@ -563,7 +580,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "setup",
+            "phase": "preparation",
+            "roster": "closed",
             "content": "ready",
             "mutation": "idle",
             "activity": "known",
@@ -585,7 +603,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "known",
@@ -606,13 +625,14 @@
           ]
         },
         {
-          "id": "section_picker",
-          "stateId": "section_picker",
+          "id": "lifecycle_workspace",
+          "stateId": "lifecycle_workspace",
           "kind": "populated",
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "setup",
+            "phase": "preparation",
+            "roster": "closed",
             "content": "ready",
             "mutation": "idle",
             "activity": "known",
@@ -639,7 +659,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "known",
@@ -666,7 +687,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "setup",
+            "phase": "preparation",
+            "roster": "closed",
             "content": "ready",
             "mutation": "idle",
             "activity": "known",
@@ -690,7 +712,8 @@
               "id": "known_activity",
               "dimensions": {
                 "route": "ready",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "known",
@@ -713,7 +736,8 @@
               "id": "unused_event",
               "dimensions": {
                 "route": "ready",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "unused",
@@ -740,7 +764,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "setup",
+            "phase": "preparation",
+            "roster": "closed",
             "content": "ready",
             "mutation": "idle",
             "activity": "known",
@@ -762,7 +787,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "known",
@@ -789,7 +815,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "guests",
+            "phase": "preparation",
+            "roster": "open",
             "content": "ready",
             "mutation": "idle",
             "activity": "known",
@@ -813,7 +840,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "guests",
+                "phase": "preparation",
+                "roster": "open",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "known",
@@ -840,7 +868,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "guests",
+            "phase": "preparation",
+            "roster": "open",
             "content": "loading",
             "mutation": "idle",
             "activity": "known",
@@ -862,7 +891,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "guests",
+                "phase": "preparation",
+                "roster": "open",
                 "content": "loading",
                 "mutation": "idle",
                 "activity": "known",
@@ -889,7 +919,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "guests",
+            "phase": "preparation",
+            "roster": "open",
             "content": "error",
             "mutation": "idle",
             "activity": "known",
@@ -911,7 +942,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "guests",
+                "phase": "preparation",
+                "roster": "open",
                 "content": "error",
                 "mutation": "idle",
                 "activity": "known",
@@ -938,7 +970,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "guests",
+            "phase": "preparation",
+            "roster": "open",
             "content": "empty",
             "mutation": "idle",
             "activity": "known",
@@ -960,7 +993,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "guests",
+                "phase": "preparation",
+                "roster": "open",
                 "content": "empty",
                 "mutation": "idle",
                 "activity": "known",
@@ -987,7 +1021,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "guests",
+            "phase": "preparation",
+            "roster": "open",
             "content": "loading",
             "mutation": "idle",
             "activity": "known",
@@ -1009,7 +1044,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "guests",
+                "phase": "preparation",
+                "roster": "open",
                 "content": "loading",
                 "mutation": "idle",
                 "activity": "known",
@@ -1036,7 +1072,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "guests",
+            "phase": "preparation",
+            "roster": "open",
             "content": "error",
             "mutation": "idle",
             "activity": "known",
@@ -1058,7 +1095,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "guests",
+                "phase": "preparation",
+                "roster": "open",
                 "content": "error",
                 "mutation": "idle",
                 "activity": "known",
@@ -1085,7 +1123,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "guests",
+            "phase": "preparation",
+            "roster": "open",
             "content": "empty",
             "mutation": "idle",
             "activity": "known",
@@ -1107,7 +1146,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "guests",
+                "phase": "preparation",
+                "roster": "open",
                 "content": "empty",
                 "mutation": "idle",
                 "activity": "known",
@@ -1134,7 +1174,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "guests",
+            "phase": "preparation",
+            "roster": "open",
             "content": "ready",
             "mutation": "pending",
             "activity": "known",
@@ -1156,7 +1197,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "guests",
+                "phase": "preparation",
+                "roster": "open",
                 "content": "ready",
                 "mutation": "pending",
                 "activity": "known",
@@ -1183,7 +1225,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "guests",
+            "phase": "preparation",
+            "roster": "open",
             "content": "ready",
             "mutation": "error",
             "activity": "known",
@@ -1205,7 +1248,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "guests",
+                "phase": "preparation",
+                "roster": "open",
                 "content": "ready",
                 "mutation": "error",
                 "activity": "known",
@@ -1232,7 +1276,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "live",
+            "phase": "runtime",
+            "roster": "closed",
             "content": "ready",
             "mutation": "idle",
             "activity": "known",
@@ -1256,7 +1301,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "live",
+                "phase": "runtime",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "known",
@@ -1283,7 +1329,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "live",
+            "phase": "runtime",
+            "roster": "closed",
             "content": "empty",
             "mutation": "idle",
             "activity": "known",
@@ -1305,7 +1352,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "live",
+                "phase": "runtime",
+                "roster": "closed",
                 "content": "empty",
                 "mutation": "idle",
                 "activity": "known",
@@ -1332,7 +1380,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "live",
+            "phase": "runtime",
+            "roster": "closed",
             "content": "loading",
             "mutation": "idle",
             "activity": "known",
@@ -1356,7 +1405,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "live",
+                "phase": "runtime",
+                "roster": "closed",
                 "content": "loading",
                 "mutation": "idle",
                 "activity": "known",
@@ -1383,7 +1433,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "live",
+            "phase": "runtime",
+            "roster": "closed",
             "content": "error",
             "mutation": "idle",
             "activity": "known",
@@ -1407,7 +1458,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "live",
+                "phase": "runtime",
+                "roster": "closed",
                 "content": "error",
                 "mutation": "idle",
                 "activity": "known",
@@ -1434,7 +1486,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "live",
+            "phase": "runtime",
+            "roster": "closed",
             "content": "offline",
             "mutation": "idle",
             "activity": "known",
@@ -1458,7 +1511,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "live",
+                "phase": "runtime",
+                "roster": "closed",
                 "content": "offline",
                 "mutation": "idle",
                 "activity": "known",
@@ -1485,7 +1539,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "live",
+            "phase": "runtime",
+            "roster": "closed",
             "content": "ready",
             "mutation": "idle",
             "activity": "known",
@@ -1516,7 +1571,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "live",
+                "phase": "runtime",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "known",
@@ -1543,7 +1599,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "live",
+            "phase": "runtime",
+            "roster": "closed",
             "content": "ready",
             "mutation": "idle",
             "activity": "known",
@@ -1567,7 +1624,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "live",
+                "phase": "runtime",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "known",
@@ -1594,7 +1652,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "live",
+            "phase": "runtime",
+            "roster": "closed",
             "content": "ready",
             "mutation": "idle",
             "activity": "known",
@@ -1618,7 +1677,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "live",
+                "phase": "runtime",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "known",
@@ -1645,7 +1705,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "live",
+            "phase": "runtime",
+            "roster": "closed",
             "content": "ready",
             "mutation": "idle",
             "activity": "known",
@@ -1669,7 +1730,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "live",
+                "phase": "runtime",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "known",
@@ -1696,7 +1758,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "live",
+            "phase": "runtime",
+            "roster": "closed",
             "content": "ready",
             "mutation": "idle",
             "activity": "known",
@@ -1720,7 +1783,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "live",
+                "phase": "runtime",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "known",
@@ -1747,7 +1811,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "live",
+            "phase": "runtime",
+            "roster": "closed",
             "content": "ready",
             "mutation": "idle",
             "activity": "known",
@@ -1771,7 +1836,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "live",
+                "phase": "runtime",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "known",
@@ -1798,7 +1864,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "live",
+            "phase": "runtime",
+            "roster": "closed",
             "content": "ready",
             "mutation": "idle",
             "activity": "known",
@@ -1822,7 +1889,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "live",
+                "phase": "runtime",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "known",
@@ -1849,7 +1917,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "live",
+            "phase": "runtime",
+            "roster": "closed",
             "content": "ready",
             "mutation": "settled",
             "activity": "known",
@@ -1873,7 +1942,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "live",
+                "phase": "runtime",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "settled",
                 "activity": "known",
@@ -1900,7 +1970,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "report",
+            "phase": "recap",
+            "roster": "closed",
             "content": "ready",
             "mutation": "idle",
             "activity": "known",
@@ -1924,7 +1995,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "report",
+                "phase": "recap",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "known",
@@ -1951,7 +2023,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "report",
+            "phase": "recap",
+            "roster": "closed",
             "content": "ready",
             "mutation": "mixed",
             "activity": "known",
@@ -1977,7 +2050,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "report",
+                "phase": "recap",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "mixed",
                 "activity": "known",
@@ -2004,7 +2078,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "report",
+            "phase": "recap",
+            "roster": "closed",
             "content": "ready",
             "mutation": "idle",
             "activity": "known",
@@ -2028,7 +2103,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "report",
+                "phase": "recap",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "known",
@@ -2055,7 +2131,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "report",
+            "phase": "recap",
+            "roster": "closed",
             "content": "loading",
             "mutation": "idle",
             "activity": "known",
@@ -2079,7 +2156,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "report",
+                "phase": "recap",
+                "roster": "closed",
                 "content": "loading",
                 "mutation": "idle",
                 "activity": "known",
@@ -2106,7 +2184,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "report",
+            "phase": "recap",
+            "roster": "closed",
             "content": "error",
             "mutation": "idle",
             "activity": "known",
@@ -2130,7 +2209,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "report",
+                "phase": "recap",
+                "roster": "closed",
                 "content": "error",
                 "mutation": "idle",
                 "activity": "known",
@@ -2157,7 +2237,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "report",
+            "phase": "recap",
+            "roster": "closed",
             "content": "offline",
             "mutation": "idle",
             "activity": "known",
@@ -2181,7 +2262,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "report",
+                "phase": "recap",
+                "roster": "closed",
                 "content": "offline",
                 "mutation": "idle",
                 "activity": "known",
@@ -2208,7 +2290,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "setup",
+            "phase": "preparation",
+            "roster": "closed",
             "content": "loading",
             "mutation": "idle",
             "activity": "known",
@@ -2230,7 +2313,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "loading",
                 "mutation": "idle",
                 "activity": "known",
@@ -2257,7 +2341,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "setup",
+            "phase": "preparation",
+            "roster": "closed",
             "content": "error",
             "mutation": "idle",
             "activity": "known",
@@ -2279,7 +2364,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "error",
                 "mutation": "idle",
                 "activity": "known",
@@ -2306,7 +2392,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "setup",
+            "phase": "preparation",
+            "roster": "closed",
             "content": "offline",
             "mutation": "idle",
             "activity": "known",
@@ -2328,7 +2415,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "offline",
                 "mutation": "idle",
                 "activity": "known",
@@ -2355,7 +2443,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "setup",
+            "phase": "preparation",
+            "roster": "closed",
             "content": "empty",
             "mutation": "idle",
             "activity": "known",
@@ -2379,7 +2468,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "empty",
                 "mutation": "idle",
                 "activity": "known",
@@ -2406,7 +2496,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "setup",
+            "phase": "preparation",
+            "roster": "closed",
             "content": "ready",
             "mutation": "idle",
             "activity": "known",
@@ -2432,7 +2523,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "known",
@@ -2459,7 +2551,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "setup",
+            "phase": "preparation",
+            "roster": "closed",
             "content": "loading",
             "mutation": "idle",
             "activity": "known",
@@ -2481,7 +2574,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "loading",
                 "mutation": "idle",
                 "activity": "known",
@@ -2508,7 +2602,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "setup",
+            "phase": "preparation",
+            "roster": "closed",
             "content": "error",
             "mutation": "idle",
             "activity": "known",
@@ -2530,7 +2625,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "error",
                 "mutation": "idle",
                 "activity": "known",
@@ -2557,7 +2653,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "setup",
+            "phase": "preparation",
+            "roster": "closed",
             "content": "offline",
             "mutation": "idle",
             "activity": "known",
@@ -2579,7 +2676,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "offline",
                 "mutation": "idle",
                 "activity": "known",
@@ -2606,7 +2704,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "setup",
+            "phase": "preparation",
+            "roster": "closed",
             "content": "empty",
             "mutation": "idle",
             "activity": "known",
@@ -2628,7 +2727,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "empty",
                 "mutation": "idle",
                 "activity": "known",
@@ -2655,7 +2755,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "setup",
+            "phase": "preparation",
+            "roster": "closed",
             "content": "ready",
             "mutation": "idle",
             "activity": "known",
@@ -2677,7 +2778,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "known",
@@ -2704,7 +2806,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "setup",
+            "phase": "preparation",
+            "roster": "closed",
             "content": "ready",
             "mutation": "idle",
             "activity": "known",
@@ -2726,7 +2829,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "known",
@@ -2753,7 +2857,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "setup",
+            "phase": "preparation",
+            "roster": "closed",
             "content": "ready",
             "mutation": "mixed",
             "activity": "known",
@@ -2776,7 +2881,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "mixed",
                 "activity": "known",
@@ -2803,7 +2909,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "setup",
+            "phase": "preparation",
+            "roster": "closed",
             "content": "ready",
             "mutation": "idle",
             "activity": "known",
@@ -2825,7 +2932,8 @@
               "id": "known_activity",
               "dimensions": {
                 "route": "ready",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "known",
@@ -2848,7 +2956,8 @@
               "id": "unused_event",
               "dimensions": {
                 "route": "ready",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "unused",
@@ -2875,7 +2984,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "setup",
+            "phase": "preparation",
+            "roster": "closed",
             "content": "ready",
             "mutation": "idle",
             "activity": "known",
@@ -2900,7 +3010,8 @@
               "id": "pending",
               "dimensions": {
                 "route": "ready",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "pending",
                 "activity": "known",
@@ -2922,7 +3033,8 @@
               "id": "error",
               "dimensions": {
                 "route": "ready",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "error",
                 "activity": "known",
@@ -2950,7 +3062,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "setup",
+            "phase": "preparation",
+            "roster": "closed",
             "content": "ready",
             "mutation": "idle",
             "activity": "unused",
@@ -2975,7 +3088,8 @@
               "id": "idle",
               "dimensions": {
                 "route": "ready",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "unused",
@@ -2997,7 +3111,8 @@
               "id": "pending",
               "dimensions": {
                 "route": "ready",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "pending",
                 "activity": "unused",
@@ -3019,7 +3134,8 @@
               "id": "error",
               "dimensions": {
                 "route": "ready",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "error",
                 "activity": "unused",
@@ -3046,7 +3162,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "setup",
+            "phase": "preparation",
+            "roster": "closed",
             "content": "ready",
             "mutation": "idle",
             "activity": "known",
@@ -3068,7 +3185,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "known",
@@ -3095,7 +3213,8 @@
           "status": "captured",
           "dimensions": {
             "route": "offline",
-            "section": "setup",
+            "phase": "preparation",
+            "roster": "closed",
             "content": "ready",
             "mutation": "idle",
             "activity": "known",
@@ -3117,7 +3236,8 @@
               "id": "default",
               "dimensions": {
                 "route": "offline",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "known",
@@ -3144,7 +3264,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "setup",
+            "phase": "preparation",
+            "roster": "closed",
             "content": "ready",
             "mutation": "idle",
             "activity": "known",
@@ -3166,7 +3287,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "known",
@@ -3193,7 +3315,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "setup",
+            "phase": "preparation",
+            "roster": "closed",
             "content": "ready",
             "mutation": "idle",
             "activity": "known",
@@ -3215,7 +3338,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "known",
@@ -3242,7 +3366,8 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "section": "setup",
+            "phase": "preparation",
+            "roster": "closed",
             "content": "ready",
             "mutation": "idle",
             "activity": "known",
@@ -3264,7 +3389,8 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "section": "setup",
+                "phase": "preparation",
+                "roster": "closed",
                 "content": "ready",
                 "mutation": "idle",
                 "activity": "known",
@@ -3371,17 +3497,6 @@
               "file": "lib/core/widgets/catch_option_card.dart",
               "constructors": [
                 "CatchOptionCard"
-              ]
-            }
-          },
-          {
-            "id": "catch.option_group",
-            "kind": "composite",
-            "dart": {
-              "symbol": "CatchOptionGroup",
-              "file": "lib/core/widgets/catch_option_group.dart",
-              "constructors": [
-                "CatchOptionGroup"
               ]
             }
           },

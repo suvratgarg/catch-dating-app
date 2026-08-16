@@ -26,6 +26,7 @@ class HostCustomerRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final usesLargeText = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
     final metadata = <String>[
       context.l10n.hostsHostAudienceEventsAttended(
         count: contact.attendedEventCount,
@@ -39,6 +40,9 @@ class HostCustomerRow extends StatelessWidget {
       if (contact.whatsappAdminSuppressed)
         context.l10n.hostsHostAudienceContactConsentPaused,
     ];
+    final lifecycleLabel = contact.hasAmbiguousIdentity
+        ? null
+        : _preferredCustomerTag(context, contact.tags);
     return CatchRowPressSurface(
       onTap: onTap,
       child: Column(
@@ -69,23 +73,36 @@ class HostCustomerRow extends StatelessWidget {
                       gapH3,
                       Text(
                         metadata.join(' · '),
-                        maxLines: 1,
+                        maxLines: usesLargeText ? 2 : 1,
                         overflow: TextOverflow.ellipsis,
                         style: CatchTextStyles.supporting(
                           context,
                           color: t.ink2,
                         ),
                       ),
+                      if (lifecycleLabel != null) ...[
+                        gapH3,
+                        Text(
+                          lifecycleLabel,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: CatchTextStyles.badgeCaps(
+                            context,
+                            color: t.ink2,
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
-                gapW10,
-                Flexible(
-                  child: Align(
-                    alignment: AlignmentDirectional.centerEnd,
-                    child: _HostCustomerRowTag(contact: contact),
+                if (contact.hasAmbiguousIdentity) ...[
+                  gapW10,
+                  CatchBadge.functional(
+                    label: context.l10n.hostCustomersNeedsReview,
+                    tone: CatchBadgeTone.warning,
+                    icon: CatchIcons.fieldWarning,
                   ),
-                ),
+                ],
                 gapW4,
                 Icon(
                   CatchIcons.chevronRightRounded,
@@ -97,35 +114,6 @@ class HostCustomerRow extends StatelessWidget {
           ),
           if (divider) const CatchDivider.fieldRow(),
         ],
-      ),
-    );
-  }
-}
-
-class _HostCustomerRowTag extends StatelessWidget {
-  const _HostCustomerRowTag({required this.contact});
-
-  final HostCustomerDirectoryContact contact;
-
-  @override
-  Widget build(BuildContext context) {
-    if (contact.hasAmbiguousIdentity) {
-      return CatchBadge.functional(
-        label: context.l10n.hostCustomersNeedsReview,
-        tone: CatchBadgeTone.warning,
-        icon: CatchIcons.fieldWarning,
-      );
-    }
-    final label = _preferredCustomerTag(context, contact.tags);
-    if (label == null) return const SizedBox.shrink();
-    return Text(
-      label.toUpperCase(),
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      textAlign: TextAlign.end,
-      style: CatchTextStyles.badgeCaps(
-        context,
-        color: CatchTokens.of(context).ink2,
       ),
     );
   }

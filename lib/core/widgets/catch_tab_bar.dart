@@ -60,39 +60,68 @@ class CatchTabBar<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     final isFloating = floatsFor(context);
     final t = CatchTokens.of(context);
-    final row = Padding(
+    final disabledAnimations = MediaQuery.maybeOf(context)?.disableAnimations;
+    final duration = disabledAnimations == true
+        ? Duration.zero
+        : CatchMotion.standard;
+    final activeIndex = items.indexWhere((item) => item.id == active);
+    final resolvedActiveIndex = activeIndex < 0 ? 0 : activeIndex;
+    final navigation = Padding(
       padding: EdgeInsets.symmetric(
         horizontal: isFloating
             ? CatchLayout.tabBarFloatingContentHorizontalPadding
             : CatchLayout.tabBarHorizontalPadding,
       ),
-      child: Row(
-        mainAxisAlignment: isFloating
-            ? MainAxisAlignment.spaceBetween
-            : MainAxisAlignment.spaceAround,
-        children: [
-          for (final item in items)
-            if (item.id == active)
-              Expanded(
-                child: CatchTabBarButton<T>(
-                  item: item,
-                  selected: true,
-                  materialInk: !isFloating,
-                  onTap: onChanged == null ? null : () => onChanged!(item.id),
-                ),
-              )
-            else
-              SizedBox(
-                width: CatchLayout.tabBarCompactItemExtent,
-                child: CatchTabBarButton<T>(
-                  item: item,
-                  selected: false,
-                  materialInk: !isFloating,
-                  onTap: onChanged == null ? null : () => onChanged!(item.id),
-                ),
-              ),
-        ],
-      ),
+      child: items.isEmpty
+          ? const SizedBox.shrink()
+          : LayoutBuilder(
+              builder: (context, constraints) {
+                final selectedExtent = _selectedExtent(
+                  context,
+                  constraints.maxWidth,
+                  items[resolvedActiveIndex].label,
+                );
+                final compactExtent = items.length == 1
+                    ? 0.0
+                    : (constraints.maxWidth - selectedExtent) /
+                          (items.length - 1);
+                var start = 0.0;
+                final positions = <({double start, double width})>[];
+                for (var index = 0; index < items.length; index++) {
+                  final width = index == resolvedActiveIndex
+                      ? selectedExtent
+                      : compactExtent;
+                  positions.add((start: start, width: width));
+                  start += width;
+                }
+
+                return Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    for (var index = 0; index < items.length; index++)
+                      AnimatedPositionedDirectional(
+                        key: ValueKey<Object>(
+                          'catch_tab_bar.slot.${items[index].id}',
+                        ),
+                        duration: duration,
+                        curve: CatchMotion.standardCurve,
+                        start: positions[index].start,
+                        top: 0,
+                        bottom: 0,
+                        width: positions[index].width,
+                        child: CatchTabBarButton<T>(
+                          item: items[index],
+                          selected: index == resolvedActiveIndex,
+                          materialInk: !isFloating,
+                          onTap: onChanged == null
+                              ? null
+                              : () => onChanged!(items[index].id),
+                        ),
+                      ),
+                  ],
+                );
+              },
+            ),
     );
 
     if (!isFloating) {
@@ -106,7 +135,7 @@ class CatchTabBar<T> extends StatelessWidget {
           top: false,
           child: SizedBox(
             height: CatchLayout.tabBarExtent,
-            child: Material(color: Colors.transparent, child: row),
+            child: Material(color: Colors.transparent, child: navigation),
           ),
         ),
       );
@@ -140,11 +169,32 @@ class CatchTabBar<T> extends StatelessWidget {
                 border: Border.all(color: t.line),
                 borderRadius: floatingChromeRadius,
               ),
-              child: SizedBox(height: CatchLayout.tabBarExtent, child: row),
+              child: SizedBox(
+                height: CatchLayout.tabBarExtent,
+                child: navigation,
+              ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  double _selectedExtent(
+    BuildContext context,
+    double availableWidth,
+    String label,
+  ) {
+    final painter = TextPainter(
+      text: TextSpan(text: label, style: CatchTextStyles.buttonSm(context)),
+      maxLines: 1,
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+    )..layout();
+    return CatchLayout.tabBarSelectedExtentFor(
+      availableWidth: availableWidth,
+      itemCount: items.length,
+      labelWidth: painter.width,
     );
   }
 }
@@ -179,24 +229,24 @@ class CatchTabBarButton<T> extends StatelessWidget {
           ? item.activeIconWidget ?? item.iconWidget
           : item.iconWidget,
     );
-    final content = AnimatedSize(
+    final content = TweenAnimationBuilder<double>(
+      key: ValueKey<Object>('catch_tab_bar.pill.${item.id}'),
       duration: duration,
       curve: CatchMotion.standardCurve,
-      alignment: Alignment.centerLeft,
-      child: AnimatedContainer(
-        duration: duration,
-        curve: CatchMotion.standardCurve,
+      tween: Tween<double>(end: selected ? 1 : 0),
+      builder: (context, progress, child) => Container(
         constraints: const BoxConstraints(
           minWidth: CatchLayout.tabBarCompactItemExtent,
           minHeight: CatchLayout.tabBarPillMinHeight,
         ),
-        padding: EdgeInsets.symmetric(
-          horizontal: selected ? CatchLayout.tabBarPillHorizontalPadding : 0,
+        padding: EdgeInsetsDirectional.only(
+          start: CatchLayout.tabBarPillLeadingPadding * progress,
+          end: CatchLayout.tabBarPillTrailingPadding * progress,
         ),
         decoration: ShapeDecoration(
-          color: selected
-              ? t.ink.withValues(alpha: CatchOpacity.tabBarPillFill)
-              : Colors.transparent,
+          color: t.ink.withValues(
+            alpha: CatchOpacity.tabBarPillFill * progress,
+          ),
           shape: const StadiumBorder(),
         ),
         child: Row(
@@ -204,50 +254,36 @@ class CatchTabBarButton<T> extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             icon,
-            Flexible(
-              child: ClipRect(
-                child: AnimatedSwitcher(
-                  duration: duration,
-                  switchInCurve: CatchMotion.standardCurve,
-                  switchOutCurve: CatchMotion.easeInCubicCurve,
-                  transitionBuilder: (child, animation) {
-                    final offsetAnimation = Tween<Offset>(
-                      begin: const Offset(-0.08, 0),
-                      end: Offset.zero,
-                    ).animate(animation);
-                    return FadeTransition(
-                      opacity: animation,
-                      child: SlideTransition(
-                        position: offsetAnimation,
-                        child: child,
-                      ),
-                    );
-                  },
-                  child: selected
-                      ? ExcludeSemantics(
-                          key: ValueKey('catch_tab_bar.label.${item.label}'),
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                              left: CatchLayout.tabBarLabelGap,
-                            ),
-                            child: Text(
-                              item.label,
-                              maxLines: 1,
-                              softWrap: false,
-                              overflow: TextOverflow.fade,
-                              style: CatchTextStyles.buttonSm(
-                                context,
-                                color: t.ink,
-                              ),
+            if (progress > 0.001)
+              Flexible(
+                child: ClipRect(
+                  child: Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    widthFactor: progress,
+                    child: Opacity(
+                      opacity: progress,
+                      child: ExcludeSemantics(
+                        key: ValueKey('catch_tab_bar.label.${item.label}'),
+                        child: Padding(
+                          padding: const EdgeInsetsDirectional.only(
+                            start: CatchLayout.tabBarLabelGap,
+                          ),
+                          child: Text(
+                            item.label,
+                            maxLines: 1,
+                            softWrap: false,
+                            overflow: TextOverflow.fade,
+                            style: CatchTextStyles.buttonSm(
+                              context,
+                              color: t.ink,
                             ),
                           ),
-                        )
-                      : const SizedBox.shrink(
-                          key: ValueKey('catch_tab_bar.label.hidden'),
                         ),
+                      ),
+                    ),
+                  ),
                 ),
               ),
-            ),
           ],
         ),
       ),
@@ -308,12 +344,12 @@ class CatchTabBarIcon extends StatelessWidget {
     final glyph =
         child ?? Icon(icon, size: CatchLayout.tabBarIconSize, color: color);
     return SizedBox(
-      width: CatchLayout.appShellNavigationBadgeWidth,
-      height: CatchLayout.appShellNavigationBadgeHeight,
+      width: CatchLayout.tabBarIconBoxExtent,
+      height: CatchLayout.tabBarIconBoxExtent,
       child: CatchCountBadge(
         count: badgeCount,
         offset: const Offset(-1, 2),
-        child: Align(alignment: Alignment.bottomCenter, child: glyph),
+        child: Align(child: glyph),
       ),
     );
   }

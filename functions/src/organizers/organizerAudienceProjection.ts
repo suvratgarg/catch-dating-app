@@ -1,6 +1,5 @@
 import {createHash} from "crypto";
 import * as admin from "firebase-admin";
-import {defineSecret} from "firebase-functions/params";
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import {organizerCommunicationPreferenceId} from
   "../shared/organizerCommunicationPreferences";
@@ -27,10 +26,7 @@ import {
   organizerIdentityClaimId,
   organizerIdentityEvidenceId,
 } from "./organizerAudienceModel";
-
-export const organizerContactIdentityKey = defineSecret(
-  "ORGANIZER_CONTACT_IDENTITY_KEY"
-);
+import {organizerContactIdentityKey} from "./organizerAudienceSecrets";
 
 const projectionReceiptTtlMillis = 30 * 24 * 60 * 60 * 1000;
 

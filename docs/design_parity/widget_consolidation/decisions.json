@@ -2290,10 +2290,10 @@
           "action": "keep"
         }
       ],
-      "rationale": "K1 composition is not duplication: HostManageMetaRow lays out three weighted event metadata columns and constructs CatchMetaRow for the date, location, and capacity cells.",
+      "rationale": "K1 composition was not duplication: HostManageMetaRow laid out three weighted event metadata columns and constructed CatchMetaRow for the date, location, and capacity cells. The 2026-08-17 lifecycle-workspace redesign removed that low-value event-header metadata composition entirely, so the historical keep boundary is superseded rather than merged.",
       "decidedBy": "codex-rule:K1",
       "date": "2026-07-03",
-      "status": "recorded-WO-015-ranked-pair"
+      "status": "superseded-2026-08-17"
     },
     {
       "clusterId": "ranked-pair: CatchTopBarTabBar/ProfileTabBar",
@@ -3245,10 +3245,10 @@
           "action": "absorb"
         }
       ],
-      "rationale": "K5 concept mismatch: both are host metric tiles, but capacity tiles own management detail/suffix rows while organizer metrics are compact rail cells with different typography and surface ownership. REVIEW (claude, 2026-07-03): HostOrganizerMetricTile is another value+label stat (CatchStatColumn shape; uppercase label standardizes away, same as RunningStat). HostCapacityTile keeps (suffix+detail richer; stat-tile v2 candidate).",
+      "rationale": "K5 concept mismatch: both were host metric tiles, but capacity tiles owned management detail/suffix rows while organizer metrics were compact rail cells with different typography and surface ownership. REVIEW (claude, 2026-07-03): HostOrganizerMetricTile is another value+label stat (CatchStatColumn shape; uppercase label standardizes away, same as RunningStat). The 2026-08-17 Host Event Manage redesign removed HostCapacityTile in favor of canonical field rows; the CatchStatColumn absorption remains valid while the historical capacity-tile boundary is superseded.",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "implemented-WO-020",
+      "status": "superseded-2026-08-17",
       "canonicalSymbol": "CatchStatColumn"
     },
     {

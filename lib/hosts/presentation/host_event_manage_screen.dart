@@ -21,13 +21,10 @@ import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
-import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart'
@@ -48,12 +45,12 @@ import 'package:catch_dating_app/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
-import 'package:catch_dating_app/hosts/domain/host_attendance_window.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_reviews_panel.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_roster_drawer.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_staff_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_operational_roster_panel.dart';
@@ -100,6 +97,7 @@ class HostEventManageScreen extends ConsumerStatefulWidget {
     this.onSectionChanged,
     this.eventSuccessFixtureActions,
     this.initialParticipantSearchQuery = '',
+    this.referenceNow,
   });
 
   final Club club;
@@ -110,31 +108,35 @@ class HostEventManageScreen extends ConsumerStatefulWidget {
   final EventSuccessHostFixtureActions? eventSuccessFixtureActions;
   final String initialParticipantSearchQuery;
 
+  /// A deterministic clock used by captures and lifecycle-focused tests.
+  /// Production callers leave this null and use the device clock.
+  final DateTime? referenceNow;
+
   @override
   ConsumerState<HostEventManageScreen> createState() =>
       _HostEventManageScreenState();
 }
 
 class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
-  late HostEventManageSection _selectedSection = widget.initialSection;
+  late bool _rosterOpen =
+      widget.initialSection == HostEventManageSection.guests;
 
   @override
   void didUpdateWidget(covariant HostEventManageScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.initialSection != widget.initialSection) {
-      _selectedSection = widget.initialSection;
+      _rosterOpen = widget.initialSection == HostEventManageSection.guests;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final club = widget.club;
     final event = widget.event;
-    final now = DateTime.now();
-    final selectedSection = hostEventManageEffectiveSection(
-      requested: _selectedSection,
+    final now = widget.referenceNow ?? DateTime.now();
+    final screenState = HostEventManageScreenState.resolve(
       event: event,
+      requestedSection: widget.initialSection,
       now: now,
     );
     final onBackToSuccess = widget.onBackToSuccess;
@@ -142,7 +144,8 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       watchEventParticipationRosterProvider(event.id),
     );
     final roster = rosterAsync.asData?.value;
-    final operationalAttendees = selectedSection == HostEventManageSection.live
+    final operationalAttendees =
+        screenState.phase == HostEventWorkspacePhase.runtime
         ? ref.watch(watchEventAttendeesProvider(event.id)).asData?.value
         : null;
     final operationalRosterSummary = _operationalRosterSummary(
@@ -175,13 +178,6 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
     );
     final disableInviteLinkMutation = ref.watch(
       HostEventManageController.disableInviteLinkMutation,
-    );
-    final textScale = MediaQuery.textScalerOf(context).scale(1);
-    final screenState = HostEventManageScreenState.resolve(
-      club: club,
-      event: event,
-      selectedSection: selectedSection,
-      textScale: textScale,
     );
     final actionState = HostEventActionDisplayState.resolve(
       event: event,
@@ -216,45 +212,51 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       disableInviteLinkMutation,
     ]);
     final actionError = _firstMutationError([cancelMutation, deleteMutation]);
-    final selectedSectionChildren = switch (screenState.selectedSection) {
-      HostEventManageSection.setup => <Widget>[
+    final hostActions = HostEventActionsSection(
+      club: club,
+      event: event,
+      actionState: actionState,
+      actionError: actionError,
+      privateLinkActionState: privateLinkActionState,
+      onEditEvent: () {
+        unawaited(
+          _handleHostEventActionIntent(
+            HostEventManageActionIntent.editEvent,
+            event: event,
+            onDeleted: onBackToSuccess,
+          ),
+        );
+      },
+      onCancelEvent: () => _handleHostEventActionIntent(
+        HostEventManageActionIntent.cancelEvent,
+        event: event,
+        onDeleted: onBackToSuccess,
+      ),
+      onDeleteEvent: () => _handleHostEventActionIntent(
+        HostEventManageActionIntent.deleteEvent,
+        event: event,
+        onDeleted: onBackToSuccess,
+      ),
+      onSharePrivateLink: (inviteLink) => _shareHostPrivateLink(
+        club: club,
+        event: event,
+        inviteLink: inviteLink,
+      ),
+    );
+    final eventSuccessSetup = EventSuccessHostSection(
+      event: event,
+      showTabs: false,
+      fixtureActions: widget.eventSuccessFixtureActions,
+    );
+    final workspaceChildren = switch (screenState.phase) {
+      HostEventWorkspacePhase.preparation => <Widget>[
         if (_showsCapacityNotice(event)) ...[
           const HostFullCapacityBanner(),
           gapH12,
         ],
         HostFullCapacityApron(event: event, roster: roster),
         gapH20,
-        HostEventActionsSection(
-          club: club,
-          event: event,
-          actionState: actionState,
-          actionError: actionError,
-          privateLinkActionState: privateLinkActionState,
-          onEditEvent: () {
-            unawaited(
-              _handleHostEventActionIntent(
-                HostEventManageActionIntent.editEvent,
-                event: event,
-                onDeleted: onBackToSuccess,
-              ),
-            );
-          },
-          onCancelEvent: () => _handleHostEventActionIntent(
-            HostEventManageActionIntent.cancelEvent,
-            event: event,
-            onDeleted: onBackToSuccess,
-          ),
-          onDeleteEvent: () => _handleHostEventActionIntent(
-            HostEventManageActionIntent.deleteEvent,
-            event: event,
-            onDeleted: onBackToSuccess,
-          ),
-          onSharePrivateLink: (inviteLink) => _shareHostPrivateLink(
-            club: club,
-            event: event,
-            inviteLink: inviteLink,
-          ),
-        ),
+        hostActions,
         gapH20,
         HostPublicRegistrationCard(
           club: club,
@@ -299,86 +301,25 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
           ),
         ],
         gapH20,
-        HostEventSummaryCard(club: club, event: event),
-        gapH20,
-        EventSuccessHostSection(
-          event: event,
-          showTabs: false,
-          fixtureActions: widget.eventSuccessFixtureActions,
-        ),
-      ],
-      HostEventManageSection.guests => <Widget>[
         HostEventStaffSection(eventId: event.id),
         gapH20,
-        if (event.isExternalCompanion && event.hasWebRuntime) ...[
-          CatchSection.fieldRows(
-            first: true,
-            children: [
-              CatchField.control(
-                title: context.l10n.hostsHostEventAttendancePanelTitleCheckInQr,
-                contractExemption:
-                    'Disclosure-only public runtime URL and QR; no editable '
-                    'value is submitted or persisted.',
-                body: context.l10n.hostsHostEventAttendancePanelBodyCheckInQr,
-                icon: CatchIcons.qrCode2Rounded,
-                control: HostEventCheckInQrPanel(event: event),
-              ),
-            ],
-          ),
-          gapH20,
-        ],
-        HostOperationalRosterPanel(
-          eventId: event.id,
-          organizerId: event.clubId,
-          bookingProvider: event.eventOrigin?.provider,
-        ),
-        if (!event.isExternalCompanion) ...[
-          gapH20,
-          HostEventParticipantsPanel(
-            eventId: event.id,
-            mode:
-                hostEventAttendanceStateFor(
-                      event: event,
-                      now: DateTime.now(),
-                    ) ==
-                    HostEventAttendanceState.open
-                ? HostEventParticipantsMode.live
-                : HostEventParticipantsMode.setup,
-            initialSearchQuery: widget.initialParticipantSearchQuery,
-          ),
-        ],
+        HostEventSummaryCard(club: club, event: event),
+        gapH20,
+        eventSuccessSetup,
       ],
-      HostEventManageSection.live => <Widget>[
+      HostEventWorkspacePhase.runtime => <Widget>[
         EventSuccessHostSection(
           event: event,
           initialTab: EventSuccessHostTab.live,
           showTabs: false,
           compactLiveControls: true,
           operationalRosterSummary: operationalRosterSummary,
-          onOpenGuests: () => _selectSection(HostEventManageSection.guests),
+          onOpenGuests: () => _setRosterOpen(true, screenState.phase),
           fixtureActions: widget.eventSuccessFixtureActions,
         ),
       ],
-      HostEventManageSection.report => <Widget>[
-        HostOperationalRosterPanel(
-          eventId: event.id,
-          organizerId: event.clubId,
-          allowRosterIntake: false,
-          allowAttendanceChanges: false,
-          allowRuntimeClaimReview: false,
-          showProviderControls: false,
-          bookingProvider: event.eventOrigin?.provider,
-        ),
-        gapH20,
+      HostEventWorkspacePhase.recap => <Widget>[
         HostEventReviewsPanel(eventId: event.id),
-        if (!event.isExternalCompanion) ...[
-          gapH20,
-          HostEventParticipantsPanel(
-            eventId: event.id,
-            mode: HostEventParticipantsMode.report,
-            initialSearchQuery: widget.initialParticipantSearchQuery,
-          ),
-        ],
         gapH20,
         EventSuccessHostSection(
           event: event,
@@ -386,8 +327,86 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
           showTabs: false,
           fixtureActions: widget.eventSuccessFixtureActions,
         ),
+        gapH20,
+        CatchSection.fieldRows(
+          first: true,
+          children: [
+            CatchField.control(
+              title: context.l10n.hostsHostEventManageReviewSetupTitle,
+              body: context.l10n.hostsHostEventManageReviewSetupBody,
+              contractExemption:
+                  'Read and management disclosure for an existing event; it '
+                  'does not submit a scalar field value.',
+              control: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  HostEventSummaryCard(club: club, event: event),
+                  gapH20,
+                  hostActions,
+                  gapH20,
+                  eventSuccessSetup,
+                ],
+              ),
+            ),
+          ],
+        ),
       ],
     };
+    final rosterMode = switch (screenState.phase) {
+      HostEventWorkspacePhase.preparation => HostEventParticipantsMode.setup,
+      HostEventWorkspacePhase.runtime => HostEventParticipantsMode.live,
+      HostEventWorkspacePhase.recap => HostEventParticipantsMode.report,
+    };
+    final rosterChildren = <Widget>[
+      if (event.isExternalCompanion &&
+          event.hasWebRuntime &&
+          screenState.phase != HostEventWorkspacePhase.recap) ...[
+        CatchSection.fieldRows(
+          first: true,
+          children: [
+            CatchField.control(
+              title: context.l10n.hostsHostEventAttendancePanelTitleCheckInQr,
+              contractExemption:
+                  'Disclosure-only public runtime URL and QR; no editable '
+                  'value is submitted or persisted.',
+              body: context.l10n.hostsHostEventAttendancePanelBodyCheckInQr,
+              icon: CatchIcons.qrCode2Rounded,
+              control: HostEventCheckInQrPanel(event: event),
+            ),
+          ],
+        ),
+        gapH20,
+      ],
+      HostOperationalRosterPanel(
+        eventId: event.id,
+        organizerId: event.clubId,
+        allowRosterIntake: screenState.phase != HostEventWorkspacePhase.recap,
+        allowAttendanceChanges:
+            screenState.phase != HostEventWorkspacePhase.recap,
+        allowRuntimeClaimReview:
+            screenState.phase != HostEventWorkspacePhase.recap,
+        showProviderControls:
+            screenState.phase == HostEventWorkspacePhase.preparation,
+        bookingProvider: event.eventOrigin?.provider,
+      ),
+      if (!event.isExternalCompanion) ...[
+        gapH20,
+        HostEventParticipantsPanel(
+          eventId: event.id,
+          mode: rosterMode,
+          initialSearchQuery: widget.initialParticipantSearchQuery,
+        ),
+      ],
+    ];
+    final workspaceBody = screenState.phase == HostEventWorkspacePhase.runtime
+        ? workspaceChildren.single
+        : ListView(
+            key: Key(
+              context.l10n.hostsHostEventManageScreenBodyHostEventManageScroll,
+            ),
+            padding: CatchInsets.pageBody,
+            children: workspaceChildren,
+          );
     return CatchMutationErrorListener(
       mutation: HostEventManageController.sharePrivateLinkMutation,
       errorContext: AppErrorContext.event,
@@ -396,56 +415,50 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
           showBackButton: true,
           onBack: onBackToSuccess,
           divider: scrolledUnder,
-          height: CatchLayout.hostEventManageTopBarHeight,
-          titleWidget: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (!screenState.collapseHeaderCopy) ...[
-                Text(
-                  club.name.toUpperCase(),
-                  style: CatchTextStyles.kicker(context, color: t.ink3),
-                ),
-                gapH2,
-              ],
-              Text(
-                screenState.eventTitle,
-                style: CatchTextStyles.titleL(context, color: t.ink),
-                semanticsLabel: screenState.collapsedTitleSemanticsLabel,
-                maxLines: screenState.collapseHeaderCopy ? 1 : 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              if (!screenState.collapseHeaderCopy) ...[
-                gapH8,
-                HostManageMetaRow(event: event),
-              ],
-            ],
+          height: CatchScreenTopBar.heightFor(
+            context: context,
+            hasSubtitle: true,
           ),
-          bottom: HostManageSectionPicker(
-            event: event,
-            now: now,
-            selectedSection: screenState.selectedSection,
-            onChanged: _selectSection,
+          title: screenState.eventTitle,
+          subtitle: event.isCancelled
+              ? context.l10n.hostsHostEventManageWorkspaceCancelled
+              : switch (screenState.phase) {
+                  HostEventWorkspacePhase.preparation =>
+                    context.l10n.hostsHostEventManageWorkspacePreparation,
+                  HostEventWorkspacePhase.runtime =>
+                    context.l10n.hostsHostEventManageWorkspaceRuntime,
+                  HostEventWorkspacePhase.recap =>
+                    context.l10n.hostsHostEventManageWorkspaceRecap,
+                },
+        ),
+        body: HostEventRosterDrawer(
+          open: _rosterOpen,
+          bookedCount: hostManageBookedCount(event, roster),
+          onOpenChanged: (open) => _setRosterOpen(open, screenState.phase),
+          body: workspaceBody,
+          roster: ListView(
+            key: const ValueKey<String>('host_event_roster_drawer.scroll'),
+            padding: CatchInsets.pageBody,
+            children: rosterChildren,
           ),
         ),
-        body: screenState.selectedSection == HostEventManageSection.live
-            ? selectedSectionChildren.single
-            : ListView(
-                key: Key(
-                  context
-                      .l10n
-                      .hostsHostEventManageScreenBodyHostEventManageScroll,
-                ),
-                padding: CatchInsets.pageBody,
-                children: selectedSectionChildren,
-              ),
       ),
     );
   }
 
-  void _selectSection(HostEventManageSection section) {
-    setState(() => _selectedSection = section);
-    widget.onSectionChanged?.call(section);
+  void _setRosterOpen(bool open, HostEventWorkspacePhase phase) {
+    if (_rosterOpen == open) return;
+    setState(() => _rosterOpen = open);
+    widget.onSectionChanged?.call(
+      open
+          ? HostEventManageSection.guests
+          : switch (phase) {
+              HostEventWorkspacePhase.preparation =>
+                HostEventManageSection.setup,
+              HostEventWorkspacePhase.runtime => HostEventManageSection.live,
+              HostEventWorkspacePhase.recap => HostEventManageSection.report,
+            },
+    );
   }
 
   Future<void> _handleHostEventActionIntent(
@@ -735,101 +748,6 @@ Object? _firstMutationError(Iterable<Object> mutations) {
     if (mutation is MutationError) return mutation.error;
   }
   return null;
-}
-
-class HostManageMetaRow extends StatelessWidget {
-  const HostManageMetaRow({super.key, required this.event});
-
-  final Event event;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Row(
-      children: [
-        Expanded(
-          flex: 5,
-          child: CatchMetaRow(
-            icon: CatchIcons.calendarTodayOutlined,
-            label: context.l10n
-                .hostsHostEventManageScreenLabelShortdatelabelTime(
-                  shortDateLabel: event.shortDateLabel,
-                  time: EventFormatters.time(event.startTime),
-                ),
-            color: t.ink2,
-          ),
-        ),
-        gapW12,
-        Expanded(
-          flex: 4,
-          child: CatchMetaRow(
-            icon: CatchIcons.pinOutlined,
-            label: event.locationName,
-            color: t.ink2,
-          ),
-        ),
-        gapW12,
-        Expanded(
-          flex: 3,
-          child: CatchMetaRow(
-            icon: CatchIcons.groupsOutlined,
-            label: event.spotsLabel,
-            color: t.ink2,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class HostManageSectionPicker extends StatelessWidget
-    implements PreferredSizeWidget {
-  const HostManageSectionPicker({
-    super.key,
-    required this.event,
-    required this.now,
-    required this.selectedSection,
-    required this.onChanged,
-  });
-
-  final Event event;
-  final DateTime now;
-  final HostEventManageSection selectedSection;
-  final ValueChanged<HostEventManageSection> onChanged;
-
-  @override
-  Size get preferredSize => const Size.fromHeight(CatchLayout.tabRailHeight);
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchTabRail<HostEventManageSection>(
-      options: [
-        for (final section in HostEventManageSection.values)
-          _optionFor(context, section),
-      ],
-      selected: selectedSection,
-      onChanged: onChanged,
-      variant: CatchOptionGroupVariant.mono,
-    );
-  }
-
-  CatchOption<HostEventManageSection> _optionFor(
-    BuildContext context,
-    HostEventManageSection section,
-  ) {
-    final access = HostEventManageSectionAccess.resolve(
-      section: section,
-      event: event,
-      now: now,
-      l10n: context.l10n,
-    );
-    return CatchOption(
-      value: section,
-      label: section.label(context.l10n).toUpperCase(),
-      enabled: access.enabled,
-      disabledReason: access.disabledReason,
-    );
-  }
 }
 
 class HostPrivateAccessCard extends StatelessWidget {
@@ -1410,60 +1328,41 @@ class HostFullCapacityApron extends StatelessWidget {
           );
     final refundPolicy = event.effectiveEventPolicy.cancellationPolicy.title;
 
-    return Column(
+    return CatchSection.fieldRows(
+      first: true,
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: HostCapacityTile(
-                value: context.l10n.hostsHostEventManageScreenVisiblecopyBooked(
-                  booked: booked,
-                ),
-                suffix: context.l10n
-                    .hostsHostEventManageScreenVisiblecopyCapacitylimit(
-                      capacityLimit: event.capacityLimit,
-                    ),
-                label: context.l10n.hostsHostEventManageScreenLabelBooked,
-                detail: context.l10n.hostsHostEventManageScreenDetailOpenOpen(
-                  open: open,
-                ),
-              ),
-            ),
-            gapW10,
-            Expanded(
-              child: HostCapacityTile(
-                value: context.l10n
-                    .hostsHostEventManageScreenVisiblecopyWaitlisted(
-                      waitlisted: waitlisted,
-                    ),
-                label: context.l10n.hostsHostEventManageScreenLabelWaitlist,
-                detail: waitlisted == 1
-                    ? context.l10n.hostsHostEventManageScreenDetail1ToReview
-                    : context.l10n
-                          .hostsHostEventManageScreenDetailWaitlistedToReview(
-                            waitlisted: waitlisted,
-                          ),
-              ),
-            ),
-          ],
+        CatchField.read(
+          icon: CatchIcons.groupsRounded,
+          title: context.l10n.hostsHostEventManageScreenLabelBooked,
+          body: context.l10n.hostsHostEventManageScreenDetailOpenOpen(
+            open: open,
+          ),
+          valueText:
+              '${context.l10n.hostsHostEventManageScreenVisiblecopyBooked(booked: booked)}'
+              '${context.l10n.hostsHostEventManageScreenVisiblecopyCapacitylimit(capacityLimit: event.capacityLimit)}',
         ),
-        gapH10,
-        Row(
-          children: [
-            Expanded(
-              child: HostCapacityTile(
-                value: revenueLabel,
-                label: context.l10n.hostsHostEventManageScreenLabelRevenueEst,
+        CatchField.read(
+          icon: CatchIcons.waitlisted,
+          title: context.l10n.hostsHostEventManageScreenLabelWaitlist,
+          body: waitlisted == 1
+              ? context.l10n.hostsHostEventManageScreenDetail1ToReview
+              : context.l10n.hostsHostEventManageScreenDetailWaitlistedToReview(
+                  waitlisted: waitlisted,
+                ),
+          valueText: context.l10n
+              .hostsHostEventManageScreenVisiblecopyWaitlisted(
+                waitlisted: waitlisted,
               ),
-            ),
-            gapW10,
-            Expanded(
-              child: HostCapacityTile(
-                value: refundPolicy,
-                label: context.l10n.hostsHostEventManageScreenLabelRefundPolicy,
-              ),
-            ),
-          ],
+        ),
+        CatchField.read(
+          icon: CatchIcons.paymentsOutlined,
+          title: context.l10n.hostsHostEventManageScreenLabelRevenueEst,
+          valueText: revenueLabel,
+        ),
+        CatchField.read(
+          icon: CatchIcons.receiptLongOutlined,
+          title: context.l10n.hostsHostEventManageScreenLabelRefundPolicy,
+          valueText: refundPolicy,
         ),
       ],
     );
@@ -1495,67 +1394,6 @@ class HostFullCapacityBanner extends StatelessWidget {
             context.l10n.hostsHostEventManageScreenTextWaitlistOpen,
             style: CatchTextStyles.badge(context, color: t.ink3),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class HostCapacityTile extends StatelessWidget {
-  const HostCapacityTile({
-    super.key,
-    required this.value,
-    required this.label,
-    this.suffix,
-    this.detail,
-  });
-
-  final String value;
-  final String? suffix;
-  final String label;
-  final String? detail;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      padding: CatchInsets.content,
-      borderColor: t.line,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          RichText(
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            text: TextSpan(
-              text: value,
-              style: CatchTextStyles.titleL(context, color: t.ink),
-              children: [
-                if (suffix != null)
-                  TextSpan(
-                    text: suffix,
-                    style: CatchTextStyles.supporting(context, color: t.ink3),
-                  ),
-              ],
-            ),
-          ),
-          gapH4,
-          Text(
-            label.toUpperCase(),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.monoLabel(context, color: t.ink2),
-          ),
-          if (detail != null) ...[
-            gapH4,
-            Text(
-              detail!,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.supporting(context, color: t.ink3),
-            ),
-          ],
         ],
       ),
     );

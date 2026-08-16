@@ -17,6 +17,7 @@
     "linkedAccount": {"type": "boolean"},
     "identityState": {"type": "string", "enum": ["unlinked", "verified", "ambiguous"]},
     "identityConfidence": {"type": "string", "enum": ["eventOnly", "proposed", "verified"]},
+    "contactDetailsEditable": {"type": "boolean", "description": "True only for an unlinked organizer-created contact whose proposed phone/email evidence the manager may edit."},
     "ambiguousCandidateContactIds": {"type": "array", "uniqueItems": true, "maxItems": 20, "items": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}},
     "whatsappAdminSuppressed": {"type": "boolean"},
     "traits": {"$ref": "#/definitions/traits"},
@@ -27,8 +28,10 @@
     "manualTagVocabulary": {"type": "array", "maxItems": 20, "uniqueItems": true, "items": {"$ref": "#/definitions/manualTag"}},
     "notes": {"type": "array", "maxItems": 100, "items": {"$ref": "#/definitions/note"}},
     "notesTruncated": {"type": "boolean"},
+    "notesCoverage": {"type": "string", "enum": ["exact", "unavailable"]},
     "sends": {"type": "array", "maxItems": 100, "items": {"$ref": "#/definitions/send"}},
     "sendsTruncated": {"type": "boolean"},
+    "sendsCoverage": {"type": "string", "enum": ["exact", "unavailable"]},
     "activeMerges": {"type": "array", "maxItems": 50, "items": {"$ref": "#/definitions/activeMerge"}},
     "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991}
   },

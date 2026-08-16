@@ -53818,7 +53818,7 @@ export const createOrganizerContactCallablePayloadSchema: Record<string, unknown
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/create_organizer_contact_payload.schema.json",
   "title": "CreateOrganizerContactCallablePayload",
-  "description": "Manager-only creation of a name-only organizer CRM contact. It does not create an attendee, Consumer account, or messaging permission.",
+  "description": "Manager-only creation of an organizer CRM contact with optional unverified contact details and an initial private note. It does not create an attendee, Consumer account, or messaging permission.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -53835,6 +53835,20 @@ export const createOrganizerContactCallablePayloadSchema: Record<string, unknown
       "type": "string",
       "minLength": 1,
       "maxLength": 120
+    },
+    "phoneE164": {
+      "type": "string",
+      "pattern": "^\\+[1-9][0-9]{7,14}$"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "maxLength": 320
+    },
+    "initialNote": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
     }
   }
 } as const;
@@ -54405,6 +54419,10 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
         "verified"
       ]
     },
+    "contactDetailsEditable": {
+      "type": "boolean",
+      "description": "True only for an unlinked organizer-created contact whose proposed phone/email evidence the manager may edit."
+    },
     "ambiguousCandidateContactIds": {
       "type": "array",
       "uniqueItems": true,
@@ -54769,6 +54787,13 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
     "notesTruncated": {
       "type": "boolean"
     },
+    "notesCoverage": {
+      "type": "string",
+      "enum": [
+        "exact",
+        "unavailable"
+      ]
+    },
     "sends": {
       "type": "array",
       "maxItems": 100,
@@ -54902,6 +54927,13 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
     },
     "sendsTruncated": {
       "type": "boolean"
+    },
+    "sendsCoverage": {
+      "type": "string",
+      "enum": [
+        "exact",
+        "unavailable"
+      ]
     },
     "activeMerges": {
       "type": "array",
@@ -55630,7 +55662,7 @@ export const mutateOrganizerContactCallablePayloadSchema: Record<string, unknown
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/mutate_organizer_contact_payload.schema.json",
   "title": "MutateOrganizerContactCallablePayload",
-  "description": "Manager-only organizer-scoped contact correction, suppression, or hiding request.",
+  "description": "Manager-only organizer-scoped contact correction, manual identity detail update, suppression, or hiding request.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -55658,6 +55690,16 @@ export const mutateOrganizerContactCallablePayloadSchema: Record<string, unknown
       "required": [
         "manualTags"
       ]
+    },
+    {
+      "required": [
+        "phoneE164"
+      ]
+    },
+    {
+      "required": [
+        "email"
+      ]
     }
   ],
   "properties": {
@@ -55683,6 +55725,21 @@ export const mutateOrganizerContactCallablePayloadSchema: Record<string, unknown
       ],
       "minLength": 1,
       "maxLength": 120
+    },
+    "phoneE164": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^\\+[1-9][0-9]{7,14}$"
+    },
+    "email": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "email",
+      "maxLength": 320
     },
     "whatsappAdminSuppressed": {
       "type": "boolean"

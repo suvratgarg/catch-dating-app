@@ -4125,6 +4125,14 @@ Widget _hostManageRouteCapture({
 }) {
   final effectiveClub = club ?? HostOperationsFixtures.primaryClub;
   final effectiveEvent = event ?? HostOperationsFixtures.privateEvent;
+  final referenceNow = switch (initialSection) {
+    HostEventManageSection.setup || HostEventManageSection.guests =>
+      effectiveEvent.startTime.subtract(const Duration(hours: 1)),
+    HostEventManageSection.live => effectiveEvent.startTime,
+    HostEventManageSection.report => effectiveEvent.endTime.add(
+      const Duration(minutes: 1),
+    ),
+  };
   return _AppRoleCapture(
     role: AppRole.host,
     child: HostEventManageRouteScreen(
@@ -4133,6 +4141,7 @@ Widget _hostManageRouteCapture({
       initialEvent: includeInitialEvent ? effectiveEvent : null,
       initialSection: initialSection,
       initialParticipantSearchQuery: initialParticipantSearchQuery,
+      referenceNow: referenceNow,
     ),
   );
 }
@@ -12099,6 +12108,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         event: _hostLiveWindowEvent,
         onBackToSuccess: () {},
         initialSection: HostEventManageSection.live,
+        referenceNow: _hostLiveWindowNow,
       ),
     ),
   ),
@@ -12114,6 +12124,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         event: _hostLiveWindowEvent,
         onBackToSuccess: () {},
         initialSection: HostEventManageSection.live,
+        referenceNow: _hostLiveWindowNow,
       ),
     ),
   ),
@@ -12148,6 +12159,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       event: _hostEvent,
       onBackToSuccess: () {},
       initialSection: HostEventManageSection.guests,
+      referenceNow: _hostEvent.startTime.subtract(const Duration(hours: 1)),
     ),
   ),
   ScreenCaptureEntry(
@@ -12395,6 +12407,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       event: _hostLiveReferenceEvent,
       onBackToSuccess: () {},
       initialSection: HostEventManageSection.live,
+      referenceNow: _hostLiveReferenceEvent.startTime.add(
+        const Duration(minutes: 30),
+      ),
     ),
   ),
   ScreenCaptureEntry(
@@ -12429,6 +12444,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       event: _hostEvent,
       onBackToSuccess: () {},
       initialSection: HostEventManageSection.report,
+      referenceNow: _hostEvent.endTime.add(const Duration(minutes: 1)),
     ),
   ),
   ScreenCaptureEntry(

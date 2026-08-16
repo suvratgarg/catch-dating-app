@@ -9010,12 +9010,33 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const createOrganizerContactCallablePayloadEmail = CatchContractFieldConstraints(
+    path: 'createOrganizerContactCallablePayload.email',
+    maxLength: 320,
+    valueTypes: <String>['string'],
+    format: 'email',
+  );
+
+  static const createOrganizerContactCallablePayloadInitialNote = CatchContractFieldConstraints(
+    path: 'createOrganizerContactCallablePayload.initialNote',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const createOrganizerContactCallablePayloadOrganizerId = CatchContractFieldConstraints(
     path: 'createOrganizerContactCallablePayload.organizerId',
     maxLength: 180,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerContactCallablePayloadPhoneE164 = CatchContractFieldConstraints(
+    path: 'createOrganizerContactCallablePayload.phoneE164',
+    valueTypes: <String>['string'],
+    pattern: '^\\+[1-9][0-9]{7,14}\$',
   );
 
   static const createOrganizerContactCallableResponseContactId = CatchContractFieldConstraints(
@@ -20785,6 +20806,11 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const getOrganizerContactDetailCallableResponseContactDetailsEditable = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.contactDetailsEditable',
+    valueTypes: <String>['boolean'],
+  );
+
   static const getOrganizerContactDetailCallableResponseContactId = CatchContractFieldConstraints(
     path: 'getOrganizerContactDetailCallableResponse.contactId',
     maxLength: 180,
@@ -21040,6 +21066,12 @@ abstract final class CatchContractConstraints {
     minimum: 0,
   );
 
+  static const getOrganizerContactDetailCallableResponseNotesCoverage = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.notesCoverage',
+    valueTypes: <String>['string'],
+    enumValues: <String>['exact', 'unavailable'],
+  );
+
   static const getOrganizerContactDetailCallableResponseNotesTruncated = CatchContractFieldConstraints(
     path: 'getOrganizerContactDetailCallableResponse.notesTruncated',
     valueTypes: <String>['boolean'],
@@ -21203,6 +21235,12 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
+  );
+
+  static const getOrganizerContactDetailCallableResponseSendsCoverage = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.sendsCoverage',
+    valueTypes: <String>['string'],
+    enumValues: <String>['exact', 'unavailable'],
   );
 
   static const getOrganizerContactDetailCallableResponseSendsTruncated = CatchContractFieldConstraints(
@@ -25736,6 +25774,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const mutateOrganizerContactCallablePayloadEmail = CatchContractFieldConstraints(
+    path: 'mutateOrganizerContactCallablePayload.email',
+    maxLength: 320,
+    valueTypes: <String>['string'],
+    format: 'email',
+  );
+
   static const mutateOrganizerContactCallablePayloadExpectedRevision = CatchContractFieldConstraints(
     path: 'mutateOrganizerContactCallablePayload.expectedRevision',
     required: true,
@@ -25771,6 +25816,12 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const mutateOrganizerContactCallablePayloadPhoneE164 = CatchContractFieldConstraints(
+    path: 'mutateOrganizerContactCallablePayload.phoneE164',
+    valueTypes: <String>['string'],
+    pattern: '^\\+[1-9][0-9]{7,14}\$',
   );
 
   static const mutateOrganizerContactCallablePayloadWhatsappAdminSuppressed = CatchContractFieldConstraints(
@@ -44734,7 +44785,10 @@ abstract final class CatchContractConstraints {
     'createOrganizerCallablePayload.profileImageUrl': createOrganizerCallablePayloadProfileImageUrl,
     'createOrganizerCallableResponse.organizerId': createOrganizerCallableResponseOrganizerId,
     'createOrganizerContactCallablePayload.displayName': createOrganizerContactCallablePayloadDisplayName,
+    'createOrganizerContactCallablePayload.email': createOrganizerContactCallablePayloadEmail,
+    'createOrganizerContactCallablePayload.initialNote': createOrganizerContactCallablePayloadInitialNote,
     'createOrganizerContactCallablePayload.organizerId': createOrganizerContactCallablePayloadOrganizerId,
+    'createOrganizerContactCallablePayload.phoneE164': createOrganizerContactCallablePayloadPhoneE164,
     'createOrganizerContactCallableResponse.contactId': createOrganizerContactCallableResponseContactId,
     'createOrganizerContactCallableResponse.displayName': createOrganizerContactCallableResponseDisplayName,
     'createOrganizerContactCallableResponse.organizerId': createOrganizerContactCallableResponseOrganizerId,
@@ -46350,6 +46404,7 @@ abstract final class CatchContractConstraints {
     'getOrganizerContactDetailCallableResponse.activeMerges.items.sourceDisplayName': getOrganizerContactDetailCallableResponseActiveMergesItemsSourceDisplayName,
     'getOrganizerContactDetailCallableResponse.ambiguousCandidateContactIds': getOrganizerContactDetailCallableResponseAmbiguousCandidateContactIds,
     'getOrganizerContactDetailCallableResponse.ambiguousCandidateContactIds.items': getOrganizerContactDetailCallableResponseAmbiguousCandidateContactIdsItems,
+    'getOrganizerContactDetailCallableResponse.contactDetailsEditable': getOrganizerContactDetailCallableResponseContactDetailsEditable,
     'getOrganizerContactDetailCallableResponse.contactId': getOrganizerContactDetailCallableResponseContactId,
     'getOrganizerContactDetailCallableResponse.displayName': getOrganizerContactDetailCallableResponseDisplayName,
     'getOrganizerContactDetailCallableResponse.displayNameOverride': getOrganizerContactDetailCallableResponseDisplayNameOverride,
@@ -46386,6 +46441,7 @@ abstract final class CatchContractConstraints {
     'getOrganizerContactDetailCallableResponse.notes.items.noteId': getOrganizerContactDetailCallableResponseNotesItemsNoteId,
     'getOrganizerContactDetailCallableResponse.notes.items.revision': getOrganizerContactDetailCallableResponseNotesItemsRevision,
     'getOrganizerContactDetailCallableResponse.notes.items.updatedAtMillis': getOrganizerContactDetailCallableResponseNotesItemsUpdatedAtMillis,
+    'getOrganizerContactDetailCallableResponse.notesCoverage': getOrganizerContactDetailCallableResponseNotesCoverage,
     'getOrganizerContactDetailCallableResponse.notesTruncated': getOrganizerContactDetailCallableResponseNotesTruncated,
     'getOrganizerContactDetailCallableResponse.organizerId': getOrganizerContactDetailCallableResponseOrganizerId,
     'getOrganizerContactDetailCallableResponse.phoneE164': getOrganizerContactDetailCallableResponsePhoneE164,
@@ -46409,6 +46465,7 @@ abstract final class CatchContractConstraints {
     'getOrganizerContactDetailCallableResponse.sends.items.partialFailure': getOrganizerContactDetailCallableResponseSendsItemsPartialFailure,
     'getOrganizerContactDetailCallableResponse.sends.items.sentAtMillis': getOrganizerContactDetailCallableResponseSendsItemsSentAtMillis,
     'getOrganizerContactDetailCallableResponse.sends.items.updatedAtMillis': getOrganizerContactDetailCallableResponseSendsItemsUpdatedAtMillis,
+    'getOrganizerContactDetailCallableResponse.sendsCoverage': getOrganizerContactDetailCallableResponseSendsCoverage,
     'getOrganizerContactDetailCallableResponse.sendsTruncated': getOrganizerContactDetailCallableResponseSendsTruncated,
     'getOrganizerContactDetailCallableResponse.sourceDisplayName': getOrganizerContactDetailCallableResponseSourceDisplayName,
     'getOrganizerContactDetailCallableResponse.traits.attendanceRate': getOrganizerContactDetailCallableResponseTraitsAttendanceRate,
@@ -47043,11 +47100,13 @@ abstract final class CatchContractConstraints {
     'moderationFlagDocument.targetUserId': moderationFlagDocumentTargetUserId,
     'mutateOrganizerContactCallablePayload.contactId': mutateOrganizerContactCallablePayloadContactId,
     'mutateOrganizerContactCallablePayload.displayNameOverride': mutateOrganizerContactCallablePayloadDisplayNameOverride,
+    'mutateOrganizerContactCallablePayload.email': mutateOrganizerContactCallablePayloadEmail,
     'mutateOrganizerContactCallablePayload.expectedRevision': mutateOrganizerContactCallablePayloadExpectedRevision,
     'mutateOrganizerContactCallablePayload.hidden': mutateOrganizerContactCallablePayloadHidden,
     'mutateOrganizerContactCallablePayload.manualTags': mutateOrganizerContactCallablePayloadManualTags,
     'mutateOrganizerContactCallablePayload.manualTags.items': mutateOrganizerContactCallablePayloadManualTagsItems,
     'mutateOrganizerContactCallablePayload.organizerId': mutateOrganizerContactCallablePayloadOrganizerId,
+    'mutateOrganizerContactCallablePayload.phoneE164': mutateOrganizerContactCallablePayloadPhoneE164,
     'mutateOrganizerContactCallablePayload.whatsappAdminSuppressed': mutateOrganizerContactCallablePayloadWhatsappAdminSuppressed,
     'mutateOrganizerContactCallableResponse.contactId': mutateOrganizerContactCallableResponseContactId,
     'mutateOrganizerContactCallableResponse.displayName': mutateOrganizerContactCallableResponseDisplayName,

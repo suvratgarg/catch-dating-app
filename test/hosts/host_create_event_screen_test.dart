@@ -10,11 +10,9 @@ import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_card.dart';
-import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
@@ -37,6 +35,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/crea
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_roster_drawer.dart';
 import 'package:catch_dating_app/locations/data/places_repository.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
@@ -51,6 +50,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../events/events_test_helpers.dart';
 import '../test_pump_helpers.dart';
 import 'host_control_room_test_helpers.dart';
+
+part 'host_create_event_lifecycle_tests.dart';
 
 void main() {
   group('CreateEventScreen', () {
@@ -319,8 +320,8 @@ void main() {
         await tester.tap(manageRunButton);
         await _pumpTestAnimation(tester);
 
-        expect(find.text('STRIDE SOCIAL'), findsOneWidget);
-        expect(find.text('SETUP'), findsWidgets);
+        expect(find.text('STRIDE SOCIAL'), findsNothing);
+        expect(find.text('Event preparation'), findsOneWidget);
       },
     );
 
@@ -825,6 +826,7 @@ void main() {
           event: event,
           onBackToSuccess: () {},
           initialSection: HostEventManageSection.guests,
+          referenceNow: event.startTime.subtract(const Duration(hours: 2)),
         ),
         overrides: [
           watchEventProvider(
@@ -841,7 +843,14 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('Taylor'),
         300,
-        scrollable: hostManageScrollable(),
+        scrollable: find
+            .descendant(
+              of: find.byKey(
+                const ValueKey<String>('host_event_roster_drawer.scroll'),
+              ),
+              matching: find.byType(Scrollable),
+            )
+            .first,
       );
       await _pumpTestAnimation(tester);
 
@@ -853,39 +862,7 @@ void main() {
       expect(find.textContaining('Waitlist'), findsWidgets);
     });
 
-    testWidgets('host manage exposes lifecycle workspace sections', (
-      tester,
-    ) async {
-      final participationRepository = FakeEventParticipationRepository();
-
-      await pumpEventsTestApp(
-        tester,
-        HostEventManageScreen(
-          club: buildClub(),
-          event: buildEvent(id: 'event-preview'),
-          onBackToSuccess: () {},
-        ),
-        overrides: [
-          eventParticipationRepositoryProvider.overrideWith(
-            (ref) => participationRepository,
-          ),
-        ],
-        signedInUid: 'host-1',
-      );
-      await _pumpHostActionFrame(tester);
-
-      expect(find.text('SETUP'), findsOneWidget);
-      expect(find.text('GUESTS'), findsOneWidget);
-      expect(find.text('LIVE'), findsOneWidget);
-      expect(find.text('REPORT'), findsOneWidget);
-      expect(
-        find.byType(CatchOptionGroup<HostEventManageSection>),
-        findsOneWidget,
-      );
-      expect(find.byType(CatchTabRail<HostEventManageSection>), findsOneWidget);
-      expect(find.text('Event success'), findsNothing);
-      expect(find.text('Open event success'), findsNothing);
-    });
+    runHostCreateEventLifecycleTests();
 
     testWidgets(
       'host manage keeps ritual controls in Live and check-in in Guests',
@@ -904,7 +881,7 @@ void main() {
         final now = DateTime.now();
         final event = buildEvent(
           id: 'event-live-roster',
-          startTime: now.add(const Duration(minutes: 10)),
+          startTime: now.add(const Duration(minutes: 5)),
           endTime: now.add(const Duration(hours: 1)),
           bookedCount: 2,
           checkedInCount: 1,
@@ -936,6 +913,7 @@ void main() {
             event: event,
             onBackToSuccess: () {},
             initialSection: HostEventManageSection.live,
+            referenceNow: now,
           ),
           overrides: [
             watchEventProvider(
@@ -989,7 +967,9 @@ void main() {
         );
         expect(find.text('Arrival check-in'), findsNothing);
 
-        await tester.tap(find.text('Guests'));
+        await tester.tap(
+          find.bySemanticsLabel('Open guest roster, 2 booked guests'),
+        );
         await _pumpTestAnimation(tester);
 
         expect(publicProfiles.fetchPublicProfilesCalls, hasLength(1));
@@ -1002,7 +982,7 @@ void main() {
         await tester.tap(find.text('Check-in QR'));
         await _pumpTestAnimation(tester);
         await tester.drag(
-          find.byKey(const Key('host_event_manage_scroll_view')),
+          find.byKey(const ValueKey<String>('host_event_roster_drawer.scroll')),
           const Offset(0, -800),
         );
         await _pumpTestAnimation(tester);
@@ -1013,47 +993,48 @@ void main() {
       },
     );
 
-    testWidgets('host manage omits duplicated demand pricing stat strip', (
-      tester,
-    ) async {
-      final participationRepository = FakeEventParticipationRepository();
-      final event = buildEvent(
-        id: 'event-demand',
-        bookedCount: 3,
-        priceInPaise: 40000,
-        eventPolicy: EventPolicyBundle.demandPricedBalancedSinglesEvent(
-          capacityLimit: 20,
-          basePriceInPaise: 40000,
-          stepAdjustmentInPaise: 20000,
-          maxAdjustmentInPaise: 100000,
-        ),
-      );
-
-      await pumpEventsTestApp(
-        tester,
-        HostEventManageScreen(
-          club: buildClub(),
-          event: event,
-          onBackToSuccess: () {},
-        ),
-        overrides: [
-          eventParticipationRepositoryProvider.overrideWith(
-            (ref) => participationRepository,
+    testWidgets(
+      'host manage renders demand revenue once without a stat strip',
+      (tester) async {
+        final participationRepository = FakeEventParticipationRepository();
+        final event = buildEvent(
+          id: 'event-demand',
+          bookedCount: 3,
+          priceInPaise: 40000,
+          eventPolicy: EventPolicyBundle.demandPricedBalancedSinglesEvent(
+            capacityLimit: 20,
+            basePriceInPaise: 40000,
+            stepAdjustmentInPaise: 20000,
+            maxAdjustmentInPaise: 100000,
           ),
-        ],
-        signedInUid: 'host-1',
-      );
-      await _pumpHostActionFrame(tester);
+        );
 
-      expect(find.text('Base est.'), findsNothing);
-      expect(find.text('Revenue'), findsNothing);
-      expect(find.text('₹1,200'), findsNothing);
-      expect(
-        find.textContaining('Demand-priced bookings may settle higher'),
-        findsNothing,
-      );
-      expect(find.text('SETUP'), findsOneWidget);
-    });
+        await pumpEventsTestApp(
+          tester,
+          HostEventManageScreen(
+            club: buildClub(),
+            event: event,
+            onBackToSuccess: () {},
+          ),
+          overrides: [
+            eventParticipationRepositoryProvider.overrideWith(
+              (ref) => participationRepository,
+            ),
+          ],
+          signedInUid: 'host-1',
+        );
+        await _pumpHostActionFrame(tester);
+
+        expect(find.text('Base est.'), findsNothing);
+        expect(find.text('Revenue'), findsNothing);
+        expect(find.text('₹1,200'), findsOneWidget);
+        expect(
+          find.textContaining('Demand-priced bookings may settle higher'),
+          findsNothing,
+        );
+        expect(find.text('Event preparation'), findsOneWidget);
+      },
+    );
 
     testWidgets('host manage exposes invite code and private link', (
       tester,
@@ -1092,7 +1073,11 @@ void main() {
       );
       await _pumpHostActionFrame(tester);
 
-      await tester.scrollUntilVisible(find.text('Private access'), 300);
+      await tester.scrollUntilVisible(
+        find.text('Private access'),
+        300,
+        scrollable: hostManageScrollable(),
+      );
       await _pumpHostActionFrame(tester);
 
       expect(find.text('Private access'), findsOneWidget);
@@ -1130,7 +1115,11 @@ void main() {
       await _pumpHostActionFrame(tester);
 
       final cancelButton = find.text('Cancel event');
-      await tester.scrollUntilVisible(cancelButton, 300);
+      await tester.scrollUntilVisible(
+        cancelButton,
+        300,
+        scrollable: hostManageScrollable(),
+      );
       await _pumpHostActionFrame(tester);
       await tester.tap(cancelButton.hitTestable());
       await _pumpHostActionFrame(tester);
@@ -1169,7 +1158,11 @@ void main() {
       await _pumpHostActionFrame(tester);
 
       final deleteButton = find.text('Delete unused event');
-      await tester.scrollUntilVisible(deleteButton, 300);
+      await tester.scrollUntilVisible(
+        deleteButton,
+        300,
+        scrollable: hostManageScrollable(),
+      );
       await _pumpHostActionFrame(tester);
       await tester.tap(deleteButton);
       await _pumpHostActionFrame(tester);

@@ -544,7 +544,7 @@ system.
 | Inbox | event scope and conversation list, pushed thread | conversation list plus selected thread | event/audience navigation, conversation list, and thread/detail at sufficiently wide local width |
 | Organizer | top tabs and one form lane | rail plus secondary organizer navigation and one content pane | secondary navigation, editor, and preview or insights pane |
 | Create Event | current paged wizard and bottom actions | step rail plus focused form; optional summary pane in landscape | step rail, approximately 640 px form lane, live cover/summary preview, compact sticky actions |
-| Manage Event | full-screen Setup/Guests/Live/Report sections | persistent section navigation plus active operation pane | section navigation, roster table or live console, sticky event summary and commands |
+| Manage Event | one lifecycle-owned Preparation, Live Operations, or Recap workspace plus an overlay guest-roster drawer | the same lifecycle workspace with a wider overlay roster | lifecycle workspace, wide overlay roster, and context-appropriate commands without persistent mode navigation |
 
 The consolidated Events route remains canonical. Responsive work must not
 recreate the retired Today destination or split operational shortcuts away from
@@ -2734,18 +2734,20 @@ Defined variant:
 
 - `ARCH-SCREEN-001C` covers host workspaces such as
   `lib/hosts/presentation/host_event_manage_screen.dart`. Host Event Manage is
-  not a mechanical Event Detail copy because one canonical route owns multiple
-  route aliases and lifecycle sections: Setup, Guests, Live, and Report.
+  not a mechanical Event Detail copy because one canonical route owns legacy
+  Setup, Guests, Live, and Report aliases while rendering exactly one
+  lifecycle-owned workspace: Preparation before the attendance window, Live
+  Operations during the event, and Recap once the event ends or is cancelled.
   `HostEventManageRouteScreen` keeps canonical route ids/aliases, uid/club/event
   loading, missing-resource/error branches, host access gating, retry
-  invalidation, and initial section/deep-link inputs. The loaded workspace may
-  keep local tab/section state while migration is in progress, but the target is
-  a `HostEventManageScreenState` or split workspace adapters that feed
-  provider-free setup, roster, private-access, invite-link, Event Success,
-  report, and host-action sections with explicit display state and typed
-  callbacks. Do not move solved route loading/access work into the workspace
-  adapter, and do not duplicate attendance or Event Success aliases as separate
-  screen contracts.
+  invalidation, and initial alias/deep-link inputs. `HostEventManageScreenState`
+  resolves the phase from event time/status; the guest roster is a lazy overlay
+  drawer that preserves the underlying workspace element and maps old Guests
+  deep links to an initially-open drawer. Provider-free preparation, roster,
+  private-access, invite-link, Event Success, recap, and host-action sections
+  retain explicit display state and typed callbacks. Do not move solved route
+  loading/access work into the workspace adapter, and do not duplicate
+  attendance or Event Success aliases as separate screen contracts.
 
 ```dart
 @override

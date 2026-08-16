@@ -415,7 +415,9 @@
       ],
       "requiredWhen": {
         "anyDeployTarget": [
-          "functions:onEventAttendeeAudienceProjected"
+          "functions:onEventAttendeeAudienceProjected",
+          "functions:createOrganizerContact",
+          "functions:mutateOrganizerContact"
         ]
       },
       "acceptedStates": [
@@ -423,7 +425,7 @@
       ],
       "owner": "organizer-audience",
       "sourcePaths": [
-        "functions/src/organizers/organizerAudienceProjection.ts"
+        "functions/src/organizers/organizerAudienceSecrets.ts"
       ]
     },
     {

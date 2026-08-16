@@ -76,7 +76,7 @@ class _HostCustomerDetailScreenState
           errorBuilder: (_, error, _) => CatchPageBody(
             child: CatchErrorState.fromError(
               error,
-              context: AppErrorContext.club,
+              context: AppErrorContext.customer,
               onRetry: () => ref.invalidate(
                 hostAudienceContactDetailProvider(
                   widget.organizerId,
@@ -88,7 +88,10 @@ class _HostCustomerDetailScreenState
           builder: (context, customer) => ListView(
             padding: CatchInsets.pageBody.copyWith(bottom: 0),
             children: [
-              HostCustomerIdentityCard(customer: customer),
+              HostCustomerIdentityCard(
+                customer: customer,
+                onManage: () => _manageCustomer(customer),
+              ),
               gapH16,
               HostCustomerMemorySection(
                 customer: customer,
@@ -125,12 +128,6 @@ class _HostCustomerDetailScreenState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    CatchButton(
-                      label: context.l10n.hostCustomersManage,
-                      variant: CatchButtonVariant.secondary,
-                      onPressed: () => _manageCustomer(customer),
-                    ),
-                    gapH12,
                     HostCustomerConversationCard(
                       customer: customer,
                       loading: _openingConversation,

@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -7,55 +6,57 @@ import 'package:catch_dating_app/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
+import 'package:catch_dating_app/hosts/domain/host_attendance_window.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 
 enum HostEventManageSection { setup, guests, live, report }
 
-class HostEventManageSectionAccess {
-  const HostEventManageSectionAccess({
-    required this.enabled,
-    this.disabledReason,
-  }) : assert(enabled || disabledReason != null);
+/// The one primary Host workspace appropriate for the event right now.
+///
+/// Route aliases can still request legacy Setup / Guests / Live / Report
+/// destinations, but lifecycle owns the rendered workspace. Guests becomes an
+/// edge drawer instead of a competing top-level screen.
+enum HostEventWorkspacePhase { preparation, runtime, recap }
 
-  factory HostEventManageSectionAccess.resolve({
-    required HostEventManageSection section,
-    required Event event,
-    required DateTime now,
-    required AppLocalizations l10n,
-  }) {
-    final eventEnded = !event.endTime.isAfter(now);
-    return switch (section) {
-      HostEventManageSection.live when eventEnded =>
-        HostEventManageSectionAccess(
-          enabled: false,
-          disabledReason: l10n.hostsHostEventManageLiveUnavailableAfterEvent,
-        ),
-      HostEventManageSection.report when !eventEnded =>
-        HostEventManageSectionAccess(
-          enabled: false,
-          disabledReason: l10n.hostsHostEventManageReportUnavailableBeforeEvent,
-        ),
-      _ => const HostEventManageSectionAccess(enabled: true),
-    };
-  }
-
-  final bool enabled;
-  final String? disabledReason;
-}
-
-HostEventManageSection hostEventManageEffectiveSection({
-  required HostEventManageSection requested,
+HostEventWorkspacePhase hostEventWorkspacePhaseFor({
   required Event event,
   required DateTime now,
 }) {
-  final eventEnded = !event.endTime.isAfter(now);
-  if (requested == HostEventManageSection.live && eventEnded) {
-    return HostEventManageSection.report;
+  final attendanceState = hostEventAttendanceStateFor(event: event, now: now);
+  if (event.isCancelled || !now.isBefore(event.endTime)) {
+    return HostEventWorkspacePhase.recap;
   }
-  if (requested == HostEventManageSection.report && !eventEnded) {
-    return HostEventManageSection.setup;
+  if (attendanceState == HostEventAttendanceState.open) {
+    return HostEventWorkspacePhase.runtime;
   }
-  return requested;
+  return HostEventWorkspacePhase.preparation;
+}
+
+class HostEventManageScreenState {
+  const HostEventManageScreenState({
+    required this.requestedSection,
+    required this.phase,
+    required this.eventTitle,
+    required this.openRosterInitially,
+  });
+
+  factory HostEventManageScreenState.resolve({
+    required Event event,
+    required HostEventManageSection requestedSection,
+    required DateTime now,
+  }) {
+    return HostEventManageScreenState(
+      requestedSection: requestedSection,
+      phase: hostEventWorkspacePhaseFor(event: event, now: now),
+      eventTitle: hostManageEventTitle(event),
+      openRosterInitially: requestedSection == HostEventManageSection.guests,
+    );
+  }
+
+  final HostEventManageSection requestedSection;
+  final HostEventWorkspacePhase phase;
+  final String eventTitle;
+  final bool openRosterInitially;
 }
 
 enum HostEventManageActionIntent { editEvent, cancelEvent, deleteEvent }
@@ -97,47 +98,6 @@ class HostEventManageActionEffect {
   final HostEventManageActionDestination destination;
   final Event event;
   final Map<String, String> pathParameters;
-}
-
-class HostEventManageScreenState {
-  const HostEventManageScreenState({
-    required this.selectedSection,
-    required this.eventTitle,
-    required this.collapseHeaderCopy,
-    required this.collapsedTitleSemanticsLabel,
-  });
-
-  factory HostEventManageScreenState.resolve({
-    required Club club,
-    required Event event,
-    required HostEventManageSection selectedSection,
-    required double textScale,
-  }) {
-    final collapseHeaderCopy = textScale >= 1.4;
-    final eventTitle = hostManageEventTitle(event);
-    return HostEventManageScreenState(
-      selectedSection: selectedSection,
-      eventTitle: eventTitle,
-      collapseHeaderCopy: collapseHeaderCopy,
-      collapsedTitleSemanticsLabel: collapseHeaderCopy
-          ? '${club.name}. $eventTitle'
-          : null,
-    );
-  }
-
-  final HostEventManageSection selectedSection;
-  final String eventTitle;
-  final bool collapseHeaderCopy;
-  final String? collapsedTitleSemanticsLabel;
-
-  HostEventManageScreenState selectSection(HostEventManageSection section) {
-    return HostEventManageScreenState(
-      selectedSection: section,
-      eventTitle: eventTitle,
-      collapseHeaderCopy: collapseHeaderCopy,
-      collapsedTitleSemanticsLabel: collapsedTitleSemanticsLabel,
-    );
-  }
 }
 
 class HostEventActionDisplayState {

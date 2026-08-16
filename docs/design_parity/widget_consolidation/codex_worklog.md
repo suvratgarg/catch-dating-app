@@ -2106,3 +2106,11 @@ live Badge + Field gates complete.
 ## Completed
 
 (move finished orders here with their receipts line)
+
+- 2026-08-17 Host Event Manage lifecycle workspace: removed the obsolete
+  `HostManageMetaRow` header composition and `HostCapacityTile` card family in
+  response to the approved product redesign. The header now uses the shared
+  `CatchTopBar` with event title and lifecycle subtitle, while preparation
+  metrics use canonical field rows. The former ranked-pair decisions remain as
+  historical evidence with `superseded-2026-08-17` status; no replacement core
+  primitive or parallel architecture was introduced.

@@ -94,6 +94,10 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
         'verified',
       ],
     },
+    'contactDetailsEditable': <String, Object?>{
+      'type': 'boolean',
+      'description': 'True only for an unlinked organizer-created contact whose proposed phone/email evidence the manager may edit.',
+    },
     'ambiguousCandidateContactIds': <String, Object?>{
       'type': 'array',
       'uniqueItems': true,
@@ -458,6 +462,13 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
     'notesTruncated': <String, Object?>{
       'type': 'boolean',
     },
+    'notesCoverage': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'exact',
+        'unavailable',
+      ],
+    },
     'sends': <String, Object?>{
       'type': 'array',
       'maxItems': 100,
@@ -591,6 +602,13 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
     },
     'sendsTruncated': <String, Object?>{
       'type': 'boolean',
+    },
+    'sendsCoverage': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'exact',
+        'unavailable',
+      ],
     },
     'activeMerges': <String, Object?>{
       'type': 'array',

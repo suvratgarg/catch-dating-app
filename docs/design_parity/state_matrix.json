@@ -1,7 +1,7 @@
 {
   "$schema": "./state_matrix.schema.json",
   "version": 1,
-  "updated": "2026-08-16",
+  "updated": "2026-08-17",
   "requiredStateKinds": [
     "loading",
     "populated",
@@ -7280,7 +7280,7 @@
               "id": "uid_loading",
               "kind": "loading",
               "status": "captured",
-              "notes": "HostEventManageRouteScreen route loading is now captured with uid/club/event provider waves resolving through HostRouteLoadingBody(showTabRail: true).",
+              "notes": "HostEventManageRouteScreen route loading is captured with uid/club/event provider waves resolving through HostRouteLoadingBody without the retired section-rail skeleton.",
               "previewIds": [
                 "HostEventManageRouteScreen/Route and section states"
               ],
@@ -7364,10 +7364,10 @@
               ]
             },
             {
-              "id": "section_picker",
+              "id": "lifecycle_workspace",
               "kind": "populated",
               "status": "captured",
-              "notes": "HostEventManageScreen renders Setup / Guests / Live / Report through CatchOptionGroup and accepts initialSection from route aliases or query state. Setup, Guests, Live, and Report selected states now have deterministic route captures; selected-section adapter ownership remains tracked by DP-HOST-EVENT-MANAGE-002.",
+              "notes": "HostEventManageScreen renders one Preparation, Live Operations, or Recap workspace from event time and status. Legacy Setup / Guests / Live / Report values remain route-compatible inputs; Guests opens HostEventRosterDrawer and cannot override the lifecycle phase.",
               "tests": [
                 "test/hosts/host_create_event_screen_test.dart"
               ],
@@ -7388,7 +7388,7 @@
               "id": "setup_workspace",
               "kind": "populated",
               "status": "captured",
-              "notes": "Setup mode composes capacity metrics, compact host action rows, optional private access, event summary, and Event Success setup. The setup workspace now has a manifest-registered setup/private-access Claude reference and deterministic host_manage_setup_private_access capture within advisory threshold: mismatch 13.35%, meanDelta 13.30, maxDelta 240.",
+              "notes": "Preparation composes one canonical capacity/revenue/policy field-row group, compact host actions, optional private access, staff, event summary, and Event Success setup without a mode picker. The prior exported setup reference remains historical evidence; the current deterministic capture reflects the user-approved lifecycle workspace.",
               "tests": [
                 "test/hosts/host_create_event_screen_test.dart"
               ],
@@ -7403,7 +7403,7 @@
               "id": "full_event_waitlist_apron",
               "kind": "populated",
               "status": "captured",
-              "notes": "Full or cohort-waitlisted events now have the deterministic host_manage_full_waitlist_apron capture and manifest-registered Claude reference showing the compact full-capacity/waitlist apron below the Host Manage top bar. Advisory comparison against design/reference_screens/screen.host.event.manage/full_waitlist_apron.png is within threshold after the compact-actions pass: mismatch 14.49%, meanDelta 15.54, maxDelta 240.",
+              "notes": "Full or cohort-waitlisted events retain a compact capacity notice, followed by the same canonical field-row summary used by every preparation state. The prior four-tile apron reference remains historical evidence rather than the active visual baseline.",
               "previewIds": [
                 "HostEventManageRouteScreen/Route and section states"
               ],
@@ -7418,7 +7418,7 @@
               "id": "attendance_setup_roster",
               "kind": "populated",
               "status": "captured",
-              "notes": "HostEventParticipantsPanel setup mode renders lifecycle filter tiles and public profile-backed participant rows from the Guests section, matching the Claude Guests reference. Advisory comparison against design/reference_screens/screen.host.event.manage/attendance_setup_roster.png is within threshold after the Guests-section pass: mismatch 12.68%, meanDelta 15.43, maxDelta 240.",
+              "notes": "HostEventRosterDrawer overlays setup-mode filters and public-profile-backed participant rows without replacing or rebuilding the lifecycle workspace. The prior full-page Guests reference remains historical evidence for roster content, not the active drawer geometry.",
               "tests": [
                 "test/hosts/host_create_event_screen_test.dart"
               ],
@@ -7550,7 +7550,7 @@
               "id": "live_workspace",
               "kind": "populated",
               "status": "captured",
-              "notes": "Host Manage live workspace renders Event Success host live console and check-in affordances. Compact live workspace now leads with club-name metadata, team-rotation round copy, previous/next controls, and a check-in summary strip while leaving the editable roster to dedicated attendance states. Advisory comparison against design/reference_screens/screen.host.event.manage/live_workspace.png is within threshold after the compact-actions fixture pass: mismatch 10.05%, meanDelta 4.69, maxDelta 240.",
+              "notes": "Live Operations renders the compact Event Success console as the sole primary workspace. Check-in and editable roster controls stay available through HostEventRosterDrawer, and the top bar carries only event title plus lifecycle subtitle.",
               "tests": [
                 "test/hosts/host_create_event_screen_test.dart"
               ],
@@ -7785,7 +7785,7 @@
               "id": "report_workspace",
               "kind": "populated",
               "status": "captured",
-              "notes": "Host Manage report workspace renders post-event scorecards and export actions. Report workspace now has a manifest-registered Claude reference and deterministic capture within advisory threshold: mismatch 12.61%, meanDelta 15.52, maxDelta 240. Continue hidden analytics, signal quality, sparse feedback, long recommendation copy, deeper offline, and reference-specific variants if the contract needs them.",
+              "notes": "Recap begins when the event ends or is cancelled, leads with public reviews and Event Success reporting, exposes its read-only roster through the edge drawer, and keeps configuration available under Review event setup. The prior report reference remains historical evidence for the reporting content.",
               "tests": [
                 "test/hosts/host_create_event_screen_test.dart"
               ],
@@ -8150,7 +8150,7 @@
               "id": "text_scale_2",
               "kind": "accessibility",
               "status": "captured",
-              "notes": "Host Manage text-scale 2.0 now has the deterministic host_manage_text_scale_2 capture covering the top bar, section picker, stats, roster table, and setup cards.",
+              "notes": "Host Manage text-scale 2.0 has a deterministic capture covering the text-aware back/title header, canonical preparation field rows, host actions, and the counted roster edge affordance without clipping or resurrecting the section picker.",
               "previewIds": [
                 "HostEventManageRouteScreen/Route and section states"
               ],

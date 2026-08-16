@@ -2405,9 +2405,15 @@ abstract final class CatchLayout {
   static const double tabBarFloatingHorizontalInset = CatchSpacing.s4;
   static const double tabBarFloatingBottomInset = CatchSpacing.s3;
   static const double tabBarCompactItemExtent = 48.0;
+  static const double tabBarMinimumTapExtent = 44.0;
+  static const double tabBarMinimumSelectedExtent = 88.0;
   static const double tabBarPillMinHeight = 42.0;
-  static const double tabBarPillHorizontalPadding = CatchSpacing.s3;
-  static const double tabBarLabelGap = CatchSpacing.s1;
+  // The icon box owns a small amount of transparent badge clearance. These
+  // asymmetric geometric insets produce equal optical pill padding.
+  static const double tabBarPillLeadingPadding = CatchSpacing.s2;
+  static const double tabBarPillTrailingPadding = CatchSpacing.s3;
+  static const double tabBarLabelGap = CatchSpacing.micro6;
+  static const double tabBarIconBoxExtent = 30.0;
   static const double tabBarIconSize = 22.0;
   static const double appShellNavigationIdentityExtent = CatchSpacing.s7;
   static const double appShellRailWidth = 96.0;
@@ -2419,6 +2425,9 @@ abstract final class CatchLayout {
   static const double topBarLargeHeight = 104.0;
   static const double hostEventManageTopBarHeight =
       topBarLargeHeight + CatchSpacing.s4;
+  static const double hostRosterDrawerMaxWidth = 440.0;
+  static const double hostRosterDrawerHandleWidth = 48.0;
+  static const double hostRosterDrawerHandleHeight = 88.0;
   static const double topBarTabHeight = CatchSpacing.s12;
   static const double topBarCollapsedFadeExtent = 72.0;
   static const double topBarCompactSearchBottomHeight = 68.0;
@@ -2429,6 +2438,39 @@ abstract final class CatchLayout {
 
   static double tabBarReservedBottomInset(double bottomSafeArea) =>
       tabBarExtent + tabBarFloatingBottomInset + bottomSafeArea;
+
+  static double tabBarSelectedExtentFor({
+    required double availableWidth,
+    required int itemCount,
+    required double labelWidth,
+  }) {
+    if (itemCount <= 1) return availableWidth;
+    final desired =
+        tabBarPillLeadingPadding +
+        tabBarIconBoxExtent +
+        tabBarLabelGap +
+        labelWidth +
+        tabBarPillTrailingPadding;
+    final maximum = availableWidth - (tabBarMinimumTapExtent * (itemCount - 1));
+    return desired
+        .clamp(
+          tabBarMinimumSelectedExtent,
+          maximum < tabBarMinimumSelectedExtent
+              ? tabBarMinimumSelectedExtent
+              : maximum,
+        )
+        .toDouble();
+  }
+
+  static double hostRosterDrawerWidthFor(double viewportWidth) =>
+      (viewportWidth - hostRosterDrawerHandleWidth)
+          .clamp(0.0, hostRosterDrawerMaxWidth)
+          .toDouble();
+
+  static double hostRosterDrawerHandleTopFor(double viewportHeight) =>
+      ((viewportHeight - hostRosterDrawerHandleHeight) / 2)
+          .clamp(CatchSpacing.s6, double.infinity)
+          .toDouble();
 
   static double distanceRingAvailableDiameterFor(Size viewport) {
     final shortestSide = viewport.width < viewport.height
