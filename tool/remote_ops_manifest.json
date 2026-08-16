@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-08-12",
+  "updated": "2026-08-16",
   "description": "Consolidated inventory of remote operational surfaces. This file groups Firebase deploys, environment switching, data repair/backfill, App Check/security console work, CI gates, and App Store/TestFlight/Play release operations without changing the underlying tools.",
   "operations": [
     {
@@ -106,6 +106,10 @@
         },
         {
           "kind": "tool-id",
+          "ref": "firebase:check-deploy-parity"
+        },
+        {
+          "kind": "tool-id",
           "ref": "firebase:index-readiness-waiter"
         },
         {
@@ -144,6 +148,7 @@
       "requiredChecks": [
         "node tool/firebase/check_environment_readiness.mjs --manifest-only",
         "node tool/firebase/check_environment_readiness.mjs --env <dev|staging|prod> --targets <csv>",
+        "node tool/firebase/check_deploy_parity.mjs --env <dev|staging|prod>",
         "node tool/contracts/check_firestore_contract.mjs",
         "npm --prefix functions run lint",
         "npm --prefix functions test",

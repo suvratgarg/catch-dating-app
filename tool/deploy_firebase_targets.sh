@@ -94,6 +94,9 @@ while IFS=$'\t' read -r phase deploy_only; do
       sleep 10
     done <<< "$function_batches"
     sync_callable_invokers
+    node "$repo_root/tool/firebase/check_deploy_parity.mjs" \
+      --env "$environment" \
+      --repo-root "${CATCH_FIREBASE_SOURCE_ROOT:-$repo_root}"
   else
     deploy_target "$phase" "$deploy_only" "$@"
   fi

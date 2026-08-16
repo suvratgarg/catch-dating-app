@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.1.1
-updated: 2026-08-13
+version: 2.1.2
+updated: 2026-08-16
 owner: recursive_audit_loop
 status: active
 ---
@@ -63,6 +63,25 @@ non-zero results block deployment. Add a requirement in the same change that
 introduces a new `defineSecret`, TTL-dependent capability, or deploy-time
 project prerequisite. A missing prerequisite must fail before dependency
 installation; do not move this gate into Firebase predeploy hooks.
+
+## Firebase Functions Deployment Parity
+
+Repository checks prove the authored Functions package, not what a Firebase
+project currently exposes. After every Functions deployment, the safe deploy
+wrapper compares the live inventory with `functions/src/index.ts` and confirms
+that every literal `defineSecret()` name exists in the selected project:
+
+```sh
+node tool/firebase/check_deploy_parity.mjs --env staging
+node tool/firebase/check_deploy_parity.mjs --env prod --json
+```
+
+Missing repository exports or declared secret names fail the deployment.
+Environment-only Functions are counted but ignored because installed Firebase
+Extensions legitimately own exports that are absent from this repository. The
+check uses only `firebase functions:list` and Secret Manager resource-name
+metadata; it never requests a secret version or payload. Authentication,
+authorization, tooling, and malformed-metadata failures fail closed.
 
 ## Firebase Rules Deployment Drift
 
