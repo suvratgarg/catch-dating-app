@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_organizer_contact_merge_candidates_response.schema.json",
+  "title": "ListOrganizerContactMergeCandidatesCallableResponse",
+  "description": "Manager-only, evidence-bearing duplicate candidates. No candidate is produced from a name match alone.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["organizerId", "candidates", "dismissedCandidates", "nextCursor", "truncated"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "candidates": {"type": "array", "maxItems": 50, "items": {"$ref": "#/definitions/candidate"}},
+    "dismissedCandidates": {"type": "array", "maxItems": 50, "items": {"$ref": "#/definitions/candidate"}},
+    "nextCursor": {"type": ["string", "null"], "maxLength": 512},
+    "truncated": {"type": "boolean"}
+  },
+  "definitions": {
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidateId", "contacts", "matchKinds", "confidence", "sourceKinds",
+        "sharedEventIds", "sharedEventCount", "updatedAtMillis",
+        "decisionState", "decisionRevision", "canReopen"
+      ],
+      "properties": {
+        "candidateId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "contacts": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"$ref": "#/definitions/contact"}},
+        "matchKinds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {"type": "string", "enum": ["sameVerifiedUid", "sameVerifiedPhone", "sameImportedPhone", "sameEmail"]}
+        },
+        "confidence": {"type": "string", "enum": ["verified", "proposed"]},
+        "sourceKinds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": {"type": "string", "enum": ["catchBooking", "hostImport", "hostManual", "webOtp", "providerSync"]}
+        },
+        "sharedEventIds": {"type": "array", "maxItems": 20, "uniqueItems": true, "items": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}},
+        "sharedEventCount": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "updatedAtMillis": {"type": "integer", "minimum": 0},
+        "decisionState": {"type": "string", "enum": ["none", "differentPeople", "reopened"]},
+        "decisionRevision": {"type": ["integer", "null"], "minimum": 1, "maximum": 9007199254740991},
+        "canReopen": {"type": "boolean"}
+      }
+    },
+    "contact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contactId", "displayName", "phoneE164", "email", "linkedAccount", "primarySource", "revision"],
+      "properties": {
+        "contactId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "displayName": {"type": "string", "minLength": 1, "maxLength": 120},
+        "phoneE164": {"type": ["string", "null"], "pattern": "^\\+[1-9][0-9]{7,14}$"},
+        "email": {"type": ["string", "null"], "format": "email", "maxLength": 320},
+        "linkedAccount": {"type": "boolean"},
+        "primarySource": {"type": "string", "enum": ["catchBooking", "hostImport", "hostManual", "webOtp", "providerSync"]},
+        "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991}
+      }
+    }
+  }
+}

@@ -24,6 +24,19 @@ enum HostAudiencePermissionStatus { unknown, optedIn, optedOut }
 
 enum HostCustomerRevenueCoverage { exact, partial, unavailable }
 
+enum HostContactMergeMatchKind {
+  sameVerifiedUid,
+  sameVerifiedPhone,
+  sameImportedPhone,
+  sameEmail,
+}
+
+enum HostContactMergeConfidence { verified, proposed }
+
+enum HostContactMergeDecisionState { none, differentPeople, reopened }
+
+enum HostWhatsappMessageDirection { inbound, outbound }
+
 enum HostRosterInsightCoverage { exact, partial }
 
 enum HostRosterSpendCoverage { catchPaymentsOnly, insufficientData }
@@ -572,6 +585,307 @@ class HostCustomerSend {
   final bool partialFailure;
 }
 
+class HostContactMergeCandidateContact {
+  const HostContactMergeCandidateContact({
+    required this.contactId,
+    required this.displayName,
+    required this.phoneE164,
+    required this.email,
+    required this.linkedAccount,
+    required this.primarySource,
+    required this.revision,
+  });
+
+  factory HostContactMergeCandidateContact.fromMap(Map<Object?, Object?> map) =>
+      HostContactMergeCandidateContact(
+        contactId: _requiredString(map, 'contactId'),
+        displayName: _requiredString(map, 'displayName'),
+        phoneE164: _nullableString(map['phoneE164']),
+        email: _nullableString(map['email']),
+        linkedAccount: _requiredBool(map, 'linkedAccount'),
+        primarySource: _requiredString(map, 'primarySource'),
+        revision: _requiredInt(map, 'revision'),
+      );
+
+  final String contactId;
+  final String displayName;
+  final String? phoneE164;
+  final String? email;
+  final bool linkedAccount;
+  final String primarySource;
+  final int revision;
+}
+
+class HostContactMergeCandidate {
+  const HostContactMergeCandidate({
+    required this.candidateId,
+    required this.contacts,
+    required this.matchKinds,
+    required this.confidence,
+    required this.sourceKinds,
+    required this.sharedEventIds,
+    required this.sharedEventCount,
+    required this.updatedAt,
+    required this.decisionState,
+    required this.decisionRevision,
+    required this.canReopen,
+  });
+
+  factory HostContactMergeCandidate.fromMap(Map<Object?, Object?> map) =>
+      HostContactMergeCandidate(
+        candidateId: _requiredString(map, 'candidateId'),
+        contacts: _mapList(
+          map['contacts'],
+          'merge candidate contacts',
+        ).map(HostContactMergeCandidateContact.fromMap).toList(growable: false),
+        matchKinds: _stringList(map['matchKinds'])
+            .map(
+              (value) => _enumByName(
+                HostContactMergeMatchKind.values,
+                value,
+                'merge match kind',
+              ),
+            )
+            .toSet(),
+        confidence: _enumByName(
+          HostContactMergeConfidence.values,
+          _requiredString(map, 'confidence'),
+          'merge confidence',
+        ),
+        sourceKinds: _stringList(map['sourceKinds']).toSet(),
+        sharedEventIds: _stringList(map['sharedEventIds']),
+        sharedEventCount: _requiredInt(map, 'sharedEventCount'),
+        updatedAt: _requiredDateTimeFromMillis(map, 'updatedAtMillis'),
+        decisionState: _enumByName(
+          HostContactMergeDecisionState.values,
+          _requiredString(map, 'decisionState'),
+          'merge decision state',
+        ),
+        decisionRevision: map['decisionRevision'] == null
+            ? null
+            : _requiredInt(map, 'decisionRevision'),
+        canReopen: _requiredBool(map, 'canReopen'),
+      );
+
+  final String candidateId;
+  final List<HostContactMergeCandidateContact> contacts;
+  final Set<HostContactMergeMatchKind> matchKinds;
+  final HostContactMergeConfidence confidence;
+  final Set<String> sourceKinds;
+  final List<String> sharedEventIds;
+  final int sharedEventCount;
+  final DateTime updatedAt;
+  final HostContactMergeDecisionState decisionState;
+  final int? decisionRevision;
+  final bool canReopen;
+}
+
+class HostContactMergeCandidatePage {
+  const HostContactMergeCandidatePage({
+    required this.organizerId,
+    required this.candidates,
+    required this.dismissedCandidates,
+    required this.nextCursor,
+    required this.truncated,
+  });
+
+  factory HostContactMergeCandidatePage.fromCallableData(Object? data) {
+    final map = _requiredMap(data, 'contact merge candidates');
+    return HostContactMergeCandidatePage(
+      organizerId: _requiredString(map, 'organizerId'),
+      candidates: _mapList(
+        map['candidates'],
+        'contact merge candidates',
+      ).map(HostContactMergeCandidate.fromMap).toList(growable: false),
+      dismissedCandidates: _mapList(
+        map['dismissedCandidates'],
+        'dismissed contact merge candidates',
+      ).map(HostContactMergeCandidate.fromMap).toList(growable: false),
+      nextCursor: _nullableString(map['nextCursor']),
+      truncated: _requiredBool(map, 'truncated'),
+    );
+  }
+
+  final String organizerId;
+  final List<HostContactMergeCandidate> candidates;
+  final List<HostContactMergeCandidate> dismissedCandidates;
+  final String? nextCursor;
+  final bool truncated;
+}
+
+class HostActiveContactMerge {
+  const HostActiveContactMerge({
+    required this.mergeReceiptId,
+    required this.sourceContactId,
+    required this.sourceDisplayName,
+    required this.evidence,
+    required this.conflicts,
+    required this.movedFactCount,
+    required this.mergedAt,
+  });
+
+  factory HostActiveContactMerge.fromMap(Map<Object?, Object?> map) =>
+      HostActiveContactMerge(
+        mergeReceiptId: _requiredString(map, 'mergeReceiptId'),
+        sourceContactId: _requiredString(map, 'sourceContactId'),
+        sourceDisplayName: _requiredString(map, 'sourceDisplayName'),
+        evidence: _stringList(map['evidence']),
+        conflicts: _stringList(map['conflicts']),
+        movedFactCount: _requiredInt(map, 'movedFactCount'),
+        mergedAt: _requiredDateTimeFromMillis(map, 'mergedAtMillis'),
+      );
+
+  final String mergeReceiptId;
+  final String sourceContactId;
+  final String sourceDisplayName;
+  final List<String> evidence;
+  final List<String> conflicts;
+  final int movedFactCount;
+  final DateTime mergedAt;
+}
+
+class HostWhatsappThreadSummary {
+  const HostWhatsappThreadSummary({
+    required this.threadId,
+    required this.contactId,
+    required this.displayName,
+    required this.eventIds,
+    required this.lastMessageBody,
+    required this.lastMessageDirection,
+    required this.lastMessageAt,
+    required this.lastInboundAt,
+    required this.serviceWindowExpiresAt,
+    required this.serviceWindowOpen,
+  });
+
+  factory HostWhatsappThreadSummary.fromMap(Map<Object?, Object?> map) =>
+      HostWhatsappThreadSummary(
+        threadId: _requiredString(map, 'threadId'),
+        contactId: _requiredString(map, 'contactId'),
+        displayName: _requiredString(map, 'displayName'),
+        eventIds: _stringList(map['eventIds']),
+        lastMessageBody: _requiredString(map, 'lastMessageBody'),
+        lastMessageDirection: _enumByName(
+          HostWhatsappMessageDirection.values,
+          _requiredString(map, 'lastMessageDirection'),
+          'WhatsApp message direction',
+        ),
+        lastMessageAt: _requiredDateTimeFromMillis(map, 'lastMessageAtMillis'),
+        lastInboundAt: _requiredDateTimeFromMillis(map, 'lastInboundAtMillis'),
+        serviceWindowExpiresAt: _requiredDateTimeFromMillis(
+          map,
+          'serviceWindowExpiresAtMillis',
+        ),
+        serviceWindowOpen: _requiredBool(map, 'serviceWindowOpen'),
+      );
+
+  final String threadId;
+  final String contactId;
+  final String displayName;
+  final List<String> eventIds;
+  final String lastMessageBody;
+  final HostWhatsappMessageDirection lastMessageDirection;
+  final DateTime lastMessageAt;
+  final DateTime lastInboundAt;
+  final DateTime serviceWindowExpiresAt;
+  final bool serviceWindowOpen;
+}
+
+class HostWhatsappThreadPage {
+  const HostWhatsappThreadPage({
+    required this.organizerId,
+    required this.threads,
+    required this.nextCursor,
+  });
+
+  factory HostWhatsappThreadPage.fromCallableData(Object? data) {
+    final map = _requiredMap(data, 'organizer WhatsApp threads');
+    return HostWhatsappThreadPage(
+      organizerId: _requiredString(map, 'organizerId'),
+      threads: _mapList(
+        map['threads'],
+        'organizer WhatsApp threads',
+      ).map(HostWhatsappThreadSummary.fromMap).toList(growable: false),
+      nextCursor: _nullableString(map['nextCursor']),
+    );
+  }
+
+  final String organizerId;
+  final List<HostWhatsappThreadSummary> threads;
+  final String? nextCursor;
+}
+
+class HostWhatsappMessage {
+  const HostWhatsappMessage({
+    required this.messageId,
+    required this.direction,
+    required this.body,
+    required this.occurredAt,
+  });
+
+  factory HostWhatsappMessage.fromMap(Map<Object?, Object?> map) =>
+      HostWhatsappMessage(
+        messageId: _requiredString(map, 'messageId'),
+        direction: _enumByName(
+          HostWhatsappMessageDirection.values,
+          _requiredString(map, 'direction'),
+          'WhatsApp message direction',
+        ),
+        body: _requiredString(map, 'body'),
+        occurredAt: _requiredDateTimeFromMillis(map, 'occurredAtMillis'),
+      );
+
+  final String messageId;
+  final HostWhatsappMessageDirection direction;
+  final String body;
+  final DateTime occurredAt;
+}
+
+class HostWhatsappThreadDetail {
+  const HostWhatsappThreadDetail({
+    required this.organizerId,
+    required this.threadId,
+    required this.contactId,
+    required this.displayName,
+    required this.lastInboundAt,
+    required this.serviceWindowExpiresAt,
+    required this.serviceWindowOpen,
+    required this.messages,
+    required this.messagesTruncated,
+  });
+
+  factory HostWhatsappThreadDetail.fromCallableData(Object? data) {
+    final map = _requiredMap(data, 'organizer WhatsApp thread');
+    return HostWhatsappThreadDetail(
+      organizerId: _requiredString(map, 'organizerId'),
+      threadId: _requiredString(map, 'threadId'),
+      contactId: _requiredString(map, 'contactId'),
+      displayName: _requiredString(map, 'displayName'),
+      lastInboundAt: _requiredDateTimeFromMillis(map, 'lastInboundAtMillis'),
+      serviceWindowExpiresAt: _requiredDateTimeFromMillis(
+        map,
+        'serviceWindowExpiresAtMillis',
+      ),
+      serviceWindowOpen: _requiredBool(map, 'serviceWindowOpen'),
+      messages: _mapList(
+        map['messages'],
+        'organizer WhatsApp messages',
+      ).map(HostWhatsappMessage.fromMap).toList(growable: false),
+      messagesTruncated: _requiredBool(map, 'messagesTruncated'),
+    );
+  }
+
+  final String organizerId;
+  final String threadId;
+  final String contactId;
+  final String displayName;
+  final DateTime lastInboundAt;
+  final DateTime serviceWindowExpiresAt;
+  final bool serviceWindowOpen;
+  final List<HostWhatsappMessage> messages;
+  final bool messagesTruncated;
+}
+
 class HostAudienceContactDetail {
   const HostAudienceContactDetail({
     required this.organizerId,
@@ -596,6 +910,7 @@ class HostAudienceContactDetail {
     this.notesTruncated = false,
     this.sends = const [],
     this.sendsTruncated = false,
+    this.activeMerges = const [],
     required this.revision,
   });
 
@@ -653,6 +968,10 @@ class HostAudienceContactDetail {
       sendsTruncated: map['sendsTruncated'] == null
           ? false
           : _requiredBool(map, 'sendsTruncated'),
+      activeMerges: _optionalMapList(
+        map['activeMerges'],
+        'active contact merges',
+      ).map(HostActiveContactMerge.fromMap).toList(growable: false),
       revision: _requiredInt(map, 'revision'),
     );
   }
@@ -679,6 +998,7 @@ class HostAudienceContactDetail {
   final bool notesTruncated;
   final List<HostCustomerSend> sends;
   final bool sendsTruncated;
+  final List<HostActiveContactMerge> activeMerges;
   final int revision;
 }
 
@@ -1358,6 +1678,84 @@ class HostCrmRepository {
     ).toJson(),
     action: 'export organizer audience',
     parse: HostAudienceExport.fromCallableData,
+  );
+
+  Future<HostContactMergeCandidatePage> listMergeCandidates(
+    String organizerId, {
+    String? cursor,
+    int limit = ReadLimitPolicy.historyPage,
+  }) => _call(
+    name: 'listOrganizerContactMergeCandidates',
+    payload: ListOrganizerContactMergeCandidatesCallableRequest(
+      organizerId: organizerId,
+      limit: limit > 50 ? 50 : limit,
+      cursor: cursor,
+    ).toJson(),
+    action: 'load organizer contact merge candidates',
+    parse: HostContactMergeCandidatePage.fromCallableData,
+  );
+
+  Future<void> reviewMergeCandidate({
+    required String organizerId,
+    required HostContactMergeCandidate candidate,
+    required bool differentPeople,
+  }) => _call<Object?>(
+    name: 'reviewOrganizerContactMergeCandidate',
+    payload: ReviewOrganizerContactMergeCandidateCallableRequest(
+      organizerId: organizerId,
+      candidateId: candidate.candidateId,
+      contactIds: candidate.contacts
+          .map((contact) => contact.contactId)
+          .toList(),
+      decision: differentPeople ? 'differentPeople' : 'reopen',
+      expectedRevision: candidate.decisionRevision,
+    ).toJson(),
+    action: 'review organizer contact merge candidate',
+    parse: (value) => value,
+  );
+
+  Future<void> mergeContacts({
+    required String organizerId,
+    required HostContactMergeCandidate candidate,
+    required String survivorContactId,
+    required bool confirmConflicts,
+    required String idempotencyKey,
+  }) {
+    final survivor = candidate.contacts.singleWhere(
+      (contact) => contact.contactId == survivorContactId,
+    );
+    final source = candidate.contacts.singleWhere(
+      (contact) => contact.contactId != survivorContactId,
+    );
+    return _call<Object?>(
+      name: 'mergeOrganizerContacts',
+      payload: MergeOrganizerContactsCallableRequest(
+        organizerId: organizerId,
+        survivorContactId: survivor.contactId,
+        sourceContactId: source.contactId,
+        survivorRevision: survivor.revision,
+        sourceRevision: source.revision,
+        confirmConflicts: confirmConflicts,
+        idempotencyKey: idempotencyKey,
+      ).toJson(),
+      action: 'merge organizer contacts',
+      parse: (value) => value,
+    );
+  }
+
+  Future<void> unmergeContacts({
+    required String organizerId,
+    required String mergeReceiptId,
+    required String idempotencyKey,
+  }) => _call<Object?>(
+    name: 'unmergeOrganizerContacts',
+    payload: UnmergeOrganizerContactsCallableRequest(
+      organizerId: organizerId,
+      mergeReceiptId: mergeReceiptId,
+      idempotencyKey: idempotencyKey,
+    ).toJson(),
+    action: 'undo organizer contact merge',
+    parse: (value) => value,
   );
 
   Future<HostMessagingSetup> getMessagingSetup(

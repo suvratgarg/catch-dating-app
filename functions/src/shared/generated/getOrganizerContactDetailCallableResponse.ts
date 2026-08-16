@@ -149,5 +149,29 @@ export interface GetOrganizerContactDetailCallableResponse {
       }
   )[];
   sendsTruncated?: boolean;
+  /**
+   * @maxItems 50
+   */
+  activeMerges: {
+    mergeReceiptId: string;
+    sourceContactId: string;
+    sourceDisplayName: string;
+    /**
+     * @maxItems 20
+     */
+    evidence: (
+      | "sameVerifiedUid"
+      | "sameVerifiedPhone"
+      | "sameImportedPhone"
+      | "sameEmail"
+      | "managerConfirmed"
+    )[];
+    /**
+     * @maxItems 20
+     */
+    conflicts: string[];
+    movedFactCount: number;
+    mergedAtMillis: number;
+  }[];
   revision: number;
 }
