@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_whatsapp_threads.schema.json",
+  "title": "OrganizerWhatsappThreadDocument",
+  "description": "Server-only organizer/contact WhatsApp thread summary with a 12-month rolling retention boundary.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerWhatsappThreads",
+  "x-firestore-path": "organizerWhatsappThreads/{threadId}",
+  "x-document-id-field": "threadId",
+  "x-owner": "organizer WhatsApp inbox and reply callables",
+  "required": ["schemaVersion", "threadId", "organizerId", "contactId", "connectionId", "endpointHash", "eventIds", "lastMessageBody", "lastMessageDirection", "lastMessageAt", "lastInboundAt", "serviceWindowExpiresAt", "messageCount", "createdAt", "updatedAt", "expiresAt"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "threadId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "contactId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "connectionId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "endpointHash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "eventIds": {"type": "array", "maxItems": 50, "uniqueItems": true, "items": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}},
+    "lastMessageBody": {"type": "string", "minLength": 1, "maxLength": 4096},
+    "lastMessageDirection": {"type": "string", "enum": ["inbound", "outbound"]},
+    "lastMessageAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "lastInboundAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "serviceWindowExpiresAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "messageCount": {"type": "integer", "minimum": 1, "maximum": 1000000},
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "expiresAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-firestore-ttl": true}
+  }
+}

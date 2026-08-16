@@ -1864,6 +1864,27 @@ export interface OrganizerContactMergeReceiptDocument {
 }
 
 /**
+ * Latest manager decision for one deterministic organizer-contact candidate pair. A different-people decision suppresses the pair until the same manager reopens it.
+ */
+export interface OrganizerContactMergeReviewDecisionDocument {
+  schemaVersion: 1;
+  decisionId: string;
+  organizerId: string;
+  /**
+   * @minItems 2
+   * @maxItems 2
+   */
+  contactIds: string[];
+  state: "differentPeople" | "reopened";
+  reviewedByUid: string;
+  reviewedAt: FirebaseFirestore.Timestamp;
+  reopenedByUid: string | null;
+  reopenedAt: FirebaseFirestore.Timestamp | null;
+  revision: number;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
  * Safe organizer-owned messaging sender metadata. Provider access tokens live in Secret Manager, never Firestore.
  */
 export interface OrganizerSenderConnectionDocument {
@@ -2248,7 +2269,7 @@ export interface OrganizerCampaignWebhookReceiptDocument {
 }
 
 /**
- * Sanitized durable provider event queued after signature verification. Message bodies and phone numbers are not retained.
+ * Sanitized durable provider event queued after signature verification. Inbound text is retained here for at most 30 days and copied into the organizer thread store for at most 12 months.
  */
 export interface OrganizerMessagingWebhookEventDocument {
   provider: "metaCloudApi";
@@ -2268,12 +2289,77 @@ export interface OrganizerMessagingWebhookEventDocument {
   endpointHash: string | null;
   isStop: boolean;
   hasReply: boolean;
+  inboundBody: string | null;
   providerErrorCode: number | null;
   providerOccurredAt: FirebaseFirestore.Timestamp | null;
   processingStatus: "pending" | "processed" | "unmatched" | "failed";
   attemptCount: number;
   createdAt: FirebaseFirestore.Timestamp;
   processedAt: FirebaseFirestore.Timestamp | null;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Server-only organizer/contact WhatsApp thread summary with a 12-month rolling retention boundary.
+ */
+export interface OrganizerWhatsappThreadDocument {
+  schemaVersion: 1;
+  threadId: string;
+  organizerId: string;
+  contactId: string;
+  connectionId: string;
+  endpointHash: string;
+  /**
+   * @maxItems 50
+   */
+  eventIds: string[];
+  lastMessageBody: string;
+  lastMessageDirection: "inbound" | "outbound";
+  lastMessageAt: FirebaseFirestore.Timestamp;
+  lastInboundAt: FirebaseFirestore.Timestamp;
+  serviceWindowExpiresAt: FirebaseFirestore.Timestamp;
+  messageCount: number;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Server-only inbound or outbound WhatsApp body retained for 12 months.
+ */
+export interface OrganizerWhatsappMessageDocument {
+  schemaVersion: 1;
+  messageId: string;
+  threadId: string;
+  organizerId: string;
+  contactId: string;
+  connectionId: string;
+  direction: "inbound" | "outbound";
+  body: string;
+  providerMessageId: string;
+  actorUid: string | null;
+  occurredAt: FirebaseFirestore.Timestamp;
+  createdAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Server-only at-most-once reservation for one organizer WhatsApp reply attempt.
+ */
+export interface OrganizerWhatsappReplyOperationDocument {
+  schemaVersion: 1;
+  operationId: string;
+  organizerId: string;
+  threadId: string;
+  contactId: string;
+  messageId: string;
+  bodyHash: string;
+  expectedLastInboundAtMillis: number;
+  actorUid: string;
+  state: "pending" | "completed" | "unknown";
+  providerMessageId: string | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
   expiresAt: FirebaseFirestore.Timestamp;
 }
 

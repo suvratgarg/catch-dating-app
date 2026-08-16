@@ -178,6 +178,27 @@ test("dynamic URL buttons bind only the provider URL suffix", async () => {
   ]);
 });
 
+test("service-window replies use the free-form text endpoint", async () => {
+  let payload: Record<string, unknown> = {};
+  const provider = new MetaWhatsappProvider(config, async (_input, init) => {
+    payload = JSON.parse(String(init?.body));
+    return jsonResponse({messages: [{id: "wamid.reply-1"}]});
+  });
+  const result = await provider.sendText({
+    accessToken: "token",
+    phoneNumberId: "phone-1",
+    toE164: "+919999999999",
+    body: "See you there",
+  });
+
+  assert.equal(result.providerMessageId, "wamid.reply-1");
+  assert.equal(payload.type, "text");
+  assert.deepEqual(payload.text, {
+    preview_url: false,
+    body: "See you there",
+  });
+});
+
 test(
   "non-Catch dynamic URL buttons are never treated as invite links",
   async () => {

@@ -39,6 +39,7 @@ import {OrganizerContactTraitDocument} from "./organizerContactTraitDocument";
 import {OrganizerAudienceSummaryDocument} from "./organizerAudienceSummaryDocument";
 import {OrganizerAudienceProjectionReceiptDocument} from "./organizerAudienceProjectionReceiptDocument";
 import {OrganizerContactMergeReceiptDocument} from "./organizerContactMergeReceiptDocument";
+import {OrganizerContactMergeReviewDecisionDocument} from "./organizerContactMergeReviewDecisionDocument";
 import {OrganizerSenderConnectionDocument} from "./organizerSenderConnectionDocument";
 import {OrganizerProviderConnectionDocument} from "./organizerProviderConnectionDocument";
 import {ExternalEventMappingDocument} from "./externalEventMappingDocument";
@@ -50,6 +51,9 @@ import {OrganizerBroadcastSummaryDocument} from "./organizerBroadcastSummaryDocu
 import {OrganizerCampaignRecipientDocument} from "./organizerCampaignRecipientDocument";
 import {OrganizerCampaignWebhookReceiptDocument} from "./organizerCampaignWebhookReceiptDocument";
 import {OrganizerMessagingWebhookEventDocument} from "./organizerMessagingWebhookEventDocument";
+import {OrganizerWhatsappThreadDocument} from "./organizerWhatsappThreadDocument";
+import {OrganizerWhatsappMessageDocument} from "./organizerWhatsappMessageDocument";
+import {OrganizerWhatsappReplyOperationDocument} from "./organizerWhatsappReplyOperationDocument";
 import {OrganizerClaimRequestDocument} from "./organizerClaimRequestDocument";
 import {OrganizerScheduleLockDocument} from "./organizerScheduleLockDocument";
 import {ClubPostDocument} from "./clubPostDocument";
@@ -280,6 +284,16 @@ import {OrganizerContactNoteCallableResponse} from "./organizerContactNoteCallab
 import {ExportOrganizerContactsCallablePayload} from "./exportOrganizerContactsCallablePayload";
 import {ExportOrganizerContactsCallableResponse} from "./exportOrganizerContactsCallableResponse";
 import {MergeOrganizerContactsCallablePayload} from "./mergeOrganizerContactsCallablePayload";
+import {ListOrganizerContactMergeCandidatesCallablePayload} from "./listOrganizerContactMergeCandidatesCallablePayload";
+import {ListOrganizerContactMergeCandidatesCallableResponse} from "./listOrganizerContactMergeCandidatesCallableResponse";
+import {ReviewOrganizerContactMergeCandidateCallablePayload} from "./reviewOrganizerContactMergeCandidateCallablePayload";
+import {ReviewOrganizerContactMergeCandidateCallableResponse} from "./reviewOrganizerContactMergeCandidateCallableResponse";
+import {ListOrganizerWhatsappThreadsCallablePayload} from "./listOrganizerWhatsappThreadsCallablePayload";
+import {ListOrganizerWhatsappThreadsCallableResponse} from "./listOrganizerWhatsappThreadsCallableResponse";
+import {GetOrganizerWhatsappThreadCallablePayload} from "./getOrganizerWhatsappThreadCallablePayload";
+import {GetOrganizerWhatsappThreadCallableResponse} from "./getOrganizerWhatsappThreadCallableResponse";
+import {SendOrganizerWhatsappReplyCallablePayload} from "./sendOrganizerWhatsappReplyCallablePayload";
+import {SendOrganizerWhatsappReplyCallableResponse} from "./sendOrganizerWhatsappReplyCallableResponse";
 import {UnmergeOrganizerContactsCallablePayload} from "./unmergeOrganizerContactsCallablePayload";
 import {MutateOrganizerContactMergeCallableResponse} from "./mutateOrganizerContactMergeCallableResponse";
 import {EventJoinRequestDecisionCallablePayload} from "./eventJoinRequestDecisionCallablePayload";
@@ -403,6 +417,7 @@ import {
   organizerAudienceSummaryDocumentSchema,
   organizerAudienceProjectionReceiptDocumentSchema,
   organizerContactMergeReceiptDocumentSchema,
+  organizerContactMergeReviewDecisionDocumentSchema,
   organizerSenderConnectionDocumentSchema,
   organizerProviderConnectionDocumentSchema,
   externalEventMappingDocumentSchema,
@@ -414,6 +429,9 @@ import {
   organizerCampaignRecipientDocumentSchema,
   organizerCampaignWebhookReceiptDocumentSchema,
   organizerMessagingWebhookEventDocumentSchema,
+  organizerWhatsappThreadDocumentSchema,
+  organizerWhatsappMessageDocumentSchema,
+  organizerWhatsappReplyOperationDocumentSchema,
   organizerClaimRequestDocumentSchema,
   organizerScheduleLockDocumentSchema,
   clubPostDocumentSchema,
@@ -644,6 +662,16 @@ import {
   exportOrganizerContactsCallablePayloadSchema,
   exportOrganizerContactsCallableResponseSchema,
   mergeOrganizerContactsCallablePayloadSchema,
+  listOrganizerContactMergeCandidatesCallablePayloadSchema,
+  listOrganizerContactMergeCandidatesCallableResponseSchema,
+  reviewOrganizerContactMergeCandidateCallablePayloadSchema,
+  reviewOrganizerContactMergeCandidateCallableResponseSchema,
+  listOrganizerWhatsappThreadsCallablePayloadSchema,
+  listOrganizerWhatsappThreadsCallableResponseSchema,
+  getOrganizerWhatsappThreadCallablePayloadSchema,
+  getOrganizerWhatsappThreadCallableResponseSchema,
+  sendOrganizerWhatsappReplyCallablePayloadSchema,
+  sendOrganizerWhatsappReplyCallableResponseSchema,
   unmergeOrganizerContactsCallablePayloadSchema,
   mutateOrganizerContactMergeCallableResponseSchema,
   eventJoinRequestDecisionCallablePayloadSchema,
@@ -876,6 +904,10 @@ export const validateOrganizerContactMergeReceiptDocument:
   ValidateFunction<OrganizerContactMergeReceiptDocument> =
     ajv.compile(organizerContactMergeReceiptDocumentSchema) as
       ValidateFunction<OrganizerContactMergeReceiptDocument>;
+export const validateOrganizerContactMergeReviewDecisionDocument:
+  ValidateFunction<OrganizerContactMergeReviewDecisionDocument> =
+    ajv.compile(organizerContactMergeReviewDecisionDocumentSchema) as
+      ValidateFunction<OrganizerContactMergeReviewDecisionDocument>;
 export const validateOrganizerSenderConnectionDocument:
   ValidateFunction<OrganizerSenderConnectionDocument> =
     ajv.compile(organizerSenderConnectionDocumentSchema) as
@@ -920,6 +952,18 @@ export const validateOrganizerMessagingWebhookEventDocument:
   ValidateFunction<OrganizerMessagingWebhookEventDocument> =
     ajv.compile(organizerMessagingWebhookEventDocumentSchema) as
       ValidateFunction<OrganizerMessagingWebhookEventDocument>;
+export const validateOrganizerWhatsappThreadDocument:
+  ValidateFunction<OrganizerWhatsappThreadDocument> =
+    ajv.compile(organizerWhatsappThreadDocumentSchema) as
+      ValidateFunction<OrganizerWhatsappThreadDocument>;
+export const validateOrganizerWhatsappMessageDocument:
+  ValidateFunction<OrganizerWhatsappMessageDocument> =
+    ajv.compile(organizerWhatsappMessageDocumentSchema) as
+      ValidateFunction<OrganizerWhatsappMessageDocument>;
+export const validateOrganizerWhatsappReplyOperationDocument:
+  ValidateFunction<OrganizerWhatsappReplyOperationDocument> =
+    ajv.compile(organizerWhatsappReplyOperationDocumentSchema) as
+      ValidateFunction<OrganizerWhatsappReplyOperationDocument>;
 export const validateOrganizerClaimRequestDocument:
   ValidateFunction<OrganizerClaimRequestDocument> =
     ajv.compile(organizerClaimRequestDocumentSchema) as
@@ -1840,6 +1884,46 @@ export const validateMergeOrganizerContactsCallablePayload:
   ValidateFunction<MergeOrganizerContactsCallablePayload> =
     ajv.compile(mergeOrganizerContactsCallablePayloadSchema) as
       ValidateFunction<MergeOrganizerContactsCallablePayload>;
+export const validateListOrganizerContactMergeCandidatesCallablePayload:
+  ValidateFunction<ListOrganizerContactMergeCandidatesCallablePayload> =
+    ajv.compile(listOrganizerContactMergeCandidatesCallablePayloadSchema) as
+      ValidateFunction<ListOrganizerContactMergeCandidatesCallablePayload>;
+export const validateListOrganizerContactMergeCandidatesCallableResponse:
+  ValidateFunction<ListOrganizerContactMergeCandidatesCallableResponse> =
+    ajv.compile(listOrganizerContactMergeCandidatesCallableResponseSchema) as
+      ValidateFunction<ListOrganizerContactMergeCandidatesCallableResponse>;
+export const validateReviewOrganizerContactMergeCandidateCallablePayload:
+  ValidateFunction<ReviewOrganizerContactMergeCandidateCallablePayload> =
+    ajv.compile(reviewOrganizerContactMergeCandidateCallablePayloadSchema) as
+      ValidateFunction<ReviewOrganizerContactMergeCandidateCallablePayload>;
+export const validateReviewOrganizerContactMergeCandidateCallableResponse:
+  ValidateFunction<ReviewOrganizerContactMergeCandidateCallableResponse> =
+    ajv.compile(reviewOrganizerContactMergeCandidateCallableResponseSchema) as
+      ValidateFunction<ReviewOrganizerContactMergeCandidateCallableResponse>;
+export const validateListOrganizerWhatsappThreadsCallablePayload:
+  ValidateFunction<ListOrganizerWhatsappThreadsCallablePayload> =
+    ajv.compile(listOrganizerWhatsappThreadsCallablePayloadSchema) as
+      ValidateFunction<ListOrganizerWhatsappThreadsCallablePayload>;
+export const validateListOrganizerWhatsappThreadsCallableResponse:
+  ValidateFunction<ListOrganizerWhatsappThreadsCallableResponse> =
+    ajv.compile(listOrganizerWhatsappThreadsCallableResponseSchema) as
+      ValidateFunction<ListOrganizerWhatsappThreadsCallableResponse>;
+export const validateGetOrganizerWhatsappThreadCallablePayload:
+  ValidateFunction<GetOrganizerWhatsappThreadCallablePayload> =
+    ajv.compile(getOrganizerWhatsappThreadCallablePayloadSchema) as
+      ValidateFunction<GetOrganizerWhatsappThreadCallablePayload>;
+export const validateGetOrganizerWhatsappThreadCallableResponse:
+  ValidateFunction<GetOrganizerWhatsappThreadCallableResponse> =
+    ajv.compile(getOrganizerWhatsappThreadCallableResponseSchema) as
+      ValidateFunction<GetOrganizerWhatsappThreadCallableResponse>;
+export const validateSendOrganizerWhatsappReplyCallablePayload:
+  ValidateFunction<SendOrganizerWhatsappReplyCallablePayload> =
+    ajv.compile(sendOrganizerWhatsappReplyCallablePayloadSchema) as
+      ValidateFunction<SendOrganizerWhatsappReplyCallablePayload>;
+export const validateSendOrganizerWhatsappReplyCallableResponse:
+  ValidateFunction<SendOrganizerWhatsappReplyCallableResponse> =
+    ajv.compile(sendOrganizerWhatsappReplyCallableResponseSchema) as
+      ValidateFunction<SendOrganizerWhatsappReplyCallableResponse>;
 export const validateUnmergeOrganizerContactsCallablePayload:
   ValidateFunction<UnmergeOrganizerContactsCallablePayload> =
     ajv.compile(unmergeOrganizerContactsCallablePayloadSchema) as

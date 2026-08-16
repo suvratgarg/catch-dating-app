@@ -131,6 +131,14 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   exportOrganizerContacts: {maxRequests: 10, windowMs: 60 * 60 * 1000},
   mergeOrganizerContacts: {maxRequests: 20, windowMs: 60 * 1000},
   unmergeOrganizerContacts: {maxRequests: 20, windowMs: 60 * 1000},
+  listOrganizerContactMergeCandidates: {
+    maxRequests: 60,
+    windowMs: 60 * 1000,
+  },
+  reviewOrganizerContactMergeCandidate: {
+    maxRequests: 30,
+    windowMs: 60 * 1000,
+  },
   completeOrganizerWhatsappConnection: {
     maxRequests: 10,
     windowMs: 60 * 60 * 1000,
@@ -138,6 +146,9 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   sendOrganizerWhatsappTest: {maxRequests: 5, windowMs: 60 * 60 * 1000},
   upsertOrganizerCampaign: {maxRequests: 30, windowMs: 60 * 1000},
   listOrganizerCampaigns: {maxRequests: 60, windowMs: 60 * 1000},
+  listOrganizerWhatsappThreads: {maxRequests: 60, windowMs: 60 * 1000},
+  getOrganizerWhatsappThread: {maxRequests: 60, windowMs: 60 * 1000},
+  sendOrganizerWhatsappReply: {maxRequests: 30, windowMs: 60 * 1000},
   approveOrganizerCampaign: {maxRequests: 20, windowMs: 60 * 1000},
   dispatchOrganizerCampaign: {maxRequests: 3, windowMs: 60 * 60 * 1000},
   getOrganizerProviderSetup: {maxRequests: 60, windowMs: 60 * 1000},

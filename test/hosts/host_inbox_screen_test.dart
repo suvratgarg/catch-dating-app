@@ -125,6 +125,54 @@ void main() {
     );
   });
 
+  testWidgets('keeps WhatsApp threads inside the existing Inbox scopes', (
+    tester,
+  ) async {
+    final event = event_test.buildEvent(
+      startTime: now.add(const Duration(hours: 1)),
+      endTime: now.add(const Duration(hours: 2)),
+    );
+    final eventThread = _whatsappThread(
+      threadId: 'event-thread',
+      displayName: 'Event Guest',
+      eventIds: [event.id],
+      body: 'Where is the entrance?',
+      now: now,
+    );
+    final generalThread = _whatsappThread(
+      threadId: 'general-thread',
+      displayName: 'General Guest',
+      eventIds: const [],
+      body: 'When is your next event?',
+      now: now,
+    );
+
+    await tester.pumpWidget(
+      _app(
+        event: event,
+        previews: const [],
+        participations: const [],
+        whatsappThreads: [eventThread, generalThread],
+        now: now,
+      ),
+    );
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Event Guest'), findsOneWidget);
+    expect(find.text('Where is the entrance?'), findsOneWidget);
+    expect(find.text('WhatsApp'), findsOneWidget);
+    expect(find.text('General Guest'), findsNothing);
+
+    await tester.tap(find.bySemanticsLabel(RegExp('Inbox scope')));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('General inquiries'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('General Guest'), findsOneWidget);
+    expect(find.text('When is your next event?'), findsOneWidget);
+    expect(find.text('Event Guest'), findsNothing);
+  });
+
   testWidgets('shows Sends history before opening the campaign composer', (
     tester,
   ) async {
@@ -360,6 +408,7 @@ Widget _app({
   HostMessagingWorkspace initialWorkspace = HostMessagingWorkspace.inbox,
   Set<HostAudienceSegment> initialCampaignSegments = const {},
   List<HostSendSummary> sends = const [],
+  List<HostWhatsappThreadSummary> whatsappThreads = const [],
 }) {
   final club = club_test.buildClub(id: event?.clubId ?? 'club-1');
   final inbox = ChatsListViewModel(
@@ -386,6 +435,15 @@ Widget _app({
           HostSendsPage(organizerId: club.id, sends: sends, nextCursor: null),
         ),
       ),
+      hostWhatsappThreadsProvider(club.id).overrideWithValue(
+        AsyncData(
+          HostWhatsappThreadPage(
+            organizerId: club.id,
+            threads: whatsappThreads,
+            nextCursor: null,
+          ),
+        ),
+      ),
       hostCustomerSegmentCountProvider.overrideWith(
         (ref, request) async => const HostCustomerSegmentCount(
           count: 12,
@@ -409,6 +467,25 @@ Widget _app({
     ),
   );
 }
+
+HostWhatsappThreadSummary _whatsappThread({
+  required String threadId,
+  required String displayName,
+  required List<String> eventIds,
+  required String body,
+  required DateTime now,
+}) => HostWhatsappThreadSummary(
+  threadId: threadId,
+  contactId: 'contact-$threadId',
+  displayName: displayName,
+  eventIds: eventIds,
+  lastMessageBody: body,
+  lastMessageDirection: HostWhatsappMessageDirection.inbound,
+  lastMessageAt: now,
+  lastInboundAt: now,
+  serviceWindowExpiresAt: now.add(const Duration(hours: 24)),
+  serviceWindowOpen: true,
+);
 
 HostMessagingSetup _messagingSetup(String organizerId) => HostMessagingSetup(
   organizerId: organizerId,

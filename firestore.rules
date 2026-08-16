@@ -1050,6 +1050,18 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /organizerWhatsappThreads/{threadId} {
+      allow read, write: if false;
+    }
+
+    match /organizerWhatsappMessages/{messageId} {
+      allow read, write: if false;
+    }
+
+    match /organizerWhatsappReplyOperations/{operationId} {
+      allow read, write: if false;
+    }
+
     match /organizerClaimRequests/{requestId} {
       allow read, write: if false;
     }

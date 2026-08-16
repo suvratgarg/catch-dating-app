@@ -984,6 +984,50 @@ describe("firestore.rules", () => {
         "lock-1",
       )));
     });
+
+    it("keeps contact merge review decisions callable-only", async () => {
+      const reviewedAt = Timestamp.fromDate(
+        new Date("2026-08-16T10:00:00.000Z"),
+      );
+      await seed(["organizerContactMergeReviewDecisions", "decision-1"], {
+        schemaVersion: 1,
+        decisionId: "decision-1",
+        organizerId: "organizer-1",
+        contactIds: ["contact-1", "contact-2"],
+        state: "differentPeople",
+        reviewedByUid: "owner-1",
+        reviewedAt,
+        reopenedByUid: null,
+        reopenedAt: null,
+        revision: 1,
+        updatedAt: reviewedAt,
+      });
+
+      const decisionRef = doc(
+        authedDb("owner-1"),
+        "organizerContactMergeReviewDecisions",
+        "decision-1",
+      );
+      await assertFails(getDoc(decisionRef));
+      await assertFails(updateDoc(decisionRef, {state: "reopened"}));
+    });
+
+    it("keeps retained WhatsApp thread bodies callable-only", async () => {
+      const db = authedDb("owner-1");
+      for (const [collectionName, documentId] of [
+        ["organizerWhatsappThreads", "thread-1"],
+        ["organizerWhatsappMessages", "message-1"],
+        ["organizerWhatsappReplyOperations", "operation-1"],
+      ]) {
+        await seed([collectionName, documentId], {
+          organizerId: "organizer-1",
+          body: "Private inbound text",
+        });
+        const reference = doc(db, collectionName, documentId);
+        await assertFails(getDoc(reference));
+        await assertFails(setDoc(reference, {organizerId: "organizer-1"}));
+      }
+    });
   });
 
   describe("relationship documents", () => {

@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/send_organizer_whatsapp_reply_payload.schema.json",
+  "title": "SendOrganizerWhatsappReplyCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["organizerId", "threadId", "body", "expectedLastInboundAtMillis", "idempotencyKey"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "threadId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "body": {"type": "string", "minLength": 1, "maxLength": 4096},
+    "expectedLastInboundAtMillis": {"type": "integer", "minimum": 0},
+    "idempotencyKey": {"type": "string", "minLength": 8, "maxLength": 120}
+  }
+}

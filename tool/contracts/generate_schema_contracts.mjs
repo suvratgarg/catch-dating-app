@@ -209,6 +209,14 @@ const schemaSpecs = [
       "functions/src/shared/generated/organizerContactMergeReceiptDocument.ts",
   },
   {
+    name: "OrganizerContactMergeReviewDecisionDocument",
+    source:
+      "firestore/organizer_contact_merge_review_decisions.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerContactMergeReviewDecisionDocument.ts",
+  },
+  {
     name: "OrganizerSenderConnectionDocument",
     source: "firestore/organizer_sender_connections.schema.json",
     typeOutput:
@@ -274,6 +282,25 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "organizerMessagingWebhookEventDocument.ts",
+  },
+  {
+    name: "OrganizerWhatsappThreadDocument",
+    source: "firestore/organizer_whatsapp_threads.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerWhatsappThreadDocument.ts",
+  },
+  {
+    name: "OrganizerWhatsappMessageDocument",
+    source: "firestore/organizer_whatsapp_messages.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerWhatsappMessageDocument.ts",
+  },
+  {
+    name: "OrganizerWhatsappReplyOperationDocument",
+    source: "firestore/organizer_whatsapp_reply_operations.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerWhatsappReplyOperationDocument.ts",
   },
   {
     name: "OrganizerClaimRequestDocument",
@@ -1733,6 +1760,85 @@ const schemaSpecs = [
     source: "callables/merge_organizer_contacts_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/mergeOrganizerContactsCallablePayload.ts",
+  },
+  {
+    name: "ListOrganizerContactMergeCandidatesCallablePayload",
+    source:
+      "callables/list_organizer_contact_merge_candidates_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "listOrganizerContactMergeCandidatesCallablePayload.ts",
+  },
+  {
+    name: "ListOrganizerContactMergeCandidatesCallableResponse",
+    source:
+      "callable_responses/" +
+      "list_organizer_contact_merge_candidates_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "listOrganizerContactMergeCandidatesCallableResponse.ts",
+  },
+  {
+    name: "ReviewOrganizerContactMergeCandidateCallablePayload",
+    source:
+      "callables/review_organizer_contact_merge_candidate_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "reviewOrganizerContactMergeCandidateCallablePayload.ts",
+  },
+  {
+    name: "ReviewOrganizerContactMergeCandidateCallableResponse",
+    source:
+      "callable_responses/" +
+      "review_organizer_contact_merge_candidate_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "reviewOrganizerContactMergeCandidateCallableResponse.ts",
+  },
+  {
+    name: "ListOrganizerWhatsappThreadsCallablePayload",
+    source: "callables/list_organizer_whatsapp_threads_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "listOrganizerWhatsappThreadsCallablePayload.ts",
+  },
+  {
+    name: "ListOrganizerWhatsappThreadsCallableResponse",
+    source:
+      "callable_responses/list_organizer_whatsapp_threads_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "listOrganizerWhatsappThreadsCallableResponse.ts",
+  },
+  {
+    name: "GetOrganizerWhatsappThreadCallablePayload",
+    source: "callables/get_organizer_whatsapp_thread_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "getOrganizerWhatsappThreadCallablePayload.ts",
+  },
+  {
+    name: "GetOrganizerWhatsappThreadCallableResponse",
+    source:
+      "callable_responses/get_organizer_whatsapp_thread_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "getOrganizerWhatsappThreadCallableResponse.ts",
+  },
+  {
+    name: "SendOrganizerWhatsappReplyCallablePayload",
+    source: "callables/send_organizer_whatsapp_reply_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "sendOrganizerWhatsappReplyCallablePayload.ts",
+  },
+  {
+    name: "SendOrganizerWhatsappReplyCallableResponse",
+    source:
+      "callable_responses/send_organizer_whatsapp_reply_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "sendOrganizerWhatsappReplyCallableResponse.ts",
   },
   {
     name: "UnmergeOrganizerContactsCallablePayload",

@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_whatsapp_messages.schema.json",
+  "title": "OrganizerWhatsappMessageDocument",
+  "description": "Server-only inbound or outbound WhatsApp body retained for 12 months.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerWhatsappMessages",
+  "x-firestore-path": "organizerWhatsappMessages/{messageId}",
+  "x-document-id-field": "messageId",
+  "x-owner": "organizer WhatsApp inbox and reply callables",
+  "required": ["schemaVersion", "messageId", "threadId", "organizerId", "contactId", "connectionId", "direction", "body", "providerMessageId", "actorUid", "occurredAt", "createdAt", "expiresAt"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "messageId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "threadId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "contactId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "connectionId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "direction": {"type": "string", "enum": ["inbound", "outbound"]},
+    "body": {"type": "string", "minLength": 1, "maxLength": 4096},
+    "providerMessageId": {"type": "string", "minLength": 1, "maxLength": 240},
+    "actorUid": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
+    "occurredAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "expiresAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-firestore-ttl": true}
+  }
+}

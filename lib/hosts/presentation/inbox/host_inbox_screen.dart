@@ -12,6 +12,7 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
@@ -34,6 +35,7 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_broadcast_compose
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_broadcast_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_sends_workspace.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_whatsapp_thread_sheet.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
@@ -324,6 +326,7 @@ class _HostInboxWorkspaceGroup extends ConsumerWidget {
 
     final eventsAsync = ref.watch(watchEventsForClubProvider(club.id));
     final inboxAsync = ref.watch(chatsListViewModelProvider);
+    final whatsappAsync = ref.watch(hostWhatsappThreadsProvider(club.id));
     final events = eventsAsync.asData?.value;
     final scope = events == null
         ? const HostInboxScope.general()
@@ -340,6 +343,7 @@ class _HostInboxWorkspaceGroup extends ConsumerWidget {
       eventsAsync,
       inboxAsync,
       participationsAsync,
+      whatsappAsync,
     ];
     final failed = asyncValues.where((value) => value.hasError).firstOrNull;
     if (failed != null) {
@@ -354,6 +358,7 @@ class _HostInboxWorkspaceGroup extends ConsumerWidget {
     );
     final inbox = inboxAsync.asData?.value;
     final participations = participationsAsync.asData?.value;
+    final whatsappPage = whatsappAsync.asData?.value;
     final workspace = events == null || inbox == null || participations == null
         ? null
         : HostInboxViewModel.compose(
@@ -366,7 +371,22 @@ class _HostInboxWorkspaceGroup extends ConsumerWidget {
             query: query,
             now: now,
           );
-    if (loading || workspace == null) return const ChatsListSkeleton();
+    if (loading || workspace == null || whatsappPage == null) {
+      return const ChatsListSkeleton();
+    }
+    final normalizedQuery = query.trim().toLowerCase();
+    final whatsappThreads = whatsappPage.threads
+        .where((thread) {
+          final inScope = scope.isGeneral
+              ? thread.eventIds.isEmpty
+              : selectedSegment == HostInboxAudienceSegment.booked &&
+                    thread.eventIds.contains(scope.eventId);
+          if (!inScope) return false;
+          return normalizedQuery.isEmpty ||
+              thread.displayName.toLowerCase().contains(normalizedQuery) ||
+              thread.lastMessageBody.toLowerCase().contains(normalizedQuery);
+        })
+        .toList(growable: false);
     return SliverMainAxisGroup(
       slivers: [
         if (workspace.scopeOptions.length > 1)
@@ -382,10 +402,18 @@ class _HostInboxWorkspaceGroup extends ConsumerWidget {
           ),
         HostInboxWorkspaceSliver(
           workspace: workspace,
+          whatsappThreads: whatsappThreads,
           now: now,
           broadcastEnabled: broadcastEnabled,
           onThreadSelected: onThreadSelected,
           onBroadcastSelected: onBroadcastSelected,
+          onWhatsappSelected: (thread) => showCatchBottomSheet<void>(
+            context: context,
+            builder: (_) => HostWhatsappThreadSheet(
+              organizerId: club.id,
+              threadId: thread.threadId,
+            ),
+          ),
         ),
       ],
     );
@@ -661,17 +689,21 @@ class HostInboxWorkspaceSliver extends StatelessWidget {
   const HostInboxWorkspaceSliver({
     super.key,
     required this.workspace,
+    this.whatsappThreads = const [],
     required this.now,
     required this.broadcastEnabled,
     required this.onThreadSelected,
     required this.onBroadcastSelected,
+    this.onWhatsappSelected,
   });
 
   final HostInboxViewModel workspace;
+  final List<HostWhatsappThreadSummary> whatsappThreads;
   final DateTime now;
   final bool broadcastEnabled;
   final ChatThreadSelectedCallback onThreadSelected;
   final ValueChanged<HostInboxViewModel> onBroadcastSelected;
+  final ValueChanged<HostWhatsappThreadSummary>? onWhatsappSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -719,8 +751,23 @@ class HostInboxWorkspaceSliver extends StatelessWidget {
                 rowsByMatchId[preview.matchId]?.supportingText ??
                 preview.previewText,
             onThreadSelected: onThreadSelected,
-          )
-        else
+          ),
+        if (whatsappThreads.isNotEmpty)
+          SliverPadding(
+            padding: CatchInsets.pageBody.copyWith(top: CatchSpacing.s2),
+            sliver: SliverList.list(
+              children: [
+                for (final thread in whatsappThreads) ...[
+                  HostWhatsappThreadRow(
+                    thread: thread,
+                    onTap: () => onWhatsappSelected?.call(thread),
+                  ),
+                  gapH8,
+                ],
+              ],
+            ),
+          ),
+        if (workspace.threads.isEmpty && whatsappThreads.isEmpty)
           CatchSliverStateViewport(
             child: workspace.query.isNotEmpty && workspace.hasUnfilteredThreads
                 ? const ChatsEmptyState.noHostSearchResults()
