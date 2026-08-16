@@ -39,6 +39,14 @@ class HostCustomersDirectoryController
         HostCustomersDirectoryState(
           contacts: List.unmodifiable(byId.values),
           nextCursor: page.nextCursor,
+          matchCount:
+              current.matchCountCoverage ==
+                  HostCustomerMatchCountCoverage.atLeast
+              ? byId.length > current.matchCount
+                    ? byId.length
+                    : current.matchCount
+              : current.matchCount,
+          matchCountCoverage: current.matchCountCoverage,
           sourceCoverage: _directoryCoverage(page.sourceCoverage),
           projectionVersion: page.projectionVersion,
         ),
@@ -49,6 +57,27 @@ class HostCustomersDirectoryController
       );
     }
   }
+}
+
+@riverpod
+Future<HostCustomerSegmentCount> hostCustomerSegmentCount(
+  Ref ref,
+  HostCustomerSegmentCountRequest request,
+) async {
+  final page = await ref
+      .read(hostCrmRepositoryProvider)
+      .listContacts(
+        request.organizerId,
+        query: HostAudienceQuery(
+          search: request.search,
+          segment: hostAudienceSegmentForCustomerFilter(request.filter),
+        ),
+        limit: 1,
+      );
+  return HostCustomerSegmentCount(
+    count: page.matchCount,
+    coverage: _matchCountCoverage(page.matchCountCoverage),
+  );
 }
 
 HostAudienceQuery _queryFor(
@@ -77,6 +106,23 @@ HostAudienceSegment? hostAudienceSegmentForCustomerFilter(
   HostCustomerTag.smsReachable => HostAudienceSegment.smsReachable,
 };
 
+HostCustomerFilter hostCustomerFilterForAudienceSegment(
+  HostAudienceSegment segment,
+) => switch (segment) {
+  HostAudienceSegment.newToOrganizer => HostCustomerFilter.newToOrganizer,
+  HostAudienceSegment.firstTimeAttendee => HostCustomerFilter.firstTime,
+  HostAudienceSegment.repeatAttendee => HostCustomerFilter.repeat,
+  HostAudienceSegment.regular => HostCustomerFilter.regular,
+  HostAudienceSegment.lapsedRegular => HostCustomerFilter.atRisk,
+  HostAudienceSegment.reliableAttendee => HostCustomerFilter.reliable,
+  HostAudienceSegment.needsConfirmation => HostCustomerFilter.needsConfirmation,
+  HostAudienceSegment.advocate => HostCustomerFilter.advocate,
+  HostAudienceSegment.highImpactAdvocate =>
+    HostCustomerFilter.highImpactAdvocate,
+  HostAudienceSegment.whatsappReachable => HostCustomerFilter.whatsappReachable,
+  HostAudienceSegment.smsReachable => HostCustomerFilter.smsReachable,
+};
+
 bool hostCrmSmsReachableAvailable(HostCrmChannelReadiness? readiness) =>
     readiness == HostCrmChannelReadiness.currentEventOnly;
 
@@ -89,13 +135,49 @@ List<HostCustomerFilter> hostCustomerFiltersForSmsReadiness(
       filter,
 ];
 
+Map<HostCustomerFilterGroup, List<HostCustomerFilter>>
+hostCustomerFilterGroupsForSmsReadiness(HostCrmChannelReadiness? smsReadiness) {
+  final filters = hostCustomerFiltersForSmsReadiness(smsReadiness).toSet();
+  return {
+    HostCustomerFilterGroup.attendance: [
+      HostCustomerFilter.newToOrganizer,
+      HostCustomerFilter.firstTime,
+      HostCustomerFilter.repeat,
+      HostCustomerFilter.regular,
+      HostCustomerFilter.atRisk,
+    ].where(filters.contains).toList(growable: false),
+    HostCustomerFilterGroup.reliability: [
+      HostCustomerFilter.reliable,
+      HostCustomerFilter.needsConfirmation,
+    ].where(filters.contains).toList(growable: false),
+    HostCustomerFilterGroup.advocacy: [
+      HostCustomerFilter.advocate,
+      HostCustomerFilter.highImpactAdvocate,
+    ].where(filters.contains).toList(growable: false),
+    HostCustomerFilterGroup.reachable: [
+      HostCustomerFilter.whatsappReachable,
+      HostCustomerFilter.smsReachable,
+    ].where(filters.contains).toList(growable: false),
+  };
+}
+
 HostCustomersDirectoryState _directoryStateFromPage(HostAudiencePage page) =>
     HostCustomersDirectoryState.fromPageData(
       contacts: page.contacts.map(_directoryContact),
       nextCursor: page.nextCursor,
+      matchCount: page.matchCount,
+      matchCountCoverage: _matchCountCoverage(page.matchCountCoverage),
       sourceCoverage: _directoryCoverage(page.sourceCoverage),
       projectionVersion: page.projectionVersion,
     );
+
+HostCustomerMatchCountCoverage _matchCountCoverage(
+  HostAudienceMatchCountCoverage coverage,
+) => switch (coverage) {
+  HostAudienceMatchCountCoverage.exact => HostCustomerMatchCountCoverage.exact,
+  HostAudienceMatchCountCoverage.atLeast =>
+    HostCustomerMatchCountCoverage.atLeast,
+};
 
 HostCustomerDirectoryContact _directoryContact(HostAudienceContact contact) =>
     HostCustomerDirectoryContact(

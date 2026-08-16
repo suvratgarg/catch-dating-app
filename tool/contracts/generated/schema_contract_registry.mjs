@@ -51848,6 +51848,8 @@ export const listOrganizerContactsCallableResponseSchema = {
     "organizerId",
     "contacts",
     "nextCursor",
+    "matchCount",
+    "matchCountCoverage",
     "sourceCoverage",
     "projectionVersion"
   ],
@@ -52007,6 +52009,18 @@ export const listOrganizerContactsCallableResponseSchema = {
         "null"
       ],
       "maxLength": 1000
+    },
+    "matchCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "matchCountCoverage": {
+      "type": "string",
+      "enum": [
+        "exact",
+        "atLeast"
+      ]
     },
     "sourceCoverage": {
       "type": "string",

@@ -3,25 +3,25 @@
   "version": 2,
   "generatedFrom": "design/features/host_customers.feature.json",
   "generatedFor": "2026-08-15",
-  "sourceDigest": "sha256:839ccdec8dc8cf0bc50fc324e88e366b9f3e5583d8fe8709a7ee5f016dbd618f",
-  "resolvedDigest": "sha256:7a7fc157f27c69ee4b134ea85032ab90e1e197106c090ee32e30de59bc22e68d",
+  "sourceDigest": "sha256:26ef6eae7a84e3b70c0b08b2bad9c6dac559898f090a3c779088f7f18d5a1b58",
+  "resolvedDigest": "sha256:45756b0b5c2344dd86222afae2c42135c4059937fc1c7c96bab6fe9478def979",
   "feature": {
     "id": "feature.host_customers",
     "name": "Host Customers",
     "owner": "hosts",
     "status": "active",
-    "description": "Makes Customers the sole Host CRM destination for the complete audience segment set, pagination, export, contact administration, customer detail, and identity-gated conversations."
+    "description": "Makes Customers the sole Host CRM directory for the complete audience segment set, pagination, export, contact administration, customer detail, identity-gated conversations, and a deep-linked segment bridge into Messaging campaigns."
   },
   "coverage": {
     "surfaces": 1,
-    "states": 24,
-    "scenarios": 24,
-    "actionCases": 24,
-    "actions": 12,
+    "states": 27,
+    "scenarios": 27,
+    "actionCases": 27,
+    "actions": 14,
     "captures": 1,
     "previews": 1,
-    "testFiles": 3,
-    "evidenceExceptions": 35
+    "testFiles": 5,
+    "evidenceExceptions": 38
   },
   "surfaces": [
     {
@@ -32,7 +32,7 @@
         "id": "screen.host.customers"
       },
       "actionScope": {
-        "included": "Customer directory recovery, shared organizer selection, debounced name search, readiness-visible server-backed CRM segments, pagination, header-menu export, organizer-only manual contact creation, rename/suppression/removal controls, complete event evidence, customer and event detail routing, and verified-account direct conversation creation.",
+        "included": "Customer directory recovery, shared organizer selection, debounced name search, exact-or-qualified result counts, grouped readiness-visible server-backed CRM segment filters, pagination, header-menu export, organizer-only manual contact creation, rename/suppression/removal controls, complete event evidence, customer and event detail routing, verified-account direct conversation creation, and routing an eligible active-sender segment into the Messaging campaign composer.",
         "excluded": [
           "Merge and unmerge controls remain backend-only until a reviewed conflict-resolution UI exists; the deprecated Audience tab did not expose them.",
           "High-spender segmentation remains excluded until completed non-refunded payment totals are projected into indexed organizer-contact traits."
@@ -89,6 +89,7 @@
           "contracts/callable_responses/get_organizer_contact_detail_response.schema.json",
           "contracts/callable_responses/list_organizer_contacts_response.schema.json",
           "contracts/callable_responses/mutate_organizer_contact_response.schema.json",
+          "contracts/callable_responses/organizer_messaging_setup_response.schema.json",
           "contracts/callables/create_organizer_contact_payload.schema.json",
           "contracts/callables/export_organizer_contacts_payload.schema.json",
           "contracts/callables/get_organizer_contact_detail_payload.schema.json",
@@ -109,6 +110,17 @@
           ],
           "customers_filtered_empty": [
             "test/hosts/host_customers_screen_state_test.dart"
+          ],
+          "customer_filter_sheet": [
+            "test/hosts/host_customers_screen_state_test.dart"
+          ],
+          "customer_campaign_bridge_ready": [
+            "test/hosts/host_customer_filter_summary_test.dart",
+            "test/hosts/host_campaign_segment_eligibility_test.dart"
+          ],
+          "customer_campaign_bridge_blocked": [
+            "test/hosts/host_customer_filter_summary_test.dart",
+            "test/hosts/host_campaign_segment_eligibility_test.dart"
           ],
           "customer_detail_linked": [
             "test/hosts/host_crm_repository_test.dart",
@@ -135,14 +147,14 @@
         }
       },
       "coverage": {
-        "states": 24,
-        "scenarios": 24,
-        "actionCases": 24,
-        "actions": 12,
+        "states": 27,
+        "scenarios": 27,
+        "actionCases": 27,
+        "actions": 14,
         "captures": 1,
         "previews": 1,
-        "testFiles": 3,
-        "evidenceExceptions": 35
+        "testFiles": 5,
+        "evidenceExceptions": 38
       },
       "dimensions": {
         "load": {
@@ -161,6 +173,20 @@
             "empty",
             "filtered_empty",
             "paginating"
+          ]
+        },
+        "filter_sheet": {
+          "default": "closed",
+          "values": [
+            "closed",
+            "open"
+          ]
+        },
+        "campaign_bridge": {
+          "default": "blocked",
+          "values": [
+            "blocked",
+            "ready"
           ]
         },
         "identity": {
@@ -275,6 +301,28 @@
           "implementationStatus": "implemented"
         },
         {
+          "id": "open_customer_filters",
+          "owner": "customers_screen",
+          "codeValue": "HostCustomerFilterSheet",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "organizerId",
+            "query",
+            "activeFilter"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "customer_filter_sheet"
+              ]
+            }
+          ],
+          "description": "Opens the grouped Attendance, Reliability, Advocacy and Reachable segment sheet with exact-or-qualified counts from listOrganizerContacts.",
+          "implementationStatus": "implemented"
+        },
+        {
           "id": "filter_customers",
           "owner": "customers_screen",
           "codeValue": "HostCustomerFilter",
@@ -293,7 +341,30 @@
               ]
             }
           ],
-          "description": "Filters the directory by server-backed versioned lifecycle traits visible for the current CRM channel readiness, including an explainable At risk alias for lapsed regulars.",
+          "description": "Filters the directory from a grouped sheet of server-backed versioned lifecycle traits, with each visible segment carrying its listOrganizerContacts match count and SMS omitted when unavailable.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "message_filtered_customers",
+          "owner": "customers_screen",
+          "codeValue": "_messageCustomers",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "organizerId",
+            "filter",
+            "matchCountCoverage"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.host.inbox"
+              }
+            }
+          ],
+          "description": "Routes an eligible active-sender segment into the Messaging Campaigns composer with that segment preselected; otherwise keeps the control disabled beside its campaign blocker reason.",
           "implementationStatus": "implemented"
         },
         {
@@ -530,6 +601,9 @@
             "customers_empty",
             "customers_filtered_empty",
             "customers_paginating",
+            "customer_filter_sheet",
+            "customer_campaign_bridge_ready",
+            "customer_campaign_bridge_blocked",
             "manual_add_pending",
             "customer_export_pending",
             "customer_manage",
@@ -562,6 +636,8 @@
           "dimensions": {
             "load": "loading",
             "directory": "populated",
+            "filter_sheet": "closed",
+            "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
             "mutation": "idle",
@@ -579,6 +655,8 @@
               "dimensions": {
                 "load": "loading",
                 "directory": "populated",
+                "filter_sheet": "closed",
+                "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
                 "mutation": "idle",
@@ -592,7 +670,9 @@
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
+                  "open_customer_filters",
                   "filter_customers",
+                  "message_filtered_customers",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -614,6 +694,8 @@
           "dimensions": {
             "load": "error",
             "directory": "populated",
+            "filter_sheet": "closed",
+            "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
             "mutation": "idle",
@@ -631,6 +713,8 @@
               "dimensions": {
                 "load": "error",
                 "directory": "populated",
+                "filter_sheet": "closed",
+                "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
                 "mutation": "idle",
@@ -645,7 +729,9 @@
                 "notAllowed": [
                   "switch_organizer",
                   "search_customers",
+                  "open_customer_filters",
                   "filter_customers",
+                  "message_filtered_customers",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -667,6 +753,8 @@
           "dimensions": {
             "load": "ready",
             "directory": "empty",
+            "filter_sheet": "closed",
+            "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
             "mutation": "idle",
@@ -684,6 +772,8 @@
               "dimensions": {
                 "load": "ready",
                 "directory": "empty",
+                "filter_sheet": "closed",
+                "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
                 "mutation": "idle",
@@ -699,7 +789,9 @@
                 "notAllowed": [
                   "retry_directory",
                   "search_customers",
+                  "open_customer_filters",
                   "filter_customers",
+                  "message_filtered_customers",
                   "load_more",
                   "export_customers",
                   "open_customer",
@@ -720,6 +812,8 @@
           "dimensions": {
             "load": "ready",
             "directory": "populated",
+            "filter_sheet": "closed",
+            "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
             "mutation": "idle",
@@ -744,6 +838,8 @@
               "dimensions": {
                 "load": "ready",
                 "directory": "populated",
+                "filter_sheet": "closed",
+                "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
                 "mutation": "idle",
@@ -754,6 +850,7 @@
                 "enabled": [
                   "switch_organizer",
                   "search_customers",
+                  "open_customer_filters",
                   "filter_customers",
                   "load_more",
                   "export_customers",
@@ -764,6 +861,7 @@
                 "disabled": [],
                 "notAllowed": [
                   "retry_directory",
+                  "message_filtered_customers",
                   "open_customer_event",
                   "retry_customer_detail",
                   "start_conversation"
@@ -780,6 +878,8 @@
           "dimensions": {
             "load": "ready",
             "directory": "filtered_empty",
+            "filter_sheet": "closed",
+            "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
             "mutation": "idle",
@@ -799,6 +899,8 @@
               "dimensions": {
                 "load": "ready",
                 "directory": "filtered_empty",
+                "filter_sheet": "closed",
+                "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
                 "mutation": "idle",
@@ -814,6 +916,8 @@
                 "notAllowed": [
                   "retry_directory",
                   "switch_organizer",
+                  "open_customer_filters",
+                  "message_filtered_customers",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -835,6 +939,8 @@
           "dimensions": {
             "load": "ready",
             "directory": "paginating",
+            "filter_sheet": "closed",
+            "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
             "mutation": "idle",
@@ -852,6 +958,8 @@
               "dimensions": {
                 "load": "ready",
                 "directory": "paginating",
+                "filter_sheet": "closed",
+                "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
                 "mutation": "idle",
@@ -867,7 +975,194 @@
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
+                  "open_customer_filters",
                   "filter_customers",
+                  "message_filtered_customers",
+                  "export_customers",
+                  "create_customer",
+                  "open_customer",
+                  "open_customer_event",
+                  "manage_customer",
+                  "retry_customer_detail",
+                  "start_conversation"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "customer_filter_sheet",
+          "stateId": "customer_filter_sheet",
+          "kind": "populated",
+          "status": "implemented",
+          "dimensions": {
+            "load": "ready",
+            "directory": "populated",
+            "filter_sheet": "open",
+            "campaign_bridge": "blocked",
+            "identity": "linked",
+            "revenue": "exact",
+            "mutation": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "test/hosts/host_customers_screen_state_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "choose",
+              "dimensions": {
+                "load": "ready",
+                "directory": "populated",
+                "filter_sheet": "open",
+                "campaign_bridge": "blocked",
+                "identity": "linked",
+                "revenue": "exact",
+                "mutation": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "filter_customers"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "open_customer_filters",
+                  "message_filtered_customers",
+                  "load_more",
+                  "export_customers",
+                  "create_customer",
+                  "open_customer",
+                  "open_customer_event",
+                  "manage_customer",
+                  "retry_customer_detail",
+                  "start_conversation"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "customer_campaign_bridge_ready",
+          "stateId": "customer_campaign_bridge_ready",
+          "kind": "populated",
+          "status": "tested",
+          "dimensions": {
+            "load": "ready",
+            "directory": "populated",
+            "filter_sheet": "closed",
+            "campaign_bridge": "ready",
+            "identity": "linked",
+            "revenue": "exact",
+            "mutation": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "test/hosts/host_customer_filter_summary_test.dart",
+              "test/hosts/host_campaign_segment_eligibility_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "message",
+              "dimensions": {
+                "load": "ready",
+                "directory": "populated",
+                "filter_sheet": "closed",
+                "campaign_bridge": "ready",
+                "identity": "linked",
+                "revenue": "exact",
+                "mutation": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "message_filtered_customers"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "open_customer_filters",
+                  "filter_customers",
+                  "load_more",
+                  "export_customers",
+                  "create_customer",
+                  "open_customer",
+                  "open_customer_event",
+                  "manage_customer",
+                  "retry_customer_detail",
+                  "start_conversation"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "customer_campaign_bridge_blocked",
+          "stateId": "customer_campaign_bridge_blocked",
+          "kind": "permission",
+          "status": "tested",
+          "dimensions": {
+            "load": "ready",
+            "directory": "populated",
+            "filter_sheet": "closed",
+            "campaign_bridge": "blocked",
+            "identity": "linked",
+            "revenue": "exact",
+            "mutation": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "test/hosts/host_customer_filter_summary_test.dart",
+              "test/hosts/host_campaign_segment_eligibility_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "explain",
+              "dimensions": {
+                "load": "ready",
+                "directory": "populated",
+                "filter_sheet": "closed",
+                "campaign_bridge": "blocked",
+                "identity": "linked",
+                "revenue": "exact",
+                "mutation": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "message_filtered_customers"
+                ],
+                "notAllowed": [
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "open_customer_filters",
+                  "filter_customers",
+                  "load_more",
                   "export_customers",
                   "create_customer",
                   "open_customer",
@@ -888,6 +1183,8 @@
           "dimensions": {
             "load": "ready",
             "directory": "populated",
+            "filter_sheet": "closed",
+            "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
             "mutation": "adding",
@@ -905,6 +1202,8 @@
               "dimensions": {
                 "load": "ready",
                 "directory": "populated",
+                "filter_sheet": "closed",
+                "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
                 "mutation": "adding",
@@ -920,7 +1219,9 @@
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
+                  "open_customer_filters",
                   "filter_customers",
+                  "message_filtered_customers",
                   "load_more",
                   "export_customers",
                   "open_customer",
@@ -941,6 +1242,8 @@
           "dimensions": {
             "load": "ready",
             "directory": "populated",
+            "filter_sheet": "closed",
+            "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
             "mutation": "exporting",
@@ -958,6 +1261,8 @@
               "dimensions": {
                 "load": "ready",
                 "directory": "populated",
+                "filter_sheet": "closed",
+                "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
                 "mutation": "exporting",
@@ -973,7 +1278,9 @@
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
+                  "open_customer_filters",
                   "filter_customers",
+                  "message_filtered_customers",
                   "load_more",
                   "create_customer",
                   "open_customer",
@@ -994,6 +1301,8 @@
           "dimensions": {
             "load": "ready",
             "directory": "populated",
+            "filter_sheet": "closed",
+            "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
             "mutation": "idle",
@@ -1013,6 +1322,8 @@
               "dimensions": {
                 "load": "ready",
                 "directory": "populated",
+                "filter_sheet": "closed",
+                "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
                 "mutation": "idle",
@@ -1028,7 +1339,9 @@
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
+                  "open_customer_filters",
                   "filter_customers",
+                  "message_filtered_customers",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -1049,6 +1362,8 @@
           "dimensions": {
             "load": "ready",
             "directory": "populated",
+            "filter_sheet": "closed",
+            "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
             "mutation": "managing_contact",
@@ -1066,6 +1381,8 @@
               "dimensions": {
                 "load": "ready",
                 "directory": "populated",
+                "filter_sheet": "closed",
+                "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
                 "mutation": "managing_contact",
@@ -1081,7 +1398,9 @@
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
+                  "open_customer_filters",
                   "filter_customers",
+                  "message_filtered_customers",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -1102,6 +1421,8 @@
           "dimensions": {
             "load": "loading",
             "directory": "populated",
+            "filter_sheet": "closed",
+            "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
             "mutation": "idle",
@@ -1119,6 +1440,8 @@
               "dimensions": {
                 "load": "loading",
                 "directory": "populated",
+                "filter_sheet": "closed",
+                "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
                 "mutation": "idle",
@@ -1132,7 +1455,9 @@
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
+                  "open_customer_filters",
                   "filter_customers",
+                  "message_filtered_customers",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -1154,6 +1479,8 @@
           "dimensions": {
             "load": "error",
             "directory": "populated",
+            "filter_sheet": "closed",
+            "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
             "mutation": "idle",
@@ -1171,6 +1498,8 @@
               "dimensions": {
                 "load": "error",
                 "directory": "populated",
+                "filter_sheet": "closed",
+                "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
                 "mutation": "idle",
@@ -1186,7 +1515,9 @@
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
+                  "open_customer_filters",
                   "filter_customers",
+                  "message_filtered_customers",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -1207,6 +1538,8 @@
           "dimensions": {
             "load": "ready",
             "directory": "populated",
+            "filter_sheet": "closed",
+            "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
             "mutation": "idle",
@@ -1229,6 +1562,8 @@
               "dimensions": {
                 "load": "ready",
                 "directory": "populated",
+                "filter_sheet": "closed",
+                "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
                 "mutation": "idle",
@@ -1245,7 +1580,9 @@
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
+                  "open_customer_filters",
                   "filter_customers",
+                  "message_filtered_customers",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -1265,6 +1602,8 @@
           "dimensions": {
             "load": "ready",
             "directory": "populated",
+            "filter_sheet": "closed",
+            "campaign_bridge": "blocked",
             "identity": "unlinked",
             "revenue": "exact",
             "mutation": "idle",
@@ -1284,6 +1623,8 @@
               "dimensions": {
                 "load": "ready",
                 "directory": "populated",
+                "filter_sheet": "closed",
+                "campaign_bridge": "blocked",
                 "identity": "unlinked",
                 "revenue": "exact",
                 "mutation": "idle",
@@ -1301,7 +1642,9 @@
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
+                  "open_customer_filters",
                   "filter_customers",
+                  "message_filtered_customers",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -1321,6 +1664,8 @@
           "dimensions": {
             "load": "ready",
             "directory": "populated",
+            "filter_sheet": "closed",
+            "campaign_bridge": "blocked",
             "identity": "ambiguous",
             "revenue": "exact",
             "mutation": "idle",
@@ -1340,6 +1685,8 @@
               "dimensions": {
                 "load": "ready",
                 "directory": "populated",
+                "filter_sheet": "closed",
+                "campaign_bridge": "blocked",
                 "identity": "ambiguous",
                 "revenue": "exact",
                 "mutation": "idle",
@@ -1357,7 +1704,9 @@
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
+                  "open_customer_filters",
                   "filter_customers",
+                  "message_filtered_customers",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -1377,6 +1726,8 @@
           "dimensions": {
             "load": "ready",
             "directory": "populated",
+            "filter_sheet": "closed",
+            "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
             "mutation": "idle",
@@ -1398,6 +1749,8 @@
               "dimensions": {
                 "load": "ready",
                 "directory": "populated",
+                "filter_sheet": "closed",
+                "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
                 "mutation": "idle",
@@ -1411,7 +1764,9 @@
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
+                  "open_customer_filters",
                   "filter_customers",
+                  "message_filtered_customers",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -1433,6 +1788,8 @@
           "dimensions": {
             "load": "ready",
             "directory": "populated",
+            "filter_sheet": "closed",
+            "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "partial",
             "mutation": "idle",
@@ -1450,6 +1807,8 @@
               "dimensions": {
                 "load": "ready",
                 "directory": "populated",
+                "filter_sheet": "closed",
+                "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "partial",
                 "mutation": "idle",
@@ -1463,7 +1822,9 @@
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
+                  "open_customer_filters",
                   "filter_customers",
+                  "message_filtered_customers",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -1485,6 +1846,8 @@
           "dimensions": {
             "load": "ready",
             "directory": "populated",
+            "filter_sheet": "closed",
+            "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "unavailable",
             "mutation": "idle",
@@ -1502,6 +1865,8 @@
               "dimensions": {
                 "load": "ready",
                 "directory": "populated",
+                "filter_sheet": "closed",
+                "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "unavailable",
                 "mutation": "idle",
@@ -1515,7 +1880,9 @@
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
+                  "open_customer_filters",
                   "filter_customers",
+                  "message_filtered_customers",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -1537,6 +1904,8 @@
           "dimensions": {
             "load": "ready",
             "directory": "populated",
+            "filter_sheet": "closed",
+            "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
             "mutation": "idle",
@@ -1558,6 +1927,8 @@
               "dimensions": {
                 "load": "ready",
                 "directory": "populated",
+                "filter_sheet": "closed",
+                "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
                 "mutation": "idle",
@@ -1573,7 +1944,9 @@
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
+                  "open_customer_filters",
                   "filter_customers",
+                  "message_filtered_customers",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -1594,6 +1967,8 @@
           "dimensions": {
             "load": "ready",
             "directory": "populated",
+            "filter_sheet": "closed",
+            "campaign_bridge": "blocked",
             "identity": "unlinked",
             "revenue": "exact",
             "mutation": "idle",
@@ -1613,6 +1988,8 @@
               "dimensions": {
                 "load": "ready",
                 "directory": "populated",
+                "filter_sheet": "closed",
+                "campaign_bridge": "blocked",
                 "identity": "unlinked",
                 "revenue": "exact",
                 "mutation": "idle",
@@ -1628,7 +2005,9 @@
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
+                  "open_customer_filters",
                   "filter_customers",
+                  "message_filtered_customers",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -1649,6 +2028,8 @@
           "dimensions": {
             "load": "offline",
             "directory": "populated",
+            "filter_sheet": "closed",
+            "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
             "mutation": "idle",
@@ -1666,6 +2047,8 @@
               "dimensions": {
                 "load": "offline",
                 "directory": "populated",
+                "filter_sheet": "closed",
+                "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
                 "mutation": "idle",
@@ -1681,7 +2064,9 @@
                 "notAllowed": [
                   "switch_organizer",
                   "search_customers",
+                  "open_customer_filters",
                   "filter_customers",
+                  "message_filtered_customers",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -1702,6 +2087,8 @@
           "dimensions": {
             "load": "ready",
             "directory": "populated",
+            "filter_sheet": "closed",
+            "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
             "mutation": "idle",
@@ -1719,6 +2106,8 @@
               "dimensions": {
                 "load": "ready",
                 "directory": "populated",
+                "filter_sheet": "closed",
+                "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
                 "mutation": "idle",
@@ -1732,7 +2121,9 @@
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
+                  "open_customer_filters",
                   "filter_customers",
+                  "message_filtered_customers",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -1754,6 +2145,8 @@
           "dimensions": {
             "load": "ready",
             "directory": "populated",
+            "filter_sheet": "closed",
+            "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
             "mutation": "idle",
@@ -1771,6 +2164,8 @@
               "dimensions": {
                 "load": "ready",
                 "directory": "populated",
+                "filter_sheet": "closed",
+                "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
                 "mutation": "idle",
@@ -1784,7 +2179,9 @@
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
+                  "open_customer_filters",
                   "filter_customers",
+                  "message_filtered_customers",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -1806,6 +2203,8 @@
           "dimensions": {
             "load": "ready",
             "directory": "populated",
+            "filter_sheet": "closed",
+            "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
             "mutation": "idle",
@@ -1823,6 +2222,8 @@
               "dimensions": {
                 "load": "ready",
                 "directory": "populated",
+                "filter_sheet": "closed",
+                "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
                 "mutation": "idle",
@@ -1836,7 +2237,9 @@
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
+                  "open_customer_filters",
                   "filter_customers",
+                  "message_filtered_customers",
                   "load_more",
                   "export_customers",
                   "create_customer",

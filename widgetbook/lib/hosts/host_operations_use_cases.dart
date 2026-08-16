@@ -27,6 +27,7 @@ import 'package:catch_dating_app/core/widgets/catch_analytics_kit.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
@@ -77,6 +78,7 @@ import 'package:catch_dating_app/hosts/presentation/customers/host_customer_row.
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
@@ -644,6 +646,8 @@ Widget hostCustomersStates(BuildContext context) {
       ),
     ],
     nextCursor: null,
+    matchCount: 1,
+    matchCountCoverage: HostCustomerMatchCountCoverage.exact,
     sourceCoverage: HostCustomerDirectoryCoverage.exact,
     projectionVersion: 1,
   );
@@ -837,7 +841,7 @@ Widget hostCustomersSummaryStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Campaign and sender states',
-  type: HostCustomerMessagingPane,
+  type: HostCampaignComposer,
   path: '[P1 product surfaces]/Host operations/Messaging',
 )
 Widget hostCustomerMessagingStates(BuildContext context) {
@@ -892,8 +896,16 @@ Widget hostCustomerMessagingStates(BuildContext context) {
               child: Scaffold(
                 body: SingleChildScrollView(
                   padding: CatchInsets.pageBody,
-                  child: HostCustomerMessagingPane(
-                    club: HostOperationsFixtures.primaryClub,
+                  child: CatchSectionList(
+                    emptyStateOmitted: true,
+                    children: [
+                      HostWhatsappSetupPane(
+                        club: HostOperationsFixtures.primaryClub,
+                      ),
+                      HostCampaignComposer(
+                        club: HostOperationsFixtures.primaryClub,
+                      ),
+                    ],
                   ),
                 ),
               ),

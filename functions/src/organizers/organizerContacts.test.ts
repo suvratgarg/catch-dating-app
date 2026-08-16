@@ -5,6 +5,7 @@ import {
   csvCell,
   decodeContactCursor,
   encodeContactCursor,
+  listContactsMatchCountResult,
   summarizeContactRevenue,
 } from "./organizerContacts";
 import {PaymentDocument} from "../shared/generated/firestoreAdminTypes";
@@ -57,6 +58,17 @@ test("contact cursor rejects malformed and unrecognized values", () => {
     segmentId: null,
   })).toString("base64url");
   assert.throws(() => decodeContactCursor(unsupported));
+});
+
+test("contact match counts never present a lower bound as exact", () => {
+  assert.deepEqual(listContactsMatchCountResult(37, 8), {
+    matchCount: 37,
+    matchCountCoverage: "exact",
+  });
+  assert.deepEqual(listContactsMatchCountResult(null, 8), {
+    matchCount: 8,
+    matchCountCoverage: "atLeast",
+  });
 });
 
 test("customer revenue includes completed organizer payments only", () => {

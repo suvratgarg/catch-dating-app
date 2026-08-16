@@ -5,6 +5,7 @@ import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
@@ -13,7 +14,10 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
@@ -144,7 +148,8 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.text('Messaging'), findsOneWidget);
-    expect(find.byType(HostCustomerMessagingPane), findsOneWidget);
+    expect(find.byType(HostWhatsappSetupPane), findsOneWidget);
+    expect(find.byType(HostCampaignComposer), findsOneWidget);
     expect(find.text('WHATSAPP BUSINESS SENDER'), findsOneWidget);
     expect(find.text('MESSAGE PAST ATTENDEES'), findsOneWidget);
     expect(find.byType(HostInboxScopeSelector), findsNothing);
@@ -260,6 +265,29 @@ void main() {
       );
     },
   );
+
+  testWidgets('campaigns workspace restores the routed campaign segment', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _app(
+        event: null,
+        previews: const [],
+        participations: const [],
+        now: now,
+        initialWorkspace: HostMessagingWorkspace.campaigns,
+        initialCampaignSegments: const {HostAudienceSegment.lapsedRegular},
+      ),
+    );
+    await pumpFeatureUi(tester);
+
+    expect(find.byType(HostMessagingWorkspaceRail), findsOneWidget);
+    expect(find.byType(HostCampaignComposer), findsOneWidget);
+    final selected = tester.widget<CatchChip>(
+      find.byKey(const ValueKey('host-campaign-segment-lapsed_regular')),
+    );
+    expect(selected.selected, isTrue);
+  });
 }
 
 Widget _app({
@@ -268,6 +296,8 @@ Widget _app({
   required List<EventParticipation> participations,
   required DateTime now,
   HostInboxScope? initialScope,
+  HostMessagingWorkspace initialWorkspace = HostMessagingWorkspace.inbox,
+  Set<HostAudienceSegment> initialCampaignSegments = const {},
 }) {
   final club = club_test.buildClub(id: event?.clubId ?? 'club-1');
   final inbox = ChatsListViewModel(
@@ -286,6 +316,15 @@ Widget _app({
       hostMessagingSetupProvider(
         club.id,
       ).overrideWithValue(AsyncData(_messagingSetup(club.id))),
+      hostCrmSummaryProvider(
+        club.id,
+      ).overrideWithValue(AsyncData(_crmSummary(club.id))),
+      hostCustomerSegmentCountProvider.overrideWith(
+        (ref, request) async => const HostCustomerSegmentCount(
+          count: 12,
+          coverage: HostCustomerMatchCountCoverage.exact,
+        ),
+      ),
       if (event != null)
         watchEventParticipationsForEventProvider(
           event.id,
@@ -295,6 +334,8 @@ Widget _app({
       theme: AppTheme.light,
       home: HostInboxScreen(
         initialScope: initialScope,
+        initialWorkspace: initialWorkspace,
+        initialCampaignSegments: initialCampaignSegments,
         syncSelectionToRoute: false,
         now: now,
       ),
@@ -334,6 +375,21 @@ HostMessagingSetup _messagingSetup(String organizerId) => HostMessagingSetup(
       buttonKinds: ['URL'],
     ),
   ],
+);
+
+HostCrmSummary _crmSummary(String organizerId) => HostCrmSummary(
+  organizerId: organizerId,
+  contactCount: 12,
+  pastAttendeeCount: 10,
+  repeatAttendeeCount: 5,
+  linkedAccountCount: 8,
+  importedContactCount: 4,
+  whatsappOptInCount: 7,
+  smsOptInCount: 0,
+  truncated: false,
+  inAppReadiness: HostCrmChannelReadiness.currentEventOnly,
+  whatsappReadiness: HostCrmChannelReadiness.currentEventOnly,
+  smsReadiness: HostCrmChannelReadiness.providerAndDltSetupRequired,
 );
 
 ChatThreadPreview _preview({

@@ -93,6 +93,13 @@ export async function listOrganizerContactsHandler(
   const limit = data.limit ?? defaultContactPageSize;
   const search = normalizeSearch(data.query ?? null);
   const cursor = decodeContactCursor(data.cursor ?? null);
+  const exactMatchCountPromise = exactListContactsMatchCount({
+    db,
+    organizerId: data.organizerId,
+    segmentId: data.segmentId ?? null,
+    search,
+    summary,
+  });
 
   const traitRows = data.segmentId ? await listSegmentTraitRows({
     db,
@@ -112,7 +119,8 @@ export async function listOrganizerContactsHandler(
     });
   const contacts = contactIds ? contactIds
     .map((contactId) => contactPage.find((item) => item.id === contactId))
-    .filter((item): item is ContactDocumentRow => item !== undefined) :
+    .filter((item): item is ContactDocumentRow => item !== undefined)
+    .filter((item) => !search || item.data.searchName.startsWith(search)) :
     contactPage;
   const traitSnaps = contacts.length === 0 ? [] : await db.getAll(
     ...contacts.map((item) => db.collection("organizerContactTraits")
@@ -142,22 +150,61 @@ export async function listOrganizerContactsHandler(
   const hasMore = traitRows?.hasMore ?? contactPage.length > limit;
   const pageRows = rows.slice(0, limit);
   const finalContact = contacts.slice(0, limit).at(-1);
-  const nextCursor = hasMore && finalContact ? encodeContactCursor({
+  const finalContactId = data.segmentId ? traitRows?.contactIds.at(-1) :
+    finalContact?.id;
+  const nextCursor = hasMore && finalContactId ? encodeContactCursor({
     plan: data.segmentId ? "segment" : search ? "search" : "people",
-    value: data.segmentId ? finalContact.id :
-      search ? finalContact.data.searchName :
-        String(finalContact.data.lastSeenAt.toMillis()),
-    contactId: finalContact.id,
+    value: data.segmentId ? finalContactId :
+      search ? finalContact!.data.searchName :
+        String(finalContact!.data.lastSeenAt.toMillis()),
+    contactId: finalContactId,
     segmentId: data.segmentId ?? null,
   }) : null;
+  const exactMatchCount = await exactMatchCountPromise;
+  const countResult = listContactsMatchCountResult(
+    exactMatchCount,
+    pageRows.length
+  );
 
   return {
     organizerId: data.organizerId,
     contacts: pageRows,
     nextCursor,
+    ...countResult,
     sourceCoverage: summary?.sourceCoverage ?? "partial",
     projectionVersion: summary?.projectionVersion ?? 1,
   };
+}
+
+export function listContactsMatchCountResult(
+  exactMatchCount: number | null,
+  visiblePageCount: number
+): Pick<ListOrganizerContactsCallableResponse,
+  "matchCount" | "matchCountCoverage"> {
+  return exactMatchCount === null ? {
+    matchCount: visiblePageCount,
+    matchCountCoverage: "atLeast",
+  } : {
+    matchCount: exactMatchCount,
+    matchCountCoverage: "exact",
+  };
+}
+
+async function exactListContactsMatchCount(params: {
+  db: FirebaseFirestore.Firestore;
+  organizerId: string;
+  segmentId: OrganizerContactTraitDocument["segmentIds"][number] | null;
+  search: string | null;
+  summary: OrganizerAudienceSummaryDocument | undefined;
+}): Promise<number | null> {
+  if (params.search) return null;
+  if (!params.segmentId) return params.summary?.contactCount ?? null;
+  const snapshot = await params.db.collection("organizerContactTraits")
+    .where("organizerId", "==", params.organizerId)
+    .where("segmentIds", "array-contains", params.segmentId)
+    .count()
+    .get();
+  return snapshot.data().count;
 }
 
 /** Creates a name-only organizer CRM contact without inventing identity. */

@@ -12890,7 +12890,77 @@ class AppLocalizationsEn extends AppLocalizations {
       'This creates an organizer-only contact. It does not create a Catch account or grant messaging permission.';
 
   @override
-  String get hostCustomersFilterByTag => 'Filter by tag';
+  String hostCustomersFilterSummary({
+    required String label,
+    required String countLabel,
+  }) {
+    return '$label · $countLabel';
+  }
+
+  @override
+  String get hostCustomersFilters => 'Filters';
+
+  @override
+  String get hostCustomersClearFilter => 'Clear';
+
+  @override
+  String hostCustomersMessageThese({required int count}) {
+    return 'Message these $count';
+  }
+
+  @override
+  String hostCustomersMessageTheseAtLeast({required int count}) {
+    return 'Message these $count+';
+  }
+
+  @override
+  String get hostCustomersFilterSheetTitle => 'Filter customers';
+
+  @override
+  String get hostCustomersFilterSheetSubtitle =>
+      'Choose one audience segment. Counts follow the current name search.';
+
+  @override
+  String get hostCustomersFilterGroupAttendance => 'Attendance';
+
+  @override
+  String get hostCustomersFilterGroupReliability => 'Reliability';
+
+  @override
+  String get hostCustomersFilterGroupAdvocacy => 'Advocacy';
+
+  @override
+  String get hostCustomersFilterGroupReachable => 'Reachable';
+
+  @override
+  String hostCustomersFilterOption({
+    required String label,
+    required String countLabel,
+  }) {
+    return '$label · $countLabel';
+  }
+
+  @override
+  String hostCustomersPeopleCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count people',
+      one: '1 person',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostCustomersPeopleCountAtLeast({required int count}) {
+    return '$count+ people';
+  }
+
+  @override
+  String get hostCustomersCountLoading => 'Loading count';
+
+  @override
+  String get hostCustomersCountUnavailable => 'Count unavailable';
 
   @override
   String get hostCustomersFilterAtRisk => 'At risk';

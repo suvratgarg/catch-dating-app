@@ -6,14 +6,14 @@
   "name": "Host Customers",
   "owner": "hosts",
   "status": "active",
-  "description": "Makes Customers the sole Host CRM destination for the complete audience segment set, pagination, export, contact administration, customer detail, and identity-gated conversations.",
+  "description": "Makes Customers the sole Host CRM directory for the complete audience segment set, pagination, export, contact administration, customer detail, identity-gated conversations, and a deep-linked segment bridge into Messaging campaigns.",
   "surfaces": [
     {
       "id": "host_flutter",
       "runtime": "flutter",
       "authority": {"registry": "flutter_screens", "id": "screen.host.customers"},
       "actionScope": {
-        "included": "Customer directory recovery, shared organizer selection, debounced name search, readiness-visible server-backed CRM segments, pagination, header-menu export, organizer-only manual contact creation, rename/suppression/removal controls, complete event evidence, customer and event detail routing, and verified-account direct conversation creation.",
+        "included": "Customer directory recovery, shared organizer selection, debounced name search, exact-or-qualified result counts, grouped readiness-visible server-backed CRM segment filters, pagination, header-menu export, organizer-only manual contact creation, rename/suppression/removal controls, complete event evidence, customer and event detail routing, verified-account direct conversation creation, and routing an eligible active-sender segment into the Messaging campaign composer.",
         "excluded": [
           "Merge and unmerge controls remain backend-only until a reviewed conflict-resolution UI exists; the deprecated Audience tab did not expose them.",
           "High-spender segmentation remains excluded until completed non-refunded payment totals are projected into indexed organizer-contact traits."
@@ -34,6 +34,7 @@
           "contracts/callable_responses/get_organizer_contact_detail_response.schema.json",
           "contracts/callable_responses/list_organizer_contacts_response.schema.json",
           "contracts/callable_responses/mutate_organizer_contact_response.schema.json",
+          "contracts/callable_responses/organizer_messaging_setup_response.schema.json",
           "contracts/callables/create_organizer_contact_payload.schema.json",
           "contracts/callables/export_organizer_contacts_payload.schema.json",
           "contracts/callables/get_organizer_contact_detail_payload.schema.json",
@@ -49,6 +50,9 @@
         "testEvidence": {
           "customers_populated": ["test/hosts/host_customers_screen_state_test.dart", "test/routing/host_shell_navigation_test.dart", "test/routing/router_redirect_test.dart"],
           "customers_filtered_empty": ["test/hosts/host_customers_screen_state_test.dart"],
+          "customer_filter_sheet": ["test/hosts/host_customers_screen_state_test.dart"],
+          "customer_campaign_bridge_ready": ["test/hosts/host_customer_filter_summary_test.dart", "test/hosts/host_campaign_segment_eligibility_test.dart"],
+          "customer_campaign_bridge_blocked": ["test/hosts/host_customer_filter_summary_test.dart", "test/hosts/host_campaign_segment_eligibility_test.dart"],
           "customer_detail_linked": ["test/hosts/host_crm_repository_test.dart", "test/hosts/host_customers_screen_state_test.dart"],
           "customer_detail_unlinked": ["test/hosts/host_customers_screen_state_test.dart"],
           "customer_detail_ambiguous": ["test/hosts/host_customers_screen_state_test.dart"],
@@ -61,6 +65,8 @@
       "dimensions": {
         "load": {"default": "ready", "values": ["ready", "loading", "error", "offline"]},
         "directory": {"default": "populated", "values": ["populated", "empty", "filtered_empty", "paginating"]},
+        "filter_sheet": {"default": "closed", "values": ["closed", "open"]},
+        "campaign_bridge": {"default": "blocked", "values": ["blocked", "ready"]},
         "identity": {"default": "linked", "values": ["linked", "unlinked", "ambiguous"]},
         "revenue": {"default": "exact", "values": ["exact", "partial", "unavailable"]},
         "mutation": {"default": "idle", "values": ["idle", "adding", "exporting", "managing_contact", "starting_conversation"]},
@@ -96,13 +102,31 @@
           "description": "Debounces text input before searching the organizer customer directory by normalized display name."
         },
         {
+          "id": "open_customer_filters",
+          "owner": "customers_screen",
+          "codeValue": "HostCustomerFilterSheet",
+          "cardinality": "singleton",
+          "scopeKeys": ["viewerUid", "organizerId", "query", "activeFilter"],
+          "outcomes": [{"kind": "surface_state", "stateIds": ["customer_filter_sheet"]}],
+          "description": "Opens the grouped Attendance, Reliability, Advocacy and Reachable segment sheet with exact-or-qualified counts from listOrganizerContacts."
+        },
+        {
           "id": "filter_customers",
           "owner": "customers_screen",
           "codeValue": "HostCustomerFilter",
           "cardinality": "unbounded",
           "scopeKeys": ["viewerUid", "organizerId", "filter"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["customers_populated", "customers_filtered_empty"]}],
-          "description": "Filters the directory by server-backed versioned lifecycle traits visible for the current CRM channel readiness, including an explainable At risk alias for lapsed regulars."
+          "description": "Filters the directory from a grouped sheet of server-backed versioned lifecycle traits, with each visible segment carrying its listOrganizerContacts match count and SMS omitted when unavailable."
+        },
+        {
+          "id": "message_filtered_customers",
+          "owner": "customers_screen",
+          "codeValue": "_messageCustomers",
+          "cardinality": "singleton",
+          "scopeKeys": ["viewerUid", "organizerId", "filter", "matchCountCoverage"],
+          "outcomes": [{"kind": "route", "authority": {"registry": "flutter_screens", "id": "screen.host.inbox"}}],
+          "description": "Routes an eligible active-sender segment into the Messaging Campaigns composer with that segment preselected; otherwise keeps the control disabled beside its campaign blocker reason."
         },
         {
           "id": "load_more",
@@ -189,15 +213,18 @@
           "description": "Starts or reuses a manager-authorized direct thread only for an unambiguous verified linked Catch account."
         }
       ],
-      "stateIds": ["customers_loading", "customers_error", "customers_empty", "customers_populated", "customers_filtered_empty", "customers_paginating", "manual_add_pending", "customer_export_pending", "customer_manage", "customer_manage_pending", "customer_detail_loading", "customer_detail_error", "customer_detail_linked", "customer_detail_unlinked", "customer_detail_ambiguous", "customer_revenue_exact", "customer_revenue_partial", "customer_revenue_unavailable", "conversation_available", "conversation_unavailable", "offline", "text_scale_2", "reduced_motion", "light_dark"],
+      "stateIds": ["customers_loading", "customers_error", "customers_empty", "customers_populated", "customers_filtered_empty", "customers_paginating", "customer_filter_sheet", "customer_campaign_bridge_ready", "customer_campaign_bridge_blocked", "manual_add_pending", "customer_export_pending", "customer_manage", "customer_manage_pending", "customer_detail_loading", "customer_detail_error", "customer_detail_linked", "customer_detail_unlinked", "customer_detail_ambiguous", "customer_revenue_exact", "customer_revenue_partial", "customer_revenue_unavailable", "conversation_available", "conversation_unavailable", "offline", "text_scale_2", "reduced_motion", "light_dark"],
       "scenarioDefaults": {"dimensions": {}, "actionCases": [{"id": "default"}]},
       "scenarioOverrides": {
         "customers_loading": {"dimensions": {"load": "loading"}},
         "customers_error": {"dimensions": {"load": "error"}, "actionCases": [{"id": "recovery", "enabledActions": ["retry_directory"]}]},
         "customers_empty": {"dimensions": {"directory": "empty"}, "actionCases": [{"id": "first_customer", "enabledActions": ["switch_organizer", "create_customer"]}]},
-        "customers_populated": {"actionCases": [{"id": "directory", "enabledActions": ["switch_organizer", "search_customers", "filter_customers", "load_more", "export_customers", "create_customer", "open_customer", "manage_customer"]}]},
+        "customers_populated": {"actionCases": [{"id": "directory", "enabledActions": ["switch_organizer", "search_customers", "open_customer_filters", "filter_customers", "load_more", "export_customers", "create_customer", "open_customer", "manage_customer"]}]},
         "customers_filtered_empty": {"dimensions": {"directory": "filtered_empty"}, "actionCases": [{"id": "adjust", "enabledActions": ["search_customers", "filter_customers"]}]},
         "customers_paginating": {"dimensions": {"directory": "paginating"}, "actionCases": [{"id": "pending", "disabledActions": ["load_more"]}]},
+        "customer_filter_sheet": {"dimensions": {"filter_sheet": "open"}, "actionCases": [{"id": "choose", "enabledActions": ["filter_customers"]}]},
+        "customer_campaign_bridge_ready": {"dimensions": {"campaign_bridge": "ready"}, "actionCases": [{"id": "message", "enabledActions": ["message_filtered_customers"]}]},
+        "customer_campaign_bridge_blocked": {"dimensions": {"campaign_bridge": "blocked"}, "actionCases": [{"id": "explain", "disabledActions": ["message_filtered_customers"]}]},
         "manual_add_pending": {"dimensions": {"mutation": "adding"}, "actionCases": [{"id": "pending", "disabledActions": ["create_customer"]}]},
         "customer_export_pending": {"dimensions": {"mutation": "exporting"}, "actionCases": [{"id": "pending", "disabledActions": ["export_customers"]}]},
         "customer_manage": {"actionCases": [{"id": "manage", "enabledActions": ["manage_customer"]}]},
@@ -226,7 +253,7 @@
           "reason": "Controller policy, repository mapping, and route tests cover the initial seam; deterministic rendered state tests remain follow-up evidence for the customer directory."
         },
         {
-          "stateIds": ["customers_loading", "customers_error", "customers_empty", "customers_filtered_empty", "customers_paginating", "manual_add_pending", "customer_export_pending", "customer_manage", "customer_manage_pending", "customer_detail_loading", "customer_detail_error", "customer_detail_unlinked", "customer_detail_ambiguous", "customer_revenue_partial", "customer_revenue_unavailable", "conversation_unavailable", "offline", "text_scale_2", "reduced_motion", "light_dark"],
+          "stateIds": ["customers_loading", "customers_error", "customers_empty", "customers_filtered_empty", "customers_paginating", "customer_filter_sheet", "customer_campaign_bridge_ready", "customer_campaign_bridge_blocked", "manual_add_pending", "customer_export_pending", "customer_manage", "customer_manage_pending", "customer_detail_loading", "customer_detail_error", "customer_detail_unlinked", "customer_detail_ambiguous", "customer_revenue_partial", "customer_revenue_unavailable", "conversation_unavailable", "offline", "text_scale_2", "reduced_motion", "light_dark"],
           "evidence": ["previews"],
           "debtId": "HOST-CUSTOMERS-EVIDENCE-001",
           "reason": "The initial Widgetbook gallery covers the populated directory and linked exact-revenue detail; remaining recovery, identity, coverage, accessibility, and theme variants are explicit preview debt."

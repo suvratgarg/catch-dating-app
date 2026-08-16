@@ -32,6 +32,7 @@ import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_broadcast_composer_sheet.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_broadcast_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -48,6 +49,9 @@ class HostInboxScreen extends ConsumerStatefulWidget {
     this.initialScope,
     this.initialSegment = HostInboxAudienceSegment.booked,
     this.initialWorkspace = HostMessagingWorkspace.inbox,
+    this.initialCampaignSegments = const {},
+    this.initialCampaignSearch,
+    this.initialOrganizerId,
     this.broadcastEnabled,
     this.syncSelectionToRoute = true,
     this.now,
@@ -56,6 +60,9 @@ class HostInboxScreen extends ConsumerStatefulWidget {
   final HostInboxScope? initialScope;
   final HostInboxAudienceSegment initialSegment;
   final HostMessagingWorkspace initialWorkspace;
+  final Set<HostAudienceSegment> initialCampaignSegments;
+  final String? initialCampaignSearch;
+  final String? initialOrganizerId;
   final bool? broadcastEnabled;
   final bool syncSelectionToRoute;
   final DateTime? now;
@@ -111,6 +118,9 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
         : resolveSelectedHostOrganizer(
             clubs,
             selectedOrganizerId: selectedOrganizerId,
+            preferredOrganizerId: selectedOrganizerId == null
+                ? widget.initialOrganizerId
+                : null,
           );
     final query = ref.watch(chatSearchQueryProvider);
     final isInbox = _workspace == HostMessagingWorkspace.inbox;
@@ -136,6 +146,8 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
             uid: uid,
             clubsAsync: clubsAsync,
             selectedClub: selectedClub,
+            initialSegments: widget.initialCampaignSegments,
+            initialSearch: widget.initialCampaignSearch,
             onRetry: _retry,
             onBusyChanged: _setCampaignBusy,
           );
@@ -387,6 +399,8 @@ class _HostCampaignWorkspaceSliver extends StatelessWidget {
     required this.uid,
     required this.clubsAsync,
     required this.selectedClub,
+    required this.initialSegments,
+    required this.initialSearch,
     required this.onRetry,
     required this.onBusyChanged,
   });
@@ -395,6 +409,8 @@ class _HostCampaignWorkspaceSliver extends StatelessWidget {
   final String? uid;
   final AsyncValue<List<Club>> clubsAsync;
   final Club? selectedClub;
+  final Set<HostAudienceSegment> initialSegments;
+  final String? initialSearch;
   final ValueChanged<String?> onRetry;
   final ValueChanged<bool> onBusyChanged;
 
@@ -417,7 +433,18 @@ class _HostCampaignWorkspaceSliver extends StatelessWidget {
       padding: CatchInsets.pageBody.copyWith(top: CatchSpacing.s3),
       sliver: SliverList.list(
         children: [
-          HostCustomerMessagingPane(club: club, onBusyChanged: onBusyChanged),
+          CatchSectionList(
+            emptyStateOmitted: true,
+            children: [
+              HostWhatsappSetupPane(club: club, onBusyChanged: onBusyChanged),
+              HostCampaignComposer(
+                club: club,
+                initialSegments: initialSegments,
+                initialSearch: initialSearch,
+                onBusyChanged: onBusyChanged,
+              ),
+            ],
+          ),
         ],
       ),
     );

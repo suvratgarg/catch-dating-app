@@ -1,7 +1,7 @@
 {
   "$schema": "./state_matrix.schema.json",
   "version": 1,
-  "updated": "2026-08-14",
+  "updated": "2026-08-16",
   "requiredStateKinds": [
     "loading",
     "populated",
@@ -920,16 +920,16 @@
             "lib/explore/presentation/explore_screen.dart",
             "lib/explore/presentation/explore_screen_state.dart",
             "lib/explore/presentation/explore_view_model.dart",
-        "lib/explore/presentation/explore_feed_view_model.dart",
-        "lib/explore/presentation/explore_cross_paths_provider.dart",
-        "lib/explore/presentation/widgets/explore_header.dart",
+            "lib/explore/presentation/explore_feed_view_model.dart",
+            "lib/explore/presentation/explore_cross_paths_provider.dart",
+            "lib/explore/presentation/widgets/explore_header.dart",
             "lib/explore/presentation/widgets/explore_filter_rail.dart",
             "lib/explore/presentation/widgets/explore_body.dart",
             "lib/explore/presentation/widgets/explore_events_section.dart",
             "lib/explore/presentation/widgets/explore_list.dart",
             "lib/explore/presentation/widgets/explore_event_type_browse_grid.dart",
-        "lib/explore/presentation/widgets/catch_cover_story.dart",
-        "lib/cross_paths/presentation/cross_paths_explore_card.dart"
+            "lib/explore/presentation/widgets/catch_cover_story.dart",
+            "lib/cross_paths/presentation/cross_paths_explore_card.dart"
           ],
           "componentIds": [
             "catch.button",
@@ -939,10 +939,10 @@
             "catch.cover_story",
             "catch.event_card",
             "catch.field",
-        "catch.icon_button",
-        "catch.index_row",
-        "catch.person_polaroid",
-        "catch.surface",
+            "catch.icon_button",
+            "catch.index_row",
+            "catch.person_polaroid",
+            "catch.surface",
             "catch.top_bar"
           ],
           "captureIds": [
@@ -958,10 +958,10 @@
             "explore_offline",
             "explore_search_query",
             "explore_filters_active",
-        "explore_unclaimed_host_projection",
-        "explore_cross_paths_person",
-        "explore_cross_paths_profile_preview",
-        "explore_text_scale_2",
+            "explore_unclaimed_host_projection",
+            "explore_cross_paths_person",
+            "explore_cross_paths_profile_preview",
+            "explore_text_scale_2",
             "explore_reduced_motion",
             "explore_map",
             "explore_map_selected_pin",
@@ -1159,8 +1159,8 @@
                 "test/explore/explore_widgets_test.dart"
               ]
             },
-        {
-          "id": "unclaimed_host_projection",
+            {
+              "id": "unclaimed_host_projection",
               "kind": "populated",
               "status": "captured",
               "captureIds": [
@@ -1174,42 +1174,42 @@
                 "test/clubs/clubs_repository_test.dart",
                 "test/explore/explore_view_model_test.dart"
               ],
-          "notes": "Captured a null hostUserId/hostName organizer record; Explore search/display paths must stay null-tolerant for unclaimed organizer profiles."
-        },
-        {
-          "id": "cross_paths_suggestion",
-          "kind": "populated",
-          "status": "captured",
-          "captureIds": [
-            "explore_cross_paths_person"
-          ],
-          "previewIds": [
-            "CrossPathsExploreCard/Cross Paths person card",
-            "CrossPathsEventContextCard/Cross Paths event context"
-          ],
-          "tests": [
-            "test/cross_paths/cross_paths_explore_card_test.dart",
-            "test/explore/explore_widgets_test.dart"
-          ],
-          "notes": "Captured the consent-safe Cross Paths person Polaroid with its separate event context and independent profile and event actions."
-        },
-        {
-          "id": "cross_paths_profile_preview",
-          "kind": "populated",
-          "status": "captured",
-          "captureIds": [
-            "explore_cross_paths_profile_preview"
-          ],
-          "previewIds": [
-            "CrossPathsProfilePreviewSheet/Cross Paths profile preview"
-          ],
-          "tests": [
-            "test/cross_paths/cross_paths_explore_card_test.dart"
-          ],
-          "notes": "Captured the bounded profile preview with no contact details, attendee roster, or invitation controls and with persistent event context."
-        },
-        {
-          "id": "map_route",
+              "notes": "Captured a null hostUserId/hostName organizer record; Explore search/display paths must stay null-tolerant for unclaimed organizer profiles."
+            },
+            {
+              "id": "cross_paths_suggestion",
+              "kind": "populated",
+              "status": "captured",
+              "captureIds": [
+                "explore_cross_paths_person"
+              ],
+              "previewIds": [
+                "CrossPathsExploreCard/Cross Paths person card",
+                "CrossPathsEventContextCard/Cross Paths event context"
+              ],
+              "tests": [
+                "test/cross_paths/cross_paths_explore_card_test.dart",
+                "test/explore/explore_widgets_test.dart"
+              ],
+              "notes": "Captured the consent-safe Cross Paths person Polaroid with its separate event context and independent profile and event actions."
+            },
+            {
+              "id": "cross_paths_profile_preview",
+              "kind": "populated",
+              "status": "captured",
+              "captureIds": [
+                "explore_cross_paths_profile_preview"
+              ],
+              "previewIds": [
+                "CrossPathsProfilePreviewSheet/Cross Paths profile preview"
+              ],
+              "tests": [
+                "test/cross_paths/cross_paths_explore_card_test.dart"
+              ],
+              "notes": "Captured the bounded profile preview with no contact details, attendee roster, or invitation controls and with persistent event context."
+            },
+            {
+              "id": "map_route",
               "kind": "populated",
               "status": "captured",
               "captureIds": [
@@ -1297,7 +1297,7 @@
             {
               "id": "DP-EXPLORE-001",
               "status": "closed",
-          "nextAction": "Closed by the screen-local Explore section registry plus formal component mappings: catch.cover_story for CoverStory, catch.count_pill for CountPill/map launcher, catch.event_card for DateTicket/EventTicket roles, catch.organizer_poster for organizer spotlights, and catch.person_polaroid for server-ranked, consent-safe Cross Paths profiles."
+              "nextAction": "Closed by the screen-local Explore section registry plus formal component mappings: catch.cover_story for CoverStory, catch.count_pill for CountPill/map launcher, catch.event_card for DateTicket/EventTicket roles, catch.organizer_poster for organizer spotlights, and catch.person_polaroid for server-ranked, consent-safe Cross Paths profiles."
             },
             {
               "id": "DP-EXPLORE-002",
@@ -2225,16 +2225,16 @@
               "status": "closed",
               "nextAction": "Closed by dashboardHomeScreenStateProvider, which owns user/profile/membership/booked-event branch selection, typed retry targets, header copy, followed-club ids, and empty/full selection before DashboardScreen composes sections."
             },
-    {
-      "id": "DP-DASHBOARD-004",
-      "status": "closed",
-      "nextAction": "Closed by Dashboard Home reference export and advisory comparison tooling. Current empty_start comparison after the hero-shell pass is 54.05% mismatch / 59.13 meanDelta, down from the first 58.50% / 76.92 baseline; full_dashboard remains at 28.50% / 36.79 until the populated-state pass."
-    },
-    {
-      "id": "DP-DASHBOARD-005",
-      "status": "open",
-      "nextAction": "Add focused state-level tests for profile_error, memberships_error, offline, text_scale_2, reduced_motion, and light_dark; feature.dashboard_home carries these six explicit evidence exceptions while compiling all 19 registered states and 12 Dashboard-owned actions."
-    }
+            {
+              "id": "DP-DASHBOARD-004",
+              "status": "closed",
+              "nextAction": "Closed by Dashboard Home reference export and advisory comparison tooling. Current empty_start comparison after the hero-shell pass is 54.05% mismatch / 59.13 meanDelta, down from the first 58.50% / 76.92 baseline; full_dashboard remains at 28.50% / 36.79 until the populated-state pass."
+            },
+            {
+              "id": "DP-DASHBOARD-005",
+              "status": "open",
+              "nextAction": "Add focused state-level tests for profile_error, memberships_error, offline, text_scale_2, reduced_motion, and light_dark; feature.dashboard_home carries these six explicit evidence exceptions while compiling all 19 registered states and 12 Dashboard-owned actions."
+            }
           ]
         }
       ],
@@ -2766,21 +2766,21 @@
               "status": "closed",
               "nextAction": "Closed by companion route loading/error/access/offline, runtime moment, action pending, text-scale, reduced-motion, and paired light/dark captures. Mutation failure/snackbar variants should be added only if product copy diverges from the shared mutation listener behavior."
             },
-    {
-      "id": "DP-EVENT-SUCCESS-COMPANION-003",
-      "status": "closed",
-      "nextAction": "Closed for provider-free companion section APIs and EventSuccessCompanionScreenState ownership. FirstHelloCheckInCard, SelfCheckInCard, PaperSelfCheckInBar, MicroPodCard, RotationScheduleCard, WingmanRequestSection, EventSuccessFeedbackForm, and CompatibilityQuestionnaireSection receive explicit action state and typed callbacks from EventSuccessCompanionScreen. The missing production route binding for the compatibility callback is tracked separately by DP-EVENT-SUCCESS-COMPANION-005."
+            {
+              "id": "DP-EVENT-SUCCESS-COMPANION-003",
+              "status": "closed",
+              "nextAction": "Closed for provider-free companion section APIs and EventSuccessCompanionScreenState ownership. FirstHelloCheckInCard, SelfCheckInCard, PaperSelfCheckInBar, MicroPodCard, RotationScheduleCard, WingmanRequestSection, EventSuccessFeedbackForm, and CompatibilityQuestionnaireSection receive explicit action state and typed callbacks from EventSuccessCompanionScreen. The missing production route binding for the compatibility callback is tracked separately by DP-EVENT-SUCCESS-COMPANION-005."
             },
-    {
-      "id": "DP-EVENT-SUCCESS-COMPANION-004",
-      "status": "blocked",
-      "nextAction": "Blocked on missing canonical design exports for runtime-stage, reveal, wingman, afterglow, feedback, offline/error, accessibility, and theme variants. The only local Event Success Companion reference is design/reference_screens/screen.event_success.companion/default_live_guide.png with masks.json."
-    },
-    {
-      "id": "DP-EVENT-SUCCESS-COMPANION-005",
-      "status": "open",
-      "nextAction": "Wire EventSuccessCompanionRouteScreen to EventSuccessController.saveCompatibilityResponse through compatibilityResponseMutation, add route-level persistence proof, then remove FEATURE-ACTION-WIRING-001 from feature.event_success. Separately add focused tests for the nine registered state-level test exceptions; auto_launch remains launcher-policy evidence without synthetic visual evidence."
-    }
+            {
+              "id": "DP-EVENT-SUCCESS-COMPANION-004",
+              "status": "blocked",
+              "nextAction": "Blocked on missing canonical design exports for runtime-stage, reveal, wingman, afterglow, feedback, offline/error, accessibility, and theme variants. The only local Event Success Companion reference is design/reference_screens/screen.event_success.companion/default_live_guide.png with masks.json."
+            },
+            {
+              "id": "DP-EVENT-SUCCESS-COMPANION-005",
+              "status": "open",
+              "nextAction": "Wire EventSuccessCompanionRouteScreen to EventSuccessController.saveCompatibilityResponse through compatibilityResponseMutation, add route-level persistence proof, then remove FEATURE-ACTION-WIRING-001 from feature.event_success. Separately add focused tests for the nine registered state-level test exceptions; auto_launch remains launcher-policy evidence without synthetic visual evidence."
+            }
           ]
         }
       ],
@@ -5086,7 +5086,9 @@
               "id": "customers_populated",
               "kind": "populated",
               "status": "captured",
-              "previewIds": ["hostCustomersStates"],
+              "previewIds": [
+                "hostCustomersStates"
+              ],
               "tests": [
                 "test/hosts/host_customers_screen_state_test.dart",
                 "test/routing/host_shell_navigation_test.dart"
@@ -5100,7 +5102,9 @@
               "id": "customers_filtered_empty",
               "kind": "empty",
               "status": "tested",
-              "tests": ["test/hosts/host_customers_screen_state_test.dart"],
+              "tests": [
+                "test/hosts/host_customers_screen_state_test.dart"
+              ],
               "notes": "Search and lifecycle-filter misses use a distinct active-filter empty state."
             },
             {
@@ -5131,7 +5135,9 @@
               "id": "customer_detail_linked",
               "kind": "populated",
               "status": "tested",
-              "previewIds": ["hostCustomersStates"],
+              "previewIds": [
+                "hostCustomersStates"
+              ],
               "tests": [
                 "test/hosts/host_crm_repository_test.dart",
                 "test/hosts/host_customers_screen_state_test.dart"
@@ -5142,22 +5148,30 @@
               "id": "customer_detail_unlinked",
               "kind": "permission",
               "status": "tested",
-              "tests": ["test/hosts/host_customers_screen_state_test.dart"],
+              "tests": [
+                "test/hosts/host_customers_screen_state_test.dart"
+              ],
               "notes": "Manual and unmatched identities keep conversation and revenue availability explicitly gated."
             },
             {
               "id": "customer_detail_ambiguous",
               "kind": "permission",
               "status": "tested",
-              "tests": ["test/hosts/host_customers_screen_state_test.dart"],
+              "tests": [
+                "test/hosts/host_customers_screen_state_test.dart"
+              ],
               "notes": "Ambiguous identity candidates fail closed for direct conversation."
             },
             {
               "id": "customer_revenue_exact",
               "kind": "populated",
               "status": "tested",
-              "previewIds": ["hostCustomersStates"],
-              "tests": ["test/hosts/host_crm_repository_test.dart"],
+              "previewIds": [
+                "hostCustomersStates"
+              ],
+              "tests": [
+                "test/hosts/host_crm_repository_test.dart"
+              ],
               "notes": "Exact coverage displays completed non-refunded Catch payments per currency and paid-order counts."
             },
             {
@@ -5176,15 +5190,21 @@
               "id": "conversation_available",
               "kind": "populated",
               "status": "tested",
-              "previewIds": ["hostCustomersStates"],
-              "tests": ["test/hosts/host_customers_screen_state_test.dart"],
+              "previewIds": [
+                "hostCustomersStates"
+              ],
+              "tests": [
+                "test/hosts/host_customers_screen_state_test.dart"
+              ],
               "notes": "Only an unambiguous verified linked Catch identity enables the direct-conversation action."
             },
             {
               "id": "conversation_unavailable",
               "kind": "permission",
               "status": "tested",
-              "tests": ["test/hosts/host_customers_screen_state_test.dart"],
+              "tests": [
+                "test/hosts/host_customers_screen_state_test.dart"
+              ],
               "notes": "The disabled conversation card explains unlinked and ambiguous identity states."
             },
             {
@@ -5197,7 +5217,9 @@
               "id": "customer_manage",
               "kind": "mutation",
               "status": "tested",
-              "tests": ["test/hosts/host_customers_screen_state_test.dart"],
+              "tests": [
+                "test/hosts/host_customers_screen_state_test.dart"
+              ],
               "notes": "The customer-management sheet exposes rename, suppression, and removal without weakening identity or revision boundaries."
             },
             {
@@ -5205,6 +5227,24 @@
               "kind": "mutation",
               "status": "implemented",
               "notes": "Customer-management mutations own a pending state while optimistic revision checks complete."
+            },
+            {
+              "id": "customer_filter_sheet",
+              "kind": "populated",
+              "status": "tested",
+              "notes": "Grouped filter sheet replacing the flat chip list; state covered by host_customers_screen_state_test.dart."
+            },
+            {
+              "id": "customer_campaign_bridge_ready",
+              "kind": "populated",
+              "status": "tested",
+              "notes": "A selected segment is campaign-eligible, so message_filtered_customers is offered."
+            },
+            {
+              "id": "customer_campaign_bridge_blocked",
+              "kind": "permission",
+              "status": "tested",
+              "notes": "The selected segment is not campaign-eligible; message_filtered_customers is disabled and explained rather than hidden."
             },
             {
               "id": "offline",
@@ -8281,14 +8321,18 @@
               "id": "customer_messaging_provider_unavailable",
               "kind": "permission",
               "status": "implemented",
-              "previewIds": ["hostCustomerMessagingStates"],
+              "previewIds": [
+                "hostCustomerMessagingStates"
+              ],
               "notes": "Messaging Campaigns explains when the configured provider is unavailable instead of presenting unusable sender controls."
             },
             {
               "id": "customer_messaging_disconnected",
               "kind": "empty",
               "status": "implemented",
-              "previewIds": ["hostCustomerMessagingStates"],
+              "previewIds": [
+                "hostCustomerMessagingStates"
+              ],
               "notes": "Messaging Campaigns provides the sender-connection handoff when the organizer has no active messaging connection."
             },
             {
@@ -8301,8 +8345,12 @@
               "id": "customer_messaging_ready",
               "kind": "populated",
               "status": "captured",
-              "previewIds": ["hostCustomerMessagingStates"],
-              "tests": ["test/hosts/host_crm_repository_test.dart"],
+              "previewIds": [
+                "hostCustomerMessagingStates"
+              ],
+              "tests": [
+                "test/hosts/host_crm_repository_test.dart"
+              ],
               "captureIds": [
                 "host_messaging_campaigns"
               ],
@@ -8312,7 +8360,9 @@
               "id": "customer_campaign_draft",
               "kind": "mutation",
               "status": "implemented",
-              "previewIds": ["hostCustomerMessagingStates"],
+              "previewIds": [
+                "hostCustomerMessagingStates"
+              ],
               "notes": "The campaign composer preserves draft audience, template, variable, and schedule input before preview."
             },
             {
@@ -8325,8 +8375,12 @@
               "id": "customer_campaign_active",
               "kind": "mutation",
               "status": "tested",
-              "previewIds": ["hostCustomerMessagingStates"],
-              "tests": ["test/hosts/host_crm_repository_test.dart"],
+              "previewIds": [
+                "hostCustomerMessagingStates"
+              ],
+              "tests": [
+                "test/hosts/host_crm_repository_test.dart"
+              ],
               "notes": "Active campaigns expose authoritative dispatch status and cancellation through the Messaging workspace."
             },
             {
@@ -8465,6 +8519,12 @@
               "previewIds": [
                 "HostInboxScreen/Event-scoped states"
               ]
+            },
+            {
+              "id": "campaign_compose_deep_link",
+              "kind": "populated",
+              "status": "tested",
+              "notes": "Composer opened from Customers against a specific segment via deep link; covered by router_widgets_test.dart."
             },
             {
               "id": "offline",
@@ -11050,52 +11110,72 @@
               "id": "editable_application",
               "kind": "empty",
               "status": "captured",
-              "captureIds": ["launch_access_application"],
-              "tests": ["test/launch_access/launch_access_application_screen_test.dart"],
+              "captureIds": [
+                "launch_access_application"
+              ],
+              "tests": [
+                "test/launch_access/launch_access_application_screen_test.dart"
+              ],
               "notes": "The normal signed-in state renders the complete editable city-access form."
             },
             {
               "id": "application_loading",
               "kind": "loading",
               "status": "captured",
-              "captureIds": ["launch_access_loading"],
-              "tests": ["test/launch_access/launch_access_application_screen_test.dart"],
+              "captureIds": [
+                "launch_access_loading"
+              ],
+              "tests": [
+                "test/launch_access/launch_access_application_screen_test.dart"
+              ],
               "notes": "Application-stream loading preserves the form-shaped skeleton."
             },
             {
               "id": "signed_out",
               "kind": "permission",
               "status": "captured",
-              "captureIds": ["launch_access_signed_out"],
+              "captureIds": [
+                "launch_access_signed_out"
+              ],
               "notes": "A missing uid shows the phone-verification requirement."
             },
             {
               "id": "provider_error",
               "kind": "error",
               "status": "captured",
-              "captureIds": ["launch_access_error"],
+              "captureIds": [
+                "launch_access_error"
+              ],
               "notes": "Application read failures retain an exact retry owner on the shared error surface."
             },
             {
               "id": "provider_offline",
               "kind": "offline",
               "status": "captured",
-              "captureIds": ["launch_access_offline"],
+              "captureIds": [
+                "launch_access_offline"
+              ],
               "notes": "Offline reads use the shared offline recovery presentation."
             },
             {
               "id": "locked_status",
               "kind": "populated",
               "status": "captured",
-              "captureIds": ["launch_access_approved"],
-              "tests": ["test/launch_access/launch_access_repository_test.dart"],
+              "captureIds": [
+                "launch_access_approved"
+              ],
+              "tests": [
+                "test/launch_access/launch_access_repository_test.dart"
+              ],
               "notes": "Approved and other locked statuses replace the form with an explicit result."
             },
             {
               "id": "submit_application",
               "kind": "mutation",
               "status": "captured",
-              "captureIds": ["launch_access_submit_pending"],
+              "captureIds": [
+                "launch_access_submit_pending"
+              ],
               "tests": [
                 "test/launch_access/launch_access_controller_test.dart",
                 "test/launch_access/launch_access_repository_test.dart"

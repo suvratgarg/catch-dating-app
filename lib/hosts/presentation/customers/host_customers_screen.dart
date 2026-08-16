@@ -32,6 +32,8 @@ import 'package:catch_dating_app/hosts/presentation/customers/host_customers_con
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
@@ -103,6 +105,9 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
           : null,
     )!;
     final summary = ref.watch(hostCrmSummaryProvider(selectedClub.id));
+    final messagingSetup = ref.watch(
+      hostMessagingSetupProvider(selectedClub.id),
+    );
     final visibleFilters = hostCustomerFiltersForSmsReadiness(
       summary.asData?.value.smsReadiness,
     );
@@ -116,6 +121,12 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     );
     final directory = ref.watch(
       hostCustomersDirectoryControllerProvider(request),
+    );
+    final activeSegment = hostAudienceSegmentForCustomerFilter(effectiveFilter);
+    final campaignBridgeBlocker = hostCampaignBridgeBlocker(
+      segment: activeSegment,
+      smsReadiness: summary.asData?.value.smsReadiness,
+      messagingSetup: messagingSetup.asData?.value,
     );
     final t = CatchTokens.of(context);
 
@@ -183,30 +194,6 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                     ),
                   ),
                   gapH16,
-                  Text(
-                    context.l10n.hostCustomersFilterByTag,
-                    style: CatchTextStyles.fieldRowTitle(context),
-                  ),
-                  gapH8,
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        for (final (index, filter)
-                            in visibleFilters.indexed) ...[
-                          if (index > 0) gapW8,
-                          CatchChip.selectable(
-                            label: _customerFilterLabel(context, filter),
-                            selected: effectiveFilter == filter,
-                            contractExemption:
-                                'Customer filters map to reviewed CRM segments.',
-                            onChanged: (_) => setState(() => _filter = filter),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  gapH16,
                   CatchAsyncValueView<HostCustomersDirectoryState>(
                     value: directory,
                     onRetry: () => ref.invalidate(
@@ -222,22 +209,53 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                         hostCustomersDirectoryControllerProvider(request),
                       ),
                     ),
-                    builder: (context, state) => HostCustomersDirectory(
-                      state: state,
-                      hasActiveQuery:
-                          _search != null ||
-                          effectiveFilter != HostCustomerFilter.all,
-                      onCustomerSelected: (contact) =>
-                          _openCustomer(selectedClub, contact),
-                      onLoadMore: state.canLoadMore
-                          ? () => ref
-                                .read(
-                                  hostCustomersDirectoryControllerProvider(
-                                    request,
-                                  ).notifier,
+                    builder: (context, state) => Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        HostCustomerFilterSummary(
+                          filter: effectiveFilter,
+                          count: state.matchCount,
+                          countCoverage: state.matchCountCoverage,
+                          campaignBlocker: campaignBridgeBlocker,
+                          onMessage:
+                              campaignBridgeBlocker == null &&
+                                  activeSegment != null
+                              ? () => _messageCustomers(
+                                  selectedClub,
+                                  activeSegment,
                                 )
-                                .loadMore()
-                          : null,
+                              : null,
+                          onOpenFilters: () => _openFilters(
+                            selectedClub,
+                            effectiveFilter,
+                            state,
+                            summary.asData?.value.smsReadiness,
+                          ),
+                          onClear: effectiveFilter == HostCustomerFilter.all
+                              ? null
+                              : () => setState(
+                                  () => _filter = HostCustomerFilter.all,
+                                ),
+                        ),
+                        gapH16,
+                        HostCustomersDirectory(
+                          state: state,
+                          hasActiveQuery:
+                              _search != null ||
+                              effectiveFilter != HostCustomerFilter.all,
+                          onCustomerSelected: (contact) =>
+                              _openCustomer(selectedClub, contact),
+                          onLoadMore: state.canLoadMore
+                              ? () => ref
+                                    .read(
+                                      hostCustomersDirectoryControllerProvider(
+                                        request,
+                                      ).notifier,
+                                    )
+                                    .loadMore()
+                              : null,
+                        ),
+                      ],
                     ),
                   ),
                   const CatchScrollTerminalPadding(),
@@ -299,6 +317,42 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
       setState(() => _search = nextSearch);
     }
   }
+
+  Future<void> _openFilters(
+    Club club,
+    HostCustomerFilter activeFilter,
+    HostCustomersDirectoryState directory,
+    HostCrmChannelReadiness? smsReadiness,
+  ) async {
+    final selected = await showCatchBottomSheet<HostCustomerFilter>(
+      context: context,
+      builder: (_) => HostCustomerFilterSheet(
+        organizerId: club.id,
+        search: _search,
+        selectedFilter: activeFilter,
+        selectedCount: HostCustomerSegmentCount(
+          count: directory.matchCount,
+          coverage: directory.matchCountCoverage,
+        ),
+        smsReadiness: smsReadiness,
+      ),
+    );
+    if (selected != null && mounted) {
+      setState(() => _filter = selected);
+    }
+  }
+
+  void _messageCustomers(Club club, HostAudienceSegment segment) =>
+      context.goNamed(
+        Routes.hostInboxScreen.name,
+        queryParameters: {
+          'workspace': HostMessagingWorkspace.campaigns.name,
+          'compose': '1',
+          'segment': segment.wireValue,
+          'search': ?_search,
+        },
+        extra: club,
+      );
 
   Future<void> _addCustomer(
     Club club,
@@ -389,6 +443,194 @@ class HostCustomersNoOrganizer extends StatelessWidget {
       ),
     ),
   );
+}
+
+class HostCustomerFilterSummary extends StatelessWidget {
+  const HostCustomerFilterSummary({
+    super.key,
+    required this.filter,
+    required this.count,
+    required this.countCoverage,
+    required this.campaignBlocker,
+    required this.onOpenFilters,
+    required this.onMessage,
+    this.onClear,
+  });
+
+  final HostCustomerFilter filter;
+  final int count;
+  final HostCustomerMatchCountCoverage countCoverage;
+  final String? campaignBlocker;
+  final VoidCallback onOpenFilters;
+  final VoidCallback? onMessage;
+  final VoidCallback? onClear;
+
+  @override
+  Widget build(BuildContext context) {
+    final countLabel = _customerPeopleCountLabel(context, count, countCoverage);
+    return CatchSurface.tinted(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  context.l10n.hostCustomersFilterSummary(
+                    label: _customerFilterLabel(context, filter),
+                    countLabel: countLabel,
+                  ),
+                  style: CatchTextStyles.fieldRowTitle(context),
+                ),
+              ),
+              if (onClear case final clear?) ...[
+                gapW8,
+                CatchButton(
+                  label: context.l10n.hostCustomersClearFilter,
+                  variant: CatchButtonVariant.ghost,
+                  size: CatchButtonSize.sm,
+                  onPressed: clear,
+                ),
+              ],
+              gapW8,
+              CatchButton(
+                label: context.l10n.hostCustomersFilters,
+                icon: Icon(CatchIcons.tuneRounded),
+                variant: CatchButtonVariant.secondary,
+                size: CatchButtonSize.sm,
+                onPressed: onOpenFilters,
+              ),
+            ],
+          ),
+          gapH12,
+          Wrap(
+            alignment: WrapAlignment.end,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s1,
+            children: [
+              if (campaignBlocker case final String blocker)
+                Text(
+                  hostCampaignBlockerLabel(context, blocker),
+                  style: CatchTextStyles.supporting(
+                    context,
+                    color: CatchTokens.of(context).warning,
+                  ),
+                ),
+              CatchButton(
+                key: const ValueKey('host-customers-message-segment'),
+                label: countCoverage == HostCustomerMatchCountCoverage.exact
+                    ? context.l10n.hostCustomersMessageThese(count: count)
+                    : context.l10n.hostCustomersMessageTheseAtLeast(
+                        count: count,
+                      ),
+                size: CatchButtonSize.sm,
+                onPressed: onMessage,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class HostCustomerFilterSheet extends ConsumerWidget {
+  const HostCustomerFilterSheet({
+    super.key,
+    required this.organizerId,
+    required this.selectedFilter,
+    required this.selectedCount,
+    required this.smsReadiness,
+    this.search,
+  });
+
+  final String organizerId;
+  final String? search;
+  final HostCustomerFilter selectedFilter;
+  final HostCustomerSegmentCount selectedCount;
+  final HostCrmChannelReadiness? smsReadiness;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final groups = hostCustomerFilterGroupsForSmsReadiness(smsReadiness);
+    return CatchBottomSheetScaffold(
+      title: context.l10n.hostCustomersFilterSheetTitle,
+      subtitle: context.l10n.hostCustomersFilterSheetSubtitle,
+      child: SingleChildScrollView(
+        child: CatchSectionList(
+          emptyStateOmitted: true,
+          children: [
+            for (final entry in groups.entries)
+              CatchSection.divided(
+                title: _customerFilterGroupLabel(context, entry.key),
+                child: Wrap(
+                  spacing: CatchSpacing.s2,
+                  runSpacing: CatchSpacing.s2,
+                  children: [
+                    for (final filter in entry.value)
+                      _HostCustomerFilterCountChip(
+                        organizerId: organizerId,
+                        search: search,
+                        filter: filter,
+                        selected: selectedFilter == filter,
+                        selectedCount: selectedCount,
+                      ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HostCustomerFilterCountChip extends ConsumerWidget {
+  const _HostCustomerFilterCountChip({
+    required this.organizerId,
+    required this.search,
+    required this.filter,
+    required this.selected,
+    required this.selectedCount,
+  });
+
+  final String organizerId;
+  final String? search;
+  final HostCustomerFilter filter;
+  final bool selected;
+  final HostCustomerSegmentCount selectedCount;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final count = selected
+        ? AsyncValue.data(selectedCount)
+        : ref.watch(
+            hostCustomerSegmentCountProvider(
+              HostCustomerSegmentCountRequest(
+                organizerId: organizerId,
+                search: search,
+                filter: filter,
+              ),
+            ),
+          );
+    final countLabel = count.when(
+      data: (value) =>
+          _customerPeopleCountLabel(context, value.count, value.coverage),
+      loading: () => context.l10n.hostCustomersCountLoading,
+      error: (_, _) => context.l10n.hostCustomersCountUnavailable,
+    );
+    return CatchChip.selectable(
+      key: ValueKey('host-customer-filter-${filter.name}'),
+      label: context.l10n.hostCustomersFilterOption(
+        label: _customerFilterLabel(context, filter),
+        countLabel: countLabel,
+      ),
+      selected: selected,
+      contractExemption: 'Customer filters map to reviewed CRM segments.',
+      onChanged: (_) => Navigator.of(context).pop(filter),
+    );
+  }
 }
 
 class HostCustomersDirectory extends StatelessWidget {
@@ -1000,4 +1242,30 @@ String _customerFilterLabel(
   HostCustomerFilter.whatsappReachable =>
     context.l10n.hostsHostAudienceSegmentWhatsapp,
   HostCustomerFilter.smsReachable => context.l10n.hostsHostAudienceSegmentSms,
+};
+
+String _customerFilterGroupLabel(
+  BuildContext context,
+  HostCustomerFilterGroup group,
+) => switch (group) {
+  HostCustomerFilterGroup.attendance =>
+    context.l10n.hostCustomersFilterGroupAttendance,
+  HostCustomerFilterGroup.reliability =>
+    context.l10n.hostCustomersFilterGroupReliability,
+  HostCustomerFilterGroup.advocacy =>
+    context.l10n.hostCustomersFilterGroupAdvocacy,
+  HostCustomerFilterGroup.reachable =>
+    context.l10n.hostCustomersFilterGroupReachable,
+};
+
+String _customerPeopleCountLabel(
+  BuildContext context,
+  int count,
+  HostCustomerMatchCountCoverage coverage,
+) => switch (coverage) {
+  HostCustomerMatchCountCoverage.exact => context.l10n.hostCustomersPeopleCount(
+    count: count,
+  ),
+  HostCustomerMatchCountCoverage.atLeast =>
+    context.l10n.hostCustomersPeopleCountAtLeast(count: count),
 };

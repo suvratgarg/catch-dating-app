@@ -190,6 +190,8 @@ HostCustomersDirectoryState _customerDirectoryState() =>
     HostCustomersDirectoryState(
       contacts: [_customerDirectoryContact()],
       nextCursor: null,
+      matchCount: 1,
+      matchCountCoverage: HostCustomerMatchCountCoverage.exact,
       sourceCoverage: HostCustomerDirectoryCoverage.exact,
       projectionVersion: 1,
     );
@@ -198,6 +200,8 @@ HostCustomersDirectoryState _emptyCustomerDirectoryState() =>
     const HostCustomersDirectoryState(
       contacts: [],
       nextCursor: null,
+      matchCount: 0,
+      matchCountCoverage: HostCustomerMatchCountCoverage.exact,
       sourceCoverage: HostCustomerDirectoryCoverage.exact,
       projectionVersion: 1,
     );

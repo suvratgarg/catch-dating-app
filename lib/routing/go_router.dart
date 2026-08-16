@@ -25,6 +25,7 @@ import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
+import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_create_club_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
@@ -79,6 +80,39 @@ HostClubsScreen hostOrganizerScreenForUri(Uri uri) {
       (tab) => tab.name == uri.queryParameters['tab'],
       orElse: () => HostClubTab.edit,
     ),
+  );
+}
+
+@visibleForTesting
+HostInboxScreen hostInboxScreenForUri(Uri uri, {String? initialOrganizerId}) {
+  final eventId = uri.queryParameters['eventId']?.trim();
+  final general = uri.queryParameters['scope'] == 'general';
+  final initialScope = eventId != null && eventId.isNotEmpty
+      ? HostInboxScope.event(eventId)
+      : general
+      ? const HostInboxScope.general()
+      : null;
+  final initialWorkspace = HostMessagingWorkspace.values.firstWhere(
+    (workspace) => workspace.name == uri.queryParameters['workspace'],
+    orElse: () => HostMessagingWorkspace.inbox,
+  );
+  final requestedSegment = uri.queryParameters['segment'];
+  final campaignSegment = HostAudienceSegment.values
+      .where((segment) => segment.wireValue == requestedSegment)
+      .firstOrNull;
+  final initialCampaignSegments =
+      uri.queryParameters['compose'] == '1' && campaignSegment != null
+      ? {campaignSegment}
+      : const <HostAudienceSegment>{};
+  final requestedSearch = uri.queryParameters['search']?.trim();
+  return HostInboxScreen(
+    initialScope: initialScope,
+    initialWorkspace: initialWorkspace,
+    initialCampaignSegments: initialCampaignSegments,
+    initialCampaignSearch: requestedSearch == null || requestedSearch.isEmpty
+        ? null
+        : requestedSearch,
+    initialOrganizerId: initialOrganizerId,
   );
 }
 
@@ -869,16 +903,13 @@ StatefulShellRoute _hostShellRoute(
           GoRoute(
             path: Routes.hostInboxScreen.path,
             name: Routes.hostInboxScreen.name,
-            builder: (context, state) {
-              final eventId = state.uri.queryParameters['eventId']?.trim();
-              final general = state.uri.queryParameters['scope'] == 'general';
-              final initialScope = eventId != null && eventId.isNotEmpty
-                  ? HostInboxScope.event(eventId)
-                  : general
-                  ? const HostInboxScope.general()
-                  : null;
-              return HostInboxScreen(initialScope: initialScope);
-            },
+            builder: (context, state) => hostInboxScreenForUri(
+              state.uri,
+              initialOrganizerId: switch (state.extra) {
+                final Club club => club.id,
+                _ => null,
+              },
+            ),
             routes: [
               GoRoute(
                 path: ':matchId',
