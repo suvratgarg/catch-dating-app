@@ -92,6 +92,13 @@ export interface GetOrganizerContactDetailCallableResponse {
     label: string;
   }[];
   /**
+   * @maxItems 20
+   */
+  manualTagVocabulary?: {
+    tagId: string;
+    label: string;
+  }[];
+  /**
    * @maxItems 100
    */
   notes?: {

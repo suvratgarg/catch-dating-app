@@ -384,6 +384,30 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
         },
       },
     },
+    'manualTagVocabulary': <String, Object?>{
+      'type': 'array',
+      'maxItems': 20,
+      'uniqueItems': true,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'tagId',
+          'label',
+        ],
+        'properties': <String, Object?>{
+          'tagId': <String, Object?>{
+            'type': 'string',
+            'pattern': '^[a-f0-9]{32}\$',
+          },
+          'label': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 40,
+          },
+        },
+      },
+    },
     'notes': <String, Object?>{
       'type': 'array',
       'maxItems': 100,

@@ -493,6 +493,7 @@ export async function getOrganizerContactDetailHandler(
     events,
     eventsTruncated: eventSnap.size > maxDetailEvents,
     manualTags: manualTagsForContact(contact, manualTagsById),
+    manualTagVocabulary: tagVocabulary,
     notes,
     notesTruncated: noteSnap.size > maxDetailNotes,
     sends,

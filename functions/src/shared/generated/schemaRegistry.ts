@@ -52937,6 +52937,30 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
         }
       }
     },
+    "manualTagVocabulary": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tagId",
+          "label"
+        ],
+        "properties": {
+          "tagId": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          }
+        }
+      }
+    },
     "notes": {
       "type": "array",
       "maxItems": 100,

@@ -20884,6 +20884,29 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-f0-9]{32}\$',
   );
 
+  static const getOrganizerContactDetailCallableResponseManualTagVocabulary = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.manualTagVocabulary',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const getOrganizerContactDetailCallableResponseManualTagVocabularyItemsLabel = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.manualTagVocabulary.items.label',
+    maxLength: 40,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseManualTagVocabularyItemsTagId = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.manualTagVocabulary.items.tagId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
   static const getOrganizerContactDetailCallableResponseNotes = CatchContractFieldConstraints(
     path: 'getOrganizerContactDetailCallableResponse.notes',
     valueTypes: <String>['array'],
@@ -44458,6 +44481,9 @@ abstract final class CatchContractConstraints {
     'getOrganizerContactDetailCallableResponse.manualTags': getOrganizerContactDetailCallableResponseManualTags,
     'getOrganizerContactDetailCallableResponse.manualTags.items.label': getOrganizerContactDetailCallableResponseManualTagsItemsLabel,
     'getOrganizerContactDetailCallableResponse.manualTags.items.tagId': getOrganizerContactDetailCallableResponseManualTagsItemsTagId,
+    'getOrganizerContactDetailCallableResponse.manualTagVocabulary': getOrganizerContactDetailCallableResponseManualTagVocabulary,
+    'getOrganizerContactDetailCallableResponse.manualTagVocabulary.items.label': getOrganizerContactDetailCallableResponseManualTagVocabularyItemsLabel,
+    'getOrganizerContactDetailCallableResponse.manualTagVocabulary.items.tagId': getOrganizerContactDetailCallableResponseManualTagVocabularyItemsTagId,
     'getOrganizerContactDetailCallableResponse.notes': getOrganizerContactDetailCallableResponseNotes,
     'getOrganizerContactDetailCallableResponse.notes.items.authorUid': getOrganizerContactDetailCallableResponseNotesItemsAuthorUid,
     'getOrganizerContactDetailCallableResponse.notes.items.body': getOrganizerContactDetailCallableResponseNotesItemsBody,
