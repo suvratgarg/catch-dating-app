@@ -903,6 +903,65 @@ describe("firestore.rules", () => {
       ), organizerEventSuccessLayout({layoutId: "layout-2"})));
     });
 
+    it("keeps contact notes and manual-tag vocabularies callable-only", async () => {
+      const createdAt = Timestamp.fromDate(
+        new Date("2026-08-16T10:00:00.000Z"),
+      );
+      await seed(["organizers", "organizer-1"], {
+        ownerUserId: "owner-1",
+        hostUserId: "owner-1",
+        hostUserIds: ["owner-1"],
+      });
+      await seed(["organizers", "organizer-2"], {
+        ownerUserId: "owner-2",
+        hostUserId: "owner-2",
+        hostUserIds: ["owner-2"],
+      });
+      await seed(["organizerContactNotes", "note-2"], {
+        organizerId: "organizer-2",
+        contactId: "contact-2",
+        authorUid: "owner-2",
+        body: "Brings friends",
+        revision: 1,
+        createdAt,
+        updatedAt: createdAt,
+        updatedByUid: "owner-2",
+      });
+      await seed(["organizerContactTagVocabularies", "organizer-2"], {
+        organizerId: "organizer-2",
+        tags: [],
+        updatedAt: createdAt,
+      });
+
+      for (const uid of ["owner-2", "owner-1"]) {
+        const db = authedDb(uid);
+        await assertFails(getDoc(doc(db, "organizerContactNotes", "note-2")));
+        await assertFails(getDocs(query(
+          collection(db, "organizerContactNotes"),
+          where("organizerId", "==", "organizer-2"),
+        )));
+        await assertFails(getDoc(doc(
+          db,
+          "organizerContactTagVocabularies",
+          "organizer-2",
+        )));
+      }
+      await assertFails(setDoc(doc(
+        authedDb("owner-2"),
+        "organizerContactNotes",
+        "note-client",
+      ), {
+        organizerId: "organizer-2",
+        contactId: "contact-2",
+        body: "Client write",
+      }));
+      await assertFails(updateDoc(doc(
+        authedDb("owner-2"),
+        "organizerContactTagVocabularies",
+        "organizer-2",
+      ), {tags: ["client-write"]}));
+    });
+
     it("keeps organizer claims and schedule locks server-only", async () => {
       await seed(["organizerClaimRequests", "claim-1"], {
         organizerId: "organizer-1",
