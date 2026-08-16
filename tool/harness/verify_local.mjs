@@ -178,9 +178,13 @@ function main() {
     );
     for (const step of skipped) console.log(`  ${step.name}  (${step.workflow}) — ${step.reason}`);
     console.log(
-      `\nMatrix-driven jobs are the common case; for the tools lane run\n` +
+      `\nMatrix-driven jobs are the common case. For the tools lane run\n` +
       `  node tool/run.mjs affected-tools --base origin/main --check\n` +
-      `which executes the registered tool checks those buckets fan out to.`,
+      `which executes the registered tool checks those buckets fan out to.\n` +
+      `If that reports "selected full mode" — which a control-plane change\n` +
+      `always does — incremental selection is deliberately bypassed and it\n` +
+      `will run nothing; use the full matrix instead:\n` +
+      `  node tool/run.mjs check`,
     );
   };
 

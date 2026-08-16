@@ -125,3 +125,54 @@ test("every ciTarget in the component graph resolves to a workflow", () => {
     `${WORKFLOWS}/ have diverged; local verification would silently skip these.`,
   );
 });
+
+test("folds a `>-` block into a single command", () => {
+  // Regression: folded scalars were joined with newlines, so a multi-line
+  // `run: >-` command executed its continuations as separate shell commands
+  // ("audit:dependency-direction: command not found"). Emitting a wrong
+  // command is worse than emitting none.
+  const steps = extractSteps([
+    "jobs:",
+    "  build:",
+    "    steps:",
+    "      - name: Structural gates",
+    "        run: >-",
+    "          node tool/run.mjs check",
+    "          audit:dependency-direction",
+    "          audit:widget-cleanup",
+  ].join("\n"));
+  assert.equal(
+    steps[0].run,
+    "node tool/run.mjs check audit:dependency-direction audit:widget-cleanup",
+  );
+});
+
+test("keeps line breaks in a `|` block", () => {
+  const steps = extractSteps([
+    "jobs:",
+    "  build:",
+    "    steps:",
+    "      - name: Two commands",
+    "        run: |",
+    "          mkdir -p build/ci",
+    "          node tool/x.mjs",
+  ].join("\n"));
+  assert.equal(steps[0].run, "mkdir -p build/ci\nnode tool/x.mjs");
+});
+
+test("no extracted command spans lines unless it came from a literal block", () => {
+  // Anti-vacuity against the real workflows: any multi-line command must
+  // originate from `|`, never from a folded scalar we mis-joined.
+  const fs2 = fs;
+  for (const file of fs2.readdirSync(WORKFLOWS).filter((f) => f.endsWith(".yml"))) {
+    const source = fs2.readFileSync(`${WORKFLOWS}/${file}`, "utf8");
+    for (const step of extractSteps(source)) {
+      if (!step.run || !step.run.includes("\n")) continue;
+      assert.ok(
+        source.includes("run: |"),
+        `${file}: step "${step.name}" yielded a multi-line command but the ` +
+        `workflow declares no literal block`,
+      );
+    }
+  }
+});
