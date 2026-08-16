@@ -185,30 +185,17 @@ class CatchTabBar<T> extends StatelessWidget {
     double availableWidth,
     String label,
   ) {
-    if (items.length == 1) return availableWidth;
     final painter = TextPainter(
       text: TextSpan(text: label, style: CatchTextStyles.buttonSm(context)),
       maxLines: 1,
       textDirection: Directionality.of(context),
       textScaler: MediaQuery.textScalerOf(context),
     )..layout();
-    final desired =
-        CatchLayout.tabBarPillLeadingPadding +
-        CatchLayout.tabBarIconBoxExtent +
-        CatchLayout.tabBarLabelGap +
-        painter.width +
-        CatchLayout.tabBarPillTrailingPadding;
-    final maximum =
-        availableWidth -
-        (CatchLayout.tabBarMinimumTapExtent * (items.length - 1));
-    return desired
-        .clamp(
-          CatchLayout.tabBarMinimumSelectedExtent,
-          maximum < CatchLayout.tabBarMinimumSelectedExtent
-              ? CatchLayout.tabBarMinimumSelectedExtent
-              : maximum,
-        )
-        .toDouble();
+    return CatchLayout.tabBarSelectedExtentFor(
+      availableWidth: availableWidth,
+      itemCount: items.length,
+      labelWidth: painter.width,
+    );
   }
 }
 

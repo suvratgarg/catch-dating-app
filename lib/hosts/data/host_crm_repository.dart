@@ -1023,6 +1023,8 @@ class HostAudienceContactDetail {
   final bool linkedAccount;
   final HostAudienceIdentityState identityState;
   final String identityConfidence;
+
+  bool get isIdentityVerified => identityConfidence == 'verified';
   final bool contactDetailsEditable;
   final int ambiguousCandidateCount;
   final bool whatsappAdminSuppressed;

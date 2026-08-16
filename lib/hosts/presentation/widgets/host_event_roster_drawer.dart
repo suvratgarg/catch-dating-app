@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_scene_viewport.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
@@ -48,18 +49,16 @@ class _HostEventRosterDrawerState extends State<HostEventRosterDrawer> {
     final duration = reduceMotion ? Duration.zero : CatchMotion.standard;
     final t = CatchTokens.of(context);
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
+    return CatchSceneViewport(
+      maxWidth: CatchLayout.maxContentWidth,
+      builder: (context, viewport) {
         final handleWidth = CatchLayout.hostRosterDrawerHandleWidth;
-        final drawerWidth = (constraints.maxWidth - handleWidth)
-            .clamp(0.0, CatchLayout.hostRosterDrawerMaxWidth)
-            .toDouble();
-        final handleTop =
-            ((constraints.maxHeight -
-                        CatchLayout.hostRosterDrawerHandleHeight) /
-                    2)
-                .clamp(CatchSpacing.s6, double.infinity)
-                .toDouble();
+        final drawerWidth = CatchLayout.hostRosterDrawerWidthFor(
+          viewport.width,
+        );
+        final handleTop = CatchLayout.hostRosterDrawerHandleTopFor(
+          viewport.height,
+        );
 
         return Stack(
           clipBehavior: Clip.none,

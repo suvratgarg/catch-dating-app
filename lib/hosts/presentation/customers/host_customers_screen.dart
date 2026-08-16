@@ -227,21 +227,18 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                         ref.invalidate(hostCrmSummaryProvider(selectedClub.id)),
                   ),
                   gapH16,
-                  LayoutBuilder(
-                    builder: (context, constraints) => CatchSearchField(
-                      key: const ValueKey('host-customers-search'),
-                      mode: CatchSearchFieldMode.expanded,
-                      maxWidth: constraints.maxWidth,
-                      value: _search ?? '',
-                      contract: CatchContractConstraints
-                          .listOrganizerContactsCallablePayloadQuery,
-                      placeholder: context.l10n.hostsHostAudienceSearch,
-                      semanticLabel: context.l10n.hostsHostAudienceSearch,
-                      textInputAction: TextInputAction.search,
-                      onChanged: _scheduleSearch,
-                      onSubmitted: _applySearch,
-                      onCloseSearch: _closeSearch,
-                    ),
+                  CatchSearchField(
+                    key: const ValueKey('host-customers-search'),
+                    mode: CatchSearchFieldMode.expanded,
+                    value: _search ?? '',
+                    contract: CatchContractConstraints
+                        .listOrganizerContactsCallablePayloadQuery,
+                    placeholder: context.l10n.hostsHostAudienceSearch,
+                    semanticLabel: context.l10n.hostsHostAudienceSearch,
+                    textInputAction: TextInputAction.search,
+                    onChanged: _scheduleSearch,
+                    onSubmitted: _applySearch,
+                    onCloseSearch: _closeSearch,
                   ),
                   gapH16,
                   CatchAsyncValueView<HostCustomersDirectoryState>(
@@ -1277,7 +1274,7 @@ class HostCustomerIdentityCard extends StatelessWidget {
             style: CatchTextStyles.supporting(context),
           )
         else ...[
-          if (customer.identityConfidence != 'verified') ...[
+          if (!customer.isIdentityVerified) ...[
             Text(
               context.l10n.hostCustomersUnverifiedContactDetails,
               style: CatchTextStyles.supporting(context),
@@ -1289,7 +1286,7 @@ class HostCustomerIdentityCard extends StatelessWidget {
               children: [
                 if (customer.phoneE164 != null)
                   CatchField.read(
-                    title: customer.identityConfidence == 'verified'
+                    title: customer.isIdentityVerified
                         ? context.l10n.hostsHostAudienceContactVerifiedPhone
                         : context.l10n.hostCustomersPhone,
                     body: customer.phoneE164,
@@ -1535,23 +1532,27 @@ class HostCustomersSummary extends StatelessWidget {
       return CatchSurface(
         padding: CatchInsets.cardContent,
         child: usesLargeText
-            ? CatchFieldLanes.single(
-                child: Column(
-                  children: [
-                    CatchField.read(
-                      title: context.l10n.hostsHostAudienceContacts,
-                      valueText: '${value.contactCount}',
-                    ),
-                    CatchField.read(
-                      title: context.l10n.hostsHostAudienceAttended,
-                      valueText: '${value.pastAttendeeCount}',
-                    ),
-                    CatchField.read(
-                      title: context.l10n.hostsHostAudienceRepeat,
-                      valueText: '${value.repeatAttendeeCount}',
-                    ),
-                  ],
-                ),
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  CatchStatColumn(
+                    value: '${value.contactCount}',
+                    label: context.l10n.hostsHostAudienceContacts,
+                    monoValue: true,
+                  ),
+                  gapH16,
+                  CatchStatColumn(
+                    value: '${value.pastAttendeeCount}',
+                    label: context.l10n.hostsHostAudienceAttended,
+                    monoValue: true,
+                  ),
+                  gapH16,
+                  CatchStatColumn(
+                    value: '${value.repeatAttendeeCount}',
+                    label: context.l10n.hostsHostAudienceRepeat,
+                    monoValue: true,
+                  ),
+                ],
               )
             : Row(
                 children: [

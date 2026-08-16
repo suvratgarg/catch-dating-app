@@ -2439,6 +2439,39 @@ abstract final class CatchLayout {
   static double tabBarReservedBottomInset(double bottomSafeArea) =>
       tabBarExtent + tabBarFloatingBottomInset + bottomSafeArea;
 
+  static double tabBarSelectedExtentFor({
+    required double availableWidth,
+    required int itemCount,
+    required double labelWidth,
+  }) {
+    if (itemCount <= 1) return availableWidth;
+    final desired =
+        tabBarPillLeadingPadding +
+        tabBarIconBoxExtent +
+        tabBarLabelGap +
+        labelWidth +
+        tabBarPillTrailingPadding;
+    final maximum = availableWidth - (tabBarMinimumTapExtent * (itemCount - 1));
+    return desired
+        .clamp(
+          tabBarMinimumSelectedExtent,
+          maximum < tabBarMinimumSelectedExtent
+              ? tabBarMinimumSelectedExtent
+              : maximum,
+        )
+        .toDouble();
+  }
+
+  static double hostRosterDrawerWidthFor(double viewportWidth) =>
+      (viewportWidth - hostRosterDrawerHandleWidth)
+          .clamp(0.0, hostRosterDrawerMaxWidth)
+          .toDouble();
+
+  static double hostRosterDrawerHandleTopFor(double viewportHeight) =>
+      ((viewportHeight - hostRosterDrawerHandleHeight) / 2)
+          .clamp(CatchSpacing.s6, double.infinity)
+          .toDouble();
+
   static double distanceRingAvailableDiameterFor(Size viewport) {
     final shortestSide = viewport.width < viewport.height
         ? viewport.width

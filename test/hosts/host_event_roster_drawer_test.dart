@@ -4,6 +4,8 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../test_pump_helpers.dart';
+
 void main() {
   testWidgets(
     'roster drawer lazily opens without rebuilding the event workspace',
@@ -54,7 +56,7 @@ void main() {
       await tester.tap(
         find.bySemanticsLabel('Open guest roster, 3 booked guests'),
       );
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
       expect(find.text('Roster content'), findsOneWidget);
       expect(
@@ -71,8 +73,15 @@ void main() {
       expect(panelRect.right, closeTo(390, 0.5));
       expect(panelRect.width, lessThanOrEqualTo(390));
 
-      await tester.tap(find.bySemanticsLabel('Close guest roster').first);
-      await tester.pumpAndSettle();
+      await tester.tap(
+        find.descendant(
+          of: find.byKey(
+            const ValueKey<String>('host_event_roster_drawer.handle'),
+          ),
+          matching: find.bySemanticsLabel('Close guest roster'),
+        ),
+      );
+      await pumpFeatureUi(tester);
       expect(
         find.bySemanticsLabel('Open guest roster, 3 booked guests'),
         findsOneWidget,

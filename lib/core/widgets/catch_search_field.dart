@@ -264,18 +264,34 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
       tween: Tween<double>(end: targetProgress),
       duration: CatchMotion.base,
       curve: CatchMotion.standardCurve,
-      builder: (context, progress, _) =>
-          _buildExpandingSearchAt(context, progress),
+      builder: (context, progress, _) {
+        final maxWidth = widget.maxWidth;
+        if (maxWidth != null) {
+          return _buildExpandingSearchAt(context, progress, maxWidth);
+        }
+        return LayoutBuilder(
+          builder: (context, constraints) => _buildExpandingSearchAt(
+            context,
+            progress,
+            constraints.hasBoundedWidth
+                ? constraints.maxWidth
+                : widget.collapsedExtent,
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildExpandingSearchAt(BuildContext context, double progress) {
+  Widget _buildExpandingSearchAt(
+    BuildContext context,
+    double progress,
+    double maxWidth,
+  ) {
     final t = CatchTokens.of(context);
     final placeholder = widget.placeholder ?? context.l10n.sharedSearchLabel;
     final tooltip = widget.tooltip ?? context.l10n.sharedSearchLabel;
     final foreground = widget.foregroundColor ?? t.ink;
     final mutedForeground = widget.mutedForegroundColor ?? t.ink3;
-    final maxWidth = widget.maxWidth ?? widget.collapsedExtent;
     final clampedProgress = progress.clamp(0.0, 1.0);
     final width =
         widget.collapsedExtent +
