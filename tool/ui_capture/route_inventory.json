@@ -4,13 +4,13 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "0dd587c308fbccc450587344c7c3c3015ca09a1e6bfe637edf6d385942ff0682",
-    "routeContractSha256": "37a7000fdd074b280d6bfe21c179c6da1c22bf72393db97d65a487dec4bd163e",
-    "goRouteCount": 54,
+    "normalizedFileSha256": "92b360aa5be2696c84205fbe48df738b5bd0832178f372ab02d9b6246deeffa3",
+    "routeContractSha256": "f0efe118adf5276cbd14df0a2e7e245b7cb263aba7064cc09742a6c96a279d2a",
+    "goRouteCount": 55,
     "shellBranchCount": 8,
-    "enumRouteCount": 53,
-    "referencedRouteCount": 53,
-    "runtimeRouteCount": 53,
+    "enumRouteCount": 54,
+    "referencedRouteCount": 54,
+    "runtimeRouteCount": 54,
     "routeHelperCount": 2,
     "routeHelpers": [
       "_hostUtilityRoutes",
@@ -496,6 +496,20 @@
       "referencedByGoRouter": true
     },
     {
+      "id": "hostOrganizerMessagingScreen",
+      "path": "/host/organizer/:clubId/messaging",
+      "pathParameters": [
+        "clubId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/organizer/:clubId/messaging",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostOrganizerMessagingScreen.path",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
       "id": "hostClubsScreen",
       "path": "/host/organizers",
       "pathParameters": [],
@@ -748,6 +762,7 @@
     "hostHomeScreen",
     "hostInboxScreen",
     "hostOperatorEventScreen",
+    "hostOrganizerMessagingScreen",
     "hostOrganizerScreen",
     "launchAccessScreen",
     "loadingScreen",

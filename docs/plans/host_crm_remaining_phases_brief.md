@@ -32,16 +32,16 @@ Report pre-existing failures rather than working around them.
 | 1 — Match counts, filter summary | Shipped (#262) |
 | 2 — Segment → send bridge | Shipped (#262) |
 | 3 — Contact memory | Shipped (#267) |
-| **P0 — Production signing key** | **Not done — blocks all prod function deploys** |
-| **4 — Sends and scheduling** | Not started |
-| **5 — Merge review** | Not started |
-| **5b — Proposed-link candidates** | Not started |
-| **6 — Inbound WhatsApp** | Not started |
-| **Sort control** | Not started (unblocked, but larger than it looks) |
+| **P0 — Production signing key** | Complete; prod secret version 1 and deploy parity verified 2026-08-16 |
+| **4 — Sends and scheduling** | Implemented in this change |
+| **5 — Merge review** | Implemented in this change |
+| **5b — Proposed-link candidates** | Implemented in this change |
+| **6 — Inbound WhatsApp** | Implemented in this change |
+| **Sort control** | Implemented in this change with the approved composite index |
 
-Work P0 first. It is not optional and not sequenced with the rest: **no Cloud
-Function has deployed to production since 2026-08-14**, so anything the phases
-below add to `functions/` cannot reach production until it is fixed.
+P0 was completed first. The production key now exists and the repo-to-production
+function/secret parity gate passes; the remaining phase source changes still
+follow the ordinary merge and deployment workflow.
 
 ---
 

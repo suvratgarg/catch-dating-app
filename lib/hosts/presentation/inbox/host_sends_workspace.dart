@@ -75,234 +75,71 @@ class _HostSendsWorkspaceSliverState
   @override
   Widget build(BuildContext context) {
     final content = _composing
-        ? _composer(context)
+        ? _HostSendsComposer(
+            club: widget.club,
+            initialSegments: widget.initialSegments,
+            initialSearch: widget.initialSearch,
+            onBusyChanged: _setBusy,
+            onBack: _showHistory,
+          )
         : _campaignReport != null
-        ? _campaignReportView(context, _campaignReport!)
+        ? _HostSendsCampaignReport(
+            campaign: _campaignReport!,
+            busy: _busy,
+            onBack: _showHistory,
+            onApprove: _campaignReport!.canApprove
+                ? () => _runCampaignAction(
+                    (controller) => controller.approveCampaign(
+                      organizerId: widget.club.id,
+                      campaign: _campaignReport!,
+                    ),
+                  )
+                : null,
+            onSend: _campaignReport!.canDispatch
+                ? () => _runCampaignAction(
+                    (controller) => controller.dispatchCampaign(
+                      organizerId: widget.club.id,
+                      campaign: _campaignReport!,
+                    ),
+                  )
+                : null,
+            onRefresh: () => _openCampaign(_campaignReport!.campaignId),
+            onNew: () => setState(() {
+              _campaignReport = null;
+              _composing = true;
+            }),
+          )
         : _announcementReport != null
-        ? _announcementReportView(context, _announcementReport!)
-        : _history(context);
+        ? _HostSendsAnnouncementReport(
+            announcement: _announcementReport!,
+            onBack: _showHistory,
+          )
+        : _HostSendsHistory(
+            organizerId: widget.club.id,
+            busy: _busy,
+            loadingMore: _loadingMore,
+            paginationBaseKey: _paginationBaseKey,
+            additionalSends: _additionalSends,
+            nextCursor: _nextCursor,
+            onNew: () => setState(() => _composing = true),
+            onOpen: _open,
+            onLoadMore: _loadMore,
+          );
     return SliverPadding(
       padding: CatchInsets.pageBody.copyWith(top: CatchSpacing.s3),
       sliver: SliverList.list(children: [content]),
     );
   }
 
-  Widget _history(BuildContext context) {
-    final sends = ref.watch(hostSendsProvider(widget.club.id));
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Wrap(
-          spacing: CatchSpacing.s2,
-          runSpacing: CatchSpacing.s2,
-          children: [
-            CatchButton(
-              key: const ValueKey('host-sends-new-message'),
-              label: context.l10n.hostSendsNewMessage,
-              onPressed: _busy ? null : () => setState(() => _composing = true),
-            ),
-            CatchButton(
-              label: context.l10n.hostSendsSettings,
-              variant: CatchButtonVariant.secondary,
-              onPressed: _busy
-                  ? null
-                  : () => context.pushNamed(
-                      Routes.hostOrganizerMessagingScreen.name,
-                      pathParameters: {'clubId': widget.club.id},
-                    ),
-            ),
-          ],
-        ),
-        gapH16,
-        sends.when(
-          loading: () =>
-              const CatchFieldLanes.single(child: LinearProgressIndicator()),
-          error: (error, _) => CatchErrorState.fromError(
-            error,
-            context: AppErrorContext.club,
-            mode: CatchErrorStateMode.compact,
-            onRetry: () => ref.invalidate(hostSendsProvider(widget.club.id)),
-          ),
-          data: (page) => _historyPage(context, page),
-        ),
-      ],
-    );
+  void _showHistory() {
+    if (_busy) return;
+    setState(() {
+      _composing = false;
+      _campaignReport = null;
+      _announcementReport = null;
+      ref.invalidate(hostSendsProvider(widget.club.id));
+    });
   }
-
-  Widget _historyPage(BuildContext context, HostSendsPage page) {
-    final baseKey = _baseKey(page);
-    final hasCurrentPagination = _paginationBaseKey == baseKey;
-    final sends = [
-      ...page.sends,
-      if (hasCurrentPagination) ..._additionalSends,
-    ];
-    final nextCursor = hasCurrentPagination ? _nextCursor : page.nextCursor;
-    if (sends.isEmpty) {
-      return CatchEmptyState(
-        title: context.l10n.hostSendsEmpty,
-        message: context.l10n.hostSendsEmptyHelp,
-      );
-    }
-    return CatchSection.divided(
-      title: context.l10n.hostMessagingWorkspaceSends,
-      child: CatchFieldLanes.single(
-        child: Column(
-          children: [
-            for (final (index, send) in sends.indexed)
-              CatchRowPressSurface(
-                onTap: _busy ? null : () => _open(send),
-                child: _sendRow(
-                  context,
-                  send,
-                  divider: index < sends.length - 1 || nextCursor != null,
-                ),
-              ),
-            if (nextCursor != null)
-              Padding(
-                padding: const EdgeInsets.only(top: CatchSpacing.s3),
-                child: CatchButton(
-                  label: context.l10n.hostSendsLoadMore,
-                  variant: CatchButtonVariant.secondary,
-                  isLoading: _loadingMore,
-                  onPressed: _loadingMore
-                      ? null
-                      : () => _loadMore(page, baseKey, nextCursor),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _sendRow(
-    BuildContext context,
-    HostSendSummary send, {
-    required bool divider,
-  }) => switch (send) {
-    HostCampaignSendSummary campaign => CatchField.read(
-      key: ValueKey('host-send-campaign-${campaign.campaignId}'),
-      title: campaign.name,
-      body: [
-        context.l10n.hostSendsCampaignType,
-        campaign.templateName ?? campaign.templateId,
-        AppTimeFormatters.shortDate(campaign.activityAt),
-      ].join(' · '),
-      valueText: campaign.status,
-      divider: divider,
-    ),
-    HostAnnouncementSendSummary announcement => CatchField.read(
-      key: ValueKey('host-send-announcement-${announcement.broadcastId}'),
-      title: announcement.eventName,
-      body: [
-        context.l10n.hostSendsAnnouncementType,
-        context.l10n.hostSendsRecipients(count: announcement.recipientCount),
-        AppTimeFormatters.shortDate(announcement.sentAt),
-      ].join(' · '),
-      valueText: announcement.partialFailure
-          ? context.l10n.hostSendsPartial
-          : announcement.audience,
-      divider: divider,
-    ),
-  };
-
-  Widget _composer(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      _backButton(context),
-      gapH12,
-      HostCampaignComposer(
-        club: widget.club,
-        initialSegments: widget.initialSegments,
-        initialSearch: widget.initialSearch,
-        onBusyChanged: _setBusy,
-      ),
-    ],
-  );
-
-  Widget _campaignReportView(BuildContext context, HostCampaign campaign) =>
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _backButton(context),
-          gapH12,
-          CatchSection.divided(
-            title: context.l10n.hostSendsCampaignType,
-            child: HostCampaignReport(
-              campaign: campaign,
-              busy: _busy,
-              onApprove: campaign.canApprove
-                  ? () => _runCampaignAction(
-                      (controller) => controller.approveCampaign(
-                        organizerId: widget.club.id,
-                        campaign: campaign,
-                      ),
-                    )
-                  : null,
-              onSend: campaign.canDispatch
-                  ? () => _runCampaignAction(
-                      (controller) => controller.dispatchCampaign(
-                        organizerId: widget.club.id,
-                        campaign: campaign,
-                      ),
-                    )
-                  : null,
-              onCancel: null,
-              onRefresh: () => _openCampaign(campaign.campaignId),
-              onNew: () => setState(() {
-                _campaignReport = null;
-                _composing = true;
-              }),
-            ),
-          ),
-        ],
-      );
-
-  Widget _announcementReportView(
-    BuildContext context,
-    HostAnnouncementSendSummary announcement,
-  ) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      _backButton(context),
-      gapH12,
-      CatchSection.divided(
-        title: context.l10n.hostSendsAnnouncementType,
-        child: CatchNotice(
-          notice: CatchNoticeData(
-            id: 'host.sends.announcement.${announcement.broadcastId}',
-            title: announcement.eventName,
-            message: [
-              context.l10n.hostSendsRecipients(
-                count: announcement.recipientCount,
-              ),
-              AppTimeFormatters.dateTime(announcement.sentAt),
-              if (announcement.partialFailure) context.l10n.hostSendsPartial,
-            ].join(' · '),
-            tone: announcement.partialFailure
-                ? CatchNoticeTone.warning
-                : CatchNoticeTone.status,
-          ),
-        ),
-      ),
-    ],
-  );
-
-  Widget _backButton(BuildContext context) => Align(
-    alignment: Alignment.centerLeft,
-    child: CatchButton(
-      label: context.l10n.hostMessagingWorkspaceSends,
-      variant: CatchButtonVariant.ghost,
-      onPressed: _busy
-          ? null
-          : () => setState(() {
-              _composing = false;
-              _campaignReport = null;
-              _announcementReport = null;
-              ref.invalidate(hostSendsProvider(widget.club.id));
-            }),
-    ),
-  );
 
   Future<void> _open(HostSendSummary send) async {
     switch (send) {
@@ -346,8 +183,8 @@ class _HostSendsWorkspaceSliverState
     setState(() => _loadingMore = true);
     try {
       final nextPage = await ref
-          .read(hostCrmRepositoryProvider)
-          .listCampaigns(widget.club.id, cursor: cursor);
+          .read(hostAudienceControllerProvider)
+          .listSends(organizerId: widget.club.id, cursor: cursor);
       if (!mounted) return;
       final existingKeys = <String>{
         for (final send in firstPage.sends) '${send.runtimeType}:${send.id}',
@@ -407,9 +244,313 @@ class _HostSendsWorkspaceSliverState
     setState(() => _busy = value);
     widget.onBusyChanged(value);
   }
-
-  String _baseKey(HostSendsPage page) => [
-    page.nextCursor ?? '',
-    for (final send in page.sends) '${send.runtimeType}:${send.id}',
-  ].join('|');
 }
+
+class _HostSendsHistory extends ConsumerWidget {
+  const _HostSendsHistory({
+    required this.organizerId,
+    required this.busy,
+    required this.loadingMore,
+    required this.paginationBaseKey,
+    required this.additionalSends,
+    required this.nextCursor,
+    required this.onNew,
+    required this.onOpen,
+    required this.onLoadMore,
+  });
+
+  final String organizerId;
+  final bool busy;
+  final bool loadingMore;
+  final String? paginationBaseKey;
+  final List<HostSendSummary> additionalSends;
+  final String? nextCursor;
+  final VoidCallback onNew;
+  final ValueChanged<HostSendSummary> onOpen;
+  final void Function(HostSendsPage, String, String) onLoadMore;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final sends = ref.watch(hostSendsProvider(organizerId));
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Wrap(
+          spacing: CatchSpacing.s2,
+          runSpacing: CatchSpacing.s2,
+          children: [
+            CatchButton(
+              key: const ValueKey('host-sends-new-message'),
+              label: context.l10n.hostSendsNewMessage,
+              onPressed: busy ? null : onNew,
+            ),
+            CatchButton(
+              label: context.l10n.hostSendsSettings,
+              variant: CatchButtonVariant.secondary,
+              onPressed: busy
+                  ? null
+                  : () => context.pushNamed(
+                      Routes.hostOrganizerMessagingScreen.name,
+                      pathParameters: {'clubId': organizerId},
+                    ),
+            ),
+          ],
+        ),
+        gapH16,
+        sends.when(
+          loading: () =>
+              const CatchFieldLanes.single(child: LinearProgressIndicator()),
+          error: (error, _) => CatchErrorState.fromError(
+            error,
+            context: AppErrorContext.club,
+            mode: CatchErrorStateMode.compact,
+            onRetry: () => ref.invalidate(hostSendsProvider(organizerId)),
+          ),
+          data: (page) => _HostSendsHistoryPage(
+            page: page,
+            busy: busy,
+            loadingMore: loadingMore,
+            paginationBaseKey: paginationBaseKey,
+            additionalSends: additionalSends,
+            paginationNextCursor: nextCursor,
+            onOpen: onOpen,
+            onLoadMore: onLoadMore,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _HostSendsHistoryPage extends StatelessWidget {
+  const _HostSendsHistoryPage({
+    required this.page,
+    required this.busy,
+    required this.loadingMore,
+    required this.paginationBaseKey,
+    required this.additionalSends,
+    required this.paginationNextCursor,
+    required this.onOpen,
+    required this.onLoadMore,
+  });
+
+  final HostSendsPage page;
+  final bool busy;
+  final bool loadingMore;
+  final String? paginationBaseKey;
+  final List<HostSendSummary> additionalSends;
+  final String? paginationNextCursor;
+  final ValueChanged<HostSendSummary> onOpen;
+  final void Function(HostSendsPage, String, String) onLoadMore;
+
+  @override
+  Widget build(BuildContext context) {
+    final baseKey = _hostSendsBaseKey(page);
+    final hasCurrentPagination = paginationBaseKey == baseKey;
+    final sends = [...page.sends, if (hasCurrentPagination) ...additionalSends];
+    final nextCursor = hasCurrentPagination
+        ? paginationNextCursor
+        : page.nextCursor;
+    if (sends.isEmpty) {
+      return CatchEmptyState(
+        title: context.l10n.hostSendsEmpty,
+        message: context.l10n.hostSendsEmptyHelp,
+      );
+    }
+    return CatchSection.divided(
+      title: context.l10n.hostMessagingWorkspaceSends,
+      child: Column(
+        children: [
+          for (final (index, send) in sends.indexed)
+            CatchRowPressSurface(
+              onTap: busy ? null : () => onOpen(send),
+              child: _HostSendRow(
+                send: send,
+                divider: index < sends.length - 1 || nextCursor != null,
+              ),
+            ),
+          if (nextCursor != null)
+            Padding(
+              padding: CatchInsets.fieldSectionChildTop,
+              child: CatchButton(
+                label: context.l10n.hostSendsLoadMore,
+                variant: CatchButtonVariant.secondary,
+                isLoading: loadingMore,
+                onPressed: loadingMore
+                    ? null
+                    : () => onLoadMore(page, baseKey, nextCursor),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HostSendRow extends StatelessWidget {
+  const _HostSendRow({required this.send, required this.divider});
+
+  final HostSendSummary send;
+  final bool divider;
+
+  @override
+  Widget build(BuildContext context) => CatchFieldLanes.single(
+    child: switch (send) {
+      HostCampaignSendSummary campaign => CatchField.read(
+        key: ValueKey('host-send-campaign-${campaign.campaignId}'),
+        title: campaign.name,
+        body: [
+          context.l10n.hostSendsCampaignType,
+          campaign.templateName ?? campaign.templateId,
+          AppTimeFormatters.shortDate(campaign.activityAt),
+        ].join(' · '),
+        valueText: campaign.status,
+        divider: divider,
+      ),
+      HostAnnouncementSendSummary announcement => CatchField.read(
+        key: ValueKey('host-send-announcement-${announcement.broadcastId}'),
+        title: announcement.eventName,
+        body: [
+          context.l10n.hostSendsAnnouncementType,
+          context.l10n.hostSendsRecipients(count: announcement.recipientCount),
+          AppTimeFormatters.shortDate(announcement.sentAt),
+        ].join(' · '),
+        valueText: announcement.partialFailure
+            ? context.l10n.hostSendsPartial
+            : announcement.audience,
+        divider: divider,
+      ),
+    },
+  );
+}
+
+class _HostSendsComposer extends StatelessWidget {
+  const _HostSendsComposer({
+    required this.club,
+    required this.initialSegments,
+    required this.initialSearch,
+    required this.onBusyChanged,
+    required this.onBack,
+  });
+
+  final Club club;
+  final Set<HostAudienceSegment> initialSegments;
+  final String? initialSearch;
+  final ValueChanged<bool> onBusyChanged;
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      _HostSendsBackButton(onPressed: onBack),
+      gapH12,
+      HostCampaignComposer(
+        club: club,
+        initialSegments: initialSegments,
+        initialSearch: initialSearch,
+        onBusyChanged: onBusyChanged,
+      ),
+    ],
+  );
+}
+
+class _HostSendsCampaignReport extends StatelessWidget {
+  const _HostSendsCampaignReport({
+    required this.campaign,
+    required this.busy,
+    required this.onBack,
+    required this.onApprove,
+    required this.onSend,
+    required this.onRefresh,
+    required this.onNew,
+  });
+
+  final HostCampaign campaign;
+  final bool busy;
+  final VoidCallback onBack;
+  final VoidCallback? onApprove;
+  final VoidCallback? onSend;
+  final VoidCallback onRefresh;
+  final VoidCallback onNew;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      _HostSendsBackButton(onPressed: busy ? null : onBack),
+      gapH12,
+      CatchSection.divided(
+        title: context.l10n.hostSendsCampaignType,
+        child: HostCampaignReport(
+          campaign: campaign,
+          busy: busy,
+          onApprove: onApprove,
+          onSend: onSend,
+          onCancel: null,
+          onRefresh: onRefresh,
+          onNew: onNew,
+        ),
+      ),
+    ],
+  );
+}
+
+class _HostSendsAnnouncementReport extends StatelessWidget {
+  const _HostSendsAnnouncementReport({
+    required this.announcement,
+    required this.onBack,
+  });
+
+  final HostAnnouncementSendSummary announcement;
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      _HostSendsBackButton(onPressed: onBack),
+      gapH12,
+      CatchSection.divided(
+        title: context.l10n.hostSendsAnnouncementType,
+        child: CatchNotice(
+          notice: CatchNoticeData(
+            id: 'host.sends.announcement.${announcement.broadcastId}',
+            title: announcement.eventName,
+            message: [
+              context.l10n.hostSendsRecipients(
+                count: announcement.recipientCount,
+              ),
+              AppTimeFormatters.dateTime(announcement.sentAt),
+              if (announcement.partialFailure) context.l10n.hostSendsPartial,
+            ].join(' · '),
+            tone: announcement.partialFailure
+                ? CatchNoticeTone.warning
+                : CatchNoticeTone.status,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+class _HostSendsBackButton extends StatelessWidget {
+  const _HostSendsBackButton({required this.onPressed});
+
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) => Align(
+    alignment: Alignment.centerLeft,
+    child: CatchButton(
+      label: context.l10n.hostMessagingWorkspaceSends,
+      variant: CatchButtonVariant.ghost,
+      onPressed: onPressed,
+    ),
+  );
+}
+
+String _hostSendsBaseKey(HostSendsPage page) => [
+  page.nextCursor ?? '',
+  for (final send in page.sends) '${send.runtimeType}:${send.id}',
+].join('|');

@@ -46,6 +46,8 @@ enum HostCustomerFilter {
 
 enum HostCustomerFilterGroup { attendance, reliability, advocacy, reachable }
 
+enum HostCustomerSort { lastSeen, mostAttended, name }
+
 @immutable
 class HostCustomerSegmentCountRequest {
   const HostCustomerSegmentCountRequest({
@@ -107,12 +109,14 @@ class HostCustomersDirectoryRequest {
     this.search,
     this.filter = HostCustomerFilter.all,
     this.manualTagId,
+    this.sort = HostCustomerSort.lastSeen,
   });
 
   final String organizerId;
   final String? search;
   final HostCustomerFilter filter;
   final String? manualTagId;
+  final HostCustomerSort sort;
 
   @override
   bool operator ==(Object other) =>
@@ -120,10 +124,12 @@ class HostCustomersDirectoryRequest {
       other.organizerId == organizerId &&
       other.search == search &&
       other.filter == filter &&
-      other.manualTagId == manualTagId;
+      other.manualTagId == manualTagId &&
+      other.sort == sort;
 
   @override
-  int get hashCode => Object.hash(organizerId, search, filter, manualTagId);
+  int get hashCode =>
+      Object.hash(organizerId, search, filter, manualTagId, sort);
 }
 
 @immutable

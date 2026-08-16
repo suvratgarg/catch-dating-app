@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-08-13",
+  "updated": "2026-08-16",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Phase 1 UI capture coverage policy. Every route from go_router.dart must be captured, aliased to a canonical capture surface, planned, or explicitly excluded.",
   "routes": [
@@ -678,6 +678,12 @@
         "host_clubs_management"
       ],
       "reason": "The first-class Host Organizer branch is captured through the real four-branch Host shell and compared against the pinned full-shell Organizer source reference."
+    },
+    {
+      "routeId": "hostOrganizerMessagingScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "The dedicated organizer WhatsApp setup route reuses the production setup pane moved from Messaging. Its deterministic sender states remain planned rather than refreshing unrelated historical Inbox captures during the route migration."
     },
     {
       "routeId": "hostClubsScreen",

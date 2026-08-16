@@ -6,18 +6,16 @@
   "name": "Host Customers",
   "owner": "hosts",
   "status": "active",
-  "description": "Makes Customers the sole Host CRM directory for computed segments, organizer-authored notes and tags, per-person campaign delivery history, contact administration, customer detail, identity-gated conversations, and a deep-linked segment bridge into Messaging campaigns.",
+  "description": "Makes Customers the sole Host CRM directory for server-backed sorting, computed segments, organizer-authored notes and tags, per-person campaign and Announcement history, reviewed identity merges and reversals, contact administration, customer detail, identity-gated conversations, and a deep-linked segment bridge into Messaging campaigns.",
   "surfaces": [
     {
       "id": "host_flutter",
       "runtime": "flutter",
       "authority": {"registry": "flutter_screens", "id": "screen.host.customers"},
       "actionScope": {
-        "included": "Customer directory recovery, shared organizer selection, debounced name search, exact-or-qualified result counts, grouped computed-segment and organizer-tag filters, pagination, header-menu export excluding notes, organizer-only manual contact creation, private author-stamped note append/edit, bounded manual-tag vocabulary assignment, per-person campaign delivery history, rename/suppression/removal controls, complete event evidence, customer and event detail routing, verified-account direct conversation creation, and routing only an eligible computed segment into the Messaging campaign composer.",
+        "included": "Customer directory recovery, shared organizer selection, debounced name search, server-backed Last seen, Most attended, and Name sorting with ordering-bound cursors, exact-or-qualified result counts, grouped computed-segment and organizer-tag filters, pagination, header-menu export excluding notes, organizer-only manual contact creation, private author-stamped note append/edit, bounded manual-tag vocabulary assignment, per-person Campaign and Announcement delivery history, evidence-bearing manager merge review with durable Different people decisions, receipt-specific unmerge from survivor detail, rename/suppression/removal controls, complete event evidence, customer and event detail routing, verified-account direct conversation creation, and routing only an eligible computed segment into the Messaging campaign composer.",
         "excluded": [
-          "Merge and unmerge controls remain backend-only until a reviewed conflict-resolution UI exists; the deprecated Audience tab did not expose them.",
-          "High-spender segmentation remains excluded until completed non-refunded payment totals are projected into indexed organizer-contact traits.",
-          "Broadcast rows remain excluded from per-person send history until Phase 4 defines and ships the broadcast index."
+          "High-spender segmentation remains excluded until completed non-refunded payment totals are projected into indexed organizer-contact traits."
         ]
       },
       "bindings": {
@@ -27,7 +25,8 @@
           {"id": "customers_directory", "language": "dart", "file": "lib/hosts/presentation/customers/host_customers_controller.dart", "symbol": "HostCustomersDirectoryController"},
           {"id": "customers_mutations", "language": "dart", "file": "lib/hosts/presentation/customers/host_customers_controller.dart", "symbol": "HostCustomersController"},
           {"id": "customer_detail", "language": "dart", "file": "lib/hosts/presentation/customers/host_customer_detail_screen.dart", "symbol": "HostCustomerDetailScreen"},
-          {"id": "customer_memory", "language": "dart", "file": "lib/hosts/presentation/customers/host_customer_memory.dart", "symbol": "HostCustomerMemorySection"}
+          {"id": "customer_memory", "language": "dart", "file": "lib/hosts/presentation/customers/host_customer_memory.dart", "symbol": "HostCustomerMemorySection"},
+          {"id": "customer_merge_review", "language": "dart", "file": "lib/hosts/presentation/customers/host_contact_merge_review.dart", "symbol": "HostContactMergeReviewSheet"}
         ],
         "componentContracts": ["catch.button", "catch.chip", "catch.empty_state", "catch.error_state", "catch.field", "catch.notice", "catch.option_group", "catch.person_row", "catch.search_field", "catch.section", "catch.skeleton", "catch.surface", "catch.top_bar"],
         "dataContracts": [
@@ -35,19 +34,25 @@
           "contracts/callable_responses/export_organizer_contacts_response.schema.json",
           "contracts/callable_responses/get_organizer_contact_detail_response.schema.json",
           "contracts/callable_responses/list_organizer_contacts_response.schema.json",
+          "contracts/callable_responses/list_organizer_contact_merge_candidates_response.schema.json",
           "contracts/callable_responses/mutate_organizer_contact_response.schema.json",
           "contracts/callable_responses/organizer_contact_note_response.schema.json",
+          "contracts/callable_responses/review_organizer_contact_merge_candidate_response.schema.json",
           "contracts/callable_responses/organizer_messaging_setup_response.schema.json",
           "contracts/callables/create_organizer_contact_payload.schema.json",
           "contracts/callables/export_organizer_contacts_payload.schema.json",
           "contracts/callables/get_organizer_contact_detail_payload.schema.json",
           "contracts/callables/list_organizer_contacts_payload.schema.json",
+          "contracts/callables/list_organizer_contact_merge_candidates_payload.schema.json",
           "contracts/callables/mutate_organizer_contact_payload.schema.json",
           "contracts/callables/create_organizer_contact_note_payload.schema.json",
           "contracts/callables/mutate_organizer_contact_note_payload.schema.json",
           "contracts/callables/start_organizer_contact_conversation_payload.schema.json",
+          "contracts/callables/review_organizer_contact_merge_candidate_payload.schema.json",
           "contracts/firestore/organizer_contact_channel_states.schema.json",
           "contracts/firestore/organizer_contact_event_edges.schema.json",
+          "contracts/firestore/organizer_contact_merge_receipts.schema.json",
+          "contracts/firestore/organizer_contact_merge_review_decisions.schema.json",
           "contracts/firestore/organizer_contact_notes.schema.json",
           "contracts/firestore/organizer_contact_tag_vocabularies.schema.json",
           "contracts/firestore/organizer_contact_traits.schema.json",
@@ -71,13 +76,19 @@
           "customer_memory_populated": ["test/hosts/host_operations_screen_test.dart", "test/hosts/host_crm_contact_memory_test.dart"],
           "customer_note_editing": ["test/hosts/host_operations_screen_test.dart"],
           "customer_tags_editing": ["test/hosts/host_operations_screen_test.dart"],
-          "customer_send_history": ["test/hosts/host_operations_screen_test.dart", "test/hosts/host_crm_contact_memory_test.dart"]
+          "customer_send_history": ["test/hosts/host_operations_screen_test.dart", "test/hosts/host_crm_contact_memory_test.dart"],
+          "customer_sorted_most_attended": ["test/hosts/host_customers_screen_state_test.dart", "test/hosts/host_crm_repository_test.dart"],
+          "customer_sorted_name": ["test/hosts/host_customers_screen_state_test.dart", "test/hosts/host_crm_repository_test.dart"],
+          "customer_merge_review": ["test/hosts/host_crm_repository_test.dart"],
+          "customer_active_merges": ["test/hosts/host_crm_repository_test.dart"]
         }
       },
       "dimensions": {
         "load": {"default": "ready", "values": ["ready", "loading", "error", "offline"]},
         "directory": {"default": "populated", "values": ["populated", "empty", "filtered_empty", "paginating"]},
+        "sort": {"default": "last_seen", "values": ["last_seen", "most_attended", "name"]},
         "filter_sheet": {"default": "closed", "values": ["closed", "open"]},
+        "merge_review": {"default": "closed", "values": ["closed", "candidates", "dismissed", "conflict_confirmation", "active_receipts", "undoing"]},
         "notes": {"default": "populated", "values": ["populated", "empty", "truncated", "editing"]},
         "tags": {"default": "assigned", "values": ["assigned", "empty", "editing"]},
         "campaign_bridge": {"default": "blocked", "values": ["blocked", "ready"]},
@@ -134,6 +145,15 @@
           "description": "Filters the directory by either one server-backed computed segment or one organizer-owned manual tag, never conflating their namespaces or visual treatment."
         },
         {
+          "id": "sort_customers",
+          "owner": "customers_screen",
+          "codeValue": "_sort",
+          "cardinality": "unbounded",
+          "scopeKeys": ["viewerUid", "organizerId", "query", "filter", "sort"],
+          "outcomes": [{"kind": "surface_state", "stateIds": ["customers_populated", "customer_sorted_most_attended", "customer_sorted_name"]}],
+          "description": "Reloads the complete server-paginated result ordering as Last seen, Most attended, or Name; cursors are bound to the selected ordering."
+        },
+        {
           "id": "message_filtered_customers",
           "owner": "customers_screen",
           "codeValue": "_messageCustomers",
@@ -147,7 +167,7 @@
           "owner": "customers_directory",
           "codeValue": "loadMore",
           "cardinality": "singleton",
-          "scopeKeys": ["viewerUid", "organizerId", "query", "filter", "cursor"],
+          "scopeKeys": ["viewerUid", "organizerId", "query", "filter", "sort", "cursor"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["customers_paginating", "customers_populated"]}],
           "description": "Loads and contact-id de-duplicates the next server page for the active query."
         },
@@ -204,6 +224,39 @@
             {"kind": "side_effect", "id": "host_customers.contact_updated"}
           ],
           "description": "Renames, pauses or resumes WhatsApp, or removes a customer using revision-checked server mutations."
+        },
+        {
+          "id": "review_duplicate_customers",
+          "owner": "customers_screen",
+          "codeValue": "_reviewDuplicates",
+          "cardinality": "singleton",
+          "scopeKeys": ["viewerUid", "organizerId", "reviewSessionId"],
+          "outcomes": [{"kind": "surface_state", "stateIds": ["customer_merge_review", "customer_merge_dismissed"]}],
+          "description": "Lists only exact verified or proposed phone/email duplicate candidates, with derived evidence and no name-only inference."
+        },
+        {
+          "id": "decide_duplicate_customer",
+          "owner": "customer_merge_review",
+          "codeValue": "_merge",
+          "cardinality": "unbounded",
+          "scopeKeys": ["viewerUid", "organizerId", "candidateId", "decision", "survivorContactId", "expectedRevisions"],
+          "outcomes": [
+            {"kind": "surface_state", "stateIds": ["customer_merge_review", "customer_merge_dismissed", "customer_merge_conflict_confirmation"]},
+            {"kind": "side_effect", "id": "host_customers.merge_review_decided"}
+          ],
+          "description": "Requires an explicit survivor for merge, confirms contradictory identity facts, or durably records and same-manager reopens Different people."
+        },
+        {
+          "id": "undo_customer_merge",
+          "owner": "customer_detail",
+          "codeValue": "_undoMerge",
+          "cardinality": "unbounded",
+          "scopeKeys": ["viewerUid", "organizerId", "contactId", "mergeReceiptId"],
+          "outcomes": [
+            {"kind": "surface_state", "stateIds": ["customer_active_merges", "customer_unmerge_pending"]},
+            {"kind": "side_effect", "id": "host_customers.merge_reversed"}
+          ],
+          "description": "Reverses one selected active merge receipt from the survivor detail screen and refreshes the customer directory."
         },
         {
           "id": "edit_contact_tags",
@@ -263,15 +316,17 @@
           "description": "Starts or reuses a manager-authorized direct thread only for an unambiguous verified linked Catch account."
         }
       ],
-      "stateIds": ["customers_loading", "customers_error", "customers_empty", "customers_populated", "customers_filtered_empty", "customers_paginating", "customer_filter_sheet", "customer_filter_manual_tag", "customer_campaign_bridge_ready", "customer_campaign_bridge_blocked", "manual_add_pending", "customer_export_pending", "customer_manage", "customer_manage_pending", "customer_detail_loading", "customer_detail_error", "customer_detail_linked", "customer_detail_unlinked", "customer_detail_ambiguous", "customer_memory_populated", "customer_note_editing", "customer_tags_editing", "customer_send_history", "customer_revenue_exact", "customer_revenue_partial", "customer_revenue_unavailable", "conversation_available", "conversation_unavailable", "offline", "text_scale_2", "reduced_motion", "light_dark"],
+      "stateIds": ["customers_loading", "customers_error", "customers_empty", "customers_populated", "customers_filtered_empty", "customers_paginating", "customer_sorted_most_attended", "customer_sorted_name", "customer_filter_sheet", "customer_filter_manual_tag", "customer_campaign_bridge_ready", "customer_campaign_bridge_blocked", "manual_add_pending", "customer_export_pending", "customer_manage", "customer_manage_pending", "customer_detail_loading", "customer_detail_error", "customer_detail_linked", "customer_detail_unlinked", "customer_detail_ambiguous", "customer_memory_populated", "customer_note_editing", "customer_tags_editing", "customer_send_history", "customer_merge_review", "customer_merge_dismissed", "customer_merge_conflict_confirmation", "customer_active_merges", "customer_unmerge_pending", "customer_revenue_exact", "customer_revenue_partial", "customer_revenue_unavailable", "conversation_available", "conversation_unavailable", "offline", "text_scale_2", "reduced_motion", "light_dark"],
       "scenarioDefaults": {"dimensions": {}, "actionCases": [{"id": "default"}]},
       "scenarioOverrides": {
         "customers_loading": {"dimensions": {"load": "loading"}},
         "customers_error": {"dimensions": {"load": "error"}, "actionCases": [{"id": "recovery", "enabledActions": ["retry_directory"]}]},
         "customers_empty": {"dimensions": {"directory": "empty"}, "actionCases": [{"id": "first_customer", "enabledActions": ["switch_organizer", "create_customer"]}]},
-        "customers_populated": {"actionCases": [{"id": "directory", "enabledActions": ["switch_organizer", "search_customers", "open_customer_filters", "filter_customers", "load_more", "export_customers", "create_customer", "open_customer", "manage_customer"]}]},
-        "customers_filtered_empty": {"dimensions": {"directory": "filtered_empty"}, "actionCases": [{"id": "adjust", "enabledActions": ["search_customers", "filter_customers"]}]},
+        "customers_populated": {"actionCases": [{"id": "directory", "enabledActions": ["switch_organizer", "search_customers", "open_customer_filters", "filter_customers", "sort_customers", "review_duplicate_customers", "load_more", "export_customers", "create_customer", "open_customer", "manage_customer"]}]},
+        "customers_filtered_empty": {"dimensions": {"directory": "filtered_empty"}, "actionCases": [{"id": "adjust", "enabledActions": ["search_customers", "filter_customers", "sort_customers"]}]},
         "customers_paginating": {"dimensions": {"directory": "paginating"}, "actionCases": [{"id": "pending", "disabledActions": ["load_more"]}]},
+        "customer_sorted_most_attended": {"dimensions": {"sort": "most_attended"}, "actionCases": [{"id": "sort", "enabledActions": ["sort_customers", "open_customer"]}]},
+        "customer_sorted_name": {"dimensions": {"sort": "name"}, "actionCases": [{"id": "sort", "enabledActions": ["sort_customers", "open_customer"]}]},
         "customer_filter_sheet": {"dimensions": {"filter_sheet": "open"}, "actionCases": [{"id": "choose", "enabledActions": ["filter_customers"]}]},
         "customer_filter_manual_tag": {"dimensions": {"filter_sheet": "open", "tags": "assigned"}, "actionCases": [{"id": "choose_manual", "enabledActions": ["filter_customers"], "disabledActions": ["message_filtered_customers"]}]},
         "customer_campaign_bridge_ready": {"dimensions": {"campaign_bridge": "ready"}, "actionCases": [{"id": "message", "enabledActions": ["message_filtered_customers"]}]},
@@ -289,6 +344,11 @@
         "customer_note_editing": {"dimensions": {"notes": "editing", "mutation": "editing_note"}, "actionCases": [{"id": "note_pending", "disabledActions": ["create_contact_note", "edit_contact_note"]}]},
         "customer_tags_editing": {"dimensions": {"tags": "editing", "mutation": "editing_tags"}, "actionCases": [{"id": "tags_pending", "disabledActions": ["edit_contact_tags"]}]},
         "customer_send_history": {"dimensions": {"identity": "linked"}},
+        "customer_merge_review": {"dimensions": {"merge_review": "candidates"}, "actionCases": [{"id": "review", "enabledActions": ["decide_duplicate_customer"]}]},
+        "customer_merge_dismissed": {"dimensions": {"merge_review": "dismissed"}, "actionCases": [{"id": "reopen", "enabledActions": ["decide_duplicate_customer"]}]},
+        "customer_merge_conflict_confirmation": {"dimensions": {"merge_review": "conflict_confirmation"}, "actionCases": [{"id": "confirm", "enabledActions": ["decide_duplicate_customer"]}]},
+        "customer_active_merges": {"dimensions": {"merge_review": "active_receipts"}, "actionCases": [{"id": "undo", "enabledActions": ["undo_customer_merge"]}]},
+        "customer_unmerge_pending": {"dimensions": {"merge_review": "undoing"}, "actionCases": [{"id": "pending", "disabledActions": ["undo_customer_merge"]}]},
         "customer_revenue_exact": {"dimensions": {"revenue": "exact"}},
         "customer_revenue_partial": {"dimensions": {"revenue": "partial"}},
         "customer_revenue_unavailable": {"dimensions": {"revenue": "unavailable"}},
@@ -301,6 +361,18 @@
       },
       "requiredEvidence": {"captures": false, "previews": true, "tests": true},
       "evidenceExceptions": [
+        {
+          "stateIds": ["customer_sorted_most_attended", "customer_sorted_name", "customer_merge_review", "customer_merge_dismissed", "customer_merge_conflict_confirmation", "customer_active_merges", "customer_unmerge_pending"],
+          "evidence": ["previews"],
+          "debtId": "HOST-CRM-REMAINING-EVIDENCE-001",
+          "reason": "The server-backed sort and reviewed merge workflows have focused contract, repository, and backend tests; dedicated deterministic visual variants remain follow-up evidence."
+        },
+        {
+          "stateIds": ["customer_merge_conflict_confirmation", "customer_unmerge_pending"],
+          "evidence": ["tests"],
+          "debtId": "HOST-CRM-REMAINING-EVIDENCE-001",
+          "reason": "Backend conflict and receipt-reversal policy is tested; focused rendered dialog and pending-state tests remain follow-up evidence."
+        },
         {
           "stateIds": ["customers_loading", "customers_error", "customers_empty", "customers_paginating", "manual_add_pending", "customer_export_pending", "customer_manage_pending", "customer_detail_loading", "customer_detail_error", "customer_revenue_partial", "customer_revenue_unavailable", "offline", "text_scale_2", "reduced_motion", "light_dark"],
           "evidence": ["tests"],

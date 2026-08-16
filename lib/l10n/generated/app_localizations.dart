@@ -20026,12 +20026,6 @@ abstract class AppLocalizations {
   /// **'Inbox'**
   String get hostMessagingWorkspaceInbox;
 
-  /// Messaging workspace label for cross-event outbound campaigns.
-  ///
-  /// In en, this message translates to:
-  /// **'Campaigns'**
-  String get hostMessagingWorkspaceCampaigns;
-
   /// Messaging workspace label for outbound history and composing.
   ///
   /// In en, this message translates to:
@@ -20091,6 +20085,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Some deliveries need attention'**
   String get hostSendsPartial;
+
+  /// Channel facet label for retained WhatsApp threads.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp'**
+  String get hostInboxWhatsappChannel;
+
+  /// Sends a free-form WhatsApp service reply.
+  ///
+  /// In en, this message translates to:
+  /// **'Reply'**
+  String get hostInboxWhatsappReply;
+
+  /// WhatsApp reply composer hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a WhatsApp reply'**
+  String get hostInboxWhatsappReplyHint;
+
+  /// Open customer-service window state.
+  ///
+  /// In en, this message translates to:
+  /// **'Replies available until {time}'**
+  String hostInboxWhatsappWindowOpen({required String time});
+
+  /// Closed customer-service window state shown before composing.
+  ///
+  /// In en, this message translates to:
+  /// **'The 24-hour reply window is closed. Start a new message with an approved template.'**
+  String get hostInboxWhatsappWindowClosed;
+
+  /// Bounded WhatsApp message history notice.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the 200 most recent retained messages are shown.'**
+  String get hostInboxWhatsappHistoryTruncated;
 
   /// Campaign scheduling field label.
   ///
@@ -20265,6 +20295,141 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Needs review'**
   String get hostCustomersNeedsReview;
+
+  /// Opens the manager-only customer merge review.
+  ///
+  /// In en, this message translates to:
+  /// **'Review possible duplicates'**
+  String get hostCustomersReviewDuplicates;
+
+  /// Merge-review sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'Possible duplicate customers'**
+  String get hostCustomersMergeReviewTitle;
+
+  /// Explains the manager-controlled merge boundary.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing is merged automatically. Compare the evidence, then choose which customer record to keep.'**
+  String get hostCustomersMergeReviewHelp;
+
+  /// Empty merge-review state.
+  ///
+  /// In en, this message translates to:
+  /// **'No possible duplicates need review.'**
+  String get hostCustomersMergeReviewEmpty;
+
+  /// Verified UID merge evidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Same verified Catch account'**
+  String get hostCustomersMergeEvidenceVerifiedUid;
+
+  /// Verified phone merge evidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Same verified phone'**
+  String get hostCustomersMergeEvidenceVerifiedPhone;
+
+  /// Proposed imported-phone merge evidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Same imported phone'**
+  String get hostCustomersMergeEvidenceImportedPhone;
+
+  /// Proposed normalized-email merge evidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Same email'**
+  String get hostCustomersMergeEvidenceEmail;
+
+  /// Computed shared-event evidence for a candidate pair.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No shared events} =1{1 shared event} other{{count} shared events}}'**
+  String hostCustomersMergeSharedEvents({required int count});
+
+  /// Selects the surviving customer record.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep {name}'**
+  String hostCustomersMergeKeep({required String name});
+
+  /// Confirms a reviewed customer merge.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge customers'**
+  String get hostCustomersMergeAction;
+
+  /// Durably dismisses a duplicate candidate.
+  ///
+  /// In en, this message translates to:
+  /// **'Different people'**
+  String get hostCustomersDifferentPeople;
+
+  /// Merge confirmation title.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge these customer records?'**
+  String get hostCustomersMergeConfirmTitle;
+
+  /// Merge and identity-conflict confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'{survivor} will be kept. Attendance and identity facts will move into that record. This also confirms any conflicting phone, email, or linked-account details shown here. You can undo the merge from the surviving customer’s details.'**
+  String hostCustomersMergeConfirmBody({required String survivor});
+
+  /// Dismissed merge-candidate section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Marked as different people'**
+  String get hostCustomersDismissedDuplicates;
+
+  /// Reopens the current manager's prior different-people decision.
+  ///
+  /// In en, this message translates to:
+  /// **'Review again'**
+  String get hostCustomersReopenDuplicate;
+
+  /// Explains manager-scoped reversal authority.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the manager who marked this pair can reopen it.'**
+  String get hostCustomersReopenOwnerOnly;
+
+  /// Active merge receipt section on the survivor.
+  ///
+  /// In en, this message translates to:
+  /// **'Merged records'**
+  String get hostCustomersMergedHistory;
+
+  /// Active merge receipt summary.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} · {count, plural, =1{1 fact moved} other{{count} facts moved}}'**
+  String hostCustomersMergedHistoryRow({
+    required String name,
+    required int count,
+  });
+
+  /// Reverses one active customer merge receipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo merge'**
+  String get hostCustomersUndoMerge;
+
+  /// Unmerge confirmation title.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo this merge?'**
+  String get hostCustomersUndoMergeTitle;
+
+  /// Unmerge confirmation body.
+  ///
+  /// In en, this message translates to:
+  /// **'The original customer record and its moved facts will be restored.'**
+  String get hostCustomersUndoMergeBody;
 
   /// Empty customer directory title.
   ///
@@ -20541,6 +20706,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Controls'**
   String get hostCustomersControls;
+
+  /// Customers directory sort menu group label.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort customers'**
+  String get hostCustomersSort;
+
+  /// Customers directory last-seen ordering.
+  ///
+  /// In en, this message translates to:
+  /// **'Last seen'**
+  String get hostCustomersSortLastSeen;
+
+  /// Customers directory event-attendance ordering.
+  ///
+  /// In en, this message translates to:
+  /// **'Most attended'**
+  String get hostCustomersSortMostAttended;
+
+  /// Customers directory alphabetical ordering.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get hostCustomersSortName;
 
   /// Host accountability sweep heading.
   ///

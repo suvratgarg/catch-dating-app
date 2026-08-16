@@ -12868,9 +12868,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostMessagingWorkspaceInbox => 'Inbox';
 
   @override
-  String get hostMessagingWorkspaceCampaigns => 'Campaigns';
-
-  @override
   String get hostMessagingWorkspaceSends => 'Sends';
 
   @override
@@ -12902,6 +12899,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostSendsPartial => 'Some deliveries need attention';
+
+  @override
+  String get hostInboxWhatsappChannel => 'WhatsApp';
+
+  @override
+  String get hostInboxWhatsappReply => 'Reply';
+
+  @override
+  String get hostInboxWhatsappReplyHint => 'Write a WhatsApp reply';
+
+  @override
+  String hostInboxWhatsappWindowOpen({required String time}) {
+    return 'Replies available until $time';
+  }
+
+  @override
+  String get hostInboxWhatsappWindowClosed =>
+      'The 24-hour reply window is closed. Start a new message with an approved template.';
+
+  @override
+  String get hostInboxWhatsappHistoryTruncated =>
+      'Only the 200 most recent retained messages are shown.';
 
   @override
   String get hostSendsDeliveryTime => 'Delivery';
@@ -13012,6 +13031,101 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersNeedsReview => 'Needs review';
+
+  @override
+  String get hostCustomersReviewDuplicates => 'Review possible duplicates';
+
+  @override
+  String get hostCustomersMergeReviewTitle => 'Possible duplicate customers';
+
+  @override
+  String get hostCustomersMergeReviewHelp =>
+      'Nothing is merged automatically. Compare the evidence, then choose which customer record to keep.';
+
+  @override
+  String get hostCustomersMergeReviewEmpty =>
+      'No possible duplicates need review.';
+
+  @override
+  String get hostCustomersMergeEvidenceVerifiedUid =>
+      'Same verified Catch account';
+
+  @override
+  String get hostCustomersMergeEvidenceVerifiedPhone => 'Same verified phone';
+
+  @override
+  String get hostCustomersMergeEvidenceImportedPhone => 'Same imported phone';
+
+  @override
+  String get hostCustomersMergeEvidenceEmail => 'Same email';
+
+  @override
+  String hostCustomersMergeSharedEvents({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count shared events',
+      one: '1 shared event',
+      zero: 'No shared events',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostCustomersMergeKeep({required String name}) {
+    return 'Keep $name';
+  }
+
+  @override
+  String get hostCustomersMergeAction => 'Merge customers';
+
+  @override
+  String get hostCustomersDifferentPeople => 'Different people';
+
+  @override
+  String get hostCustomersMergeConfirmTitle => 'Merge these customer records?';
+
+  @override
+  String hostCustomersMergeConfirmBody({required String survivor}) {
+    return '$survivor will be kept. Attendance and identity facts will move into that record. This also confirms any conflicting phone, email, or linked-account details shown here. You can undo the merge from the surviving customer’s details.';
+  }
+
+  @override
+  String get hostCustomersDismissedDuplicates => 'Marked as different people';
+
+  @override
+  String get hostCustomersReopenDuplicate => 'Review again';
+
+  @override
+  String get hostCustomersReopenOwnerOnly =>
+      'Only the manager who marked this pair can reopen it.';
+
+  @override
+  String get hostCustomersMergedHistory => 'Merged records';
+
+  @override
+  String hostCustomersMergedHistoryRow({
+    required String name,
+    required int count,
+  }) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count facts moved',
+      one: '1 fact moved',
+    );
+    return '$name · $_temp0';
+  }
+
+  @override
+  String get hostCustomersUndoMerge => 'Undo merge';
+
+  @override
+  String get hostCustomersUndoMergeTitle => 'Undo this merge?';
+
+  @override
+  String get hostCustomersUndoMergeBody =>
+      'The original customer record and its moved facts will be restored.';
 
   @override
   String get hostCustomersEmpty => 'No customers yet';
@@ -13189,6 +13303,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersControls => 'Controls';
+
+  @override
+  String get hostCustomersSort => 'Sort customers';
+
+  @override
+  String get hostCustomersSortLastSeen => 'Last seen';
+
+  @override
+  String get hostCustomersSortMostAttended => 'Most attended';
+
+  @override
+  String get hostCustomersSortName => 'Name';
 
   @override
   String get eventSuccessAccountabilityTitle => 'Return sweep';

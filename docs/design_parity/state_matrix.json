@@ -5024,6 +5024,7 @@
           "implementationPaths": [
             "lib/hosts/presentation/customers/host_customers_screen.dart",
             "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
+            "lib/hosts/presentation/customers/host_contact_merge_review.dart",
             "lib/hosts/presentation/customers/host_customer_memory.dart",
             "lib/hosts/presentation/customers/host_customers_screen_state.dart",
             "lib/hosts/presentation/customers/host_customers_controller.dart",
@@ -5115,6 +5116,26 @@
               "kind": "mutation",
               "status": "implemented",
               "notes": "Load-more keeps existing contacts visible and de-duplicates the returned page by contact id."
+            },
+            {
+              "id": "customer_sorted_most_attended",
+              "kind": "populated",
+              "status": "tested",
+              "tests": [
+                "test/hosts/host_customers_screen_state_test.dart",
+                "test/hosts/host_crm_repository_test.dart"
+              ],
+              "notes": "The selected Most attended order is evaluated server-side over contact traits and uses an order-bound versioned cursor."
+            },
+            {
+              "id": "customer_sorted_name",
+              "kind": "populated",
+              "status": "tested",
+              "tests": [
+                "test/hosts/host_customers_screen_state_test.dart",
+                "test/hosts/host_crm_repository_test.dart"
+              ],
+              "notes": "The selected Name order uses the server search-name index and rejects cursors created for another order or filter."
             },
             {
               "id": "manual_add_pending",
@@ -5307,7 +5328,44 @@
               "captureIds": [
                 "host_customer_detail_memory"
               ],
-              "notes": "Campaign-recipient delivery rows are bounded newest-first; broadcast rows wait for the Phase 4 index."
+              "notes": "Campaign and Announcement delivery rows share a typed bounded newest-first history without exposing message bodies or raw delivery receipts."
+            },
+            {
+              "id": "customer_merge_review",
+              "kind": "mutation",
+              "status": "tested",
+              "tests": [
+                "test/hosts/host_crm_repository_test.dart",
+                "functions/src/organizers/organizerContactMergeReview.test.ts"
+              ],
+              "notes": "The manager-only review sheet presents only verified UID/phone or exact proposed phone/email candidates with derived evidence and explicit survivor choice."
+            },
+            {
+              "id": "customer_merge_dismissed",
+              "kind": "mutation",
+              "status": "implemented",
+              "notes": "Different people decisions are durable, suppress the candidate from the active list, and can be reopened only by the manager who recorded the decision."
+            },
+            {
+              "id": "customer_merge_conflict_confirmation",
+              "kind": "mutation",
+              "status": "implemented",
+              "notes": "Conflicting identity fields require a second explicit confirmation before the existing merge callable executes."
+            },
+            {
+              "id": "customer_active_merges",
+              "kind": "populated",
+              "status": "tested",
+              "tests": [
+                "test/hosts/host_crm_repository_test.dart"
+              ],
+              "notes": "Survivor detail lists active merge receipts newest-first with source identity, evidence, conflicts, moved-fact count, and a receipt-specific undo action."
+            },
+            {
+              "id": "customer_unmerge_pending",
+              "kind": "mutation",
+              "status": "implemented",
+              "notes": "Undo is confirmation-gated and targets one merge receipt while preserving every other active merge."
             },
             {
               "id": "offline",
@@ -8156,8 +8214,13 @@
         {
           "id": "host.inbox",
           "routeId": "hostInboxScreen",
+          "routeIds": [
+            "hostInboxScreen",
+            "hostOrganizerMessagingScreen"
+          ],
           "implementationPaths": [
             "lib/hosts/presentation/inbox/host_inbox_screen.dart",
+            "lib/hosts/presentation/inbox/host_whatsapp_thread_sheet.dart",
             "lib/hosts/presentation/inbox/host_inbox_view_model.dart",
             "lib/hosts/presentation/inbox/host_inbox_broadcast_controller.dart",
             "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart",
@@ -8363,6 +8426,42 @@
               ]
             },
             {
+              "id": "whatsapp_inbound_thread",
+              "kind": "populated",
+              "status": "tested",
+              "tests": [
+                "test/hosts/host_inbox_screen_test.dart",
+                "test/hosts/host_crm_repository_test.dart"
+              ],
+              "notes": "Retained inbound WhatsApp rows render as a channel facet inside the existing event or General Inbox scope rather than creating a third scope."
+            },
+            {
+              "id": "whatsapp_service_window_open",
+              "kind": "populated",
+              "status": "tested",
+              "tests": [
+                "test/hosts/host_crm_repository_test.dart",
+                "functions/src/organizers/organizerWhatsappThreads.test.ts"
+              ],
+              "notes": "The thread sheet shows the server-computed service-window expiry before enabling a free-form reply."
+            },
+            {
+              "id": "whatsapp_service_window_closed",
+              "kind": "permission",
+              "status": "tested",
+              "tests": [
+                "test/hosts/host_crm_repository_test.dart",
+                "functions/src/organizers/organizerWhatsappThreads.test.ts"
+              ],
+              "notes": "An expired service window remains readable but disables the composer before the host can attempt a reply."
+            },
+            {
+              "id": "whatsapp_reply_sending",
+              "kind": "mutation",
+              "status": "implemented",
+              "notes": "Reply sending retains one idempotency key for the current body, guards the latest inbound timestamp, and fails closed when provider acceptance is unknown."
+            },
+            {
               "id": "broadcast_composer_lifecycle",
               "kind": "mutation",
               "status": "captured",
@@ -8387,7 +8486,7 @@
               "previewIds": [
                 "hostCustomerMessagingStates"
               ],
-              "notes": "Messaging Campaigns explains when the configured provider is unavailable instead of presenting unusable sender controls."
+              "notes": "WhatsApp settings explains when the configured provider is unavailable instead of presenting unusable sender controls."
             },
             {
               "id": "customer_messaging_disconnected",
@@ -8396,7 +8495,7 @@
               "previewIds": [
                 "hostCustomerMessagingStates"
               ],
-              "notes": "Messaging Campaigns provides the sender-connection handoff when the organizer has no active messaging connection."
+              "notes": "WhatsApp settings provides the sender-connection handoff when the organizer has no active messaging connection."
             },
             {
               "id": "customer_messaging_connecting",
@@ -8417,7 +8516,7 @@
               "captureIds": [
                 "host_messaging_campaigns"
               ],
-              "notes": "A ready provider exposes the organizer sender, approved templates, and campaign composition controls in the Messaging Campaigns workspace."
+              "notes": "A ready provider exposes the organizer sender and approved templates on the dedicated organizer messaging route while Sends owns outbound history and composition."
             },
             {
               "id": "customer_campaign_draft",
@@ -8662,7 +8761,7 @@
             {
               "id": "DP-HOST-INBOX-005",
               "status": "open",
-              "nextAction": "feature.host_inbox compiles all 25 registered states and ten actions. Add four standalone interaction captures and focused tests for the eight registered test exceptions to retire its twelve evidence exceptions."
+              "nextAction": "feature.host_inbox compiles all registered Catch and WhatsApp states and actions. Add deterministic WhatsApp thread/window captures and focused composer mutation tests before retiring the remaining evidence exceptions."
             }
           ]
         },

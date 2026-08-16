@@ -214,23 +214,36 @@ enum HostAudienceSegment {
   }
 }
 
+enum HostAudienceSort {
+  lastSeen('lastSeen'),
+  mostAttended('mostAttended'),
+  name('name');
+
+  const HostAudienceSort(this.wireValue);
+
+  final String wireValue;
+}
+
 class HostAudienceQuery {
   const HostAudienceQuery({
     this.search,
     this.segment,
     this.manualTagId,
+    this.sort = HostAudienceSort.lastSeen,
     this.cursor,
   });
 
   final String? search;
   final HostAudienceSegment? segment;
   final String? manualTagId;
+  final HostAudienceSort sort;
   final String? cursor;
 
   HostAudienceQuery copyWith({
     String? search,
     HostAudienceSegment? segment,
     String? manualTagId,
+    HostAudienceSort? sort,
     String? cursor,
     bool clearSegment = false,
     bool clearManualTag = false,
@@ -239,6 +252,7 @@ class HostAudienceQuery {
     search: search ?? this.search,
     segment: clearSegment ? null : segment ?? this.segment,
     manualTagId: clearManualTag ? null : manualTagId ?? this.manualTagId,
+    sort: sort ?? this.sort,
     cursor: clearCursor ? null : cursor ?? this.cursor,
   );
 
@@ -248,10 +262,11 @@ class HostAudienceQuery {
       other.search == search &&
       other.segment == segment &&
       other.manualTagId == manualTagId &&
+      other.sort == sort &&
       other.cursor == cursor;
 
   @override
-  int get hashCode => Object.hash(search, segment, manualTagId, cursor);
+  int get hashCode => Object.hash(search, segment, manualTagId, sort, cursor);
 }
 
 class HostManualTag {
@@ -1561,6 +1576,7 @@ class HostCrmRepository {
       limit: limit,
       cursor: query.cursor,
       query: query.search?.trim().isEmpty ?? true ? null : query.search?.trim(),
+      sort: query.sort.wireValue,
       segmentId: query.segment?.wireValue,
       manualTagId: query.manualTagId,
     ).toJson(),

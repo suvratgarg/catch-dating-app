@@ -122,6 +122,22 @@ void main() {
     },
   );
 
+  test('directory request identity includes the server sort order', () {
+    const lastSeen = HostCustomersDirectoryRequest(organizerId: 'organizer-1');
+    const mostAttended = HostCustomersDirectoryRequest(
+      organizerId: 'organizer-1',
+      sort: HostCustomerSort.mostAttended,
+    );
+    const sameMostAttended = HostCustomersDirectoryRequest(
+      organizerId: 'organizer-1',
+      sort: HostCustomerSort.mostAttended,
+    );
+
+    expect(lastSeen, isNot(mostAttended));
+    expect(mostAttended, sameMostAttended);
+    expect(mostAttended.hashCode, sameMostAttended.hashCode);
+  });
+
   test('conversation requires an unambiguous linked customer identity', () {
     expect(
       customerConversationAvailability(

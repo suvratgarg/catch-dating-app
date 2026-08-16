@@ -1,7 +1,7 @@
 ---
 doc_id: standalone_host_product_and_crm_delivery_plan
-version: 4.1.0
-updated: 2026-08-13
+version: 4.2.0
+updated: 2026-08-16
 owner: host_tooling
 status: active
 ---
@@ -69,8 +69,8 @@ independent layers:
 | --- | --- | --- |
 | External event + roster | **Implemented** | CSV/XLSX/manual import and provider-specific normalization work without Catch checkout; provider export samples still determine adapter confidence |
 | No-download Event Success | **Implemented** | Guests use phone OTP at `/join/:publicRuntimeId`; First Hello, wingman, questionnaires, groups, pairs, rotations, assignment delivery, self check-in and feedback do not require the Consumer app |
-| Host CRM/Audience | **Implemented** | Person directory, timeline, fixed categories, search, detail, safe merge/unmerge, export, privacy requests and suppression work from any roster source; migration coverage is shown rather than hidden |
-| WhatsApp Business campaigns | **Implemented; provider-gated** | Catch supports Meta account authorization, WABA/number selection, sender verification, template sync/test, preview/approval/schedule/dispatch/report, status webhooks and STOP; production sending requires Meta assets, credentials, webhook configuration, approved templates and exact recipient consent |
+| Host CRM/Audience | **Implemented** | Person directory, timeline, fixed categories, server-backed sorting, search, detail, evidence-bearing merge review and receipt-specific unmerge, export, privacy requests and suppression work from any roster source; migration coverage is shown rather than hidden |
+| WhatsApp Business campaigns and Inbox | **Implemented; provider-gated** | Catch supports Meta account authorization, WABA/number selection, sender verification, template sync/test, preview/approval/schedule/dispatch/report, status webhooks, STOP, 12-month inbound thread retention and service-window replies; production use requires Meta assets, credentials, webhook configuration, approved templates where required and exact recipient consent |
 | Rich Host invitations | **Implemented** | Host/channel/direct-recipient/promoter/partner links, rich creative, bearer-token landing, likely-human opens and downstream conversions work without Catch booking; external booking conversion stays unknown without reconciliation/provider evidence |
 | Attendee share attribution | **Implemented in web runtime and Consumer app** | Eligible attendees receive one stable personal link in no-download event mode, event detail or payment confirmation; Catch records use of its share/copy controls, opens, verified registrations and attendance, never private WhatsApp sends or forwards |
 | Provider sync | **Implemented for Luma polling; cataloged for all providers** | Luma account connection, event selection, manual refresh and roster/check-in reconciliation are implemented; Eventbrite needs app/OAuth configuration, Partiful/Posh use exports, and other named providers remain sample/partner-gated |
@@ -88,7 +88,8 @@ remaining promotion work.
 The Host shell now gives CRM people their own `/host/customers` branch between
 Events and Inbox. The default surface is an organizer-scoped, server-paginated
 directory sourced from `organizerContacts`; it supports name search, reviewed
-fixed-trait filters, organizer switching, manual name-only contacts, and a
+fixed-trait filters, Last seen/Most attended/Name sorting, organizer switching,
+manual name-only contacts, reviewed exact-evidence merge decisions, and a
 route-level detail at `/host/customers/:contactId`. “At risk” is presentation
 copy for the versioned `lapsed_regular` rule. It is never an opaque churn score.
 
@@ -104,9 +105,10 @@ keep the action unavailable.
 `HostCustomersController` owns create and conversation mutations;
 `HostCrmRepository` remains the only Flutter callable boundary. The existing
 Organizer Audience campaign/setup pane remains available during extraction so
-the navigation cutover does not remove campaign functionality. Campaigns,
-notes/tags, merge review, and value-segment projection can move under Customers
-incrementally without creating another contact model.
+the navigation cutover does not remove campaign functionality. Campaigns remain
+in Messaging; notes/tags, reviewed merge/unmerge and per-person
+Campaign/Announcement history are now under Customers without creating another
+contact model. Value-segment projection remains a separate future decision.
 
 The first Customers cutover deliberately does not label anyone “high spender.”
 Customer detail revenue is implemented, but organizer-wide `known_spender` and
@@ -1045,9 +1047,9 @@ imported person.
 | Capability | Current state | Honest Host-facing status |
 | --- | --- | --- |
 | Cross-event aggregate | **Implemented:** scalable organizer projections return total, past, repeat, imported, linked, advocate and channel-opt-in counts with migration coverage | "Audience overview"; partial migration coverage remains explicit |
-| Person directory/timeline | **Implemented:** paginated fixed-segment/name search, person detail, event timeline, Audience UI and safe merge/unmerge callables exist | Available to organizer managers; excludes private Event Success and safety data |
+| Person directory/timeline | **Implemented:** paginated fixed-segment/name search, Last seen/Most attended/Name ordering, person detail, event timeline, Customers merge-review UI and safe receipt-specific merge/unmerge exist | Available to organizer managers; excludes private Event Success and safety data |
 | Current-event announcement | **Implemented:** `sendEventBroadcast` sends a non-replyable Activity and eligible push to booked, prospective, or everyone for one active event, capped at 500 recipients | "Event announcement"; not a cross-event campaign |
-| WhatsApp and SMS send | **WhatsApp implemented/provider-gated; SMS foundation only:** Meta setup, templates, campaigns, delivery receipts and STOP are implemented; SMS has no sender adapter | WhatsApp activates only after sender/template/consent/compliance gates; SMS remains unavailable |
+| WhatsApp and SMS send | **WhatsApp implemented/provider-gated; SMS foundation only:** Meta setup, templates, campaigns, delivery receipts, STOP, inbound Inbox facets and service-window replies are implemented; SMS has no sender adapter | WhatsApp activates only after sender/template/consent/compliance gates; free-form replies require an inbound message inside the service window; SMS remains unavailable |
 | Channel permission ledger | **Foundation:** organizer-scoped WhatsApp/SMS preferences exist and account deletion removes them | Permission evidence only; not delivery readiness |
 | Named invite-source links | **Implemented end to end:** opaque tokens, Host/direct/promoter/partner and stable attendee-referrer kinds, token retrieval/disable, Host reporting, likely-human opens and share intents | Runtime-web and Consumer attendee sharing are self-service; no person-to-person send proof |
 | Rich share card | **Implemented in Flutter:** event details can be rendered and shared as an image plus text/link | Share creative; delivery and forwarding remain outside Catch |
@@ -1309,10 +1311,10 @@ and message-status webhooks. The durable product decision is:
   and business phone identity. Catch connects it through Meta Embedded Signup
   or a reviewed Business Solution Provider. A shared Catch number must not be
   presented as the Host's CRM sender.
-- **Replies:** inbound replies belong to the organizer sender. Phase 1 may
-  route the Host to its existing WhatsApp inbox or show a restricted reply
-  queue; it must never create a Consumer Catch chat or expose another
-  organizer's conversation.
+- **Replies:** inbound replies belong to the organizer sender. They surface as
+  WhatsApp facets inside the existing Event/General Host Inbox scopes with
+  12-month time-based retention; they never create a Consumer Catch chat or
+  expose another organizer's conversation.
 
 Connection flow:
 
@@ -2425,7 +2427,8 @@ The owner must resolve these before their dependent implementation slice:
     onboarding availability, coexistence, countries, support and unit economics.
 19. Event-service sender identity: whether Catch will operate a narrow
     transactional sender before organizer-owned WABA onboarding is available.
-20. WhatsApp reply destination and retention for Phase 1.
+20. Per-thread or per-contact WhatsApp deletion semantics beyond the implemented
+    12-month time-based expiry.
 21. Organizer-contact notes/tags retention, staff visibility and attendee
     correction/export wording.
 22. Fixed-segment thresholds after pilot data; every changed definition needs

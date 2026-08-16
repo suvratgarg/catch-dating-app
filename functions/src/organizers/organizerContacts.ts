@@ -69,6 +69,9 @@ const maxExportContacts = 2500;
 const maxContactPayments = 500;
 const maxOrganizerManualTags = 20;
 const maxContactManualTags = 5;
+const maxSortedCandidateScan = 2500;
+
+type ContactSort = NonNullable<ListOrganizerContactsCallablePayload["sort"]>;
 
 interface OrganizerContactsDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -81,7 +84,11 @@ const defaultDeps: OrganizerContactsDeps = {
 };
 
 interface ContactCursor {
+  version: 2;
+  organizerId: string;
   plan: "people" | "search" | "segment" | "manualTag";
+  sort: ContactSort;
+  search: string | null;
   value: string;
   contactId: string;
   segmentId: string | null;
@@ -131,6 +138,7 @@ export async function listOrganizerContactsHandler(
   const limit = data.limit ?? defaultContactPageSize;
   const search = normalizeSearch(data.query ?? null);
   const cursor = decodeContactCursor(data.cursor ?? null);
+  const sort = data.sort ?? "lastSeen";
   const exactMatchCountPromise = exactListContactsMatchCount({
     db,
     organizerId: data.organizerId,
@@ -140,35 +148,17 @@ export async function listOrganizerContactsHandler(
     summary,
   });
 
-  const traitRows = data.segmentId ? await listSegmentTraitRows({
+  const sortedPage = await listSortedContactDocuments({
     db,
     organizerId: data.organizerId,
-    segmentId: data.segmentId,
+    search,
+    segmentId: data.segmentId ?? null,
+    manualTagId: data.manualTagId ?? null,
+    sort,
     cursor,
     limit,
-  }) : null;
-  const manualTagRows = data.manualTagId ? await listManualTagContactRows({
-    db,
-    organizerId: data.organizerId,
-    manualTagId: data.manualTagId,
-    cursor,
-    limit,
-  }) : null;
-  const contactIds = traitRows?.contactIds ??
-    manualTagRows?.contactIds ?? null;
-  const contactPage = contactIds ? await getContactsById(db, contactIds) :
-    await listContactDocuments({
-      db,
-      organizerId: data.organizerId,
-      search,
-      cursor,
-      limit,
-    });
-  const contacts = contactIds ? contactIds
-    .map((contactId) => contactPage.find((item) => item.id === contactId))
-    .filter((item): item is ContactDocumentRow => item !== undefined)
-    .filter((item) => !search || item.data.searchName.startsWith(search)) :
-    contactPage;
+  });
+  const contacts = sortedPage.contacts;
   const traitSnaps = contacts.length === 0 ? [] : await db.getAll(
     ...contacts.map((item) => db.collection("organizerContactTraits")
       .doc(item.id))
@@ -195,22 +185,24 @@ export async function listOrganizerContactsHandler(
       manualTagsById
     ))
     .filter((item): item is NonNullable<typeof item> => item !== null);
-  const hasMore = traitRows?.hasMore ?? manualTagRows?.hasMore ??
-    contactPage.length > limit;
-  const pageRows = rows.slice(0, limit);
-  const finalContact = contacts.slice(0, limit).at(-1);
-  const finalContactId = data.segmentId ? traitRows?.contactIds.at(-1) :
-    data.manualTagId ? manualTagRows?.contactIds.at(-1) : finalContact?.id;
-  const nextCursor = hasMore && finalContactId ? encodeContactCursor({
-    plan: data.segmentId ? "segment" :
-      data.manualTagId ? "manualTag" : search ? "search" : "people",
-    value: data.segmentId || data.manualTagId ? finalContactId :
-      search ? finalContact!.data.searchName :
-        String(finalContact!.data.lastSeenAt.toMillis()),
-    contactId: finalContactId,
-    segmentId: data.segmentId ?? null,
-    manualTagId: data.manualTagId ?? null,
-  }) : null;
+  const pageRows = rows;
+  const finalContact = contacts.at(-1);
+  const nextCursor = sortedPage.hasMore && finalContact ?
+    encodeContactCursor({
+      version: 2,
+      organizerId: data.organizerId,
+      plan: contactQueryPlan({
+        segmentId: data.segmentId ?? null,
+        manualTagId: data.manualTagId ?? null,
+        search,
+      }),
+      sort,
+      search,
+      value: sortedPage.lastValue!,
+      contactId: finalContact.id,
+      segmentId: data.segmentId ?? null,
+      manualTagId: data.manualTagId ?? null,
+    }) : null;
   const exactMatchCount = await exactMatchCountPromise;
   const countResult = listContactsMatchCountResult(
     exactMatchCount,
@@ -962,86 +954,333 @@ interface ContactDocumentRow {
   data: OrganizerContactDocument;
 }
 
-async function listContactDocuments(params: {
+interface SortedContactPage {
+  contacts: ContactDocumentRow[];
+  hasMore: boolean;
+  lastValue: string | null;
+}
+
+async function listSortedContactDocuments(params: {
   db: FirebaseFirestore.Firestore;
   organizerId: string;
   search: string | null;
+  segmentId: OrganizerContactTraitDocument["segmentIds"][number] | null;
+  manualTagId: string | null;
+  sort: ContactSort;
   cursor: ContactCursor | null;
   limit: number;
-}): Promise<ContactDocumentRow[]> {
-  const plan = params.search ? "search" : "people";
-  assertCursorPlan(params.cursor, plan, null, null);
-  let query: FirebaseFirestore.Query = params.db
+}): Promise<SortedContactPage> {
+  const plan = contactQueryPlan(params);
+  assertCursorPlan(
+    params.cursor,
+    plan,
+    params.organizerId,
+    params.search,
+    params.segmentId,
+    params.manualTagId,
+    params.sort
+  );
+  const directContactSort = !params.segmentId && !params.manualTagId &&
+    (!params.search || params.sort === "name") &&
+    params.sort !== "mostAttended";
+  if (directContactSort) return listDirectContactSort(params);
+  if (!params.segmentId && !params.manualTagId && !params.search &&
+      params.sort === "mostAttended") {
+    return listDirectAttendanceSort(params);
+  }
+  return listBoundedFilteredSort(params);
+}
+
+async function listDirectContactSort(params: {
+  db: FirebaseFirestore.Firestore;
+  organizerId: string;
+  search: string | null;
+  sort: ContactSort;
+  cursor: ContactCursor | null;
+  limit: number;
+}): Promise<SortedContactPage> {
+  let baseQuery: FirebaseFirestore.Query = params.db
     .collection("organizerContacts")
     .where("organizerId", "==", params.organizerId)
     .where("deletedAt", "==", null);
-  if (params.search) {
-    query = query.orderBy("searchName").orderBy(
+  if (params.sort === "name") {
+    baseQuery = baseQuery.orderBy("searchName").orderBy(
       admin.firestore.FieldPath.documentId()
-    ).startAt(params.search).endAt(`${params.search}\uf8ff`);
-    if (params.cursor) {
-      query = query.startAfter(params.cursor.value, params.cursor.contactId);
+    );
+    if (params.search) {
+      baseQuery = baseQuery.startAt(params.search)
+        .endAt(`${params.search}\uf8ff`);
     }
   } else {
-    query = query.orderBy("lastSeenAt", "desc").orderBy(
+    baseQuery = baseQuery.orderBy("lastSeenAt", "desc").orderBy(
       admin.firestore.FieldPath.documentId(), "desc"
     );
-    if (params.cursor) {
-      query = query.startAfter(
-        admin.firestore.Timestamp.fromMillis(Number(params.cursor.value)),
-        params.cursor.contactId
+  }
+  const eligible: ContactDocumentRow[] = [];
+  let scanned = 0;
+  let scanValue = params.cursor?.value ?? null;
+  let scanContactId = params.cursor?.contactId ?? null;
+  while (eligible.length <= params.limit) {
+    const remaining = maxSortedCandidateScan - scanned;
+    if (remaining <= 0) throwSortScanLimit();
+    const batchLimit = Math.min(
+      Math.max(params.limit + 1, 100),
+      remaining + 1
+    );
+    let pageQuery = baseQuery;
+    if (scanValue !== null && scanContactId !== null) {
+      pageQuery = params.sort === "name" ?
+        pageQuery.startAfter(scanValue, scanContactId) :
+        pageQuery.startAfter(
+          admin.firestore.Timestamp.fromMillis(Number(scanValue)),
+          scanContactId
+        );
+    }
+    const snapshot = await pageQuery.limit(batchLimit).get();
+    const allowed = snapshot.docs.slice(0, remaining);
+    const rows = allowed.map((document) => ({
+      id: document.id,
+      data: document.data() as OrganizerContactDocument,
+    }));
+    eligible.push(...rows.filter((contact) =>
+      contact.data.hiddenAt == null &&
+      contact.data.identityState !== "merged"
+    ));
+    scanned += allowed.length;
+    if (eligible.length > params.limit) break;
+    if (snapshot.size > allowed.length) throwSortScanLimit();
+    if (snapshot.size < batchLimit || allowed.length === 0) break;
+    const lastScanned = rows.at(-1)!;
+    scanValue = contactSortValue(lastScanned, undefined, params.sort);
+    scanContactId = lastScanned.id;
+  }
+  const selected = eligible.slice(0, params.limit);
+  const last = selected.at(-1);
+  return {
+    contacts: selected,
+    hasMore: eligible.length > params.limit,
+    lastValue: last ? contactSortValue(last, undefined, params.sort) : null,
+  };
+}
+
+async function listDirectAttendanceSort(params: {
+  db: FirebaseFirestore.Firestore;
+  organizerId: string;
+  cursor: ContactCursor | null;
+  limit: number;
+}): Promise<SortedContactPage> {
+  const baseQuery: FirebaseFirestore.Query = params.db
+    .collection("organizerContactTraits")
+    .where("organizerId", "==", params.organizerId)
+    .orderBy("attendedEventCount", "desc")
+    .orderBy(admin.firestore.FieldPath.documentId(), "desc");
+  const eligible: Array<{
+    contact: ContactDocumentRow;
+    trait: OrganizerContactTraitDocument;
+  }> = [];
+  let scanned = 0;
+  let scanValue = params.cursor?.value ?? null;
+  let scanContactId = params.cursor?.contactId ?? null;
+  while (eligible.length <= params.limit) {
+    const remaining = maxSortedCandidateScan - scanned;
+    if (remaining <= 0) throwSortScanLimit();
+    const batchLimit = Math.min(
+      Math.max(params.limit + 1, 100),
+      remaining + 1
+    );
+    let pageQuery = baseQuery;
+    if (scanValue !== null && scanContactId !== null) {
+      pageQuery = pageQuery.startAfter(Number(scanValue), scanContactId);
+    }
+    const snapshot = await pageQuery.limit(batchLimit).get();
+    const allowed = snapshot.docs.slice(0, remaining).map((document) => ({
+      id: document.id,
+      data: document.data() as OrganizerContactTraitDocument,
+    }));
+    const contacts = await getContactsById(
+      params.db,
+      allowed.map((row) => row.id)
+    );
+    const byId = new Map(contacts.map((contact) => [contact.id, contact]));
+    eligible.push(...allowed.map((trait) => {
+      const contact = byId.get(trait.id);
+      return contact ? {contact, trait: trait.data} : null;
+    }).filter((row): row is NonNullable<typeof row> => row !== null));
+    scanned += allowed.length;
+    if (eligible.length > params.limit) break;
+    if (snapshot.size > allowed.length) throwSortScanLimit();
+    if (snapshot.size < batchLimit || allowed.length === 0) break;
+    const lastScanned = allowed.at(-1)!;
+    scanValue = String(lastScanned.data.attendedEventCount);
+    scanContactId = lastScanned.id;
+  }
+  const selected = eligible.slice(0, params.limit);
+  const last = selected.at(-1);
+  return {
+    contacts: selected.map((row) => row.contact),
+    hasMore: eligible.length > params.limit,
+    lastValue: last ? String(last.trait.attendedEventCount) : null,
+  };
+}
+
+function throwSortScanLimit(): never {
+  throw new HttpsError(
+    "resource-exhausted",
+    "This audience is too large to sort. Narrow the filters."
+  );
+}
+
+async function listBoundedFilteredSort(params: {
+  db: FirebaseFirestore.Firestore;
+  organizerId: string;
+  search: string | null;
+  segmentId: OrganizerContactTraitDocument["segmentIds"][number] | null;
+  manualTagId: string | null;
+  sort: ContactSort;
+  cursor: ContactCursor | null;
+  limit: number;
+}): Promise<SortedContactPage> {
+  let candidateQuery: FirebaseFirestore.Query;
+  let candidatesAreTraits = false;
+  if (params.segmentId) {
+    candidatesAreTraits = true;
+    candidateQuery = params.db.collection("organizerContactTraits")
+      .where("organizerId", "==", params.organizerId)
+      .where("segmentIds", "array-contains", params.segmentId)
+      .orderBy(admin.firestore.FieldPath.documentId());
+  } else {
+    candidateQuery = params.db.collection("organizerContacts")
+      .where("organizerId", "==", params.organizerId)
+      .where("deletedAt", "==", null);
+    if (params.manualTagId) {
+      candidateQuery = candidateQuery
+        .where("hiddenAt", "==", null)
+        .where("manualTagIds", "array-contains", params.manualTagId)
+        .orderBy(admin.firestore.FieldPath.documentId());
+    } else if (params.search) {
+      candidateQuery = candidateQuery.orderBy("searchName")
+        .orderBy(admin.firestore.FieldPath.documentId())
+        .startAt(params.search).endAt(`${params.search}\uf8ff`);
+    } else {
+      candidateQuery = candidateQuery.orderBy(
+        admin.firestore.FieldPath.documentId()
       );
     }
   }
-  const snap = await query.limit(params.limit + 1).get();
-  return snap.docs.map((doc) => ({
-    id: doc.id,
-    data: doc.data() as OrganizerContactDocument,
-  }));
-}
-
-async function listSegmentTraitRows(params: {
-  db: FirebaseFirestore.Firestore;
-  organizerId: string;
-  segmentId: OrganizerContactTraitDocument["segmentIds"][number];
-  cursor: ContactCursor | null;
-  limit: number;
-}): Promise<{contactIds: string[]; hasMore: boolean}> {
-  assertCursorPlan(params.cursor, "segment", params.segmentId, null);
-  let query: FirebaseFirestore.Query = params.db
-    .collection("organizerContactTraits")
-    .where("organizerId", "==", params.organizerId)
-    .where("segmentIds", "array-contains", params.segmentId)
-    .orderBy(admin.firestore.FieldPath.documentId());
-  if (params.cursor) query = query.startAfter(params.cursor.contactId);
-  const snapshot = await query.limit(params.limit + 1).get();
+  const candidateSnapshot = await candidateQuery
+    .limit(maxSortedCandidateScan + 1).get();
+  if (candidateSnapshot.size > maxSortedCandidateScan) {
+    throw new HttpsError(
+      "resource-exhausted",
+      "This filtered audience is too large to sort. Narrow the filters."
+    );
+  }
+  const candidateIds = candidateSnapshot.docs.map((document) => document.id);
+  const [contactRows, traitSnapshots] = await Promise.all([
+    candidatesAreTraits ? getContactsById(params.db, candidateIds) :
+      Promise.resolve(candidateSnapshot.docs.map((document) => ({
+        id: document.id,
+        data: document.data() as OrganizerContactDocument,
+      }))),
+    candidateIds.length === 0 ? Promise.resolve([]) : params.db.getAll(
+      ...candidateIds.map((contactId) => params.db
+        .collection("organizerContactTraits").doc(contactId))
+    ),
+  ]);
+  const traitsById = new Map(traitSnapshots
+    .filter((snapshot) => snapshot.exists)
+    .map((snapshot) => [
+      snapshot.id,
+      snapshot.data() as OrganizerContactTraitDocument,
+    ]));
+  const eligible = contactRows.filter((contact) => {
+    const trait = traitsById.get(contact.id);
+    return contact.data.organizerId === params.organizerId &&
+      contact.data.deletedAt === null && contact.data.hiddenAt == null &&
+      contact.data.identityState !== "merged" &&
+      (!params.search || contact.data.searchName.startsWith(params.search)) &&
+      (!params.manualTagId ||
+        (contact.data.manualTagIds ?? []).includes(params.manualTagId)) &&
+      (!params.segmentId || trait?.segmentIds.includes(params.segmentId));
+  });
+  eligible.sort((left, right) => compareContactSortRows(
+    left,
+    right,
+    traitsById,
+    params.sort
+  ));
+  const afterCursor = eligible.filter((contact) => contactIsAfterCursor(
+    contact,
+    traitsById.get(contact.id),
+    params.sort,
+    params.cursor
+  ));
+  const selected = afterCursor.slice(0, params.limit);
+  const last = selected.at(-1);
   return {
-    contactIds: snapshot.docs.slice(0, params.limit).map((doc) => doc.id),
-    hasMore: snapshot.size > params.limit,
+    contacts: selected,
+    hasMore: afterCursor.length > selected.length,
+    lastValue: last ? contactSortValue(
+      last,
+      traitsById.get(last.id),
+      params.sort
+    ) : null,
   };
 }
 
-async function listManualTagContactRows(params: {
-  db: FirebaseFirestore.Firestore;
-  organizerId: string;
-  manualTagId: string;
-  cursor: ContactCursor | null;
-  limit: number;
-}): Promise<{contactIds: string[]; hasMore: boolean}> {
-  assertCursorPlan(params.cursor, "manualTag", null, params.manualTagId);
-  let query: FirebaseFirestore.Query = params.db
-    .collection("organizerContacts")
-    .where("organizerId", "==", params.organizerId)
-    .where("deletedAt", "==", null)
-    .where("hiddenAt", "==", null)
-    .where("manualTagIds", "array-contains", params.manualTagId)
-    .orderBy(admin.firestore.FieldPath.documentId());
-  if (params.cursor) query = query.startAfter(params.cursor.contactId);
-  const snapshot = await query.limit(params.limit + 1).get();
-  return {
-    contactIds: snapshot.docs.slice(0, params.limit).map((doc) => doc.id),
-    hasMore: snapshot.size > params.limit,
-  };
+function compareContactSortRows(
+  left: ContactDocumentRow,
+  right: ContactDocumentRow,
+  traitsById: ReadonlyMap<string, OrganizerContactTraitDocument>,
+  sort: ContactSort
+): number {
+  const leftValue = contactSortValue(left, traitsById.get(left.id), sort);
+  const rightValue = contactSortValue(right, traitsById.get(right.id), sort);
+  if (leftValue !== rightValue) {
+    return sort === "name" ? leftValue.localeCompare(rightValue) :
+      Number(rightValue) - Number(leftValue);
+  }
+  return sort === "name" ? left.id.localeCompare(right.id) :
+    right.id.localeCompare(left.id);
+}
+
+function contactIsAfterCursor(
+  contact: ContactDocumentRow,
+  trait: OrganizerContactTraitDocument | undefined,
+  sort: ContactSort,
+  cursor: ContactCursor | null
+): boolean {
+  if (!cursor) return true;
+  const value = contactSortValue(contact, trait, sort);
+  if (value === cursor.value) {
+    return sort === "name" ?
+      contact.id.localeCompare(cursor.contactId) > 0 :
+      contact.id.localeCompare(cursor.contactId) < 0;
+  }
+  return sort === "name" ? value.localeCompare(cursor.value) > 0 :
+    Number(value) < Number(cursor.value);
+}
+
+function contactSortValue(
+  contact: ContactDocumentRow,
+  trait: OrganizerContactTraitDocument | undefined,
+  sort: ContactSort
+): string {
+  if (sort === "name") return contact.data.searchName;
+  if (sort === "mostAttended") {
+    return String(trait?.attendedEventCount ?? 0);
+  }
+  return String(contact.data.lastSeenAt.toMillis());
+}
+
+function contactQueryPlan(params: {
+  search: string | null;
+  segmentId: string | null;
+  manualTagId: string | null;
+}): ContactCursor["plan"] {
+  if (params.segmentId) return "segment";
+  if (params.manualTagId) return "manualTag";
+  return params.search ? "search" : "people";
 }
 
 async function getContactsById(
@@ -1509,16 +1748,23 @@ export function decodeContactCursor(
     const cursor = JSON.parse(
       Buffer.from(value, "base64url").toString("utf8")
     ) as Partial<ContactCursor>;
-    if (!cursor.plan || !["people", "search", "segment", "manualTag"]
-      .includes(cursor.plan) || typeof cursor.value !== "string" ||
+    if (cursor.version !== 2 || typeof cursor.organizerId !== "string" ||
+      cursor.organizerId.length === 0 || !cursor.plan ||
+      !["people", "search", "segment", "manualTag"]
+        .includes(cursor.plan) || typeof cursor.value !== "string" ||
       typeof cursor.contactId !== "string" || cursor.contactId.length === 0 ||
+      !cursor.sort || !["lastSeen", "mostAttended", "name"]
+      .includes(cursor.sort) ||
+      !(typeof cursor.search === "string" || cursor.search === null) ||
       !(typeof cursor.segmentId === "string" || cursor.segmentId === null) ||
       !(typeof cursor.manualTagId === "string" ||
-        cursor.manualTagId === null || cursor.manualTagId === undefined)) {
+        cursor.manualTagId === null)) {
       throw new Error();
     }
-    return {...cursor, manualTagId: cursor.manualTagId ?? null} as
-      ContactCursor;
+    if (cursor.sort !== "name" &&
+        (!Number.isSafeInteger(Number(cursor.value)) ||
+          Number(cursor.value) < 0)) throw new Error();
+    return cursor as ContactCursor;
   } catch {
     throw new HttpsError("invalid-argument", "Audience cursor is invalid.");
   }
@@ -1552,14 +1798,19 @@ export const exportOrganizerContacts = onCall(
 function assertCursorPlan(
   cursor: ContactCursor | null,
   plan: ContactCursor["plan"],
+  organizerId: string,
+  search: string | null,
   segmentId: string | null,
-  manualTagId: string | null
+  manualTagId: string | null,
+  sort: ContactSort
 ): void {
-  if (cursor && (cursor.plan !== plan || cursor.segmentId !== segmentId ||
-      cursor.manualTagId !== manualTagId)) {
+  if (cursor && (cursor.plan !== plan ||
+      cursor.organizerId !== organizerId || cursor.search !== search ||
+      cursor.segmentId !== segmentId || cursor.manualTagId !== manualTagId ||
+      cursor.sort !== sort)) {
     throw new HttpsError(
       "invalid-argument",
-      "Audience cursor does not match the selected filters."
+      "Audience cursor does not match the selected filters and sort order."
     );
   }
 }
@@ -1574,6 +1825,7 @@ function normalizeListContactsPayload(value: unknown): unknown {
     query: normalizeNullableString(input.query),
     segmentId: normalizeNullableString(input.segmentId),
     manualTagId: normalizeNullableString(input.manualTagId),
+    sort: normalizeString(input.sort),
   };
 }
 

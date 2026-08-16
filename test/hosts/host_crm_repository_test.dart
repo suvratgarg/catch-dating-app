@@ -2,6 +2,34 @@ import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('audience query identity and copies retain the server sort order', () {
+    const query = HostAudienceQuery(
+      search: 'asha',
+      sort: HostAudienceSort.mostAttended,
+      cursor: 'page-2',
+    );
+
+    expect(
+      query,
+      const HostAudienceQuery(
+        search: 'asha',
+        sort: HostAudienceSort.mostAttended,
+        cursor: 'page-2',
+      ),
+    );
+    expect(
+      query.copyWith(clearCursor: true),
+      const HostAudienceQuery(
+        search: 'asha',
+        sort: HostAudienceSort.mostAttended,
+      ),
+    );
+    expect(
+      query.copyWith(sort: HostAudienceSort.name, clearCursor: true),
+      const HostAudienceQuery(search: 'asha', sort: HostAudienceSort.name),
+    );
+  });
+
   test('parses privacy-bounded CRM counts and delivery readiness', () {
     final summary = HostCrmSummary.fromCallableData({
       'organizerId': 'organizer-1',
