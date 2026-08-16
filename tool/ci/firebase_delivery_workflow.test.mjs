@@ -142,6 +142,32 @@ test("Delivery keeps the current immutable control plane separate from an older 
   assert.match(executor, /sleep 60/);
 });
 
+test("Functions deployment checks live parity against the exact source checkout", () => {
+  const executor = fs.readFileSync(
+    path.join(repoRoot, "tool/deploy_firebase_targets.sh"),
+    "utf8",
+  );
+  const batchesComplete = executor.indexOf('done <<< "$function_batches"');
+  const invokersComplete = executor.indexOf(
+    "sync_callable_invokers",
+    batchesComplete,
+  );
+  const parityCheck = executor.indexOf(
+    "check_deploy_parity.mjs",
+    invokersComplete,
+  );
+
+  assert.ok(
+    batchesComplete >= 0 &&
+      batchesComplete < invokersComplete &&
+      invokersComplete < parityCheck,
+  );
+  assert.match(
+    executor,
+    /check_deploy_parity\.mjs" \\\n+\s+--env "\$environment" \\\n+\s+--repo-root "\$\{CATCH_FIREBASE_SOURCE_ROOT:-\$repo_root\}"/u,
+  );
+});
+
 test("Delivery consumes the always-present plan before deciding package or no-op", () => {
   const delivery = workflow("delivery.yml");
   const planOffset = delivery.indexOf("Download the exact CI impact plan first");

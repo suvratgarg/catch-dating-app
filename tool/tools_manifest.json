@@ -2931,6 +2931,38 @@
       }
     },
     {
+      "id": "firebase:check-deploy-parity",
+      "category": "firebase",
+      "path": "tool/firebase/check_deploy_parity.mjs",
+      "command": "node tool/firebase/check_deploy_parity.mjs",
+      "safety": "remote-readonly",
+      "status": "active",
+      "impactPaths": [
+        "tool/firebase/check_deploy_parity.test.mjs",
+        "tool/ci/firebase_delivery_workflow.test.mjs",
+        "tool/deploy_firebase_targets.sh",
+        "functions/src/index.ts",
+        "functions/src/**/*.ts"
+      ],
+      "description": "Fails after a Functions deploy when a repository export is absent from the selected Firebase environment or a literal defineSecret name is absent from its project, while ignoring extension-owned extras.",
+      "checks": [
+        "node --check tool/firebase/check_deploy_parity.mjs",
+        "node --test tool/firebase/check_deploy_parity.test.mjs",
+        "node --test tool/ci/firebase_delivery_workflow.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/firebase/check_deploy_parity.test.mjs",
+        "contains": [
+          "fails when a repo export is absent while ignoring deployed extension extras",
+          "fails when a declared defineSecret name is absent from the target project",
+          "live inventory commands are metadata-only and project-bound",
+          "Functions deployment checks live parity against the exact source checkout"
+        ]
+      }
+    },
+    {
       "id": "firebase:deploy-targets",
       "category": "firebase",
       "path": "tool/deploy_firebase_targets.sh",
@@ -2941,12 +2973,15 @@
       "checks": [
         "bash -n tool/deploy_firebase_targets.sh",
         "node --test tool/firebase/plan_firebase_deploy_targets.test.mjs",
-        "node --test tool/firebase/check_deploy_ref.test.mjs"
+        "node --test tool/firebase/check_deploy_ref.test.mjs",
+        "node --test tool/firebase/check_deploy_parity.test.mjs"
       ],
       "role": "generator",
       "impactPaths": [
         "tool/firebase/check_deploy_ref.mjs",
-        "tool/firebase/check_deploy_ref.test.mjs"
+        "tool/firebase/check_deploy_ref.test.mjs",
+        "tool/firebase/check_deploy_parity.mjs",
+        "tool/firebase/check_deploy_parity.test.mjs"
       ]
     },
     {
