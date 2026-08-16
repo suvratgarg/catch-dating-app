@@ -3790,14 +3790,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String hostsHostEventManageScreenLabelShortdatelabelTime({
-    required Object shortDateLabel,
-    required Object time,
-  }) {
-    return '$shortDateLabel · $time';
-  }
-
-  @override
   String hostsHostEventManageScreenDetailOpenOpen({required Object open}) {
     return '$open open';
   }
@@ -12291,9 +12283,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'This does not alter the guest’s Catch profile or verified contact details.';
 
   @override
-  String get hostsHostAudienceContactSaveName => 'Save name';
-
-  @override
   String get hostsHostAudienceContactVerifiedPhone => 'Verified phone';
 
   @override
@@ -13475,14 +13464,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventSuccessHostResourceEventReport => 'Event report';
-
-  @override
-  String get hostsHostEventManageLiveUnavailableAfterEvent =>
-      'Live controls close when the event ends.';
-
-  @override
-  String get hostsHostEventManageReportUnavailableBeforeEvent =>
-      'Reports are available after the event ends.';
 
   @override
   String get hostsHostEventManageWorkspacePreparation => 'Event preparation';

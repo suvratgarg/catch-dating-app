@@ -6376,15 +6376,6 @@ abstract class AppLocalizations {
     required Object label,
   });
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{shortDateLabel} · {time}'**
-  String hostsHostEventManageScreenLabelShortdatelabelTime({
-    required Object shortDateLabel,
-    required Object time,
-  });
-
   /// Product copy used by lib/hosts/presentation/host_event_manage_screen.dart (detail).
   ///
   /// In en, this message translates to:
@@ -19129,12 +19120,6 @@ abstract class AppLocalizations {
   /// **'This does not alter the guest’s Catch profile or verified contact details.'**
   String get hostsHostAudienceContactNameHelp;
 
-  /// Save organizer-local contact name CTA.
-  ///
-  /// In en, this message translates to:
-  /// **'Save name'**
-  String get hostsHostAudienceContactSaveName;
-
   /// Verified contact phone label.
   ///
   /// In en, this message translates to:
@@ -20991,18 +20976,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Event report'**
   String get eventSuccessHostResourceEventReport;
-
-  /// Reason the Live workspace is disabled for an ended event.
-  ///
-  /// In en, this message translates to:
-  /// **'Live controls close when the event ends.'**
-  String get hostsHostEventManageLiveUnavailableAfterEvent;
-
-  /// Reason the Report workspace is disabled before an event ends.
-  ///
-  /// In en, this message translates to:
-  /// **'Reports are available after the event ends.'**
-  String get hostsHostEventManageReportUnavailableBeforeEvent;
 
   /// Concise lifecycle subtitle for a hosted event before check-in opens.
   ///

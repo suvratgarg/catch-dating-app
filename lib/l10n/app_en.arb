@@ -7453,17 +7453,6 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen"
   },
-  "hostsHostEventManageScreenLabelShortdatelabelTime": "{shortDateLabel} · {time}",
-  "@hostsHostEventManageScreenLabelShortdatelabelTime": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen.dart (label).",
-    "placeholders": {
-      "shortDateLabel": {},
-      "time": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_event_manage_screen"
-  },
   "hostsHostEventManageScreenDetailOpenOpen": "{open} open",
   "@hostsHostEventManageScreenDetailOpenOpen": {
     "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen.dart (detail).",
@@ -20765,8 +20754,6 @@
   "@hostsHostAudienceContactName": {"description": "Organizer-local audience contact name field.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_audience"},
   "hostsHostAudienceContactNameHelp": "This does not alter the guest’s Catch profile or verified contact details.",
   "@hostsHostAudienceContactNameHelp": {"description": "Organizer-local audience contact name disclosure.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_audience"},
-  "hostsHostAudienceContactSaveName": "Save name",
-  "@hostsHostAudienceContactSaveName": {"description": "Save organizer-local contact name CTA.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_audience"},
   "hostsHostAudienceContactVerifiedPhone": "Verified phone",
   "@hostsHostAudienceContactVerifiedPhone": {"description": "Verified contact phone label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_audience"},
   "hostsHostAudienceContactEmail": "Email",
@@ -21379,10 +21366,6 @@
   "@eventSuccessHostResourceHostHelpProfiles": {"description": "Event Success Host-help profile enrichment resource name.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_screen"},
   "eventSuccessHostResourceEventReport": "Event report",
   "@eventSuccessHostResourceEventReport": {"description": "Event Success aggregate scorecard resource name.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_screen"},
-  "hostsHostEventManageLiveUnavailableAfterEvent": "Live controls close when the event ends.",
-  "@hostsHostEventManageLiveUnavailableAfterEvent": {"description": "Reason the Live workspace is disabled for an ended event.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_event_manage_screen"},
-  "hostsHostEventManageReportUnavailableBeforeEvent": "Reports are available after the event ends.",
-  "@hostsHostEventManageReportUnavailableBeforeEvent": {"description": "Reason the Report workspace is disabled before an event ends.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_event_manage_screen"},
   "hostsHostEventManageWorkspacePreparation": "Event preparation",
   "@hostsHostEventManageWorkspacePreparation": {"description": "Concise lifecycle subtitle for a hosted event before check-in opens.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_event_manage_screen"},
   "hostsHostEventManageWorkspaceRuntime": "Live operations",
