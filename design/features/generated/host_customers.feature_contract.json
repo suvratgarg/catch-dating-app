@@ -2,26 +2,26 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/host_customers.feature.json",
-  "generatedFor": "2026-08-15",
-  "sourceDigest": "sha256:26ef6eae7a84e3b70c0b08b2bad9c6dac559898f090a3c779088f7f18d5a1b58",
-  "resolvedDigest": "sha256:45756b0b5c2344dd86222afae2c42135c4059937fc1c7c96bab6fe9478def979",
+  "generatedFor": "2026-08-16",
+  "sourceDigest": "sha256:f8bdd392411d34688bd2722f1b139821265ffa57d5ac2347c4b2d5aeb293e739",
+  "resolvedDigest": "sha256:5989d5aacfc115779180cc85dc9f25695a402fc4fc51b12469beed603a88df50",
   "feature": {
     "id": "feature.host_customers",
     "name": "Host Customers",
     "owner": "hosts",
     "status": "active",
-    "description": "Makes Customers the sole Host CRM directory for the complete audience segment set, pagination, export, contact administration, customer detail, identity-gated conversations, and a deep-linked segment bridge into Messaging campaigns."
+    "description": "Makes Customers the sole Host CRM directory for computed segments, organizer-authored notes and tags, per-person campaign delivery history, contact administration, customer detail, identity-gated conversations, and a deep-linked segment bridge into Messaging campaigns."
   },
   "coverage": {
     "surfaces": 1,
-    "states": 27,
-    "scenarios": 27,
-    "actionCases": 27,
-    "actions": 14,
-    "captures": 1,
+    "states": 32,
+    "scenarios": 32,
+    "actionCases": 32,
+    "actions": 17,
+    "captures": 2,
     "previews": 1,
-    "testFiles": 5,
-    "evidenceExceptions": 38
+    "testFiles": 6,
+    "evidenceExceptions": 41
   },
   "surfaces": [
     {
@@ -32,10 +32,11 @@
         "id": "screen.host.customers"
       },
       "actionScope": {
-        "included": "Customer directory recovery, shared organizer selection, debounced name search, exact-or-qualified result counts, grouped readiness-visible server-backed CRM segment filters, pagination, header-menu export, organizer-only manual contact creation, rename/suppression/removal controls, complete event evidence, customer and event detail routing, verified-account direct conversation creation, and routing an eligible active-sender segment into the Messaging campaign composer.",
+        "included": "Customer directory recovery, shared organizer selection, debounced name search, exact-or-qualified result counts, grouped computed-segment and organizer-tag filters, pagination, header-menu export excluding notes, organizer-only manual contact creation, private author-stamped note append/edit, bounded manual-tag vocabulary assignment, per-person campaign delivery history, rename/suppression/removal controls, complete event evidence, customer and event detail routing, verified-account direct conversation creation, and routing only an eligible computed segment into the Messaging campaign composer.",
         "excluded": [
           "Merge and unmerge controls remain backend-only until a reviewed conflict-resolution UI exists; the deprecated Audience tab did not expose them.",
-          "High-spender segmentation remains excluded until completed non-refunded payment totals are projected into indexed organizer-contact traits."
+          "High-spender segmentation remains excluded until completed non-refunded payment totals are projected into indexed organizer-contact traits.",
+          "Broadcast rows remain excluded from per-person send history until Phase 4 defines and ships the broadcast index."
         ]
       },
       "bindings": {
@@ -66,6 +67,12 @@
             "language": "dart",
             "file": "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
             "symbol": "HostCustomerDetailScreen"
+          },
+          {
+            "id": "customer_memory",
+            "language": "dart",
+            "file": "lib/hosts/presentation/customers/host_customer_memory.dart",
+            "symbol": "HostCustomerMemorySection"
           }
         ],
         "componentContracts": [
@@ -89,15 +96,20 @@
           "contracts/callable_responses/get_organizer_contact_detail_response.schema.json",
           "contracts/callable_responses/list_organizer_contacts_response.schema.json",
           "contracts/callable_responses/mutate_organizer_contact_response.schema.json",
+          "contracts/callable_responses/organizer_contact_note_response.schema.json",
           "contracts/callable_responses/organizer_messaging_setup_response.schema.json",
           "contracts/callables/create_organizer_contact_payload.schema.json",
           "contracts/callables/export_organizer_contacts_payload.schema.json",
           "contracts/callables/get_organizer_contact_detail_payload.schema.json",
           "contracts/callables/list_organizer_contacts_payload.schema.json",
           "contracts/callables/mutate_organizer_contact_payload.schema.json",
+          "contracts/callables/create_organizer_contact_note_payload.schema.json",
+          "contracts/callables/mutate_organizer_contact_note_payload.schema.json",
           "contracts/callables/start_organizer_contact_conversation_payload.schema.json",
           "contracts/firestore/organizer_contact_channel_states.schema.json",
           "contracts/firestore/organizer_contact_event_edges.schema.json",
+          "contracts/firestore/organizer_contact_notes.schema.json",
+          "contracts/firestore/organizer_contact_tag_vocabularies.schema.json",
           "contracts/firestore/organizer_contact_traits.schema.json",
           "contracts/firestore/organizer_contacts.schema.json",
           "contracts/firestore/payments.schema.json"
@@ -143,18 +155,36 @@
           ],
           "customer_manage": [
             "test/hosts/host_customers_screen_state_test.dart"
+          ],
+          "customer_filter_manual_tag": [
+            "test/hosts/host_customer_filter_summary_test.dart",
+            "test/hosts/host_crm_contact_memory_test.dart"
+          ],
+          "customer_memory_populated": [
+            "test/hosts/host_operations_screen_test.dart",
+            "test/hosts/host_crm_contact_memory_test.dart"
+          ],
+          "customer_note_editing": [
+            "test/hosts/host_operations_screen_test.dart"
+          ],
+          "customer_tags_editing": [
+            "test/hosts/host_operations_screen_test.dart"
+          ],
+          "customer_send_history": [
+            "test/hosts/host_operations_screen_test.dart",
+            "test/hosts/host_crm_contact_memory_test.dart"
           ]
         }
       },
       "coverage": {
-        "states": 27,
-        "scenarios": 27,
-        "actionCases": 27,
-        "actions": 14,
-        "captures": 1,
+        "states": 32,
+        "scenarios": 32,
+        "actionCases": 32,
+        "actions": 17,
+        "captures": 2,
         "previews": 1,
-        "testFiles": 5,
-        "evidenceExceptions": 38
+        "testFiles": 6,
+        "evidenceExceptions": 41
       },
       "dimensions": {
         "load": {
@@ -180,6 +210,23 @@
           "values": [
             "closed",
             "open"
+          ]
+        },
+        "notes": {
+          "default": "populated",
+          "values": [
+            "populated",
+            "empty",
+            "truncated",
+            "editing"
+          ]
+        },
+        "tags": {
+          "default": "assigned",
+          "values": [
+            "assigned",
+            "empty",
+            "editing"
           ]
         },
         "campaign_bridge": {
@@ -212,6 +259,8 @@
             "adding",
             "exporting",
             "managing_contact",
+            "editing_note",
+            "editing_tags",
             "starting_conversation"
           ]
         },
@@ -319,7 +368,7 @@
               ]
             }
           ],
-          "description": "Opens the grouped Attendance, Reliability, Advocacy and Reachable segment sheet with exact-or-qualified counts from listOrganizerContacts.",
+          "description": "Opens the grouped Attendance, Reliability, Advocacy, Reachable, and visually distinct Your tags filters with exact-or-qualified counts from listOrganizerContacts.",
           "implementationStatus": "implemented"
         },
         {
@@ -341,7 +390,7 @@
               ]
             }
           ],
-          "description": "Filters the directory from a grouped sheet of server-backed versioned lifecycle traits, with each visible segment carrying its listOrganizerContacts match count and SMS omitted when unavailable.",
+          "description": "Filters the directory by either one server-backed computed segment or one organizer-owned manual tag, never conflating their namespaces or visual treatment.",
           "implementationStatus": "implemented"
         },
         {
@@ -518,6 +567,88 @@
           "implementationStatus": "implemented"
         },
         {
+          "id": "edit_contact_tags",
+          "owner": "customer_memory",
+          "codeValue": "HostCustomerTagsSheet",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "organizerId",
+            "contactId",
+            "expectedRevision"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "customer_tags_editing",
+                "customer_memory_populated"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "host_customers.manual_tags_updated"
+            }
+          ],
+          "description": "Assigns up to five labels from an organizer vocabulary capped at twenty through mutateOrganizerContact.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "create_contact_note",
+          "owner": "customer_memory",
+          "codeValue": "createNote",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "organizerId",
+            "contactId",
+            "submitAttemptId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "customer_note_editing",
+                "customer_memory_populated"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "host_customers.contact_note_created"
+            }
+          ],
+          "description": "Appends an organizer-scoped, author-stamped note without adding it to contact export.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "edit_contact_note",
+          "owner": "customer_memory",
+          "codeValue": "editNote",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "organizerId",
+            "contactId",
+            "noteId",
+            "expectedRevision"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "customer_note_editing",
+                "customer_memory_populated"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "host_customers.contact_note_updated"
+            }
+          ],
+          "description": "Optimistically edits one note body while preserving its original author stamp.",
+          "implementationStatus": "implemented"
+        },
+        {
           "id": "retry_customer_detail",
           "owner": "customer_detail",
           "codeValue": "invalidate",
@@ -602,6 +733,7 @@
             "customers_filtered_empty",
             "customers_paginating",
             "customer_filter_sheet",
+            "customer_filter_manual_tag",
             "customer_campaign_bridge_ready",
             "customer_campaign_bridge_blocked",
             "manual_add_pending",
@@ -612,6 +744,8 @@
             "customer_detail_error",
             "customer_detail_unlinked",
             "customer_detail_ambiguous",
+            "customer_note_editing",
+            "customer_tags_editing",
             "customer_revenue_partial",
             "customer_revenue_unavailable",
             "conversation_unavailable",
@@ -637,6 +771,8 @@
             "load": "loading",
             "directory": "populated",
             "filter_sheet": "closed",
+            "notes": "populated",
+            "tags": "assigned",
             "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
@@ -656,6 +792,8 @@
                 "load": "loading",
                 "directory": "populated",
                 "filter_sheet": "closed",
+                "notes": "populated",
+                "tags": "assigned",
                 "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
@@ -679,6 +817,9 @@
                   "open_customer",
                   "open_customer_event",
                   "manage_customer",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
                   "retry_customer_detail",
                   "start_conversation"
                 ]
@@ -695,6 +836,8 @@
             "load": "error",
             "directory": "populated",
             "filter_sheet": "closed",
+            "notes": "populated",
+            "tags": "assigned",
             "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
@@ -714,6 +857,8 @@
                 "load": "error",
                 "directory": "populated",
                 "filter_sheet": "closed",
+                "notes": "populated",
+                "tags": "assigned",
                 "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
@@ -738,6 +883,9 @@
                   "open_customer",
                   "open_customer_event",
                   "manage_customer",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
                   "retry_customer_detail",
                   "start_conversation"
                 ]
@@ -754,6 +902,8 @@
             "load": "ready",
             "directory": "empty",
             "filter_sheet": "closed",
+            "notes": "populated",
+            "tags": "assigned",
             "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
@@ -773,6 +923,8 @@
                 "load": "ready",
                 "directory": "empty",
                 "filter_sheet": "closed",
+                "notes": "populated",
+                "tags": "assigned",
                 "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
@@ -797,6 +949,9 @@
                   "open_customer",
                   "open_customer_event",
                   "manage_customer",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
                   "retry_customer_detail",
                   "start_conversation"
                 ]
@@ -813,6 +968,8 @@
             "load": "ready",
             "directory": "populated",
             "filter_sheet": "closed",
+            "notes": "populated",
+            "tags": "assigned",
             "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
@@ -839,6 +996,8 @@
                 "load": "ready",
                 "directory": "populated",
                 "filter_sheet": "closed",
+                "notes": "populated",
+                "tags": "assigned",
                 "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
@@ -863,6 +1022,9 @@
                   "retry_directory",
                   "message_filtered_customers",
                   "open_customer_event",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
                   "retry_customer_detail",
                   "start_conversation"
                 ]
@@ -879,6 +1041,8 @@
             "load": "ready",
             "directory": "filtered_empty",
             "filter_sheet": "closed",
+            "notes": "populated",
+            "tags": "assigned",
             "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
@@ -900,6 +1064,8 @@
                 "load": "ready",
                 "directory": "filtered_empty",
                 "filter_sheet": "closed",
+                "notes": "populated",
+                "tags": "assigned",
                 "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
@@ -924,6 +1090,9 @@
                   "open_customer",
                   "open_customer_event",
                   "manage_customer",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
                   "retry_customer_detail",
                   "start_conversation"
                 ]
@@ -940,6 +1109,8 @@
             "load": "ready",
             "directory": "paginating",
             "filter_sheet": "closed",
+            "notes": "populated",
+            "tags": "assigned",
             "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
@@ -959,6 +1130,8 @@
                 "load": "ready",
                 "directory": "paginating",
                 "filter_sheet": "closed",
+                "notes": "populated",
+                "tags": "assigned",
                 "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
@@ -983,6 +1156,9 @@
                   "open_customer",
                   "open_customer_event",
                   "manage_customer",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
                   "retry_customer_detail",
                   "start_conversation"
                 ]
@@ -999,6 +1175,8 @@
             "load": "ready",
             "directory": "populated",
             "filter_sheet": "open",
+            "notes": "populated",
+            "tags": "assigned",
             "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
@@ -1020,6 +1198,8 @@
                 "load": "ready",
                 "directory": "populated",
                 "filter_sheet": "open",
+                "notes": "populated",
+                "tags": "assigned",
                 "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
@@ -1044,6 +1224,79 @@
                   "open_customer",
                   "open_customer_event",
                   "manage_customer",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
+                  "retry_customer_detail",
+                  "start_conversation"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "customer_filter_manual_tag",
+          "stateId": "customer_filter_manual_tag",
+          "kind": "populated",
+          "status": "tested",
+          "dimensions": {
+            "load": "ready",
+            "directory": "populated",
+            "filter_sheet": "open",
+            "notes": "populated",
+            "tags": "assigned",
+            "campaign_bridge": "blocked",
+            "identity": "linked",
+            "revenue": "exact",
+            "mutation": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "test/hosts/host_customer_filter_summary_test.dart",
+              "test/hosts/host_crm_contact_memory_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "choose_manual",
+              "dimensions": {
+                "load": "ready",
+                "directory": "populated",
+                "filter_sheet": "open",
+                "notes": "populated",
+                "tags": "assigned",
+                "campaign_bridge": "blocked",
+                "identity": "linked",
+                "revenue": "exact",
+                "mutation": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "filter_customers"
+                ],
+                "disabled": [
+                  "message_filtered_customers"
+                ],
+                "notAllowed": [
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "open_customer_filters",
+                  "load_more",
+                  "export_customers",
+                  "create_customer",
+                  "open_customer",
+                  "open_customer_event",
+                  "manage_customer",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
                   "retry_customer_detail",
                   "start_conversation"
                 ]
@@ -1060,6 +1313,8 @@
             "load": "ready",
             "directory": "populated",
             "filter_sheet": "closed",
+            "notes": "populated",
+            "tags": "assigned",
             "campaign_bridge": "ready",
             "identity": "linked",
             "revenue": "exact",
@@ -1082,6 +1337,8 @@
                 "load": "ready",
                 "directory": "populated",
                 "filter_sheet": "closed",
+                "notes": "populated",
+                "tags": "assigned",
                 "campaign_bridge": "ready",
                 "identity": "linked",
                 "revenue": "exact",
@@ -1106,6 +1363,9 @@
                   "open_customer",
                   "open_customer_event",
                   "manage_customer",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
                   "retry_customer_detail",
                   "start_conversation"
                 ]
@@ -1122,6 +1382,8 @@
             "load": "ready",
             "directory": "populated",
             "filter_sheet": "closed",
+            "notes": "populated",
+            "tags": "assigned",
             "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
@@ -1144,6 +1406,8 @@
                 "load": "ready",
                 "directory": "populated",
                 "filter_sheet": "closed",
+                "notes": "populated",
+                "tags": "assigned",
                 "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
@@ -1168,6 +1432,9 @@
                   "open_customer",
                   "open_customer_event",
                   "manage_customer",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
                   "retry_customer_detail",
                   "start_conversation"
                 ]
@@ -1184,6 +1451,8 @@
             "load": "ready",
             "directory": "populated",
             "filter_sheet": "closed",
+            "notes": "populated",
+            "tags": "assigned",
             "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
@@ -1203,6 +1472,8 @@
                 "load": "ready",
                 "directory": "populated",
                 "filter_sheet": "closed",
+                "notes": "populated",
+                "tags": "assigned",
                 "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
@@ -1227,6 +1498,9 @@
                   "open_customer",
                   "open_customer_event",
                   "manage_customer",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
                   "retry_customer_detail",
                   "start_conversation"
                 ]
@@ -1243,6 +1517,8 @@
             "load": "ready",
             "directory": "populated",
             "filter_sheet": "closed",
+            "notes": "populated",
+            "tags": "assigned",
             "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
@@ -1262,6 +1538,8 @@
                 "load": "ready",
                 "directory": "populated",
                 "filter_sheet": "closed",
+                "notes": "populated",
+                "tags": "assigned",
                 "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
@@ -1286,6 +1564,9 @@
                   "open_customer",
                   "open_customer_event",
                   "manage_customer",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
                   "retry_customer_detail",
                   "start_conversation"
                 ]
@@ -1302,6 +1583,8 @@
             "load": "ready",
             "directory": "populated",
             "filter_sheet": "closed",
+            "notes": "populated",
+            "tags": "assigned",
             "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
@@ -1323,6 +1606,8 @@
                 "load": "ready",
                 "directory": "populated",
                 "filter_sheet": "closed",
+                "notes": "populated",
+                "tags": "assigned",
                 "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
@@ -1347,6 +1632,9 @@
                   "create_customer",
                   "open_customer",
                   "open_customer_event",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
                   "retry_customer_detail",
                   "start_conversation"
                 ]
@@ -1363,6 +1651,8 @@
             "load": "ready",
             "directory": "populated",
             "filter_sheet": "closed",
+            "notes": "populated",
+            "tags": "assigned",
             "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
@@ -1382,6 +1672,8 @@
                 "load": "ready",
                 "directory": "populated",
                 "filter_sheet": "closed",
+                "notes": "populated",
+                "tags": "assigned",
                 "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
@@ -1406,6 +1698,9 @@
                   "create_customer",
                   "open_customer",
                   "open_customer_event",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
                   "retry_customer_detail",
                   "start_conversation"
                 ]
@@ -1422,6 +1717,8 @@
             "load": "loading",
             "directory": "populated",
             "filter_sheet": "closed",
+            "notes": "populated",
+            "tags": "assigned",
             "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
@@ -1441,6 +1738,8 @@
                 "load": "loading",
                 "directory": "populated",
                 "filter_sheet": "closed",
+                "notes": "populated",
+                "tags": "assigned",
                 "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
@@ -1464,6 +1763,9 @@
                   "open_customer",
                   "open_customer_event",
                   "manage_customer",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
                   "retry_customer_detail",
                   "start_conversation"
                 ]
@@ -1480,6 +1782,8 @@
             "load": "error",
             "directory": "populated",
             "filter_sheet": "closed",
+            "notes": "populated",
+            "tags": "assigned",
             "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
@@ -1499,6 +1803,8 @@
                 "load": "error",
                 "directory": "populated",
                 "filter_sheet": "closed",
+                "notes": "populated",
+                "tags": "assigned",
                 "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
@@ -1524,6 +1830,9 @@
                   "open_customer",
                   "open_customer_event",
                   "manage_customer",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
                   "start_conversation"
                 ]
               }
@@ -1539,6 +1848,8 @@
             "load": "ready",
             "directory": "populated",
             "filter_sheet": "closed",
+            "notes": "populated",
+            "tags": "assigned",
             "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
@@ -1563,6 +1874,8 @@
                 "load": "ready",
                 "directory": "populated",
                 "filter_sheet": "closed",
+                "notes": "populated",
+                "tags": "assigned",
                 "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
@@ -1588,6 +1901,9 @@
                   "create_customer",
                   "open_customer",
                   "manage_customer",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
                   "retry_customer_detail"
                 ]
               }
@@ -1603,6 +1919,8 @@
             "load": "ready",
             "directory": "populated",
             "filter_sheet": "closed",
+            "notes": "populated",
+            "tags": "assigned",
             "campaign_bridge": "blocked",
             "identity": "unlinked",
             "revenue": "exact",
@@ -1624,6 +1942,8 @@
                 "load": "ready",
                 "directory": "populated",
                 "filter_sheet": "closed",
+                "notes": "populated",
+                "tags": "assigned",
                 "campaign_bridge": "blocked",
                 "identity": "unlinked",
                 "revenue": "exact",
@@ -1650,6 +1970,9 @@
                   "create_customer",
                   "open_customer",
                   "manage_customer",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
                   "retry_customer_detail"
                 ]
               }
@@ -1665,6 +1988,8 @@
             "load": "ready",
             "directory": "populated",
             "filter_sheet": "closed",
+            "notes": "populated",
+            "tags": "assigned",
             "campaign_bridge": "blocked",
             "identity": "ambiguous",
             "revenue": "exact",
@@ -1686,6 +2011,8 @@
                 "load": "ready",
                 "directory": "populated",
                 "filter_sheet": "closed",
+                "notes": "populated",
+                "tags": "assigned",
                 "campaign_bridge": "blocked",
                 "identity": "ambiguous",
                 "revenue": "exact",
@@ -1712,6 +2039,9 @@
                   "create_customer",
                   "open_customer",
                   "manage_customer",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
                   "retry_customer_detail"
                 ]
               }
@@ -1719,14 +2049,16 @@
           ]
         },
         {
-          "id": "customer_revenue_exact",
-          "stateId": "customer_revenue_exact",
+          "id": "customer_memory_populated",
+          "stateId": "customer_memory_populated",
           "kind": "populated",
-          "status": "implemented",
+          "status": "captured",
           "dimensions": {
             "load": "ready",
             "directory": "populated",
             "filter_sheet": "closed",
+            "notes": "populated",
+            "tags": "assigned",
             "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
@@ -1735,12 +2067,224 @@
             "theme": "standard"
           },
           "evidence": {
-            "captureIds": [],
+            "captureIds": [
+              "host_customer_detail_memory"
+            ],
             "previewIds": [
               "hostCustomersStates"
             ],
             "tests": [
-              "test/hosts/host_crm_repository_test.dart"
+              "test/hosts/host_operations_screen_test.dart",
+              "test/hosts/host_crm_contact_memory_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "memory",
+              "dimensions": {
+                "load": "ready",
+                "directory": "populated",
+                "filter_sheet": "closed",
+                "notes": "populated",
+                "tags": "assigned",
+                "campaign_bridge": "blocked",
+                "identity": "linked",
+                "revenue": "exact",
+                "mutation": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "open_customer_filters",
+                  "filter_customers",
+                  "message_filtered_customers",
+                  "load_more",
+                  "export_customers",
+                  "create_customer",
+                  "open_customer",
+                  "open_customer_event",
+                  "manage_customer",
+                  "retry_customer_detail",
+                  "start_conversation"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "customer_note_editing",
+          "stateId": "customer_note_editing",
+          "kind": "mutation",
+          "status": "tested",
+          "dimensions": {
+            "load": "ready",
+            "directory": "populated",
+            "filter_sheet": "closed",
+            "notes": "editing",
+            "tags": "assigned",
+            "campaign_bridge": "blocked",
+            "identity": "linked",
+            "revenue": "exact",
+            "mutation": "editing_note",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "test/hosts/host_operations_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "note_pending",
+              "dimensions": {
+                "load": "ready",
+                "directory": "populated",
+                "filter_sheet": "closed",
+                "notes": "editing",
+                "tags": "assigned",
+                "campaign_bridge": "blocked",
+                "identity": "linked",
+                "revenue": "exact",
+                "mutation": "editing_note",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "create_contact_note",
+                  "edit_contact_note"
+                ],
+                "notAllowed": [
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "open_customer_filters",
+                  "filter_customers",
+                  "message_filtered_customers",
+                  "load_more",
+                  "export_customers",
+                  "create_customer",
+                  "open_customer",
+                  "open_customer_event",
+                  "manage_customer",
+                  "edit_contact_tags",
+                  "retry_customer_detail",
+                  "start_conversation"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "customer_tags_editing",
+          "stateId": "customer_tags_editing",
+          "kind": "mutation",
+          "status": "tested",
+          "dimensions": {
+            "load": "ready",
+            "directory": "populated",
+            "filter_sheet": "closed",
+            "notes": "populated",
+            "tags": "editing",
+            "campaign_bridge": "blocked",
+            "identity": "linked",
+            "revenue": "exact",
+            "mutation": "editing_tags",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "test/hosts/host_operations_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "tags_pending",
+              "dimensions": {
+                "load": "ready",
+                "directory": "populated",
+                "filter_sheet": "closed",
+                "notes": "populated",
+                "tags": "editing",
+                "campaign_bridge": "blocked",
+                "identity": "linked",
+                "revenue": "exact",
+                "mutation": "editing_tags",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "edit_contact_tags"
+                ],
+                "notAllowed": [
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "open_customer_filters",
+                  "filter_customers",
+                  "message_filtered_customers",
+                  "load_more",
+                  "export_customers",
+                  "create_customer",
+                  "open_customer",
+                  "open_customer_event",
+                  "manage_customer",
+                  "create_contact_note",
+                  "edit_contact_note",
+                  "retry_customer_detail",
+                  "start_conversation"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "customer_send_history",
+          "stateId": "customer_send_history",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "directory": "populated",
+            "filter_sheet": "closed",
+            "notes": "populated",
+            "tags": "assigned",
+            "campaign_bridge": "blocked",
+            "identity": "linked",
+            "revenue": "exact",
+            "mutation": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_customer_detail_memory"
+            ],
+            "previewIds": [
+              "hostCustomersStates"
+            ],
+            "tests": [
+              "test/hosts/host_operations_screen_test.dart",
+              "test/hosts/host_crm_contact_memory_test.dart"
             ]
           },
           "actionCases": [
@@ -1750,6 +2294,8 @@
                 "load": "ready",
                 "directory": "populated",
                 "filter_sheet": "closed",
+                "notes": "populated",
+                "tags": "assigned",
                 "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
@@ -1773,6 +2319,78 @@
                   "open_customer",
                   "open_customer_event",
                   "manage_customer",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
+                  "retry_customer_detail",
+                  "start_conversation"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "customer_revenue_exact",
+          "stateId": "customer_revenue_exact",
+          "kind": "populated",
+          "status": "implemented",
+          "dimensions": {
+            "load": "ready",
+            "directory": "populated",
+            "filter_sheet": "closed",
+            "notes": "populated",
+            "tags": "assigned",
+            "campaign_bridge": "blocked",
+            "identity": "linked",
+            "revenue": "exact",
+            "mutation": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "hostCustomersStates"
+            ],
+            "tests": [
+              "test/hosts/host_crm_repository_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "ready",
+                "directory": "populated",
+                "filter_sheet": "closed",
+                "notes": "populated",
+                "tags": "assigned",
+                "campaign_bridge": "blocked",
+                "identity": "linked",
+                "revenue": "exact",
+                "mutation": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "open_customer_filters",
+                  "filter_customers",
+                  "message_filtered_customers",
+                  "load_more",
+                  "export_customers",
+                  "create_customer",
+                  "open_customer",
+                  "open_customer_event",
+                  "manage_customer",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
                   "retry_customer_detail",
                   "start_conversation"
                 ]
@@ -1789,6 +2407,8 @@
             "load": "ready",
             "directory": "populated",
             "filter_sheet": "closed",
+            "notes": "populated",
+            "tags": "assigned",
             "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "partial",
@@ -1808,6 +2428,8 @@
                 "load": "ready",
                 "directory": "populated",
                 "filter_sheet": "closed",
+                "notes": "populated",
+                "tags": "assigned",
                 "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "partial",
@@ -1831,6 +2453,9 @@
                   "open_customer",
                   "open_customer_event",
                   "manage_customer",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
                   "retry_customer_detail",
                   "start_conversation"
                 ]
@@ -1847,6 +2472,8 @@
             "load": "ready",
             "directory": "populated",
             "filter_sheet": "closed",
+            "notes": "populated",
+            "tags": "assigned",
             "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "unavailable",
@@ -1866,6 +2493,8 @@
                 "load": "ready",
                 "directory": "populated",
                 "filter_sheet": "closed",
+                "notes": "populated",
+                "tags": "assigned",
                 "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "unavailable",
@@ -1889,6 +2518,9 @@
                   "open_customer",
                   "open_customer_event",
                   "manage_customer",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
                   "retry_customer_detail",
                   "start_conversation"
                 ]
@@ -1905,6 +2537,8 @@
             "load": "ready",
             "directory": "populated",
             "filter_sheet": "closed",
+            "notes": "populated",
+            "tags": "assigned",
             "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
@@ -1928,6 +2562,8 @@
                 "load": "ready",
                 "directory": "populated",
                 "filter_sheet": "closed",
+                "notes": "populated",
+                "tags": "assigned",
                 "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
@@ -1953,6 +2589,9 @@
                   "open_customer",
                   "open_customer_event",
                   "manage_customer",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
                   "retry_customer_detail"
                 ]
               }
@@ -1968,6 +2607,8 @@
             "load": "ready",
             "directory": "populated",
             "filter_sheet": "closed",
+            "notes": "populated",
+            "tags": "assigned",
             "campaign_bridge": "blocked",
             "identity": "unlinked",
             "revenue": "exact",
@@ -1989,6 +2630,8 @@
                 "load": "ready",
                 "directory": "populated",
                 "filter_sheet": "closed",
+                "notes": "populated",
+                "tags": "assigned",
                 "campaign_bridge": "blocked",
                 "identity": "unlinked",
                 "revenue": "exact",
@@ -2014,6 +2657,9 @@
                   "open_customer",
                   "open_customer_event",
                   "manage_customer",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
                   "retry_customer_detail"
                 ]
               }
@@ -2029,6 +2675,8 @@
             "load": "offline",
             "directory": "populated",
             "filter_sheet": "closed",
+            "notes": "populated",
+            "tags": "assigned",
             "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
@@ -2048,6 +2696,8 @@
                 "load": "offline",
                 "directory": "populated",
                 "filter_sheet": "closed",
+                "notes": "populated",
+                "tags": "assigned",
                 "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
@@ -2073,6 +2723,9 @@
                   "open_customer",
                   "open_customer_event",
                   "manage_customer",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
                   "start_conversation"
                 ]
               }
@@ -2088,6 +2741,8 @@
             "load": "ready",
             "directory": "populated",
             "filter_sheet": "closed",
+            "notes": "populated",
+            "tags": "assigned",
             "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
@@ -2107,6 +2762,8 @@
                 "load": "ready",
                 "directory": "populated",
                 "filter_sheet": "closed",
+                "notes": "populated",
+                "tags": "assigned",
                 "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
@@ -2130,6 +2787,9 @@
                   "open_customer",
                   "open_customer_event",
                   "manage_customer",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
                   "retry_customer_detail",
                   "start_conversation"
                 ]
@@ -2146,6 +2806,8 @@
             "load": "ready",
             "directory": "populated",
             "filter_sheet": "closed",
+            "notes": "populated",
+            "tags": "assigned",
             "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
@@ -2165,6 +2827,8 @@
                 "load": "ready",
                 "directory": "populated",
                 "filter_sheet": "closed",
+                "notes": "populated",
+                "tags": "assigned",
                 "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
@@ -2188,6 +2852,9 @@
                   "open_customer",
                   "open_customer_event",
                   "manage_customer",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
                   "retry_customer_detail",
                   "start_conversation"
                 ]
@@ -2204,6 +2871,8 @@
             "load": "ready",
             "directory": "populated",
             "filter_sheet": "closed",
+            "notes": "populated",
+            "tags": "assigned",
             "campaign_bridge": "blocked",
             "identity": "linked",
             "revenue": "exact",
@@ -2223,6 +2892,8 @@
                 "load": "ready",
                 "directory": "populated",
                 "filter_sheet": "closed",
+                "notes": "populated",
+                "tags": "assigned",
                 "campaign_bridge": "blocked",
                 "identity": "linked",
                 "revenue": "exact",
@@ -2246,6 +2917,9 @@
                   "open_customer",
                   "open_customer_event",
                   "manage_customer",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
                   "retry_customer_detail",
                   "start_conversation"
                 ]

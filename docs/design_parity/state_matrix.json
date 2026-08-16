@@ -5023,6 +5023,8 @@
           ],
           "implementationPaths": [
             "lib/hosts/presentation/customers/host_customers_screen.dart",
+            "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
+            "lib/hosts/presentation/customers/host_customer_memory.dart",
             "lib/hosts/presentation/customers/host_customers_screen_state.dart",
             "lib/hosts/presentation/customers/host_customers_controller.dart",
             "lib/hosts/data/host_crm_repository.dart",
@@ -5045,7 +5047,8 @@
             "catch.top_bar"
           ],
           "captureIds": [
-            "host_customers_populated"
+            "host_customers_populated",
+            "host_customer_detail_memory"
           ],
           "designRefs": [
             {
@@ -5053,7 +5056,7 @@
               "kind": "repo",
               "status": "available",
               "path": "design/features/host_customers.feature.json",
-              "notes": "Typed directory/detail state, action, identity, revenue, and evidence contract."
+              "notes": "Typed directory/detail state, action, organizer memory, campaign history, identity, revenue, and evidence contract."
             },
             {
               "id": "host-customers-generated-contract",
@@ -5235,6 +5238,16 @@
               "notes": "Grouped filter sheet replacing the flat chip list; state covered by host_customers_screen_state_test.dart."
             },
             {
+              "id": "customer_filter_manual_tag",
+              "kind": "populated",
+              "status": "tested",
+              "tests": [
+                "test/hosts/host_customer_filter_summary_test.dart",
+                "test/hosts/host_crm_contact_memory_test.dart"
+              ],
+              "notes": "Your tags is a separately rendered organizer-owned filter namespace and never enables the computed-segment campaign bridge."
+            },
+            {
               "id": "customer_campaign_bridge_ready",
               "kind": "populated",
               "status": "tested",
@@ -5245,6 +5258,56 @@
               "kind": "permission",
               "status": "tested",
               "notes": "The selected segment is not campaign-eligible; message_filtered_customers is disabled and explained rather than hidden."
+            },
+            {
+              "id": "customer_memory_populated",
+              "kind": "populated",
+              "status": "captured",
+              "previewIds": [
+                "hostCustomersStates"
+              ],
+              "tests": [
+                "test/hosts/host_operations_screen_test.dart",
+                "test/hosts/host_crm_contact_memory_test.dart"
+              ],
+              "captureIds": [
+                "host_customer_detail_memory"
+              ],
+              "notes": "Organizer-authored notes and mixed-case manual tags sit between identity and system-computed activity."
+            },
+            {
+              "id": "customer_note_editing",
+              "kind": "mutation",
+              "status": "tested",
+              "tests": [
+                "test/hosts/host_operations_screen_test.dart"
+              ],
+              "notes": "The note sheet appends or optimistic-revision edits one author-stamped note."
+            },
+            {
+              "id": "customer_tags_editing",
+              "kind": "mutation",
+              "status": "tested",
+              "tests": [
+                "test/hosts/host_operations_screen_test.dart"
+              ],
+              "notes": "The tag sheet assigns existing vocabulary labels or creates bounded labels under the 5-per-contact and 20-per-organizer caps."
+            },
+            {
+              "id": "customer_send_history",
+              "kind": "populated",
+              "status": "captured",
+              "previewIds": [
+                "hostCustomersStates"
+              ],
+              "tests": [
+                "test/hosts/host_operations_screen_test.dart",
+                "test/hosts/host_crm_contact_memory_test.dart"
+              ],
+              "captureIds": [
+                "host_customer_detail_memory"
+              ],
+              "notes": "Campaign-recipient delivery rows are bounded newest-first; broadcast rows wait for the Phase 4 index."
             },
             {
               "id": "offline",

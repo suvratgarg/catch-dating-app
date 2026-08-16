@@ -149,7 +149,7 @@
       "authorityId": "screen.host.customers",
       "status": "contracted",
       "priority": "P1",
-      "reason": "Compiled Host Customers contract covers the direct organizer-scoped CRM directory: all supported segments, pagination, export, manual and managed contacts, complete customer detail, typed Catch revenue coverage, and verified-account conversations.",
+      "reason": "Compiled Host Customers contract covers the direct organizer-scoped CRM directory: computed segments and distinct manual-tag filters, pagination, notes-excluding export, author-stamped contact notes, capped organizer tag vocabulary, campaign delivery history, identity-first detail, typed Catch revenue coverage, and verified-account conversations.",
       "featureContract": "feature.host_customers"
     },
     {

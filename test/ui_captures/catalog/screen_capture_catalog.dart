@@ -134,6 +134,7 @@ import 'package:catch_dating_app/hosts/presentation/club_management/create/creat
 import 'package:catch_dating_app/hosts/presentation/club_management/host_club_edit_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_team_management_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
@@ -4764,6 +4765,95 @@ List<Object> _hostCustomersProviderOverrides() {
       ),
     ),
   ];
+}
+
+HostAudienceContactDetail _hostCustomerMemoryDetail() {
+  final organizerId = HostOperationsFixtures.primaryClub.id;
+  return HostAudienceContactDetail(
+    organizerId: organizerId,
+    contactId: 'capture-customer-ananya',
+    displayName: 'Ananya Rao',
+    sourceDisplayName: 'Ananya Rao',
+    displayNameOverride: null,
+    phoneE164: '+919876543210',
+    email: 'ananya@example.com',
+    linkedAccount: true,
+    identityState: HostAudienceIdentityState.verified,
+    identityConfidence: 'verified',
+    ambiguousCandidateCount: 0,
+    whatsappAdminSuppressed: false,
+    traits: const HostCustomerTraits(
+      expectedEventCount: 9,
+      attendedEventCount: 8,
+      cancelledEventCount: 1,
+      noShowCount: 0,
+      importedEventCount: 0,
+      attendanceRate: 8 / 9,
+      segments: {HostAudienceSegment.regular},
+      sourceCoverage: HostAudienceSourceCoverage.exact,
+    ),
+    revenue: const HostCustomerRevenue(
+      coverage: HostCustomerRevenueCoverage.exact,
+      amounts: [
+        HostCustomerRevenueAmount(
+          currency: 'INR',
+          amountMinor: 184500,
+          paidOrderCount: 7,
+        ),
+      ],
+    ),
+    events: [
+      HostAudienceEventFact(
+        eventId: 'capture-event-1',
+        displayName: 'Sunday Run Club',
+        source: 'catchBooking',
+        status: 'checkedIn',
+        checkedIn: true,
+        eventStartAt: DateTime(2026, 6, 18, 18, 30),
+      ),
+    ],
+    eventsTruncated: false,
+    manualTags: const [
+      HostManualTag(
+        tagId: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        label: 'Brings friends',
+      ),
+    ],
+    manualTagVocabulary: const [
+      HostManualTag(
+        tagId: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        label: 'Brings friends',
+      ),
+      HostManualTag(
+        tagId: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+        label: 'Prefers weekends',
+      ),
+    ],
+    notes: [
+      HostCustomerNote(
+        noteId: 'capture-note-1',
+        body: 'Introduced three friends and prefers smaller weekend events.',
+        authorUid: HostOperationsFixtures.hostUid,
+        createdAt: DateTime(2026, 8, 15, 11),
+        updatedAt: DateTime(2026, 8, 15, 11),
+        revision: 1,
+      ),
+    ],
+    notesTruncated: false,
+    sends: [
+      HostCustomerSend(
+        campaignId: 'capture-campaign-1',
+        name: 'August member invite',
+        messageClass: 'organizerPromotion',
+        deliveryStatus: HostCustomerSendDeliveryStatus.delivered,
+        createdAt: DateTime(2026, 8, 14, 9),
+        sentAt: DateTime(2026, 8, 14, 9, 5),
+        updatedAt: DateTime(2026, 8, 14, 9, 6),
+      ),
+    ],
+    sendsTruncated: false,
+    revision: 3,
+  );
 }
 
 HostMessagingSetup _hostMessagingCaptureSetup(String organizerId) =>
@@ -14037,6 +14127,29 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       activeIndex: 1,
       child: HostCustomersScreen(
         initialOrganizerId: HostOperationsFixtures.primaryClub.id,
+      ),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_customer_detail_memory',
+    routeIds: const <String>['hostCustomerDetailScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: [
+      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      uidProvider.overrideWithValue(
+        const AsyncData<String?>(HostOperationsFixtures.hostUid),
+      ),
+      hostAudienceContactDetailProvider(
+        HostOperationsFixtures.primaryClub.id,
+        'capture-customer-ananya',
+      ).overrideWithValue(AsyncData(_hostCustomerMemoryDetail())),
+    ],
+    builder: (context) => _HostRoutedShellCapture(
+      initialLocation: '/host/customers',
+      activeIndex: 1,
+      child: HostCustomerDetailScreen(
+        organizerId: HostOperationsFixtures.primaryClub.id,
+        contactId: 'capture-customer-ananya',
       ),
     ),
   ),
