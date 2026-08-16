@@ -225,7 +225,7 @@ void _registerHostOperationsCustomersTests() {
 
     expect(find.text('MESSAGES SENT'), findsOneWidget);
     expect(find.text('August invite'), findsOneWidget);
-    expect(find.text('Delivered'), findsOneWidget);
+    expect(find.textContaining('Delivered'), findsOneWidget);
   });
 
   testWidgets('customer detail orders identity, memory, activity, controls', (

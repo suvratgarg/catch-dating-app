@@ -10,6 +10,7 @@ export interface ListOrganizerContactsCallablePayload {
   limit?: number;
   cursor?: string | null;
   query?: string | null;
+  sort?: "lastSeen" | "mostAttended" | "name";
   segmentId?:
     | (
         | "new_to_organizer"

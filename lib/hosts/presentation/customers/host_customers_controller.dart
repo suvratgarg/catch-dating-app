@@ -111,6 +111,11 @@ HostAudienceQuery _queryFor(
   search: request.search,
   segment: hostAudienceSegmentForCustomerFilter(request.filter),
   manualTagId: request.manualTagId,
+  sort: switch (request.sort) {
+    HostCustomerSort.lastSeen => HostAudienceSort.lastSeen,
+    HostCustomerSort.mostAttended => HostAudienceSort.mostAttended,
+    HostCustomerSort.name => HostAudienceSort.name,
+  },
   cursor: cursor,
 );
 
@@ -321,4 +326,52 @@ class HostCustomersController {
     expectedRevision: note.revision,
     body: body,
   );
+
+  Future<HostContactMergeCandidatePage> listMergeCandidates({
+    required String organizerId,
+    String? cursor,
+  }) => _repository.listMergeCandidates(organizerId, cursor: cursor);
+
+  Future<void> markDifferentPeople({
+    required String organizerId,
+    required HostContactMergeCandidate candidate,
+  }) => _repository.reviewMergeCandidate(
+    organizerId: organizerId,
+    candidate: candidate,
+    differentPeople: true,
+  );
+
+  Future<void> reopenMergeCandidate({
+    required String organizerId,
+    required HostContactMergeCandidate candidate,
+  }) => _repository.reviewMergeCandidate(
+    organizerId: organizerId,
+    candidate: candidate,
+    differentPeople: false,
+  );
+
+  Future<void> mergeCustomers({
+    required String organizerId,
+    required HostContactMergeCandidate candidate,
+    required String survivorContactId,
+    required bool confirmConflicts,
+  }) => _repository.mergeContacts(
+    organizerId: organizerId,
+    candidate: candidate,
+    survivorContactId: survivorContactId,
+    confirmConflicts: confirmConflicts,
+    idempotencyKey: _mergeIdempotencyKey('merge', candidate.candidateId),
+  );
+
+  Future<void> unmergeCustomers({
+    required String organizerId,
+    required String mergeReceiptId,
+  }) => _repository.unmergeContacts(
+    organizerId: organizerId,
+    mergeReceiptId: mergeReceiptId,
+    idempotencyKey: _mergeIdempotencyKey('unmerge', mergeReceiptId),
+  );
 }
+
+String _mergeIdempotencyKey(String operation, String subjectId) =>
+    '$operation-$subjectId-${DateTime.now().microsecondsSinceEpoch}';

@@ -18,29 +18,45 @@ import {
 test("contact cursors round trip every query plan", () => {
   for (const cursor of [
     {
+      version: 2 as const,
+      organizerId: "organizer-1",
       plan: "people" as const,
+      sort: "lastSeen" as const,
+      search: null,
       value: "1720000000000",
       contactId: "contact-1",
       segmentId: null,
       manualTagId: null,
     },
     {
+      version: 2 as const,
+      organizerId: "organizer-1",
       plan: "search" as const,
+      sort: "name" as const,
+      search: "asha",
       value: "asha",
       contactId: "contact-2",
       segmentId: null,
       manualTagId: null,
     },
     {
+      version: 2 as const,
+      organizerId: "organizer-1",
       plan: "segment" as const,
-      value: "contact-3",
+      sort: "mostAttended" as const,
+      search: null,
+      value: "7",
       contactId: "contact-3",
       segmentId: "repeat_attendee",
       manualTagId: null,
     },
     {
+      version: 2 as const,
+      organizerId: "organizer-1",
       plan: "manualTag" as const,
-      value: "contact-4",
+      sort: "name" as const,
+      search: null,
+      value: "zara",
       contactId: "contact-4",
       segmentId: null,
       manualTagId: "a".repeat(32),
@@ -51,6 +67,22 @@ test("contact cursors round trip every query plan", () => {
       cursor
     );
   }
+});
+
+test("legacy contact cursors fail instead of changing sort semantics", () => {
+  const legacyCursor = Buffer.from(JSON.stringify({
+    plan: "people",
+    value: "1720000000000",
+    contactId: "contact-1",
+    segmentId: null,
+    manualTagId: null,
+  })).toString("base64url");
+
+  assert.throws(
+    () => decodeContactCursor(legacyCursor),
+    (error: unknown) => error instanceof HttpsError &&
+      error.code === "invalid-argument"
+  );
 });
 
 test("manual tags reuse case-insensitive vocabulary entries", () => {

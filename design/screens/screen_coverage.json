@@ -1,7 +1,7 @@
 {
   "$schema": "./screen_coverage.schema.json",
   "version": 1,
-  "updated": "2026-08-12",
+  "updated": "2026-08-16",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Design screen coverage policy. Every route from the generated route inventory must be contracted, aliased to a canonical design surface, planned for a future screen contract, or explicitly excluded from baseline design parity.",
   "routes": [
@@ -261,6 +261,13 @@
       "priority": "P1",
       "reason": "Covered by screen.host.clubs as the dedicated Organizer branch of the Host lifecycle shell.",
       "screenId": "screen.host.clubs"
+    },
+    {
+      "routeId": "hostOrganizerMessagingScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Covered by screen.host.inbox as the dedicated organizer WhatsApp sender setup route reached from Sends.",
+      "screenId": "screen.host.inbox"
     },
     {
       "routeId": "hostClubsScreen",

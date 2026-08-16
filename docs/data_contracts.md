@@ -549,6 +549,7 @@ Root-level edge/action documents are the source of truth for many-to-many state:
 | Organizer-scoped operational contact | server-only `organizerContacts/{contactId}` |
 | Contact-to-event fact | server-only `organizerContactEventEdges/{attendeeId}` |
 | Contact identity evidence and verified claim | server-only `organizerContactIdentityLinks/{evidenceId}` and `organizerContactIdentityClaims/{claimId}` |
+| Contact merge decision and reversible receipt | server-only `organizerContactMergeReviewDecisions/{decisionId}` and `organizerContactMergeReceipts/{receiptId}` |
 | Rebuildable contact traits and organizer summary | server-only `organizerContactTraits/{contactId}` and `organizerAudienceSummaries/{organizerId}` |
 | Invitation aggregate and isolated bearer token | host-readable `eventInviteLinks/{inviteLinkId}` and server-only `eventInviteLinkSecrets/{inviteLinkId}` |
 | Short-lived invite open/share evidence | server-only `eventInviteTouches/{touchId}` and `eventShareIntents/{intentId}` |
@@ -556,6 +557,7 @@ Root-level edge/action documents are the source of truth for many-to-many state:
 | Organizer campaign and recipient snapshot | server-only `organizerCampaigns/{campaignId}` and `organizerCampaignRecipients/{recipientId}` |
 | Organizer Announcement history projection | server-only `organizerBroadcastSummaries/{broadcastId}`; manager clients use `listOrganizerCampaigns` and contact-detail callables |
 | Organizer WhatsApp sender/template state | server-only `organizerSenderConnections/{connectionId}`, `organizerMessageTemplates/{templateId}`, and webhook receipts/events |
+| Organizer WhatsApp Inbox and reply reservation | server-only TTL-bound `organizerWhatsappThreads/{threadId}`, `organizerWhatsappMessages/{messageId}`, and `organizerWhatsappReplyOperations/{operationId}` |
 | External provider connection and event mapping | server-only `organizerProviderConnections/{connectionId}`, `externalEventMappings/{mappingId}`, and `providerSyncRuns/{runId}` |
 | Event-scoped staff authority | server-owned `eventStaffGrants/{eventId_uid}` with direct reads denied |
 | Cross Paths event visibility | `eventCrossPathsConsents/{eventId_uid}` |
@@ -713,6 +715,13 @@ Conflicting UID, phone, or email facts require explicit confirmation. Unmerge
 restores only the exact source-origin edge, evidence, and claim identifiers in
 the original receipt and creates one deterministic reversal receipt. Facts
 created after a merge remain with the survivor instead of being guessed back.
+The manager review boundary lists conflicted verified UID/phone claims plus
+exact proposed phone/email hashes. It derives shared events, source kinds and
+confidence at read time, never proposes name-only matches, and stores a
+`organizerContactMergeReviewDecisions` row when a manager chooses Different
+people. Only that manager may reopen the decision. Contact detail returns the
+newest active merge receipts for the survivor so each receipt can be reversed
+individually.
 
 `organizerContactTraits` are rebuilt from event edges and verified invite
 attribution facts and contain only
@@ -739,6 +748,10 @@ identity or contact fields. `listOrganizerContacts` and
 `getOrganizerContactDetail` are separate manager-authorized, server-paginated
 boundaries. They return only organizer-owned endpoints plus explainable
 attendance/reachability facts; no Event Success private input is a CRM field.
+The directory accepts `lastSeen`, `mostAttended`, or `name`; every opaque cursor
+is versioned and bound to its query plan, filters, and ordering. Filtered sorts
+are computed over a bounded complete candidate set rather than sorting one
+already-paginated page, and an over-limit candidate set fails explicitly.
 `createOrganizerContact` may add a name-only contact and its zero-history trait,
 but creates no attendee, endpoint evidence, UID, Consumer profile, or messaging
 grant. The Customer detail revenue block joins only a verified linked UID to
@@ -782,7 +795,18 @@ reported configured only when `META_WHATSAPP_ENABLED=true` and the real Meta
 app/config credentials are present. Webhook receipts are signature-verified,
 deduplicated and monotonic;
 STOP updates the same organizer-scoped preference/suppression boundary without
-retaining inbound message content. Account
+creating analytics content. For one unambiguously resolved organizer contact,
+the bounded inbound body is also copied into
+`organizerWhatsappMessages/{messageId}` and summarized by
+`organizerWhatsappThreads/{threadId}`. Both are server-only and carry a rolling
+12-month `expiresAt`; the queue copy expires after 30 days. Manager callables
+list and open these threads in the existing Inbox scopes. Free-form replies
+require the current sender connection, unsuppressed contact state, an unchanged
+latest-inbound timestamp, and an open 24-hour customer-service window; the
+server rechecks all of those conditions even when the client composer appears
+enabled. `organizerWhatsappReplyOperations` reserves each idempotency key before
+the provider call, preventing concurrent duplicate sends and preserving an
+unknown-outcome state when Meta acceptance cannot be confirmed. Account
 deletion removes the onboarding draft, organizer communication grants, UID
 identity evidence and verified UID claims. Retained operational attendee,
 contact and event-edge history is unlinked from the deleted Catch UID.

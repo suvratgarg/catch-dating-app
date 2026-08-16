@@ -39,6 +39,15 @@ const schemaListOrganizerContactsCallablePayloadSchema = <String, Object?>{
       ],
       'maxLength': 120,
     },
+    'sort': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'lastSeen',
+        'mostAttended',
+        'name',
+      ],
+      'default': 'lastSeen',
+    },
     'segmentId': <String, Object?>{
       'anyOf': <Object?>[
         <String, Object?>{

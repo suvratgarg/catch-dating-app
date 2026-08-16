@@ -12,6 +12,7 @@ final class ListOrganizerContactsCallableRequest {
     this.limit,
     this.cursor,
     this.query,
+    this.sort,
     this.segmentId,
     this.manualTagId,
   });
@@ -20,6 +21,7 @@ final class ListOrganizerContactsCallableRequest {
   final int? limit;
   final String? cursor;
   final String? query;
+  final String? sort;
   final String? segmentId;
   final String? manualTagId;
 
@@ -28,6 +30,7 @@ final class ListOrganizerContactsCallableRequest {
     'limit': ?limit,
     'cursor': ?cursor,
     'query': ?query,
+    'sort': ?sort,
     'segmentId': ?segmentId,
     'manualTagId': ?manualTagId,
   };

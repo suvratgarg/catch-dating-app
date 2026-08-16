@@ -1,6 +1,6 @@
 # Host Customers + Messaging Restructure Spec (for Codex)
 
-Status: phases 0–2 shipped; 3–6 pending · updated 2026-08-16
+Status: phases 0–6 and server-backed sort implemented after this change merges · updated 2026-08-16
 
 Delivery state (verified against `origin/main`, 2026-08-16):
 
@@ -8,13 +8,16 @@ Delivery state (verified against `origin/main`, 2026-08-16):
   original commit; the merged implementation is the one to build on.
 - **Phases 1–2** — shipped in #262 (filter summary, match counts, composer
   extraction, segment→campaign bridge, unified counts).
-- **Phases 3–6** — pending.
+- **Phase 3** — shipped in #267 (contact memory).
+- **Phases 4–6 and sort** — implemented by this change: Sends/scheduling,
+  reviewed merge/unmerge including proposed exact endpoint candidates, inbound
+  WhatsApp Inbox facets and service-window replies, and all three server-backed
+  directory orderings.
 
-Two statements in this document are known stale and were **not** implemented:
-the deep link is `workspace=campaigns`, not `workspace=sends`; and the sort
-control moved to Phase 1 is still blocked on owner decision 6, since the
-`listOrganizerContacts` payload schema has no sort field. Nothing was invented
-to satisfy either.
+The deep-link wire value remains `workspace=campaigns`, not `workspace=sends`;
+the user-facing label is Sends. The later owner decision accepted the Most
+attended Firestore index, so `listOrganizerContacts` now carries an explicit
+ordering and ordering-bound cursor contract.
 Scope: `lib/hosts/presentation/customers/`, `lib/hosts/presentation/inbox/`,
 `lib/hosts/presentation/host_operations/host_audience.dart`,
 `lib/hosts/data/host_crm_repository.dart`, `lib/core/widgets/catch_field*.dart`,

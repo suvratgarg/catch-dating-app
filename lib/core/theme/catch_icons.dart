@@ -58,6 +58,7 @@ abstract final class CatchIcons {
   // ── Browse modes / navigation ────────────────────────────────────────────
   static IconData get map => PhosphorIconsRegular.mapTrifold;
   static IconData get list => PhosphorIconsBold.list;
+  static IconData get sort => PhosphorIconsRegular.sortAscending;
   static IconData get search => PhosphorIconsRegular.magnifyingGlass;
   static IconData get add => PhosphorIconsBold.plus;
   static IconData get forwardArrow => PhosphorIconsBold.arrowRight;

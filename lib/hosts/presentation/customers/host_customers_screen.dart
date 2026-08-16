@@ -27,6 +27,7 @@ import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_contact_merge_review.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_row.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
@@ -41,7 +42,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-enum _HostCustomersHeaderAction { export, whatsappReady, sources }
+enum _HostCustomersHeaderAction {
+  sortLastSeen,
+  sortMostAttended,
+  sortName,
+  reviewDuplicates,
+  export,
+  whatsappReady,
+  sources,
+}
 
 class HostCustomersScreen extends ConsumerStatefulWidget {
   const HostCustomersScreen({super.key, this.initialOrganizerId});
@@ -59,6 +68,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
   String? _search;
   HostCustomerFilter _filter = HostCustomerFilter.all;
   HostCustomerManualTag? _manualTag;
+  HostCustomerSort _sort = HostCustomerSort.lastSeen;
   bool _exporting = false;
 
   @override
@@ -120,6 +130,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
       search: _search,
       filter: _manualTag == null ? effectiveFilter : HostCustomerFilter.all,
       manualTagId: _manualTag?.tagId,
+      sort: _sort,
     );
     final directory = ref.watch(
       hostCustomersDirectoryControllerProvider(request),
@@ -157,6 +168,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                     items: _hostCustomersHeaderActions(
                       context,
                       summary.asData?.value,
+                      selectedSort: _sort,
                       exportEnabled: !_exporting && _manualTag == null,
                       exportSublabel: _manualTag == null
                           ? null
@@ -165,6 +177,22 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                                 .hostCustomersManualTagExportUnavailable,
                     ),
                     onSelected: (action) {
+                      final selectedSort = switch (action) {
+                        _HostCustomersHeaderAction.sortLastSeen =>
+                          HostCustomerSort.lastSeen,
+                        _HostCustomersHeaderAction.sortMostAttended =>
+                          HostCustomerSort.mostAttended,
+                        _HostCustomersHeaderAction.sortName =>
+                          HostCustomerSort.name,
+                        _ => null,
+                      };
+                      if (selectedSort != null) {
+                        setState(() => _sort = selectedSort);
+                      }
+                      if (action ==
+                          _HostCustomersHeaderAction.reviewDuplicates) {
+                        unawaited(_reviewDuplicates(selectedClub.id));
+                      }
                       if (action == _HostCustomersHeaderAction.export) {
                         unawaited(
                           _exportCustomers(selectedClub, effectiveFilter),
@@ -285,9 +313,36 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
   _hostCustomersHeaderActions(
     BuildContext context,
     HostCrmSummary? summary, {
+    required HostCustomerSort selectedSort,
     required bool exportEnabled,
     String? exportSublabel,
   }) => [
+    CatchActionMenuItem(
+      value: _HostCustomersHeaderAction.sortLastSeen,
+      label: context.l10n.hostCustomersSortLastSeen,
+      sublabel: context.l10n.hostCustomersSort,
+      icon: CatchIcons.sort,
+      selected: selectedSort == HostCustomerSort.lastSeen,
+    ),
+    CatchActionMenuItem(
+      value: _HostCustomersHeaderAction.sortMostAttended,
+      label: context.l10n.hostCustomersSortMostAttended,
+      sublabel: context.l10n.hostCustomersSort,
+      icon: CatchIcons.sort,
+      selected: selectedSort == HostCustomerSort.mostAttended,
+    ),
+    CatchActionMenuItem(
+      value: _HostCustomersHeaderAction.sortName,
+      label: context.l10n.hostCustomersSortName,
+      sublabel: context.l10n.hostCustomersSort,
+      icon: CatchIcons.sort,
+      selected: selectedSort == HostCustomerSort.name,
+    ),
+    CatchActionMenuItem(
+      value: _HostCustomersHeaderAction.reviewDuplicates,
+      label: context.l10n.hostCustomersReviewDuplicates,
+      icon: CatchIcons.peopleOutlineRounded,
+    ),
     CatchActionMenuItem(
       value: _HostCustomersHeaderAction.export,
       label: context.l10n.hostsHostAudienceExport,
@@ -314,6 +369,16 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
       ),
     ],
   ];
+
+  Future<void> _reviewDuplicates(String organizerId) async {
+    final changed = await showCatchBottomSheet<bool>(
+      context: context,
+      builder: (_) => HostContactMergeReviewSheet(organizerId: organizerId),
+    );
+    if (!mounted || changed != true) return;
+    ref.invalidate(hostCustomersDirectoryControllerProvider);
+    ref.invalidate(hostCrmSummaryProvider(organizerId));
+  }
 
   void _scheduleSearch(String value) {
     _searchDebounce?.cancel();
@@ -1085,11 +1150,13 @@ class HostCustomerConversationCard extends StatelessWidget {
     required this.customer,
     required this.loading,
     required this.onOpen,
+    this.onReview,
   });
 
   final HostAudienceContactDetail customer;
   final bool loading;
   final VoidCallback? onOpen;
+  final VoidCallback? onReview;
 
   @override
   Widget build(BuildContext context) {
@@ -1113,6 +1180,15 @@ class HostCustomerConversationCard extends StatelessWidget {
         children: [
           if (message != null) ...[
             Text(message, style: CatchTextStyles.supporting(context)),
+            gapH12,
+          ],
+          if (availability == HostCustomerConversationAvailability.ambiguous &&
+              onReview != null) ...[
+            CatchButton(
+              label: context.l10n.hostCustomersReviewDuplicates,
+              variant: CatchButtonVariant.secondary,
+              onPressed: onReview,
+            ),
             gapH12,
           ],
           CatchButton(
