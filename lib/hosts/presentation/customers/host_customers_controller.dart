@@ -47,6 +47,9 @@ class HostCustomersDirectoryController
                     : current.matchCount
               : current.matchCount,
           matchCountCoverage: current.matchCountCoverage,
+          manualTagVocabulary: page.manualTagVocabulary
+              .map(_directoryManualTag)
+              .toList(growable: false),
           sourceCoverage: _directoryCoverage(page.sourceCoverage),
           projectionVersion: page.projectionVersion,
         ),
@@ -57,6 +60,27 @@ class HostCustomersDirectoryController
       );
     }
   }
+}
+
+@riverpod
+Future<HostCustomerSegmentCount> hostCustomerManualTagCount(
+  Ref ref,
+  HostCustomerManualTagCountRequest request,
+) async {
+  final page = await ref
+      .read(hostCrmRepositoryProvider)
+      .listContacts(
+        request.organizerId,
+        query: HostAudienceQuery(
+          search: request.search,
+          manualTagId: request.manualTagId,
+        ),
+        limit: 1,
+      );
+  return HostCustomerSegmentCount(
+    count: page.matchCount,
+    coverage: _matchCountCoverage(page.matchCountCoverage),
+  );
 }
 
 @riverpod
@@ -86,6 +110,7 @@ HostAudienceQuery _queryFor(
 }) => HostAudienceQuery(
   search: request.search,
   segment: hostAudienceSegmentForCustomerFilter(request.filter),
+  manualTagId: request.manualTagId,
   cursor: cursor,
 );
 
@@ -167,6 +192,7 @@ HostCustomersDirectoryState _directoryStateFromPage(HostAudiencePage page) =>
       nextCursor: page.nextCursor,
       matchCount: page.matchCount,
       matchCountCoverage: _matchCountCoverage(page.matchCountCoverage),
+      manualTagVocabulary: page.manualTagVocabulary.map(_directoryManualTag),
       sourceCoverage: _directoryCoverage(page.sourceCoverage),
       projectionVersion: page.projectionVersion,
     );
@@ -186,6 +212,9 @@ HostCustomerDirectoryContact _directoryContact(HostAudienceContact contact) =>
       attendedEventCount: contact.attendedEventCount,
       lastAttendedAt: contact.lastAttendedAt,
       tags: {for (final segment in contact.segments) ?_customerTag(segment)},
+      manualTags: contact.manualTags
+          .map(_directoryManualTag)
+          .toList(growable: false),
       hasAmbiguousIdentity:
           contact.identityState == HostAudienceIdentityState.ambiguous ||
           contact.ambiguousCandidateCount > 0,
@@ -193,6 +222,9 @@ HostCustomerDirectoryContact _directoryContact(HostAudienceContact contact) =>
           contact.whatsappStatus == HostAudiencePermissionStatus.optedIn,
       whatsappAdminSuppressed: contact.whatsappAdminSuppressed,
     );
+
+HostCustomerManualTag _directoryManualTag(HostManualTag tag) =>
+    HostCustomerManualTag(tagId: tag.tagId, label: tag.label);
 
 HostCustomerTag? _customerTag(HostAudienceSegment segment) => switch (segment) {
   HostAudienceSegment.newToOrganizer => HostCustomerTag.newToOrganizer,
@@ -255,6 +287,7 @@ class HostCustomersController {
     bool clearDisplayNameOverride = false,
     bool? whatsappAdminSuppressed,
     bool? hidden,
+    List<String>? manualTags,
   }) => _repository.mutateContact(
     organizerId: organizerId,
     contactId: contactId,
@@ -263,5 +296,29 @@ class HostCustomersController {
     clearDisplayNameOverride: clearDisplayNameOverride,
     whatsappAdminSuppressed: whatsappAdminSuppressed,
     hidden: hidden,
+    manualTags: manualTags,
+  );
+
+  Future<HostCustomerNote> createNote({
+    required String organizerId,
+    required String contactId,
+    required String body,
+  }) => _repository.createContactNote(
+    organizerId: organizerId,
+    contactId: contactId,
+    body: body,
+  );
+
+  Future<HostCustomerNote> editNote({
+    required String organizerId,
+    required String contactId,
+    required HostCustomerNote note,
+    required String body,
+  }) => _repository.mutateContactNote(
+    organizerId: organizerId,
+    contactId: contactId,
+    noteId: note.noteId,
+    expectedRevision: note.revision,
+    body: body,
   );
 }
