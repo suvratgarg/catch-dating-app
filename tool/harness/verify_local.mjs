@@ -78,6 +78,7 @@ function collectGates(targets) {
   );
   const gates = [];
   const unresolved = [];
+  const skipped = [];
   const seen = new Set();
 
   for (const target of targets) {
@@ -94,18 +95,23 @@ function collectGates(targets) {
         continue;
       }
       for (const step of steps) {
-        if (!step.runnable) continue;
         // Targets share workflows (android/ios/web all route to the build
         // matrix); running a gate once per target would multiply the cost of
         // a full verification for no additional coverage.
         const key = `${workflow}::${step.name}::${step.run}`;
         if (seen.has(key)) continue;
         seen.add(key);
+        if (!step.runnable) {
+          // Composite-action setup steps are noise; a shell step that cannot
+          // run locally is a real coverage gap and must be reported as one.
+          if (step.run) skipped.push({workflow, name: step.name, reason: step.skipReason});
+          continue;
+        }
         gates.push({target, workflow, name: step.name, command: step.run});
       }
     }
   }
-  return {gates, unresolved};
+  return {gates, unresolved, skipped};
 }
 
 function runGate(gate) {
@@ -137,7 +143,7 @@ function main() {
     context = resolved;
   }
 
-  const {gates, unresolved} = collectGates(targets);
+  const {gates, unresolved, skipped} = collectGates(targets);
 
   if (unresolved.length > 0) {
     console.error(
@@ -149,7 +155,7 @@ function main() {
   }
 
   if (args.json) {
-    console.log(JSON.stringify({targets, gates, ...context}, null, 2));
+    console.log(JSON.stringify({targets, gates, skipped, ...context}, null, 2));
     return;
   }
 
@@ -164,6 +170,19 @@ function main() {
       `(${context.unknownPaths.slice(0, 3).join(", ")}) — coverage may be incomplete.`);
   }
   console.log(`${gates.length} locally-runnable gate(s):\n`);
+  const reportSkipped = () => {
+    if (skipped.length === 0) return;
+    console.log(
+      `\n${skipped.length} CI step(s) are NOT covered locally — this run is not ` +
+      `equivalent to CI:`,
+    );
+    for (const step of skipped) console.log(`  ${step.name}  (${step.workflow}) — ${step.reason}`);
+    console.log(
+      `\nMatrix-driven jobs are the common case; for the tools lane run\n` +
+      `  node tool/run.mjs affected-tools --base origin/main --check\n` +
+      `which executes the registered tool checks those buckets fan out to.`,
+    );
+  };
 
   if (args.list) {
     let lastWorkflow = null;
@@ -175,6 +194,7 @@ function main() {
       console.log(`  ${gate.name}`);
       for (const line of gate.command.split("\n")) console.log(`      ${line}`);
     }
+    reportSkipped();
     return;
   }
 
@@ -190,6 +210,7 @@ function main() {
     console.log(`  ${r.status === 0 ? "pass" : "FAIL"}  ${String(r.seconds).padStart(4)}s  ${r.name}`);
   }
   console.log(`${results.length - failed.length}/${results.length} gate(s) passed.`);
+  reportSkipped();
   process.exit(failed.length === 0 ? 0 : 1);
 }
 
