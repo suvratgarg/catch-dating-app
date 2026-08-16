@@ -33,6 +33,23 @@ const dedent = (lines) => {
 };
 
 /**
+ * Join a block scalar's lines according to its style.
+ *
+ * Literal (`|`) keeps line breaks. Folded (`>`) joins consecutive non-empty
+ * lines with a single space, and treats a blank line as a genuine break —
+ * which is what YAML folding does and what makes a multi-line `>-` command
+ * execute as the single command its author wrote.
+ */
+function joinBlock(lines, style) {
+  const text = dedent(lines);
+  if (style !== "folded" || text.length === 0) return text;
+  return text
+    .split(/\n{2,}/)
+    .map((paragraph) => paragraph.split("\n").map((l) => l.trim()).join(" ").trim())
+    .join("\n");
+}
+
+/**
  * @param {string} source raw workflow YAML
  * @returns {{name: string, run: string|null, uses: string|null, if: string|null,
  *            runnable: boolean, skipReason: string|null}[]}
@@ -44,8 +61,11 @@ export function extractSteps(source) {
 
   const flush = () => {
     if (!current) return;
-    if (current.blockKey === "run") current.run = dedent(current.blockLines);
+    if (current.blockKey === "run") {
+      current.run = joinBlock(current.blockLines, current.blockStyle);
+    }
     delete current.blockKey;
+    delete current.blockStyle;
     delete current.blockLines;
     steps.push(current);
     current = null;
@@ -72,8 +92,9 @@ export function extractSteps(source) {
     if (line.startsWith(KEY_INDENT) && !line.startsWith(`${KEY_INDENT} `)) {
       // A sibling key ends any block scalar in progress.
       if (current.blockKey === "run") {
-        current.run = dedent(current.blockLines);
+        current.run = joinBlock(current.blockLines, current.blockStyle);
         current.blockKey = null;
+        current.blockStyle = null;
         current.blockLines = [];
       }
       applyKey(current, line.slice(KEY_INDENT.length));
@@ -100,8 +121,19 @@ function applyKey(step, text) {
   const value = rawValue.trim();
 
   if (key === "run") {
-    if (value === "|" || value === "|-" || value === ">" || value === ">-") {
+    // YAML block scalars come in two styles and they mean different things:
+    // literal (`|`) keeps newlines, folded (`>`) folds them into spaces. A
+    // folded command is ONE command; joining its lines with newlines turns
+    // each continuation into a separate shell command, so `node tool/run.mjs
+    // check` runs bare and `audit:dependency-direction` becomes "command not
+    // found". Emitting a wrong command is worse than emitting none.
+    if (value === "|" || value === "|-") {
       step.blockKey = "run";
+      step.blockStyle = "literal";
+      step.blockLines = [];
+    } else if (value === ">" || value === ">-") {
+      step.blockKey = "run";
+      step.blockStyle = "folded";
       step.blockLines = [];
     } else {
       step.run = value;
