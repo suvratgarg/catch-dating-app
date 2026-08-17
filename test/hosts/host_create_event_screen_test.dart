@@ -67,10 +67,8 @@ void main() {
     ) async {
       await _pumpCreateEventFlow(tester);
       await _openCreateEventFlow(tester);
-
       await _tapPrimaryButton(tester, 'Next');
       await tester.pump();
-
       expect(find.text('Required'), findsOneWidget);
       expect(find.text('Select a pace'), findsOneWidget);
     });
@@ -80,9 +78,7 @@ void main() {
       (tester) async {
         await _pumpCreateEventFlow(tester);
         await _openCreateEventFlow(tester);
-
         expect(find.byType(CatchFieldChoiceChip), findsNothing);
-
         await _openCatchField(tester, 'Activity type');
         final walking = tester.widget<CatchFieldChoiceChip>(
           find.byWidgetPredicate(
@@ -105,7 +101,6 @@ void main() {
           socialRun.accent,
           ActivityPalette.resolve(context, ActivityKind.socialRun).accent,
         );
-
         await _openCatchField(tester, 'Pace level');
         expect(
           find.byWidgetPredicate(
@@ -132,7 +127,6 @@ void main() {
         HostCreateEventRouteScreen(clubId: 'club-1', initialClub: buildClub()),
       );
       await tester.pump();
-
       expect(find.text('Host access required'), findsOneWidget);
       expect(
         find.text(

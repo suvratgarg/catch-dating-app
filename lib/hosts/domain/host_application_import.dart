@@ -1,8 +1,8 @@
 import 'dart:convert';
 
+import 'package:catch_dating_app/core/cryptography/sha256_digest.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/profile_schema_contracts.g.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
-import 'package:crypto/crypto.dart';
 
 enum HostApplicationImportIssue { missingNameColumn, noRows }
 
@@ -160,7 +160,7 @@ HostApplicationImportDraft buildHostApplicationImportDraft(
     headers: table.headers,
     rows: boundedRows,
     questions: questions,
-    importKey: 'applications-${sha256.convert(utf8.encode(canonical))}',
+    importKey: 'applications-${sha256Digest(canonical)}',
     truncatedRowCount: table.rows.length - boundedRows.length,
   );
 }

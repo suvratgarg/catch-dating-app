@@ -97,6 +97,18 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
     windowMs: 60 * 1000,
   },
   reviewOrganizerApplication: {maxRequests: 60, windowMs: 60 * 1000},
+  getParticipantOrganizerApplicationForm: {
+    maxRequests: 60,
+    windowMs: 60 * 1000,
+  },
+  submitParticipantOrganizerApplication: {
+    maxRequests: 10,
+    windowMs: 60 * 60 * 1000,
+  },
+  revokeParticipantOrganizerDataGrant: {
+    maxRequests: 10,
+    windowMs: 60 * 60 * 1000,
+  },
   createEventRosterHandoff: {maxRequests: 10, windowMs: 60 * 60 * 1000},
   markEventAttendeeAttendance: {maxRequests: 120, windowMs: 60 * 1000},
   registerPublicEvent: {maxRequests: 10, windowMs: 60 * 60 * 1000},
