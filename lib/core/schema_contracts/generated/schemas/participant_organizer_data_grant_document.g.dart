@@ -71,6 +71,7 @@ const schemaParticipantOrganizerDataGrantDocumentSchema = <String, Object?>{
       'uniqueItems': true,
       'items': <String, Object?>{
         'type': 'string',
+        'x-catch-catalog': '../catalogs/person_fields.json',
         'enum': <Object?>[
           'givenName',
           'familyName',
@@ -94,6 +95,9 @@ const schemaParticipantOrganizerDataGrantDocumentSchema = <String, Object?>{
           'drinking',
           'smoking',
           'religion',
+          'workout',
+          'diet',
+          'children',
         ],
       },
     },

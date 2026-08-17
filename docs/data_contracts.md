@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.29.0
+version: 1.30.0
 updated: 2026-08-17
 owner: recursive_audit_loop
 status: active
@@ -823,6 +823,47 @@ Retained organizer roster history is unlinked by setting `linkedUid` and
 subject to the organizer's stated booking/records purpose rather than Catch
 account or marketing permission.
 
+### Person Data Lenses And Canonical Fields
+
+Catch does not have one client-readable master person document. A verified
+Firebase Auth identity, the participant's private profile, the dating feed
+projection, portable application intake, organizer-submitted answers, and an
+organizer's CRM history are separate authority and visibility lenses. A phone
+match is an identity-resolution input only; it never grants an organizer access
+to private-profile fields or another organizer's records.
+
+| Lens | Canonical storage | Authority and visibility |
+|---|---|---|
+| Verified account identity | Firebase Auth plus the verified `users/{uid}.phoneNumber` mirror | Firebase Auth is authoritative for phone ownership. The private mirror is not a Host projection. |
+| Private Catch/dating profile | `users/{uid}` | Participant-authored source used to build Catch experiences. Its presence does not authorize Host access. |
+| Public dating projection | `publicProfiles/{uid}` | Server-derived, redacted feed shape only. A person-field mapping describes where a published value would land; it is not publication consent. |
+| Portable application prefill | `participantIntakeProfiles/{uid}` | Participant-private, reviewed values for lower-friction future applications. It neither overwrites `users` nor becomes organizer-visible merely by existing. |
+| Organizer application snapshot | `organizerApplicationResponses/{responseId}` plus `participantOrganizerDataGrants/{grantId}` | Exact questions answered for one application and the exact question/field grant receipt. This is the only application-field slice available to that organizer. |
+| Organizer CRM/customer history | `organizerContacts` and its organizer-scoped event, note, trait, campaign, and commerce projections | Facts the organizer acquired through its own events and workflows. It must not be hydrated from private `users` fields merely because an identity link exists. |
+| Platform reconciliation | Server-side joins across the preceding stores | Catch may resolve the same authenticated person across organizers, but employee-facing reads must remain purpose-scoped, role-gated, masked where possible, and audited. There is no universal raw-PII client projection. |
+
+`contracts/catalogs/person_fields.json` is the single semantic registry for
+portable person fields. It owns stable ids, normalized provider-header aliases,
+native question kinds, import transforms, privacy classes, prefill review
+requirements, Host presentation intent, authority, and structural private/public
+profile mappings. The validator requires the organizer-application enum and
+real profile paths to match the catalog. Generated Dart, Functions, and tool
+registries consume it so Google Forms, Typeform, Fillout, CSV/XLSX, and future
+native forms cannot maintain divergent alias maps.
+
+The catalog is classification metadata, not permission. Its organizer policy
+is `submittedQuestionGrantOnly`: a Host sees a field only when that organizer's
+form asked the question and the response/grant records it. Its public-profile
+mapping is also structural metadata only. Choice-shaped fields imported from a
+table remain text until the source options are explicitly mapped, preventing a
+provider export from silently inventing Catch choice semantics.
+
+Age is derived from date of birth rather than a second mutable profile value.
+Phone authority belongs to Firebase Auth even though `users.phoneNumber` keeps
+a verified mirror. Provider-specific questions remain organizer-custom answers;
+they are not added to this catalog merely because one provider or organizer
+uses them.
+
 ### Organizer Application Intake
 
 Organizer applications are a provider-neutral intake domain. A Google Form,
@@ -849,7 +890,8 @@ Portable participant prefill belongs in private
 explicitly saved eligible fields. It is separate from `users/{uid}` and cannot
 overwrite an existing Consumer profile. An organizer receives only the exact
 fields and purpose recorded by
-`participantOrganizerDataGrants/{uid_organizerId}`; a global phone or email
+`participantOrganizerDataGrants/{grantId}` for that application/response; a
+global phone or email
 identity never implies cross-organizer visibility. Organizer-proprietary
 questions such as a preferred cocktail remain in that organizer's application
 response and are never promoted into the portable profile by default.

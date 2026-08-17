@@ -55,6 +55,9 @@ export interface OrganizerApplicationResponseDocument {
           | "drinking"
           | "smoking"
           | "religion"
+          | "workout"
+          | "diet"
+          | "children"
         )
       | null;
     privacyClass: "contact" | "profile" | "sensitive" | "organizerCustom";

@@ -2898,6 +2898,7 @@ const generatedFiles = [];
 
 async function main() {
   const profileCatalog = readContractJson("catalogs/profile_prompts.json");
+  const personFieldCatalog = readContractJson("catalogs/person_fields.json");
   const eventSuccessMomentPresentationCatalog = readContractJson(
     "catalogs/event_success_moment_presentations.json"
   );
@@ -2931,6 +2932,7 @@ async function main() {
     renderTsSchemaRegistry({
       schemaMap: bundledSchemas,
       profileCatalog,
+      personFieldCatalog,
       photoCatalog,
       profilePhotoPolicy,
     })
@@ -2958,6 +2960,7 @@ async function main() {
     renderToolSchemaRegistry({
       schemaMap: bundledSchemas,
       profileCatalog,
+      personFieldCatalog,
       photoCatalog,
       profilePhotoPolicy,
     })
@@ -2990,6 +2993,7 @@ async function main() {
     "lib/core/schema_contracts/generated/profile_schema_contracts.g.dart",
     renderDartContracts({
       profileCatalog,
+      personFieldCatalog,
       photoCatalog,
       profilePhotoPolicy,
       profilePromptSchema: bundledSchemas.get("ProfilePromptAnswer"),
@@ -4084,12 +4088,14 @@ function typeImportPath(spec) {
 function renderTsSchemaRegistry({
   schemaMap,
   profileCatalog,
+  personFieldCatalog,
   photoCatalog,
   profilePhotoPolicy,
 }) {
   const entries = schemaRegistryEntries(schemaMap);
   const catalogEntries = [
     ["profilePromptCatalog", profileCatalog],
+    ["personFieldCatalog", personFieldCatalog],
     ["photoPromptCatalog", photoCatalog],
     ["profilePromptLimits", profileCatalog.limits],
     ["photoPromptLimits", photoCatalog.limits],
@@ -4168,12 +4174,14 @@ export const schemaProfileDecisionFutureOutgoingSubcollectionPath =
 function renderToolSchemaRegistry({
   schemaMap,
   profileCatalog,
+  personFieldCatalog,
   photoCatalog,
   profilePhotoPolicy,
 }) {
   const entries = schemaRegistryEntries(schemaMap);
   const catalogEntries = [
     ["profilePromptCatalog", profileCatalog],
+    ["personFieldCatalog", personFieldCatalog],
     ["photoPromptCatalog", photoCatalog],
     ["profilePromptLimits", profileCatalog.limits],
     ["photoPromptLimits", photoCatalog.limits],
@@ -4251,6 +4259,7 @@ export const joinWaitlistResponseSchema: Record<string, unknown> =
 
 function renderDartContracts({
   profileCatalog,
+  personFieldCatalog,
   photoCatalog,
   profilePhotoPolicy,
   profilePromptSchema,
@@ -4287,6 +4296,28 @@ function renderDartContracts({
   const defaultPromptIds = profileCatalog.defaultPromptIds
     .map((id) => `  ${dartString(id)},`)
     .join("\n");
+  const personFields = personFieldCatalog.fields.map((field) =>
+    `  SchemaPersonFieldDefinition(` +
+    `id: ${dartString(field.id)}, ` +
+    `aliases: <String>[${field.aliases.map(dartString).join(", ")}], ` +
+    `questionKind: ${dartString(field.questionKind)}, ` +
+    `transform: ${dartString(field.transform)}, ` +
+    `privacyClass: ${dartString(field.privacyClass)}, ` +
+    `prefillPolicy: ${dartString(field.prefillPolicy)}, ` +
+    `hostPresentation: ${dartString(field.hostPresentation)}, ` +
+    `authority: ${dartString(field.authority)}, ` +
+    `privateProfilePath: ${dartLiteral(field.privateProfilePath)}, ` +
+    `derivedFrom: ${dartLiteral(field.derivedFrom)}, ` +
+    `publicProfileProjection: ` +
+    `${dartString(field.publicProfileProjection)}, ` +
+    `publicProfilePath: ${dartLiteral(field.publicProfilePath)},` +
+    `),`
+  ).join("\n");
+  const personFieldAliases = personFieldCatalog.fields.flatMap((field) =>
+    field.aliases.map((alias) =>
+      `  ${dartString(alias)}: ${dartString(field.id)},`
+    )
+  ).join("\n");
 
   return `${dartGeneratedHeader()}
 class SchemaProfilePromptDefinition {
@@ -4312,6 +4343,46 @@ class SchemaPhotoPromptDefinition {
   final String title;
   final String placeholder;
 }
+
+class SchemaPersonFieldDefinition {
+  const SchemaPersonFieldDefinition({
+    required this.id,
+    required this.aliases,
+    required this.questionKind,
+    required this.transform,
+    required this.privacyClass,
+    required this.prefillPolicy,
+    required this.hostPresentation,
+    required this.authority,
+    required this.privateProfilePath,
+    required this.derivedFrom,
+    required this.publicProfileProjection,
+    required this.publicProfilePath,
+  });
+
+  final String id;
+  final List<String> aliases;
+  final String questionKind;
+  final String transform;
+  final String privacyClass;
+  final String prefillPolicy;
+  final String hostPresentation;
+  final String authority;
+  final String? privateProfilePath;
+  final String? derivedFrom;
+  final String publicProfileProjection;
+  final String? publicProfilePath;
+}
+
+const schemaPersonFieldOrganizerAccessPolicy = ${dartString(
+  personFieldCatalog.organizerAccessPolicy
+)};
+const schemaPersonFieldPublicProfileMetadataPolicy = ${dartString(
+  personFieldCatalog.publicProfileMetadataPolicy
+)};
+const schemaPersonFieldTabularChoiceImportPolicy = ${dartString(
+  personFieldCatalog.tabularChoiceImportPolicy
+)};
 
 const schemaProfilePromptPerfectEventId = ${dartString(
   profileCatalog.defaultPromptIds[0]
@@ -4359,6 +4430,24 @@ ${profilePrompts}
 const schemaPhotoPromptCatalog = <SchemaPhotoPromptDefinition>[
 ${photoPrompts}
 ];
+
+const schemaPersonFieldCatalog = <SchemaPersonFieldDefinition>[
+${personFields}
+];
+
+const schemaPersonFieldIdByNormalizedAlias = <String, String>{
+${personFieldAliases}
+};
+
+String? schemaPersonFieldIdForNormalizedAlias(String alias) =>
+    schemaPersonFieldIdByNormalizedAlias[alias];
+
+SchemaPersonFieldDefinition? schemaPersonFieldForId(String id) {
+  for (final field in schemaPersonFieldCatalog) {
+    if (field.id == id) return field;
+  }
+  return null;
+}
 
 const schemaProfilePromptAnswerSchema = ${dartLiteral(profilePromptSchema)};
 

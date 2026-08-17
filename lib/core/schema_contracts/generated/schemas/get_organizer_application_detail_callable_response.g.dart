@@ -133,6 +133,7 @@ const schemaGetOrganizerApplicationDetailCallableResponseSchema = <String, Objec
             'anyOf': <Object?>[
               <String, Object?>{
                 'type': 'string',
+                'x-catch-catalog': '../catalogs/person_fields.json',
                 'enum': <Object?>[
                   'givenName',
                   'familyName',
@@ -156,6 +157,9 @@ const schemaGetOrganizerApplicationDetailCallableResponseSchema = <String, Objec
                   'drinking',
                   'smoking',
                   'religion',
+                  'workout',
+                  'diet',
+                  'children',
                 ],
               },
               <String, Object?>{

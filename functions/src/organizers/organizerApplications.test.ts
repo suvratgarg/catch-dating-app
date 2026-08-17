@@ -4,6 +4,7 @@ import {OrganizerApplicationFormVersionDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {
   applicationOutreach,
+  canonicalFieldForNormalizedHeader,
   normalizeHeader,
   normalizeTabularPayload,
   prepareApplicationRows,
@@ -149,6 +150,15 @@ describe("organizer application safe outreach", () => {
 
 it("normalizes common spreadsheet header punctuation", () => {
   assert.equal(normalizeHeader(" WhatsApp / Mobile # "), "whatsappmobile");
+});
+
+it("uses the shared person-field catalog for provider header aliases", () => {
+  assert.equal(canonicalFieldForNormalizedHeader("birthdate"), "dateOfBirth");
+  assert.equal(
+    canonicalFieldForNormalizedHeader("whatsappnumber"),
+    "phoneNumber"
+  );
+  assert.equal(canonicalFieldForNormalizedHeader("favoritecocktail"), null);
 });
 
 it("keeps preview normalization free of import-only properties", () => {

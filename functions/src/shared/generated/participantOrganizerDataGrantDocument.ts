@@ -42,6 +42,9 @@ export interface ParticipantOrganizerDataGrantDocument {
     | "drinking"
     | "smoking"
     | "religion"
+    | "workout"
+    | "diet"
+    | "children"
   )[];
   consentVersion: string;
   consentCopyHash: string;

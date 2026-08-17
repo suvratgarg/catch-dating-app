@@ -64,6 +64,9 @@ export interface GetOrganizerApplicationDetailCallableResponse {
           | "drinking"
           | "smoking"
           | "religion"
+          | "workout"
+          | "diet"
+          | "children"
         )
       | null;
     privacyClass: "contact" | "profile" | "sensitive" | "organizerCustom";

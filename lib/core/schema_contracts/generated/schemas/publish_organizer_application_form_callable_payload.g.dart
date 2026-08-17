@@ -160,6 +160,7 @@ const schemaPublishOrganizerApplicationFormCallablePayloadSchema = <String, Obje
             'anyOf': <Object?>[
               <String, Object?>{
                 'type': 'string',
+                'x-catch-catalog': '../catalogs/person_fields.json',
                 'enum': <Object?>[
                   'givenName',
                   'familyName',
@@ -183,6 +184,9 @@ const schemaPublishOrganizerApplicationFormCallablePayloadSchema = <String, Obje
                   'drinking',
                   'smoking',
                   'religion',
+                  'workout',
+                  'diet',
+                  'children',
                 ],
               },
               <String, Object?>{

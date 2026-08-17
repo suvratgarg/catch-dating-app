@@ -38,6 +38,7 @@ const schemaParticipantIntakeProfileDocumentSchema = <String, Object?>{
         'properties': <String, Object?>{
           'canonicalFieldId': <String, Object?>{
             'type': 'string',
+            'x-catch-catalog': '../catalogs/person_fields.json',
             'enum': <Object?>[
               'givenName',
               'familyName',
@@ -61,6 +62,9 @@ const schemaParticipantIntakeProfileDocumentSchema = <String, Object?>{
               'drinking',
               'smoking',
               'religion',
+              'workout',
+              'diet',
+              'children',
             ],
           },
           'value': <String, Object?>{

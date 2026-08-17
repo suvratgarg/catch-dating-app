@@ -6,6 +6,7 @@
   "definitions": {
     "canonicalFieldId": {
       "type": "string",
+      "x-catch-catalog": "../catalogs/person_fields.json",
       "enum": [
         "givenName",
         "familyName",
@@ -28,7 +29,10 @@
         "interestedInGenders",
         "drinking",
         "smoking",
-        "religion"
+        "religion",
+        "workout",
+        "diet",
+        "children"
       ]
     },
     "questionKind": {

@@ -41,6 +41,7 @@ import {
   validatePublishOrganizerApplicationFormCallablePayload,
   validateReviewOrganizerApplicationCallablePayload,
 } from "../shared/generated/schemaValidators";
+import {personFieldCatalog} from "../shared/generated/schemaRegistry";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from
   "../shared/callableOptions";
@@ -77,6 +78,13 @@ const defaultDeps: OrganizerApplicationDeps = {
 const defaultPageSize = 50;
 const maxListScan = 500;
 const maxImportRows = 200;
+const canonicalFieldByNormalizedAlias = new Map<
+  string,
+  Question["canonicalFieldId"]
+>(personFieldCatalog.fields.flatMap((field) => field.aliases.map((alias) => [
+  alias,
+  field.id as Question["canonicalFieldId"],
+])));
 
 interface PreparedApplicationRow {
   rowId: string;
@@ -818,7 +826,7 @@ function suggestQuestion(
       normalizeHeader(question.key) === normalized)
   );
   if (exact) return {question: exact, confidence: "exact"};
-  const canonicalId = canonicalFieldForHeader(normalized);
+  const canonicalId = canonicalFieldForNormalizedHeader(normalized);
   const alias = canonicalId ? questions.find((question) =>
     !excluded.has(question.questionId) &&
     question.canonicalFieldId === canonicalId
@@ -1205,47 +1213,10 @@ export function normalizeHeader(value: string): string {
   return value.trim().toLowerCase().replace(/[^a-z0-9]+/g, "");
 }
 
-function canonicalFieldForHeader(value: string): Question["canonicalFieldId"] {
-  const aliases: Record<string, Question["canonicalFieldId"]> = {
-    firstname: "givenName",
-    givenname: "givenName",
-    lastname: "familyName",
-    surname: "familyName",
-    name: "displayName",
-    fullname: "displayName",
-    dob: "dateOfBirth",
-    dateofbirth: "dateOfBirth",
-    age: "age",
-    gender: "gender",
-    phone: "phoneNumber",
-    phonenumber: "phoneNumber",
-    mobile: "phoneNumber",
-    mobilenumber: "phoneNumber",
-    whatsapp: "phoneNumber",
-    email: "email",
-    emailaddress: "email",
-    instagram: "instagramHandle",
-    instagramhandle: "instagramHandle",
-    linkedin: "linkedinUrl",
-    linkedinurl: "linkedinUrl",
-    photo: "profilePhoto",
-    profilephoto: "profilePhoto",
-    city: "city",
-    height: "heightCm",
-    heightcm: "heightCm",
-    occupation: "occupation",
-    job: "occupation",
-    company: "company",
-    education: "education",
-    languages: "languages",
-    lookingfor: "relationshipGoal",
-    relationshipgoal: "relationshipGoal",
-    interestedin: "interestedInGenders",
-    drinking: "drinking",
-    smoking: "smoking",
-    religion: "religion",
-  };
-  return aliases[value] ?? null;
+export function canonicalFieldForNormalizedHeader(
+  value: string
+): Question["canonicalFieldId"] {
+  return canonicalFieldByNormalizedAlias.get(value) ?? null;
 }
 
 function normalizeE164(value: string): string | null {

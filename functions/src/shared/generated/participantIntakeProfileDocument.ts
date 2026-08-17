@@ -32,7 +32,10 @@ export interface ParticipantIntakeProfileDocument {
       | "interestedInGenders"
       | "drinking"
       | "smoking"
-      | "religion";
+      | "religion"
+      | "workout"
+      | "diet"
+      | "children";
     value: {
       valueKind:
         | "empty"

@@ -26,19 +26,19 @@ void main() {
       ),
     );
 
-    expect(
-      draft.questions.map((question) => question.canonicalFieldId),
-      [
-        'displayName',
-        'phoneNumber',
-        'dateOfBirth',
-        'relationshipGoal',
-        null,
-      ],
-    );
+    expect(draft.questions.map((question) => question.canonicalFieldId), [
+      'displayName',
+      'phoneNumber',
+      'dateOfBirth',
+      'relationshipGoal',
+      null,
+    ]);
     expect(draft.questions.last.privacyClass, 'organizerCustom');
     expect(draft.questions.last.prefillPolicy, 'never');
-    expect(draft.mappingJson.last['questionId'], draft.questions.last.questionId);
+    expect(
+      draft.mappingJson.last['questionId'],
+      draft.questions.last.questionId,
+    );
     expect(draft.rowJson.single['values'], [
       'Ada Lovelace',
       '+44 7700 900123',
@@ -62,6 +62,43 @@ void main() {
     expect(draft.questions[1].canonicalFieldId, 'familyName');
     expect(draft.questions[2].canonicalFieldId, 'email');
     expect(draft.questions[0].required, isTrue);
+  });
+
+  test('uses the canonical catalog for aliases and newer profile fields', () {
+    final draft = buildHostApplicationImportDraft(
+      _table(
+        headers: const [
+          'Your name',
+          'Birth date',
+          'WhatsApp Number',
+          'Workout frequency',
+          'Dietary preference',
+          'Kids',
+        ],
+        rows: const [
+          [
+            'Grace Hopper',
+            '1906-12-09',
+            '+1 202 555 0100',
+            'Weekly',
+            'Vegetarian',
+            'No',
+          ],
+        ],
+      ),
+    );
+
+    expect(draft.questions.map((question) => question.canonicalFieldId), [
+      'displayName',
+      'dateOfBirth',
+      'phoneNumber',
+      'workout',
+      'diet',
+      'children',
+    ]);
+    expect(draft.questions[1].kind, 'date');
+    expect(draft.questions[3].kind, 'shortText');
+    expect(draft.questions[3].transform, 'trim');
   });
 
   test('requires a recognizable applicant name for the review queue', () {

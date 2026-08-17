@@ -1,7 +1,7 @@
 ---
 doc_id: schema_contracts
-version: 0.2.10
-updated: 2026-07-14
+version: 0.3.0
+updated: 2026-08-17
 owner: data_contracts
 status: active
 ---
@@ -100,8 +100,8 @@ Schema:
   timestamp, enum, id, money, and location shapes.
 - `embedded/`: reusable embedded object schemas such as prompt answers and
   `ProfilePhoto` storage metadata.
-- `catalogs/`: product catalogs referenced by schemas, currently profile and
-  photo prompt definitions.
+- `catalogs/`: product catalogs referenced by schemas, including the canonical
+  person-field registry plus profile, photo-prompt, and presentation catalogs.
 - `callables/`: callable Function request payload schemas.
 - `callable_responses/`: callable Function response payload schemas decoded by
   typed Flutter response objects.
@@ -139,7 +139,7 @@ The current contract layer covers:
 - embedded photo prompt answers;
 - embedded `ProfilePhoto` storage metadata objects;
 - embedded activity preference objects, currently `activityPreferences.running`;
-- profile and photo prompt catalogs;
+- person-field, profile, and photo prompt catalogs;
 - event, event-success, club, relationship, social, payment, safety,
   operational, and demo Firestore document contracts;
 - durable operations contracts with valid/invalid lifecycle fixtures;

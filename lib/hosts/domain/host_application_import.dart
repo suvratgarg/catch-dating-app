@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:catch_dating_app/core/schema_contracts/generated/profile_schema_contracts.g.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:crypto/crypto.dart';
 
@@ -112,27 +113,30 @@ HostApplicationImportDraft buildHostApplicationImportDraft(
   final questions = <HostApplicationImportQuestion>[];
   for (var index = 0; index < table.headers.length; index += 1) {
     final header = table.headers[index];
-    var canonicalFieldId = _canonicalFieldForHeader(_normalize(header));
+    var canonicalFieldId = schemaPersonFieldIdForNormalizedAlias(
+      _normalize(header),
+    );
     if (canonicalFieldId != null && !canonicalIds.add(canonicalFieldId)) {
       canonicalFieldId = null;
     }
+    final field = canonicalFieldId == null
+        ? null
+        : schemaPersonFieldForId(canonicalFieldId);
     final key = _uniqueKey(header, index, usedKeys);
     questions.add(
       HostApplicationImportQuestion(
         questionId: 'q${index + 1}_$key',
         key: key,
         label: header,
-        kind: _questionKind(canonicalFieldId),
+        kind: _tabularQuestionKind(field),
         required:
             canonicalFieldId == 'displayName' ||
             canonicalFieldId == 'givenName',
         canonicalFieldId: canonicalFieldId,
-        privacyClass: _privacyClass(canonicalFieldId),
-        prefillPolicy: canonicalFieldId == null
-            ? 'never'
-            : 'participantReviewRequired',
-        hostPresentation: _hostPresentation(canonicalFieldId),
-        transform: _transform(canonicalFieldId),
+        privacyClass: field?.privacyClass ?? 'organizerCustom',
+        prefillPolicy: field?.prefillPolicy ?? 'never',
+        hostPresentation: field?.hostPresentation ?? 'filterable',
+        transform: _tabularTransform(field),
       ),
     );
   }
@@ -201,89 +205,20 @@ String _titleFromFileName(String value) {
 String _normalize(String value) =>
     value.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
 
-String? _canonicalFieldForHeader(String value) => const {
-  'firstname': 'givenName',
-  'givenname': 'givenName',
-  'lastname': 'familyName',
-  'surname': 'familyName',
-  'name': 'displayName',
-  'fullname': 'displayName',
-  'yourname': 'displayName',
-  'dob': 'dateOfBirth',
-  'dateofbirth': 'dateOfBirth',
-  'birthdate': 'dateOfBirth',
-  'age': 'age',
-  'gender': 'gender',
-  'phone': 'phoneNumber',
-  'phonenumber': 'phoneNumber',
-  'mobile': 'phoneNumber',
-  'mobilenumber': 'phoneNumber',
-  'whatsapp': 'phoneNumber',
-  'whatsappnumber': 'phoneNumber',
-  'email': 'email',
-  'emailaddress': 'email',
-  'instagram': 'instagramHandle',
-  'instagramhandle': 'instagramHandle',
-  'instagramprofile': 'instagramHandle',
-  'linkedin': 'linkedinUrl',
-  'linkedinurl': 'linkedinUrl',
-  'linkedinprofile': 'linkedinUrl',
-  'photo': 'profilePhoto',
-  'profilephoto': 'profilePhoto',
-  'uploadaphoto': 'profilePhoto',
-  'city': 'city',
-  'height': 'heightCm',
-  'heightcm': 'heightCm',
-  'occupation': 'occupation',
-  'job': 'occupation',
-  'company': 'company',
-  'education': 'education',
-  'languages': 'languages',
-  'lookingfor': 'relationshipGoal',
-  'whatareyoulookingfor': 'relationshipGoal',
-  'relationshipgoal': 'relationshipGoal',
-  'interestedin': 'interestedInGenders',
-  'drinking': 'drinking',
-  'smoking': 'smoking',
-  'religion': 'religion',
-}[value];
+String _tabularQuestionKind(SchemaPersonFieldDefinition? field) {
+  if (field == null ||
+      field.questionKind == 'singleChoice' ||
+      field.questionKind == 'multiChoice') {
+    return 'shortText';
+  }
+  return field.questionKind;
+}
 
-String _questionKind(String? field) => switch (field) {
-  'dateOfBirth' => 'date',
-  'age' || 'heightCm' => 'number',
-  'phoneNumber' => 'phone',
-  'email' => 'email',
-  'linkedinUrl' => 'url',
-  'profilePhoto' => 'file',
-  _ => 'shortText',
-};
-
-String _transform(String? field) => switch (field) {
-  'dateOfBirth' => 'isoDate',
-  'age' || 'heightCm' => 'number',
-  'phoneNumber' => 'e164',
-  'profilePhoto' || 'linkedinUrl' => 'assetUrl',
-  _ => 'trim',
-};
-
-String _privacyClass(String? field) => switch (field) {
-  null => 'organizerCustom',
-  'displayName' ||
-  'givenName' ||
-  'familyName' ||
-  'phoneNumber' ||
-  'email' => 'contact',
-  'dateOfBirth' ||
-  'age' ||
-  'gender' ||
-  'relationshipGoal' ||
-  'interestedInGenders' ||
-  'religion' => 'sensitive',
-  _ => 'profile',
-};
-
-String _hostPresentation(String? field) => switch (field) {
-  'displayName' || 'givenName' || 'familyName' => 'sortable',
-  null => 'filterable',
-  _ => 'detailOnly',
-};
+String _tabularTransform(SchemaPersonFieldDefinition? field) {
+  if (field == null ||
+      field.questionKind == 'singleChoice' ||
+      field.questionKind == 'multiChoice') {
+    return 'trim';
+  }
+  return field.transform;
+}

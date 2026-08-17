@@ -20721,7 +20721,7 @@ abstract final class CatchContractConstraints {
   static const getOrganizerApplicationDetailCallableResponseAnswersItemsCanonicalFieldId = CatchContractFieldConstraints(
     path: 'getOrganizerApplicationDetailCallableResponse.answers.items.canonicalFieldId',
     valueTypes: <String>['string'],
-    enumValues: <String>['givenName', 'familyName', 'displayName', 'dateOfBirth', 'age', 'gender', 'phoneNumber', 'email', 'instagramHandle', 'linkedinUrl', 'profilePhoto', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'interestedInGenders', 'drinking', 'smoking', 'religion'],
+    enumValues: <String>['givenName', 'familyName', 'displayName', 'dateOfBirth', 'age', 'gender', 'phoneNumber', 'email', 'instagramHandle', 'linkedinUrl', 'profilePhoto', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'interestedInGenders', 'drinking', 'smoking', 'religion', 'workout', 'diet', 'children'],
   );
 
   static const getOrganizerApplicationDetailCallableResponseAnswersItemsHostPresentation = CatchContractFieldConstraints(
@@ -27766,7 +27766,7 @@ abstract final class CatchContractConstraints {
   static const organizerApplicationFormVersionDocumentQuestionsItemsCanonicalFieldId = CatchContractFieldConstraints(
     path: 'organizerApplicationFormVersionDocument.questions.items.canonicalFieldId',
     valueTypes: <String>['string'],
-    enumValues: <String>['givenName', 'familyName', 'displayName', 'dateOfBirth', 'age', 'gender', 'phoneNumber', 'email', 'instagramHandle', 'linkedinUrl', 'profilePhoto', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'interestedInGenders', 'drinking', 'smoking', 'religion'],
+    enumValues: <String>['givenName', 'familyName', 'displayName', 'dateOfBirth', 'age', 'gender', 'phoneNumber', 'email', 'instagramHandle', 'linkedinUrl', 'profilePhoto', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'interestedInGenders', 'drinking', 'smoking', 'religion', 'workout', 'diet', 'children'],
   );
 
   static const organizerApplicationFormVersionDocumentQuestionsItemsHelpText = CatchContractFieldConstraints(
@@ -28067,7 +28067,7 @@ abstract final class CatchContractConstraints {
   static const organizerApplicationResponseDocumentAnswersItemsCanonicalFieldId = CatchContractFieldConstraints(
     path: 'organizerApplicationResponseDocument.answers.items.canonicalFieldId',
     valueTypes: <String>['string'],
-    enumValues: <String>['givenName', 'familyName', 'displayName', 'dateOfBirth', 'age', 'gender', 'phoneNumber', 'email', 'instagramHandle', 'linkedinUrl', 'profilePhoto', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'interestedInGenders', 'drinking', 'smoking', 'religion'],
+    enumValues: <String>['givenName', 'familyName', 'displayName', 'dateOfBirth', 'age', 'gender', 'phoneNumber', 'email', 'instagramHandle', 'linkedinUrl', 'profilePhoto', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'interestedInGenders', 'drinking', 'smoking', 'religion', 'workout', 'diet', 'children'],
   );
 
   static const organizerApplicationResponseDocumentAnswersItemsHostPresentation = CatchContractFieldConstraints(
@@ -36689,7 +36689,7 @@ abstract final class CatchContractConstraints {
     path: 'participantIntakeProfileDocument.fields.items.canonicalFieldId',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['givenName', 'familyName', 'displayName', 'dateOfBirth', 'age', 'gender', 'phoneNumber', 'email', 'instagramHandle', 'linkedinUrl', 'profilePhoto', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'interestedInGenders', 'drinking', 'smoking', 'religion'],
+    enumValues: <String>['givenName', 'familyName', 'displayName', 'dateOfBirth', 'age', 'gender', 'phoneNumber', 'email', 'instagramHandle', 'linkedinUrl', 'profilePhoto', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'interestedInGenders', 'drinking', 'smoking', 'religion', 'workout', 'diet', 'children'],
   );
 
   static const participantIntakeProfileDocumentFieldsItemsReviewedByParticipantAtNanoseconds = CatchContractFieldConstraints(
@@ -36863,7 +36863,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['givenName', 'familyName', 'displayName', 'dateOfBirth', 'age', 'gender', 'phoneNumber', 'email', 'instagramHandle', 'linkedinUrl', 'profilePhoto', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'interestedInGenders', 'drinking', 'smoking', 'religion'],
+    itemEnumValues: <String>['givenName', 'familyName', 'displayName', 'dateOfBirth', 'age', 'gender', 'phoneNumber', 'email', 'instagramHandle', 'linkedinUrl', 'profilePhoto', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'interestedInGenders', 'drinking', 'smoking', 'religion', 'workout', 'diet', 'children'],
     maxItems: 40,
     uniqueItems: true,
   );
@@ -36872,7 +36872,7 @@ abstract final class CatchContractConstraints {
     path: 'participantOrganizerDataGrantDocument.grantedCanonicalFieldIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['givenName', 'familyName', 'displayName', 'dateOfBirth', 'age', 'gender', 'phoneNumber', 'email', 'instagramHandle', 'linkedinUrl', 'profilePhoto', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'interestedInGenders', 'drinking', 'smoking', 'religion'],
+    enumValues: <String>['givenName', 'familyName', 'displayName', 'dateOfBirth', 'age', 'gender', 'phoneNumber', 'email', 'instagramHandle', 'linkedinUrl', 'profilePhoto', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'interestedInGenders', 'drinking', 'smoking', 'religion', 'workout', 'diet', 'children'],
   );
 
   static const participantOrganizerDataGrantDocumentGrantedQuestionIds = CatchContractFieldConstraints(
@@ -38534,7 +38534,7 @@ abstract final class CatchContractConstraints {
   static const publishOrganizerApplicationFormCallablePayloadQuestionsItemsCanonicalFieldId = CatchContractFieldConstraints(
     path: 'publishOrganizerApplicationFormCallablePayload.questions.items.canonicalFieldId',
     valueTypes: <String>['string'],
-    enumValues: <String>['givenName', 'familyName', 'displayName', 'dateOfBirth', 'age', 'gender', 'phoneNumber', 'email', 'instagramHandle', 'linkedinUrl', 'profilePhoto', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'interestedInGenders', 'drinking', 'smoking', 'religion'],
+    enumValues: <String>['givenName', 'familyName', 'displayName', 'dateOfBirth', 'age', 'gender', 'phoneNumber', 'email', 'instagramHandle', 'linkedinUrl', 'profilePhoto', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'interestedInGenders', 'drinking', 'smoking', 'religion', 'workout', 'diet', 'children'],
   );
 
   static const publishOrganizerApplicationFormCallablePayloadQuestionsItemsHelpText = CatchContractFieldConstraints(

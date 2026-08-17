@@ -161,6 +161,7 @@ const schemaOrganizerApplicationFormVersionDocumentSchema = <String, Object?>{
             'anyOf': <Object?>[
               <String, Object?>{
                 'type': 'string',
+                'x-catch-catalog': '../catalogs/person_fields.json',
                 'enum': <Object?>[
                   'givenName',
                   'familyName',
@@ -184,6 +185,9 @@ const schemaOrganizerApplicationFormVersionDocumentSchema = <String, Object?>{
                   'drinking',
                   'smoking',
                   'religion',
+                  'workout',
+                  'diet',
+                  'children',
                 ],
               },
               <String, Object?>{
