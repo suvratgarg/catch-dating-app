@@ -222,7 +222,7 @@ abstract final class EventSuccessPlaybookLibrary {
         hostInstruction:
             'Assign mixed teams and name one lightweight role per person.',
         attendeeExperience: 'Join a table with a reason to contribute.',
-        moduleIds: ['qr_check_in', 'micro_pods', 'live_reveal'],
+        moduleIds: ['qr_check_in', 'live_reveal'],
       ),
       EventRunOfShowStep(
         stage: EventSuccessStage.activity,

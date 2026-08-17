@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/events/domain/event_draft.dart';
+import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -17,6 +18,7 @@ void main() {
           customActivityLabel: 'Salsa night',
           interactionModel: 'pairedRotations',
           paceName: 'easy',
+          routePlan: RouteEventPlan.hostedWalk.toJson(),
           meetingPoint: 'Bandra Fort',
           locationDetails: 'Near the gate',
           startingPointLat: 19.0596,
@@ -45,6 +47,10 @@ void main() {
         expect(restored.customActivityLabel, 'Salsa night');
         expect(restored.interactionModel, 'pairedRotations');
         expect(restored.paceName, 'easy');
+        expect(
+          RouteEventPlan.tryFromJson(restored.routePlan),
+          RouteEventPlan.hostedWalk,
+        );
         expect(restored.meetingPoint, 'Bandra Fort');
         expect(restored.locationDetails, 'Near the gate');
         expect(restored.startingPointLat, 19.0596);
@@ -138,6 +144,17 @@ void main() {
         expect(draft.isEmpty, isTrue);
       });
 
+      test('treats the default social run route plan as empty', () {
+        final draft = EventDraft(
+          id: 'draft-1',
+          clubId: 'club-1',
+          savedAt: DateTime.now(),
+          activityKind: 'socialRun',
+          routePlan: RouteEventPlan.socialRun.toJson(),
+        );
+        expect(draft.isEmpty, isTrue);
+      });
+
       test('returns false when a non-default activity is selected', () {
         final draft = EventDraft(
           id: 'draft-1',
@@ -156,6 +173,16 @@ void main() {
           activityKind: 'openActivity',
           customActivityLabel: 'Salsa night',
           interactionModel: 'pairedRotations',
+        );
+        expect(draft.isEmpty, isFalse);
+      });
+
+      test('returns false when route operations are configured', () {
+        final draft = EventDraft(
+          id: 'draft-route',
+          clubId: 'club-1',
+          savedAt: DateTime.now(),
+          routePlan: RouteEventPlan.socialWalk.toJson(),
         );
         expect(draft.isEmpty, isFalse);
       });

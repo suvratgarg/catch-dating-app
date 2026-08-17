@@ -3354,6 +3354,146 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsEventDetailsStepLabelActivityType => 'Activity type';
 
   @override
+  String get hostsEventDetailsStepFormatPackTitle => 'Catch prepares';
+
+  @override
+  String get hostsEventDetailsStepFormatPackPacePods =>
+      'Pace pods · timed legs · finish sweep';
+
+  @override
+  String get hostsEventDetailsStepFormatPackPairedRotations =>
+      'Pair assignments · timed rounds · ranked outcomes';
+
+  @override
+  String get hostsEventDetailsStepFormatPackTeamRotations =>
+      'Teams · points by round · standings reveal';
+
+  @override
+  String get hostsEventDetailsStepFormatPackSeatedTable =>
+      'Tables · course pacing · guided prompts';
+
+  @override
+  String get hostsEventDetailsStepFormatPackFreeFormMixer =>
+      'Social groups · guided rounds · reveal moments';
+
+  @override
+  String get hostsEventDetailsStepFormatPackHostLedProgram =>
+      'Host run-of-show · live prompts · event recap';
+
+  @override
+  String get hostsEventDetailsStepFormatPackOpenFormat =>
+      'Flexible run-of-show · optional groups · event recap';
+
+  @override
+  String get hostsRouteEventPlanSectionTitle => 'Route plan';
+
+  @override
+  String get hostsRouteEventPlanOptInTitle => 'Route-based event';
+
+  @override
+  String get hostsRouteEventPlanOptInBody =>
+      'Plan how people move, stop, and stay accounted for.';
+
+  @override
+  String get hostsRouteEventPlanSummaryTitle => 'Route operations';
+
+  @override
+  String get hostsRouteEventPlanMovementTitle => 'Movement';
+
+  @override
+  String get hostsRouteEventPlanMovementRun => 'Run';
+
+  @override
+  String get hostsRouteEventPlanMovementWalk => 'Walk';
+
+  @override
+  String get hostsRouteEventPlanMovementRide => 'Ride';
+
+  @override
+  String get hostsRouteEventPlanMovementMixed => 'Mixed';
+
+  @override
+  String get hostsRouteEventPlanShapeTitle => 'Route shape';
+
+  @override
+  String get hostsRouteEventPlanShapeLoop => 'Loop';
+
+  @override
+  String get hostsRouteEventPlanShapeOutAndBack => 'Out and back';
+
+  @override
+  String get hostsRouteEventPlanShapePointToPoint => 'Point to point';
+
+  @override
+  String get hostsRouteEventPlanGroupTitle => 'Group movement';
+
+  @override
+  String get hostsRouteEventPlanGroupTogether => 'One group';
+
+  @override
+  String get hostsRouteEventPlanGroupPaceGroups => 'Pace groups';
+
+  @override
+  String get hostsRouteEventPlanGroupSelfDirected => 'Self-directed';
+
+  @override
+  String get hostsRouteEventPlanCadenceTitle => 'Stop rhythm';
+
+  @override
+  String get hostsRouteEventPlanCadenceContinuous => 'Continuous';
+
+  @override
+  String get hostsRouteEventPlanCadenceFlexible => 'Flexible stops';
+
+  @override
+  String get hostsRouteEventPlanCadenceHosted => 'Hosted stops';
+
+  @override
+  String get hostsRouteEventPlanStopsTitle => 'Stops to prepare';
+
+  @override
+  String get hostsRouteEventPlanStopWater => 'Water';
+
+  @override
+  String get hostsRouteEventPlanStopRegroup => 'Regroup point';
+
+  @override
+  String get hostsRouteEventPlanStopVenue => 'Venue';
+
+  @override
+  String get hostsRouteEventPlanStopPhoto => 'Photo spot';
+
+  @override
+  String get hostsRouteEventPlanStopViewpoint => 'Viewpoint';
+
+  @override
+  String get hostsRouteEventPlanStopHazard => 'Hazard';
+
+  @override
+  String get hostsRouteEventPlanStopTurnaround => 'Turnaround';
+
+  @override
+  String get hostsRouteEventPlanRolesTitle => 'Route roles';
+
+  @override
+  String get hostsRouteEventPlanRoleLead => 'Route lead';
+
+  @override
+  String get hostsRouteEventPlanRoleSweep => 'Sweep';
+
+  @override
+  String get hostsRouteEventPlanRolePacer => 'Pacer';
+
+  @override
+  String get hostsRouteEventPlanRoleStopHost => 'Stop host';
+
+  @override
+  String get hostsRouteEventPlanRoleMarshal => 'Marshal';
+
+  @override
+  String get hostsRouteEventPlanRolePhotographer => 'Photographer';
+
+  @override
   String get hostsEventDetailsStepLabelFormatStructure => 'Format structure';
 
   @override
@@ -12698,6 +12838,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventSuccessLiveControlEmptyUnitsMessage =>
       'Generate the live units before recording outcomes.';
+
+  @override
+  String get eventSuccessLiveControlEmptyScoreTeamsMessage =>
+      'Check in guests and give each team an arrival group before recording points.';
 
   @override
   String get eventSuccessLiveControlSaveRoundLabel => 'Save round for reveal';

@@ -2,6 +2,7 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
+import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_location_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_schedule_state.dart';
@@ -18,6 +19,7 @@ class CreateEventDraftRestoreState {
     required this.customActivityLabelText,
     required this.interactionModel,
     required this.pace,
+    required this.routePlan,
     required this.meetingPointText,
     required this.locationDetailsText,
     required this.locationState,
@@ -72,6 +74,9 @@ class CreateEventDraftRestoreState {
         fallback: activityKind.defaultInteractionModel,
       ),
       pace: paceFromName(draft.paceName),
+      routePlan:
+          RouteEventPlan.tryFromJson(draft.routePlan) ??
+          RouteEventPlan.defaultForActivity(activityKind),
       meetingPointText: draft.meetingPoint,
       locationDetailsText: draft.locationDetails,
       locationState: CreateEventLocationState(
@@ -120,6 +125,7 @@ class CreateEventDraftRestoreState {
   final String customActivityLabelText;
   final EventInteractionModel interactionModel;
   final PaceLevel? pace;
+  final RouteEventPlan? routePlan;
   final String? meetingPointText;
   final String? locationDetailsText;
   final CreateEventLocationState locationState;

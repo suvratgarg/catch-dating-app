@@ -5834,6 +5834,270 @@ abstract class AppLocalizations {
   /// **'Activity type'**
   String get hostsEventDetailsStepLabelActivityType;
 
+  /// Labels the operational runbook automatically selected from an event type.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch prepares'**
+  String get hostsEventDetailsStepFormatPackTitle;
+
+  /// Summarizes the pace-pod event format pack.
+  ///
+  /// In en, this message translates to:
+  /// **'Pace pods · timed legs · finish sweep'**
+  String get hostsEventDetailsStepFormatPackPacePods;
+
+  /// Summarizes the paired-rotation event format pack.
+  ///
+  /// In en, this message translates to:
+  /// **'Pair assignments · timed rounds · ranked outcomes'**
+  String get hostsEventDetailsStepFormatPackPairedRotations;
+
+  /// Summarizes the team-rotation event format pack.
+  ///
+  /// In en, this message translates to:
+  /// **'Teams · points by round · standings reveal'**
+  String get hostsEventDetailsStepFormatPackTeamRotations;
+
+  /// Summarizes the seated-table event format pack.
+  ///
+  /// In en, this message translates to:
+  /// **'Tables · course pacing · guided prompts'**
+  String get hostsEventDetailsStepFormatPackSeatedTable;
+
+  /// Summarizes the free-form mixer event format pack.
+  ///
+  /// In en, this message translates to:
+  /// **'Social groups · guided rounds · reveal moments'**
+  String get hostsEventDetailsStepFormatPackFreeFormMixer;
+
+  /// Summarizes the host-led event format pack.
+  ///
+  /// In en, this message translates to:
+  /// **'Host run-of-show · live prompts · event recap'**
+  String get hostsEventDetailsStepFormatPackHostLedProgram;
+
+  /// Summarizes the open event format pack.
+  ///
+  /// In en, this message translates to:
+  /// **'Flexible run-of-show · optional groups · event recap'**
+  String get hostsEventDetailsStepFormatPackOpenFormat;
+
+  /// Labels the composable route operations section.
+  ///
+  /// In en, this message translates to:
+  /// **'Route plan'**
+  String get hostsRouteEventPlanSectionTitle;
+
+  /// Lets a custom event opt into route operations.
+  ///
+  /// In en, this message translates to:
+  /// **'Route-based event'**
+  String get hostsRouteEventPlanOptInTitle;
+
+  /// Explains what enabling route operations adds.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan how people move, stop, and stay accounted for.'**
+  String get hostsRouteEventPlanOptInBody;
+
+  /// Labels the selected route operations preset.
+  ///
+  /// In en, this message translates to:
+  /// **'Route operations'**
+  String get hostsRouteEventPlanSummaryTitle;
+
+  /// Labels how attendees move through a route.
+  ///
+  /// In en, this message translates to:
+  /// **'Movement'**
+  String get hostsRouteEventPlanMovementTitle;
+
+  /// Route movement option for running.
+  ///
+  /// In en, this message translates to:
+  /// **'Run'**
+  String get hostsRouteEventPlanMovementRun;
+
+  /// Route movement option for walking.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk'**
+  String get hostsRouteEventPlanMovementWalk;
+
+  /// Route movement option for riding.
+  ///
+  /// In en, this message translates to:
+  /// **'Ride'**
+  String get hostsRouteEventPlanMovementRide;
+
+  /// Route movement option for mixed movement modes.
+  ///
+  /// In en, this message translates to:
+  /// **'Mixed'**
+  String get hostsRouteEventPlanMovementMixed;
+
+  /// Labels the route shape choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Route shape'**
+  String get hostsRouteEventPlanShapeTitle;
+
+  /// Route shape option that returns to its start.
+  ///
+  /// In en, this message translates to:
+  /// **'Loop'**
+  String get hostsRouteEventPlanShapeLoop;
+
+  /// Route shape option that retraces the outward route.
+  ///
+  /// In en, this message translates to:
+  /// **'Out and back'**
+  String get hostsRouteEventPlanShapeOutAndBack;
+
+  /// Route shape option with different start and finish points.
+  ///
+  /// In en, this message translates to:
+  /// **'Point to point'**
+  String get hostsRouteEventPlanShapePointToPoint;
+
+  /// Labels how attendees are grouped along the route.
+  ///
+  /// In en, this message translates to:
+  /// **'Group movement'**
+  String get hostsRouteEventPlanGroupTitle;
+
+  /// Route grouping option where everyone moves together.
+  ///
+  /// In en, this message translates to:
+  /// **'One group'**
+  String get hostsRouteEventPlanGroupTogether;
+
+  /// Route grouping option for multiple pace groups.
+  ///
+  /// In en, this message translates to:
+  /// **'Pace groups'**
+  String get hostsRouteEventPlanGroupPaceGroups;
+
+  /// Route grouping option where attendees navigate independently.
+  ///
+  /// In en, this message translates to:
+  /// **'Self-directed'**
+  String get hostsRouteEventPlanGroupSelfDirected;
+
+  /// Labels how stops are operated along the route.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop rhythm'**
+  String get hostsRouteEventPlanCadenceTitle;
+
+  /// Route cadence option with minimal planned stops.
+  ///
+  /// In en, this message translates to:
+  /// **'Continuous'**
+  String get hostsRouteEventPlanCadenceContinuous;
+
+  /// Route cadence option with stops taken as needed.
+  ///
+  /// In en, this message translates to:
+  /// **'Flexible stops'**
+  String get hostsRouteEventPlanCadenceFlexible;
+
+  /// Route cadence option with actively operated stops.
+  ///
+  /// In en, this message translates to:
+  /// **'Hosted stops'**
+  String get hostsRouteEventPlanCadenceHosted;
+
+  /// Labels the route stop types a host plans to prepare.
+  ///
+  /// In en, this message translates to:
+  /// **'Stops to prepare'**
+  String get hostsRouteEventPlanStopsTitle;
+
+  /// Water route stop option.
+  ///
+  /// In en, this message translates to:
+  /// **'Water'**
+  String get hostsRouteEventPlanStopWater;
+
+  /// Route stop option where attendees regroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Regroup point'**
+  String get hostsRouteEventPlanStopRegroup;
+
+  /// Hosted venue route stop option.
+  ///
+  /// In en, this message translates to:
+  /// **'Venue'**
+  String get hostsRouteEventPlanStopVenue;
+
+  /// Photography route stop option.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo spot'**
+  String get hostsRouteEventPlanStopPhoto;
+
+  /// Scenic viewpoint route stop option.
+  ///
+  /// In en, this message translates to:
+  /// **'Viewpoint'**
+  String get hostsRouteEventPlanStopViewpoint;
+
+  /// Route hazard marker option.
+  ///
+  /// In en, this message translates to:
+  /// **'Hazard'**
+  String get hostsRouteEventPlanStopHazard;
+
+  /// Route turnaround marker option.
+  ///
+  /// In en, this message translates to:
+  /// **'Turnaround'**
+  String get hostsRouteEventPlanStopTurnaround;
+
+  /// Labels the operational roles assigned along a route.
+  ///
+  /// In en, this message translates to:
+  /// **'Route roles'**
+  String get hostsRouteEventPlanRolesTitle;
+
+  /// Role responsible for leading attendees on the route.
+  ///
+  /// In en, this message translates to:
+  /// **'Route lead'**
+  String get hostsRouteEventPlanRoleLead;
+
+  /// Role responsible for accounting for the back of a group.
+  ///
+  /// In en, this message translates to:
+  /// **'Sweep'**
+  String get hostsRouteEventPlanRoleSweep;
+
+  /// Role responsible for maintaining a route pace.
+  ///
+  /// In en, this message translates to:
+  /// **'Pacer'**
+  String get hostsRouteEventPlanRolePacer;
+
+  /// Role responsible for operating a route stop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop host'**
+  String get hostsRouteEventPlanRoleStopHost;
+
+  /// Role responsible for route safety or crossings.
+  ///
+  /// In en, this message translates to:
+  /// **'Marshal'**
+  String get hostsRouteEventPlanRoleMarshal;
+
+  /// Role responsible for photographing the route event.
+  ///
+  /// In en, this message translates to:
+  /// **'Photographer'**
+  String get hostsRouteEventPlanRolePhotographer;
+
   /// Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (label).
   ///
   /// In en, this message translates to:
@@ -19764,6 +20028,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Generate the live units before recording outcomes.'**
   String get eventSuccessLiveControlEmptyUnitsMessage;
+
+  /// Explains how quiz teams become scoreable units.
+  ///
+  /// In en, this message translates to:
+  /// **'Check in guests and give each team an arrival group before recording points.'**
+  String get eventSuccessLiveControlEmptyScoreTeamsMessage;
 
   /// Saves the current round outcomes for a later reveal.
   ///

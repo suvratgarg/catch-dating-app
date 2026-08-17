@@ -66,6 +66,7 @@ class EventSuccessActivityProfile {
       interactionModel,
       compatibilityPolicy,
       assignmentResolution,
+      unitOutcome,
     );
     final reasons = _reasonsFor(interactionModel);
     final recommendations = <EventSuccessModuleRecommendation>[

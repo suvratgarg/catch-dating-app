@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
+import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 
 class CreateEventDraftSnapshot {
   const CreateEventDraftSnapshot({
@@ -11,6 +12,7 @@ class CreateEventDraftSnapshot {
     required this.customActivityLabel,
     required this.interactionModel,
     required this.paceName,
+    this.routePlan,
     required this.meetingPoint,
     required this.locationDetails,
     required this.meetingLocationAddress,
@@ -46,6 +48,7 @@ class CreateEventDraftSnapshot {
   final String? customActivityLabel;
   final String? interactionModel;
   final String? paceName;
+  final RouteEventPlan? routePlan;
   final String? meetingPoint;
   final String? locationDetails;
   final String? meetingLocationAddress;
@@ -81,6 +84,7 @@ class CreateEventDraftSnapshot {
     customActivityLabel: customActivityLabel,
     interactionModel: interactionModel,
     paceName: paceName,
+    routePlan: routePlan,
     meetingPoint: meetingPoint,
     locationDetails: locationDetails,
     meetingLocationAddress: meetingLocationAddress,
@@ -125,6 +129,7 @@ class CreateEventDraftSnapshot {
       customActivityLabel: customActivityLabel,
       interactionModel: interactionModel,
       paceName: paceName,
+      routePlan: routePlan?.toJson(),
       meetingPoint: meetingPoint,
       locationDetails: locationDetails,
       meetingLocationAddress: meetingLocationAddress,

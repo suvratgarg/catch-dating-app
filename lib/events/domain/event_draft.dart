@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/business_rules.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
+import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'event_draft.freezed.dart';
@@ -23,6 +24,7 @@ abstract class EventDraft with _$EventDraft {
     String? customActivityLabel,
     String? interactionModel,
     String? paceName,
+    Map<String, dynamic>? routePlan,
     // Where step
     String? meetingPoint,
     String? locationDetails,
@@ -74,6 +76,7 @@ extension EventDraftX on EventDraft {
       customActivityLabel == null &&
       interactionModel == null &&
       paceName == null &&
+      _routePlanIsDefault &&
       meetingPoint == null &&
       locationDetails == null &&
       meetingLocationAddress == null &&
@@ -97,6 +100,16 @@ extension EventDraftX on EventDraft {
       crossPathsPairInventoryEnabled == false &&
       crossPathsPairCapacity == null &&
       eventSuccessDefaults == const EventSuccessDefaults();
+
+  bool get _routePlanIsDefault {
+    if (routePlan == null) return true;
+    final activity = ActivityKind.values.firstWhere(
+      (value) => value.name == activityKind,
+      orElse: () => ActivityKind.socialRun,
+    );
+    return RouteEventPlan.tryFromJson(routePlan) ==
+        RouteEventPlan.defaultForActivity(activity);
+  }
 
   String get summary {
     final parts = <String>[];

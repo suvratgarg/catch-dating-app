@@ -219,7 +219,7 @@ abstract final class EventSuccessPlaybookLibrary {
         hostInstruction:
             {{library.pubQuiz.hostInstruction.1}},
         attendeeExperience: {{library.pubQuiz.attendeeExperience.1}},
-        moduleIds: ['qr_check_in', 'micro_pods', 'live_reveal'],
+        moduleIds: ['qr_check_in', 'live_reveal'],
       ),
       EventRunOfShowStep(
         stage: EventSuccessStage.activity,

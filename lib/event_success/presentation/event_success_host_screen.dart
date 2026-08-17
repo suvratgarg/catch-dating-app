@@ -196,11 +196,13 @@ class _EventSuccessHostSectionState
               .watch(watchEventSuccessPresenceSummaryProvider(event.id))
               .whenData((summary) => summary)
         : const AsyncData<EventSuccessPresenceSummary?>(null);
-    final shouldLoadAccountability =
+    final shouldLoadOperationalAttendees =
         shouldLoadAssignments &&
-        eventSuccessProfile.accountability == EventSuccessAccountability.sweep;
+        (eventSuccessProfile.accountability ==
+                EventSuccessAccountability.sweep ||
+            unitOutcome == EventSuccessUnitOutcome.score);
     final AsyncValue<List<EventAttendee>> accountabilityAttendeesAsync =
-        shouldLoadAccountability
+        shouldLoadOperationalAttendees
         ? ref.watch(watchEventAttendeesProvider(event.id))
         : const AsyncData(<EventAttendee>[]);
     final AsyncValue<EventSuccessLayout?> spatialLayoutAsync =

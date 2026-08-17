@@ -6774,6 +6774,314 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
   },
+  "hostsEventDetailsStepFormatPackTitle": "Catch prepares",
+  "@hostsEventDetailsStepFormatPackTitle": {
+    "description": "Labels the operational runbook automatically selected from an event type.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepFormatPackPacePods": "Pace pods · timed legs · finish sweep",
+  "@hostsEventDetailsStepFormatPackPacePods": {
+    "description": "Summarizes the pace-pod event format pack.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepFormatPackPairedRotations": "Pair assignments · timed rounds · ranked outcomes",
+  "@hostsEventDetailsStepFormatPackPairedRotations": {
+    "description": "Summarizes the paired-rotation event format pack.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepFormatPackTeamRotations": "Teams · points by round · standings reveal",
+  "@hostsEventDetailsStepFormatPackTeamRotations": {
+    "description": "Summarizes the team-rotation event format pack.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepFormatPackSeatedTable": "Tables · course pacing · guided prompts",
+  "@hostsEventDetailsStepFormatPackSeatedTable": {
+    "description": "Summarizes the seated-table event format pack.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepFormatPackFreeFormMixer": "Social groups · guided rounds · reveal moments",
+  "@hostsEventDetailsStepFormatPackFreeFormMixer": {
+    "description": "Summarizes the free-form mixer event format pack.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepFormatPackHostLedProgram": "Host run-of-show · live prompts · event recap",
+  "@hostsEventDetailsStepFormatPackHostLedProgram": {
+    "description": "Summarizes the host-led event format pack.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepFormatPackOpenFormat": "Flexible run-of-show · optional groups · event recap",
+  "@hostsEventDetailsStepFormatPackOpenFormat": {
+    "description": "Summarizes the open event format pack.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsRouteEventPlanSectionTitle": "Route plan",
+  "@hostsRouteEventPlanSectionTitle": {
+    "description": "Labels the composable route operations section.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanOptInTitle": "Route-based event",
+  "@hostsRouteEventPlanOptInTitle": {
+    "description": "Lets a custom event opt into route operations.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanOptInBody": "Plan how people move, stop, and stay accounted for.",
+  "@hostsRouteEventPlanOptInBody": {
+    "description": "Explains what enabling route operations adds.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanSummaryTitle": "Route operations",
+  "@hostsRouteEventPlanSummaryTitle": {
+    "description": "Labels the selected route operations preset.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanMovementTitle": "Movement",
+  "@hostsRouteEventPlanMovementTitle": {
+    "description": "Labels how attendees move through a route.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanMovementRun": "Run",
+  "@hostsRouteEventPlanMovementRun": {
+    "description": "Route movement option for running.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanMovementWalk": "Walk",
+  "@hostsRouteEventPlanMovementWalk": {
+    "description": "Route movement option for walking.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanMovementRide": "Ride",
+  "@hostsRouteEventPlanMovementRide": {
+    "description": "Route movement option for riding.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanMovementMixed": "Mixed",
+  "@hostsRouteEventPlanMovementMixed": {
+    "description": "Route movement option for mixed movement modes.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanShapeTitle": "Route shape",
+  "@hostsRouteEventPlanShapeTitle": {
+    "description": "Labels the route shape choice.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanShapeLoop": "Loop",
+  "@hostsRouteEventPlanShapeLoop": {
+    "description": "Route shape option that returns to its start.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanShapeOutAndBack": "Out and back",
+  "@hostsRouteEventPlanShapeOutAndBack": {
+    "description": "Route shape option that retraces the outward route.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanShapePointToPoint": "Point to point",
+  "@hostsRouteEventPlanShapePointToPoint": {
+    "description": "Route shape option with different start and finish points.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanGroupTitle": "Group movement",
+  "@hostsRouteEventPlanGroupTitle": {
+    "description": "Labels how attendees are grouped along the route.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanGroupTogether": "One group",
+  "@hostsRouteEventPlanGroupTogether": {
+    "description": "Route grouping option where everyone moves together.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanGroupPaceGroups": "Pace groups",
+  "@hostsRouteEventPlanGroupPaceGroups": {
+    "description": "Route grouping option for multiple pace groups.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanGroupSelfDirected": "Self-directed",
+  "@hostsRouteEventPlanGroupSelfDirected": {
+    "description": "Route grouping option where attendees navigate independently.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanCadenceTitle": "Stop rhythm",
+  "@hostsRouteEventPlanCadenceTitle": {
+    "description": "Labels how stops are operated along the route.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanCadenceContinuous": "Continuous",
+  "@hostsRouteEventPlanCadenceContinuous": {
+    "description": "Route cadence option with minimal planned stops.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanCadenceFlexible": "Flexible stops",
+  "@hostsRouteEventPlanCadenceFlexible": {
+    "description": "Route cadence option with stops taken as needed.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanCadenceHosted": "Hosted stops",
+  "@hostsRouteEventPlanCadenceHosted": {
+    "description": "Route cadence option with actively operated stops.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanStopsTitle": "Stops to prepare",
+  "@hostsRouteEventPlanStopsTitle": {
+    "description": "Labels the route stop types a host plans to prepare.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanStopWater": "Water",
+  "@hostsRouteEventPlanStopWater": {
+    "description": "Water route stop option.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanStopRegroup": "Regroup point",
+  "@hostsRouteEventPlanStopRegroup": {
+    "description": "Route stop option where attendees regroup.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanStopVenue": "Venue",
+  "@hostsRouteEventPlanStopVenue": {
+    "description": "Hosted venue route stop option.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanStopPhoto": "Photo spot",
+  "@hostsRouteEventPlanStopPhoto": {
+    "description": "Photography route stop option.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanStopViewpoint": "Viewpoint",
+  "@hostsRouteEventPlanStopViewpoint": {
+    "description": "Scenic viewpoint route stop option.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanStopHazard": "Hazard",
+  "@hostsRouteEventPlanStopHazard": {
+    "description": "Route hazard marker option.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanStopTurnaround": "Turnaround",
+  "@hostsRouteEventPlanStopTurnaround": {
+    "description": "Route turnaround marker option.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanRolesTitle": "Route roles",
+  "@hostsRouteEventPlanRolesTitle": {
+    "description": "Labels the operational roles assigned along a route.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanRoleLead": "Route lead",
+  "@hostsRouteEventPlanRoleLead": {
+    "description": "Role responsible for leading attendees on the route.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanRoleSweep": "Sweep",
+  "@hostsRouteEventPlanRoleSweep": {
+    "description": "Role responsible for accounting for the back of a group.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanRolePacer": "Pacer",
+  "@hostsRouteEventPlanRolePacer": {
+    "description": "Role responsible for maintaining a route pace.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanRoleStopHost": "Stop host",
+  "@hostsRouteEventPlanRoleStopHost": {
+    "description": "Role responsible for operating a route stop.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanRoleMarshal": "Marshal",
+  "@hostsRouteEventPlanRoleMarshal": {
+    "description": "Role responsible for route safety or crossings.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
+  "hostsRouteEventPlanRolePhotographer": "Photographer",
+  "@hostsRouteEventPlanRolePhotographer": {
+    "description": "Role responsible for photographing the route event.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
+  },
   "hostsEventDetailsStepLabelFormatStructure": "Format structure",
   "@hostsEventDetailsStepLabelFormatStructure": {
     "description": "Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (label).",
@@ -20965,6 +21273,8 @@
   "@eventSuccessLiveControlScoreEntryInstructions": {"description": "Explains how the host records scored unit outcomes before reveal.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"},
   "eventSuccessLiveControlEmptyUnitsMessage": "Generate the live units before recording outcomes.",
   "@eventSuccessLiveControlEmptyUnitsMessage": {"description": "Explains why round outcomes cannot be recorded before units exist.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"},
+  "eventSuccessLiveControlEmptyScoreTeamsMessage": "Check in guests and give each team an arrival group before recording points.",
+  "@eventSuccessLiveControlEmptyScoreTeamsMessage": {"description": "Explains how quiz teams become scoreable units.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"},
   "eventSuccessLiveControlSaveRoundLabel": "Save round for reveal",
   "@eventSuccessLiveControlSaveRoundLabel": {"description": "Saves the current round outcomes for a later reveal.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"},
   "@eventSuccessLiveControlPublishRotationConfirmLabel": {"description": "Confirms an irreversible prepared rotation publication.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"},

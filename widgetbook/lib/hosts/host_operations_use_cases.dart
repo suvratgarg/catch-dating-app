@@ -49,6 +49,7 @@ import 'package:catch_dating_app/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
+import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
 import 'package:catch_dating_app/events/shared/attendance_sheet_view_model.dart';
@@ -5630,6 +5631,7 @@ class _EventDetailsStepFrameState extends State<_EventDetailsStepFrame> {
   late final TextEditingController _descriptionController;
   late ActivityKind _activityKind;
   late EventInteractionModel _interactionModel;
+  RouteEventPlan? _routePlan;
   PaceLevel? _pace = PaceLevel.easy;
 
   @override
@@ -5639,6 +5641,7 @@ class _EventDetailsStepFrameState extends State<_EventDetailsStepFrame> {
         ? ActivityKind.openActivity
         : ActivityKind.socialRun;
     _interactionModel = _activityKind.defaultInteractionModel;
+    _routePlan = RouteEventPlan.defaultForActivity(_activityKind);
     _distanceController = TextEditingController(text: '5');
     _customActivityLabelController = TextEditingController(text: 'Salsa mixer');
     _descriptionController = TextEditingController(
@@ -5670,12 +5673,15 @@ class _EventDetailsStepFrameState extends State<_EventDetailsStepFrame> {
       onActivityKindChanged: (activityKind) => setState(() {
         _activityKind = activityKind;
         _interactionModel = activityKind.defaultInteractionModel;
+        _routePlan = RouteEventPlan.defaultForActivity(activityKind);
       }),
       selectedInteractionModel: _interactionModel,
       onInteractionModelChanged: (model) =>
           setState(() => _interactionModel = model),
       selectedPace: _pace,
       onPaceChanged: (pace) => setState(() => _pace = pace),
+      routePlan: _routePlan,
+      onRoutePlanChanged: (plan) => setState(() => _routePlan = plan),
     );
   }
 }

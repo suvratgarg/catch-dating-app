@@ -27,6 +27,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
+import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
@@ -55,6 +56,8 @@ import '../test_pump_helpers.dart';
 import 'host_control_room_test_helpers.dart';
 
 part 'host_create_event_lifecycle_tests.dart';
+part 'host_create_event_format_tests.dart';
+part 'host_create_event_interaction_test_helpers.dart';
 
 void main() {
   group('CreateEventScreen', () {
@@ -118,6 +121,8 @@ void main() {
         );
       },
     );
+
+    runHostCreateEventFormatTests();
 
     testWidgets('route blocks users outside the club host team', (
       tester,
@@ -294,6 +299,10 @@ void main() {
         expect(fakeEventRepository.createdEvent!.capacityLimit, 18);
         expect(fakeEventRepository.createdEvent!.priceInPaise, 24950);
         expect(fakeEventRepository.createdEvent!.pace.name, 'moderate');
+        expect(
+          fakeEventRepository.createdEvent!.eventFormat.routePlan,
+          RouteEventPlan.socialRun,
+        );
         expect(fakeEventRepository.createdEvent!.constraints.minAge, 21);
         expect(fakeEventRepository.createdEvent!.constraints.maxAge, 35);
         expect(fakeEventRepository.createdEvent!.constraints.maxMen, isNull);
@@ -1540,34 +1549,6 @@ Future<void> _enterCreateEventText(
   await tester.enterText(textField, text);
   tester.testTextInput.hide();
   await tester.pump();
-}
-
-Future<void> _tapActivityKind(WidgetTester tester, String label) async {
-  await _openCatchField(tester, 'Activity type');
-  await _tapCreateEventChip(tester, label);
-}
-
-Future<void> _openCatchField(WidgetTester tester, String title) async {
-  final field = find.byWidgetPredicate(
-    (widget) => widget is CatchField && widget.title == title,
-  );
-  await Scrollable.ensureVisible(tester.element(field), alignment: 0.25);
-  await tester.pump();
-  await tester.tap(field);
-  await _pumpTestAnimation(tester);
-}
-
-Future<void> _tapCreateEventChip(WidgetTester tester, String label) async {
-  final finder = find
-      .byWidgetPredicate(
-        (widget) => widget is CatchFieldChoiceChip && widget.label == label,
-        description: 'selectable chip labeled $label',
-      )
-      .hitTestable();
-  await Scrollable.ensureVisible(tester.element(finder), alignment: 0.25);
-  await tester.pump();
-  await tester.tap(finder);
-  await _pumpTestAnimation(tester);
 }
 
 Future<void> _tapPrimaryButton(WidgetTester tester, String label) async {

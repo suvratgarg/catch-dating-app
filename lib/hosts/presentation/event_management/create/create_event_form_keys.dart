@@ -12,6 +12,14 @@ abstract final class CreateEventFormKeys {
   static const capacity = ValueKey('create-event-capacity-field');
   static const price = ValueKey('create-event-price-field');
   static const description = ValueKey('create-event-description-field');
+  static const routePlanEnabled = ValueKey('create-event-route-plan-enabled');
+  static const routePlanSummary = ValueKey('create-event-route-plan-summary');
+  static const routeMovement = ValueKey('create-event-route-movement');
+  static const routeShape = ValueKey('create-event-route-shape');
+  static const routeGroupStrategy = ValueKey('create-event-route-group');
+  static const routeStopCadence = ValueKey('create-event-route-stop-cadence');
+  static const routeStopKinds = ValueKey('create-event-route-stop-kinds');
+  static const routeRoleKinds = ValueKey('create-event-route-role-kinds');
   static const externalBookingProvider = ValueKey(
     'create-event-external-booking-provider',
   );

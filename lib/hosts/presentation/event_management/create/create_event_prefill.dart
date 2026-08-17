@@ -4,6 +4,7 @@ import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
+import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:collection/collection.dart';
 
 /// Non-persisted values used to begin a new event from an existing event.
@@ -57,6 +58,7 @@ class CreateEventPrefill {
         customActivityLabel: event.eventFormat.customActivityLabel,
         interactionModel: event.eventFormat.interactionModel.name,
         paceName: event.pace.name,
+        routePlan: event.eventFormat.routePlan?.toJson(),
         meetingPoint: event.locationName,
         locationDetails: event.locationNotes,
         meetingLocationAddress: location?.address,

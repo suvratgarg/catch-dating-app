@@ -21,7 +21,18 @@
     "version": 1,
     "activityKind": "socialRun",
     "interactionModel": "pacePods",
-    "defaultPlaybookId": "social_run_light"
+    "defaultPlaybookId": "social_run_light",
+    "activityDetails": {
+      "routePlan": {
+        "version": 1,
+        "movementMode": "run",
+        "routeShape": "loop",
+        "groupStrategy": "paceGroups",
+        "stopCadence": "continuous",
+        "stopKinds": ["water", "regroup", "hazard"],
+        "roleKinds": ["routeLead", "sweep", "pacer"]
+      }
+    }
   },
   "eventSuccessDefaults": {
     "enabled": true,

@@ -110,6 +110,110 @@ void _registerEventSuccessHostLiveTests() {
     expect(retries, [EventSuccessHostRetryIntent.roster]);
   });
 
+  testWidgets('quiz points use distinct checked-in roster team names', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(800, 5000);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final now = DateTime(2026, 8, 17, 19);
+    final event = buildEvent(
+      id: 'quiz-roster-points',
+      startTime: now,
+      endTime: now.add(const Duration(hours: 2)),
+      eventFormat: EventFormatSnapshot.fromActivityKind(ActivityKind.pubQuiz),
+    );
+    final plan = EventSuccessPlan.defaultForEvent(
+      event,
+      now: now,
+    ).copyWith(status: EventSuccessPlanStatus.live);
+
+    EventAttendee attendee({
+      required String id,
+      required String team,
+      required EventAttendeeStatus status,
+    }) => EventAttendee(
+      id: id,
+      eventId: event.id,
+      clubId: event.clubId,
+      organizerId: 'host-1',
+      displayName: 'Guest $id',
+      searchName: 'guest $id',
+      source: EventAttendeeSource.hostImport,
+      status: status,
+      arrivalGroup: team,
+      createdAt: now,
+      updatedAt: now,
+      checkedInAt: status == EventAttendeeStatus.checkedIn ? now : null,
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: EventSuccessHostPanel(
+              event: event,
+              plan: plan,
+              planIsPersisted: true,
+              roster: EventParticipationRoster.empty(),
+              accountabilityAttendees: [
+                attendee(
+                  id: 'one',
+                  team: 'Team A',
+                  status: EventAttendeeStatus.checkedIn,
+                ),
+                attendee(
+                  id: 'two',
+                  team: '  team   a  ',
+                  status: EventAttendeeStatus.checkedIn,
+                ),
+                attendee(
+                  id: 'three',
+                  team: 'Team B',
+                  status: EventAttendeeStatus.checkedIn,
+                ),
+                attendee(
+                  id: 'four',
+                  team: 'Team C',
+                  status: EventAttendeeStatus.registered,
+                ),
+              ],
+              initialTab: EventSuccessHostTab.live,
+              showTabs: false,
+            ),
+          ),
+        ),
+      ),
+    );
+    await pumpFeatureUi(tester);
+
+    expect(plan.hasModule(EventSuccessModuleCatalog.liveReveal.id), isTrue);
+    final liveTab = tester.widget<LiveTab>(find.byType(LiveTab));
+    expect(liveTab.accountabilityAttendees, hasLength(4));
+    expect(liveTab.accountabilityAttendees.first.isCheckedIn, isTrue);
+    expect(
+      find.byKey(
+        const ValueKey('event_success.outcome.0.arrival_group_team_a'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(
+        const ValueKey('event_success.outcome.0.arrival_group_team_c'),
+      ),
+      findsNothing,
+    );
+    expect(
+      find.byKey(
+        const ValueKey('event_success.outcome.0.arrival_group_team_b'),
+      ),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('host confirms presence changes before the next round', (
     tester,
   ) async {

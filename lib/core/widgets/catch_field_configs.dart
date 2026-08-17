@@ -300,6 +300,7 @@ final class _ToggleConfig extends _CatchFieldConfig {
     String? title,
     String? body,
     CatchContractFieldConstraints? contract,
+    this.contractExemption,
     required this.value,
     required ValueChanged<bool>? onChanged,
     this.titleMaxLines = 1,
@@ -329,6 +330,7 @@ final class _ToggleConfig extends _CatchFieldConfig {
 
   final bool value;
   final ValueChanged<bool>? onToggleChanged;
+  final String? contractExemption;
   final int titleMaxLines;
   final int bodyMaxLines;
   final String? helperText;

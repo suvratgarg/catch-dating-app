@@ -1,7 +1,7 @@
 ---
 doc_id: event_success
-version: 1.18.0
-updated: 2026-08-14
+version: 1.20.0
+updated: 2026-08-17
 owner: recursive_audit_loop
 status: active
 ---
@@ -116,6 +116,108 @@ The currently wired pieces are:
   callable-owned and cannot be changed directly by clients;
 - attendee companion routing, event-detail entry, and check-in auto-launch use
   the saved plan/runtime rather than raw event type.
+
+### Founding Organizer Format Packs
+
+The pilot product is one event runtime with format packs, not a collection of
+separate quiz, run-club, racket, dinner, or mixer applications. Every pack must
+reuse the same operational kernel: event, roster, check-in, saved format,
+run-of-show, revision-fenced live controls, manual recovery, and recap. A pack
+may change vocabulary, defaults, unit outcomes, and bounded optional modules;
+it must not fork routing, attendance, or reporting.
+
+The create-event activity choice is the pack chooser. After selection, the Host
+must see a concise `Catch prepares` preview of the resulting operating model
+before saving. Custom formats additionally choose an interaction model. The
+saved `EventFormatSnapshot` remains the authority; the preview is explanatory
+copy, not a second configuration or persistence layer.
+
+The founding packs are:
+
+| Pack | Operating units | Live cadence | Outcome/accountability | Pilot boundary |
+|---|---|---|---|---|
+| Social run | Pace pods plus a composable route plan | Timed legs | Completion plus finish sweep | Static route operations only; no live GPS tracking |
+| Pickleball/padel/racket | Pair assignments and bounded resources | Timed rounds | Ranked outcomes | Existing pair-rotation engine; no bracket/tournament engine |
+| Pub quiz | Host/imported teams | Quiz rounds | Numeric points and standings reveal | Not a question authoring, answer validation, or buzzer system |
+| Dinner | Tables | Courses | No competitive outcome | True table-seating optimization remains unsupported |
+| Mixer/open | Social groups or whole group | Rounds or continuous beats | Optional reveal or no outcome | Uses only saved interaction primitives |
+
+Format-specific language belongs at the edges. The generic Host route remains
+`/host/organizers/:clubId/events/:eventId/success`; the runtime derives whether
+the primary nouns are team/round/points, pod/leg/sweep, pair/round/rank, or
+table/course/prompt. Separate navigation routes per event type would fragment
+the operating model and are not part of this contract.
+
+#### Quiz points
+
+Quiz points use the existing `unitOutcome: score` recorder and standings
+projection. A scoreable team is resolved in this order:
+
+1. an existing score assignment unit, preserving its stable unit id; then
+2. each distinct, non-empty `arrivalGroup` on a currently checked-in
+   `eventAttendee`, normalized case-insensitively for duplicate detection.
+
+Roster import and the no-download runtime's required `teamName` field both feed
+`arrivalGroup`. Registered but absent teams do not appear in the live recorder.
+The Host records one complete numeric score set per round; corrections replace
+that round under the existing outcome revision fence and recompute standings.
+Attendees see standings only through the existing reveal gate. The first pilot
+does not need automatic team balancing to keep score, but it does need every
+team to have an arrival group before points can be recorded.
+
+#### Route-based event plan contract
+
+A route plan describes how an event moves, stops, and stays accounted for. It
+is not a Flutter navigation route and it is not limited to running. The first
+shipped contract is a typed, static Host-authored `RouteEventPlan` persisted at
+`EventFormatSnapshot.activityDetails.routePlan`.
+
+The plan composes six independent operational axes:
+
+- movement: run, walk, ride, or mixed;
+- route shape: loop, out-and-back, or point-to-point;
+- group strategy: together, pace groups, or self-directed;
+- stop cadence: continuous, flexible stops, or hosted stops;
+- stop modules: water, regroup, venue, photo, viewpoint, hazard, and
+  turnaround; and
+- route roles: lead, sweep, pacer, stop host, marshal, and photographer.
+
+Activity kind selects only a useful default; it is not the capability gate.
+Social runs start with pace groups and a continuous cadence, walks start as one
+group with flexible stops, rides add marshal and turnaround operations, and bar
+crawls start as hosted point-to-point walks with venue stops. A custom event,
+including a photography walk, can opt into the same plan and then compose any
+of the axes. This keeps event taxonomy, live interaction model, and route
+operations orthogonal.
+
+The initial implementation does not store route names, coordinates, ordered
+waypoints, distance, surface, elevation, emergency notes, or attendee map
+projections. It must not claim turn-by-turn navigation, live GPS tracking,
+off-route alerts, route geocoding, or GPX fidelity. Those are later modules on
+top of the route-plan contract, not fields that should be guessed into the
+first operational configurator.
+
+#### Pilot activation contract
+
+The first 100 organizers are a concierge cohort, not evidence that onboarding
+can remain manual indefinitely. For the first event, Catch should collect the
+format, expected headcount, current booking/roster source, team/table/pace data,
+venue or course constraints, and the one live failure the organizer fears most.
+The operator then imports a realistic roster, runs the saved guide in rehearsal
+with synthetic attendees, and reviews the recap after the real event.
+
+Rehearsal is a required next product slice: a read-only or isolated synthetic
+roster, explicit `REHEARSAL` chrome, no production attendance/messages/outcome
+writes, and a resettable clock. Until that isolation exists, onboarding may use
+staging fixtures but the product must not label a production event as safely
+rehearsable.
+
+Pilot success is activation and repeated operational use, not account creation:
+time to first configured event, roster readiness before doors open, successful
+check-in, live-guide use, recoveries/overrides, completed points or sweep when
+the format calls for them, recap viewed, and a second event scheduled. Billing,
+marketplace demand, a general quiz engine, tournament brackets, live run
+tracking, and fully self-serve onboarding are outside this first tranche.
 
 Assignment generation is deliberately narrower than the format taxonomy. The
 format primitives now resolve a `matchingObjective` independently from
