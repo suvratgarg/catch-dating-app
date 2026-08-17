@@ -14,7 +14,7 @@
   "definitions": {
     "application": {
       "type": "object", "additionalProperties": false,
-      "required": ["applicationId", "formId", "formVersionId", "targetKind", "targetId", "applicantDisplayName", "reviewStatus", "sourceKind", "providerId", "submittedAtMillis", "revision"],
+      "required": ["applicationId", "formId", "formVersionId", "targetKind", "targetId", "applicantDisplayName", "reviewStatus", "dataAccessState", "sourceKind", "providerId", "submittedAtMillis", "revision"],
       "properties": {
         "applicationId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
         "formId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
@@ -23,6 +23,7 @@
         "targetId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
         "applicantDisplayName": {"type": "string", "minLength": 1, "maxLength": 160},
         "reviewStatus": {"type": "string", "enum": ["submitted", "inReview", "approved", "waitlisted", "declined", "withdrawn"]},
+        "dataAccessState": {"type": "string", "enum": ["organizerImported", "activeParticipantGrant", "revokedParticipantGrant"]},
         "sourceKind": {"type": "string", "enum": ["native", "tabularImport", "connector"]},
         "providerId": {"type": ["string", "null"], "minLength": 1, "maxLength": 80},
         "submittedAtMillis": {"type": "integer", "minimum": 0},

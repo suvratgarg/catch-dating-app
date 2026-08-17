@@ -86,6 +86,19 @@ function checkPersonFieldCatalog(parsed) {
       "until the source options are mapped."
     );
   }
+  const accessPolicies = {
+    authenticationPolicy: "identityVerificationDoesNotGrantDataAccess",
+    applicationReviewPolicy: "reviewEveryQuestionBeforeEachSubmission",
+    hostCommercePolicy: "eventScopedAggregatesOnly",
+    eventStaffPolicy: "eventScopedRosterAndAttendanceOnly",
+    employeeAccessPolicy: "purposeScopedRoleGatedMaskedAndAudited",
+    rawPiiPolicy: "breakGlassOnly",
+  };
+  for (const [key, expected] of Object.entries(accessPolicies)) {
+    if (catalog[key] !== expected) {
+      fail(`${relative(catalogPath)}: ${key} must remain ${expected}.`);
+    }
+  }
   if (!Array.isArray(catalog.fields) || catalog.fields.length === 0) {
     fail(`${relative(catalogPath)}: fields must be a non-empty array.`);
     return;

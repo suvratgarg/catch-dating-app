@@ -1739,6 +1739,57 @@ const schemaSpecs = [
       "publishOrganizerApplicationFormCallablePayload.ts",
   },
   {
+    name: "GetParticipantOrganizerApplicationFormCallablePayload",
+    source:
+      "callables/get_participant_organizer_application_form_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "getParticipantOrganizerApplicationFormCallablePayload.ts",
+  },
+  {
+    name: "GetParticipantOrganizerApplicationFormCallableResponse",
+    source:
+      "callable_responses/" +
+      "get_participant_organizer_application_form_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "getParticipantOrganizerApplicationFormCallableResponse.ts",
+  },
+  {
+    name: "SubmitParticipantOrganizerApplicationCallablePayload",
+    source:
+      "callables/submit_participant_organizer_application_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "submitParticipantOrganizerApplicationCallablePayload.ts",
+  },
+  {
+    name: "SubmitParticipantOrganizerApplicationCallableResponse",
+    source:
+      "callable_responses/" +
+      "submit_participant_organizer_application_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "submitParticipantOrganizerApplicationCallableResponse.ts",
+  },
+  {
+    name: "RevokeParticipantOrganizerDataGrantCallablePayload",
+    source:
+      "callables/revoke_participant_organizer_data_grant_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "revokeParticipantOrganizerDataGrantCallablePayload.ts",
+  },
+  {
+    name: "RevokeParticipantOrganizerDataGrantCallableResponse",
+    source:
+      "callable_responses/" +
+      "revoke_participant_organizer_data_grant_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "revokeParticipantOrganizerDataGrantCallableResponse.ts",
+  },
+  {
     name: "PublishOrganizerApplicationFormCallableResponse",
     source:
       "callable_responses/" +

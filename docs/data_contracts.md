@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.30.0
+version: 1.31.0
 updated: 2026-08-17
 owner: recursive_audit_loop
 status: active
@@ -873,6 +873,16 @@ be a separate approval-gated operation because stale identity evidence and
 organizer-supplied contact history must be reconciled together; age or source
 labels alone are never deletion proof.
 
+After an explicit repair approval, the only supported mutation path is
+`node tool/data/repair_legacy_host_contact_projection.mjs`. It requires one
+organizer, exact expected high-confidence and reconciliation counts, and both
+production confirmation flags. Each row is reclassified transactionally before
+phone/email are set to null. The current deployed attendee trigger must then
+rebuild the event edge, contact, traits, identity evidence and audience summary;
+the repair verifies that postcondition and removes only orphaned phone claims.
+It never deletes an attendee, event, organizer contact, or organizer-supplied
+contact fact, and never prints raw contact values.
+
 ### Organizer Application Intake
 
 Organizer applications are a provider-neutral intake domain. A Google Form,
@@ -896,19 +906,29 @@ public dating profile. Review status alone creates none of those entities.
 
 Portable participant prefill belongs in private
 `participantIntakeProfiles/{uid}` only after an authenticated participant has
-explicitly saved eligible fields. It is separate from `users/{uid}` and cannot
-overwrite an existing Consumer profile. An organizer receives only the exact
+explicitly saved eligible fields. Private-profile and verified-Auth suggestions
+may be shown to that participant, but every current form question must be
+reviewed again before every submission. Authentication proves ownership of the
+private suggestions; it grants the organizer nothing. Portable intake is
+separate from `users/{uid}` and cannot overwrite an existing Consumer profile.
+An organizer receives only the exact
 fields and purpose recorded by
 `participantOrganizerDataGrants/{grantId}` for that application/response; a
 global phone or email
 identity never implies cross-organizer visibility. Organizer-proprietary
 questions such as a preferred cocktail remain in that organizer's application
 response and are never promoted into the portable profile by default.
-Field visibility is not messaging permission: WhatsApp/SMS opt-in remains
+The native submission callable creates the response and grant atomically.
+Revocation stamps only `revokedAt`, withdraws the review row, and immediately
+makes manager list/detail projections mask the participant name and return no
+answers or outreach actions; the immutable platform audit snapshot is retained.
+Imported/connector data remains organizer-acquired and is labeled separately
+instead of receiving a fictional participant grant. Field visibility is not
+messaging permission: WhatsApp/SMS opt-in remains
 exclusively in `organizerCommunicationPreferences`, and an application grant
 cannot create or broaden it.
 
-The first runtime tranche accepts locally decoded CSV/XLSX tables, requires an
+The provider-neutral import runtime accepts locally decoded CSV/XLSX tables, requires an
 explicit mapping for every source column, imports at most 200 rows atomically,
 and records a hash-bound idempotent receipt in
 `organizerApplicationImportReceipts/{receiptId}`. Known identity/profile
@@ -916,9 +936,22 @@ headers map to canonical fields; all other columns remain organizer-only
 questions. Hosts list, search, sort, inspect, and review only through manager
 callables. Direct client access to forms, versions, applications, responses,
 assets, source mappings, receipts, private intake profiles, and grants is
-denied. Native participant submission, portable-prefill reuse, and provider
-connectors are later runtimes over these same contracts, not provider-specific
-schemas.
+denied. Authenticated native form load/submission/revocation now use these same
+contracts: suggestions are private and review-required, response snapshots are
+server-built from the published question version, and grant-aware Host reads
+enforce exact question/canonical-field ids. Provider connectors remain source
+adapters over the same model, not provider-specific schemas.
+
+The executable policies in `contracts/catalogs/person_fields.json` also bind
+the role projections:
+
+| Consumer | Allowed projection |
+|---|---|
+| Organizer manager | Exact active application grant, organizer-acquired CRM facts and notes, and event-scoped completed/non-refunded revenue aggregates. No payment instrument, billing address, provider secret, private dating/profile, feedback, safety or cross-organizer data. |
+| Delegated event staff | One event's display name, ticket/registration state and attendance controls under an expiring grant. No CRM, application answers, campaigns, provider setup, commerce enrichment or contact endpoints. |
+| Support | Masked, purpose-specific operational projections only. Raw PII is not the default support view. |
+| Safety / Finance / Admin | Only the role- and workflow-specific projection required for the case; every action remains audited. Raw PII is break-glass only, never a universal employee client projection. |
+| Catch backend | May reconcile the consolidated identity across private stores to enforce product, fraud, safety, finance and deletion duties, but must return only the projection authorized for the caller and purpose. |
 
 ### Provider Sync, Staff, And Offline Attendance
 

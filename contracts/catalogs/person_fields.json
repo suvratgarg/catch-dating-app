@@ -4,6 +4,12 @@
   "organizerAccessPolicy": "submittedQuestionGrantOnly",
   "publicProfileMetadataPolicy": "structuralMappingOnlyNotAuthorization",
   "tabularChoiceImportPolicy": "preserveAsTextUntilOptionsMapped",
+  "authenticationPolicy": "identityVerificationDoesNotGrantDataAccess",
+  "applicationReviewPolicy": "reviewEveryQuestionBeforeEachSubmission",
+  "hostCommercePolicy": "eventScopedAggregatesOnly",
+  "eventStaffPolicy": "eventScopedRosterAndAttendanceOnly",
+  "employeeAccessPolicy": "purposeScopedRoleGatedMaskedAndAudited",
+  "rawPiiPolicy": "breakGlassOnly",
   "fields": [
     {
       "id": "givenName",

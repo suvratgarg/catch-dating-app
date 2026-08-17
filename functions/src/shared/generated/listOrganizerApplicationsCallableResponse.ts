@@ -24,6 +24,10 @@ export interface ListOrganizerApplicationsCallableResponse {
       | "waitlisted"
       | "declined"
       | "withdrawn";
+    dataAccessState:
+      | "organizerImported"
+      | "activeParticipantGrant"
+      | "revokedParticipantGrant";
     sourceKind: "native" | "tabularImport" | "connector";
     providerId: string | null;
     submittedAtMillis: number;

@@ -20,8 +20,11 @@ export interface GetOrganizerApplicationDetailCallableResponse {
     | "waitlisted"
     | "declined"
     | "withdrawn";
+  dataAccessState:
+    | "organizerImported"
+    | "activeParticipantGrant"
+    | "revokedParticipantGrant";
   /**
-   * @minItems 1
    * @maxItems 100
    */
   answers: {

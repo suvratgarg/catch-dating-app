@@ -8,7 +8,7 @@ const schemaParticipantOrganizerDataGrantDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/firestore/participant_organizer_data_grants.schema.json',
   'title': 'ParticipantOrganizerDataGrantDocument',
-  'description': 'Immutable consent receipt granting one organizer access to exact submitted fields for one application.',
+  'description': 'Append-stable consent receipt granting one organizer access to exact submitted fields for one application. Only revokedAt may transition after creation.',
   'type': 'object',
   'additionalProperties': false,
   'x-firestore-collection': 'participantOrganizerDataGrants',
@@ -21,6 +21,7 @@ const schemaParticipantOrganizerDataGrantDocumentSchema = <String, Object?>{
     'applicationId',
     'responseId',
     'formVersionId',
+    'purpose',
     'grantedQuestionIds',
     'grantedCanonicalFieldIds',
     'consentVersion',
@@ -53,6 +54,10 @@ const schemaParticipantOrganizerDataGrantDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+    },
+    'purpose': <String, Object?>{
+      'type': 'string',
+      'const': 'organizerApplicationReview',
     },
     'grantedQuestionIds': <String, Object?>{
       'type': 'array',

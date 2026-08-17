@@ -20,6 +20,7 @@ const schemaGetOrganizerApplicationDetailCallableResponseSchema = <String, Objec
     'targetId',
     'applicantDisplayName',
     'reviewStatus',
+    'dataAccessState',
     'answers',
     'outreach',
     'reviewNote',
@@ -81,9 +82,16 @@ const schemaGetOrganizerApplicationDetailCallableResponseSchema = <String, Objec
         'withdrawn',
       ],
     },
+    'dataAccessState': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'organizerImported',
+        'activeParticipantGrant',
+        'revokedParticipantGrant',
+      ],
+    },
     'answers': <String, Object?>{
       'type': 'array',
-      'minItems': 1,
       'maxItems': 100,
       'items': <String, Object?>{
         'type': 'object',

@@ -32,6 +32,7 @@ import {
   OrganizerApplicationFormVersionDocument,
   OrganizerApplicationImportReceiptDocument,
   OrganizerApplicationResponseDocument,
+  ParticipantOrganizerDataGrantDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {
   validateGetOrganizerApplicationDetailCallablePayload,
@@ -49,6 +50,10 @@ import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
+import {
+  hostVisibleApplicationAnswers,
+  participantOrganizerGrantId,
+} from "./participantOrganizerApplications";
 
 type Question = OrganizerApplicationFormVersionDocument["questions"][number];
 type Answer = OrganizerApplicationResponseDocument["answers"][number];
@@ -522,11 +527,35 @@ export async function listOrganizerApplicationsHandler(
       );
     }
   }
+  const grants = await participantGrantsByApplicationId(
+    db,
+    snapshot.docs.map((doc) => ({
+      id: doc.id,
+      data: doc.data() as OrganizerApplicationDocument,
+    }))
+  );
   const query = normalizeSearch(data.query ?? "");
   const rows = snapshot.docs.map((doc) => ({
     id: doc.id,
     data: doc.data() as OrganizerApplicationDocument,
-  })).filter((row) => {
+  })).map((row) => {
+    const accessState = applicationDataAccessState(
+      row.id,
+      row.data,
+      grants.get(row.id)
+    );
+    const visibleName = accessState === "revokedParticipantGrant" ?
+      "Withdrawn applicant" : row.data.applicantDisplayName;
+    return {
+      ...row,
+      data: {
+        ...row.data,
+        applicantDisplayName: visibleName,
+        applicantDisplayNameNormalized: normalizeSearch(visibleName),
+      },
+      accessState,
+    };
+  }).filter((row) => {
     if (data.formId && row.data.formId !== data.formId) return false;
     if (data.targetId && row.data.targetId !== data.targetId) return false;
     if (data.reviewStatus &&
@@ -548,6 +577,7 @@ export async function listOrganizerApplicationsHandler(
       targetId: row.data.targetId,
       applicantDisplayName: row.data.applicantDisplayName,
       reviewStatus: row.data.reviewStatus,
+      dataAccessState: row.accessState,
       sourceKind: row.data.source.kind,
       providerId: row.data.source.providerId,
       submittedAtMillis: row.data.submittedAt.toMillis(),
@@ -606,6 +636,15 @@ export async function getOrganizerApplicationDetailHandler(
       response.organizerId !== data.organizerId) {
     throw new HttpsError("internal", "Application response scope mismatch.");
   }
+  const grant = response.source.kind === "native" && response.grantId ?
+    (await db.collection("participantOrganizerDataGrants")
+      .doc(response.grantId).get()).data() as
+        ParticipantOrganizerDataGrantDocument | undefined : undefined;
+  const visible = hostVisibleApplicationAnswers({
+    response,
+    responseId: application.latestResponseId,
+    grant,
+  });
   return {
     organizerId: data.organizerId,
     applicationId: data.applicationId,
@@ -613,10 +652,13 @@ export async function getOrganizerApplicationDetailHandler(
     formVersionId: application.formVersionId,
     targetKind: application.targetKind,
     targetId: application.targetId,
-    applicantDisplayName: application.applicantDisplayName,
+    applicantDisplayName:
+      visible.accessState === "revokedParticipantGrant" ?
+        "Withdrawn applicant" : application.applicantDisplayName,
     reviewStatus: application.reviewStatus,
-    answers: response.answers,
-    outreach: applicationOutreach(response.answers),
+    dataAccessState: visible.accessState,
+    answers: visible.answers,
+    outreach: applicationOutreach(visible.answers),
     reviewNote: application.reviewNote,
     assignedReviewerUid: application.assignedReviewerUid,
     submittedAtMillis: application.submittedAt.toMillis(),
@@ -666,6 +708,23 @@ export async function reviewOrganizerApplicationHandler(
         "failed-precondition",
         "A withdrawn application cannot be reviewed."
       );
+    }
+    if (application.source.kind === "native") {
+      const grantSnap = await tx.get(
+        db.collection("participantOrganizerDataGrants")
+          .doc(participantOrganizerGrantId(data.applicationId))
+      );
+      const grant = grantSnap.data() as
+        ParticipantOrganizerDataGrantDocument | undefined;
+      if (!grant || grant.revokedAt !== null ||
+          grant.participantUid !== application.linkedUid ||
+          grant.organizerId !== data.organizerId ||
+          grant.purpose !== "organizerApplicationReview") {
+        throw new HttpsError(
+          "failed-precondition",
+          "The participant has revoked access to this application."
+        );
+      }
     }
     const nextRevision = application.revision + 1;
     tx.update(ref, {
@@ -1173,6 +1232,44 @@ function applicationComparator(
   return (a, b) => direction * (
     a.data.submittedAt.toMillis() - b.data.submittedAt.toMillis()
   ) || a.id.localeCompare(b.id);
+}
+
+async function participantGrantsByApplicationId(
+  db: FirebaseFirestore.Firestore,
+  rows: Array<{id: string; data: OrganizerApplicationDocument}>
+): Promise<Map<string, ParticipantOrganizerDataGrantDocument>> {
+  const nativeRows = rows.filter((row) => row.data.source.kind === "native");
+  if (nativeRows.length === 0) return new Map();
+  const result = new Map<string, ParticipantOrganizerDataGrantDocument>();
+  for (let start = 0; start < nativeRows.length; start += 250) {
+    const chunk = nativeRows.slice(start, start + 250);
+    const snapshots = await db.getAll(...chunk.map((row) =>
+      db.collection("participantOrganizerDataGrants")
+        .doc(participantOrganizerGrantId(row.id))
+    ));
+    for (let index = 0; index < snapshots.length; index += 1) {
+      if (snapshots[index].exists) {
+        result.set(chunk[index].id, snapshots[index].data() as
+          ParticipantOrganizerDataGrantDocument);
+      }
+    }
+  }
+  return result;
+}
+
+function applicationDataAccessState(
+  applicationId: string,
+  application: OrganizerApplicationDocument,
+  grant: ParticipantOrganizerDataGrantDocument | undefined
+): "organizerImported" | "activeParticipantGrant" |
+  "revokedParticipantGrant" {
+  if (application.source.kind !== "native") return "organizerImported";
+  return grant && grant.revokedAt === null &&
+    grant.applicationId === applicationId &&
+    grant.organizerId === application.organizerId &&
+    grant.participantUid === application.linkedUid &&
+    grant.purpose === "organizerApplicationReview" ?
+    "activeParticipantGrant" : "revokedParticipantGrant";
 }
 
 function encodeCursor(organizerId: string, offset: number): string {

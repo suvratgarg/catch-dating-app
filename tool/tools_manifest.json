@@ -2332,6 +2332,20 @@
       "role": "generator"
     },
     {
+      "id": "data:repair-legacy-host-contact-projection",
+      "category": "data",
+      "path": "tool/data/repair_legacy_host_contact_projection.mjs",
+      "command": "node tool/data/repair_legacy_host_contact_projection.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Exact-count, one-organizer repair for approved legacy private-profile contact projections; relies on the deployed audience trigger to rebuild CRM edges, evidence, contacts, and summaries.",
+      "checks": [
+        "node --check tool/data/repair_legacy_host_contact_projection.mjs",
+        "node --test tool/data/repair_legacy_host_contact_projection.test.mjs"
+      ],
+      "role": "generator"
+    },
+    {
       "id": "data:backfill-organizer-intake-visibility-decisions",
       "category": "data",
       "path": "tool/data/backfill_organizer_intake_visibility_decisions.mjs",

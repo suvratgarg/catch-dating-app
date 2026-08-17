@@ -2333,7 +2333,7 @@ export interface ParticipantIntakeProfileDocument {
 }
 
 /**
- * Immutable consent receipt granting one organizer access to exact submitted fields for one application.
+ * Append-stable consent receipt granting one organizer access to exact submitted fields for one application. Only revokedAt may transition after creation.
  */
 export interface ParticipantOrganizerDataGrantDocument {
   participantUid: string;
@@ -2341,6 +2341,7 @@ export interface ParticipantOrganizerDataGrantDocument {
   applicationId: string;
   responseId: string;
   formVersionId: string;
+  purpose: "organizerApplicationReview";
   /**
    * @minItems 1
    * @maxItems 100

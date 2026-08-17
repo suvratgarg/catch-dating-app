@@ -36,6 +36,7 @@ const schemaListOrganizerApplicationsCallableResponseSchema = <String, Object?>{
           'targetId',
           'applicantDisplayName',
           'reviewStatus',
+          'dataAccessState',
           'sourceKind',
           'providerId',
           'submittedAtMillis',
@@ -89,6 +90,14 @@ const schemaListOrganizerApplicationsCallableResponseSchema = <String, Object?>{
               'withdrawn',
             ],
           },
+          'dataAccessState': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'organizerImported',
+              'activeParticipantGrant',
+              'revokedParticipantGrant',
+            ],
+          },
           'sourceKind': <String, Object?>{
             'type': 'string',
             'enum': <Object?>[
@@ -137,6 +146,7 @@ const schemaListOrganizerApplicationsCallableResponseSchema = <String, Object?>{
         'targetId',
         'applicantDisplayName',
         'reviewStatus',
+        'dataAccessState',
         'sourceKind',
         'providerId',
         'submittedAtMillis',
@@ -188,6 +198,14 @@ const schemaListOrganizerApplicationsCallableResponseSchema = <String, Object?>{
             'waitlisted',
             'declined',
             'withdrawn',
+          ],
+        },
+        'dataAccessState': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'organizerImported',
+            'activeParticipantGrant',
+            'revokedParticipantGrant',
           ],
         },
         'sourceKind': <String, Object?>{
