@@ -20,7 +20,12 @@ void registerHostEventEntryTests() {
       tester,
       HostOperationsHomeScreen(now: DateTime(2026, 6, 15, 12)),
       overrides: [
-        ..._hostClubOverrides(owned: [club]),
+        ..._hostClubOverrides(
+          owned: [club],
+          timelineEventsByOrganizer: {
+            club.id: [event],
+          },
+        ),
         watchEventsForClubProvider(
           club.id,
         ).overrideWithValue(AsyncData<List<Event>>([event])),
@@ -361,12 +366,16 @@ List _hostClubOverrides({
   List<Club> owned = const [],
   List<Club> hosted = const [],
   Map<String, List<EventDraft>> draftsByOrganizer = const {},
+  Map<String, List<Event>> timelineEventsByOrganizer = const {},
 }) {
   final organizerIds = {
     ...owned.map((club) => club.id),
     ...hosted.map((club) => club.id),
   };
   return [
+    hostEventsTimelineControllerProvider.overrideWith2(
+      (_) => _FixedHostEventsTimelineController(timelineEventsByOrganizer),
+    ),
     uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
     watchClubsOwnedByProvider(
       _hostUid,
@@ -418,6 +427,31 @@ List _hostClubOverrides({
         ),
       ),
   ];
+}
+
+class _FixedHostEventsTimelineController extends HostEventsTimelineController {
+  _FixedHostEventsTimelineController(this.eventsByOrganizer);
+
+  final Map<String, List<Event>> eventsByOrganizer;
+
+  @override
+  Future<HostEventsTimelineData> build(
+    HostEventsTimelineRequest request,
+  ) async {
+    final events = eventsByOrganizer[request.organizerId] ?? const <Event>[];
+    return HostEventsTimelineData(
+      activeEvents: events
+          .where((event) => event.endTime.isAfter(request.sessionBoundary))
+          .toList(growable: false),
+      pastEvents: events
+          .where((event) => !event.endTime.isAfter(request.sessionBoundary))
+          .toList(growable: false),
+      activeCursor: null,
+      pastCursor: null,
+      hasMoreActive: false,
+      hasMorePast: false,
+    );
+  }
 }
 
 HostCrmSummary _emptyCrmSummary(String organizerId) => HostCrmSummary(

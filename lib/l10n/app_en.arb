@@ -11652,6 +11652,34 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_events_list"
   },
+  "hostEventsTimelineSchedule": "Schedule",
+  "@hostEventsTimelineSchedule": {
+    "description": "Heading for live and upcoming events in the unified Host Events timeline.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.host_operations.host_events_list"
+  },
+  "hostEventsTimelineHistory": "History",
+  "@hostEventsTimelineHistory": {
+    "description": "Heading for completed events in the unified Host Events timeline.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.host_operations.host_events_list"
+  },
+  "hostEventsTimelineLoadMoreSchedule": "Load more events",
+  "@hostEventsTimelineLoadMoreSchedule": {
+    "description": "Loads the next cursor page of live or upcoming Host events.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.host_operations.host_events_list"
+  },
+  "hostEventsTimelineLoadMoreHistory": "Load older events",
+  "@hostEventsTimelineLoadMoreHistory": {
+    "description": "Loads the next cursor page of completed Host events.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.host_operations.host_events_list"
+  },
   "hostsHostEventsScaffoldTitleCreateYourFirstClub": "Create your first organizer",
   "@hostsHostEventsScaffoldTitleCreateYourFirstClub": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_events_scaffold.dart (title).",
@@ -21472,8 +21500,8 @@
   "@hostCustomersMessageTheseAtLeast": {"description": "Starts a campaign for a lower-bound number of customers in the active segment.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersFilterSheetTitle": "Filter customers",
   "@hostCustomersFilterSheetTitle": {"description": "Grouped customer filter sheet title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostCustomersFilterSheetSubtitle": "Choose one computed segment or one of your tags. Counts follow the current name search.",
-  "@hostCustomersFilterSheetSubtitle": {"description": "Explains the scope of counts shown in the grouped customer filter sheet.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostCustomersFilterSheetSubtitle": "Choose one computed segment or one of your tags. The result count updates after you apply it.",
+  "@hostCustomersFilterSheetSubtitle": {"description": "Explains when the grouped customer filter result count updates.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersFilterGroupAttendance": "Attendance",
   "@hostCustomersFilterGroupAttendance": {"description": "Customer segment group for attendance lifecycle filters.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersFilterGroupReliability": "Reliability",

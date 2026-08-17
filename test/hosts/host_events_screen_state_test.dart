@@ -104,26 +104,26 @@ void main() {
     final state = HostEventsWorkspaceState.fromEvents(
       events: [nextYear, july, cancelled, past, today],
       now: now,
-      selectedFilter: HostEventsLifecycleFilter.upcoming,
     );
 
     expect(state.status, HostEventsWorkspaceStatus.populated);
-    expect(state.sections.map((section) => section.label), [
+    expect(state.activeSections.map((section) => section.label), [
       'June',
       'July',
       'June 2027',
     ]);
     expect(
-      state.sections
+      state.activeSections
           .expand((section) => section.rows)
           .map((row) => row.event.id),
       ['today', 'july', 'next-year'],
     );
-    final todayRow = state.sections.first.rows.single;
+    final todayRow = state.activeSections.first.rows.single;
     expect(todayRow.isToday, isTrue);
     expect(todayRow.metaLabel, 'Today · 24 going');
     expect(todayRow.fillPercent, 80);
-    expect(state.sections[1].rows.single.fillRatio, 1);
+    expect(state.activeSections[1].rows.single.fillRatio, 1);
+    expect(state.pastSections.single.rows.single.event, past);
     expect(state.repeatSource, past);
   });
 
@@ -142,26 +142,22 @@ void main() {
       bookedCount: 15,
     );
 
-    final live = HostEventsWorkspaceState.fromEvents(
+    final state = HostEventsWorkspaceState.fromEvents(
       events: [endsNow, startsNow],
       now: now,
-      selectedFilter: HostEventsLifecycleFilter.live,
     );
-    expect(live.sections.single.rows.single.event, startsNow);
-    expect(live.sections.single.rows.single.isLive, isTrue);
-
-    final past = HostEventsWorkspaceState.fromEvents(
-      events: [endsNow, startsNow],
-      now: now,
-      selectedFilter: HostEventsLifecycleFilter.past,
+    expect(state.activeSections.single.rows.single.event, startsNow);
+    expect(state.activeSections.single.rows.single.isLive, isTrue);
+    expect(state.pastSections.single.rows.single.event, endsNow);
+    expect(
+      state.pastSections.single.rows.single.metaLabel,
+      contains('12 attended'),
     );
-    expect(past.sections.single.rows.single.event, endsNow);
-    expect(past.sections.single.rows.single.metaLabel, contains('12 attended'));
-    expect(past.sections.single.rows.single.metaLabel, contains('free'));
+    expect(state.pastSections.single.rows.single.metaLabel, contains('free'));
   });
 
   test(
-    'Host Events async state maps loading, error, and filter empty copy',
+    'Host Events async state maps loading, error, and timeline empty copy',
     () {
       final now = DateTime(2026, 6, 15, 12);
       final cancelled = buildEvent(
@@ -175,7 +171,6 @@ void main() {
         buildHostEventsWorkspaceState(
           const AsyncLoading<List<Event>>(),
           now: now,
-          selectedFilter: HostEventsLifecycleFilter.upcoming,
         ).status,
         HostEventsWorkspaceStatus.loading,
       );
@@ -183,7 +178,6 @@ void main() {
       final errorState = buildHostEventsWorkspaceState(
         AsyncError<List<Event>>(error, stackTrace),
         now: now,
-        selectedFilter: HostEventsLifecycleFilter.live,
       );
       expect(errorState.status, HostEventsWorkspaceStatus.error);
       expect(errorState.error, error);
@@ -191,11 +185,10 @@ void main() {
       final emptyState = buildHostEventsWorkspaceState(
         AsyncData<List<Event>>([cancelled]),
         now: now,
-        selectedFilter: HostEventsLifecycleFilter.live,
       );
       expect(emptyState.status, HostEventsWorkspaceStatus.empty);
-      expect(emptyState.emptyTitle(_l10n), 'Nothing live right now');
-      expect(emptyState.emptyBody(_l10n), contains('when it starts'));
+      expect(emptyState.emptyTitle(_l10n), 'No upcoming events');
+      expect(emptyState.emptyBody(_l10n), contains('Create your next event'));
     },
   );
 
@@ -247,12 +240,14 @@ void main() {
     final upcomingState = HostEventsWorkspaceState.fromEvents(
       events: [late, early],
       now: now,
-      selectedFilter: HostEventsLifecycleFilter.upcoming,
       featuredEventId: early.id,
     );
     expect(upcomingState.status, HostEventsWorkspaceStatus.populated);
     expect(
-      upcomingState.sections.expand((section) => section.rows).single.event,
+      upcomingState.activeSections
+          .expand((section) => section.rows)
+          .single
+          .event,
       late,
     );
   });

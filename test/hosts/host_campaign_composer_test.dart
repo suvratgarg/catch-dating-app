@@ -122,16 +122,13 @@ void main() {
     expect(selected.selected, isTrue);
     expect(whatsapp.selected, isFalse);
     expect(selected.label, contains('12 people'));
-    expect(whatsapp.label, contains('3+ people'));
-    expect(
-      countRequests,
-      contains(
-        const HostCustomerSegmentCountRequest(
-          organizerId: organizerId,
-          search: 'asha',
-          filter: HostCustomerFilter.atRisk,
-        ),
+    expect(whatsapp.label, 'WhatsApp reachable');
+    expect(countRequests, const [
+      HostCustomerSegmentCountRequest(
+        organizerId: organizerId,
+        search: 'asha',
+        filter: HostCustomerFilter.atRisk,
       ),
-    );
+    ]);
   });
 }

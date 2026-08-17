@@ -74,6 +74,7 @@ void main() {
 
       final payload = callable.calls.single as Map<Object?, Object?>;
       expect(payload['organizerId'], 'organizer-1');
+      expect(payload['limit'], 30);
       expect(payload, isNot(contains('sort')));
     },
   );

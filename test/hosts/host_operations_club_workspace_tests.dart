@@ -22,7 +22,12 @@ void _registerHostOperationsClubWorkspaceTests() {
       tester,
       HostOperationsHomeScreen(now: now),
       overrides: [
-        ..._hostClubOverrides(owned: [club]),
+        ..._hostClubOverrides(
+          owned: [club],
+          timelineEventsByOrganizer: {
+            club.id: [hero, later],
+          },
+        ),
         watchEventsForClubProvider(
           club.id,
         ).overrideWithValue(AsyncData<List<Event>>([hero, later])),
@@ -64,7 +69,12 @@ void _registerHostOperationsClubWorkspaceTests() {
       tester,
       HostOperationsHomeScreen(now: now),
       overrides: [
-        ..._hostClubOverrides(owned: [club]),
+        ..._hostClubOverrides(
+          owned: [club],
+          timelineEventsByOrganizer: {
+            club.id: [live],
+          },
+        ),
         watchEventsForClubProvider(
           club.id,
         ).overrideWithValue(AsyncData<List<Event>>([live])),
@@ -119,7 +129,7 @@ void _registerHostOperationsClubWorkspaceTests() {
     );
   });
 
-  testWidgets('Host events filters lifecycle rows and repeats a past event', (
+  testWidgets('Host events unifies lifecycle rows and repeats a past event', (
     tester,
   ) async {
     final now = DateTime(2026, 6, 15, 12);
@@ -158,17 +168,22 @@ void _registerHostOperationsClubWorkspaceTests() {
       tester,
       HostOperationsHomeScreen(now: now),
       overrides: [
-        ..._hostClubOverrides(owned: [club]),
+        ..._hostClubOverrides(
+          owned: [club],
+          timelineEventsByOrganizer: {
+            club.id: [oldestPast, olderPast, past, live, upcoming],
+          },
+        ),
         watchEventsForClubProvider(club.id).overrideWithValue(
           AsyncData<List<Event>>([oldestPast, olderPast, past, live, upcoming]),
         ),
       ],
     );
 
-    expect(
-      find.byType(CatchOptionGroup<HostEventsLifecycleFilter>),
-      findsOneWidget,
-    );
+    expect(find.text('Upcoming'), findsNothing);
+    expect(find.text('Live'), findsNothing);
+    expect(find.text('Past'), findsNothing);
+    expect(find.text('SCHEDULE'), findsOneWidget);
     expect(
       tester
           .widget<HostEventOperationalSpotlight>(
@@ -178,8 +193,6 @@ void _registerHostOperationsClubWorkspaceTests() {
       live,
     );
     expect(find.text(past.title), findsNothing);
-    expect(find.text(olderPast.title), findsNothing);
-    expect(find.text(oldestPast.title), findsNothing);
     expect(find.text('Repeat last event'), findsNothing);
     await tester.scrollUntilVisible(
       find.byKey(const ValueKey<String>('host-event-row-upcoming-event')),
@@ -188,19 +201,6 @@ void _registerHostOperationsClubWorkspaceTests() {
     );
     expect(find.text(upcoming.title), findsOneWidget);
 
-    await tester.fling(
-      find.byType(CustomScrollView),
-      const Offset(0, 1000),
-      10000,
-    );
-    await pumpFeatureUi(tester);
-    await tester.tap(find.text('Live'));
-    await pumpFeatureUi(tester);
-    expect(find.text(upcoming.title), findsNothing);
-    expect(find.byType(HostEventLifecycleRow), findsNothing);
-
-    await tester.tap(find.text('Past'));
-    await pumpFeatureUi(tester);
     await tester.scrollUntilVisible(
       find.byKey(const ValueKey<String>('host-events-month-2026-6')),
       300,
@@ -214,7 +214,7 @@ void _registerHostOperationsClubWorkspaceTests() {
     );
     expect(find.text(olderPast.title), findsOneWidget);
     expect(find.text(oldestPast.title), findsOneWidget);
-    expect(find.byType(HostEventLifecycleRow), findsNothing);
+    expect(find.byType(HostEventLifecycleRow), findsOneWidget);
 
     final juneSection = find.byKey(
       const ValueKey<String>('host-events-month-2026-6'),
@@ -289,6 +289,12 @@ void _registerHostOperationsClubWorkspaceTests() {
       closeTo(tester.getTopRight(maySection).dx, 0.5),
     );
 
+    await tester.fling(
+      _hostEventsScrollable(),
+      const Offset(0, 1200),
+      10000,
+    );
+    await pumpFeatureUi(tester);
     final createButton = find.byKey(
       const ValueKey<String>('host-events-create-event'),
     );
@@ -335,7 +341,14 @@ void _registerHostOperationsClubWorkspaceTests() {
       tester,
       HostOperationsHomeScreen(now: DateTime(2026, 6, 15, 12)),
       overrides: [
-        ..._hostClubOverrides(owned: [ownedClub], hosted: [cohostClub]),
+        ..._hostClubOverrides(
+          owned: [ownedClub],
+          hosted: [cohostClub],
+          timelineEventsByOrganizer: {
+            ownedClub.id: [ownedEvent],
+            cohostClub.id: [hostedEvent],
+          },
+        ),
         watchEventsForClubProvider(
           ownedClub.id,
         ).overrideWithValue(AsyncData<List<Event>>([ownedEvent])),

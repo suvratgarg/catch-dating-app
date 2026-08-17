@@ -19,8 +19,8 @@ class HostEventsScaffold extends ConsumerStatefulWidget {
 }
 
 class _HostEventsScaffoldState extends ConsumerState<HostEventsScaffold> {
-  HostEventsLifecycleFilter _eventFilter = HostEventsLifecycleFilter.upcoming;
   late DateTime _clockNow;
+  late DateTime _timelineBoundary;
   Timer? _clockTimer;
 
   @override
@@ -44,6 +44,7 @@ class _HostEventsScaffoldState extends ConsumerState<HostEventsScaffold> {
   void _resetClock() {
     _clockTimer?.cancel();
     _clockNow = widget.now ?? DateTime.now();
+    _timelineBoundary = _clockNow;
     if (widget.now != null) return;
     _scheduleClockTick();
   }
@@ -111,13 +112,11 @@ class _HostEventsScaffoldState extends ConsumerState<HostEventsScaffold> {
               )
             : HostEventsClubCard(
                 club: selectedClub,
-                selectedFilter: _eventFilter,
-                onFilterChanged: (filter) =>
-                    setState(() => _eventFilter = filter),
                 onEventEntrySelected: _handleEventEntrySelected,
                 onManageEvent: _openEvent,
                 onOpenTask: _openAttentionTask,
                 now: _clockNow,
+                sessionBoundary: _timelineBoundary,
               ),
       ),
     );

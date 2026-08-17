@@ -9960,6 +9960,30 @@ abstract class AppLocalizations {
   /// **'TODAY'**
   String get hostsHostEventsListTextToday;
 
+  /// Heading for live and upcoming events in the unified Host Events timeline.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule'**
+  String get hostEventsTimelineSchedule;
+
+  /// Heading for completed events in the unified Host Events timeline.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get hostEventsTimelineHistory;
+
+  /// Loads the next cursor page of live or upcoming Host events.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more events'**
+  String get hostEventsTimelineLoadMoreSchedule;
+
+  /// Loads the next cursor page of completed Host events.
+  ///
+  /// In en, this message translates to:
+  /// **'Load older events'**
+  String get hostEventsTimelineLoadMoreHistory;
+
   /// Product copy used by lib/hosts/presentation/host_operations/host_events_scaffold.dart (title).
   ///
   /// In en, this message translates to:
@@ -20626,10 +20650,10 @@ abstract class AppLocalizations {
   /// **'Filter customers'**
   String get hostCustomersFilterSheetTitle;
 
-  /// Explains the scope of counts shown in the grouped customer filter sheet.
+  /// Explains when the grouped customer filter result count updates.
   ///
   /// In en, this message translates to:
-  /// **'Choose one computed segment or one of your tags. Counts follow the current name search.'**
+  /// **'Choose one computed segment or one of your tags. The result count updates after you apply it.'**
   String get hostCustomersFilterSheetSubtitle;
 
   /// Customer segment group for attendance lifecycle filters.

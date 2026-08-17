@@ -4,25 +4,33 @@ class HostEventsClubCard extends ConsumerWidget {
   const HostEventsClubCard({
     super.key,
     required this.club,
-    required this.selectedFilter,
-    required this.onFilterChanged,
     required this.onEventEntrySelected,
     required this.onManageEvent,
     required this.onOpenTask,
     required this.now,
+    required this.sessionBoundary,
   });
 
   final Club club;
-  final HostEventsLifecycleFilter selectedFilter;
-  final ValueChanged<HostEventsLifecycleFilter> onFilterChanged;
   final HostEventEntryCallback onEventEntrySelected;
   final HostHomeManageEventCallback onManageEvent;
   final HostHomeOpenTaskCallback onOpenTask;
   final DateTime now;
+  final DateTime sessionBoundary;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final eventsAsync = ref.watch(watchEventsForClubProvider(club.id));
+    final request = HostEventsTimelineRequest(
+      organizerId: club.id,
+      sessionBoundary: sessionBoundary,
+    );
+    final timelineAsync = ref.watch(
+      hostEventsTimelineControllerProvider(request),
+    );
+    final eventsAsync = timelineAsync.whenData(
+      (timeline) => timeline.allEvents,
+    );
+    final timeline = timelineAsync.asData?.value;
     final overviewState = buildHostEventsOverviewState(
       eventsAsync,
       now: now,
@@ -31,8 +39,14 @@ class HostEventsClubCard extends ConsumerWidget {
     final workspaceState = buildHostEventsWorkspaceState(
       eventsAsync,
       now: now,
-      selectedFilter: selectedFilter,
       featuredEventId: overviewState.event?.id,
+      hasMoreActive: timeline?.hasMoreActive ?? false,
+      hasMorePast: timeline?.hasMorePast ?? false,
+      loadingMoreActive: timeline?.loadingMoreActive ?? false,
+      loadingMorePast: timeline?.loadingMorePast ?? false,
+      activeLoadMoreError: timeline?.activeLoadMoreError,
+      pastError: timeline?.pastError,
+      pastStackTrace: timeline?.pastStackTrace,
     );
     final draftsAsync = ref.watch(clubEventDraftsProvider(clubId: club.id));
     final drafts = switch (draftsAsync) {
@@ -50,8 +64,17 @@ class HostEventsClubCard extends ConsumerWidget {
       state: workspaceState,
       entryState: entryState,
       overviewState: overviewState,
-      onFilterChanged: onFilterChanged,
-      onRetryEvents: () => ref.invalidate(watchEventsForClubProvider(club.id)),
+      onRetryEvents: () =>
+          ref.invalidate(hostEventsTimelineControllerProvider(request)),
+      onLoadMoreActive: () => ref
+          .read(hostEventsTimelineControllerProvider(request).notifier)
+          .loadMoreActive(),
+      onLoadMorePast: () => ref
+          .read(hostEventsTimelineControllerProvider(request).notifier)
+          .loadMorePast(),
+      onRetryPast: () => ref
+          .read(hostEventsTimelineControllerProvider(request).notifier)
+          .retryPast(),
       onEventEntrySelected: onEventEntrySelected,
       onManageEvent: onManageEvent,
       onOpenTask: onOpenTask,
@@ -67,7 +90,9 @@ class HostEventsClubSection extends StatelessWidget {
     required this.state,
     required this.entryState,
     required this.overviewState,
-    required this.onFilterChanged,
+    required this.onLoadMoreActive,
+    required this.onLoadMorePast,
+    required this.onRetryPast,
     required this.onEventEntrySelected,
     required this.onManageEvent,
     required this.onOpenTask,
@@ -79,8 +104,10 @@ class HostEventsClubSection extends StatelessWidget {
   final HostEventsWorkspaceState state;
   final HostEventEntryState entryState;
   final HostEventsOverviewState overviewState;
-  final ValueChanged<HostEventsLifecycleFilter> onFilterChanged;
   final VoidCallback? onRetryEvents;
+  final VoidCallback onLoadMoreActive;
+  final VoidCallback onLoadMorePast;
+  final VoidCallback onRetryPast;
   final HostEventEntryCallback onEventEntrySelected;
   final HostHomeManageEventCallback onManageEvent;
   final HostHomeOpenTaskCallback onOpenTask;
@@ -122,18 +149,6 @@ class HostEventsClubSection extends StatelessWidget {
                     now: now,
                   ),
                 ],
-                gapH16,
-                CatchOptionGroup<HostEventsLifecycleFilter>(
-                  contract: CatchContractConstraints
-                      .mobileFormStateHostEventsLifecycleFilter,
-                  contractValue: (filter) => filter.name,
-                  selected: state.selectedFilter,
-                  onChanged: onFilterChanged,
-                  options: [
-                    for (final filter in HostEventsLifecycleFilter.values)
-                      CatchOption(value: filter, label: filter.label),
-                  ],
-                ),
                 gapH14,
               ],
             ),
@@ -163,32 +178,92 @@ class HostEventsClubSection extends StatelessWidget {
             icon: CatchIcons.eventBusy,
             title: state.emptyTitle(context.l10n),
             message: state.emptyBody(context.l10n),
-            action: state.selectedFilter == HostEventsLifecycleFilter.upcoming
-                ? CatchButton(
-                    label: context.l10n.hostsHostEventsListLabelNewEvent,
-                    size: CatchButtonSize.sm,
-                    onPressed: () => _showEventEntrySheet(context),
-                  )
-                : null,
+            action: CatchButton(
+              label: context.l10n.hostsHostEventsListLabelNewEvent,
+              size: CatchButtonSize.sm,
+              onPressed: () => _showEventEntrySheet(context),
+            ),
           ),
           HostEventsWorkspaceStatus.populated => SliverPadding(
             padding: CatchInsets.pageHorizontal,
             sliver: SliverList.list(
               children: [
-                for (
-                  var sectionIndex = 0;
-                  sectionIndex < state.sections.length;
-                  sectionIndex += 1
-                )
-                  if (state.selectedFilter == HostEventsLifecycleFilter.past)
+                if (state.activeSections.isNotEmpty) ...[
+                  Padding(
+                    padding: CatchInsets.hostEventSectionLabel,
+                    child: Text(
+                      context.l10n.hostEventsTimelineSchedule.toUpperCase(),
+                      style: CatchTextStyles.monoLabel(
+                        context,
+                        color: CatchTokens.of(context).ink3,
+                      ),
+                    ),
+                  ),
+                  for (final section in state.activeSections) ...[
+                    Padding(
+                      padding: CatchInsets.hostEventSectionLabel,
+                      child: Text(
+                        section.label.toUpperCase(),
+                        style: CatchTextStyles.monoLabel(
+                          context,
+                          color: CatchTokens.of(context).ink3,
+                        ),
+                      ),
+                    ),
+                    for (final row in section.rows) ...[
+                      HostEventLifecycleRow(
+                        key: ValueKey<String>('host-event-row-${row.event.id}'),
+                        data: row,
+                        onPressed: () => onManageEvent(club, row.event),
+                      ),
+                      gapH10,
+                    ],
+                  ],
+                ],
+                if (state.activeLoadMoreError != null)
+                  CatchInlineErrorState.fromError(
+                    state.activeLoadMoreError!,
+                    context: AppErrorContext.event,
+                    onRetry: onLoadMoreActive,
+                  )
+                else if (state.hasMoreActive)
+                  Align(
+                    child: CatchButton(
+                      key: const ValueKey('host-events-load-more-active'),
+                      label: context.l10n.hostEventsTimelineLoadMoreSchedule,
+                      variant: CatchButtonVariant.secondary,
+                      size: CatchButtonSize.sm,
+                      isLoading: state.loadingMoreActive,
+                      onPressed: state.canLoadMoreActive
+                          ? onLoadMoreActive
+                          : null,
+                    ),
+                  ),
+                if (state.pastSections.isNotEmpty) ...[
+                  gapH24,
+                  Padding(
+                    padding: CatchInsets.hostEventSectionLabel,
+                    child: Text(
+                      context.l10n.hostEventsTimelineHistory.toUpperCase(),
+                      style: CatchTextStyles.monoLabel(
+                        context,
+                        color: CatchTokens.of(context).ink3,
+                      ),
+                    ),
+                  ),
+                  for (
+                    var sectionIndex = 0;
+                    sectionIndex < state.pastSections.length;
+                    sectionIndex += 1
+                  )
                     CatchSection.fieldRows(
                       key: ValueKey<String>(
-                        'host-events-month-${state.sections[sectionIndex].key}',
+                        'host-events-month-${state.pastSections[sectionIndex].key}',
                       ),
-                      title: state.sections[sectionIndex].label,
+                      title: state.pastSections[sectionIndex].label,
                       first: sectionIndex == 0,
                       children: [
-                        for (final row in state.sections[sectionIndex].rows)
+                        for (final row in state.pastSections[sectionIndex].rows)
                           CatchField.nav(
                             key: ValueKey<String>(
                               'host-event-field-${row.event.id}',
@@ -208,27 +283,25 @@ class HostEventsClubSection extends StatelessWidget {
                             onTap: () => onManageEvent(club, row.event),
                           ),
                       ],
-                    )
-                  else ...[
-                    Padding(
-                      padding: CatchInsets.hostEventSectionLabel,
-                      child: Text(
-                        state.sections[sectionIndex].label.toUpperCase(),
-                        style: CatchTextStyles.monoLabel(
-                          context,
-                          color: CatchTokens.of(context).ink3,
-                        ),
-                      ),
                     ),
-                    for (final row in state.sections[sectionIndex].rows) ...[
-                      HostEventLifecycleRow(
-                        key: ValueKey<String>('host-event-row-${row.event.id}'),
-                        data: row,
-                        onPressed: () => onManageEvent(club, row.event),
-                      ),
-                      gapH10,
-                    ],
-                  ],
+                ],
+                if (state.pastError != null)
+                  CatchInlineErrorState.fromError(
+                    state.pastError!,
+                    context: AppErrorContext.event,
+                    onRetry: onRetryPast,
+                  )
+                else if (state.hasMorePast)
+                  Align(
+                    child: CatchButton(
+                      key: const ValueKey('host-events-load-more-past'),
+                      label: context.l10n.hostEventsTimelineLoadMoreHistory,
+                      variant: CatchButtonVariant.secondary,
+                      size: CatchButtonSize.sm,
+                      isLoading: state.loadingMorePast,
+                      onPressed: state.canLoadMorePast ? onLoadMorePast : null,
+                    ),
+                  ),
               ],
             ),
           ),

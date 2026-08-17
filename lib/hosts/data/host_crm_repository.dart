@@ -1595,7 +1595,7 @@ class HostCrmRepository {
   Future<HostAudiencePage> listContacts(
     String organizerId, {
     HostAudienceQuery query = const HostAudienceQuery(),
-    int limit = ReadLimitPolicy.historyPage,
+    int limit = ReadLimitPolicy.directoryPage,
   }) => _call(
     name: 'listOrganizerContacts',
     payload: ListOrganizerContactsCallableRequest(

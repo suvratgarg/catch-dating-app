@@ -56,19 +56,23 @@ HostHomeRouteState buildHostHomeRouteState({
 HostEventsWorkspaceState buildHostEventsWorkspaceState(
   AsyncValue<List<Event>> events, {
   required DateTime now,
-  required HostEventsLifecycleFilter selectedFilter,
   String? featuredEventId,
+  bool hasMoreActive = false,
+  bool hasMorePast = false,
+  bool loadingMoreActive = false,
+  bool loadingMorePast = false,
+  Object? activeLoadMoreError,
+  Object? pastError,
+  StackTrace? pastStackTrace,
 }) {
   if (events.isLoading) {
-    return HostEventsWorkspaceState(
+    return const HostEventsWorkspaceState(
       status: HostEventsWorkspaceStatus.loading,
-      selectedFilter: selectedFilter,
     );
   }
   if (events.hasError) {
     return HostEventsWorkspaceState(
       status: HostEventsWorkspaceStatus.error,
-      selectedFilter: selectedFilter,
       error: events.error,
       stackTrace: events.stackTrace,
     );
@@ -77,8 +81,14 @@ HostEventsWorkspaceState buildHostEventsWorkspaceState(
   return HostEventsWorkspaceState.fromEvents(
     events: events.asData?.value ?? const <Event>[],
     now: now,
-    selectedFilter: selectedFilter,
     featuredEventId: featuredEventId,
+    hasMoreActive: hasMoreActive,
+    hasMorePast: hasMorePast,
+    loadingMoreActive: loadingMoreActive,
+    loadingMorePast: loadingMorePast,
+    activeLoadMoreError: activeLoadMoreError,
+    pastError: pastError,
+    pastStackTrace: pastStackTrace,
   );
 }
 

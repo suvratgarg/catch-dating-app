@@ -6269,6 +6269,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostEventsListTextToday => 'TODAY';
 
   @override
+  String get hostEventsTimelineSchedule => 'Schedule';
+
+  @override
+  String get hostEventsTimelineHistory => 'History';
+
+  @override
+  String get hostEventsTimelineLoadMoreSchedule => 'Load more events';
+
+  @override
+  String get hostEventsTimelineLoadMoreHistory => 'Load older events';
+
+  @override
   String get hostsHostEventsScaffoldTitleCreateYourFirstClub =>
       'Create your first organizer';
 
@@ -13198,7 +13210,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersFilterSheetSubtitle =>
-      'Choose one computed segment or one of your tags. Counts follow the current name search.';
+      'Choose one computed segment or one of your tags. The result count updates after you apply it.';
 
   @override
   String get hostCustomersFilterGroupAttendance => 'Attendance';

@@ -77,25 +77,22 @@ class HostHomeScreenState {
   }
 }
 
-enum HostEventsLifecycleFilter {
-  upcoming('Upcoming'),
-  live('Live'),
-  past('Past');
-
-  const HostEventsLifecycleFilter(this.label);
-
-  final String label;
-}
-
 enum HostEventsWorkspaceStatus { loading, error, empty, populated }
 
 @immutable
 class HostEventsWorkspaceState {
   const HostEventsWorkspaceState({
     required this.status,
-    required this.selectedFilter,
-    this.sections = const <HostEventsMonthSection>[],
+    this.activeSections = const <HostEventsMonthSection>[],
+    this.pastSections = const <HostEventsMonthSection>[],
     this.repeatSource,
+    this.hasMoreActive = false,
+    this.hasMorePast = false,
+    this.loadingMoreActive = false,
+    this.loadingMorePast = false,
+    this.activeLoadMoreError,
+    this.pastError,
+    this.pastStackTrace,
     this.error,
     this.stackTrace,
   });
@@ -103,67 +100,71 @@ class HostEventsWorkspaceState {
   factory HostEventsWorkspaceState.fromEvents({
     required Iterable<Event> events,
     required DateTime now,
-    required HostEventsLifecycleFilter selectedFilter,
     String? featuredEventId,
+    bool hasMoreActive = false,
+    bool hasMorePast = false,
+    bool loadingMoreActive = false,
+    bool loadingMorePast = false,
+    Object? activeLoadMoreError,
+    Object? pastError,
+    StackTrace? pastStackTrace,
   }) {
     final active = events.where((event) => !event.isCancelled).toList();
     final past = active.where((event) => !event.endTime.isAfter(now)).toList()
       ..sort((a, b) => b.endTime.compareTo(a.endTime));
     final repeatSource = past.where(_canRepeatEvent).firstOrNull;
-    final filtered = switch (selectedFilter) {
-      HostEventsLifecycleFilter.upcoming =>
-        active.where((event) => event.startTime.isAfter(now)).toList()
-          ..sort((a, b) => a.startTime.compareTo(b.startTime)),
-      HostEventsLifecycleFilter.live =>
-        active
-            .where(
-              (event) =>
-                  !event.startTime.isAfter(now) && event.endTime.isAfter(now),
-            )
-            .toList()
-          ..sort((a, b) => a.startTime.compareTo(b.startTime)),
-      HostEventsLifecycleFilter.past => past,
-    };
-    final visibleEvents = featuredEventId == null
-        ? filtered
-        : filtered.where((event) => event.id != featuredEventId);
-    final sectionsByMonth = <String, List<HostEventLifecycleRowData>>{};
-    for (final event in visibleEvents) {
-      final key = '${event.startTime.year}-${event.startTime.month}';
-      sectionsByMonth
-          .putIfAbsent(key, () => <HostEventLifecycleRowData>[])
-          .add(HostEventLifecycleRowData.fromEvent(event: event, now: now));
-    }
-    final sections = <HostEventsMonthSection>[
-      for (final entry in sectionsByMonth.entries)
-        HostEventsMonthSection(
-          key: entry.key,
-          label: _monthSectionLabel(entry.value.first.event.startTime, now),
-          rows: List<HostEventLifecycleRowData>.unmodifiable(entry.value),
-        ),
-    ];
+    final currentAndUpcoming =
+        active.where((event) => event.endTime.isAfter(now)).toList()
+          ..sort((a, b) {
+            final aLive = !a.startTime.isAfter(now);
+            final bLive = !b.startTime.isAfter(now);
+            if (aLive != bLive) return aLive ? -1 : 1;
+            return a.startTime.compareTo(b.startTime);
+          });
+    final visibleActive = featuredEventId == null
+        ? currentAndUpcoming
+        : currentAndUpcoming.where((event) => event.id != featuredEventId);
+
+    final activeSections = _eventMonthSections(visibleActive, now);
+    final pastSections = _eventMonthSections(past, now);
 
     return HostEventsWorkspaceState(
       // The operational spotlight is the richer representation of the
-      // featured event, so a filter remains populated when that is its only
-      // event even though the condensed list has no rows.
-      status: filtered.isEmpty
+      // featured event, so the timeline remains populated when it has no
+      // additional condensed rows.
+      status: currentAndUpcoming.isEmpty && past.isEmpty && pastError == null
           ? HostEventsWorkspaceStatus.empty
           : HostEventsWorkspaceStatus.populated,
-      selectedFilter: selectedFilter,
-      sections: List<HostEventsMonthSection>.unmodifiable(sections),
+      activeSections: activeSections,
+      pastSections: pastSections,
       repeatSource: repeatSource,
+      hasMoreActive: hasMoreActive,
+      hasMorePast: hasMorePast,
+      loadingMoreActive: loadingMoreActive,
+      loadingMorePast: loadingMorePast,
+      activeLoadMoreError: activeLoadMoreError,
+      pastError: pastError,
+      pastStackTrace: pastStackTrace,
     );
   }
 
   final HostEventsWorkspaceStatus status;
-  final HostEventsLifecycleFilter selectedFilter;
-  final List<HostEventsMonthSection> sections;
+  final List<HostEventsMonthSection> activeSections;
+  final List<HostEventsMonthSection> pastSections;
   final Event? repeatSource;
+  final bool hasMoreActive;
+  final bool hasMorePast;
+  final bool loadingMoreActive;
+  final bool loadingMorePast;
+  final Object? activeLoadMoreError;
+  final Object? pastError;
+  final StackTrace? pastStackTrace;
   final Object? error;
   final StackTrace? stackTrace;
 
   bool get canRepeat => repeatSource != null;
+  bool get canLoadMoreActive => hasMoreActive && !loadingMoreActive;
+  bool get canLoadMorePast => hasMorePast && !loadingMorePast;
 
   String repeatLabel(AppLocalizations l10n) {
     final event = repeatSource;
@@ -176,23 +177,32 @@ class HostEventsWorkspaceState {
         : l10n.hostsHostHomeScreenStateVisiblecopyRepeatLabel(label: label);
   }
 
-  String emptyTitle(AppLocalizations l10n) => switch (selectedFilter) {
-    HostEventsLifecycleFilter.upcoming =>
-      l10n.hostsHostHomeScreenStateEmptytitleNoUpcomingEvents,
-    HostEventsLifecycleFilter.live =>
-      l10n.hostsHostHomeScreenStateEmptytitleNothingLiveRightNow,
-    HostEventsLifecycleFilter.past =>
-      l10n.hostsHostHomeScreenStateEmptytitleNoPastEventsYet,
-  };
+  String emptyTitle(AppLocalizations l10n) =>
+      l10n.hostsHostHomeScreenStateEmptytitleNoUpcomingEvents;
 
-  String emptyBody(AppLocalizations l10n) => switch (selectedFilter) {
-    HostEventsLifecycleFilter.upcoming =>
-      l10n.hostsHostHomeScreenStateEmptybodyCreateYourNextEvent,
-    HostEventsLifecycleFilter.live =>
-      l10n.hostsHostHomeScreenStateEmptybodyYourNextEventAppears,
-    HostEventsLifecycleFilter.past =>
-      l10n.hostsHostHomeScreenStateEmptybodyCompletedEventsAndTheir,
-  };
+  String emptyBody(AppLocalizations l10n) =>
+      l10n.hostsHostHomeScreenStateEmptybodyCreateYourNextEvent;
+}
+
+List<HostEventsMonthSection> _eventMonthSections(
+  Iterable<Event> events,
+  DateTime now,
+) {
+  final sectionsByMonth = <String, List<HostEventLifecycleRowData>>{};
+  for (final event in events) {
+    final key = '${event.startTime.year}-${event.startTime.month}';
+    sectionsByMonth
+        .putIfAbsent(key, () => <HostEventLifecycleRowData>[])
+        .add(HostEventLifecycleRowData.fromEvent(event: event, now: now));
+  }
+  return List<HostEventsMonthSection>.unmodifiable([
+    for (final entry in sectionsByMonth.entries)
+      HostEventsMonthSection(
+        key: entry.key,
+        label: _monthSectionLabel(entry.value.first.event.startTime, now),
+        rows: List<HostEventLifecycleRowData>.unmodifiable(entry.value),
+      ),
+  ]);
 }
 
 @immutable
