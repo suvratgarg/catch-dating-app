@@ -8,6 +8,7 @@ import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
+import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_restore_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_snapshot.dart';
@@ -720,6 +721,7 @@ void main() {
       customActivityLabel: 'Trail loop',
       interactionModel: 'unknown-model',
       paceName: 'unknown-pace',
+      routePlan: RouteEventPlan.customWalk.toJson(),
       meetingPoint: 'Bandstand',
       locationDetails: 'Meet by the steps',
       meetingLocationAddress: 'Bandra Bandstand',
@@ -761,6 +763,7 @@ void main() {
       ActivityKind.openActivity.defaultInteractionModel,
     );
     expect(state.pace, isNull);
+    expect(state.routePlan, RouteEventPlan.customWalk);
     expect(state.meetingPointText, 'Bandstand');
     expect(state.locationDetailsText, 'Meet by the steps');
     expect(state.locationState.startingPoint?.latitude, 19.043);
@@ -821,6 +824,7 @@ void main() {
       customActivityLabel: 'Trail loop',
       interactionModel: 'paired',
       paceName: 'easy',
+      routePlan: RouteEventPlan.socialRun,
       meetingPoint: 'Bandstand',
       locationDetails: 'Meet by the steps',
       meetingLocationAddress: 'Bandra Bandstand',
@@ -865,6 +869,10 @@ void main() {
     expect(draft.customActivityLabel, 'Trail loop');
     expect(draft.interactionModel, 'paired');
     expect(draft.paceName, 'easy');
+    expect(
+      RouteEventPlan.tryFromJson(draft.routePlan),
+      RouteEventPlan.socialRun,
+    );
     expect(draft.meetingPoint, 'Bandstand');
     expect(draft.locationDetails, 'Meet by the steps');
     expect(draft.meetingLocationAddress, 'Bandra Bandstand');

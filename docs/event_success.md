@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.19.0
+version: 1.20.0
 updated: 2026-08-17
 owner: recursive_audit_loop
 status: active
@@ -136,7 +136,7 @@ The founding packs are:
 
 | Pack | Operating units | Live cadence | Outcome/accountability | Pilot boundary |
 |---|---|---|---|---|
-| Social run | Pace pods | Timed legs | Completion plus finish sweep | Static route plan is the next decision; no live GPS tracking |
+| Social run | Pace pods plus a composable route plan | Timed legs | Completion plus finish sweep | Static route operations only; no live GPS tracking |
 | Pickleball/padel/racket | Pair assignments and bounded resources | Timed rounds | Ranked outcomes | Existing pair-rotation engine; no bracket/tournament engine |
 | Pub quiz | Host/imported teams | Quiz rounds | Numeric points and standings reveal | Not a question authoring, answer validation, or buzzer system |
 | Dinner | Tables | Courses | No competitive outcome | True table-seating optimization remains unsupported |
@@ -165,24 +165,37 @@ Attendees see standings only through the existing reveal gate. The first pilot
 does not need automatic team balancing to keep score, but it does need every
 team to have an arrival group before points can be recorded.
 
-#### Run route decision contract
+#### Route-based event plan contract
 
-“Run route” means the physical course, not a second Flutter navigation route.
-The first shippable model should be a static Host-authored `RunRoutePlan` with:
+A route plan describes how an event moves, stops, and stays accounted for. It
+is not a Flutter navigation route and it is not limited to running. The first
+shipped contract is a typed, static Host-authored `RouteEventPlan` persisted at
+`EventFormatSnapshot.activityDetails.routePlan`.
 
-- a route name and shape: loop, out-and-back, or point-to-point;
-- start and finish locations plus ordered route points;
-- derived or entered distance, surface (road/trail/mixed), and elevation note;
-- water, regroup, hazard, and turnaround markers;
-- pacer/sweep ownership and a short emergency note; and
-- a shareable attendee projection that reveals no private roster data.
+The plan composes six independent operational axes:
 
-The initial implementation must not claim turn-by-turn navigation, live GPS
-tracking, off-route alerts, or GPX fidelity. The map-first and checklist-first
-Figma explorations are the decision gate for authoring order and compact-device
-behavior. Persistence should use typed `activityDetails.routePlan` only after
-one direction is selected and its validation limits are added to the shared
-event contract.
+- movement: run, walk, ride, or mixed;
+- route shape: loop, out-and-back, or point-to-point;
+- group strategy: together, pace groups, or self-directed;
+- stop cadence: continuous, flexible stops, or hosted stops;
+- stop modules: water, regroup, venue, photo, viewpoint, hazard, and
+  turnaround; and
+- route roles: lead, sweep, pacer, stop host, marshal, and photographer.
+
+Activity kind selects only a useful default; it is not the capability gate.
+Social runs start with pace groups and a continuous cadence, walks start as one
+group with flexible stops, rides add marshal and turnaround operations, and bar
+crawls start as hosted point-to-point walks with venue stops. A custom event,
+including a photography walk, can opt into the same plan and then compose any
+of the axes. This keeps event taxonomy, live interaction model, and route
+operations orthogonal.
+
+The initial implementation does not store route names, coordinates, ordered
+waypoints, distance, surface, elevation, emergency notes, or attendee map
+projections. It must not claim turn-by-turn navigation, live GPS tracking,
+off-route alerts, route geocoding, or GPX fidelity. Those are later modules on
+top of the route-plan contract, not fields that should be guessed into the
+first operational configurator.
 
 #### Pilot activation contract
 

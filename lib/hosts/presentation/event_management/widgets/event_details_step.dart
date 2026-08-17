@@ -9,8 +9,10 @@ import 'package:catch_dating_app/core/widgets/catch_field_accordion.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_photo_picker.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/route_event_plan_editor.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -35,6 +37,8 @@ class EventDetailsStep extends StatefulWidget {
     required this.onInteractionModelChanged,
     required this.selectedPace,
     required this.onPaceChanged,
+    required this.routePlan,
+    required this.onRoutePlanChanged,
     this.externalBookingMode = false,
     this.externalBookingProvider = ExternalBookingProvider.generic,
     this.externalEventUrlController,
@@ -61,6 +65,8 @@ class EventDetailsStep extends StatefulWidget {
   final ValueChanged<EventInteractionModel> onInteractionModelChanged;
   final PaceLevel? selectedPace;
   final ValueChanged<PaceLevel?> onPaceChanged;
+  final RouteEventPlan? routePlan;
+  final ValueChanged<RouteEventPlan?> onRoutePlanChanged;
   final bool externalBookingMode;
   final ExternalBookingProvider externalBookingProvider;
   final TextEditingController? externalEventUrlController;
@@ -458,6 +464,13 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                   ),
                 ],
               ),
+              if (widget.selectedActivityKind == ActivityKind.openActivity ||
+                  widget.routePlan != null)
+                RouteEventPlanEditor(
+                  activityKind: widget.selectedActivityKind,
+                  plan: widget.routePlan,
+                  onChanged: widget.onRoutePlanChanged,
+                ),
             ],
           ),
         ],

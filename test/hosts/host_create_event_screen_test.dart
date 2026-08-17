@@ -27,6 +27,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
+import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
@@ -142,6 +143,65 @@ void main() {
         findsOneWidget,
       );
     });
+
+    testWidgets(
+      'route operations adapt across walks, crawls, and custom events',
+      (tester) async {
+        await _pumpCreateEventFlow(tester);
+        await _openCreateEventFlow(tester);
+
+        expect(find.text('Run · Pace groups · Continuous'), findsOneWidget);
+
+        await _tapActivityKind(tester, 'Walking');
+        expect(find.text('Walk · One group · Flexible stops'), findsOneWidget);
+
+        await _tapActivityKind(tester, 'Bar crawl');
+        expect(find.text('Walk · One group · Hosted stops'), findsOneWidget);
+        await _openCatchField(tester, 'Route operations');
+        expect(
+          find.byWidgetPredicate(
+            (widget) =>
+                widget is CatchField &&
+                widget.title == 'Stops to prepare' &&
+                widget.body != null &&
+                widget.body!.contains('Venue'),
+          ),
+          findsOneWidget,
+        );
+
+        await _tapActivityKind(tester, 'Pub quiz');
+        expect(find.text('Route plan'), findsNothing);
+
+        await _tapActivityKind(tester, 'Open activity');
+        expect(find.text('Route-based event'), findsOneWidget);
+        await tester.ensureVisible(
+          find.byKey(CreateEventFormKeys.routePlanEnabled),
+        );
+        await tester.tap(find.byKey(CreateEventFormKeys.routePlanEnabled));
+        await _pumpTestAnimation(tester);
+        await _openCatchField(tester, 'Route operations');
+        expect(
+          find.byWidgetPredicate(
+            (widget) =>
+                widget is CatchField &&
+                widget.title == 'Stops to prepare' &&
+                widget.body != null &&
+                widget.body!.contains('Photo spot'),
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.byWidgetPredicate(
+            (widget) =>
+                widget is CatchField &&
+                widget.title == 'Route roles' &&
+                widget.body != null &&
+                widget.body!.contains('Photographer'),
+          ),
+          findsOneWidget,
+        );
+      },
+    );
 
     testWidgets('route blocks users outside the club host team', (
       tester,
@@ -318,6 +378,10 @@ void main() {
         expect(fakeEventRepository.createdEvent!.capacityLimit, 18);
         expect(fakeEventRepository.createdEvent!.priceInPaise, 24950);
         expect(fakeEventRepository.createdEvent!.pace.name, 'moderate');
+        expect(
+          fakeEventRepository.createdEvent!.eventFormat.routePlan,
+          RouteEventPlan.socialRun,
+        );
         expect(fakeEventRepository.createdEvent!.constraints.minAge, 21);
         expect(fakeEventRepository.createdEvent!.constraints.maxAge, 35);
         expect(fakeEventRepository.createdEvent!.constraints.maxMen, isNull);

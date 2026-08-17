@@ -344,6 +344,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
         value: widget.toggled,
         onChanged: _isSaving ? null : widget.onToggle,
         contract: widget.contract,
+        contractExemption: widget.toggleContractExemption,
         semanticLabel: _title,
         status: _effectiveStatus,
         topPadding: 0,

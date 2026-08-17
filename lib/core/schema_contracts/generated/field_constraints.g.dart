@@ -3360,9 +3360,74 @@ abstract final class CatchContractConstraints {
     maximum: 100,
   );
 
-  static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetails = CatchContractFieldConstraints(
-    path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails',
-    valueTypes: <String>['object'],
+  static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanGroupStrategy = CatchContractFieldConstraints(
+    path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.groupStrategy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['together', 'paceGroups', 'selfDirected'],
+  );
+
+  static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanMovementMode = CatchContractFieldConstraints(
+    path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.movementMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['run', 'walk', 'ride', 'mixed'],
+  );
+
+  static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanRoleKinds = CatchContractFieldConstraints(
+    path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.roleKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+    minItems: 1,
+    maxItems: 6,
+    uniqueItems: true,
+  );
+
+  static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanRoleKindsItems = CatchContractFieldConstraints(
+    path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.roleKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+  );
+
+  static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanRouteShape = CatchContractFieldConstraints(
+    path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.routeShape',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['loop', 'outAndBack', 'pointToPoint'],
+  );
+
+  static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanStopCadence = CatchContractFieldConstraints(
+    path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.stopCadence',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'flexibleStops', 'hostedStops'],
+  );
+
+  static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanStopKinds = CatchContractFieldConstraints(
+    path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.stopKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+    minItems: 1,
+    maxItems: 7,
+    uniqueItems: true,
+  );
+
+  static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanStopKindsItems = CatchContractFieldConstraints(
+    path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.stopKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+  );
+
+  static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanVersion = CatchContractFieldConstraints(
+    path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.version',
+    required: true,
+    valueTypes: <String>['integer'],
   );
 
   static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityKind = CatchContractFieldConstraints(
@@ -7313,9 +7378,74 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
-  static const createEventCallablePayloadEventFormatActivityDetails = CatchContractFieldConstraints(
-    path: 'createEventCallablePayload.eventFormat.activityDetails',
-    valueTypes: <String>['object'],
+  static const createEventCallablePayloadEventFormatActivityDetailsRoutePlanGroupStrategy = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventFormat.activityDetails.routePlan.groupStrategy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['together', 'paceGroups', 'selfDirected'],
+  );
+
+  static const createEventCallablePayloadEventFormatActivityDetailsRoutePlanMovementMode = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventFormat.activityDetails.routePlan.movementMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['run', 'walk', 'ride', 'mixed'],
+  );
+
+  static const createEventCallablePayloadEventFormatActivityDetailsRoutePlanRoleKinds = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventFormat.activityDetails.routePlan.roleKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+    minItems: 1,
+    maxItems: 6,
+    uniqueItems: true,
+  );
+
+  static const createEventCallablePayloadEventFormatActivityDetailsRoutePlanRoleKindsItems = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventFormat.activityDetails.routePlan.roleKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+  );
+
+  static const createEventCallablePayloadEventFormatActivityDetailsRoutePlanRouteShape = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventFormat.activityDetails.routePlan.routeShape',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['loop', 'outAndBack', 'pointToPoint'],
+  );
+
+  static const createEventCallablePayloadEventFormatActivityDetailsRoutePlanStopCadence = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventFormat.activityDetails.routePlan.stopCadence',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'flexibleStops', 'hostedStops'],
+  );
+
+  static const createEventCallablePayloadEventFormatActivityDetailsRoutePlanStopKinds = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventFormat.activityDetails.routePlan.stopKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+    minItems: 1,
+    maxItems: 7,
+    uniqueItems: true,
+  );
+
+  static const createEventCallablePayloadEventFormatActivityDetailsRoutePlanStopKindsItems = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventFormat.activityDetails.routePlan.stopKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+  );
+
+  static const createEventCallablePayloadEventFormatActivityDetailsRoutePlanVersion = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventFormat.activityDetails.routePlan.version',
+    required: true,
+    valueTypes: <String>['integer'],
   );
 
   static const createEventCallablePayloadEventFormatActivityKind = CatchContractFieldConstraints(
@@ -11626,9 +11756,74 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
-  static const eventDocumentEventFormatActivityDetails = CatchContractFieldConstraints(
-    path: 'eventDocument.eventFormat.activityDetails',
-    valueTypes: <String>['object'],
+  static const eventDocumentEventFormatActivityDetailsRoutePlanGroupStrategy = CatchContractFieldConstraints(
+    path: 'eventDocument.eventFormat.activityDetails.routePlan.groupStrategy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['together', 'paceGroups', 'selfDirected'],
+  );
+
+  static const eventDocumentEventFormatActivityDetailsRoutePlanMovementMode = CatchContractFieldConstraints(
+    path: 'eventDocument.eventFormat.activityDetails.routePlan.movementMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['run', 'walk', 'ride', 'mixed'],
+  );
+
+  static const eventDocumentEventFormatActivityDetailsRoutePlanRoleKinds = CatchContractFieldConstraints(
+    path: 'eventDocument.eventFormat.activityDetails.routePlan.roleKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+    minItems: 1,
+    maxItems: 6,
+    uniqueItems: true,
+  );
+
+  static const eventDocumentEventFormatActivityDetailsRoutePlanRoleKindsItems = CatchContractFieldConstraints(
+    path: 'eventDocument.eventFormat.activityDetails.routePlan.roleKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+  );
+
+  static const eventDocumentEventFormatActivityDetailsRoutePlanRouteShape = CatchContractFieldConstraints(
+    path: 'eventDocument.eventFormat.activityDetails.routePlan.routeShape',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['loop', 'outAndBack', 'pointToPoint'],
+  );
+
+  static const eventDocumentEventFormatActivityDetailsRoutePlanStopCadence = CatchContractFieldConstraints(
+    path: 'eventDocument.eventFormat.activityDetails.routePlan.stopCadence',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'flexibleStops', 'hostedStops'],
+  );
+
+  static const eventDocumentEventFormatActivityDetailsRoutePlanStopKinds = CatchContractFieldConstraints(
+    path: 'eventDocument.eventFormat.activityDetails.routePlan.stopKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+    minItems: 1,
+    maxItems: 7,
+    uniqueItems: true,
+  );
+
+  static const eventDocumentEventFormatActivityDetailsRoutePlanStopKindsItems = CatchContractFieldConstraints(
+    path: 'eventDocument.eventFormat.activityDetails.routePlan.stopKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+  );
+
+  static const eventDocumentEventFormatActivityDetailsRoutePlanVersion = CatchContractFieldConstraints(
+    path: 'eventDocument.eventFormat.activityDetails.routePlan.version',
+    required: true,
+    valueTypes: <String>['integer'],
   );
 
   static const eventDocumentEventFormatActivityKind = CatchContractFieldConstraints(
@@ -47160,7 +47355,15 @@ abstract final class CatchContractConstraints {
     'adminUpdateEventDetailsCallablePayload.fields.crossPathsDiscoveryEnabled': adminUpdateEventDetailsCallablePayloadFieldsCrossPathsDiscoveryEnabled,
     'adminUpdateEventDetailsCallablePayload.fields.description': adminUpdateEventDetailsCallablePayloadFieldsDescription,
     'adminUpdateEventDetailsCallablePayload.fields.distanceKm': adminUpdateEventDetailsCallablePayloadFieldsDistanceKm,
-    'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetails,
+    'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.groupStrategy': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanGroupStrategy,
+    'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.movementMode': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanMovementMode,
+    'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.roleKinds': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanRoleKinds,
+    'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.roleKinds.items': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanRoleKindsItems,
+    'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.routeShape': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanRouteShape,
+    'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.stopCadence': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanStopCadence,
+    'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.stopKinds': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanStopKinds,
+    'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.stopKinds.items': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanStopKindsItems,
+    'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.version': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanVersion,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityKind': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityKind,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.customActivityLabel': adminUpdateEventDetailsCallablePayloadFieldsEventFormatCustomActivityLabel,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.defaultModuleIds': adminUpdateEventDetailsCallablePayloadFieldsEventFormatDefaultModuleIds,
@@ -47714,7 +47917,15 @@ abstract final class CatchContractConstraints {
     'createEventCallablePayload.description': createEventCallablePayloadDescription,
     'createEventCallablePayload.distanceKm': createEventCallablePayloadDistanceKm,
     'createEventCallablePayload.endTimeMillis': createEventCallablePayloadEndTimeMillis,
-    'createEventCallablePayload.eventFormat.activityDetails': createEventCallablePayloadEventFormatActivityDetails,
+    'createEventCallablePayload.eventFormat.activityDetails.routePlan.groupStrategy': createEventCallablePayloadEventFormatActivityDetailsRoutePlanGroupStrategy,
+    'createEventCallablePayload.eventFormat.activityDetails.routePlan.movementMode': createEventCallablePayloadEventFormatActivityDetailsRoutePlanMovementMode,
+    'createEventCallablePayload.eventFormat.activityDetails.routePlan.roleKinds': createEventCallablePayloadEventFormatActivityDetailsRoutePlanRoleKinds,
+    'createEventCallablePayload.eventFormat.activityDetails.routePlan.roleKinds.items': createEventCallablePayloadEventFormatActivityDetailsRoutePlanRoleKindsItems,
+    'createEventCallablePayload.eventFormat.activityDetails.routePlan.routeShape': createEventCallablePayloadEventFormatActivityDetailsRoutePlanRouteShape,
+    'createEventCallablePayload.eventFormat.activityDetails.routePlan.stopCadence': createEventCallablePayloadEventFormatActivityDetailsRoutePlanStopCadence,
+    'createEventCallablePayload.eventFormat.activityDetails.routePlan.stopKinds': createEventCallablePayloadEventFormatActivityDetailsRoutePlanStopKinds,
+    'createEventCallablePayload.eventFormat.activityDetails.routePlan.stopKinds.items': createEventCallablePayloadEventFormatActivityDetailsRoutePlanStopKindsItems,
+    'createEventCallablePayload.eventFormat.activityDetails.routePlan.version': createEventCallablePayloadEventFormatActivityDetailsRoutePlanVersion,
     'createEventCallablePayload.eventFormat.activityKind': createEventCallablePayloadEventFormatActivityKind,
     'createEventCallablePayload.eventFormat.customActivityLabel': createEventCallablePayloadEventFormatCustomActivityLabel,
     'createEventCallablePayload.eventFormat.defaultModuleIds': createEventCallablePayloadEventFormatDefaultModuleIds,
@@ -48311,7 +48522,15 @@ abstract final class CatchContractConstraints {
     'eventDocument.distanceKm': eventDocumentDistanceKm,
     'eventDocument.endTime._nanoseconds': eventDocumentEndTimeNanoseconds,
     'eventDocument.endTime._seconds': eventDocumentEndTimeSeconds,
-    'eventDocument.eventFormat.activityDetails': eventDocumentEventFormatActivityDetails,
+    'eventDocument.eventFormat.activityDetails.routePlan.groupStrategy': eventDocumentEventFormatActivityDetailsRoutePlanGroupStrategy,
+    'eventDocument.eventFormat.activityDetails.routePlan.movementMode': eventDocumentEventFormatActivityDetailsRoutePlanMovementMode,
+    'eventDocument.eventFormat.activityDetails.routePlan.roleKinds': eventDocumentEventFormatActivityDetailsRoutePlanRoleKinds,
+    'eventDocument.eventFormat.activityDetails.routePlan.roleKinds.items': eventDocumentEventFormatActivityDetailsRoutePlanRoleKindsItems,
+    'eventDocument.eventFormat.activityDetails.routePlan.routeShape': eventDocumentEventFormatActivityDetailsRoutePlanRouteShape,
+    'eventDocument.eventFormat.activityDetails.routePlan.stopCadence': eventDocumentEventFormatActivityDetailsRoutePlanStopCadence,
+    'eventDocument.eventFormat.activityDetails.routePlan.stopKinds': eventDocumentEventFormatActivityDetailsRoutePlanStopKinds,
+    'eventDocument.eventFormat.activityDetails.routePlan.stopKinds.items': eventDocumentEventFormatActivityDetailsRoutePlanStopKindsItems,
+    'eventDocument.eventFormat.activityDetails.routePlan.version': eventDocumentEventFormatActivityDetailsRoutePlanVersion,
     'eventDocument.eventFormat.activityKind': eventDocumentEventFormatActivityKind,
     'eventDocument.eventFormat.customActivityLabel': eventDocumentEventFormatCustomActivityLabel,
     'eventDocument.eventFormat.defaultModuleIds': eventDocumentEventFormatDefaultModuleIds,

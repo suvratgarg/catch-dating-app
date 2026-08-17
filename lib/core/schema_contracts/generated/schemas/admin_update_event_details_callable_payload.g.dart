@@ -218,6 +218,96 @@ const schemaAdminUpdateEventDetailsCallablePayloadSchema = <String, Object?>{
             'activityDetails': <String, Object?>{
               'type': 'object',
               'additionalProperties': true,
+              'properties': <String, Object?>{
+                'routePlan': <String, Object?>{
+                  'type': 'object',
+                  'description': 'Composable operations for an event that moves through a route. Activity kind remains the broader format authority.',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'version',
+                    'movementMode',
+                    'routeShape',
+                    'groupStrategy',
+                    'stopCadence',
+                    'stopKinds',
+                    'roleKinds',
+                  ],
+                  'properties': <String, Object?>{
+                    'version': <String, Object?>{
+                      'type': 'integer',
+                      'const': 1,
+                    },
+                    'movementMode': <String, Object?>{
+                      'type': 'string',
+                      'enum': <Object?>[
+                        'run',
+                        'walk',
+                        'ride',
+                        'mixed',
+                      ],
+                    },
+                    'routeShape': <String, Object?>{
+                      'type': 'string',
+                      'enum': <Object?>[
+                        'loop',
+                        'outAndBack',
+                        'pointToPoint',
+                      ],
+                    },
+                    'groupStrategy': <String, Object?>{
+                      'type': 'string',
+                      'enum': <Object?>[
+                        'together',
+                        'paceGroups',
+                        'selfDirected',
+                      ],
+                    },
+                    'stopCadence': <String, Object?>{
+                      'type': 'string',
+                      'enum': <Object?>[
+                        'continuous',
+                        'flexibleStops',
+                        'hostedStops',
+                      ],
+                    },
+                    'stopKinds': <String, Object?>{
+                      'type': 'array',
+                      'minItems': 1,
+                      'maxItems': 7,
+                      'uniqueItems': true,
+                      'items': <String, Object?>{
+                        'type': 'string',
+                        'enum': <Object?>[
+                          'water',
+                          'regroup',
+                          'venue',
+                          'photoSpot',
+                          'viewpoint',
+                          'hazard',
+                          'turnaround',
+                        ],
+                      },
+                    },
+                    'roleKinds': <String, Object?>{
+                      'type': 'array',
+                      'minItems': 1,
+                      'maxItems': 6,
+                      'uniqueItems': true,
+                      'items': <String, Object?>{
+                        'type': 'string',
+                        'enum': <Object?>[
+                          'routeLead',
+                          'sweep',
+                          'pacer',
+                          'stopHost',
+                          'marshal',
+                          'photographer',
+                        ],
+                      },
+                    },
+                  },
+                },
+              },
             },
           },
         },

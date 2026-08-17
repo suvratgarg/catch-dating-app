@@ -211,6 +211,41 @@ export interface EventFormatSnapshot {
   defaultModuleIds?: string[];
   eventSuccessPrimitives?: EventSuccessFormatPrimitives;
   activityDetails?: {
+    /**
+     * Composable operations for an event that moves through a route. Activity kind remains the broader format authority.
+     */
+    routePlan?: {
+      version: 1;
+      movementMode: "run" | "walk" | "ride" | "mixed";
+      routeShape: "loop" | "outAndBack" | "pointToPoint";
+      groupStrategy: "together" | "paceGroups" | "selfDirected";
+      stopCadence: "continuous" | "flexibleStops" | "hostedStops";
+      /**
+       * @minItems 1
+       * @maxItems 7
+       */
+      stopKinds: (
+        | "water"
+        | "regroup"
+        | "venue"
+        | "photoSpot"
+        | "viewpoint"
+        | "hazard"
+        | "turnaround"
+      )[];
+      /**
+       * @minItems 1
+       * @maxItems 6
+       */
+      roleKinds: (
+        | "routeLead"
+        | "sweep"
+        | "pacer"
+        | "stopHost"
+        | "marshal"
+        | "photographer"
+      )[];
+    };
     [k: string]: unknown;
   };
 }

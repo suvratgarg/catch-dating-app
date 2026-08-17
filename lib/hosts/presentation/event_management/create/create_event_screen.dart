@@ -21,6 +21,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/events/events.dart'
     show LocationPickerResult, LocationPickerScreen;
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
@@ -179,6 +180,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   EventInteractionModel _selectedInteractionModel =
       ActivityKind.socialRun.defaultInteractionModel;
   PaceLevel? _selectedPace;
+  RouteEventPlan? _routePlan = RouteEventPlan.socialRun;
   var _eventPhotos = const CreateEventPhotoDraftState.empty();
 
   // Step 3 — Rules
@@ -583,6 +585,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
         customActivityLabel: _customActivityLabelDraftValue,
         interactionModel: _interactionModelDraftValue,
         paceName: _selectedPace?.name,
+        routePlan: _routePlan,
         meetingPoint: _trimmedTextOrNull(_meetingPointController),
         locationDetails: _trimmedTextOrNull(_locationDetailsController),
         meetingLocationAddress: _locationState.meetingLocationAddress,
@@ -665,6 +668,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     _customActivityLabelController.text = restore.customActivityLabelText;
     _selectedInteractionModel = restore.interactionModel;
     _selectedPace = restore.pace;
+    _routePlan = restore.routePlan;
 
     // Where
     if (restore.meetingPointText != null) {
@@ -787,8 +791,14 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   }
 
   EventFormatSnapshot get _selectedEventFormat {
+    final routeDetails = _routePlan == null
+        ? const <String, Object?>{}
+        : <String, Object?>{'routePlan': _routePlan!.toJson()};
     if (_selectedActivityKind != ActivityKind.openActivity) {
-      return EventFormatSnapshot.fromActivityKind(_selectedActivityKind);
+      return EventFormatSnapshot.fromActivityKind(
+        _selectedActivityKind,
+        activityDetails: routeDetails,
+      );
     }
     return EventFormatSnapshot.custom(
       label: _customActivityLabelController.text,
@@ -796,6 +806,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       activityDetails: {
         context.l10n.hostsCreateEventScreenVisiblecopyConfiguredin:
             context.l10n.hostsCreateEventScreenVisiblecopyCreateEvent,
+        ...routeDetails,
       },
     );
   }
@@ -803,6 +814,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   void _applyClubDefaults(ClubHostDefaults defaults) {
     _selectedActivityKind = defaults.primaryActivityKind;
     _selectedInteractionModel = _selectedActivityKind.defaultInteractionModel;
+    _routePlan = RouteEventPlan.defaultForActivity(_selectedActivityKind);
     final policy = defaults.eventPolicy;
     final policyForm = CreateEventPolicyDefaultsFormState.fromDefaults(
       policy,
@@ -910,6 +922,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                       _selectedActivityKind = activityKind;
                       _selectedInteractionModel =
                           activityKind.defaultInteractionModel;
+                      _routePlan = RouteEventPlan.defaultForActivity(
+                        activityKind,
+                      );
                       if (!activityKind.isDistanceBased) {
                         _selectedPace = null;
                       }
@@ -932,6 +947,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                     }),
                     selectedPace: _selectedPace,
                     onPaceChanged: (p) => setState(() => _selectedPace = p),
+                    routePlan: _routePlan,
+                    onRoutePlanChanged: (plan) =>
+                        setState(() => _routePlan = plan),
                     externalBookingMode: widget.externalBookingMode,
                     externalBookingProvider: _externalBookingProvider,
                     externalEventUrlController: _externalEventUrlController,

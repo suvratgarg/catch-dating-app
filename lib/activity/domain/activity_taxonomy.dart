@@ -185,11 +185,15 @@ class EventFormatSnapshot {
         defaultPlaybookId: 'social_run_light',
       );
 
-  factory EventFormatSnapshot.fromActivityKind(ActivityKind activityKind) {
+  factory EventFormatSnapshot.fromActivityKind(
+    ActivityKind activityKind, {
+    Map<String, Object?> activityDetails = const {},
+  }) {
     return EventFormatSnapshot(
       activityKind: activityKind,
       interactionModel: activityKind.defaultInteractionModel,
       defaultPlaybookId: activityKind.defaultPlaybookId,
+      activityDetails: activityDetails,
     );
   }
 

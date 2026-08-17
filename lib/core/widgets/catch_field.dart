@@ -187,6 +187,7 @@ abstract class CatchField extends StatefulWidget {
     String? title,
     String? body,
     CatchContractFieldConstraints? contract,
+    String? contractExemption,
     required bool value,
     required ValueChanged<bool>? onChanged,
     int titleMaxLines,
@@ -756,6 +757,7 @@ abstract class CatchField extends StatefulWidget {
   String? get inputHint => _editConfig?.inputHint;
   bool get toggled => _toggleConfig?.value ?? false;
   ValueChanged<bool>? get onToggle => _toggleConfig?.onToggleChanged;
+  String? get toggleContractExemption => _toggleConfig?.contractExemption;
 
   /// Control revealed by a navigation-mode disclosure field.
   Widget? get control => _controlConfig?.control;
