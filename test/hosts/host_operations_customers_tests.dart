@@ -178,6 +178,7 @@ void _registerHostOperationsCustomersTests() {
       const HostCustomerDetailScreen(
         organizerId: 'organizer-1',
         contactId: 'contact-1',
+        initialDisplayName: 'Ananya Rao',
       ),
       overrides: [
         uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
@@ -196,6 +197,10 @@ void _registerHostOperationsCustomersTests() {
     expect(find.text('Customer details unavailable'), findsOneWidget);
     expect(find.text('Reload customer'), findsOneWidget);
     expect(find.text('Organizer unavailable'), findsNothing);
+    expect(
+      tester.widget<CatchTopBar>(find.byType(CatchTopBar)).title,
+      'Ananya Rao',
+    );
   });
 
   testWidgets('customer header compresses stats and export into overflow', (
@@ -233,6 +238,53 @@ void _registerHostOperationsCustomersTests() {
     await pumpFeatureUi(tester);
     expect(find.text('Export this audience'), findsOneWidget);
     expect(find.text('WhatsApp ready'), findsOneWidget);
+  });
+
+  testWidgets('customer search shows clear only while input is non-empty', (
+    tester,
+  ) async {
+    final club = buildClub(id: 'search-club', ownerUserId: _hostUid);
+    await _pumpHostScreen(
+      tester,
+      const HostCustomersScreen(),
+      overrides: [
+        ..._hostClubOverrides(owned: [club]),
+        hostCustomersDirectoryControllerProvider.overrideWith2(
+          (_) => _FixedHostCustomersDirectoryController(
+            [],
+            _emptyCustomerDirectoryState(),
+          ),
+        ),
+      ],
+    );
+
+    final search = find.byKey(const ValueKey('host-customers-search'));
+    Finder trailingIcon(IconData icon) =>
+        find.descendant(of: search, matching: find.byIcon(icon));
+
+    expect(trailingIcon(CatchIcons.close), findsNothing);
+    expect(trailingIcon(CatchIcons.clearCircle), findsNothing);
+
+    await tester.enterText(
+      find.descendant(of: search, matching: find.byType(TextField)),
+      'Ananya',
+    );
+    await tester.pump();
+
+    expect(trailingIcon(CatchIcons.clearCircle), findsOneWidget);
+    await tester.tap(trailingIcon(CatchIcons.clearCircle));
+    await tester.pump();
+
+    expect(trailingIcon(CatchIcons.clearCircle), findsNothing);
+    expect(
+      tester
+          .widget<TextField>(
+            find.descendant(of: search, matching: find.byType(TextField)),
+          )
+          .controller!
+          .text,
+      isEmpty,
+    );
   });
 
   testWidgets('compact customer header preserves its title at large text', (

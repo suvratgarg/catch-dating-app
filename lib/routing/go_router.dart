@@ -27,6 +27,7 @@ import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_create_club_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_route_arguments.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
@@ -897,6 +898,11 @@ StatefulShellRoute _hostShellRoute(
                 builder: (context, state) => HostCustomerDetailScreen(
                   organizerId: state.uri.queryParameters['organizerId'] ?? '',
                   contactId: state.pathParameters['contactId']!,
+                  initialDisplayName: switch (state.extra) {
+                    HostCustomerDetailRouteArguments(:final displayName) =>
+                      displayName,
+                    _ => null,
+                  },
                 ),
               ),
             ],

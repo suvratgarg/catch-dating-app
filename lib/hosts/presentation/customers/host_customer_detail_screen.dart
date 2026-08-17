@@ -31,10 +31,12 @@ class HostCustomerDetailScreen extends ConsumerStatefulWidget {
     super.key,
     required this.organizerId,
     required this.contactId,
+    this.initialDisplayName,
   });
 
   final String organizerId;
   final String contactId;
+  final String? initialDisplayName;
 
   @override
   ConsumerState<HostCustomerDetailScreen> createState() =>
@@ -51,10 +53,14 @@ class _HostCustomerDetailScreenState
     final detail = ref.watch(
       hostAudienceContactDetailProvider(widget.organizerId, widget.contactId),
     );
+    final initialDisplayName = widget.initialDisplayName?.trim();
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title:
             detail.asData?.value.displayName ??
+            (initialDisplayName?.isNotEmpty ?? false
+                ? initialDisplayName
+                : null) ??
             context.l10n.hostNavigationCustomers,
         leadingType: CatchTopBarLeading.back,
         divider: scrolledUnder,

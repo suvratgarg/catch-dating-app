@@ -429,10 +429,6 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
           showBackButton: true,
           onBack: onBackToSuccess,
           divider: scrolledUnder,
-          height: CatchScreenTopBar.heightFor(
-            context: context,
-            hasSubtitle: true,
-          ),
           title: screenState.eventTitle,
           subtitle: event.isCancelled
               ? context.l10n.hostsHostEventManageWorkspaceCancelled
