@@ -561,6 +561,37 @@ void main() {
       );
     },
   );
+
+  testWidgets(
+    'CatchField.inputActions keeps multiline values in the canonical value style',
+    (tester) async {
+      final controller = TextEditingController(text: 'Pablo and friends');
+      addTearDown(controller.dispose);
+
+      await tester.pumpWidget(
+        _wrap(
+          SizedBox(
+            width: 320,
+            child: CatchField.inputActions(
+              title: 'Description',
+              controller: controller,
+              open: false,
+              onOpenChanged: (_) {},
+              onCancel: () {},
+              onSubmit: () {},
+              maxLines: 3,
+              minLines: 2,
+            ),
+          ),
+        ),
+      );
+
+      final editable = tester.widget<EditableText>(find.byType(EditableText));
+      expect(editable.style.fontSize, CatchFieldTokens.valueFontSize);
+      expect(editable.style.fontWeight, FontWeight.w700);
+      expect(editable.style.height, CatchFieldTokens.multilineValueLineHeight);
+    },
+  );
 }
 
 Widget _wrap(Widget child, {ThemeData? theme, double textScale = 1}) {
