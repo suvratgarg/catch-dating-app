@@ -37,6 +37,64 @@ void runHostCreateEventLifecycleTests() {
     expect(find.text('REPORT'), findsNothing);
     expect(find.text('Event success'), findsNothing);
     expect(find.text('Open event success'), findsNothing);
+
+    await tester.scrollUntilVisible(
+      find.text('GUEST SOURCES'),
+      300,
+      scrollable: hostManageScrollable(),
+    );
+    expect(find.text('Website registration'), findsOneWidget);
+    expect(find.text('Imported guest list'), findsOneWidget);
+
+    await tester.scrollUntilVisible(
+      find.text('TEAM & ACCESS'),
+      300,
+      scrollable: hostManageScrollable(),
+    );
+    expect(find.text('Event staff access'), findsOneWidget);
+
+    await tester.tap(find.bySemanticsLabel('Open guest roster'));
+    await _pumpTestAnimation(tester);
+
+    final rosterPanel = find.byKey(
+      const ValueKey<String>('host_event_roster_drawer.panel'),
+    );
+    expect(
+      find.descendant(of: rosterPanel, matching: find.text('Guest roster')),
+      findsWidgets,
+    );
+    expect(
+      find.descendant(
+        of: rosterPanel,
+        matching: find.text('Imported guest list'),
+      ),
+      findsNothing,
+    );
+    expect(
+      find.descendant(
+        of: rosterPanel,
+        matching: find.text('Website registration'),
+      ),
+      findsNothing,
+    );
+    expect(
+      find.descendant(
+        of: rosterPanel,
+        matching: find.text('Event staff access'),
+      ),
+      findsNothing,
+    );
+    expect(
+      find.descendant(
+        of: rosterPanel,
+        matching: find.text('Import spreadsheet'),
+      ),
+      findsNothing,
+    );
+    expect(
+      find.descendant(of: rosterPanel, matching: find.text('Add walk-in')),
+      findsNothing,
+    );
   });
 
   testWidgets('past event opens recap without setup or live navigation', (
@@ -80,5 +138,22 @@ void runHostCreateEventLifecycleTests() {
       scrollable: hostManageScrollable(),
     );
     expect(find.text('Review event setup'), findsOneWidget);
+
+    await tester.tap(find.bySemanticsLabel('Open guest roster'));
+    await _pumpTestAnimation(tester);
+    final rosterPanel = find.byKey(
+      const ValueKey<String>('host_event_roster_drawer.panel'),
+    );
+    expect(
+      find.descendant(of: rosterPanel, matching: find.text('Add walk-in')),
+      findsNothing,
+    );
+    expect(
+      find.descendant(
+        of: rosterPanel,
+        matching: find.text('Import spreadsheet'),
+      ),
+      findsNothing,
+    );
   });
 }

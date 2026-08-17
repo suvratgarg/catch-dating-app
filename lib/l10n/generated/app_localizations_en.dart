@@ -11514,11 +11514,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'Reserved companion spots';
 
   @override
-  String get hostsOperationalRosterTitle => 'External and web guests';
+  String get hostsOperationalRosterTitle => 'Guest roster';
 
   @override
   String get hostsOperationalRosterSubtitle =>
-      'Run this event even when Catch did not handle the booking. Imported, manually added, and web-registered guests stay in one private roster.';
+      'Review arrivals, guest details, source, and status in one operational list.';
 
   @override
   String get hostsOperationalRosterInsightsLoading =>
@@ -11595,10 +11595,20 @@ class AppLocalizationsEn extends AppLocalizations {
       'Top Catch spender';
 
   @override
+  String get hostsOperationalRosterGuestIntakeTitle => 'Imported guest list';
+
+  @override
+  String get hostsOperationalRosterGuestIntakeBody =>
+      'Import a spreadsheet, add guests manually, or connect this event\'s booking source.';
+
+  @override
   String get hostsOperationalRosterImport => 'Import spreadsheet';
 
   @override
   String get hostsOperationalRosterAddGuest => 'Add guest';
+
+  @override
+  String get hostsOperationalRosterAddWalkIn => 'Add walk-in';
 
   @override
   String get hostsOperationalRosterForwardCsv => 'Forward CSV';
@@ -13467,6 +13477,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostEventManageWorkspacePreparation => 'Event preparation';
+
+  @override
+  String get hostsHostEventManagePreparationEventDetails => 'EVENT DETAILS';
+
+  @override
+  String get hostsHostEventManagePreparationGuestSources => 'GUEST SOURCES';
+
+  @override
+  String get hostsHostEventManagePreparationTeamAccess => 'TEAM & ACCESS';
 
   @override
   String get hostsHostEventManageWorkspaceRuntime => 'Live operations';

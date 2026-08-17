@@ -13448,7 +13448,7 @@
           "id": "setup_workspace",
           "kind": "populated",
           "status": "captured",
-          "source": "Preparation composes canonical capacity/revenue/policy field rows, compact host actions, optional private access, staff, event summary, and Event Success setup without a mode picker.",
+          "source": "Preparation composes canonical capacity/revenue/policy field rows, stable event details, a Guest sources section for website registration and imported lists, optional private access, a lazy Team and access staff disclosure, Event Success setup, and terminal host actions without a mode picker.",
           "tests": [
             "test/hosts/host_create_event_screen_test.dart"
           ],
@@ -14345,7 +14345,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "HostEventManageRouteScreen reads uid, club, and event providers, then HostEventManageScreenState resolves one Preparation, Live Operations, or Recap workspace. CatchTopBar shows only event title and lifecycle subtitle. HostEventRosterDrawer overlays the setup/live/report roster without replacing the workspace. Preparation owns configuration and host actions, Live owns the compact Event Success console, and Recap owns reviews/reporting with configuration available under Review event setup.",
+        "currentLayout": "HostEventManageRouteScreen reads uid, club, and event providers, then HostEventManageScreenState resolves one Preparation, Live Operations, or Recap workspace. CatchTopBar shows only event title and lifecycle subtitle. HostEventRosterDrawer overlays an operational roster without replacing the workspace. Preparation groups event details, website registration, imported guest sources, private access, staff access, Event Success setup, and host actions. Live owns the compact Event Success console plus a roster-only Add walk-in escape hatch. Recap owns reviews/reporting and a read-only roster, with configuration available under Review event setup.",
         "targetLayout": "Keep HostEventManageRouteScreen as the ARCH-SCREEN-001C route shell for aliases, loading/access/error, and deep-link inputs. Continue moving roster/private-access/invite-link/Event Success/report display waves and typed callbacks into provider-free adapters without reintroducing a persistent section picker or duplicating the lifecycle resolver.",
         "sections": [
           {
@@ -14476,7 +14476,7 @@
               "profile_error",
               "mutation_error"
             ],
-            "migration": "HostEventRosterDrawer owns lazy overlay presentation and preserves the underlying workspace element. Existing roster display states own lifecycle filters, search, rows, mutations, profile lookup, and report exports. Add compact/wide, swipe, long-name, and text-scale capture coverage without moving provider ownership into the drawer.",
+            "migration": "HostEventRosterDrawer owns lazy overlay presentation and preserves the underlying workspace element. HostGuestIntakeField keeps spreadsheet import, manual preparation entry, secure forwarding, and provider setup in Preparation. The drawer keeps lifecycle filters, search, rows, claims, check-in mutations, profile lookup, report exports, and only the Live Operations Add walk-in escape hatch. Add compact/wide, swipe, long-name, and text-scale capture coverage without moving provider ownership into the drawer.",
             "previewIds": [
               "HostEventManageRouteScreen/Route and section states"
             ]

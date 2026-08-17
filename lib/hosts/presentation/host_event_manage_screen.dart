@@ -256,14 +256,28 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         ],
         HostFullCapacityApron(event: event, roster: roster),
         gapH20,
-        hostActions,
-        gapH20,
-        HostPublicRegistrationCard(
+        HostEventSummaryCard(
           club: club,
           event: event,
-          mutation: publicRegistrationMutation,
-          onChanged: (enabled) =>
-              _setPublicRegistration(event: event, enabled: enabled),
+          title: context.l10n.hostsHostEventManagePreparationEventDetails,
+        ),
+        gapH20,
+        CatchSection.fieldRows(
+          title: context.l10n.hostsHostEventManagePreparationGuestSources,
+          children: [
+            HostPublicRegistrationCard(
+              club: club,
+              event: event,
+              mutation: publicRegistrationMutation,
+              onChanged: (enabled) =>
+                  _setPublicRegistration(event: event, enabled: enabled),
+            ),
+            HostGuestIntakeField(
+              eventId: event.id,
+              organizerId: event.clubId,
+              bookingProvider: event.eventOrigin?.provider,
+            ),
+          ],
         ),
         if (event.effectiveEventPolicy.usesInviteOnly) ...[
           gapH20,
@@ -301,11 +315,14 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
           ),
         ],
         gapH20,
-        HostEventStaffSection(eventId: event.id),
-        gapH20,
-        HostEventSummaryCard(club: club, event: event),
+        CatchSection.fieldRows(
+          title: context.l10n.hostsHostEventManagePreparationTeamAccess,
+          children: [HostEventStaffSection(eventId: event.id)],
+        ),
         gapH20,
         eventSuccessSetup,
+        gapH20,
+        hostActions,
       ],
       HostEventWorkspacePhase.runtime => <Widget>[
         EventSuccessHostSection(
@@ -380,14 +397,11 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       HostOperationalRosterPanel(
         eventId: event.id,
         organizerId: event.clubId,
-        allowRosterIntake: screenState.phase != HostEventWorkspacePhase.recap,
+        allowManualGuest: screenState.phase == HostEventWorkspacePhase.runtime,
         allowAttendanceChanges:
             screenState.phase != HostEventWorkspacePhase.recap,
         allowRuntimeClaimReview:
-            screenState.phase != HostEventWorkspacePhase.recap,
-        showProviderControls:
-            screenState.phase == HostEventWorkspacePhase.preparation,
-        bookingProvider: event.eventOrigin?.provider,
+            screenState.phase == HostEventWorkspacePhase.runtime,
       ),
       if (!event.isExternalCompanion) ...[
         gapH20,
@@ -1555,56 +1569,68 @@ class HostPublicRegistrationCard extends StatelessWidget {
         !policy.admissionPolicy.membershipRequired &&
         !policy.admissionPolicy.manualApprovalRequired;
     final enabled = event.publicRegistrationEnabled;
-    return CatchSection.contained(
-      title: context.l10n.hostsHostPublicRegistrationTitle,
-      subtitle: enabled
-          ? context.l10n.hostsHostPublicRegistrationSubtitleEnabled
-          : context.l10n.hostsHostPublicRegistrationSubtitleDisabled,
-      trailing: CatchBadge.functional(
-        label: enabled
-            ? context.l10n.hostsHostPublicRegistrationStatusOpen
-            : context.l10n.hostsHostPublicRegistrationStatusOff,
-        tone: enabled ? CatchBadgeTone.success : CatchBadgeTone.neutral,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            !supportsStandaloneRegistration
-                ? context.l10n.hostsHostPublicRegistrationBodyUnsupported
-                : organizerPublished
-                ? context.l10n.hostsHostPublicRegistrationBodyPublished
-                : context.l10n.hostsHostPublicRegistrationBodyNeedsPage,
-            style: CatchTextStyles.supporting(
-              context,
-              color: CatchTokens.of(context).ink2,
+    return CatchFieldLanes.single(
+      child: CatchField.control(
+        key: const ValueKey<String>('host_event_website_registration_field'),
+        title: context.l10n.hostsHostPublicRegistrationTitle,
+        body: enabled
+            ? context.l10n.hostsHostPublicRegistrationSubtitleEnabled
+            : context.l10n.hostsHostPublicRegistrationSubtitleDisabled,
+        icon: CatchIcons.languageOutlined,
+        contractExemption:
+            'Disclosure and mutation surface for server-owned public event '
+            'registration; the field itself does not persist a scalar value.',
+        control: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: CatchBadge.functional(
+                label: enabled
+                    ? context.l10n.hostsHostPublicRegistrationStatusOpen
+                    : context.l10n.hostsHostPublicRegistrationStatusOff,
+                tone: enabled ? CatchBadgeTone.success : CatchBadgeTone.neutral,
+              ),
             ),
-          ),
-          gapH12,
-          CatchButton(
-            label: enabled
-                ? context.l10n.hostsHostPublicRegistrationActionDisable
-                : context.l10n.hostsHostPublicRegistrationActionEnable,
-            onPressed:
-                mutation.isPending ||
-                    ((!organizerPublished || !supportsStandaloneRegistration) &&
-                        !enabled)
-                ? null
-                : () => onChanged(!enabled),
-            isLoading: mutation.isPending,
-            variant: enabled
-                ? CatchButtonVariant.secondary
-                : CatchButtonVariant.primary,
-            fullWidth: true,
-          ),
-          if (mutation.hasError) ...[
             gapH8,
-            CatchErrorBanner.fromError(
-              (mutation as MutationError).error,
-              context: AppErrorContext.event,
+            Text(
+              !supportsStandaloneRegistration
+                  ? context.l10n.hostsHostPublicRegistrationBodyUnsupported
+                  : organizerPublished
+                  ? context.l10n.hostsHostPublicRegistrationBodyPublished
+                  : context.l10n.hostsHostPublicRegistrationBodyNeedsPage,
+              style: CatchTextStyles.supporting(
+                context,
+                color: CatchTokens.of(context).ink2,
+              ),
             ),
+            gapH12,
+            CatchButton(
+              label: enabled
+                  ? context.l10n.hostsHostPublicRegistrationActionDisable
+                  : context.l10n.hostsHostPublicRegistrationActionEnable,
+              onPressed:
+                  mutation.isPending ||
+                      ((!organizerPublished ||
+                              !supportsStandaloneRegistration) &&
+                          !enabled)
+                  ? null
+                  : () => onChanged(!enabled),
+              isLoading: mutation.isPending,
+              variant: enabled
+                  ? CatchButtonVariant.secondary
+                  : CatchButtonVariant.primary,
+              fullWidth: true,
+            ),
+            if (mutation.hasError) ...[
+              gapH8,
+              CatchErrorBanner.fromError(
+                (mutation as MutationError).error,
+                context: AppErrorContext.event,
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
@@ -1615,10 +1641,12 @@ class HostEventSummaryCard extends StatelessWidget {
     super.key,
     required this.club,
     required this.event,
+    this.title,
   });
 
   final Club club;
   final Event event;
+  final String? title;
 
   @override
   Widget build(BuildContext context) {
@@ -1631,6 +1659,7 @@ class HostEventSummaryCard extends StatelessWidget {
 
     return CatchSection.fieldRows(
       first: true,
+      title: title,
       children: [
         CatchField.read(
           icon: CatchIcons.groupsRounded,

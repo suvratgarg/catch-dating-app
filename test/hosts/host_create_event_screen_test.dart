@@ -973,6 +973,9 @@ void main() {
         await _pumpTestAnimation(tester);
 
         expect(publicProfiles.fetchPublicProfilesCalls, hasLength(1));
+        expect(find.text('Add walk-in'), findsOneWidget);
+        expect(find.text('Import spreadsheet'), findsNothing);
+        expect(find.text('Forward CSV'), findsNothing);
         expect(find.text('Check-in QR'), findsOneWidget);
         await tester.tap(find.text('Check-in QR'));
         await _pumpHostActionFrame(tester);

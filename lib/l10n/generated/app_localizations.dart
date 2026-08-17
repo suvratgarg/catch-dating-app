@@ -17878,13 +17878,13 @@ abstract class AppLocalizations {
   /// Title for the standalone Host operational roster.
   ///
   /// In en, this message translates to:
-  /// **'External and web guests'**
+  /// **'Guest roster'**
   String get hostsOperationalRosterTitle;
 
-  /// Explanation of independent Host roster sources.
+  /// Explanation of the lifecycle-specific operational guest roster.
   ///
   /// In en, this message translates to:
-  /// **'Run this event even when Catch did not handle the booking. Imported, manually added, and web-registered guests stay in one private roster.'**
+  /// **'Review arrivals, guest details, source, and status in one operational list.'**
   String get hostsOperationalRosterSubtitle;
 
   /// Non-blocking loading copy for manager-only live roster enrichment.
@@ -18010,6 +18010,18 @@ abstract class AppLocalizations {
   /// **'Top Catch spender'**
   String get hostsOperationalRosterInsightTopCatchSpender;
 
+  /// Preparation disclosure for importing or manually adding guests.
+  ///
+  /// In en, this message translates to:
+  /// **'Imported guest list'**
+  String get hostsOperationalRosterGuestIntakeTitle;
+
+  /// Concise summary of external guest intake options.
+  ///
+  /// In en, this message translates to:
+  /// **'Import a spreadsheet, add guests manually, or connect this event\'\'s booking source.'**
+  String get hostsOperationalRosterGuestIntakeBody;
+
   /// CTA to import a Host roster spreadsheet.
   ///
   /// In en, this message translates to:
@@ -18021,6 +18033,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add guest'**
   String get hostsOperationalRosterAddGuest;
+
+  /// Runtime action to add an unexpected guest without exposing setup-only import controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Add walk-in'**
+  String get hostsOperationalRosterAddWalkIn;
 
   /// CTA to create secure per-event email or WhatsApp roster-forwarding instructions.
   ///
@@ -20982,6 +21000,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Event preparation'**
   String get hostsHostEventManageWorkspacePreparation;
+
+  /// Preparation section title for stable event facts.
+  ///
+  /// In en, this message translates to:
+  /// **'EVENT DETAILS'**
+  String get hostsHostEventManagePreparationEventDetails;
+
+  /// Preparation section title for website registration and imported guest intake.
+  ///
+  /// In en, this message translates to:
+  /// **'GUEST SOURCES'**
+  String get hostsHostEventManagePreparationGuestSources;
+
+  /// Preparation section title for temporary event staff access.
+  ///
+  /// In en, this message translates to:
+  /// **'TEAM & ACCESS'**
+  String get hostsHostEventManagePreparationTeamAccess;
 
   /// Concise lifecycle subtitle while Host runtime controls are relevant.
   ///

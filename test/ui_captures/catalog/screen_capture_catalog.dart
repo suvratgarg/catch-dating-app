@@ -4247,6 +4247,9 @@ EventSuccessPlan _hostManageLivePlanForModule({
 
 List<Object> _hostManageLiveWindowProviderOverrides() => [
   uidProvider.overrideWith((ref) => Stream.value(_captureViewerUid)),
+  appConnectivityProvider.overrideWith(
+    (ref) => Stream.value(const <ConnectivityResult>[ConnectivityResult.wifi]),
+  ),
   watchUserProfileProvider.overrideWith((ref) => Stream.value(_captureViewer)),
   watchEventProvider(
     _hostLiveWindowEvent.id,
@@ -5890,6 +5893,29 @@ final _hostParticipationRepository = FakeEventParticipationRepository()
   ..eventParticipations[_hostEvent.id] = _hostParticipations;
 final _hostPublicProfileRepository = FakePublicProfileRepository()
   ..profiles = _hostGuestProfiles;
+final _hostOperationalAttendees = [
+  for (final indexed in _hostParticipations.indexed)
+    if (indexed.$2.status != EventParticipationStatus.cancelled &&
+        indexed.$2.status != EventParticipationStatus.deleted)
+      EventAttendee(
+        id: 'host-attendee-${indexed.$1}',
+        eventId: _hostEvent.id,
+        clubId: _hostEvent.clubId,
+        organizerId: _captureViewerUid,
+        displayName: _hostGuestProfiles[indexed.$1].name,
+        searchName: _hostGuestProfiles[indexed.$1].name.toLowerCase(),
+        source: EventAttendeeSource.catchBooking,
+        status: switch (indexed.$2.status) {
+          EventParticipationStatus.waitlisted => EventAttendeeStatus.waitlisted,
+          EventParticipationStatus.attended => EventAttendeeStatus.checkedIn,
+          _ => EventAttendeeStatus.registered,
+        },
+        linkedUid: indexed.$2.uid,
+        createdAt: indexed.$2.createdAt,
+        updatedAt: indexed.$2.updatedAt,
+        checkedInAt: indexed.$2.attendedAt,
+      ),
+];
 final _hostAttendeeIds = [
   for (final participation in _hostParticipations)
     if (participation.status != EventParticipationStatus.waitlisted)
@@ -12133,7 +12159,20 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['hostAppEventManageScreen'],
     device: CaptureDevice.iphone17Pro,
     providerOverrides: [
-      uidProvider.overrideWith((ref) => Stream.value(_captureViewerUid)),
+      uidProvider.overrideWithValue(
+        const AsyncData<String?>(_captureViewerUid),
+      ),
+      appConnectivityProvider.overrideWith(
+        (ref) =>
+            Stream.value(const <ConnectivityResult>[ConnectivityResult.wifi]),
+      ),
+      hostAttendanceOutboxStoreProvider.overrideWithValue(
+        _CaptureHostAttendanceOutboxStore(),
+      ),
+      firebaseFirestoreProvider.overrideWithValue(FakeFirebaseFirestore()),
+      firebaseFunctionsProvider.overrideWithValue(
+        _CaptureFirebaseFunctions(const <String, Object?>{}),
+      ),
       watchUserProfileProvider.overrideWith(
         (ref) => Stream.value(_captureViewer),
       ),
@@ -12142,6 +12181,20 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       ).overrideWith((ref) => Stream.value(_hostEvent)),
       eventParticipationRepositoryProvider.overrideWithValue(
         _hostParticipationRepository,
+      ),
+      watchEventAttendeesProvider(
+        _hostEvent.id,
+      ).overrideWith((ref) => Stream.value(_hostOperationalAttendees)),
+      hostEventRosterInsightsProvider(_hostEvent.id).overrideWith(
+        (ref) async => HostEventRosterInsights(
+          eventId: _hostEvent.id,
+          organizerId: _captureViewerUid,
+          cutoffAt: _hostEvent.startTime,
+          sourceCoverage: HostRosterInsightCoverage.exact,
+          spendCoverage: HostRosterSpendCoverage.catchPaymentsOnly,
+          rows: const <HostEventRosterInsight>[],
+          computedAt: _captureNow,
+        ),
       ),
       publicProfileRepositoryProvider.overrideWithValue(
         _hostPublicProfileRepository,
@@ -12425,6 +12478,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       watchEventProvider(
         _hostEvent.id,
       ).overrideWith((ref) => Stream.value(_hostEvent)),
+      watchReviewsForEventProvider(
+        _hostEvent.id,
+      ).overrideWith((ref) => Stream.value(const <Review>[])),
       eventParticipationRepositoryProvider.overrideWithValue(
         _hostParticipationRepository,
       ),
