@@ -1,6 +1,6 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.22.0
+version: 1.23.0
 updated: 2026-08-17
 owner: recursive_audit_loop
 status: active
@@ -153,7 +153,8 @@ is `docs/migrations/clubs_to_organizers.md`.
 
 | Function | Type | Initiator | Writes | Notes |
 |---|---|---|---|---|
-| `updateUserProfile` | Callable | `UserProfileRepository.updateUserProfile` | `users/{uid}` | Validates profile patches with generated Ajv contract validators; owns complex profile edits after initial create; rate-limited at 60/minute. |
+| `updateUserProfile` | Callable | `UserProfileRepository.updateUserProfile` | `users/{uid}` | Validates profile patches with generated Ajv contract validators; owns complex profile edits after initial create; rate-limited at 60/minute. Verified phone is excluded from the patch contract and initial profile creation must match the Firebase Auth phone claim. |
+| `onEventParticipationRosterProjected` | Firestore trigger on `eventParticipations/{participationId}` writes | Backend | `eventAttendees/{attendeeId}` | Uses Firebase Auth phone only as an event-scoped convergence key for a row the organizer already supplied. A Catch booking projects public display identity and operational status but never copies private-profile phone or email into Host data. |
 | `syncPublicProfile` | Firestore trigger on `users/{uid}` writes | Backend | `publicProfiles/{uid}` set/delete, authored `reviews/{reviewId}.reviewerName` updates | Sole owner of dating/user-identity projections. Uses `displayName`, then first name, then legacy fallback; projects grouped `profilePhotos` and nested `activityPreferences.running`. It must not update organizer-manager identity. Existing stale public profiles can be repaired with `node tool/data/recompute_public_profiles.mjs --env dev --apply`; existing stale review author names can be repaired with `node tool/data/recompute_review_author_profiles.mjs --env dev --apply` after `npm --prefix functions run build`. |
 | `syncHostProfile` | Firestore trigger on `hostProfiles/{uid}` writes | Backend | hosted `organizers/{organizerId}.hostName`, `hostAvatarUrl`, `hostProfiles[]` plus legacy club shadow | Sole owner of professional host display projections. Uses `hostProfiles/{uid}` only, never the dating public/private profile. |
 | `generateProfilePhotoThumbnail` | Storage trigger on `users/{uid}/photos/{fileName}` finalize | Backend | Storage `users/{uid}/photoThumbnails/{fileName}`, `users/{uid}.profilePhotos` | Generates 160px JPEG thumbnails for avatar-scale surfaces. Dashboard/event-detail hype avatars must use thumbnail URLs, not full profile photos. Existing beta data can be backfilled with `npm --prefix functions run backfill:profile-thumbnails -- --apply` after setting `FIREBASE_STORAGE_BUCKET`; the script updates grouped `profilePhotos`. |

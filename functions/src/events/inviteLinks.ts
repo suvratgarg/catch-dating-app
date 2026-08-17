@@ -12,7 +12,6 @@ import {
   EventParticipationDocument,
   EventInviteLinkDocument,
   EventInviteLinkSecretDocument,
-  UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {
   CreateEventInviteLinkCallablePayload,
@@ -276,16 +275,18 @@ export async function createAttendeeInviteLinkHandler(
     .doc(`${payload.eventId}_${actorUid}`);
   const participationRef = db.collection("eventParticipations")
     .doc(eventParticipationId(payload.eventId, actorUid));
-  const userRef = db.collection("users").doc(actorUid);
+  const authPhone = normalizeRosterPhone(
+    typeof request.auth?.token.phone_number === "string" ?
+      request.auth.token.phone_number : null
+  ).value;
   const inviteToken = eventInviteToken(inviteRef.id);
   let returnedToken = inviteToken;
   await db.runTransaction(async (tx) => {
-    const [eventSnap, runtimeSnap, participationSnap, userSnap] =
+    const [eventSnap, runtimeSnap, participationSnap] =
       await Promise.all([
         tx.get(eventRef),
         tx.get(runtimeRef),
         tx.get(participationRef),
-        tx.get(userRef),
       ]);
     if (!eventSnap.exists) {
       throw new HttpsError(
@@ -316,12 +317,10 @@ export async function createAttendeeInviteLinkHandler(
         "Verify your event access before creating a referral link."
       );
     }
-    const user = userSnap.data() as UserProfileDocument | undefined;
-    const phone = normalizeRosterPhone(user?.phoneNumber).value;
     const attendeeId = validRuntime ? runtime!.eventAttendeeId! :
       eventAttendeeId(
         payload.eventId,
-        phone ? `phone:${phone}` : `uid:${actorUid}`
+        authPhone ? `phone:${authPhone}` : `uid:${actorUid}`
       );
     const [attendeeSnap, edgeSnap] = await Promise.all([
       tx.get(db.collection("eventAttendees").doc(attendeeId)),

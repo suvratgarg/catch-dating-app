@@ -438,11 +438,6 @@ const schemaUpdateUserProfileCallablePayloadSchema =
             'x-catch-catalog': '../catalogs/profile_prompts.json',
           },
         },
-        'phoneNumber': <String, Object?>{
-          'type': 'string',
-          'minLength': 1,
-          'maxLength': 32,
-        },
         'dateOfBirth': <String, Object?>{
           'type': 'integer',
           'minimum': 0,

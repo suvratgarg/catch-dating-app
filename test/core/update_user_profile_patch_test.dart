@@ -24,7 +24,6 @@ void main() {
         email: 'x@example.test',
         instagramHandle: 'x',
         profilePrompts: const [],
-        phoneNumber: '+10000000000',
         dateOfBirth: DateTime.utc(1990),
         gender: Gender.other,
         profileComplete: true,

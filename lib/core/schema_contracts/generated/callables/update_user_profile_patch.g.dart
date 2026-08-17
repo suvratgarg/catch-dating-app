@@ -19,7 +19,6 @@ final class UpdateUserProfilePatch {
     String? email,
     Object? instagramHandle = unsetSentinel,
     List<ProfilePromptAnswer>? profilePrompts,
-    String? phoneNumber,
     DateTime? dateOfBirth,
     Gender? gender,
     bool? profileComplete,
@@ -63,8 +62,6 @@ final class UpdateUserProfilePatch {
            'instagramHandle': instagramHandle,
          if (profilePrompts != null)
            'profilePrompts': profilePrompts.map((e) => _updateUserProfilePatchJsonValue(e.toJson())).toList(),
-         if (phoneNumber != null)
-           'phoneNumber': phoneNumber,
          if (dateOfBirth != null)
            'dateOfBirth': dateOfBirth.millisecondsSinceEpoch,
          if (gender != null)

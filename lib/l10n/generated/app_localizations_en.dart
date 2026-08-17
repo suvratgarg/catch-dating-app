@@ -12989,7 +12989,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersVerifiedDetailsManagedByCatch =>
-      'Verified contact details come from the linked Catch account and cannot be edited here.';
+      'Contact details shown here come from this organizer’s records. Linking a Catch account does not reveal additional profile fields.';
 
   @override
   String get hostCustomersUnverifiedContactDetails =>

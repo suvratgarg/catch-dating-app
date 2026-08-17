@@ -328,7 +328,7 @@ service cloud.firestore {
         && data.profilePrompts is list
         && data.profilePrompts.size() <= 3
 	        && optionalString(data, 'instagramHandle')
-	        && data.phoneNumber is string
+	        && data.phoneNumber == request.auth.token.phone_number
 	        && optionalString(data, 'countryCode')
 	        && data.dateOfBirth is timestamp
         && data.gender in ['man', 'woman', 'nonBinary', 'other']
@@ -435,8 +435,7 @@ service cloud.firestore {
         && request.auth.uid == uid
         && !isDeletedUser(uid)
         && hasValidUserShape(request.resource.data)
-        && !hasField(request.resource.data, 'deleted')
-        && !hasField(request.resource.data, 'deletedAt');
+        && !request.resource.data.keys().hasAny(['deleted', 'deletedAt']);
     }
 
     function userChangedKeys() {

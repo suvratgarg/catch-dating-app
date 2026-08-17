@@ -19,7 +19,6 @@ export interface UpdateUserProfileCallablePayload {
      * @maxItems 3
      */
     profilePrompts?: ProfilePromptAnswer[];
-    phoneNumber?: string;
     /**
      * Milliseconds since epoch before conversion to Firestore Timestamp.
      */

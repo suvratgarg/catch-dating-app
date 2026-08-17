@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.28.0
+version: 1.29.0
 updated: 2026-08-17
 owner: recursive_audit_loop
 status: active
@@ -611,6 +611,10 @@ replaces `eventParticipations`:
 - raw contact fields are private to an authorized organizer manager and
   callable/Admin support boundaries. Public website, Consumer discovery and
   aggregate analytics cannot enumerate them;
+- a Catch booking may use the Firebase Auth verified phone only to converge
+  with an event row whose contact data the organizer already supplied. It
+  never copies `users/{uid}.phoneNumber` or `users/{uid}.email` into a new
+  attendee row, organizer event edge, or CRM contact;
 - the production website snapshot uses Firestore `count()` aggregation queries
   for registered, checked-in, and waitlisted totals. Only free,
   open-admission events with an explicit Host publication switch qualify; paid,

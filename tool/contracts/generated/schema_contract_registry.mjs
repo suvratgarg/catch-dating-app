@@ -37897,11 +37897,6 @@ export const updateUserProfileCallablePayloadSchema = {
             "x-catch-catalog": "../catalogs/profile_prompts.json"
           }
         },
-        "phoneNumber": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 32
-        },
         "dateOfBirth": {
           "type": "integer",
           "minimum": 0,

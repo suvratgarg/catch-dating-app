@@ -43383,14 +43383,6 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
-  static const updateUserProfilePatchPhoneNumber = CatchContractFieldConstraints(
-    path: 'updateUserProfilePatch.phoneNumber',
-    maxLength: 32,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const updateUserProfilePatchPrefsClubUpdates = CatchContractFieldConstraints(
     path: 'updateUserProfilePatch.prefsClubUpdates',
     valueTypes: <String>['boolean'],
@@ -52113,7 +52105,6 @@ abstract final class CatchContractConstraints {
     'updateUserProfilePatch.minAgePreference': updateUserProfilePatchMinAgePreference,
     'updateUserProfilePatch.name': updateUserProfilePatchName,
     'updateUserProfilePatch.occupation': updateUserProfilePatchOccupation,
-    'updateUserProfilePatch.phoneNumber': updateUserProfilePatchPhoneNumber,
     'updateUserProfilePatch.prefsClubUpdates': updateUserProfilePatchPrefsClubUpdates,
     'updateUserProfilePatch.prefsCrossPathsInvitations': updateUserProfilePatchPrefsCrossPathsInvitations,
     'updateUserProfilePatch.prefsEventReminders': updateUserProfilePatchPrefsEventReminders,

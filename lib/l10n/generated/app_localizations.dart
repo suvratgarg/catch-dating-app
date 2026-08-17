@@ -20251,10 +20251,10 @@ abstract class AppLocalizations {
   /// **'Save details'**
   String get hostCustomersSaveDetails;
 
-  /// Boundary for verified linked customer identity details.
+  /// Boundary between organizer-owned contact details and a linked Catch profile.
   ///
   /// In en, this message translates to:
-  /// **'Verified contact details come from the linked Catch account and cannot be edited here.'**
+  /// **'Contact details shown here come from this organizer’s records. Linking a Catch account does not reveal additional profile fields.'**
   String get hostCustomersVerifiedDetailsManagedByCatch;
 
   /// Labels manually entered customer endpoints as unverified.

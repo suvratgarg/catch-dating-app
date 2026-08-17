@@ -1,28 +1,30 @@
 import * as admin from "firebase-admin";
+import * as logger from "firebase-functions/logger";
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import {
   EventAttendeeDocument,
   EventParticipationDocument,
   PublicProfileDocument,
-  UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {publicDisplayName} from "../shared/profileProjection";
 import {eventAttendeeId, normalizeRosterPhone} from "./eventAttendees";
 
 interface ProjectionDeps {
   firestore: () => FirebaseFirestore.Firestore;
+  auth: () => admin.auth.Auth;
   timestamp: () => FirebaseFirestore.Timestamp;
 }
 
 const defaultDeps: ProjectionDeps = {
   firestore: () => admin.firestore(),
+  auth: () => admin.auth(),
   timestamp: () => admin.firestore.Timestamp.now(),
 };
 
 /**
  * Projects a UID-backed Consumer participation into the Host operational
- * roster. Phone identity is event-scoped and converges with a prior Host
- * import when the same normalized number was supplied.
+ * roster. A verified Auth phone may converge with a prior Host-supplied row,
+ * but a Catch booking never discloses private-profile contact fields to the
+ * organizer.
  */
 export async function projectEventParticipationToAttendee(
   before: EventParticipationDocument | undefined,
@@ -32,14 +34,13 @@ export async function projectEventParticipationToAttendee(
   const participation = after ?? before;
   if (!participation) return;
   const db = deps.firestore();
-  const [userSnap, profileSnap] = await Promise.all([
-    db.collection("users").doc(participation.uid).get(),
+  const [verifiedPhone, profileSnap] = await Promise.all([
+    verifiedPhoneForUid(participation.uid, deps.auth()),
     db.collection("publicProfiles").doc(participation.uid).get(),
   ]);
-  const user = userSnap.data() as UserProfileDocument | undefined;
   const profile = profileSnap.data() as PublicProfileDocument | undefined;
-  const phone = normalizeRosterPhone(user?.phoneNumber).value;
-  const stableKey = phone ? `phone:${phone}` : `uid:${participation.uid}`;
+  const stableKey = verifiedPhone ?
+    `phone:${verifiedPhone}` : `uid:${participation.uid}`;
   const attendeeId = eventAttendeeId(participation.eventId, stableKey);
   const attendeeRef = db.collection("eventAttendees").doc(attendeeId);
   const existingSnap = await attendeeRef.get();
@@ -49,8 +50,7 @@ export async function projectEventParticipationToAttendee(
     participationStatus(after?.status),
     existing?.status
   );
-  const displayName = profile?.name?.trim() ||
-    (user ? publicDisplayName(user) : existing?.displayName) ||
+  const displayName = profile?.name?.trim() || existing?.displayName ||
     participation.uid;
 
   const document: EventAttendeeDocument = {
@@ -64,8 +64,10 @@ export async function projectEventParticipationToAttendee(
     source: existing?.source ?? "catchBooking",
     status,
     linkedUid: participation.uid,
-    phoneE164: phone ?? existing?.phoneE164 ?? null,
-    email: user?.email?.trim() || existing?.email || null,
+    // Preserve only contact fields already supplied to this organizer. A
+    // private users/{uid} value is never an organizer disclosure source.
+    phoneE164: existing?.phoneE164 ?? null,
+    email: existing?.email ?? null,
     externalReference: existing?.externalReference ?? null,
     arrivalGroup: existing?.arrivalGroup ?? null,
     ticketType: existing?.ticketType ?? null,
@@ -89,6 +91,22 @@ export async function projectEventParticipationToAttendee(
       existing?.preCheckInStatus ?? "registered" : null,
   };
   await attendeeRef.set(document);
+}
+
+async function verifiedPhoneForUid(
+  uid: string,
+  auth: admin.auth.Auth
+): Promise<string | null> {
+  try {
+    const user = await auth.getUser(uid);
+    return normalizeRosterPhone(user.phoneNumber).value;
+  } catch (error) {
+    logger.warn("Could not resolve verified phone for attendee projection", {
+      uid,
+      error,
+    });
+    return null;
+  }
 }
 
 export function projectedParticipationStatus(
