@@ -1014,6 +1014,46 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Application forms, answer snapshots, assets, review state, import
+    // receipts, and participant consent ledgers contain cross-organizer PII.
+    // Clients receive only purpose-built callable projections; even a manager
+    // cannot enumerate another organizer's raw documents by direct query.
+    match /organizerApplicationForms/{formId} {
+      allow read, write: if false;
+    }
+
+    match /organizerApplicationFormVersions/{versionId} {
+      allow read, write: if false;
+    }
+
+    match /organizerApplications/{applicationId} {
+      allow read, write: if false;
+    }
+
+    match /organizerApplicationResponses/{responseId} {
+      allow read, write: if false;
+    }
+
+    match /organizerApplicationAssets/{assetId} {
+      allow read, write: if false;
+    }
+
+    match /organizerApplicationSourceMappings/{mappingId} {
+      allow read, write: if false;
+    }
+
+    match /organizerApplicationImportReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
+    match /participantIntakeProfiles/{uid} {
+      allow read, write: if false;
+    }
+
+    match /participantOrganizerDataGrants/{grantId} {
+      allow read, write: if false;
+    }
+
     match /externalEventMappings/{mappingId} {
       allow read, write: if false;
     }

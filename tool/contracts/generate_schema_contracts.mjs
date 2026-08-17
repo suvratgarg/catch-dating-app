@@ -229,6 +229,60 @@ const schemaSpecs = [
       "functions/src/shared/generated/organizerProviderConnectionDocument.ts",
   },
   {
+    name: "OrganizerApplicationFormDocument",
+    source: "firestore/organizer_application_forms.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerApplicationFormDocument.ts",
+  },
+  {
+    name: "OrganizerApplicationFormVersionDocument",
+    source: "firestore/organizer_application_form_versions.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerApplicationFormVersionDocument.ts",
+  },
+  {
+    name: "OrganizerApplicationDocument",
+    source: "firestore/organizer_applications.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerApplicationDocument.ts",
+  },
+  {
+    name: "OrganizerApplicationResponseDocument",
+    source: "firestore/organizer_application_responses.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerApplicationResponseDocument.ts",
+  },
+  {
+    name: "OrganizerApplicationAssetDocument",
+    source: "firestore/organizer_application_assets.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerApplicationAssetDocument.ts",
+  },
+  {
+    name: "OrganizerApplicationSourceMappingDocument",
+    source: "firestore/organizer_application_source_mappings.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerApplicationSourceMappingDocument.ts",
+  },
+  {
+    name: "OrganizerApplicationImportReceiptDocument",
+    source: "firestore/organizer_application_import_receipts.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerApplicationImportReceiptDocument.ts",
+  },
+  {
+    name: "ParticipantIntakeProfileDocument",
+    source: "firestore/participant_intake_profiles.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/participantIntakeProfileDocument.ts",
+  },
+  {
+    name: "ParticipantOrganizerDataGrantDocument",
+    source: "firestore/participant_organizer_data_grants.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/participantOrganizerDataGrantDocument.ts",
+  },
+  {
     name: "ExternalEventMappingDocument",
     source: "firestore/external_event_mappings.schema.json",
     typeOutput:
@@ -1675,6 +1729,102 @@ const schemaSpecs = [
     source: "callables/list_organizer_contacts_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/listOrganizerContactsCallablePayload.ts",
+  },
+  {
+    name: "PublishOrganizerApplicationFormCallablePayload",
+    source:
+      "callables/publish_organizer_application_form_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "publishOrganizerApplicationFormCallablePayload.ts",
+  },
+  {
+    name: "PublishOrganizerApplicationFormCallableResponse",
+    source:
+      "callable_responses/" +
+      "publish_organizer_application_form_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "publishOrganizerApplicationFormCallableResponse.ts",
+  },
+  {
+    name: "PreviewOrganizerApplicationImportCallablePayload",
+    source:
+      "callables/preview_organizer_application_import_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "previewOrganizerApplicationImportCallablePayload.ts",
+  },
+  {
+    name: "PreviewOrganizerApplicationImportCallableResponse",
+    source:
+      "callable_responses/" +
+      "preview_organizer_application_import_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "previewOrganizerApplicationImportCallableResponse.ts",
+  },
+  {
+    name: "ImportOrganizerApplicationsCallablePayload",
+    source: "callables/import_organizer_applications_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "importOrganizerApplicationsCallablePayload.ts",
+  },
+  {
+    name: "ImportOrganizerApplicationsCallableResponse",
+    source:
+      "callable_responses/import_organizer_applications_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "importOrganizerApplicationsCallableResponse.ts",
+  },
+  {
+    name: "ListOrganizerApplicationsCallablePayload",
+    source: "callables/list_organizer_applications_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "listOrganizerApplicationsCallablePayload.ts",
+  },
+  {
+    name: "ListOrganizerApplicationsCallableResponse",
+    source:
+      "callable_responses/list_organizer_applications_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "listOrganizerApplicationsCallableResponse.ts",
+  },
+  {
+    name: "GetOrganizerApplicationDetailCallablePayload",
+    source:
+      "callables/get_organizer_application_detail_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "getOrganizerApplicationDetailCallablePayload.ts",
+  },
+  {
+    name: "GetOrganizerApplicationDetailCallableResponse",
+    source:
+      "callable_responses/" +
+      "get_organizer_application_detail_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "getOrganizerApplicationDetailCallableResponse.ts",
+  },
+  {
+    name: "ReviewOrganizerApplicationCallablePayload",
+    source: "callables/review_organizer_application_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "reviewOrganizerApplicationCallablePayload.ts",
+  },
+  {
+    name: "ReviewOrganizerApplicationCallableResponse",
+    source:
+      "callable_responses/review_organizer_application_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "reviewOrganizerApplicationCallableResponse.ts",
   },
   {
     name: "CreateOrganizerContactCallablePayload",

@@ -1621,6 +1621,15 @@ describe("firestore.rules", () => {
         ["organizerProviderConnections", "connection-1"],
         ["externalEventMappings", "mapping-1"],
         ["providerSyncRuns", "sync-1"],
+        ["organizerApplicationForms", "form-1"],
+        ["organizerApplicationFormVersions", "version-1"],
+        ["organizerApplications", "application-1"],
+        ["organizerApplicationResponses", "response-1"],
+        ["organizerApplicationAssets", "asset-1"],
+        ["organizerApplicationSourceMappings", "mapping-2"],
+        ["organizerApplicationImportReceipts", "receipt-1"],
+        ["participantIntakeProfiles", "profile-1"],
+        ["participantOrganizerDataGrants", "grant-1"],
       ];
       for (const path of paths) {
         await seed(path, {eventId: "event-1", organizerId: "club-1"});

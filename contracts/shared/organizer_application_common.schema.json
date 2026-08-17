@@ -1,0 +1,195 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/organizer_application_common.schema.json",
+  "title": "Organizer application common contract definitions",
+  "description": "Provider-neutral question, answer, source, consent, and review definitions for organizer application workflows.",
+  "definitions": {
+    "canonicalFieldId": {
+      "type": "string",
+      "enum": [
+        "givenName",
+        "familyName",
+        "displayName",
+        "dateOfBirth",
+        "age",
+        "gender",
+        "phoneNumber",
+        "email",
+        "instagramHandle",
+        "linkedinUrl",
+        "profilePhoto",
+        "city",
+        "heightCm",
+        "occupation",
+        "company",
+        "education",
+        "languages",
+        "relationshipGoal",
+        "interestedInGenders",
+        "drinking",
+        "smoking",
+        "religion"
+      ]
+    },
+    "questionKind": {
+      "type": "string",
+      "enum": [
+        "shortText",
+        "longText",
+        "singleChoice",
+        "multiChoice",
+        "date",
+        "phone",
+        "email",
+        "url",
+        "number",
+        "boolean",
+        "file"
+      ]
+    },
+    "questionOption": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["optionId", "label", "value"],
+      "properties": {
+        "optionId": {"type": "string", "minLength": 1, "maxLength": 80},
+        "label": {"type": "string", "minLength": 1, "maxLength": 160},
+        "value": {"type": "string", "minLength": 1, "maxLength": 160}
+      }
+    },
+    "questionDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "questionId",
+        "key",
+        "label",
+        "helpText",
+        "kind",
+        "required",
+        "options",
+        "canonicalFieldId",
+        "privacyClass",
+        "prefillPolicy",
+        "hostPresentation"
+      ],
+      "properties": {
+        "questionId": {"type": "string", "minLength": 1, "maxLength": 120},
+        "key": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_]{0,79}$"},
+        "label": {"type": "string", "minLength": 1, "maxLength": 240},
+        "helpText": {"type": ["string", "null"], "maxLength": 500},
+        "kind": {"$ref": "#/definitions/questionKind"},
+        "required": {"type": "boolean"},
+        "options": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {"$ref": "#/definitions/questionOption"}
+        },
+        "canonicalFieldId": {
+          "anyOf": [
+            {"$ref": "#/definitions/canonicalFieldId"},
+            {"type": "null"}
+          ]
+        },
+        "privacyClass": {
+          "type": "string",
+          "enum": ["contact", "profile", "sensitive", "organizerCustom"]
+        },
+        "prefillPolicy": {
+          "type": "string",
+          "enum": ["never", "participantReviewRequired"]
+        },
+        "hostPresentation": {
+          "type": "string",
+          "enum": ["detailOnly", "filterable", "sortable"]
+        }
+      }
+    },
+    "answerValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "valueKind",
+        "textValue",
+        "numberValue",
+        "booleanValue",
+        "dateValue",
+        "optionValues",
+        "assetIds"
+      ],
+      "properties": {
+        "valueKind": {
+          "type": "string",
+          "enum": ["empty", "text", "number", "boolean", "date", "options", "assets"]
+        },
+        "textValue": {"type": ["string", "null"], "maxLength": 4000},
+        "numberValue": {"type": ["number", "null"], "minimum": -1000000000, "maximum": 1000000000},
+        "booleanValue": {"type": ["boolean", "null"]},
+        "dateValue": {"type": ["string", "null"], "format": "date"},
+        "optionValues": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {"type": "string", "minLength": 1, "maxLength": 160}
+        },
+        "assetIds": {
+          "type": "array",
+          "maxItems": 10,
+          "uniqueItems": true,
+          "items": {"$ref": "event_common.schema.json#/definitions/documentId"}
+        }
+      }
+    },
+    "answerSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "questionId",
+        "questionKey",
+        "questionLabel",
+        "questionKind",
+        "canonicalFieldId",
+        "privacyClass",
+        "hostPresentation",
+        "value"
+      ],
+      "properties": {
+        "questionId": {"type": "string", "minLength": 1, "maxLength": 120},
+        "questionKey": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_]{0,79}$"},
+        "questionLabel": {"type": "string", "minLength": 1, "maxLength": 240},
+        "questionKind": {"$ref": "#/definitions/questionKind"},
+        "canonicalFieldId": {
+          "anyOf": [
+            {"$ref": "#/definitions/canonicalFieldId"},
+            {"type": "null"}
+          ]
+        },
+        "privacyClass": {
+          "type": "string",
+          "enum": ["contact", "profile", "sensitive", "organizerCustom"]
+        },
+        "hostPresentation": {
+          "type": "string",
+          "enum": ["detailOnly", "filterable", "sortable"]
+        },
+        "value": {"$ref": "#/definitions/answerValue"}
+      }
+    },
+    "sourceDescriptor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "providerId", "externalFormId", "externalResponseId", "importReceiptId"],
+      "properties": {
+        "kind": {"type": "string", "enum": ["native", "tabularImport", "connector"]},
+        "providerId": {"type": ["string", "null"], "minLength": 1, "maxLength": 80},
+        "externalFormId": {"type": ["string", "null"], "minLength": 1, "maxLength": 240},
+        "externalResponseId": {"type": ["string", "null"], "minLength": 1, "maxLength": 240},
+        "importReceiptId": {
+          "anyOf": [
+            {"$ref": "event_common.schema.json#/definitions/documentId"},
+            {"type": "null"}
+          ]
+        }
+      }
+    }
+  }
+}

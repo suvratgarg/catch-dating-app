@@ -56,6 +56,11 @@ enum Routes {
   hostHomeScreen('/host', AppRouteAudience.host),
   hostEventsScreen('/host/events', AppRouteAudience.host),
   hostCustomersScreen('/host/customers', AppRouteAudience.host),
+  hostApplicationsScreen('/host/customers/applications', AppRouteAudience.host),
+  hostApplicationDetailScreen(
+    '/host/customers/applications/:applicationId',
+    AppRouteAudience.host,
+  ),
   hostCustomerDetailScreen('/host/customers/:contactId', AppRouteAudience.host),
   hostOperatorEventScreen('/host/operator/:eventId', AppRouteAudience.host),
   hostOrganizerScreen('/host/organizer', AppRouteAudience.host),

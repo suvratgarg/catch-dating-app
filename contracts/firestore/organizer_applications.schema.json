@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_applications.schema.json",
+  "title": "OrganizerApplicationDocument",
+  "description": "Organizer-scoped application review summary with no provider-specific answer shape.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerApplications",
+  "x-firestore-path": "organizerApplications/{applicationId}",
+  "x-document-id-field": "applicationId",
+  "x-owner": "organizer application submission, import, and review callables",
+  "required": ["organizerId", "formId", "formVersionId", "targetKind", "targetId", "linkedUid", "contactId", "applicantDisplayName", "applicantDisplayNameNormalized", "reviewStatus", "latestResponseId", "source", "assignedReviewerUid", "reviewNote", "revision", "submittedAt", "updatedAt", "reviewedAt"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "formId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "formVersionId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "targetKind": {"type": "string", "enum": ["organizer", "event", "campaign"]},
+    "targetId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
+    "linkedUid": {
+      "anyOf": [
+        {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        {"type": "null"}
+      ]
+    },
+    "contactId": {
+      "anyOf": [
+        {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        {"type": "null"}
+      ]
+    },
+    "applicantDisplayName": {"type": "string", "minLength": 1, "maxLength": 160},
+    "applicantDisplayNameNormalized": {"type": "string", "minLength": 1, "maxLength": 160},
+    "reviewStatus": {"type": "string", "enum": ["submitted", "inReview", "approved", "waitlisted", "declined", "withdrawn"]},
+    "latestResponseId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "source": {"$ref": "../shared/organizer_application_common.schema.json#/definitions/sourceDescriptor"},
+    "assignedReviewerUid": {
+      "anyOf": [
+        {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        {"type": "null"}
+      ]
+    },
+    "reviewNote": {"type": ["string", "null"], "maxLength": 2000},
+    "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "submittedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "reviewedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"}
+  }
+}

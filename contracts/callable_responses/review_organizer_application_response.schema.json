@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/review_organizer_application_response.schema.json",
+  "title": "ReviewOrganizerApplicationCallableResponse",
+  "description": "Updated organizer application review identity and revision.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["organizerId", "applicationId", "reviewStatus", "reviewedAtMillis", "revision"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "applicationId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "reviewStatus": {"type": "string", "enum": ["inReview", "approved", "waitlisted", "declined"]},
+    "reviewedAtMillis": {"type": "integer", "minimum": 0},
+    "revision": {"type": "integer", "minimum": 2, "maximum": 9007199254740991}
+  }
+}

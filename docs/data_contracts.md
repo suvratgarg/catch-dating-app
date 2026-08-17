@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.27.0
-updated: 2026-08-16
+version: 1.28.0
+updated: 2026-08-17
 owner: recursive_audit_loop
 status: active
 ---
@@ -818,6 +818,52 @@ Retained organizer roster history is unlinked by setting `linkedUid` and
 `linkedAt` to null; any separately retained operational contact field remains
 subject to the organizer's stated booking/records purpose rather than Catch
 account or marketing permission.
+
+### Organizer Application Intake
+
+Organizer applications are a provider-neutral intake domain. A Google Form,
+Typeform, Fillout form, spreadsheet, or future native Catch form is a source
+edge; none of those providers owns the application model. The immutable
+`organizerApplicationFormVersions/{versionId}` snapshot defines ordered
+questions, canonical field mappings, participant-prefill eligibility, consent
+copy, and retention copy. `organizerApplicationForms/{formId}` owns only the
+mutable draft/published pointer and target kind. Publishing creates a new
+version rather than changing the meaning of answers already collected.
+
+`organizerApplications/{applicationId}` is the organizer-scoped workflow row:
+source provenance, event/campaign target, applicant display projection, status,
+review revision, and private reviewer note. The corresponding immutable
+`organizerApplicationResponses/{responseId}` preserves the exact answer
+snapshot and per-question consent evidence. Canonical contact fields and
+organizer-only custom answers remain distinct even when they arrived in the
+same spreadsheet row. An application is not the Consumer launch-access
+`accessApplications/{uid}` document, a CRM contact, an event booking, or a
+public dating profile. Review status alone creates none of those entities.
+
+Portable participant prefill belongs in private
+`participantIntakeProfiles/{uid}` only after an authenticated participant has
+explicitly saved eligible fields. It is separate from `users/{uid}` and cannot
+overwrite an existing Consumer profile. An organizer receives only the exact
+fields and purpose recorded by
+`participantOrganizerDataGrants/{uid_organizerId}`; a global phone or email
+identity never implies cross-organizer visibility. Organizer-proprietary
+questions such as a preferred cocktail remain in that organizer's application
+response and are never promoted into the portable profile by default.
+Field visibility is not messaging permission: WhatsApp/SMS opt-in remains
+exclusively in `organizerCommunicationPreferences`, and an application grant
+cannot create or broaden it.
+
+The first runtime tranche accepts locally decoded CSV/XLSX tables, requires an
+explicit mapping for every source column, imports at most 200 rows atomically,
+and records a hash-bound idempotent receipt in
+`organizerApplicationImportReceipts/{receiptId}`. Known identity/profile
+headers map to canonical fields; all other columns remain organizer-only
+questions. Hosts list, search, sort, inspect, and review only through manager
+callables. Direct client access to forms, versions, applications, responses,
+assets, source mappings, receipts, private intake profiles, and grants is
+denied. Native participant submission, portable-prefill reuse, and provider
+connectors are later runtimes over these same contracts, not provider-specific
+schemas.
 
 ### Provider Sync, Staff, And Offline Attendance
 

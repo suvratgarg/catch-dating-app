@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/import_organizer_applications_payload.schema.json",
+  "title": "ImportOrganizerApplicationsCallablePayload",
+  "description": "Commits a bounded provider-neutral tabular application import.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["organizerId", "formId", "formVersionId", "targetKind", "targetId", "mappingId", "importKey", "fileName", "format", "headers", "mappings", "rows"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "formId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "formVersionId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "targetKind": {"type": "string", "enum": ["organizer", "event", "campaign"]},
+    "targetId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
+    "mappingId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
+    "importKey": {"type": "string", "minLength": 8, "maxLength": 120},
+    "fileName": {"type": "string", "minLength": 1, "maxLength": 255},
+    "format": {"type": "string", "enum": ["csv", "xlsx", "connector"]},
+    "headers": {"$ref": "preview_organizer_application_import_payload.schema.json#/definitions/headers"},
+    "mappings": {"$ref": "preview_organizer_application_import_payload.schema.json#/definitions/mappings"},
+    "rows": {"$ref": "preview_organizer_application_import_payload.schema.json#/definitions/rows"}
+  }
+}

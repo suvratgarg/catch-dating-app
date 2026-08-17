@@ -41,6 +41,15 @@ import {
   organizerContactMergeReviewDecisionDocumentSchema,
   organizerSenderConnectionDocumentSchema,
   organizerProviderConnectionDocumentSchema,
+  organizerApplicationFormDocumentSchema,
+  organizerApplicationFormVersionDocumentSchema,
+  organizerApplicationDocumentSchema,
+  organizerApplicationResponseDocumentSchema,
+  organizerApplicationAssetDocumentSchema,
+  organizerApplicationSourceMappingDocumentSchema,
+  organizerApplicationImportReceiptDocumentSchema,
+  participantIntakeProfileDocumentSchema,
+  participantOrganizerDataGrantDocumentSchema,
   externalEventMappingDocumentSchema,
   providerSyncRunDocumentSchema,
   organizerMessageTemplateDocumentSchema,
@@ -270,6 +279,18 @@ import {
   getEventRosterInsightsCallableResponseSchema,
   getOrganizerCrmSummaryCallableResponseSchema,
   listOrganizerContactsCallablePayloadSchema,
+  publishOrganizerApplicationFormCallablePayloadSchema,
+  publishOrganizerApplicationFormCallableResponseSchema,
+  previewOrganizerApplicationImportCallablePayloadSchema,
+  previewOrganizerApplicationImportCallableResponseSchema,
+  importOrganizerApplicationsCallablePayloadSchema,
+  importOrganizerApplicationsCallableResponseSchema,
+  listOrganizerApplicationsCallablePayloadSchema,
+  listOrganizerApplicationsCallableResponseSchema,
+  getOrganizerApplicationDetailCallablePayloadSchema,
+  getOrganizerApplicationDetailCallableResponseSchema,
+  reviewOrganizerApplicationCallablePayloadSchema,
+  reviewOrganizerApplicationCallableResponseSchema,
   createOrganizerContactCallablePayloadSchema,
   createOrganizerContactCallableResponseSchema,
   listOrganizerContactsCallableResponseSchema,
@@ -442,6 +463,15 @@ export const validateOrganizerContactMergeReceiptDocument = ajv.compile(organize
 export const validateOrganizerContactMergeReviewDecisionDocument = ajv.compile(organizerContactMergeReviewDecisionDocumentSchema);
 export const validateOrganizerSenderConnectionDocument = ajv.compile(organizerSenderConnectionDocumentSchema);
 export const validateOrganizerProviderConnectionDocument = ajv.compile(organizerProviderConnectionDocumentSchema);
+export const validateOrganizerApplicationFormDocument = ajv.compile(organizerApplicationFormDocumentSchema);
+export const validateOrganizerApplicationFormVersionDocument = ajv.compile(organizerApplicationFormVersionDocumentSchema);
+export const validateOrganizerApplicationDocument = ajv.compile(organizerApplicationDocumentSchema);
+export const validateOrganizerApplicationResponseDocument = ajv.compile(organizerApplicationResponseDocumentSchema);
+export const validateOrganizerApplicationAssetDocument = ajv.compile(organizerApplicationAssetDocumentSchema);
+export const validateOrganizerApplicationSourceMappingDocument = ajv.compile(organizerApplicationSourceMappingDocumentSchema);
+export const validateOrganizerApplicationImportReceiptDocument = ajv.compile(organizerApplicationImportReceiptDocumentSchema);
+export const validateParticipantIntakeProfileDocument = ajv.compile(participantIntakeProfileDocumentSchema);
+export const validateParticipantOrganizerDataGrantDocument = ajv.compile(participantOrganizerDataGrantDocumentSchema);
 export const validateExternalEventMappingDocument = ajv.compile(externalEventMappingDocumentSchema);
 export const validateProviderSyncRunDocument = ajv.compile(providerSyncRunDocumentSchema);
 export const validateOrganizerMessageTemplateDocument = ajv.compile(organizerMessageTemplateDocumentSchema);
@@ -671,6 +701,18 @@ export const validateGetEventRosterInsightsCallablePayload = ajv.compile(getEven
 export const validateGetEventRosterInsightsCallableResponse = ajv.compile(getEventRosterInsightsCallableResponseSchema);
 export const validateGetOrganizerCrmSummaryCallableResponse = ajv.compile(getOrganizerCrmSummaryCallableResponseSchema);
 export const validateListOrganizerContactsCallablePayload = ajv.compile(listOrganizerContactsCallablePayloadSchema);
+export const validatePublishOrganizerApplicationFormCallablePayload = ajv.compile(publishOrganizerApplicationFormCallablePayloadSchema);
+export const validatePublishOrganizerApplicationFormCallableResponse = ajv.compile(publishOrganizerApplicationFormCallableResponseSchema);
+export const validatePreviewOrganizerApplicationImportCallablePayload = ajv.compile(previewOrganizerApplicationImportCallablePayloadSchema);
+export const validatePreviewOrganizerApplicationImportCallableResponse = ajv.compile(previewOrganizerApplicationImportCallableResponseSchema);
+export const validateImportOrganizerApplicationsCallablePayload = ajv.compile(importOrganizerApplicationsCallablePayloadSchema);
+export const validateImportOrganizerApplicationsCallableResponse = ajv.compile(importOrganizerApplicationsCallableResponseSchema);
+export const validateListOrganizerApplicationsCallablePayload = ajv.compile(listOrganizerApplicationsCallablePayloadSchema);
+export const validateListOrganizerApplicationsCallableResponse = ajv.compile(listOrganizerApplicationsCallableResponseSchema);
+export const validateGetOrganizerApplicationDetailCallablePayload = ajv.compile(getOrganizerApplicationDetailCallablePayloadSchema);
+export const validateGetOrganizerApplicationDetailCallableResponse = ajv.compile(getOrganizerApplicationDetailCallableResponseSchema);
+export const validateReviewOrganizerApplicationCallablePayload = ajv.compile(reviewOrganizerApplicationCallablePayloadSchema);
+export const validateReviewOrganizerApplicationCallableResponse = ajv.compile(reviewOrganizerApplicationCallableResponseSchema);
 export const validateCreateOrganizerContactCallablePayload = ajv.compile(createOrganizerContactCallablePayloadSchema);
 export const validateCreateOrganizerContactCallableResponse = ajv.compile(createOrganizerContactCallableResponseSchema);
 export const validateListOrganizerContactsCallableResponse = ajv.compile(listOrganizerContactsCallableResponseSchema);

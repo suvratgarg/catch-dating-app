@@ -169,6 +169,15 @@
       "leading": "back"
     },
     {
+      "path": "lib/hosts/presentation/applications/host_applications_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
+      "leading": "back",
+      "occurrences": 2
+    },
+    {
       "path": "lib/hosts/presentation/inbox/host_messaging_setup_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar",

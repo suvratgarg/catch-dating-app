@@ -44,6 +44,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 enum _HostCustomersHeaderAction {
+  applications,
   sortLastSeen,
   sortMostAttended,
   sortName,
@@ -207,6 +208,14 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                           _HostCustomersHeaderAction.reviewDuplicates) {
                         unawaited(_reviewDuplicates(selectedClub.id));
                       }
+                      if (action == _HostCustomersHeaderAction.applications) {
+                        unawaited(
+                          context.pushNamed(
+                            Routes.hostApplicationsScreen.name,
+                            queryParameters: {'organizerId': selectedClub.id},
+                          ),
+                        );
+                      }
                       if (action == _HostCustomersHeaderAction.export) {
                         unawaited(
                           _exportCustomers(selectedClub, effectiveFilter),
@@ -329,6 +338,11 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     required bool exportEnabled,
     String? exportSublabel,
   }) => [
+    CatchActionMenuItem(
+      value: _HostCustomersHeaderAction.applications,
+      label: context.l10n.hostApplicationsOpen,
+      icon: CatchIcons.factCheckOutlined,
+    ),
     CatchActionMenuItem(
       value: _HostCustomersHeaderAction.sortLastSeen,
       label: context.l10n.hostCustomersSortLastSeen,
