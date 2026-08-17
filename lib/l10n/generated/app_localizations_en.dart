@@ -12269,11 +12269,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostAudienceCoveragePartial =>
-      'Customer history is still syncing';
+      'Some customer history is unavailable';
 
   @override
   String get hostsHostAudienceCoveragePartialBody =>
-      'Older roster changes may be missing. Messaging stays off until the sync is complete.';
+      'Some older attendance may be missing. Counts marked + are minimums, and audience campaigns stay off until history is complete.';
 
   @override
   String get hostsHostAudienceWhatsappSender => 'WhatsApp Business sender';
@@ -12572,7 +12572,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostAudienceBlockerCoverage =>
-      'Audience history is still being reconciled';
+      'Customer history is incomplete';
 
   @override
   String get hostsHostAudienceBlockerTooLarge =>
@@ -13178,6 +13178,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersClearFilter => 'Clear';
+
+  @override
+  String get hostCustomersCoverageRefresh => 'Check again';
 
   @override
   String hostCustomersMessageThese({required int count}) {

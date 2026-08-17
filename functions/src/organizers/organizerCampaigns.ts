@@ -45,6 +45,10 @@ import {
   organizerCampaignRecipientId,
   organizerContactChannelStateId,
 } from "./organizerCampaignModel";
+import {
+  effectiveOrganizerAudienceCoverage,
+  resolveOrganizerAudienceCoverage,
+} from "./organizerAudienceCoverage";
 
 type CampaignBlocker = OrganizerCampaignCallableResponse["blockers"][number];
 type ExclusionReason = OrganizerCampaignRecipientDocument["exclusionReason"];
@@ -299,6 +303,11 @@ export async function approveOrganizerCampaignHandler(
           .doc(organizerContactChannelStateId(data.organizerId, row.contactId)),
       ]),
     ];
+    const attendeeHistorySnap = await tx.get(
+      db.collection("eventAttendees")
+        .where("organizerId", "==", data.organizerId)
+        .limit(1),
+    );
     const snapshots = await tx.getAll(...refs);
     const liveCampaign = snapshots[0].data() as
       | OrganizerCampaignDocument
@@ -306,12 +315,16 @@ export async function approveOrganizerCampaignHandler(
     const liveSummary = snapshots[1].data() as
       | OrganizerAudienceSummaryDocument
       | undefined;
+    const liveCoverage = effectiveOrganizerAudienceCoverage(
+      liveSummary?.sourceCoverage,
+      attendeeHistorySnap.size > 0,
+    );
     if (
       !liveCampaign ||
       liveCampaign.organizerId !== data.organizerId ||
       liveCampaign.status !== "previewed" ||
       liveCampaign.revision !== initial.campaign.revision ||
-      liveSummary?.sourceCoverage !== "exact"
+      !liveSummary || liveCoverage !== "exact"
     ) {
       throw new HttpsError(
         "aborted",
@@ -560,6 +573,13 @@ async function campaignContext(
   const summary = summarySnap.data() as
     | OrganizerAudienceSummaryDocument
     | undefined;
+  const summaryForOrganizer = summary?.organizerId === organizerId ?
+    summary : undefined;
+  const sourceCoverage = await resolveOrganizerAudienceCoverage({
+    db,
+    organizerId,
+    storedCoverage: summaryForOrganizer?.sourceCoverage,
+  });
   const audience = loadAudience ?
     await loadAudienceRows({
       db,
@@ -581,7 +601,10 @@ async function campaignContext(
       event && (event.organizerId ?? event.clubId) === organizerId ?
         event :
         null,
-    summary: summary?.organizerId === organizerId ? summary : null,
+    summary: summaryForOrganizer ? {
+      ...summaryForOrganizer,
+      sourceCoverage,
+    } : null,
     audienceRows: audience.rows,
     audienceTooLarge: audience.tooLarge,
   };

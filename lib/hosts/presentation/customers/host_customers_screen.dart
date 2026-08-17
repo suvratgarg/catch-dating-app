@@ -137,11 +137,6 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
       hostCustomersDirectoryControllerProvider(request),
     );
     final activeSegment = hostAudienceSegmentForCustomerFilter(effectiveFilter);
-    final campaignBridgeBlocker = hostCampaignBridgeBlocker(
-      segment: activeSegment,
-      smsReadiness: summary.asData?.value.smsReadiness,
-      messagingSetup: messagingSetup.asData?.value,
-    );
     final t = CatchTokens.of(context);
     final compactHeader = ScreenSize.fromWidth(
       MediaQuery.sizeOf(context).width,
@@ -265,59 +260,80 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                         hostCustomersDirectoryControllerProvider(request),
                       ),
                     ),
-                    builder: (context, state) => Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        HostCustomerFilterSummary(
-                          filter: effectiveFilter,
-                          manualTag: _manualTag,
-                          count: state.matchCount,
-                          countCoverage: state.matchCountCoverage,
-                          campaignBlocker: campaignBridgeBlocker,
-                          onMessage:
-                              campaignBridgeBlocker == null &&
-                                  activeSegment != null
-                              ? () => _messageCustomers(
-                                  selectedClub,
-                                  activeSegment,
-                                )
-                              : null,
-                          onOpenFilters: () => _openFilters(
-                            effectiveFilter,
-                            _manualTag,
-                            state,
-                            summary.asData?.value.smsReadiness,
+                    builder: (context, state) {
+                      final campaignBridgeBlocker = hostCampaignBridgeBlocker(
+                        segment: activeSegment,
+                        smsReadiness: summary.asData?.value.smsReadiness,
+                        messagingSetup: messagingSetup.asData?.value,
+                        audienceCoverageComplete:
+                            state.sourceCoverage ==
+                            HostCustomerDirectoryCoverage.exact,
+                      );
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          HostCustomerFilterSummary(
+                            filter: effectiveFilter,
+                            manualTag: _manualTag,
+                            count: state.matchCount,
+                            countCoverage: state.matchCountCoverage,
+                            campaignBlocker: campaignBridgeBlocker,
+                            onMessage:
+                                campaignBridgeBlocker == null &&
+                                    activeSegment != null
+                                ? () => _messageCustomers(
+                                    selectedClub,
+                                    activeSegment,
+                                  )
+                                : null,
+                            onOpenFilters: () => _openFilters(
+                              selectedClub,
+                              effectiveFilter,
+                              _manualTag,
+                              state,
+                              summary.asData?.value.smsReadiness,
+                            ),
+                            onClear:
+                                effectiveFilter == HostCustomerFilter.all &&
+                                    _manualTag == null
+                                ? null
+                                : () => setState(() {
+                                    _filter = HostCustomerFilter.all;
+                                    _manualTag = null;
+                                  }),
                           ),
-                          onClear:
-                              effectiveFilter == HostCustomerFilter.all &&
-                                  _manualTag == null
-                              ? null
-                              : () => setState(() {
-                                  _filter = HostCustomerFilter.all;
-                                  _manualTag = null;
-                                }),
-                        ),
-                        gapH16,
-                        HostCustomersDirectory(
-                          state: state,
-                          hasActiveQuery:
-                              _search != null ||
-                              effectiveFilter != HostCustomerFilter.all ||
-                              _manualTag != null,
-                          onCustomerSelected: (contact) =>
-                              _openCustomer(selectedClub, contact),
-                          onLoadMore: state.canLoadMore
-                              ? () => ref
-                                    .read(
-                                      hostCustomersDirectoryControllerProvider(
-                                        request,
-                                      ).notifier,
-                                    )
-                                    .loadMore()
-                              : null,
-                        ),
-                      ],
-                    ),
+                          gapH16,
+                          HostCustomersDirectory(
+                            state: state,
+                            hasActiveQuery:
+                                _search != null ||
+                                effectiveFilter != HostCustomerFilter.all ||
+                                _manualTag != null,
+                            onCustomerSelected: (contact) =>
+                                _openCustomer(selectedClub, contact),
+                            onLoadMore: state.canLoadMore
+                                ? () => ref
+                                      .read(
+                                        hostCustomersDirectoryControllerProvider(
+                                          request,
+                                        ).notifier,
+                                      )
+                                      .loadMore()
+                                : null,
+                            onRefreshCoverage: () {
+                              ref.invalidate(
+                                hostCrmSummaryProvider(selectedClub.id),
+                              );
+                              ref.invalidate(
+                                hostCustomersDirectoryControllerProvider(
+                                  request,
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      );
+                    },
                   ),
                   const CatchScrollTerminalPadding(),
                 ],
@@ -821,12 +837,14 @@ class HostCustomersDirectory extends StatelessWidget {
     required this.hasActiveQuery,
     required this.onCustomerSelected,
     required this.onLoadMore,
+    required this.onRefreshCoverage,
   });
 
   final HostCustomersDirectoryState state;
   final bool hasActiveQuery;
   final ValueChanged<HostCustomerDirectoryContact> onCustomerSelected;
   final VoidCallback? onLoadMore;
+  final VoidCallback onRefreshCoverage;
 
   @override
   Widget build(BuildContext context) {
@@ -840,6 +858,17 @@ class HostCustomersDirectory extends StatelessWidget {
             message: context.l10n.hostsHostAudienceCoveragePartialBody,
             messageIcon: CatchIcons.infoOutlineRounded,
             messageTone: CatchSurfaceMessageTone.warning,
+          ),
+          gapH8,
+          Align(
+            alignment: Alignment.centerLeft,
+            child: CatchButton(
+              key: const ValueKey('host-customers-refresh-coverage'),
+              label: context.l10n.hostCustomersCoverageRefresh,
+              variant: CatchButtonVariant.secondary,
+              size: CatchButtonSize.sm,
+              onPressed: onRefreshCoverage,
+            ),
           ),
           gapH12,
         ],
@@ -1522,6 +1551,7 @@ class HostCustomersSummary extends StatelessWidget {
     ),
     builder: (context, value) {
       final usesLargeText = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
+      String countLabel(int count) => value.truncated ? '$count+' : '$count';
       return CatchSurface(
         padding: CatchInsets.cardContent,
         child: usesLargeText
@@ -1529,19 +1559,19 @@ class HostCustomersSummary extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   CatchStatColumn(
-                    value: '${value.contactCount}',
+                    value: countLabel(value.contactCount),
                     label: context.l10n.hostsHostAudienceContacts,
                     monoValue: true,
                   ),
                   gapH16,
                   CatchStatColumn(
-                    value: '${value.pastAttendeeCount}',
+                    value: countLabel(value.pastAttendeeCount),
                     label: context.l10n.hostsHostAudienceAttended,
                     monoValue: true,
                   ),
                   gapH16,
                   CatchStatColumn(
-                    value: '${value.repeatAttendeeCount}',
+                    value: countLabel(value.repeatAttendeeCount),
                     label: context.l10n.hostsHostAudienceRepeat,
                     monoValue: true,
                   ),
@@ -1551,21 +1581,21 @@ class HostCustomersSummary extends StatelessWidget {
                 children: [
                   Expanded(
                     child: CatchStatColumn(
-                      value: '${value.contactCount}',
+                      value: countLabel(value.contactCount),
                       label: context.l10n.hostsHostAudienceContacts,
                       monoValue: true,
                     ),
                   ),
                   Expanded(
                     child: CatchStatColumn(
-                      value: '${value.pastAttendeeCount}',
+                      value: countLabel(value.pastAttendeeCount),
                       label: context.l10n.hostsHostAudienceAttended,
                       monoValue: true,
                     ),
                   ),
                   Expanded(
                     child: CatchStatColumn(
-                      value: '${value.repeatAttendeeCount}',
+                      value: countLabel(value.repeatAttendeeCount),
                       label: context.l10n.hostsHostAudienceRepeat,
                       monoValue: true,
                     ),

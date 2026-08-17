@@ -78,6 +78,71 @@ void _registerHostOperationsCustomersTests() {
     );
   });
 
+  testWidgets('incomplete customer history is honest and can be rechecked', (
+    tester,
+  ) async {
+    var refreshes = 0;
+    await _pumpHostScreen(
+      tester,
+      Scaffold(
+        body: HostCustomersDirectory(
+          state: HostCustomersDirectoryState(
+            contacts: [_customerDirectoryContact()],
+            nextCursor: null,
+            matchCount: 1,
+            matchCountCoverage: HostCustomerMatchCountCoverage.atLeast,
+            sourceCoverage: HostCustomerDirectoryCoverage.partial,
+            projectionVersion: 1,
+          ),
+          hasActiveQuery: false,
+          onCustomerSelected: (_) {},
+          onLoadMore: null,
+          onRefreshCoverage: () => refreshes += 1,
+        ),
+      ),
+    );
+
+    expect(find.text('Some customer history is unavailable'), findsOneWidget);
+    expect(find.textContaining('still syncing'), findsNothing);
+    expect(find.textContaining('Counts marked + are minimums'), findsOneWidget);
+
+    await tester.tap(
+      find.byKey(const ValueKey('host-customers-refresh-coverage')),
+    );
+    expect(refreshes, 1);
+  });
+
+  testWidgets('incomplete CRM totals render as lower bounds', (tester) async {
+    await _pumpHostScreen(
+      tester,
+      Scaffold(
+        body: HostCustomersSummary(
+          summary: const AsyncData(
+            HostCrmSummary(
+              organizerId: 'organizer-1',
+              contactCount: 4,
+              pastAttendeeCount: 3,
+              repeatAttendeeCount: 2,
+              linkedAccountCount: 1,
+              importedContactCount: 0,
+              whatsappOptInCount: 0,
+              smsOptInCount: 0,
+              truncated: true,
+              inAppReadiness: HostCrmChannelReadiness.currentEventOnly,
+              whatsappReadiness: HostCrmChannelReadiness.providerSetupRequired,
+              smsReadiness: HostCrmChannelReadiness.providerAndDltSetupRequired,
+            ),
+          ),
+          onRetry: () {},
+        ),
+      ),
+    );
+
+    expect(find.text('4+'), findsOneWidget);
+    expect(find.text('3+'), findsOneWidget);
+    expect(find.text('2+'), findsOneWidget);
+  });
+
   testWidgets('customer search debounces and unavailable SMS stays hidden', (
     tester,
   ) async {

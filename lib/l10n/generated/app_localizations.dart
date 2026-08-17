@@ -19161,13 +19161,13 @@ abstract class AppLocalizations {
   /// Partial audience coverage notice title.
   ///
   /// In en, this message translates to:
-  /// **'Customer history is still syncing'**
+  /// **'Some customer history is unavailable'**
   String get hostsHostAudienceCoveragePartial;
 
   /// Partial audience coverage explanation.
   ///
   /// In en, this message translates to:
-  /// **'Older roster changes may be missing. Messaging stays off until the sync is complete.'**
+  /// **'Some older attendance may be missing. Counts marked + are minimums, and audience campaigns stay off until history is complete.'**
   String get hostsHostAudienceCoveragePartialBody;
 
   /// WhatsApp sender section title.
@@ -19639,7 +19639,7 @@ abstract class AppLocalizations {
   /// Campaign coverage blocker.
   ///
   /// In en, this message translates to:
-  /// **'Audience history is still being reconciled'**
+  /// **'Customer history is incomplete'**
   String get hostsHostAudienceBlockerCoverage;
 
   /// Campaign size blocker.
@@ -20607,6 +20607,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Clear'**
   String get hostCustomersClearFilter;
+
+  /// Reloads customer history coverage after an organizer import or repair.
+  ///
+  /// In en, this message translates to:
+  /// **'Check again'**
+  String get hostCustomersCoverageRefresh;
 
   /// Starts a campaign for the exact number of customers in the active segment.
   ///

@@ -18,6 +18,8 @@ import {validateGetOrganizerCrmSummaryCallablePayload} from
 import {requireOrganizerManager} from "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
+import {resolveOrganizerAudienceCoverage} from
+  "./organizerAudienceCoverage";
 
 const maxRosterDocuments = 2500;
 
@@ -63,8 +65,16 @@ export async function getOrganizerCrmSummaryHandler(
       projectedSummarySnap,
       "OrganizerAudienceSummaryDocument"
     ) : null;
-  if (projectedSummary?.sourceCoverage === "exact") {
-    return projectedOrganizerCrmSummary(projectedSummary);
+  const sourceCoverage = await resolveOrganizerAudienceCoverage({
+    db,
+    organizerId: data.organizerId,
+    storedCoverage: projectedSummary?.sourceCoverage,
+  });
+  if (projectedSummary && sourceCoverage === "exact") {
+    return projectedOrganizerCrmSummary({
+      ...projectedSummary,
+      sourceCoverage,
+    });
   }
   const [rosterSnap, preferenceSnap] = await Promise.all([
     db.collection("eventAttendees")

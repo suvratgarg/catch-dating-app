@@ -69,33 +69,54 @@ export async function buildOrganizerAudienceBackfillPlan(
   firestore,
   organizerId = null
 ) {
-  let query = firestore.collection("eventAttendees");
-  if (organizerId) query = query.where("organizerId", "==", organizerId);
-  const snapshot = await query.get();
   const organizers = new Map();
-  for (const doc of snapshot.docs) {
-    const attendee = doc.data();
-    if (typeof attendee.organizerId !== "string" ||
-        attendee.organizerId.length === 0) {
-      continue;
-    }
-    const current = organizers.get(attendee.organizerId) ?? {
-      organizerId: attendee.organizerId,
+  const ensureOrganizer = (candidate) => {
+    if (typeof candidate !== "string" || candidate.length === 0) return null;
+    const current = organizers.get(candidate) ?? {
+      organizerId: candidate,
       attendeeCount: 0,
-      firstAttendeeId: doc.id,
-      lastAttendeeId: doc.id,
+      firstAttendeeId: null,
+      lastAttendeeId: null,
     };
+    organizers.set(candidate, current);
+    return current;
+  };
+  if (organizerId) ensureOrganizer(organizerId);
+
+  const collectionSnapshot = async (collectionName) => {
+    let query = firestore.collection(collectionName);
+    if (organizerId) query = query.where("organizerId", "==", organizerId);
+    return query.get();
+  };
+  const [attendeeSnapshot, contactSnapshot, summarySnapshot] =
+    await Promise.all([
+      collectionSnapshot("eventAttendees"),
+      collectionSnapshot("organizerContacts"),
+      collectionSnapshot("organizerAudienceSummaries"),
+    ]);
+
+  let validAttendeeCount = 0;
+  for (const doc of attendeeSnapshot.docs) {
+    const attendee = doc.data();
+    const current = ensureOrganizer(attendee.organizerId);
+    if (!current) continue;
     current.attendeeCount += 1;
+    current.firstAttendeeId ??= doc.id;
     current.lastAttendeeId = doc.id;
-    organizers.set(attendee.organizerId, current);
+    validAttendeeCount += 1;
+  }
+  for (const doc of contactSnapshot.docs) {
+    ensureOrganizer(doc.data().organizerId);
+  }
+  for (const doc of summarySnapshot.docs) {
+    const summary = doc.data();
+    if (summary.sourceCoverage !== "exact") {
+      ensureOrganizer(summary.organizerId);
+    }
   }
   return {
-    attendeeCount: snapshot.size,
-    skippedInvalidOrganizerCount: snapshot.size -
-      [...organizers.values()].reduce(
-        (total, item) => total + item.attendeeCount,
-        0
-      ),
+    attendeeCount: attendeeSnapshot.size,
+    skippedInvalidOrganizerCount: attendeeSnapshot.size - validAttendeeCount,
     organizers: [...organizers.values()].sort((left, right) =>
       left.organizerId.localeCompare(right.organizerId)
     ),
@@ -231,7 +252,8 @@ function printHelp() {
 
 Builds organizer contact/event/trait projections from canonical event attendees.
 Dry run is the default. An organizer summary switches to exact coverage only
-after every current attendee in that organizer has been projected.
+after every current attendee in that organizer has been projected. Discovery
+also includes manual-contact and partial-summary organizers with zero attendees.
 
 Options:
   --apply                   Write projections and exact summaries.

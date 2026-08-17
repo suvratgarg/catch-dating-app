@@ -69,6 +69,10 @@ import {
   organizerIdentityHash,
 } from "./organizerAudienceModel";
 import {organizerContactIdentityKey} from "./organizerAudienceSecrets";
+import {
+  OrganizerAudienceSourceCoverage,
+  resolveOrganizerAudienceCoverage,
+} from "./organizerAudienceCoverage";
 
 const defaultContactPageSize = 50;
 const maxDetailEvents = 100;
@@ -138,6 +142,11 @@ export async function listOrganizerContactsHandler(
   ]);
   const summary = summarySnap.data() as
     OrganizerAudienceSummaryDocument | undefined;
+  const sourceCoveragePromise = resolveOrganizerAudienceCoverage({
+    db,
+    organizerId: data.organizerId,
+    storedCoverage: summary?.sourceCoverage,
+  });
   const tagVocabulary = tagVocabularySnap.data() as
     OrganizerContactTagVocabularyDocument | undefined;
   const manualTagVocabulary = safeManualTagVocabulary(
@@ -220,6 +229,7 @@ export async function listOrganizerContactsHandler(
     exactMatchCount,
     pageRows.length
   );
+  const sourceCoverage = await sourceCoveragePromise;
 
   return {
     organizerId: data.organizerId,
@@ -227,7 +237,7 @@ export async function listOrganizerContactsHandler(
     nextCursor,
     ...countResult,
     manualTagVocabulary,
-    sourceCoverage: summary?.sourceCoverage ?? "partial",
+    sourceCoverage,
     projectionVersion: summary?.projectionVersion ?? 1,
   };
 }
@@ -244,6 +254,15 @@ export function listContactsMatchCountResult(
     matchCount: exactMatchCount,
     matchCountCoverage: "exact",
   };
+}
+
+/**
+ * Partial summary totals are lower bounds and cannot label a directory exact.
+ */
+export function exactContactCountFromSummary(
+  summary: OrganizerAudienceSummaryDocument | undefined,
+): number | null {
+  return summary?.sourceCoverage === "exact" ? summary.contactCount : null;
 }
 
 async function exactListContactsMatchCount(params: {
@@ -265,7 +284,19 @@ async function exactListContactsMatchCount(params: {
       .get();
     return snapshot.data().count;
   }
-  if (!params.segmentId) return params.summary?.contactCount ?? null;
+  const summaryCount = exactContactCountFromSummary(params.summary);
+  if (!params.segmentId && summaryCount !== null) {
+    return summaryCount;
+  }
+  if (!params.segmentId) {
+    const snapshot = await params.db.collection("organizerContacts")
+      .where("organizerId", "==", params.organizerId)
+      .where("deletedAt", "==", null)
+      .where("hiddenAt", "==", null)
+      .count()
+      .get();
+    return snapshot.data().count;
+  }
   const snapshot = await params.db.collection("organizerContactTraits")
     .where("organizerId", "==", params.organizerId)
     .where("segmentIds", "array-contains", params.segmentId)
@@ -314,6 +345,11 @@ export async function createOrganizerContactRecord(params: {
   now?: FirebaseFirestore.Timestamp;
 }): Promise<CreateOrganizerContactCallableResponse> {
   const now = params.now ?? admin.firestore.Timestamp.now();
+  const initialSourceCoverage = await resolveOrganizerAudienceCoverage({
+    db: params.db,
+    organizerId: params.organizerId,
+    storedCoverage: null,
+  });
   const contactRef = params.contactId ?
     params.db.collection("organizerContacts").doc(params.contactId) :
     params.db.collection("organizerContacts").doc();
@@ -422,7 +458,8 @@ export async function createOrganizerContactRecord(params: {
       params.organizerId,
       summarySnap.data() as OrganizerAudienceSummaryDocument | undefined,
       trait,
-      now
+      now,
+      initialSourceCoverage,
     ));
   });
   return {
@@ -1075,6 +1112,11 @@ export async function exportOrganizerContactsHandler(
   ])].map((row) => row.map(csvCell).join(",")).join("\r\n") + "\r\n";
   const summary = summarySnap.data() as
     OrganizerAudienceSummaryDocument | undefined;
+  const sourceCoverage = await resolveOrganizerAudienceCoverage({
+    db,
+    organizerId: data.organizerId,
+    storedCoverage: summary?.sourceCoverage,
+  });
   const generatedAt = admin.firestore.Timestamp.now();
   return {
     organizerId: data.organizerId,
@@ -1084,7 +1126,7 @@ export async function exportOrganizerContactsHandler(
     rowCount: rows.length,
     truncated: contactSnap.size > maxExportContacts,
     generatedAtMillis: generatedAt.toMillis(),
-    sourceCoverage: summary?.sourceCoverage ?? "partial",
+    sourceCoverage,
   };
 }
 
@@ -2019,9 +2061,17 @@ function summaryWithTrait(
   organizerId: string,
   summary: OrganizerAudienceSummaryDocument | undefined,
   trait: OrganizerContactTraitDocument,
-  now: FirebaseFirestore.Timestamp
+  now: FirebaseFirestore.Timestamp,
+  defaultSourceCoverage: OrganizerAudienceSourceCoverage = "partial",
 ): OrganizerAudienceSummaryDocument {
-  return summaryAfterTraitDelta(organizerId, summary, trait, 1, now);
+  return summaryAfterTraitDelta(
+    organizerId,
+    summary,
+    trait,
+    1,
+    now,
+    defaultSourceCoverage,
+  );
 }
 
 function summaryAfterTraitDelta(
@@ -2029,7 +2079,8 @@ function summaryAfterTraitDelta(
   summary: OrganizerAudienceSummaryDocument | undefined,
   trait: OrganizerContactTraitDocument,
   direction: 1 | -1,
-  now: FirebaseFirestore.Timestamp
+  now: FirebaseFirestore.Timestamp,
+  defaultSourceCoverage: OrganizerAudienceSourceCoverage = "partial",
 ): OrganizerAudienceSummaryDocument {
   const value = (current: number | undefined, applies: boolean) => Math.max(
     0,
@@ -2054,7 +2105,8 @@ function summaryAfterTraitDelta(
       trait.whatsappStatus === "optedIn"),
     smsOptInCount: value(summary?.smsOptInCount,
       trait.smsStatus === "optedIn"),
-    sourceCoverage: summary?.sourceCoverage ?? "partial",
+    sourceCoverage: summary?.sourceCoverage === "exact" ?
+      "exact" : defaultSourceCoverage,
     projectionVersion: summary?.projectionVersion ?? 1,
     computedAt: now,
   };

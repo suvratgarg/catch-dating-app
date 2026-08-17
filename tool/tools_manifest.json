@@ -2310,7 +2310,7 @@
       "command": "node tool/data/backfill_organizer_audience.mjs",
       "safety": "remote-write-apply-guarded",
       "status": "active",
-      "description": "Dry-run-first, resumable organizer contact/event/trait projection backfill with an exact-coverage switch only after every current attendee is processed.",
+      "description": "Dry-run-first, resumable organizer contact/event/trait projection backfill that discovers attendee, manual-contact, and partial-summary organizers, including zero-attendee repairs, and switches to exact coverage only after every current attendee is processed.",
       "checks": [
         "node --check tool/data/backfill_organizer_audience.mjs",
         "node --test tool/data/backfill_organizer_audience.test.mjs"

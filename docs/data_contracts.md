@@ -738,8 +738,13 @@ trailing 365 days; raw link opens and share-button taps never qualify.
 Trait and summary writes use exactly-once TTL receipts, so retries cannot
 double-count an organizer. The dry-run-first organizer-audience backfill uses
 the same production projector and marks a summary `exact` only after every
-current attendee row has completed. Newer live rows always win over stale
-backfill snapshots.
+current attendee row has completed. Its discovery set is the union of attendee,
+contact, and incomplete-summary organizers, so a manual-only organizer with
+zero attendees can still be completed. Newer live rows always win over stale
+backfill snapshots. A missing or partial summary is also effectively `exact`
+when a bounded canonical-history check proves that the organizer has no
+`eventAttendees`; absence of projection state alone is not treated as an
+incomplete migration.
 
 `getOrganizerCrmSummary` reads `organizerAudienceSummaries` only when its
 coverage is `exact` and returns only privacy-bounded counts for contacts, past
