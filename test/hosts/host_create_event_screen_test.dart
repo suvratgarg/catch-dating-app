@@ -6,6 +6,7 @@ import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
@@ -13,6 +14,7 @@ import 'package:catch_dating_app/core/widgets/catch_option_card.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
@@ -34,6 +36,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/crea
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_success_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_roster_drawer.dart';
 import 'package:catch_dating_app/locations/data/places_repository.dart';
@@ -64,10 +67,8 @@ void main() {
     ) async {
       await _pumpCreateEventFlow(tester);
       await _openCreateEventFlow(tester);
-
       await _tapPrimaryButton(tester, 'Next');
       await tester.pump();
-
       expect(find.text('Required'), findsOneWidget);
       expect(find.text('Select a pace'), findsOneWidget);
     });
@@ -77,9 +78,7 @@ void main() {
       (tester) async {
         await _pumpCreateEventFlow(tester);
         await _openCreateEventFlow(tester);
-
         expect(find.byType(CatchFieldChoiceChip), findsNothing);
-
         await _openCatchField(tester, 'Activity type');
         final walking = tester.widget<CatchFieldChoiceChip>(
           find.byWidgetPredicate(
@@ -102,7 +101,6 @@ void main() {
           socialRun.accent,
           ActivityPalette.resolve(context, ActivityKind.socialRun).accent,
         );
-
         await _openCatchField(tester, 'Pace level');
         expect(
           find.byWidgetPredicate(
@@ -129,7 +127,6 @@ void main() {
         HostCreateEventRouteScreen(clubId: 'club-1', initialClub: buildClub()),
       );
       await tester.pump();
-
       expect(find.text('Host access required'), findsOneWidget);
       expect(
         find.text(

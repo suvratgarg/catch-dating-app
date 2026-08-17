@@ -229,6 +229,60 @@ const schemaSpecs = [
       "functions/src/shared/generated/organizerProviderConnectionDocument.ts",
   },
   {
+    name: "OrganizerApplicationFormDocument",
+    source: "firestore/organizer_application_forms.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerApplicationFormDocument.ts",
+  },
+  {
+    name: "OrganizerApplicationFormVersionDocument",
+    source: "firestore/organizer_application_form_versions.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerApplicationFormVersionDocument.ts",
+  },
+  {
+    name: "OrganizerApplicationDocument",
+    source: "firestore/organizer_applications.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerApplicationDocument.ts",
+  },
+  {
+    name: "OrganizerApplicationResponseDocument",
+    source: "firestore/organizer_application_responses.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerApplicationResponseDocument.ts",
+  },
+  {
+    name: "OrganizerApplicationAssetDocument",
+    source: "firestore/organizer_application_assets.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerApplicationAssetDocument.ts",
+  },
+  {
+    name: "OrganizerApplicationSourceMappingDocument",
+    source: "firestore/organizer_application_source_mappings.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerApplicationSourceMappingDocument.ts",
+  },
+  {
+    name: "OrganizerApplicationImportReceiptDocument",
+    source: "firestore/organizer_application_import_receipts.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerApplicationImportReceiptDocument.ts",
+  },
+  {
+    name: "ParticipantIntakeProfileDocument",
+    source: "firestore/participant_intake_profiles.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/participantIntakeProfileDocument.ts",
+  },
+  {
+    name: "ParticipantOrganizerDataGrantDocument",
+    source: "firestore/participant_organizer_data_grants.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/participantOrganizerDataGrantDocument.ts",
+  },
+  {
     name: "ExternalEventMappingDocument",
     source: "firestore/external_event_mappings.schema.json",
     typeOutput:
@@ -1677,6 +1731,153 @@ const schemaSpecs = [
       "functions/src/shared/generated/listOrganizerContactsCallablePayload.ts",
   },
   {
+    name: "PublishOrganizerApplicationFormCallablePayload",
+    source:
+      "callables/publish_organizer_application_form_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "publishOrganizerApplicationFormCallablePayload.ts",
+  },
+  {
+    name: "GetParticipantOrganizerApplicationFormCallablePayload",
+    source:
+      "callables/get_participant_organizer_application_form_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "getParticipantOrganizerApplicationFormCallablePayload.ts",
+  },
+  {
+    name: "GetParticipantOrganizerApplicationFormCallableResponse",
+    source:
+      "callable_responses/" +
+      "get_participant_organizer_application_form_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "getParticipantOrganizerApplicationFormCallableResponse.ts",
+  },
+  {
+    name: "SubmitParticipantOrganizerApplicationCallablePayload",
+    source:
+      "callables/submit_participant_organizer_application_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "submitParticipantOrganizerApplicationCallablePayload.ts",
+  },
+  {
+    name: "SubmitParticipantOrganizerApplicationCallableResponse",
+    source:
+      "callable_responses/" +
+      "submit_participant_organizer_application_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "submitParticipantOrganizerApplicationCallableResponse.ts",
+  },
+  {
+    name: "RevokeParticipantOrganizerDataGrantCallablePayload",
+    source:
+      "callables/revoke_participant_organizer_data_grant_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "revokeParticipantOrganizerDataGrantCallablePayload.ts",
+  },
+  {
+    name: "RevokeParticipantOrganizerDataGrantCallableResponse",
+    source:
+      "callable_responses/" +
+      "revoke_participant_organizer_data_grant_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "revokeParticipantOrganizerDataGrantCallableResponse.ts",
+  },
+  {
+    name: "PublishOrganizerApplicationFormCallableResponse",
+    source:
+      "callable_responses/" +
+      "publish_organizer_application_form_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "publishOrganizerApplicationFormCallableResponse.ts",
+  },
+  {
+    name: "PreviewOrganizerApplicationImportCallablePayload",
+    source:
+      "callables/preview_organizer_application_import_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "previewOrganizerApplicationImportCallablePayload.ts",
+  },
+  {
+    name: "PreviewOrganizerApplicationImportCallableResponse",
+    source:
+      "callable_responses/" +
+      "preview_organizer_application_import_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "previewOrganizerApplicationImportCallableResponse.ts",
+  },
+  {
+    name: "ImportOrganizerApplicationsCallablePayload",
+    source: "callables/import_organizer_applications_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "importOrganizerApplicationsCallablePayload.ts",
+  },
+  {
+    name: "ImportOrganizerApplicationsCallableResponse",
+    source:
+      "callable_responses/import_organizer_applications_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "importOrganizerApplicationsCallableResponse.ts",
+  },
+  {
+    name: "ListOrganizerApplicationsCallablePayload",
+    source: "callables/list_organizer_applications_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "listOrganizerApplicationsCallablePayload.ts",
+  },
+  {
+    name: "ListOrganizerApplicationsCallableResponse",
+    source:
+      "callable_responses/list_organizer_applications_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "listOrganizerApplicationsCallableResponse.ts",
+  },
+  {
+    name: "GetOrganizerApplicationDetailCallablePayload",
+    source:
+      "callables/get_organizer_application_detail_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "getOrganizerApplicationDetailCallablePayload.ts",
+  },
+  {
+    name: "GetOrganizerApplicationDetailCallableResponse",
+    source:
+      "callable_responses/" +
+      "get_organizer_application_detail_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "getOrganizerApplicationDetailCallableResponse.ts",
+  },
+  {
+    name: "ReviewOrganizerApplicationCallablePayload",
+    source: "callables/review_organizer_application_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "reviewOrganizerApplicationCallablePayload.ts",
+  },
+  {
+    name: "ReviewOrganizerApplicationCallableResponse",
+    source:
+      "callable_responses/review_organizer_application_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "reviewOrganizerApplicationCallableResponse.ts",
+  },
+  {
     name: "CreateOrganizerContactCallablePayload",
     source: "callables/create_organizer_contact_payload.schema.json",
     typeOutput:
@@ -2748,6 +2949,7 @@ const generatedFiles = [];
 
 async function main() {
   const profileCatalog = readContractJson("catalogs/profile_prompts.json");
+  const personFieldCatalog = readContractJson("catalogs/person_fields.json");
   const eventSuccessMomentPresentationCatalog = readContractJson(
     "catalogs/event_success_moment_presentations.json"
   );
@@ -2781,6 +2983,7 @@ async function main() {
     renderTsSchemaRegistry({
       schemaMap: bundledSchemas,
       profileCatalog,
+      personFieldCatalog,
       photoCatalog,
       profilePhotoPolicy,
     })
@@ -2808,6 +3011,7 @@ async function main() {
     renderToolSchemaRegistry({
       schemaMap: bundledSchemas,
       profileCatalog,
+      personFieldCatalog,
       photoCatalog,
       profilePhotoPolicy,
     })
@@ -2840,6 +3044,7 @@ async function main() {
     "lib/core/schema_contracts/generated/profile_schema_contracts.g.dart",
     renderDartContracts({
       profileCatalog,
+      personFieldCatalog,
       photoCatalog,
       profilePhotoPolicy,
       profilePromptSchema: bundledSchemas.get("ProfilePromptAnswer"),
@@ -3934,12 +4139,14 @@ function typeImportPath(spec) {
 function renderTsSchemaRegistry({
   schemaMap,
   profileCatalog,
+  personFieldCatalog,
   photoCatalog,
   profilePhotoPolicy,
 }) {
   const entries = schemaRegistryEntries(schemaMap);
   const catalogEntries = [
     ["profilePromptCatalog", profileCatalog],
+    ["personFieldCatalog", personFieldCatalog],
     ["photoPromptCatalog", photoCatalog],
     ["profilePromptLimits", profileCatalog.limits],
     ["photoPromptLimits", photoCatalog.limits],
@@ -4018,12 +4225,14 @@ export const schemaProfileDecisionFutureOutgoingSubcollectionPath =
 function renderToolSchemaRegistry({
   schemaMap,
   profileCatalog,
+  personFieldCatalog,
   photoCatalog,
   profilePhotoPolicy,
 }) {
   const entries = schemaRegistryEntries(schemaMap);
   const catalogEntries = [
     ["profilePromptCatalog", profileCatalog],
+    ["personFieldCatalog", personFieldCatalog],
     ["photoPromptCatalog", photoCatalog],
     ["profilePromptLimits", profileCatalog.limits],
     ["photoPromptLimits", photoCatalog.limits],
@@ -4101,6 +4310,7 @@ export const joinWaitlistResponseSchema: Record<string, unknown> =
 
 function renderDartContracts({
   profileCatalog,
+  personFieldCatalog,
   photoCatalog,
   profilePhotoPolicy,
   profilePromptSchema,
@@ -4137,6 +4347,28 @@ function renderDartContracts({
   const defaultPromptIds = profileCatalog.defaultPromptIds
     .map((id) => `  ${dartString(id)},`)
     .join("\n");
+  const personFields = personFieldCatalog.fields.map((field) =>
+    `  SchemaPersonFieldDefinition(` +
+    `id: ${dartString(field.id)}, ` +
+    `aliases: <String>[${field.aliases.map(dartString).join(", ")}], ` +
+    `questionKind: ${dartString(field.questionKind)}, ` +
+    `transform: ${dartString(field.transform)}, ` +
+    `privacyClass: ${dartString(field.privacyClass)}, ` +
+    `prefillPolicy: ${dartString(field.prefillPolicy)}, ` +
+    `hostPresentation: ${dartString(field.hostPresentation)}, ` +
+    `authority: ${dartString(field.authority)}, ` +
+    `privateProfilePath: ${dartLiteral(field.privateProfilePath)}, ` +
+    `derivedFrom: ${dartLiteral(field.derivedFrom)}, ` +
+    `publicProfileProjection: ` +
+    `${dartString(field.publicProfileProjection)}, ` +
+    `publicProfilePath: ${dartLiteral(field.publicProfilePath)},` +
+    `),`
+  ).join("\n");
+  const personFieldAliases = personFieldCatalog.fields.flatMap((field) =>
+    field.aliases.map((alias) =>
+      `  ${dartString(alias)}: ${dartString(field.id)},`
+    )
+  ).join("\n");
 
   return `${dartGeneratedHeader()}
 class SchemaProfilePromptDefinition {
@@ -4162,6 +4394,46 @@ class SchemaPhotoPromptDefinition {
   final String title;
   final String placeholder;
 }
+
+class SchemaPersonFieldDefinition {
+  const SchemaPersonFieldDefinition({
+    required this.id,
+    required this.aliases,
+    required this.questionKind,
+    required this.transform,
+    required this.privacyClass,
+    required this.prefillPolicy,
+    required this.hostPresentation,
+    required this.authority,
+    required this.privateProfilePath,
+    required this.derivedFrom,
+    required this.publicProfileProjection,
+    required this.publicProfilePath,
+  });
+
+  final String id;
+  final List<String> aliases;
+  final String questionKind;
+  final String transform;
+  final String privacyClass;
+  final String prefillPolicy;
+  final String hostPresentation;
+  final String authority;
+  final String? privateProfilePath;
+  final String? derivedFrom;
+  final String publicProfileProjection;
+  final String? publicProfilePath;
+}
+
+const schemaPersonFieldOrganizerAccessPolicy = ${dartString(
+  personFieldCatalog.organizerAccessPolicy
+)};
+const schemaPersonFieldPublicProfileMetadataPolicy = ${dartString(
+  personFieldCatalog.publicProfileMetadataPolicy
+)};
+const schemaPersonFieldTabularChoiceImportPolicy = ${dartString(
+  personFieldCatalog.tabularChoiceImportPolicy
+)};
 
 const schemaProfilePromptPerfectEventId = ${dartString(
   profileCatalog.defaultPromptIds[0]
@@ -4209,6 +4481,24 @@ ${profilePrompts}
 const schemaPhotoPromptCatalog = <SchemaPhotoPromptDefinition>[
 ${photoPrompts}
 ];
+
+const schemaPersonFieldCatalog = <SchemaPersonFieldDefinition>[
+${personFields}
+];
+
+const schemaPersonFieldIdByNormalizedAlias = <String, String>{
+${personFieldAliases}
+};
+
+String? schemaPersonFieldIdForNormalizedAlias(String alias) =>
+    schemaPersonFieldIdByNormalizedAlias[alias];
+
+SchemaPersonFieldDefinition? schemaPersonFieldForId(String id) {
+  for (final field in schemaPersonFieldCatalog) {
+    if (field.id == id) return field;
+  }
+  return null;
+}
 
 const schemaProfilePromptAnswerSchema = ${dartLiteral(profilePromptSchema)};
 

@@ -100,10 +100,13 @@ function request(inviteToken: string, sessionId = "session-12345678") {
   } as CallableRequest<unknown>;
 }
 
-function authenticatedRequest(data: Record<string, unknown>) {
+function authenticatedRequest(
+  data: Record<string, unknown>,
+  phoneNumber = "+919876543210"
+) {
   return {
     data,
-    auth: {uid: "user-1", token: {}},
+    auth: {uid: "user-1", token: {phone_number: phoneNumber}},
     rawRequest: {},
   } as CallableRequest<unknown>;
 }
@@ -151,7 +154,8 @@ test("attendee links default to the external booking destination", async () => {
       uid: "user-1",
       status: "signedUp",
     },
-    "users/user-1": {phoneNumber: "+919876543210"},
+    // A mutable profile value must not participate in identity resolution.
+    "users/user-1": {phoneNumber: "+918888888888"},
     [`eventAttendees/${attendeeId}`]: {
       eventId: "event-1",
       organizerId: "organizer-1",

@@ -40,7 +40,6 @@ const trimmedStringFields: ProfilePatchField[] = [
   "name",
   "displayName",
   "email",
-  "phoneNumber",
   "city",
 ];
 const nullableTrimmedStringFields: ProfilePatchField[] = [

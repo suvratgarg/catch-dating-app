@@ -143,6 +143,19 @@ export {
   mutateOrganizerContactNote,
 } from "./organizers/organizerContacts";
 export {
+  getOrganizerApplicationDetail,
+  importOrganizerApplications,
+  listOrganizerApplications,
+  previewOrganizerApplicationImport,
+  publishOrganizerApplicationForm,
+  reviewOrganizerApplication,
+} from "./organizers/organizerApplications";
+export {
+  getParticipantOrganizerApplicationForm,
+  revokeParticipantOrganizerDataGrant,
+  submitParticipantOrganizerApplication,
+} from "./organizers/participantOrganizerApplications";
+export {
   mergeOrganizerContacts,
   unmergeOrganizerContacts,
 } from "./organizers/organizerContactMerges";

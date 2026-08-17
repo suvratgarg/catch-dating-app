@@ -33,8 +33,11 @@ const projectId = "demo-catch-rules";
 
 let testEnv;
 
-function authedDb(uid) {
-  return testEnv.authenticatedContext(uid).firestore();
+function authedDb(uid, token = {}) {
+  return testEnv.authenticatedContext(uid, {
+    phone_number: "+919999999999",
+    ...token,
+  }).firestore();
 }
 
 function club(overrides = {}) {
@@ -1621,6 +1624,15 @@ describe("firestore.rules", () => {
         ["organizerProviderConnections", "connection-1"],
         ["externalEventMappings", "mapping-1"],
         ["providerSyncRuns", "sync-1"],
+        ["organizerApplicationForms", "form-1"],
+        ["organizerApplicationFormVersions", "version-1"],
+        ["organizerApplications", "application-1"],
+        ["organizerApplicationResponses", "response-1"],
+        ["organizerApplicationAssets", "asset-1"],
+        ["organizerApplicationSourceMappings", "mapping-2"],
+        ["organizerApplicationImportReceipts", "receipt-1"],
+        ["participantIntakeProfiles", "profile-1"],
+        ["participantOrganizerDataGrants", "grant-1"],
       ];
       for (const path of paths) {
         await seed(path, {eventId: "event-1", organizerId: "club-1"});
@@ -1867,6 +1879,25 @@ describe("firestore.rules", () => {
     it("allows owners to create the current UserProfile schema without legacy sexualOrientation", async () => {
       await assertSucceeds(
         setDoc(doc(authedDb("runner-1"), "users", "runner-1"), userProfile()),
+      );
+    });
+
+    it("requires the initial profile phone to match the verified Auth phone", async () => {
+      await assertFails(
+        setDoc(
+          doc(authedDb("runner-1"), "users", "runner-1"),
+          userProfile({phoneNumber: "+918888888888"}),
+        ),
+      );
+      await assertFails(
+        setDoc(
+          doc(
+            testEnv.authenticatedContext("runner-2").firestore(),
+            "users",
+            "runner-2",
+          ),
+          userProfile(),
+        ),
       );
     });
 

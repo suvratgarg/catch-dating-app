@@ -12989,7 +12989,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersVerifiedDetailsManagedByCatch =>
-      'Verified contact details come from the linked Catch account and cannot be edited here.';
+      'Contact details shown here come from this organizer’s records. Linking a Catch account does not reveal additional profile fields.';
 
   @override
   String get hostCustomersUnverifiedContactDetails =>
@@ -13532,4 +13532,199 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostEventRosterDrawerClose => 'Close guest roster';
+
+  @override
+  String get hostApplicationsTitle => 'Applications';
+
+  @override
+  String get hostApplicationsOpen => 'Review applications';
+
+  @override
+  String get hostApplicationsImport => 'Import responses';
+
+  @override
+  String get hostApplicationsImportTitle => 'Import applications';
+
+  @override
+  String get hostApplicationsImportSubtitle =>
+      'Every column is preserved. Recognized profile fields can support future prefill; unique questions stay organizer-only.';
+
+  @override
+  String get hostApplicationsImportReusableField => 'Reusable profile field';
+
+  @override
+  String get hostApplicationsImportOrganizerField => 'Organizer-only question';
+
+  @override
+  String hostApplicationsImportAction({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count applications',
+      one: '1 application',
+    );
+    return 'Import $_temp0';
+  }
+
+  @override
+  String hostApplicationsImportLimit({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count additional rows will need a second import.',
+      one: '1 additional row will need a second import.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostApplicationsImportMissingName =>
+      'Map a Name, Full name, or First name column before importing.';
+
+  @override
+  String get hostApplicationsImportNoRows =>
+      'The spreadsheet does not contain any application rows.';
+
+  @override
+  String hostApplicationsImportComplete({
+    required int created,
+    required int skipped,
+  }) {
+    return 'Imported $created and skipped $skipped.';
+  }
+
+  @override
+  String get hostApplicationsConsentCopy =>
+      'I agree to share these submitted answers with this organizer for application review.';
+
+  @override
+  String get hostApplicationsRetentionCopy =>
+      'The organizer may retain submitted answers for application review and customer history according to its stated policy.';
+
+  @override
+  String get hostApplicationsSubtitle =>
+      'Review sign-ups from Catch forms or imported spreadsheets in one queue.';
+
+  @override
+  String get hostApplicationsSearch => 'Search by applicant name';
+
+  @override
+  String get hostApplicationsEmptyTitle => 'No applications yet';
+
+  @override
+  String get hostApplicationsEmptyBody =>
+      'Publish a Catch form or import responses from any spreadsheet. New submissions will appear here.';
+
+  @override
+  String get hostApplicationsSortNewest => 'Newest first';
+
+  @override
+  String get hostApplicationsSortOldest => 'Oldest first';
+
+  @override
+  String get hostApplicationsSortName => 'Applicant name';
+
+  @override
+  String get hostApplicationsFilterAll => 'All';
+
+  @override
+  String get hostApplicationsStatusSubmitted => 'Submitted';
+
+  @override
+  String get hostApplicationsStatusInReview => 'In review';
+
+  @override
+  String get hostApplicationsStatusApproved => 'Approved';
+
+  @override
+  String get hostApplicationsStatusWaitlisted => 'Waitlisted';
+
+  @override
+  String get hostApplicationsStatusDeclined => 'Declined';
+
+  @override
+  String get hostApplicationsStatusWithdrawn => 'Withdrawn';
+
+  @override
+  String get hostApplicationsSourceNative => 'Catch form';
+
+  @override
+  String get hostApplicationsSourceImport => 'Spreadsheet import';
+
+  @override
+  String get hostApplicationsSourceConnector => 'Connected form';
+
+  @override
+  String hostApplicationsSubmittedOn({required String date}) {
+    return 'Submitted $date';
+  }
+
+  @override
+  String get hostApplicationsLoadMore => 'Load more applications';
+
+  @override
+  String get hostApplicationAnswersTitle => 'Application answers';
+
+  @override
+  String get hostApplicationNotAnswered => 'Not answered';
+
+  @override
+  String get hostApplicationAnswerYes => 'Yes';
+
+  @override
+  String get hostApplicationAnswerNo => 'No';
+
+  @override
+  String hostApplicationAnswerFiles({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count files',
+      one: '1 file',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostApplicationOutreachTitle => 'Contact applicant';
+
+  @override
+  String get hostApplicationCall => 'Call';
+
+  @override
+  String get hostApplicationEmail => 'Email';
+
+  @override
+  String get hostApplicationInstagram => 'Instagram';
+
+  @override
+  String get hostApplicationLinkedin => 'LinkedIn';
+
+  @override
+  String get hostApplicationNoOutreach =>
+      'This form did not grant a usable phone, email, Instagram, or LinkedIn destination.';
+
+  @override
+  String get hostApplicationReviewTitle => 'Review decision';
+
+  @override
+  String get hostApplicationReviewNote => 'Private review note';
+
+  @override
+  String get hostApplicationReviewNoteHint => 'Add context for your team';
+
+  @override
+  String get hostApplicationMarkInReview => 'Mark in review';
+
+  @override
+  String get hostApplicationApprove => 'Approve';
+
+  @override
+  String get hostApplicationWaitlist => 'Waitlist';
+
+  @override
+  String get hostApplicationDecline => 'Decline';
+
+  @override
+  String get hostApplicationReviewUpdated => 'Application review updated';
 }

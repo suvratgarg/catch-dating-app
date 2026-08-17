@@ -22,9 +22,10 @@ Verified against `lib/user_profile/presentation/widgets/profile_tab.dart`,
 `lib/user_profile/domain/user_profile.dart`, and
 `test/profile/profile_widgets_test.dart` on 2026-06-29:
 
-1. `Phone` is display-only in Profile. There is still no profile-local Firebase
-   Auth phone re-verification/change flow, so keep it readonly unless an OTP
-   re-verification flow updates the Auth credential first.
+1. `Phone` is display-only in Profile. The profile patch contract excludes it,
+   and initial profile creation must match the Firebase Auth phone claim. A
+   future phone change must update the Auth credential through OTP first and
+   then synchronize the private profile through a server-owned operation.
 2. `Date of birth` is still display-only. Decide whether corrections go
    through an in-app support flow, admin review, or a carefully constrained
    editor.

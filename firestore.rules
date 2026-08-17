@@ -328,7 +328,7 @@ service cloud.firestore {
         && data.profilePrompts is list
         && data.profilePrompts.size() <= 3
 	        && optionalString(data, 'instagramHandle')
-	        && data.phoneNumber is string
+	        && data.phoneNumber == request.auth.token.phone_number
 	        && optionalString(data, 'countryCode')
 	        && data.dateOfBirth is timestamp
         && data.gender in ['man', 'woman', 'nonBinary', 'other']
@@ -435,8 +435,7 @@ service cloud.firestore {
         && request.auth.uid == uid
         && !isDeletedUser(uid)
         && hasValidUserShape(request.resource.data)
-        && !hasField(request.resource.data, 'deleted')
-        && !hasField(request.resource.data, 'deletedAt');
+        && !request.resource.data.keys().hasAny(['deleted', 'deletedAt']);
     }
 
     function userChangedKeys() {
@@ -1011,6 +1010,46 @@ service cloud.firestore {
     }
 
     match /organizerProviderConnections/{connectionId} {
+      allow read, write: if false;
+    }
+
+    // Application forms, answer snapshots, assets, review state, import
+    // receipts, and participant consent ledgers contain cross-organizer PII.
+    // Clients receive only purpose-built callable projections; even a manager
+    // cannot enumerate another organizer's raw documents by direct query.
+    match /organizerApplicationForms/{formId} {
+      allow read, write: if false;
+    }
+
+    match /organizerApplicationFormVersions/{versionId} {
+      allow read, write: if false;
+    }
+
+    match /organizerApplications/{applicationId} {
+      allow read, write: if false;
+    }
+
+    match /organizerApplicationResponses/{responseId} {
+      allow read, write: if false;
+    }
+
+    match /organizerApplicationAssets/{assetId} {
+      allow read, write: if false;
+    }
+
+    match /organizerApplicationSourceMappings/{mappingId} {
+      allow read, write: if false;
+    }
+
+    match /organizerApplicationImportReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
+    match /participantIntakeProfiles/{uid} {
+      allow read, write: if false;
+    }
+
+    match /participantOrganizerDataGrants/{grantId} {
       allow read, write: if false;
     }
 

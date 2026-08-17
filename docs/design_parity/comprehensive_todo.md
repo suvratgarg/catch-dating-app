@@ -21,12 +21,12 @@ ledgers as the source of truth when counts differ:
 
 ## Current Snapshot
 
-- Route inventory: 53 app routes.
-- Route coverage decisions: 47 contracted, 4 alias, 0 planned, 2 excluded.
-- Screen contracts: 35 contracted screens.
+- Route inventory: 56 app routes.
+- Route coverage decisions: 50 contracted, 4 alias, 0 planned, 2 excluded.
+- Screen contracts: 36 contracted screens.
 - Feature orchestration coverage: 57 registered authorities, 41 source
   contracts, 32 contracted Flutter screens, 6 contracted marketing routes, 14
-  contracted Admin routes, and 0 planned authorities in any runtime. Four static/fallback marketing
+  contracted Admin routes, and 1 planned Flutter authority. Four static/fallback marketing
   routes remain deliberately excluded and the legacy organizer-listing route
   remains a grouped static-output projection. The social-journey batch compiles all 99
   registered states and 23 explicit actions across Catches Hub, Catches Event,
@@ -96,22 +96,22 @@ ledgers as the source of truth when counts differ:
   overview, access-decision, role, safety, and marketing mutation directions
   now have strict request and response schemas; remaining structural callables
   stay explicitly labeled rather than being overclaimed.
-- Screen priority spread: 20 P1, 10 P2, and 5 P3 contracted screens.
-- Contracted screen states: 650.
-- Contracted screen sections: 235.
-- Screen registry migration gaps: 17 open, 25 blocked, and 113 closed. One of
-  the 17 non-blocked gaps is currently marked in progress. These are
+- Screen priority spread: 21 P1, 10 P2, and 5 P3 contracted screens.
+- Contracted screen states: 678.
+- Contracted screen sections: 239.
+- Screen registry migration gaps: 19 open, 25 blocked, and 113 closed. One of
+  the 19 non-blocked gaps is currently marked in progress. These are
   product migration gaps in `design/screens/catch.screens.json`, not
   validation failures.
 - Contracted section states: 1,113.
 - Open screen-contract validation gaps: 0.
-- Design parity matrix: 12 feature groups, 36 screens, 652 matrix states, and
-  52 open matrix gaps across screen-state, lint-candidate, and preview-plan
+- Design parity matrix: 12 feature groups, 37 screens, 680 matrix states, and
+  54 open matrix gaps across screen-state, lint-candidate, and preview-plan
   queues.
-- Matrix state status spread: 558 captured, 33 implemented, 4 planned, and
-  57 tested.
-- Capture coverage registry: 620 capture ids across 37 captured route entries,
-  8 alias route entries, 6 planned route entries, and 2 excluded route entries.
+- Matrix state status spread: 562 captured, 43 implemented, 4 planned, and
+  71 tested.
+- Capture coverage registry: 624 capture ids across 39 captured route entries,
+  8 alias route entries, 7 planned route entries, and 2 excluded route entries.
 - Component contracts: 71 reusable primitive/composite contracts with 445
   contract states.
 - Widgetbook registry: 870 generated component entries, 928 generated use-case
@@ -747,6 +747,7 @@ from those ledgers rather than hand-editing counts.
 | P1 | `screen.host.event.manage` | 58 | 12 | 5 | Blocked: edge-state masks need canonical exports | `DS-HOST-EVENT-MANAGE-001`, `DS-HOST-EVENT-MANAGE-004`, `DS-HOST-EVENT-MANAGE-005` blocked, `DS-HOST-EVENT-MANAGE-006` | Host Manage now has an exact generated feature contract across all registered route/workspace states and primary edit/cancel/delete actions, including typed route, screen-state, and side-effect outcomes. The restored route-and-section Widgetbook use case closes the stale preview reference; 33 focused test gaps remain explicit evidence debt. Route/access, section, participant, invite-link, Event Success, action, report, cancellation, accessibility, and theme captures remain registered, while reference-specific edge masks are still blocked on canonical exports. |
 | P1 | `screen.host.home` | 18 | 7 | 2 | Blocked: consolidated state variants need canonical exports | `DS-HOST-HOME-002` blocked, `DS-HOST-HOME-004` blocked, `DS-HOST-HOME-005` | `feature.host_home` compiles all 18 registered states and 11 actions across auth recovery, organizer switching, the consolidated detail-rich Events overview, nested event recovery, lifecycle filtering, and typed create/repeat/manage/task navigation. Fifteen focused evidence obligations remain explicit debt. Historical Today and Events references remain ingredient evidence until design supplies one approved consolidated Events source. |
 | P1 | `screen.host.customers` | 32 | 5 | 0 | Planned: canonical direct-directory and detail references | `HOST-CUSTOMERS-001` blocked, `HOST-CUSTOMERS-002` | `feature.host_customers` compiles all 32 registered states and 17 actions across computed segments, visually distinct organizer tags, author-stamped notes, notes-excluding export, campaign delivery history, pagination, contact administration, identity and revenue boundaries, and verified-account conversations. Deterministic directory and contact-memory captures are registered; broadcast history remains a deliberate Phase 4 seam, and a payment-maintained indexed High spender trait remains explicit follow-up work. |
+| P1 | `screen.host.applications` | 8 | 2 | 0 | Planned: canonical queue, import, and detail references | `HOST-APPLICATIONS-001`, `HOST-APPLICATIONS-002` | Host Applications owns one provider-neutral review queue, exact submitted-answer projection, validated outreach, revision-fenced review, and CSV/XLSX import mapping. Participant submission and revocation callables now enforce reviewed values and exact organizer grants; participant-facing Flutter UI, deterministic previews/captures, and only justified provider API connectors remain explicit follow-up work. |
 | P1 | `screen.host.inbox` | 32 | 9 | 1 | Blocked: Inbox variant references and new Campaigns references need canonical exports or product-backed data | `DS-HOST-INBOX-001`, `DS-HOST-INBOX-004`, `DS-HOST-INBOX-005` | `feature.host_inbox` now represents Host Messaging and compiles all 32 registered states and 13 actions across organizer-scoped Inbox/Campaigns workspaces, event/general scope, booked/prospective audiences, search, chat routing, roster-derived event broadcasts, WhatsApp sender setup, and campaign lifecycle. A full-shell Campaigns capture and focused ownership test cover the move; 25 focused evidence obligations remain explicit debt. The populated Inbox comparison and external live callable/IAM/delivery proof remain separate work. |
 | P1 | `screen.matches.chat` | 23 | 8 | 2 | None | None | Shared `ChatRouteState`, `HostChatScreenState`, `ChatThreadLookupState`, `ChatReadMarkerController`, `ChatScrollCoordinator`, `ChatThreadActionController`, and `ChatRetryController` now own provider waves, lookup keys, read effects, scroll behavior, top-bar action execution, retry invalidation, and disabled composer copy for consumer Match Chat. Deterministic captures include keyboard-open multiline, send failure snackbar, report failure snackbar, and block confirmation. Populated-thread and new-match empty references are registered and compare within threshold after fixture and reference-safe-area alignment: populated `7.22%` / `8.50`, new-match empty `5.01%` / `5.46`. Continue only if design exports keyboard/share/report/block/dynamic-time panels. |
 | P1 | `screen.matches.list` | 15 | 6 | 1 | None | None | `HostInboxScreenState` and `ChatsListDisplayState` now live in `chats_list_screen_state.dart` and own visible row derivation, unread filtering, empty-state selection, search affordance, and display-error retry intents. `ChatsListCelebrationController` owns new-match celebration target selection and dialog execution, and `ChatsSearchHeaderController` owns search-open close policy while the route passes query value/callback into the header. No `ChatNewMatchesRail` symbol remains; new matches render through the shared row list with fresh treatment. The populated baseline is within advisory threshold against `matches_list_context` (`6.84%` mismatch, meanDelta `8.21`); continue only if design exports distinct search/filter/loading/empty panels or the interaction state becomes external. |

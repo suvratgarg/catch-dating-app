@@ -43,6 +43,34 @@ test("accepts canonical route-scaffold top-bar builders", () => {
   assert.deepEqual(result.findings, []);
 });
 
+test("flags geometry overrides on compact route bars", () => {
+  const root = fixtureRoot({
+    source: `
+      CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+          title: 'Sunday Padel',
+          subtitle: 'Event recap',
+          height: CatchScreenTopBar.heightFor(
+            context: context,
+            hasSubtitle: true,
+          ),
+          leadingType: CatchTopBarLeading.back,
+          divider: scrolledUnder,
+        ),
+        body: ListView(),
+      );
+    `,
+    contract: compactContract({
+      leading: "back",
+      surface: "CatchRouteScaffold",
+    }),
+  });
+
+  const result = checkScreenTopBarContracts({root});
+
+  assert.ok(hasFinding(result, "compact-chrome-geometry-override"));
+});
+
 test("flags a route contract that drops its canonical surface", () => {
   const root = fixtureRoot({
     source: `

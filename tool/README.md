@@ -133,7 +133,10 @@ adoption ledger after the bounded decision is complete.
 - `contracts/`: Firestore, schema, business-rule, and generated contract gates.
 - `copy/`: typed locale-catalog validation, ownership scanners, and generated
   structured product-copy sync tools.
-- `data/`: Firestore data validators, repair scripts, and backfills.
+- `data/`: Firestore data validators, repair scripts, backfills, and read-only
+  privacy audits. The legacy Host contact-projection audit never implements an
+  apply path or prints raw contact values; remediation is a separately reviewed
+  operation after its high-confidence and reconciliation counts are accepted.
 - `demo/`: demo seeding, demo operations, and demo seed fixtures.
 - `design/`: visual review and design-preview entrypoints.
 - `env/`: checked-in Dart define files for app environments.

@@ -4,13 +4,13 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "92b360aa5be2696c84205fbe48df738b5bd0832178f372ab02d9b6246deeffa3",
-    "routeContractSha256": "f0efe118adf5276cbd14df0a2e7e245b7cb263aba7064cc09742a6c96a279d2a",
-    "goRouteCount": 55,
+    "normalizedFileSha256": "d784448493b9c7ac455402d678b1a3019af586d99bcb2abf4c97ea8d5bb69b39",
+    "routeContractSha256": "7f712d6935162580464473c24a90fed817568508e3fa20bc0db1341c382a5a68",
+    "goRouteCount": 57,
     "shellBranchCount": 8,
-    "enumRouteCount": 54,
-    "referencedRouteCount": 54,
-    "runtimeRouteCount": 54,
+    "enumRouteCount": 56,
+    "referencedRouteCount": 56,
+    "runtimeRouteCount": 56,
     "routeHelperCount": 2,
     "routeHelpers": [
       "_hostUtilityRoutes",
@@ -456,6 +456,32 @@
       "referencedByGoRouter": true
     },
     {
+      "id": "hostApplicationsScreen",
+      "path": "/host/customers/applications",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "runtimePath": "/host/customers/applications",
+      "runtimeParentId": "hostCustomersScreen",
+      "runtimePathExpression": "'applications'",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostApplicationDetailScreen",
+      "path": "/host/customers/applications/:applicationId",
+      "pathParameters": [
+        "applicationId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/customers/applications/:applicationId",
+      "runtimeParentId": "hostApplicationsScreen",
+      "runtimePathExpression": "':applicationId'",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
       "id": "hostCustomerDetailScreen",
       "path": "/host/customers/:contactId",
       "pathParameters": [
@@ -746,6 +772,8 @@
     "hostAppEventDetailScreen",
     "hostAppEventManageScreen",
     "hostAppEventSuccessScreen",
+    "hostApplicationDetailScreen",
+    "hostApplicationsScreen",
     "hostChatScreen",
     "hostClubDetailScreen",
     "hostClubEventDefaultsScreen",

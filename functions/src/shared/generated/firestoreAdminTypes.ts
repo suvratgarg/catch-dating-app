@@ -1954,6 +1954,436 @@ export interface OrganizerProviderConnectionDocument {
 }
 
 /**
+ * Provider-neutral organizer-owned application form metadata. Published questions live in immutable version documents.
+ */
+export interface OrganizerApplicationFormDocument {
+  organizerId: string;
+  createdByUid: string;
+  title: string;
+  description: string | null;
+  status: "draft" | "published" | "archived";
+  defaultTargetKind: "organizer" | "event" | "campaign";
+  activeVersionId: string | null;
+  revision: number;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  archivedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Immutable published or imported snapshot of one organizer application form.
+ */
+export interface OrganizerApplicationFormVersionDocument {
+  organizerId: string;
+  formId: string;
+  version: number;
+  state: "draftSnapshot" | "published" | "retired";
+  title: string;
+  description: string | null;
+  /**
+   * @minItems 1
+   * @maxItems 100
+   */
+  questions: {
+    questionId: string;
+    key: string;
+    label: string;
+    helpText: string | null;
+    kind:
+      | "shortText"
+      | "longText"
+      | "singleChoice"
+      | "multiChoice"
+      | "date"
+      | "phone"
+      | "email"
+      | "url"
+      | "number"
+      | "boolean"
+      | "file";
+    required: boolean;
+    /**
+     * @maxItems 100
+     */
+    options: {
+      optionId: string;
+      label: string;
+      value: string;
+    }[];
+    canonicalFieldId:
+      | (
+          | "givenName"
+          | "familyName"
+          | "displayName"
+          | "dateOfBirth"
+          | "age"
+          | "gender"
+          | "phoneNumber"
+          | "email"
+          | "instagramHandle"
+          | "linkedinUrl"
+          | "profilePhoto"
+          | "city"
+          | "heightCm"
+          | "occupation"
+          | "company"
+          | "education"
+          | "languages"
+          | "relationshipGoal"
+          | "interestedInGenders"
+          | "drinking"
+          | "smoking"
+          | "religion"
+          | "workout"
+          | "diet"
+          | "children"
+        )
+      | null;
+    privacyClass: "contact" | "profile" | "sensitive" | "organizerCustom";
+    prefillPolicy: "never" | "participantReviewRequired";
+    hostPresentation: "detailOnly" | "filterable" | "sortable";
+  }[];
+  consentCopy: string;
+  consentVersion: string;
+  retentionCopy: string;
+  createdByUid: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  publishedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Organizer-scoped application review summary with no provider-specific answer shape.
+ */
+export interface OrganizerApplicationDocument {
+  organizerId: string;
+  formId: string;
+  formVersionId: string;
+  targetKind: "organizer" | "event" | "campaign";
+  targetId: string | null;
+  linkedUid: string | null;
+  contactId: string | null;
+  applicantDisplayName: string;
+  applicantDisplayNameNormalized: string;
+  reviewStatus:
+    | "submitted"
+    | "inReview"
+    | "approved"
+    | "waitlisted"
+    | "declined"
+    | "withdrawn";
+  latestResponseId: string;
+  source: {
+    kind: "native" | "tabularImport" | "connector";
+    providerId: string | null;
+    externalFormId: string | null;
+    externalResponseId: string | null;
+    importReceiptId: string | null;
+  };
+  assignedReviewerUid: string | null;
+  reviewNote: string | null;
+  revision: number;
+  submittedAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  reviewedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Immutable answer snapshot for one native, imported, or connector-originated organizer application response.
+ */
+export interface OrganizerApplicationResponseDocument {
+  organizerId: string;
+  applicationId: string;
+  formId: string;
+  formVersionId: string;
+  linkedUid: string | null;
+  /**
+   * @minItems 1
+   * @maxItems 100
+   */
+  answers: {
+    questionId: string;
+    questionKey: string;
+    questionLabel: string;
+    questionKind:
+      | "shortText"
+      | "longText"
+      | "singleChoice"
+      | "multiChoice"
+      | "date"
+      | "phone"
+      | "email"
+      | "url"
+      | "number"
+      | "boolean"
+      | "file";
+    canonicalFieldId:
+      | (
+          | "givenName"
+          | "familyName"
+          | "displayName"
+          | "dateOfBirth"
+          | "age"
+          | "gender"
+          | "phoneNumber"
+          | "email"
+          | "instagramHandle"
+          | "linkedinUrl"
+          | "profilePhoto"
+          | "city"
+          | "heightCm"
+          | "occupation"
+          | "company"
+          | "education"
+          | "languages"
+          | "relationshipGoal"
+          | "interestedInGenders"
+          | "drinking"
+          | "smoking"
+          | "religion"
+          | "workout"
+          | "diet"
+          | "children"
+        )
+      | null;
+    privacyClass: "contact" | "profile" | "sensitive" | "organizerCustom";
+    hostPresentation: "detailOnly" | "filterable" | "sortable";
+    value: {
+      valueKind:
+        | "empty"
+        | "text"
+        | "number"
+        | "boolean"
+        | "date"
+        | "options"
+        | "assets";
+      textValue: string | null;
+      numberValue: number | null;
+      booleanValue: boolean | null;
+      dateValue: string | null;
+      /**
+       * @maxItems 100
+       */
+      optionValues: string[];
+      /**
+       * @maxItems 10
+       */
+      assetIds: string[];
+    };
+  }[];
+  source: {
+    kind: "native" | "tabularImport" | "connector";
+    providerId: string | null;
+    externalFormId: string | null;
+    externalResponseId: string | null;
+    importReceiptId: string | null;
+  };
+  consentVersion: string | null;
+  grantId: string | null;
+  submittedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Metadata for a private file uploaded with an organizer application; bytes remain in protected Storage.
+ */
+export interface OrganizerApplicationAssetDocument {
+  organizerId: string;
+  applicationId: string;
+  responseId: string;
+  questionId: string;
+  uploadedByUid: string | null;
+  storagePath: string;
+  originalFileName: string;
+  contentType: "image/jpeg" | "image/png" | "image/webp" | "application/pdf";
+  sizeBytes: number;
+  sha256: string;
+  status: "pendingScan" | "ready" | "rejected" | "deleted";
+  createdAt: FirebaseFirestore.Timestamp;
+  deletedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Reusable provider-neutral mapping from external tabular columns to one Catch form version.
+ */
+export interface OrganizerApplicationSourceMappingDocument {
+  organizerId: string;
+  formId: string;
+  formVersionId: string;
+  name: string;
+  sourceKind: "csv" | "xlsx" | "connector";
+  providerId: string | null;
+  externalFormId: string | null;
+  headerFingerprint: string;
+  /**
+   * @minItems 1
+   * @maxItems 250
+   */
+  columns: {
+    sourceHeader: string;
+    sourceHeaderNormalized: string;
+    action: "map" | "ignore";
+    questionId: string | null;
+    transform:
+      | "identity"
+      | "trim"
+      | "e164"
+      | "isoDate"
+      | "number"
+      | "boolean"
+      | "splitOptions"
+      | "assetUrl";
+  }[];
+  createdByUid: string;
+  revision: number;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Idempotency and result receipt for one bounded application import commit.
+ */
+export interface OrganizerApplicationImportReceiptDocument {
+  organizerId: string;
+  formId: string;
+  formVersionId: string;
+  mappingId: string | null;
+  uploadedByUid: string;
+  importKey: string;
+  fileName: string;
+  format: "csv" | "xlsx" | "connector";
+  payloadHash: string;
+  status: "completed" | "partial" | "failed";
+  rowCount: number;
+  createdCount: number;
+  skippedCount: number;
+  /**
+   * @maxItems 100
+   */
+  errors: {
+    rowId: string;
+    code: string;
+    message: string;
+  }[];
+  createdAt: FirebaseFirestore.Timestamp;
+  completedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Participant-private reusable application values. This is neither a Catch dating profile nor organizer-visible CRM data.
+ */
+export interface ParticipantIntakeProfileDocument {
+  /**
+   * @maxItems 40
+   */
+  fields: {
+    canonicalFieldId:
+      | "givenName"
+      | "familyName"
+      | "displayName"
+      | "dateOfBirth"
+      | "age"
+      | "gender"
+      | "phoneNumber"
+      | "email"
+      | "instagramHandle"
+      | "linkedinUrl"
+      | "profilePhoto"
+      | "city"
+      | "heightCm"
+      | "occupation"
+      | "company"
+      | "education"
+      | "languages"
+      | "relationshipGoal"
+      | "interestedInGenders"
+      | "drinking"
+      | "smoking"
+      | "religion"
+      | "workout"
+      | "diet"
+      | "children";
+    value: {
+      valueKind:
+        | "empty"
+        | "text"
+        | "number"
+        | "boolean"
+        | "date"
+        | "options"
+        | "assets";
+      textValue: string | null;
+      numberValue: number | null;
+      booleanValue: boolean | null;
+      dateValue: string | null;
+      /**
+       * @maxItems 100
+       */
+      optionValues: string[];
+      /**
+       * @maxItems 10
+       */
+      assetIds: string[];
+    };
+    sourceApplicationId: string | null;
+    reviewedByParticipantAt: FirebaseFirestore.Timestamp;
+    updatedAt: FirebaseFirestore.Timestamp;
+  }[];
+  revision: number;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Append-stable consent receipt granting one organizer access to exact submitted fields for one application. Only revokedAt may transition after creation.
+ */
+export interface ParticipantOrganizerDataGrantDocument {
+  participantUid: string;
+  organizerId: string;
+  applicationId: string;
+  responseId: string;
+  formVersionId: string;
+  purpose: "organizerApplicationReview";
+  /**
+   * @minItems 1
+   * @maxItems 100
+   */
+  grantedQuestionIds: string[];
+  /**
+   * @maxItems 40
+   */
+  grantedCanonicalFieldIds: (
+    | "givenName"
+    | "familyName"
+    | "displayName"
+    | "dateOfBirth"
+    | "age"
+    | "gender"
+    | "phoneNumber"
+    | "email"
+    | "instagramHandle"
+    | "linkedinUrl"
+    | "profilePhoto"
+    | "city"
+    | "heightCm"
+    | "occupation"
+    | "company"
+    | "education"
+    | "languages"
+    | "relationshipGoal"
+    | "interestedInGenders"
+    | "drinking"
+    | "smoking"
+    | "religion"
+    | "workout"
+    | "diet"
+    | "children"
+  )[];
+  consentVersion: string;
+  consentCopyHash: string;
+  grantedAt: FirebaseFirestore.Timestamp;
+  revokedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
  * Stable mapping and field-level authority between one Catch event and one organizer-authorized booking-provider event.
  */
 export interface ExternalEventMappingDocument {

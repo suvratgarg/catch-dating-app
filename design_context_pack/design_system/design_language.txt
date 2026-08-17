@@ -258,9 +258,16 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   `CatchRouteScaffold`; it owns the page surface and shows a divider only when
   vertical content has actually scrolled beneath the compact bar. Root tab
   titles are scroll content rather than fixed app bars.
+- Compact route bars use the default `CatchTopBar` geometry. Feature screens do
+  not override height, safe-area, alignment, gutter, or content padding. A
+  detail route whose title is loaded asynchronously carries the known subject
+  label through navigation so loading and error states never fall back to a
+  parent collection title.
 - Section titles and trailing actions route through `CatchSection` or the
   reviewed contained/content owner. A feature-local header-plus-card shell is
-  scanner-visible debt.
+  scanner-visible debt. Loading, empty, and error children inherit their
+  section's divided, contained, or plain surface decision; state changes do not
+  introduce a second border or switch a peer module to a different variant.
 
 The API boundary is the first enforcement layer: duplicate placement variants
 are deleted rather than kept as aliases. Component contracts, Widgetbook

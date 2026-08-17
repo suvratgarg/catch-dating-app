@@ -26,6 +26,40 @@ class SchemaPhotoPromptDefinition {
   final String placeholder;
 }
 
+class SchemaPersonFieldDefinition {
+  const SchemaPersonFieldDefinition({
+    required this.id,
+    required this.aliases,
+    required this.questionKind,
+    required this.transform,
+    required this.privacyClass,
+    required this.prefillPolicy,
+    required this.hostPresentation,
+    required this.authority,
+    required this.privateProfilePath,
+    required this.derivedFrom,
+    required this.publicProfileProjection,
+    required this.publicProfilePath,
+  });
+
+  final String id;
+  final List<String> aliases;
+  final String questionKind;
+  final String transform;
+  final String privacyClass;
+  final String prefillPolicy;
+  final String hostPresentation;
+  final String authority;
+  final String? privateProfilePath;
+  final String? derivedFrom;
+  final String publicProfileProjection;
+  final String? publicProfilePath;
+}
+
+const schemaPersonFieldOrganizerAccessPolicy = 'submittedQuestionGrantOnly';
+const schemaPersonFieldPublicProfileMetadataPolicy = 'structuralMappingOnlyNotAuthorization';
+const schemaPersonFieldTabularChoiceImportPolicy = 'preserveAsTextUntilOptionsMapped';
+
 const schemaProfilePromptPerfectEventId = 'perfectRun';
 const schemaMaxProfilePromptAnswers = 3;
 const schemaMaxPhotoPromptCaptions = 6;
@@ -81,6 +115,114 @@ const schemaPhotoPromptCatalog = <SchemaPhotoPromptDefinition>[
   SchemaPhotoPromptDefinition(id: 'weekendEnergy', title: 'Weekend energy', placeholder: 'What does this photo say about your weekends?',),
   SchemaPhotoPromptDefinition(id: 'captionThis', title: 'First thought?', placeholder: 'Give people an easy opening line.',),
 ];
+
+const schemaPersonFieldCatalog = <SchemaPersonFieldDefinition>[
+  SchemaPersonFieldDefinition(id: 'givenName', aliases: <String>['firstname', 'givenname'], questionKind: 'shortText', transform: 'trim', privacyClass: 'contact', prefillPolicy: 'participantReviewRequired', hostPresentation: 'sortable', authority: 'privateProfile', privateProfilePath: 'firstName', derivedFrom: null, publicProfileProjection: 'never', publicProfilePath: null,),
+  SchemaPersonFieldDefinition(id: 'familyName', aliases: <String>['familyname', 'lastname', 'surname'], questionKind: 'shortText', transform: 'trim', privacyClass: 'contact', prefillPolicy: 'participantReviewRequired', hostPresentation: 'sortable', authority: 'privateProfile', privateProfilePath: 'lastName', derivedFrom: null, publicProfileProjection: 'never', publicProfilePath: null,),
+  SchemaPersonFieldDefinition(id: 'displayName', aliases: <String>['displayname', 'name', 'fullname', 'yourname', 'yourfullname'], questionKind: 'shortText', transform: 'trim', privacyClass: 'contact', prefillPolicy: 'participantReviewRequired', hostPresentation: 'sortable', authority: 'privateProfile', privateProfilePath: 'displayName', derivedFrom: null, publicProfileProjection: 'direct', publicProfilePath: 'name',),
+  SchemaPersonFieldDefinition(id: 'dateOfBirth', aliases: <String>['dob', 'dateofbirth', 'birthdate'], questionKind: 'date', transform: 'isoDate', privacyClass: 'sensitive', prefillPolicy: 'participantReviewRequired', hostPresentation: 'sortable', authority: 'privateProfile', privateProfilePath: 'dateOfBirth', derivedFrom: null, publicProfileProjection: 'derived', publicProfilePath: 'age',),
+  SchemaPersonFieldDefinition(id: 'age', aliases: <String>['age'], questionKind: 'number', transform: 'number', privacyClass: 'sensitive', prefillPolicy: 'participantReviewRequired', hostPresentation: 'sortable', authority: 'derived', privateProfilePath: null, derivedFrom: 'dateOfBirth', publicProfileProjection: 'derived', publicProfilePath: 'age',),
+  SchemaPersonFieldDefinition(id: 'gender', aliases: <String>['gender'], questionKind: 'singleChoice', transform: 'trim', privacyClass: 'sensitive', prefillPolicy: 'participantReviewRequired', hostPresentation: 'filterable', authority: 'privateProfile', privateProfilePath: 'gender', derivedFrom: null, publicProfileProjection: 'direct', publicProfilePath: 'gender',),
+  SchemaPersonFieldDefinition(id: 'phoneNumber', aliases: <String>['phone', 'phonenumber', 'mobile', 'mobilenumber', 'whatsapp', 'whatsappnumber'], questionKind: 'phone', transform: 'e164', privacyClass: 'contact', prefillPolicy: 'participantReviewRequired', hostPresentation: 'detailOnly', authority: 'firebaseAuth', privateProfilePath: 'phoneNumber', derivedFrom: null, publicProfileProjection: 'never', publicProfilePath: null,),
+  SchemaPersonFieldDefinition(id: 'email', aliases: <String>['email', 'emailaddress'], questionKind: 'email', transform: 'trim', privacyClass: 'contact', prefillPolicy: 'participantReviewRequired', hostPresentation: 'detailOnly', authority: 'privateProfile', privateProfilePath: 'email', derivedFrom: null, publicProfileProjection: 'never', publicProfilePath: null,),
+  SchemaPersonFieldDefinition(id: 'instagramHandle', aliases: <String>['instagram', 'instagramhandle', 'instagramprofile'], questionKind: 'shortText', transform: 'trim', privacyClass: 'profile', prefillPolicy: 'participantReviewRequired', hostPresentation: 'detailOnly', authority: 'privateProfile', privateProfilePath: 'instagramHandle', derivedFrom: null, publicProfileProjection: 'never', publicProfilePath: null,),
+  SchemaPersonFieldDefinition(id: 'linkedinUrl', aliases: <String>['linkedin', 'linkedinurl', 'linkedinprofile'], questionKind: 'url', transform: 'assetUrl', privacyClass: 'profile', prefillPolicy: 'participantReviewRequired', hostPresentation: 'detailOnly', authority: 'intakeProfile', privateProfilePath: null, derivedFrom: null, publicProfileProjection: 'never', publicProfilePath: null,),
+  SchemaPersonFieldDefinition(id: 'profilePhoto', aliases: <String>['photo', 'profilephoto', 'uploadaphoto'], questionKind: 'file', transform: 'assetUrl', privacyClass: 'profile', prefillPolicy: 'participantReviewRequired', hostPresentation: 'detailOnly', authority: 'privateProfile', privateProfilePath: 'profilePhotos', derivedFrom: null, publicProfileProjection: 'direct', publicProfilePath: 'profilePhotos',),
+  SchemaPersonFieldDefinition(id: 'city', aliases: <String>['city', 'location'], questionKind: 'shortText', transform: 'trim', privacyClass: 'profile', prefillPolicy: 'participantReviewRequired', hostPresentation: 'filterable', authority: 'privateProfile', privateProfilePath: 'city', derivedFrom: null, publicProfileProjection: 'direct', publicProfilePath: 'city',),
+  SchemaPersonFieldDefinition(id: 'heightCm', aliases: <String>['height', 'heightcm'], questionKind: 'number', transform: 'number', privacyClass: 'profile', prefillPolicy: 'participantReviewRequired', hostPresentation: 'sortable', authority: 'privateProfile', privateProfilePath: 'height', derivedFrom: null, publicProfileProjection: 'direct', publicProfilePath: 'height',),
+  SchemaPersonFieldDefinition(id: 'occupation', aliases: <String>['occupation', 'job', 'profession'], questionKind: 'shortText', transform: 'trim', privacyClass: 'profile', prefillPolicy: 'participantReviewRequired', hostPresentation: 'filterable', authority: 'privateProfile', privateProfilePath: 'occupation', derivedFrom: null, publicProfileProjection: 'direct', publicProfilePath: 'occupation',),
+  SchemaPersonFieldDefinition(id: 'company', aliases: <String>['company', 'workplace', 'employer'], questionKind: 'shortText', transform: 'trim', privacyClass: 'profile', prefillPolicy: 'participantReviewRequired', hostPresentation: 'filterable', authority: 'privateProfile', privateProfilePath: 'company', derivedFrom: null, publicProfileProjection: 'direct', publicProfilePath: 'company',),
+  SchemaPersonFieldDefinition(id: 'education', aliases: <String>['education', 'educationlevel'], questionKind: 'singleChoice', transform: 'trim', privacyClass: 'profile', prefillPolicy: 'participantReviewRequired', hostPresentation: 'filterable', authority: 'privateProfile', privateProfilePath: 'education', derivedFrom: null, publicProfileProjection: 'direct', publicProfilePath: 'education',),
+  SchemaPersonFieldDefinition(id: 'languages', aliases: <String>['language', 'languages', 'languagesspoken'], questionKind: 'multiChoice', transform: 'splitOptions', privacyClass: 'profile', prefillPolicy: 'participantReviewRequired', hostPresentation: 'filterable', authority: 'privateProfile', privateProfilePath: 'languages', derivedFrom: null, publicProfileProjection: 'direct', publicProfilePath: 'languages',),
+  SchemaPersonFieldDefinition(id: 'relationshipGoal', aliases: <String>['lookingfor', 'whatareyoulookingfor', 'relationshipgoal'], questionKind: 'singleChoice', transform: 'trim', privacyClass: 'sensitive', prefillPolicy: 'participantReviewRequired', hostPresentation: 'filterable', authority: 'privateProfile', privateProfilePath: 'relationshipGoal', derivedFrom: null, publicProfileProjection: 'direct', publicProfilePath: 'relationshipGoal',),
+  SchemaPersonFieldDefinition(id: 'interestedInGenders', aliases: <String>['interestedin', 'interestedingenders', 'genderpreference'], questionKind: 'multiChoice', transform: 'splitOptions', privacyClass: 'sensitive', prefillPolicy: 'participantReviewRequired', hostPresentation: 'filterable', authority: 'privateProfile', privateProfilePath: 'interestedInGenders', derivedFrom: null, publicProfileProjection: 'never', publicProfilePath: null,),
+  SchemaPersonFieldDefinition(id: 'drinking', aliases: <String>['drinking', 'drinkinghabit'], questionKind: 'singleChoice', transform: 'trim', privacyClass: 'sensitive', prefillPolicy: 'participantReviewRequired', hostPresentation: 'filterable', authority: 'privateProfile', privateProfilePath: 'drinking', derivedFrom: null, publicProfileProjection: 'direct', publicProfilePath: 'drinking',),
+  SchemaPersonFieldDefinition(id: 'smoking', aliases: <String>['smoking', 'smokinghabit'], questionKind: 'singleChoice', transform: 'trim', privacyClass: 'sensitive', prefillPolicy: 'participantReviewRequired', hostPresentation: 'filterable', authority: 'privateProfile', privateProfilePath: 'smoking', derivedFrom: null, publicProfileProjection: 'direct', publicProfilePath: 'smoking',),
+  SchemaPersonFieldDefinition(id: 'religion', aliases: <String>['religion', 'faith'], questionKind: 'singleChoice', transform: 'trim', privacyClass: 'sensitive', prefillPolicy: 'participantReviewRequired', hostPresentation: 'filterable', authority: 'privateProfile', privateProfilePath: 'religion', derivedFrom: null, publicProfileProjection: 'direct', publicProfilePath: 'religion',),
+  SchemaPersonFieldDefinition(id: 'workout', aliases: <String>['workout', 'exercise', 'workoutfrequency'], questionKind: 'singleChoice', transform: 'trim', privacyClass: 'profile', prefillPolicy: 'participantReviewRequired', hostPresentation: 'filterable', authority: 'privateProfile', privateProfilePath: 'workout', derivedFrom: null, publicProfileProjection: 'direct', publicProfilePath: 'workout',),
+  SchemaPersonFieldDefinition(id: 'diet', aliases: <String>['diet', 'dietarypreference'], questionKind: 'singleChoice', transform: 'trim', privacyClass: 'profile', prefillPolicy: 'participantReviewRequired', hostPresentation: 'filterable', authority: 'privateProfile', privateProfilePath: 'diet', derivedFrom: null, publicProfileProjection: 'direct', publicProfilePath: 'diet',),
+  SchemaPersonFieldDefinition(id: 'children', aliases: <String>['children', 'kids', 'childrenstatus'], questionKind: 'singleChoice', transform: 'trim', privacyClass: 'sensitive', prefillPolicy: 'participantReviewRequired', hostPresentation: 'filterable', authority: 'privateProfile', privateProfilePath: 'children', derivedFrom: null, publicProfileProjection: 'direct', publicProfilePath: 'children',),
+];
+
+const schemaPersonFieldIdByNormalizedAlias = <String, String>{
+  'firstname': 'givenName',
+  'givenname': 'givenName',
+  'familyname': 'familyName',
+  'lastname': 'familyName',
+  'surname': 'familyName',
+  'displayname': 'displayName',
+  'name': 'displayName',
+  'fullname': 'displayName',
+  'yourname': 'displayName',
+  'yourfullname': 'displayName',
+  'dob': 'dateOfBirth',
+  'dateofbirth': 'dateOfBirth',
+  'birthdate': 'dateOfBirth',
+  'age': 'age',
+  'gender': 'gender',
+  'phone': 'phoneNumber',
+  'phonenumber': 'phoneNumber',
+  'mobile': 'phoneNumber',
+  'mobilenumber': 'phoneNumber',
+  'whatsapp': 'phoneNumber',
+  'whatsappnumber': 'phoneNumber',
+  'email': 'email',
+  'emailaddress': 'email',
+  'instagram': 'instagramHandle',
+  'instagramhandle': 'instagramHandle',
+  'instagramprofile': 'instagramHandle',
+  'linkedin': 'linkedinUrl',
+  'linkedinurl': 'linkedinUrl',
+  'linkedinprofile': 'linkedinUrl',
+  'photo': 'profilePhoto',
+  'profilephoto': 'profilePhoto',
+  'uploadaphoto': 'profilePhoto',
+  'city': 'city',
+  'location': 'city',
+  'height': 'heightCm',
+  'heightcm': 'heightCm',
+  'occupation': 'occupation',
+  'job': 'occupation',
+  'profession': 'occupation',
+  'company': 'company',
+  'workplace': 'company',
+  'employer': 'company',
+  'education': 'education',
+  'educationlevel': 'education',
+  'language': 'languages',
+  'languages': 'languages',
+  'languagesspoken': 'languages',
+  'lookingfor': 'relationshipGoal',
+  'whatareyoulookingfor': 'relationshipGoal',
+  'relationshipgoal': 'relationshipGoal',
+  'interestedin': 'interestedInGenders',
+  'interestedingenders': 'interestedInGenders',
+  'genderpreference': 'interestedInGenders',
+  'drinking': 'drinking',
+  'drinkinghabit': 'drinking',
+  'smoking': 'smoking',
+  'smokinghabit': 'smoking',
+  'religion': 'religion',
+  'faith': 'religion',
+  'workout': 'workout',
+  'exercise': 'workout',
+  'workoutfrequency': 'workout',
+  'diet': 'diet',
+  'dietarypreference': 'diet',
+  'children': 'children',
+  'kids': 'children',
+  'childrenstatus': 'children',
+};
+
+String? schemaPersonFieldIdForNormalizedAlias(String alias) =>
+    schemaPersonFieldIdByNormalizedAlias[alias];
+
+SchemaPersonFieldDefinition? schemaPersonFieldForId(String id) {
+  for (final field in schemaPersonFieldCatalog) {
+    if (field.id == id) return field;
+  }
+  return null;
+}
 
 const schemaProfilePromptAnswerSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
@@ -437,11 +579,6 @@ const schemaUpdateUserProfileCallablePayloadSchema =
             },
             'x-catch-catalog': '../catalogs/profile_prompts.json',
           },
-        },
-        'phoneNumber': <String, Object?>{
-          'type': 'string',
-          'minLength': 1,
-          'maxLength': 32,
         },
         'dateOfBirth': <String, Object?>{
           'type': 'integer',

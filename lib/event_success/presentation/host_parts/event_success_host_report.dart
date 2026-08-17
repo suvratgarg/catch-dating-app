@@ -34,7 +34,7 @@ class ReportTab extends StatelessWidget {
       return EventSuccessHostTabBody(
         embedded: embedded,
         children: [
-          CatchEmptyState(
+          _EventSuccessReportEmptyState(
             icon: CatchIcons.insightsOutlined,
             title: context
                 .l10n
@@ -42,9 +42,6 @@ class ReportTab extends StatelessWidget {
             message: context
                 .l10n
                 .eventSuccessEventSuccessHostReportBodyTheLiveEventGuide,
-            layout: CatchEmptyStateLayout.inline,
-            surface: true,
-            padding: CatchInsets.content,
           ),
         ],
       );
@@ -59,7 +56,7 @@ class ReportTab extends StatelessWidget {
       return EventSuccessHostTabBody(
         embedded: embedded,
         children: [
-          CatchEmptyState(
+          _EventSuccessReportEmptyState(
             icon: CatchIcons.insightsOutlined,
             title: context
                 .l10n
@@ -67,9 +64,6 @@ class ReportTab extends StatelessWidget {
             message: context
                 .l10n
                 .eventSuccessEventSuccessHostReportBodyThisEventGuideDoes,
-            layout: CatchEmptyStateLayout.inline,
-            surface: true,
-            padding: CatchInsets.content,
           ),
         ],
       );
@@ -106,7 +100,7 @@ class ReportTab extends StatelessWidget {
             (failure) =>
                 failure.retryIntent == EventSuccessHostRetryIntent.scorecard,
           ))
-            CatchEmptyState(
+            _EventSuccessReportEmptyState(
               icon: CatchIcons.insightsOutlined,
               title: context
                   .l10n
@@ -114,9 +108,6 @@ class ReportTab extends StatelessWidget {
               message: context
                   .l10n
                   .eventSuccessEventSuccessHostReportBodyThePostEventReport,
-              layout: CatchEmptyStateLayout.inline,
-              surface: true,
-              padding: CatchInsets.content,
             ),
         ],
       );
@@ -158,6 +149,29 @@ class ReportTab extends StatelessWidget {
       ],
     );
   }
+}
+
+class _EventSuccessReportEmptyState extends StatelessWidget {
+  const _EventSuccessReportEmptyState({
+    required this.icon,
+    required this.title,
+    required this.message,
+  });
+
+  final IconData icon;
+  final String title;
+  final String message;
+
+  @override
+  Widget build(BuildContext context) => CatchSection.contained(
+    child: CatchEmptyState(
+      icon: icon,
+      title: title,
+      message: message,
+      layout: CatchEmptyStateLayout.inline,
+      padding: EdgeInsets.zero,
+    ),
+  );
 }
 
 class HostReportSignalGrid extends StatelessWidget {

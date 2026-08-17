@@ -32,6 +32,7 @@ function main() {
   checkCallableShapeMarkers(parsed);
   checkWireShapeExtensions(parsed);
   checkPromptCatalogs(parsed);
+  checkPersonFieldCatalog(parsed);
   checkFixturePlacement(parsed);
   checkCurrentCodeDrift(parsed);
 
@@ -41,6 +42,186 @@ function main() {
       file.endsWith(".schema.json")
     ).length,
   });
+}
+
+function checkPersonFieldCatalog(parsed) {
+  const catalogPath = path.join(contractRoot, "catalogs/person_fields.json");
+  const applicationCommonPath = path.join(
+    contractRoot,
+    "shared/organizer_application_common.schema.json"
+  );
+  const usersPath = path.join(contractRoot, "firestore/users.schema.json");
+  const publicProfilesPath = path.join(
+    contractRoot,
+    "firestore/public_profiles.schema.json"
+  );
+  const catalog = parsed.get(catalogPath);
+  const applicationCommon = parsed.get(applicationCommonPath);
+  const users = parsed.get(usersPath);
+  const publicProfiles = parsed.get(publicProfilesPath);
+  if (!catalog || !applicationCommon || !users || !publicProfiles) {
+    fail("Missing person-field catalog or profile/application schemas.");
+    return;
+  }
+  if (catalog.schemaVersion !== 1 || catalog.kind !== "personFields") {
+    fail(`${relative(catalogPath)}: invalid catalog identity.`);
+  }
+  if (catalog.organizerAccessPolicy !== "submittedQuestionGrantOnly") {
+    fail(
+      `${relative(catalogPath)}: organizer access must remain bound to ` +
+      "submitted question grants."
+    );
+  }
+  if (catalog.publicProfileMetadataPolicy !==
+      "structuralMappingOnlyNotAuthorization") {
+    fail(
+      `${relative(catalogPath)}: public profile mappings must remain ` +
+      "structural metadata, not an access grant."
+    );
+  }
+  if (catalog.tabularChoiceImportPolicy !==
+      "preserveAsTextUntilOptionsMapped") {
+    fail(
+      `${relative(catalogPath)}: tabular choice answers must remain text ` +
+      "until the source options are mapped."
+    );
+  }
+  const accessPolicies = {
+    authenticationPolicy: "identityVerificationDoesNotGrantDataAccess",
+    applicationReviewPolicy: "reviewEveryQuestionBeforeEachSubmission",
+    hostCommercePolicy: "eventScopedAggregatesOnly",
+    eventStaffPolicy: "eventScopedRosterAndAttendanceOnly",
+    employeeAccessPolicy: "purposeScopedRoleGatedMaskedAndAudited",
+    rawPiiPolicy: "breakGlassOnly",
+  };
+  for (const [key, expected] of Object.entries(accessPolicies)) {
+    if (catalog[key] !== expected) {
+      fail(`${relative(catalogPath)}: ${key} must remain ${expected}.`);
+    }
+  }
+  if (!Array.isArray(catalog.fields) || catalog.fields.length === 0) {
+    fail(`${relative(catalogPath)}: fields must be a non-empty array.`);
+    return;
+  }
+
+  const ids = new Set();
+  const aliases = new Set();
+  const questionKinds = new Set([
+    "shortText", "longText", "singleChoice", "multiChoice", "date",
+    "phone", "email", "url", "number", "boolean", "file",
+  ]);
+  const transforms = new Set([
+    "identity", "trim", "e164", "isoDate", "number", "boolean",
+    "splitOptions", "assetUrl",
+  ]);
+  const privacyClasses = new Set([
+    "contact", "profile", "sensitive", "organizerCustom",
+  ]);
+  const prefillPolicies = new Set([
+    "never", "participantReviewRequired",
+  ]);
+  const hostPresentations = new Set([
+    "detailOnly", "filterable", "sortable",
+  ]);
+  const authorities = new Set([
+    "firebaseAuth", "privateProfile", "intakeProfile", "derived",
+  ]);
+  const publicProjections = new Set(["never", "direct", "derived"]);
+  for (const [index, field] of catalog.fields.entries()) {
+    const label = `${relative(catalogPath)} fields[${index}]`;
+    if (typeof field.id !== "string" || !/^[A-Za-z][A-Za-z0-9]*$/.test(field.id)) {
+      fail(`${label}: id must be a canonical field identifier.`);
+      continue;
+    }
+    if (ids.has(field.id)) fail(`${label}: duplicate id ${field.id}.`);
+    ids.add(field.id);
+    if (!Array.isArray(field.aliases) || field.aliases.length === 0) {
+      fail(`${label}: aliases must be a non-empty array.`);
+    } else {
+      for (const alias of field.aliases) {
+        if (typeof alias !== "string" || !/^[a-z0-9]+$/.test(alias)) {
+          fail(`${label}: alias ${String(alias)} is not normalized.`);
+        } else if (aliases.has(alias)) {
+          fail(`${label}: duplicate alias ${alias}.`);
+        }
+        aliases.add(alias);
+      }
+      const canonicalAlias = field.id.toLowerCase();
+      if (!field.aliases.includes(canonicalAlias)) {
+        fail(`${label}: aliases must include canonical id ${canonicalAlias}.`);
+      }
+    }
+    checkEnumValue(label, "questionKind", field.questionKind, questionKinds);
+    checkEnumValue(label, "transform", field.transform, transforms);
+    checkEnumValue(label, "privacyClass", field.privacyClass, privacyClasses);
+    checkEnumValue(label, "prefillPolicy", field.prefillPolicy, prefillPolicies);
+    checkEnumValue(
+      label,
+      "hostPresentation",
+      field.hostPresentation,
+      hostPresentations
+    );
+    checkEnumValue(label, "authority", field.authority, authorities);
+    checkEnumValue(
+      label,
+      "publicProfileProjection",
+      field.publicProfileProjection,
+      publicProjections
+    );
+
+    if (field.privateProfilePath !== null &&
+        !users.properties?.[field.privateProfilePath]) {
+      fail(`${label}: unknown privateProfilePath ${field.privateProfilePath}.`);
+    }
+    if (field.publicProfileProjection === "never") {
+      if (field.publicProfilePath !== null) {
+        fail(`${label}: non-public fields cannot name a public profile path.`);
+      }
+    } else if (typeof field.publicProfilePath !== "string" ||
+        !publicProfiles.properties?.[field.publicProfilePath]) {
+      fail(`${label}: public projection must name a real public profile path.`);
+    }
+    if (field.authority === "derived") {
+      if (typeof field.derivedFrom !== "string") {
+        fail(`${label}: derived authority requires derivedFrom.`);
+      }
+      if (field.privateProfilePath !== null) {
+        fail(`${label}: derived fields cannot claim a private profile path.`);
+      }
+    } else if (field.derivedFrom !== null) {
+      fail(`${label}: only derived fields may declare derivedFrom.`);
+    }
+  }
+  for (const field of catalog.fields) {
+    if (field.derivedFrom !== null && !ids.has(field.derivedFrom)) {
+      fail(
+        `${relative(catalogPath)}: ${field.id} derives from unknown field ` +
+        `${field.derivedFrom}.`
+      );
+    }
+  }
+
+  const schemaField = applicationCommon.definitions?.canonicalFieldId;
+  const schemaIds = schemaField?.enum;
+  if (!Array.isArray(schemaIds) ||
+      JSON.stringify(schemaIds) !== JSON.stringify([...ids])) {
+    fail(
+      `${relative(applicationCommonPath)}: canonicalFieldId enum must match ` +
+      `${relative(catalogPath)} exactly and in order.`
+    );
+  }
+  if (schemaField?.["x-catch-catalog"] !== "../catalogs/person_fields.json") {
+    fail(
+      `${relative(applicationCommonPath)}: canonicalFieldId must declare its ` +
+      "person-field catalog."
+    );
+  }
+}
+
+function checkEnumValue(label, key, value, allowed) {
+  if (!allowed.has(value)) {
+    fail(`${label}: ${key} has unsupported value ${String(value)}.`);
+  }
 }
 
 function checkSchemaFiles(parsed) {

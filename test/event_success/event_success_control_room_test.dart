@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
+import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
@@ -11,6 +13,46 @@ import 'package:flutter_test/flutter_test.dart';
 import '../events/events_test_helpers.dart' show buildEvent;
 
 void main() {
+  testWidgets('report empty state inherits the contained report module', (
+    tester,
+  ) async {
+    final event = buildEvent(id: 'waiting-report');
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: EventSuccessHostPanel(
+              event: event,
+              plan: plan,
+              planIsPersisted: true,
+              roster: EventParticipationRoster.empty(),
+              initialTab: EventSuccessHostTab.report,
+              showTabs: false,
+              embedded: true,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final waiting = find.text('Waiting for attendee feedback');
+    expect(waiting, findsOneWidget);
+    expect(
+      find.ancestor(
+        of: waiting,
+        matching: find.byType(CatchSectionFocusSurface),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      tester.widget<CatchEmptyState>(find.byType(CatchEmptyState)).surface,
+      isFalse,
+    );
+  });
+
   testWidgets('restart mid-round resumes the correct persisted beat', (
     tester,
   ) async {

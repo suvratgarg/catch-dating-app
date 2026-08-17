@@ -20251,10 +20251,10 @@ abstract class AppLocalizations {
   /// **'Save details'**
   String get hostCustomersSaveDetails;
 
-  /// Boundary for verified linked customer identity details.
+  /// Boundary between organizer-owned contact details and a linked Catch profile.
   ///
   /// In en, this message translates to:
-  /// **'Verified contact details come from the linked Catch account and cannot be edited here.'**
+  /// **'Contact details shown here come from this organizer’s records. Linking a Catch account does not reveal additional profile fields.'**
   String get hostCustomersVerifiedDetailsManagedByCatch;
 
   /// Labels manually entered customer endpoints as unverified.
@@ -21072,6 +21072,321 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Close guest roster'**
   String get hostsHostEventRosterDrawerClose;
+
+  /// Host application review queue title.
+  ///
+  /// In en, this message translates to:
+  /// **'Applications'**
+  String get hostApplicationsTitle;
+
+  /// Customers header action opening the application review queue.
+  ///
+  /// In en, this message translates to:
+  /// **'Review applications'**
+  String get hostApplicationsOpen;
+
+  /// Application queue spreadsheet import action.
+  ///
+  /// In en, this message translates to:
+  /// **'Import responses'**
+  String get hostApplicationsImport;
+
+  /// Application spreadsheet import sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'Import applications'**
+  String get hostApplicationsImportTitle;
+
+  /// Explains provider-neutral automatic field mapping.
+  ///
+  /// In en, this message translates to:
+  /// **'Every column is preserved. Recognized profile fields can support future prefill; unique questions stay organizer-only.'**
+  String get hostApplicationsImportSubtitle;
+
+  /// Mapping label for a canonical participant intake field.
+  ///
+  /// In en, this message translates to:
+  /// **'Reusable profile field'**
+  String get hostApplicationsImportReusableField;
+
+  /// Mapping label for a proprietary form question.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer-only question'**
+  String get hostApplicationsImportOrganizerField;
+
+  /// Confirms a bounded application spreadsheet import.
+  ///
+  /// In en, this message translates to:
+  /// **'Import {count, plural, =1{1 application} other{{count} applications}}'**
+  String hostApplicationsImportAction({required int count});
+
+  /// Application import batch truncation explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 additional row will need a second import.} other{{count} additional rows will need a second import.}}'**
+  String hostApplicationsImportLimit({required int count});
+
+  /// Application import requires a safe queue identity.
+  ///
+  /// In en, this message translates to:
+  /// **'Map a Name, Full name, or First name column before importing.'**
+  String get hostApplicationsImportMissingName;
+
+  /// Empty application spreadsheet error.
+  ///
+  /// In en, this message translates to:
+  /// **'The spreadsheet does not contain any application rows.'**
+  String get hostApplicationsImportNoRows;
+
+  /// Application import result summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Imported {created} and skipped {skipped}.'**
+  String hostApplicationsImportComplete({
+    required int created,
+    required int skipped,
+  });
+
+  /// Default participant consent copy for imported-form versions that may later accept native submissions.
+  ///
+  /// In en, this message translates to:
+  /// **'I agree to share these submitted answers with this organizer for application review.'**
+  String get hostApplicationsConsentCopy;
+
+  /// Default application retention disclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'The organizer may retain submitted answers for application review and customer history according to its stated policy.'**
+  String get hostApplicationsRetentionCopy;
+
+  /// Provider-neutral review queue explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Review sign-ups from Catch forms or imported spreadsheets in one queue.'**
+  String get hostApplicationsSubtitle;
+
+  /// Application queue applicant-name search placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by applicant name'**
+  String get hostApplicationsSearch;
+
+  /// Empty application queue title.
+  ///
+  /// In en, this message translates to:
+  /// **'No applications yet'**
+  String get hostApplicationsEmptyTitle;
+
+  /// Empty application queue guidance without favoring one form provider.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish a Catch form or import responses from any spreadsheet. New submissions will appear here.'**
+  String get hostApplicationsEmptyBody;
+
+  /// Application queue newest sort.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest first'**
+  String get hostApplicationsSortNewest;
+
+  /// Application queue oldest sort.
+  ///
+  /// In en, this message translates to:
+  /// **'Oldest first'**
+  String get hostApplicationsSortOldest;
+
+  /// Application queue name sort.
+  ///
+  /// In en, this message translates to:
+  /// **'Applicant name'**
+  String get hostApplicationsSortName;
+
+  /// Application queue all-status filter.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get hostApplicationsFilterAll;
+
+  /// New organizer application status.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted'**
+  String get hostApplicationsStatusSubmitted;
+
+  /// Organizer application in-review status.
+  ///
+  /// In en, this message translates to:
+  /// **'In review'**
+  String get hostApplicationsStatusInReview;
+
+  /// Approved organizer application status.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get hostApplicationsStatusApproved;
+
+  /// Waitlisted organizer application status.
+  ///
+  /// In en, this message translates to:
+  /// **'Waitlisted'**
+  String get hostApplicationsStatusWaitlisted;
+
+  /// Declined organizer application status.
+  ///
+  /// In en, this message translates to:
+  /// **'Declined'**
+  String get hostApplicationsStatusDeclined;
+
+  /// Withdrawn organizer application status.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawn'**
+  String get hostApplicationsStatusWithdrawn;
+
+  /// Native Catch form source label.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch form'**
+  String get hostApplicationsSourceNative;
+
+  /// Provider-neutral spreadsheet source label.
+  ///
+  /// In en, this message translates to:
+  /// **'Spreadsheet import'**
+  String get hostApplicationsSourceImport;
+
+  /// Generic external form connector source label.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected form'**
+  String get hostApplicationsSourceConnector;
+
+  /// Application submitted date metadata.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted {date}'**
+  String hostApplicationsSubmittedOn({required String date});
+
+  /// Application queue pagination action.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more applications'**
+  String get hostApplicationsLoadMore;
+
+  /// Application detail answers section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Application answers'**
+  String get hostApplicationAnswersTitle;
+
+  /// Empty optional application answer value.
+  ///
+  /// In en, this message translates to:
+  /// **'Not answered'**
+  String get hostApplicationNotAnswered;
+
+  /// Boolean yes application answer.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get hostApplicationAnswerYes;
+
+  /// Boolean no application answer.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get hostApplicationAnswerNo;
+
+  /// Application asset answer count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 file} other{{count} files}}'**
+  String hostApplicationAnswerFiles({required int count});
+
+  /// Application detail validated outreach actions title.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact applicant'**
+  String get hostApplicationOutreachTitle;
+
+  /// Calls a validated E.164 application phone number.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get hostApplicationCall;
+
+  /// Emails a validated application address.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get hostApplicationEmail;
+
+  /// Opens a validated Instagram profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Instagram'**
+  String get hostApplicationInstagram;
+
+  /// Opens a validated LinkedIn profile.
+  ///
+  /// In en, this message translates to:
+  /// **'LinkedIn'**
+  String get hostApplicationLinkedin;
+
+  /// Application detail absence of validated outreach data.
+  ///
+  /// In en, this message translates to:
+  /// **'This form did not grant a usable phone, email, Instagram, or LinkedIn destination.'**
+  String get hostApplicationNoOutreach;
+
+  /// Application detail review section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Review decision'**
+  String get hostApplicationReviewTitle;
+
+  /// Organizer-only application review note label.
+  ///
+  /// In en, this message translates to:
+  /// **'Private review note'**
+  String get hostApplicationReviewNote;
+
+  /// Organizer-only application review note hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add context for your team'**
+  String get hostApplicationReviewNoteHint;
+
+  /// Application review transition action.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark in review'**
+  String get hostApplicationMarkInReview;
+
+  /// Application approval action.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get hostApplicationApprove;
+
+  /// Application waitlist action.
+  ///
+  /// In en, this message translates to:
+  /// **'Waitlist'**
+  String get hostApplicationWaitlist;
+
+  /// Application decline action.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get hostApplicationDecline;
+
+  /// Successful application review mutation message.
+  ///
+  /// In en, this message translates to:
+  /// **'Application review updated'**
+  String get hostApplicationReviewUpdated;
 }
 
 class _AppLocalizationsDelegate

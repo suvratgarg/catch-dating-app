@@ -248,6 +248,13 @@ test("updateUserProfileHandler rejects invalid payloads", async () => {
   );
   await assert.rejects(
     updateUserProfileHandler(
+      request("runner-1", {fields: {phoneNumber: "+918888888888"}}),
+      h.deps
+    ),
+    (error) => assertHttpsCode(error, "invalid-argument")
+  );
+  await assert.rejects(
+    updateUserProfileHandler(
       request("runner-1", {fields: {sexualOrientation: "straight"}}),
       h.deps
     ),
