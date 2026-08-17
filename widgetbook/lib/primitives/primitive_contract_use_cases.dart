@@ -6182,6 +6182,10 @@ Widget catchTabDockContractStates(BuildContext context) {
       'first-selected',
       'last-selected',
       'selection-transition',
+      'contact-preview',
+      'press-and-slide',
+      'pointer-focus',
+      'long-press-secondary-action',
     ],
     children: [
       _StateCard(
@@ -6313,7 +6317,8 @@ Widget catchTabDockContractStates(BuildContext context) {
         ),
       ),
       _StateCard(
-        label: 'selection-transition',
+        label:
+            'selection-transition · contact-preview · press-and-slide · pointer-focus',
         child: SizedBox(
           width: WidgetbookPreviewLayout.wideContractWidth,
           child: StatefulBuilder(
@@ -6322,6 +6327,27 @@ Widget catchTabDockContractStates(BuildContext context) {
               active: transitionActive,
               onChanged: (next) => setState(() => transitionActive = next),
             ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'long-press-secondary-action',
+        child: SizedBox(
+          width: WidgetbookPreviewLayout.wideContractWidth,
+          child: CatchTabBar<String>(
+            items: [
+              ..._contractTabBarItems,
+              CatchTabBarItem<String>(
+                id: 'organizer',
+                icon: CatchIcons.personOutlined,
+                activeIcon: CatchIcons.personRounded,
+                label: 'Organizer',
+                onLongPress: _noop,
+                semanticHint: 'Hold to switch organizer',
+              ),
+            ],
+            active: 'explore',
+            onChanged: _ignoreString,
           ),
         ),
       ),
@@ -6338,7 +6364,14 @@ Widget catchTabDockButtonContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'CatchTabBarButton',
     contractId: 'catch.tab_bar.button',
-    states: const ['selected', 'unselected', 'badge'],
+    states: const [
+      'selected',
+      'unselected',
+      'badge',
+      'pressed',
+      'hovered',
+      'focused',
+    ],
     children: [
       _StateCard(
         label: 'button states',

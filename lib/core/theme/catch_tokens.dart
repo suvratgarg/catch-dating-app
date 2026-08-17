@@ -1240,6 +1240,15 @@ abstract final class CatchOpacity {
   /// Selected tab pill fill inside the bottom tab bar.
   static const double tabBarPillFill = 0.08;
 
+  /// Pointer hover preview inside the bottom tab bar.
+  static const double tabBarHoverFill = 0.06;
+
+  /// Keyboard focus preview inside the bottom tab bar.
+  static const double tabBarFocusFill = 0.10;
+
+  /// Contact and drag preview inside the bottom tab bar.
+  static const double tabBarPressedFill = 0.14;
+
   /// Very light tint for accent-color backgrounds (date pills, soft status
   /// pills).
   static const double subtleFill = 0.12;
@@ -2398,16 +2407,16 @@ abstract final class CatchLayout {
   static const double statusBarTimeFontSize = 14.0;
   static const double statusBarIconSize = 14.0;
   static const double statusBarIconGap = CatchSpacing.micro6;
-  static const double tabBarExtent = 56.0;
+  static const double tabBarExtent = 64.0;
   static const double tabBarBlurSigma = 10.0;
   static const double tabBarHorizontalPadding = CatchSpacing.s3;
-  static const double tabBarFloatingContentHorizontalPadding = CatchSpacing.s2;
+  static const double tabBarFloatingContentHorizontalPadding = CatchSpacing.s3;
   static const double tabBarFloatingHorizontalInset = CatchSpacing.s4;
   static const double tabBarFloatingBottomInset = CatchSpacing.s3;
   static const double tabBarCompactItemExtent = 48.0;
-  static const double tabBarMinimumTapExtent = 44.0;
+  static const double tabBarMinimumTapExtent = tabBarCompactItemExtent;
   static const double tabBarMinimumSelectedExtent = 88.0;
-  static const double tabBarPillMinHeight = 42.0;
+  static const double tabBarIndicatorExtent = 48.0;
   // The icon box owns a small amount of transparent badge clearance. These
   // asymmetric geometric insets produce equal optical pill padding.
   static const double tabBarPillLeadingPadding = CatchSpacing.s2;
@@ -2415,6 +2424,12 @@ abstract final class CatchLayout {
   static const double tabBarLabelGap = CatchSpacing.micro6;
   static const double tabBarIconBoxExtent = 30.0;
   static const double tabBarIconSize = 22.0;
+  static const double tabBarDragHysteresis = CatchSpacing.s2;
+  static const double tabBarDragCancelSlop = CatchSpacing.s6;
+  static const double tabBarDragBottomLimit =
+      tabBarExtent + tabBarDragCancelSlop;
+  static const double tabBarCompactItemHorizontalPadding =
+      (tabBarCompactItemExtent - tabBarIconBoxExtent) / 2;
   static const double appShellNavigationIdentityExtent = CatchSpacing.s7;
   static const double appShellRailWidth = 96.0;
   static const double appShellSidebarWidth = 240.0;

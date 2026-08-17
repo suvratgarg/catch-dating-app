@@ -9267,7 +9267,7 @@
       "name": "CatchTabBar",
       "status": "active",
       "kind": "composite",
-      "summary": "Adaptive bottom navigation with stable keyed destination slots, equal compact allocations, a measured selected icon-label pill, badges, and platform-specific chrome.",
+      "summary": "Adaptive bottom navigation with stable keyed destination slots, one shared 48px selection/contact indicator, measured selected labels, press-and-slide selection, badges, and platform-specific chrome.",
       "dart": {
         "symbol": "CatchTabBar",
         "file": "lib/core/widgets/catch_tab_bar.dart",
@@ -9324,7 +9324,11 @@
           "with-four-tabs",
           "first-selected",
           "last-selected",
-          "selection-transition"
+          "selection-transition",
+          "contact-preview",
+          "press-and-slide",
+          "pointer-focus",
+          "long-press-secondary-action"
         ],
         "slots": [],
         "tokens": [
@@ -9345,8 +9349,11 @@
           "CatchLayout.tabBarIconSize",
           "CatchLayout.tabBarMinimumTapExtent",
           "CatchLayout.tabBarIconBoxExtent",
+          "CatchLayout.tabBarIndicatorExtent",
           "CatchLayout.tabBarPillLeadingPadding",
-          "CatchLayout.tabBarPillTrailingPadding"
+          "CatchLayout.tabBarPillTrailingPadding",
+          "CatchLayout.tabBarDragHysteresis",
+          "CatchLayout.tabBarDragCancelSlop"
         ],
         "goldens": [],
         "members": [
@@ -9354,11 +9361,14 @@
             "id": "catch.tab_bar.button",
             "symbol": "CatchTabBarButton",
             "file": "lib/core/widgets/catch_tab_bar.dart",
-            "summary": "Stable tab-bar button renderer with selected-label reveal semantics and unchanged element identity across selection.",
+            "summary": "Stable full-slot tab-bar button renderer with selected-label reveal, explicit contact/focus callbacks, and committed-selection semantics.",
             "states": [
               "selected",
               "unselected",
-              "badge"
+              "badge",
+              "pressed",
+              "hovered",
+              "focused"
             ],
             "governance": {
               "conceptRole": "member",
@@ -9408,7 +9418,9 @@
         "notes": [
           "Use for Catch bottom navigation. Platform adaptation belongs inside this widget; do not fork native/custom tab bars in shells.",
           "Keep every destination in one stable keyed slot. Animate geometry and pill reveal without replacing fixed and expanded subtrees on selection.",
-          "Use optical leading and trailing pill insets because the square icon box reserves transparent badge clearance."
+          "Use optical leading and trailing pill insets because the square icon box reserves transparent badge clearance.",
+          "Keep contact previews transient: move the shared indicator while the route and selected semantics remain committed until release.",
+          "Preserve item long press when the pointer remains stationary; horizontal travel transfers ownership to press-and-slide selection."
         ]
       },
       "governance": {
