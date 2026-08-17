@@ -489,14 +489,14 @@ void _registerHostOperationsClubWorkspaceTests() {
         .toList();
     expect(editSections, hasLength(5));
     expect(editSections.map((section) => section.title), [
-      'Public Catch page',
+      'Public visibility',
       'Media',
       'Identity',
       'Contact',
       'Organizer settings',
     ]);
     for (final title in [
-      'Public Catch page',
+      'Public visibility',
       'Media',
       'Identity',
       'Contact',

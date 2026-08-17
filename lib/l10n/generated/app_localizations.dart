@@ -18966,56 +18966,92 @@ abstract class AppLocalizations {
   /// Organizer publication control title.
   ///
   /// In en, this message translates to:
-  /// **'Public Catch page'**
+  /// **'Public visibility'**
   String get hostsHostClubPublicationTitle;
 
-  /// Private organizer publication state.
+  /// Native Catch discovery channel label.
   ///
   /// In en, this message translates to:
-  /// **'Your operations workspace is private'**
-  String get hostsHostClubPublicationSubtitlePrivate;
+  /// **'Catch app'**
+  String get hostsHostClubPublicationChannelCatch;
 
-  /// Published organizer publication state.
+  /// Public website channel label.
   ///
   /// In en, this message translates to:
-  /// **'Your organizer page is live'**
-  String get hostsHostClubPublicationSubtitlePublished;
+  /// **'Public website'**
+  String get hostsHostClubPublicationChannelWebsite;
 
-  /// Private publication status badge.
+  /// Visible Catch app status badge.
   ///
   /// In en, this message translates to:
-  /// **'Private'**
-  String get hostsHostClubPublicationStatusPrivate;
+  /// **'Visible'**
+  String get hostsHostClubPublicationStatusVisible;
 
-  /// Published publication status badge.
+  /// Hidden Catch app status badge.
   ///
   /// In en, this message translates to:
-  /// **'Published'**
-  String get hostsHostClubPublicationStatusPublished;
+  /// **'Hidden'**
+  String get hostsHostClubPublicationStatusHidden;
 
-  /// Explains the operations-first private workspace.
+  /// Enabled website status badge.
   ///
   /// In en, this message translates to:
-  /// **'Run events, import guests, check people in, and learn from feedback without appearing in the Consumer app. Publish when you want a public page, reviews, and web registration.'**
+  /// **'Enabled'**
+  String get hostsHostClubPublicationStatusEnabled;
+
+  /// Disabled website status badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enabled'**
+  String get hostsHostClubPublicationStatusNotEnabled;
+
+  /// Explains a fully private organizer.
+  ///
+  /// In en, this message translates to:
+  /// **'Only your Host team can access this organizer. You can still run events, import guests, and check people in.'**
   String get hostsHostClubPublicationBodyPrivate;
 
-  /// Explains the published organizer state.
+  /// Explains Catch-only organizer visibility.
   ///
   /// In en, this message translates to:
-  /// **'People can discover this organizer in Catch and on the public website. Unpublishing keeps your Host data and event operations intact.'**
-  String get hostsHostClubPublicationBodyPublished;
+  /// **'People can find this organizer in Catch. Enable its website page to share it outside the app and support web registration. It will appear after the next website release.'**
+  String get hostsHostClubPublicationBodyCatchOnly;
 
-  /// Publish organizer CTA.
+  /// Explains website-only organizer visibility.
   ///
   /// In en, this message translates to:
-  /// **'Publish organizer page'**
-  String get hostsHostClubPublicationActionPublish;
+  /// **'The website page is enabled, but this organizer is hidden in Catch. Restore Catch visibility to keep both public settings in sync.'**
+  String get hostsHostClubPublicationBodyWebsiteOnly;
 
-  /// Unpublish organizer CTA.
+  /// Explains fully public organizer settings.
   ///
   /// In en, this message translates to:
-  /// **'Return to private workspace'**
-  String get hostsHostClubPublicationActionUnpublish;
+  /// **'This organizer is enabled for Catch and the public website. Website changes appear after the next website release.'**
+  String get hostsHostClubPublicationBodyEverywhere;
+
+  /// Enable both public channels CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Make organizer public'**
+  String get hostsHostClubPublicationActionMakePublic;
+
+  /// Enable the organizer website page CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable website page'**
+  String get hostsHostClubPublicationActionEnableWebsite;
+
+  /// Restore native Catch discovery CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore Catch visibility'**
+  String get hostsHostClubPublicationActionRestoreCatch;
+
+  /// Disable both public channels CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Make organizer private'**
+  String get hostsHostClubPublicationActionMakePrivate;
 
   /// Host public event registration control title.
   ///

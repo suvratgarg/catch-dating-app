@@ -109,10 +109,10 @@ class _CatchFieldState extends State<CatchField>
       _cancelExpandedContentReveal();
     }
     if (widget._explicitSaveInput && !wasOpen && isOpen) {
+      // Let the drawer finish first. Requesting native focus in the opening
+      // frame makes the keyboard resize the viewport while the same subtree is
+      // still revealing, which reads as a flicker on compact Host screens.
       _pendingExpansionFocus = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _requestPendingExpansionFocus();
-      });
     } else if (wasOpen && !isOpen) {
       _pendingExpansionFocus = false;
       _focusNode.unfocus();

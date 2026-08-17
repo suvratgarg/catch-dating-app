@@ -127,12 +127,23 @@ class OrganizerPublicPage {
 
   Map<String, dynamic> toJson() => Map<String, dynamic>.of(_json);
 
+  String? get canonicalPath {
+    final value = _json['canonicalPath'];
+    if (value is! String) return null;
+    final trimmed = value.trim();
+    return trimmed.isEmpty ? null : trimmed;
+  }
+
+  bool get hasCanonicalRoute => canonicalPath != null;
+
   bool get blocksPublicRead =>
       publishStatus == OrganizerPublicPagePublishStatus.suppressed ||
       publishStatus == OrganizerPublicPagePublishStatus.removed;
 
   bool get allowsPublicWebRead =>
       publishStatus == OrganizerPublicPagePublishStatus.published;
+
+  bool get isPublicWebsiteEnabled => allowsPublicWebRead && hasCanonicalRoute;
 
   bool get allowsPublicWebReviewWrite =>
       allowsPublicWebRead &&

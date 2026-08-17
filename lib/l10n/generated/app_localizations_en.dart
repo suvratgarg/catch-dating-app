@@ -12156,36 +12156,57 @@ class AppLocalizationsEn extends AppLocalizations {
       'Reviews for this event will appear here, including reviews submitted on your public Catch page.';
 
   @override
-  String get hostsHostClubPublicationTitle => 'Public Catch page';
+  String get hostsHostClubPublicationTitle => 'Public visibility';
 
   @override
-  String get hostsHostClubPublicationSubtitlePrivate =>
-      'Your operations workspace is private';
+  String get hostsHostClubPublicationChannelCatch => 'Catch app';
 
   @override
-  String get hostsHostClubPublicationSubtitlePublished =>
-      'Your organizer page is live';
+  String get hostsHostClubPublicationChannelWebsite => 'Public website';
 
   @override
-  String get hostsHostClubPublicationStatusPrivate => 'Private';
+  String get hostsHostClubPublicationStatusVisible => 'Visible';
 
   @override
-  String get hostsHostClubPublicationStatusPublished => 'Published';
+  String get hostsHostClubPublicationStatusHidden => 'Hidden';
+
+  @override
+  String get hostsHostClubPublicationStatusEnabled => 'Enabled';
+
+  @override
+  String get hostsHostClubPublicationStatusNotEnabled => 'Not enabled';
 
   @override
   String get hostsHostClubPublicationBodyPrivate =>
-      'Run events, import guests, check people in, and learn from feedback without appearing in the Consumer app. Publish when you want a public page, reviews, and web registration.';
+      'Only your Host team can access this organizer. You can still run events, import guests, and check people in.';
 
   @override
-  String get hostsHostClubPublicationBodyPublished =>
-      'People can discover this organizer in Catch and on the public website. Unpublishing keeps your Host data and event operations intact.';
+  String get hostsHostClubPublicationBodyCatchOnly =>
+      'People can find this organizer in Catch. Enable its website page to share it outside the app and support web registration. It will appear after the next website release.';
 
   @override
-  String get hostsHostClubPublicationActionPublish => 'Publish organizer page';
+  String get hostsHostClubPublicationBodyWebsiteOnly =>
+      'The website page is enabled, but this organizer is hidden in Catch. Restore Catch visibility to keep both public settings in sync.';
 
   @override
-  String get hostsHostClubPublicationActionUnpublish =>
-      'Return to private workspace';
+  String get hostsHostClubPublicationBodyEverywhere =>
+      'This organizer is enabled for Catch and the public website. Website changes appear after the next website release.';
+
+  @override
+  String get hostsHostClubPublicationActionMakePublic =>
+      'Make organizer public';
+
+  @override
+  String get hostsHostClubPublicationActionEnableWebsite =>
+      'Enable website page';
+
+  @override
+  String get hostsHostClubPublicationActionRestoreCatch =>
+      'Restore Catch visibility';
+
+  @override
+  String get hostsHostClubPublicationActionMakePrivate =>
+      'Make organizer private';
 
   @override
   String get hostsHostPublicRegistrationTitle => 'Website registration';

@@ -262,12 +262,10 @@ extension _CatchFieldEdit on _CatchFieldState {
     final multilineValueStyle = _fieldValueTextStyle(
       context,
       color: widget.enabled ? t.ink : t.ink3,
-      fontWeight: FontWeight.w500,
     ).copyWith(height: CatchFieldTokens.multilineValueLineHeight);
     final multilineHintStyle = _fieldValueTextStyle(
       context,
       color: t.ink2,
-      fontWeight: FontWeight.w500,
     ).copyWith(height: CatchFieldTokens.multilineValueLineHeight);
     final inputStyle = valueEmphasis
         ? multiline

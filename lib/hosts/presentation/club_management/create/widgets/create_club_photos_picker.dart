@@ -5,7 +5,6 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
-import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
@@ -129,9 +128,10 @@ class CreateClubProfileImagePicker extends StatelessWidget {
         ClubProfileImageTile(
           imageBytes: imageBytes,
           existingImageUrl: existingImageUrl,
-          onTap: onTap,
+          // The adjacent labelled button is the single Add/Replace action.
+          // Keeping the preview passive avoids three competing upload cues.
+          onTap: null,
           size: compact ? 72 : CatchLayout.clubProfileImagePickerExtent,
-          showEmptyLabel: !compact,
         ),
         gapW16,
         Expanded(
@@ -208,87 +208,76 @@ class ClubProfileImageTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final hasImage = imageBytes != null || existingImageUrl != null;
+    final interactive = onTap != null;
+    final Widget content;
+
+    if (imageBytes case final bytes?) {
+      content = Image.memory(bytes, fit: BoxFit.cover);
+    } else if (existingImageUrl case final imageUrl?) {
+      content = CatchNetworkImage(
+        imageUrl,
+        errorBuilder: (_, _, _) => Container(color: t.raised),
+      );
+    } else {
+      content = ColoredBox(
+        color: t.raised,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              interactive
+                  ? CatchIcons.addPhotoAlternateOutlined
+                  : CatchIcons.imageOutlined,
+              size: CatchIcon.hero,
+              color: t.ink2,
+            ),
+            if (interactive &&
+                showEmptyLabel &&
+                size >= 112 &&
+                MediaQuery.textScalerOf(context).scale(1) < 1.6) ...[
+              gapH8,
+              Padding(
+                padding: CatchInsets.inlineHorizontal,
+                child: Text(
+                  context.l10n.hostsCreateClubPhotosPickerTextAddImage,
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ],
+        ),
+      );
+    }
+
+    final tile = SizedBox.square(
+      dimension: size,
+      child: CatchSurface(
+        tone: CatchSurfaceTone.raised,
+        radius: CatchRadius.md,
+        borderColor: t.line2,
+        clipBehavior: Clip.antiAlias,
+        child: content,
+      ),
+    );
+
+    if (!interactive) {
+      return hasImage
+          ? Semantics(
+              image: true,
+              label:
+                  context.l10n.hostsCreateClubPhotosPickerLabelClubProfileImage,
+              child: tile,
+            )
+          : ExcludeSemantics(child: tile);
+    }
 
     return Semantics(
       button: true,
       label: hasImage
           ? context.l10n.hostsCreateClubPhotosPickerLabelChangeClubProfileImage
           : context.l10n.hostsCreateClubPhotosPickerLabelAddClubProfileImage,
-      child: GestureDetector(
-        onTap: onTap,
-        child: SizedBox.square(
-          dimension: size,
-          child: CatchSurface(
-            tone: CatchSurfaceTone.raised,
-            radius: CatchRadius.md,
-            borderColor: t.line2,
-            clipBehavior: Clip.antiAlias,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                if (hasImage)
-                  if (imageBytes case final bytes?)
-                    Image.memory(bytes, fit: BoxFit.cover)
-                  else
-                    CatchNetworkImage(
-                      existingImageUrl!,
-                      errorBuilder: (_, _, _) => Container(color: t.raised),
-                    )
-                else
-                  ColoredBox(
-                    color: t.raised,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          CatchIcons.addPhotoAlternateOutlined,
-                          size: CatchIcon.hero,
-                          color: t.ink2,
-                        ),
-                        if (showEmptyLabel &&
-                            size >= 112 &&
-                            MediaQuery.textScalerOf(context).scale(1) <
-                                1.6) ...[
-                          gapH8,
-                          Padding(
-                            padding: CatchInsets.inlineHorizontal,
-                            child: Text(
-                              context
-                                  .l10n
-                                  .hostsCreateClubPhotosPickerTextAddImage,
-                              style: CatchTextStyles.supporting(
-                                context,
-                                color: t.ink2,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                Positioned(
-                  bottom: 6,
-                  right: 6,
-                  child: CatchIconTile(
-                    icon: hasImage
-                        ? CatchIcons.editOutlined
-                        : CatchIcons.addPhotoAlternateOutlined,
-                    iconColor: t.ink,
-                    backgroundColor: t.surface.withValues(
-                      alpha: CatchOpacity.imageEditControlFill,
-                    ),
-                    borderColor: Colors.transparent,
-                    size: 28,
-                    iconSize: CatchIcon.xs,
-                    radius: CatchRadius.pill,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+      child: GestureDetector(onTap: onTap, child: tile),
     );
   }
 }
