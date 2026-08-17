@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_form_drafts.schema.json",
+  "title": "OrganizerFormDraftDocument",
+  "description": "Mutable optimistic-revision builder state for one organizer form.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["organizerId", "formId", "revision", "definition", "updatedByUid", "createdAt", "updatedAt"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "formId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "definition": {"$ref": "../shared/organizer_form_common.schema.json#/definitions/formDefinition"},
+    "updatedByUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+  },
+  "x-firestore-collection": "organizerFormDrafts",
+  "x-firestore-path": "organizerFormDrafts/{formId}",
+  "x-document-id-field": "formId",
+  "x-owner": "organizer form draft callables"
+}

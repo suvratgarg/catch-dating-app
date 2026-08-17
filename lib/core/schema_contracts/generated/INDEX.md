@@ -52,6 +52,9 @@ Do not edit it by hand.
 | OrganizerProviderConnectionDocument | `firestore/organizer_provider_connections.schema.json` | `functions/src/shared/generated/organizerProviderConnectionDocument.ts` |
 | OrganizerApplicationFormDocument | `firestore/organizer_application_forms.schema.json` | `functions/src/shared/generated/organizerApplicationFormDocument.ts` |
 | OrganizerApplicationFormVersionDocument | `firestore/organizer_application_form_versions.schema.json` | `functions/src/shared/generated/organizerApplicationFormVersionDocument.ts` |
+| OrganizerFormDocument | `firestore/organizer_forms.schema.json` | `functions/src/shared/generated/organizerFormDocument.ts` |
+| OrganizerFormDraftDocument | `firestore/organizer_form_drafts.schema.json` | `functions/src/shared/generated/organizerFormDraftDocument.ts` |
+| OrganizerFormVersionDocument | `firestore/organizer_form_versions.schema.json` | `functions/src/shared/generated/organizerFormVersionDocument.ts` |
 | OrganizerApplicationDocument | `firestore/organizer_applications.schema.json` | `functions/src/shared/generated/organizerApplicationDocument.ts` |
 | OrganizerApplicationResponseDocument | `firestore/organizer_application_responses.schema.json` | `functions/src/shared/generated/organizerApplicationResponseDocument.ts` |
 | OrganizerApplicationAssetDocument | `firestore/organizer_application_assets.schema.json` | `functions/src/shared/generated/organizerApplicationAssetDocument.ts` |
@@ -461,6 +464,9 @@ Do not edit it by hand.
 | `schemaOrganizerProviderConnectionDocumentSchema` | OrganizerProviderConnectionDocument | `firestore/organizer_provider_connections.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_provider_connection_document.g.dart` |
 | `schemaOrganizerApplicationFormDocumentSchema` | OrganizerApplicationFormDocument | `firestore/organizer_application_forms.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_application_form_document.g.dart` |
 | `schemaOrganizerApplicationFormVersionDocumentSchema` | OrganizerApplicationFormVersionDocument | `firestore/organizer_application_form_versions.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_application_form_version_document.g.dart` |
+| `schemaOrganizerFormDocumentSchema` | OrganizerFormDocument | `firestore/organizer_forms.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_form_document.g.dart` |
+| `schemaOrganizerFormDraftDocumentSchema` | OrganizerFormDraftDocument | `firestore/organizer_form_drafts.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_form_draft_document.g.dart` |
+| `schemaOrganizerFormVersionDocumentSchema` | OrganizerFormVersionDocument | `firestore/organizer_form_versions.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_form_version_document.g.dart` |
 | `schemaOrganizerApplicationDocumentSchema` | OrganizerApplicationDocument | `firestore/organizer_applications.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_application_document.g.dart` |
 | `schemaOrganizerApplicationResponseDocumentSchema` | OrganizerApplicationResponseDocument | `firestore/organizer_application_responses.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_application_response_document.g.dart` |
 | `schemaOrganizerApplicationAssetDocumentSchema` | OrganizerApplicationAssetDocument | `firestore/organizer_application_assets.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_application_asset_document.g.dart` |

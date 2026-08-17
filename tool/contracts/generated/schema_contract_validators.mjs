@@ -43,6 +43,9 @@ import {
   organizerProviderConnectionDocumentSchema,
   organizerApplicationFormDocumentSchema,
   organizerApplicationFormVersionDocumentSchema,
+  organizerFormDocumentSchema,
+  organizerFormDraftDocumentSchema,
+  organizerFormVersionDocumentSchema,
   organizerApplicationDocumentSchema,
   organizerApplicationResponseDocumentSchema,
   organizerApplicationAssetDocumentSchema,
@@ -471,6 +474,9 @@ export const validateOrganizerSenderConnectionDocument = ajv.compile(organizerSe
 export const validateOrganizerProviderConnectionDocument = ajv.compile(organizerProviderConnectionDocumentSchema);
 export const validateOrganizerApplicationFormDocument = ajv.compile(organizerApplicationFormDocumentSchema);
 export const validateOrganizerApplicationFormVersionDocument = ajv.compile(organizerApplicationFormVersionDocumentSchema);
+export const validateOrganizerFormDocument = ajv.compile(organizerFormDocumentSchema);
+export const validateOrganizerFormDraftDocument = ajv.compile(organizerFormDraftDocumentSchema);
+export const validateOrganizerFormVersionDocument = ajv.compile(organizerFormVersionDocumentSchema);
 export const validateOrganizerApplicationDocument = ajv.compile(organizerApplicationDocumentSchema);
 export const validateOrganizerApplicationResponseDocument = ajv.compile(organizerApplicationResponseDocumentSchema);
 export const validateOrganizerApplicationAssetDocument = ajv.compile(organizerApplicationAssetDocumentSchema);

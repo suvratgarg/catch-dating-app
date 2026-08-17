@@ -2087,6 +2087,414 @@ export interface OrganizerApplicationFormVersionDocument {
 }
 
 /**
+ * Organizer-owned generic form metadata and lifecycle. Editable content lives in a draft and published content in immutable versions.
+ */
+export interface OrganizerFormDocument {
+  organizerId: string;
+  createdByUid: string;
+  title: string;
+  description: string | null;
+  purpose:
+    | "application"
+    | "registration"
+    | "intake"
+    | "waiver"
+    | "feedback"
+    | "survey";
+  status: "draft" | "published" | "paused" | "archived";
+  templateId: string | null;
+  publicFormId: string;
+  defaultTargetKind: "organizer" | "event" | "campaign";
+  defaultTargetId: string | null;
+  activeVersionId: string | null;
+  draftRevision: number;
+  publishedVersion: number;
+  submittedResponseCount: number;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  publishedAt: FirebaseFirestore.Timestamp | null;
+  pausedAt: FirebaseFirestore.Timestamp | null;
+  archivedAt: FirebaseFirestore.Timestamp | null;
+  lastResponseAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Mutable optimistic-revision builder state for one organizer form.
+ */
+export interface OrganizerFormDraftDocument {
+  organizerId: string;
+  formId: string;
+  revision: number;
+  definition: {
+    title: string;
+    description: string | null;
+    purpose:
+      | "application"
+      | "registration"
+      | "intake"
+      | "waiver"
+      | "feedback"
+      | "survey";
+    defaultTargetKind: "organizer" | "event" | "campaign";
+    defaultTargetId: string | null;
+    identityPolicy:
+      | "anonymous"
+      | "emailVerified"
+      | "phoneVerified"
+      | "emailOrPhoneVerified"
+      | "catchAccount";
+    /**
+     * @minItems 1
+     * @maxItems 40
+     */
+    sections: {
+      sectionId: string;
+      title: string;
+      description: string | null;
+      pageBreak: boolean;
+      /**
+       * @maxItems 100
+       */
+      questions: {
+        questionId: string;
+        key: string;
+        label: string;
+        helpText: string | null;
+        kind:
+          | "shortText"
+          | "longText"
+          | "singleChoice"
+          | "multiChoice"
+          | "date"
+          | "phone"
+          | "email"
+          | "url"
+          | "number"
+          | "boolean"
+          | "file"
+          | "acknowledgement"
+          | "signature";
+        required: boolean;
+        /**
+         * @maxItems 100
+         */
+        options: {
+          optionId: string;
+          label: string;
+          value: string;
+        }[];
+        canonicalFieldId:
+          | (
+              | "givenName"
+              | "familyName"
+              | "displayName"
+              | "dateOfBirth"
+              | "age"
+              | "gender"
+              | "phoneNumber"
+              | "email"
+              | "instagramHandle"
+              | "linkedinUrl"
+              | "profilePhoto"
+              | "city"
+              | "heightCm"
+              | "occupation"
+              | "company"
+              | "education"
+              | "languages"
+              | "relationshipGoal"
+              | "interestedInGenders"
+              | "drinking"
+              | "smoking"
+              | "religion"
+              | "workout"
+              | "diet"
+              | "children"
+            )
+          | null;
+        privacyClass: "contact" | "profile" | "sensitive" | "organizerCustom";
+        prefillPolicy: "never" | "participantReviewRequired";
+        hostPresentation: "detailOnly" | "filterable" | "sortable";
+        validation: {
+          minLength: number | null;
+          maxLength: number | null;
+          minNumber: number | null;
+          maxNumber: number | null;
+          earliestDate: string | null;
+          latestDate: string | null;
+          minSelections: number | null;
+          maxSelections: number | null;
+          maxFileCount: number | null;
+          maxFileSizeBytes: number | null;
+          /**
+           * @maxItems 20
+           */
+          allowedMimeTypes: string[];
+          patternPreset:
+            | null
+            | "lettersAndSpaces"
+            | "alphanumeric"
+            | "postalCode"
+            | "handle";
+          customError: string | null;
+        };
+      }[];
+    }[];
+    /**
+     * @maxItems 100
+     */
+    logicRules: {
+      ruleId: string;
+      conditionMode: "all" | "any";
+      /**
+       * @minItems 1
+       * @maxItems 20
+       */
+      conditions: {
+        questionId: string;
+        operator:
+          | "equals"
+          | "notEquals"
+          | "contains"
+          | "notContains"
+          | "greaterThan"
+          | "lessThan"
+          | "answered"
+          | "notAnswered";
+        /**
+         * @maxItems 20
+         */
+        expectedValues: (string | number | boolean)[];
+      }[];
+      action:
+        | "showQuestion"
+        | "hideQuestion"
+        | "showSection"
+        | "hideSection"
+        | "routeToSection"
+        | "finish";
+      targetQuestionId: string | null;
+      targetSectionId: string | null;
+    }[];
+    appearance: {
+      preset: "editorial" | "minimal" | "activity";
+      logoAssetId: string | null;
+      coverAssetId: string | null;
+      activityKind: string | null;
+    };
+    availability: {
+      opensAt: FirebaseFirestore.Timestamp | null;
+      closesAt: FirebaseFirestore.Timestamp | null;
+      responseLimit: number | null;
+      closedMessage: string | null;
+    };
+    consent: {
+      consentCopy: string;
+      consentVersion: string;
+      retentionCopy: string;
+    };
+    completion: {
+      title: string;
+      message: string | null;
+      actionKind: "none" | "externalUrl" | "event" | "eventRuntime";
+      actionLabel: string | null;
+      actionUrl: string | null;
+    };
+  };
+  updatedByUid: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Immutable published definition of one generic organizer form version.
+ */
+export interface OrganizerFormVersionDocument {
+  organizerId: string;
+  formId: string;
+  version: number;
+  definition: {
+    title: string;
+    description: string | null;
+    purpose:
+      | "application"
+      | "registration"
+      | "intake"
+      | "waiver"
+      | "feedback"
+      | "survey";
+    defaultTargetKind: "organizer" | "event" | "campaign";
+    defaultTargetId: string | null;
+    identityPolicy:
+      | "anonymous"
+      | "emailVerified"
+      | "phoneVerified"
+      | "emailOrPhoneVerified"
+      | "catchAccount";
+    /**
+     * @minItems 1
+     * @maxItems 40
+     */
+    sections: {
+      sectionId: string;
+      title: string;
+      description: string | null;
+      pageBreak: boolean;
+      /**
+       * @maxItems 100
+       */
+      questions: {
+        questionId: string;
+        key: string;
+        label: string;
+        helpText: string | null;
+        kind:
+          | "shortText"
+          | "longText"
+          | "singleChoice"
+          | "multiChoice"
+          | "date"
+          | "phone"
+          | "email"
+          | "url"
+          | "number"
+          | "boolean"
+          | "file"
+          | "acknowledgement"
+          | "signature";
+        required: boolean;
+        /**
+         * @maxItems 100
+         */
+        options: {
+          optionId: string;
+          label: string;
+          value: string;
+        }[];
+        canonicalFieldId:
+          | (
+              | "givenName"
+              | "familyName"
+              | "displayName"
+              | "dateOfBirth"
+              | "age"
+              | "gender"
+              | "phoneNumber"
+              | "email"
+              | "instagramHandle"
+              | "linkedinUrl"
+              | "profilePhoto"
+              | "city"
+              | "heightCm"
+              | "occupation"
+              | "company"
+              | "education"
+              | "languages"
+              | "relationshipGoal"
+              | "interestedInGenders"
+              | "drinking"
+              | "smoking"
+              | "religion"
+              | "workout"
+              | "diet"
+              | "children"
+            )
+          | null;
+        privacyClass: "contact" | "profile" | "sensitive" | "organizerCustom";
+        prefillPolicy: "never" | "participantReviewRequired";
+        hostPresentation: "detailOnly" | "filterable" | "sortable";
+        validation: {
+          minLength: number | null;
+          maxLength: number | null;
+          minNumber: number | null;
+          maxNumber: number | null;
+          earliestDate: string | null;
+          latestDate: string | null;
+          minSelections: number | null;
+          maxSelections: number | null;
+          maxFileCount: number | null;
+          maxFileSizeBytes: number | null;
+          /**
+           * @maxItems 20
+           */
+          allowedMimeTypes: string[];
+          patternPreset:
+            | null
+            | "lettersAndSpaces"
+            | "alphanumeric"
+            | "postalCode"
+            | "handle";
+          customError: string | null;
+        };
+      }[];
+    }[];
+    /**
+     * @maxItems 100
+     */
+    logicRules: {
+      ruleId: string;
+      conditionMode: "all" | "any";
+      /**
+       * @minItems 1
+       * @maxItems 20
+       */
+      conditions: {
+        questionId: string;
+        operator:
+          | "equals"
+          | "notEquals"
+          | "contains"
+          | "notContains"
+          | "greaterThan"
+          | "lessThan"
+          | "answered"
+          | "notAnswered";
+        /**
+         * @maxItems 20
+         */
+        expectedValues: (string | number | boolean)[];
+      }[];
+      action:
+        | "showQuestion"
+        | "hideQuestion"
+        | "showSection"
+        | "hideSection"
+        | "routeToSection"
+        | "finish";
+      targetQuestionId: string | null;
+      targetSectionId: string | null;
+    }[];
+    appearance: {
+      preset: "editorial" | "minimal" | "activity";
+      logoAssetId: string | null;
+      coverAssetId: string | null;
+      activityKind: string | null;
+    };
+    availability: {
+      opensAt: FirebaseFirestore.Timestamp | null;
+      closesAt: FirebaseFirestore.Timestamp | null;
+      responseLimit: number | null;
+      closedMessage: string | null;
+    };
+    consent: {
+      consentCopy: string;
+      consentVersion: string;
+      retentionCopy: string;
+    };
+    completion: {
+      title: string;
+      message: string | null;
+      actionKind: "none" | "externalUrl" | "event" | "eventRuntime";
+      actionLabel: string | null;
+      actionUrl: string | null;
+    };
+  };
+  createdByUid: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  publishedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
  * Organizer-scoped application review summary with no provider-specific answer shape.
  */
 export interface OrganizerApplicationDocument {

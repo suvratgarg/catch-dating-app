@@ -1,0 +1,265 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/organizer_form_common.schema.json",
+  "title": "Organizer form common contract definitions",
+  "description": "Generic Host form definitions shared by draft, published-version, response, and callable contracts.",
+  "definitions": {
+    "formPurpose": {
+      "type": "string",
+      "enum": ["application", "registration", "intake", "waiver", "feedback", "survey"]
+    },
+    "formLifecycleStatus": {
+      "type": "string",
+      "enum": ["draft", "published", "paused", "archived"]
+    },
+    "identityPolicy": {
+      "type": "string",
+      "enum": ["anonymous", "emailVerified", "phoneVerified", "emailOrPhoneVerified", "catchAccount"]
+    },
+    "targetKind": {
+      "type": "string",
+      "enum": ["organizer", "event", "campaign"]
+    },
+    "questionKind": {
+      "type": "string",
+      "enum": [
+        "shortText",
+        "longText",
+        "singleChoice",
+        "multiChoice",
+        "date",
+        "phone",
+        "email",
+        "url",
+        "number",
+        "boolean",
+        "file",
+        "acknowledgement",
+        "signature"
+      ]
+    },
+    "questionOption": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["optionId", "label", "value"],
+      "properties": {
+        "optionId": {"$ref": "event_common.schema.json#/definitions/documentId"},
+        "label": {"type": "string", "minLength": 1, "maxLength": 160},
+        "value": {"type": "string", "minLength": 1, "maxLength": 160}
+      }
+    },
+    "questionValidation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minLength", "maxLength", "minNumber", "maxNumber", "earliestDate", "latestDate", "minSelections", "maxSelections", "maxFileCount", "maxFileSizeBytes", "allowedMimeTypes", "patternPreset", "customError"],
+      "properties": {
+        "minLength": {"type": ["integer", "null"], "minimum": 0, "maximum": 4000},
+        "maxLength": {"type": ["integer", "null"], "minimum": 1, "maximum": 4000},
+        "minNumber": {"type": ["number", "null"], "minimum": -1000000000, "maximum": 1000000000},
+        "maxNumber": {"type": ["number", "null"], "minimum": -1000000000, "maximum": 1000000000},
+        "earliestDate": {"type": ["string", "null"], "format": "date"},
+        "latestDate": {"type": ["string", "null"], "format": "date"},
+        "minSelections": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+        "maxSelections": {"type": ["integer", "null"], "minimum": 1, "maximum": 100},
+        "maxFileCount": {"type": ["integer", "null"], "minimum": 1, "maximum": 10},
+        "maxFileSizeBytes": {"type": ["integer", "null"], "minimum": 1, "maximum": 26214400},
+        "allowedMimeTypes": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^[a-z0-9.+-]+/[a-z0-9.+*-]+$", "maxLength": 100}
+        },
+        "patternPreset": {
+          "type": ["string", "null"],
+          "enum": [null, "lettersAndSpaces", "alphanumeric", "postalCode", "handle"]
+        },
+        "customError": {"type": ["string", "null"], "maxLength": 240}
+      }
+    },
+    "questionDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["questionId", "key", "label", "helpText", "kind", "required", "options", "canonicalFieldId", "privacyClass", "prefillPolicy", "hostPresentation", "validation"],
+      "properties": {
+        "questionId": {"$ref": "event_common.schema.json#/definitions/documentId"},
+        "key": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_]{0,79}$"},
+        "label": {"type": "string", "minLength": 1, "maxLength": 240},
+        "helpText": {"type": ["string", "null"], "maxLength": 500},
+        "kind": {"$ref": "#/definitions/questionKind"},
+        "required": {"type": "boolean"},
+        "options": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {"$ref": "#/definitions/questionOption"}
+        },
+        "canonicalFieldId": {
+          "anyOf": [
+            {"$ref": "organizer_application_common.schema.json#/definitions/canonicalFieldId"},
+            {"type": "null"}
+          ]
+        },
+        "privacyClass": {
+          "type": "string",
+          "enum": ["contact", "profile", "sensitive", "organizerCustom"]
+        },
+        "prefillPolicy": {
+          "type": "string",
+          "enum": ["never", "participantReviewRequired"]
+        },
+        "hostPresentation": {
+          "type": "string",
+          "enum": ["detailOnly", "filterable", "sortable"]
+        },
+        "validation": {"$ref": "#/definitions/questionValidation"}
+      }
+    },
+    "sectionDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sectionId", "title", "description", "pageBreak", "questions"],
+      "properties": {
+        "sectionId": {"$ref": "event_common.schema.json#/definitions/documentId"},
+        "title": {"type": "string", "minLength": 1, "maxLength": 160},
+        "description": {"type": ["string", "null"], "maxLength": 1000},
+        "pageBreak": {"type": "boolean"},
+        "questions": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {"$ref": "#/definitions/questionDefinition"}
+        }
+      }
+    },
+    "logicCondition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["questionId", "operator", "expectedValues"],
+      "properties": {
+        "questionId": {"$ref": "event_common.schema.json#/definitions/documentId"},
+        "operator": {
+          "type": "string",
+          "enum": ["equals", "notEquals", "contains", "notContains", "greaterThan", "lessThan", "answered", "notAnswered"]
+        },
+        "expectedValues": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {"type": ["string", "number", "boolean"]}
+        }
+      }
+    },
+    "logicRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ruleId", "conditionMode", "conditions", "action", "targetQuestionId", "targetSectionId"],
+      "properties": {
+        "ruleId": {"$ref": "event_common.schema.json#/definitions/documentId"},
+        "conditionMode": {"type": "string", "enum": ["all", "any"]},
+        "conditions": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20,
+          "items": {"$ref": "#/definitions/logicCondition"}
+        },
+        "action": {"type": "string", "enum": ["showQuestion", "hideQuestion", "showSection", "hideSection", "routeToSection", "finish"]},
+        "targetQuestionId": {
+          "anyOf": [
+            {"$ref": "event_common.schema.json#/definitions/documentId"},
+            {"type": "null"}
+          ]
+        },
+        "targetSectionId": {
+          "anyOf": [
+            {"$ref": "event_common.schema.json#/definitions/documentId"},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "formAppearance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["preset", "logoAssetId", "coverAssetId", "activityKind"],
+      "properties": {
+        "preset": {"type": "string", "enum": ["editorial", "minimal", "activity"]},
+        "logoAssetId": {
+          "anyOf": [
+            {"$ref": "event_common.schema.json#/definitions/documentId"},
+            {"type": "null"}
+          ]
+        },
+        "coverAssetId": {
+          "anyOf": [
+            {"$ref": "event_common.schema.json#/definitions/documentId"},
+            {"type": "null"}
+          ]
+        },
+        "activityKind": {"type": ["string", "null"], "maxLength": 80}
+      }
+    },
+    "formAvailability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["opensAt", "closesAt", "responseLimit", "closedMessage"],
+      "properties": {
+        "opensAt": {"$ref": "event_common.schema.json#/definitions/nullableTimestamp"},
+        "closesAt": {"$ref": "event_common.schema.json#/definitions/nullableTimestamp"},
+        "responseLimit": {"type": ["integer", "null"], "minimum": 1, "maximum": 1000000},
+        "closedMessage": {"type": ["string", "null"], "maxLength": 500}
+      }
+    },
+    "formConsent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["consentCopy", "consentVersion", "retentionCopy"],
+      "properties": {
+        "consentCopy": {"type": "string", "minLength": 1, "maxLength": 2000},
+        "consentVersion": {"type": "string", "minLength": 1, "maxLength": 80},
+        "retentionCopy": {"type": "string", "minLength": 1, "maxLength": 1000}
+      }
+    },
+    "formCompletion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "message", "actionKind", "actionLabel", "actionUrl"],
+      "properties": {
+        "title": {"type": "string", "minLength": 1, "maxLength": 160},
+        "message": {"type": ["string", "null"], "maxLength": 1000},
+        "actionKind": {"type": "string", "enum": ["none", "externalUrl", "event", "eventRuntime"]},
+        "actionLabel": {"type": ["string", "null"], "maxLength": 80},
+        "actionUrl": {"type": ["string", "null"], "format": "uri", "maxLength": 500}
+      }
+    },
+    "formDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "description", "purpose", "defaultTargetKind", "defaultTargetId", "identityPolicy", "sections", "logicRules", "appearance", "availability", "consent", "completion"],
+      "properties": {
+        "title": {"type": "string", "minLength": 1, "maxLength": 160},
+        "description": {"type": ["string", "null"], "maxLength": 1000},
+        "purpose": {"$ref": "#/definitions/formPurpose"},
+        "defaultTargetKind": {"$ref": "#/definitions/targetKind"},
+        "defaultTargetId": {
+          "anyOf": [
+            {"$ref": "event_common.schema.json#/definitions/documentId"},
+            {"type": "null"}
+          ]
+        },
+        "identityPolicy": {"$ref": "#/definitions/identityPolicy"},
+        "sections": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 40,
+          "items": {"$ref": "#/definitions/sectionDefinition"}
+        },
+        "logicRules": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {"$ref": "#/definitions/logicRule"}
+        },
+        "appearance": {"$ref": "#/definitions/formAppearance"},
+        "availability": {"$ref": "#/definitions/formAvailability"},
+        "consent": {"$ref": "#/definitions/formConsent"},
+        "completion": {"$ref": "#/definitions/formCompletion"}
+      }
+    }
+  }
+}

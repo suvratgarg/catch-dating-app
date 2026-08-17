@@ -241,6 +241,23 @@ const schemaSpecs = [
       "functions/src/shared/generated/organizerApplicationFormVersionDocument.ts",
   },
   {
+    name: "OrganizerFormDocument",
+    source: "firestore/organizer_forms.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerFormDocument.ts",
+  },
+  {
+    name: "OrganizerFormDraftDocument",
+    source: "firestore/organizer_form_drafts.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerFormDraftDocument.ts",
+  },
+  {
+    name: "OrganizerFormVersionDocument",
+    source: "firestore/organizer_form_versions.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerFormVersionDocument.ts",
+  },
+  {
     name: "OrganizerApplicationDocument",
     source: "firestore/organizer_applications.schema.json",
     typeOutput:
@@ -2950,6 +2967,10 @@ const generatedFiles = [];
 async function main() {
   const profileCatalog = readContractJson("catalogs/profile_prompts.json");
   const personFieldCatalog = readContractJson("catalogs/person_fields.json");
+  const organizerFormTemplateCatalog = readContractJson(
+    "catalogs/organizer_form_templates.json"
+  );
+  assertOrganizerFormTemplateCatalog(organizerFormTemplateCatalog);
   const eventSuccessMomentPresentationCatalog = readContractJson(
     "catalogs/event_success_moment_presentations.json"
   );
@@ -2984,6 +3005,7 @@ async function main() {
       schemaMap: bundledSchemas,
       profileCatalog,
       personFieldCatalog,
+      organizerFormTemplateCatalog,
       photoCatalog,
       profilePhotoPolicy,
     })
@@ -3012,6 +3034,7 @@ async function main() {
       schemaMap: bundledSchemas,
       profileCatalog,
       personFieldCatalog,
+      organizerFormTemplateCatalog,
       photoCatalog,
       profilePhotoPolicy,
     })
@@ -3140,6 +3163,86 @@ async function main() {
       "Generated schema contract outputs are current." :
       `Generated ${generatedFiles.length} schema contract files.`
   );
+}
+
+const ORGANIZER_FORM_TEMPLATE_IDS = [
+  "event-application",
+  "event-registration",
+  "dinner-guest-intake",
+  "run-walk-participation",
+  "racket-session",
+  "quiz-team-night",
+  "event-waiver",
+  "post-event-feedback",
+  "blank",
+];
+const ORGANIZER_FORM_PURPOSES = new Set([
+  "application",
+  "registration",
+  "intake",
+  "waiver",
+  "feedback",
+  "survey",
+]);
+const ORGANIZER_FORM_IDENTITY_POLICIES = new Set([
+  "anonymous",
+  "emailVerified",
+  "phoneVerified",
+  "emailOrPhoneVerified",
+  "catchAccount",
+]);
+
+function assertOrganizerFormTemplateCatalog(catalog) {
+  if (catalog?.schemaVersion !== 1 ||
+      catalog?.kind !== "organizerFormTemplates") {
+    throw new Error("Organizer form template catalog identity is invalid.");
+  }
+  if (!Array.isArray(catalog.templates) ||
+      catalog.templates.length !== ORGANIZER_FORM_TEMPLATE_IDS.length) {
+    throw new Error("Organizer form template catalog coverage is incomplete.");
+  }
+  const ids = new Set();
+  for (const template of catalog.templates) {
+    if (!ORGANIZER_FORM_TEMPLATE_IDS.includes(template?.id) ||
+        ids.has(template.id)) {
+      throw new Error(`Invalid organizer form template id: ${template?.id}`);
+    }
+    ids.add(template.id);
+    if (!Number.isInteger(template.version) || template.version < 1 ||
+        typeof template.title !== "string" || !template.title.trim() ||
+        typeof template.description !== "string" ||
+        !ORGANIZER_FORM_PURPOSES.has(template.purpose) ||
+        !ORGANIZER_FORM_IDENTITY_POLICIES.has(template.identityPolicy) ||
+        !Array.isArray(template.sections) || template.sections.length === 0) {
+      throw new Error(`Organizer form template ${template.id} is malformed.`);
+    }
+    const sectionIds = new Set();
+    const questionKeys = new Set();
+    for (const section of template.sections) {
+      if (typeof section?.id !== "string" || !section.id ||
+          sectionIds.has(section.id) ||
+          typeof section.title !== "string" || !section.title.trim() ||
+          !Array.isArray(section.questions)) {
+        throw new Error(
+          `Organizer form template ${template.id} has an invalid section.`
+        );
+      }
+      sectionIds.add(section.id);
+      for (const question of section.questions) {
+        if (typeof question?.key !== "string" ||
+            !/^[A-Za-z][A-Za-z0-9_]{0,79}$/u.test(question.key) ||
+            questionKeys.has(question.key) ||
+            typeof question.label !== "string" || !question.label.trim() ||
+            typeof question.kind !== "string" ||
+            typeof question.required !== "boolean") {
+          throw new Error(
+            `Organizer form template ${template.id} has an invalid question.`
+          );
+        }
+        questionKeys.add(question.key);
+      }
+    }
+  }
 }
 
 const EVENT_SUCCESS_MOMENT_KINDS = [
@@ -4140,6 +4243,7 @@ function renderTsSchemaRegistry({
   schemaMap,
   profileCatalog,
   personFieldCatalog,
+  organizerFormTemplateCatalog,
   photoCatalog,
   profilePhotoPolicy,
 }) {
@@ -4147,6 +4251,7 @@ function renderTsSchemaRegistry({
   const catalogEntries = [
     ["profilePromptCatalog", profileCatalog],
     ["personFieldCatalog", personFieldCatalog],
+    ["organizerFormTemplateCatalog", organizerFormTemplateCatalog],
     ["photoPromptCatalog", photoCatalog],
     ["profilePromptLimits", profileCatalog.limits],
     ["photoPromptLimits", photoCatalog.limits],
@@ -4226,6 +4331,7 @@ function renderToolSchemaRegistry({
   schemaMap,
   profileCatalog,
   personFieldCatalog,
+  organizerFormTemplateCatalog,
   photoCatalog,
   profilePhotoPolicy,
 }) {
@@ -4233,6 +4339,7 @@ function renderToolSchemaRegistry({
   const catalogEntries = [
     ["profilePromptCatalog", profileCatalog],
     ["personFieldCatalog", personFieldCatalog],
+    ["organizerFormTemplateCatalog", organizerFormTemplateCatalog],
     ["photoPromptCatalog", photoCatalog],
     ["profilePromptLimits", profileCatalog.limits],
     ["photoPromptLimits", photoCatalog.limits],

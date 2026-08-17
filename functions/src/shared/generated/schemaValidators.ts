@@ -44,6 +44,9 @@ import {OrganizerSenderConnectionDocument} from "./organizerSenderConnectionDocu
 import {OrganizerProviderConnectionDocument} from "./organizerProviderConnectionDocument";
 import {OrganizerApplicationFormDocument} from "./organizerApplicationFormDocument";
 import {OrganizerApplicationFormVersionDocument} from "./organizerApplicationFormVersionDocument";
+import {OrganizerFormDocument} from "./organizerFormDocument";
+import {OrganizerFormDraftDocument} from "./organizerFormDraftDocument";
+import {OrganizerFormVersionDocument} from "./organizerFormVersionDocument";
 import {OrganizerApplicationDocument} from "./organizerApplicationDocument";
 import {OrganizerApplicationResponseDocument} from "./organizerApplicationResponseDocument";
 import {OrganizerApplicationAssetDocument} from "./organizerApplicationAssetDocument";
@@ -449,6 +452,9 @@ import {
   organizerProviderConnectionDocumentSchema,
   organizerApplicationFormDocumentSchema,
   organizerApplicationFormVersionDocumentSchema,
+  organizerFormDocumentSchema,
+  organizerFormDraftDocumentSchema,
+  organizerFormVersionDocumentSchema,
   organizerApplicationDocumentSchema,
   organizerApplicationResponseDocumentSchema,
   organizerApplicationAssetDocumentSchema,
@@ -978,6 +984,18 @@ export const validateOrganizerApplicationFormVersionDocument:
   ValidateFunction<OrganizerApplicationFormVersionDocument> =
     ajv.compile(organizerApplicationFormVersionDocumentSchema) as
       ValidateFunction<OrganizerApplicationFormVersionDocument>;
+export const validateOrganizerFormDocument:
+  ValidateFunction<OrganizerFormDocument> =
+    ajv.compile(organizerFormDocumentSchema) as
+      ValidateFunction<OrganizerFormDocument>;
+export const validateOrganizerFormDraftDocument:
+  ValidateFunction<OrganizerFormDraftDocument> =
+    ajv.compile(organizerFormDraftDocumentSchema) as
+      ValidateFunction<OrganizerFormDraftDocument>;
+export const validateOrganizerFormVersionDocument:
+  ValidateFunction<OrganizerFormVersionDocument> =
+    ajv.compile(organizerFormVersionDocumentSchema) as
+      ValidateFunction<OrganizerFormVersionDocument>;
 export const validateOrganizerApplicationDocument:
   ValidateFunction<OrganizerApplicationDocument> =
     ajv.compile(organizerApplicationDocumentSchema) as
