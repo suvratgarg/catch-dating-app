@@ -24847,7 +24847,7 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchRouteScaffold + CatchTopBar",
+        "expression": "CatchTopBar",
         "owner": "HostApplicationsScreen and HostApplicationDetailScreen",
         "reason": "The queue and nested detail route share the canonical compact Host top bar with an explicit back action."
       },
