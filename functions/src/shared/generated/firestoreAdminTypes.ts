@@ -2313,6 +2313,7 @@ export interface OrganizerFormVersionDocument {
   organizerId: string;
   formId: string;
   version: number;
+  sourceDraftRevision: number;
   definition: {
     title: string;
     description: string | null;

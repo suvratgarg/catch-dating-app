@@ -151,6 +151,18 @@ export {
   reviewOrganizerApplication,
 } from "./organizers/organizerApplications";
 export {
+  createOrganizerForm,
+  deleteOrganizerFormDraft,
+  duplicateOrganizerForm,
+  getOrganizerFormEditor,
+  listOrganizerForms,
+  listOrganizerFormTemplates,
+  publishOrganizerForm,
+  setOrganizerFormLifecycle,
+  updateOrganizerFormDraft,
+  validateOrganizerFormDraft,
+} from "./organizers/organizerForms";
+export {
   getParticipantOrganizerApplicationForm,
   revokeParticipantOrganizerDataGrant,
   submitParticipantOrganizerApplication,

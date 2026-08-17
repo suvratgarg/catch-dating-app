@@ -1,0 +1,7 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/set_organizer_form_lifecycle_response.schema.json",
+  "title": "SetOrganizerFormLifecycleCallableResponse",
+  "description": "Organizer form summary after a lifecycle transition.",
+  "allOf": [{"$ref": "../shared/organizer_form_api_common.schema.json#/definitions/formSummary"}]
+}

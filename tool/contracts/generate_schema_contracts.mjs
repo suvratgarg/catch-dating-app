@@ -1748,6 +1748,143 @@ const schemaSpecs = [
       "functions/src/shared/generated/listOrganizerContactsCallablePayload.ts",
   },
   {
+    name: "CreateOrganizerFormCallablePayload",
+    source: "callables/create_organizer_form_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createOrganizerFormCallablePayload.ts",
+  },
+  {
+    name: "CreateOrganizerFormCallableResponse",
+    source: "callable_responses/create_organizer_form_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createOrganizerFormCallableResponse.ts",
+  },
+  {
+    name: "UpdateOrganizerFormDraftCallablePayload",
+    source: "callables/update_organizer_form_draft_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "updateOrganizerFormDraftCallablePayload.ts",
+  },
+  {
+    name: "UpdateOrganizerFormDraftCallableResponse",
+    source:
+      "callable_responses/update_organizer_form_draft_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "updateOrganizerFormDraftCallableResponse.ts",
+  },
+  {
+    name: "GetOrganizerFormEditorCallablePayload",
+    source: "callables/get_organizer_form_editor_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/getOrganizerFormEditorCallablePayload.ts",
+  },
+  {
+    name: "GetOrganizerFormEditorCallableResponse",
+    source:
+      "callable_responses/get_organizer_form_editor_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "getOrganizerFormEditorCallableResponse.ts",
+  },
+  {
+    name: "ListOrganizerFormsCallablePayload",
+    source: "callables/list_organizer_forms_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/listOrganizerFormsCallablePayload.ts",
+  },
+  {
+    name: "ListOrganizerFormsCallableResponse",
+    source: "callable_responses/list_organizer_forms_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/listOrganizerFormsCallableResponse.ts",
+  },
+  {
+    name: "ValidateOrganizerFormDraftCallablePayload",
+    source: "callables/validate_organizer_form_draft_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "validateOrganizerFormDraftCallablePayload.ts",
+  },
+  {
+    name: "ValidateOrganizerFormDraftCallableResponse",
+    source:
+      "callable_responses/validate_organizer_form_draft_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "validateOrganizerFormDraftCallableResponse.ts",
+  },
+  {
+    name: "PublishOrganizerFormCallablePayload",
+    source: "callables/publish_organizer_form_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/publishOrganizerFormCallablePayload.ts",
+  },
+  {
+    name: "PublishOrganizerFormCallableResponse",
+    source: "callable_responses/publish_organizer_form_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/publishOrganizerFormCallableResponse.ts",
+  },
+  {
+    name: "SetOrganizerFormLifecycleCallablePayload",
+    source: "callables/set_organizer_form_lifecycle_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "setOrganizerFormLifecycleCallablePayload.ts",
+  },
+  {
+    name: "SetOrganizerFormLifecycleCallableResponse",
+    source:
+      "callable_responses/set_organizer_form_lifecycle_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "setOrganizerFormLifecycleCallableResponse.ts",
+  },
+  {
+    name: "DuplicateOrganizerFormCallablePayload",
+    source: "callables/duplicate_organizer_form_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/duplicateOrganizerFormCallablePayload.ts",
+  },
+  {
+    name: "DuplicateOrganizerFormCallableResponse",
+    source: "callable_responses/duplicate_organizer_form_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/duplicateOrganizerFormCallableResponse.ts",
+  },
+  {
+    name: "DeleteOrganizerFormDraftCallablePayload",
+    source: "callables/delete_organizer_form_draft_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "deleteOrganizerFormDraftCallablePayload.ts",
+  },
+  {
+    name: "DeleteOrganizerFormDraftCallableResponse",
+    source:
+      "callable_responses/delete_organizer_form_draft_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "deleteOrganizerFormDraftCallableResponse.ts",
+  },
+  {
+    name: "ListOrganizerFormTemplatesCallablePayload",
+    source: "callables/list_organizer_form_templates_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "listOrganizerFormTemplatesCallablePayload.ts",
+  },
+  {
+    name: "ListOrganizerFormTemplatesCallableResponse",
+    source:
+      "callable_responses/list_organizer_form_templates_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "listOrganizerFormTemplatesCallableResponse.ts",
+  },
+  {
     name: "PublishOrganizerApplicationFormCallablePayload",
     source:
       "callables/publish_organizer_application_form_payload.schema.json",

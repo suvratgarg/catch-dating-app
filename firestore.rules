@@ -1045,6 +1045,21 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Generic Forms metadata, mutable drafts, and immutable versions are
+    // callable-owned. Host clients receive only manager-authorized bounded
+    // projections and public respondents receive a separate safe projection.
+    match /organizerForms/{formId} {
+      allow read, write: if false;
+    }
+
+    match /organizerFormDrafts/{formId} {
+      allow read, write: if false;
+    }
+
+    match /organizerFormVersions/{versionId} {
+      allow read, write: if false;
+    }
+
     match /participantIntakeProfiles/{uid} {
       allow read, write: if false;
     }

@@ -218,6 +218,15 @@
       ]
     },
     {
+      "collectionGroup": "organizerForms",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "updatedAt", "mode": "DESCENDING"},
+        {"fieldPath": "__name__", "mode": "DESCENDING"}
+      ]
+    },
+    {
       "collectionGroup": "organizerContacts",
       "queryScope": "COLLECTION",
       "fields": [

@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/update_organizer_form_draft_payload.schema.json",
+  "title": "UpdateOrganizerFormDraftCallablePayload",
+  "description": "Optimistically replaces one organizer form draft definition.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["organizerId", "formId", "expectedRevision", "definition"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "formId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "expectedRevision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "definition": {"$ref": "../shared/organizer_form_common.schema.json#/definitions/formDefinition"}
+  }
+}

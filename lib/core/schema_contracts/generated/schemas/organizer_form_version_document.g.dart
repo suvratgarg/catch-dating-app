@@ -15,6 +15,7 @@ const schemaOrganizerFormVersionDocumentSchema = <String, Object?>{
     'organizerId',
     'formId',
     'version',
+    'sourceDraftRevision',
     'definition',
     'createdByUid',
     'createdAt',
@@ -35,6 +36,11 @@ const schemaOrganizerFormVersionDocumentSchema = <String, Object?>{
       'type': 'integer',
       'minimum': 1,
       'maximum': 1000000,
+    },
+    'sourceDraftRevision': <String, Object?>{
+      'type': 'integer',
+      'minimum': 1,
+      'maximum': 9007199254740991,
     },
     'definition': <String, Object?>{
       'type': 'object',
