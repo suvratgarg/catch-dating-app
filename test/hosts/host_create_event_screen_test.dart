@@ -56,6 +56,8 @@ import '../test_pump_helpers.dart';
 import 'host_control_room_test_helpers.dart';
 
 part 'host_create_event_lifecycle_tests.dart';
+part 'host_create_event_format_tests.dart';
+part 'host_create_event_interaction_test_helpers.dart';
 
 void main() {
   group('CreateEventScreen', () {
@@ -120,88 +122,7 @@ void main() {
       },
     );
 
-    testWidgets('event type previews the operating format Catch prepares', (
-      tester,
-    ) async {
-      await _pumpCreateEventFlow(tester);
-      await _openCreateEventFlow(tester);
-
-      expect(
-        find.text('Pace pods · timed legs · finish sweep'),
-        findsOneWidget,
-      );
-
-      await _tapActivityKind(tester, 'Pub quiz');
-
-      expect(find.text('Catch prepares'), findsOneWidget);
-      expect(
-        find.text('Teams · points by round · standings reveal'),
-        findsOneWidget,
-      );
-      expect(
-        find.byKey(const ValueKey('host.event_format_pack_preview')),
-        findsOneWidget,
-      );
-    });
-
-    testWidgets(
-      'route operations adapt across walks, crawls, and custom events',
-      (tester) async {
-        await _pumpCreateEventFlow(tester);
-        await _openCreateEventFlow(tester);
-
-        expect(find.text('Run · Pace groups · Continuous'), findsOneWidget);
-
-        await _tapActivityKind(tester, 'Walking');
-        expect(find.text('Walk · One group · Flexible stops'), findsOneWidget);
-
-        await _tapActivityKind(tester, 'Bar crawl');
-        expect(find.text('Walk · One group · Hosted stops'), findsOneWidget);
-        await _openCatchField(tester, 'Route operations');
-        expect(
-          find.byWidgetPredicate(
-            (widget) =>
-                widget is CatchField &&
-                widget.title == 'Stops to prepare' &&
-                widget.body != null &&
-                widget.body!.contains('Venue'),
-          ),
-          findsOneWidget,
-        );
-
-        await _tapActivityKind(tester, 'Pub quiz');
-        expect(find.text('Route plan'), findsNothing);
-
-        await _tapActivityKind(tester, 'Open activity');
-        expect(find.text('Route-based event'), findsOneWidget);
-        await tester.ensureVisible(
-          find.byKey(CreateEventFormKeys.routePlanEnabled),
-        );
-        await tester.tap(find.byKey(CreateEventFormKeys.routePlanEnabled));
-        await _pumpTestAnimation(tester);
-        await _openCatchField(tester, 'Route operations');
-        expect(
-          find.byWidgetPredicate(
-            (widget) =>
-                widget is CatchField &&
-                widget.title == 'Stops to prepare' &&
-                widget.body != null &&
-                widget.body!.contains('Photo spot'),
-          ),
-          findsOneWidget,
-        );
-        expect(
-          find.byWidgetPredicate(
-            (widget) =>
-                widget is CatchField &&
-                widget.title == 'Route roles' &&
-                widget.body != null &&
-                widget.body!.contains('Photographer'),
-          ),
-          findsOneWidget,
-        );
-      },
-    );
+    runHostCreateEventFormatTests();
 
     testWidgets('route blocks users outside the club host team', (
       tester,
@@ -1628,34 +1549,6 @@ Future<void> _enterCreateEventText(
   await tester.enterText(textField, text);
   tester.testTextInput.hide();
   await tester.pump();
-}
-
-Future<void> _tapActivityKind(WidgetTester tester, String label) async {
-  await _openCatchField(tester, 'Activity type');
-  await _tapCreateEventChip(tester, label);
-}
-
-Future<void> _openCatchField(WidgetTester tester, String title) async {
-  final field = find.byWidgetPredicate(
-    (widget) => widget is CatchField && widget.title == title,
-  );
-  await Scrollable.ensureVisible(tester.element(field), alignment: 0.25);
-  await tester.pump();
-  await tester.tap(field);
-  await _pumpTestAnimation(tester);
-}
-
-Future<void> _tapCreateEventChip(WidgetTester tester, String label) async {
-  final finder = find
-      .byWidgetPredicate(
-        (widget) => widget is CatchFieldChoiceChip && widget.label == label,
-        description: 'selectable chip labeled $label',
-      )
-      .hitTestable();
-  await Scrollable.ensureVisible(tester.element(finder), alignment: 0.25);
-  await tester.pump();
-  await tester.tap(finder);
-  await _pumpTestAnimation(tester);
 }
 
 Future<void> _tapPrimaryButton(WidgetTester tester, String label) async {

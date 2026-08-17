@@ -889,6 +889,94 @@ const model = {
             }
           }
         },
+        "routeEventPlan": {
+          "type": "object",
+          "description": "Composable operations for an event that moves through a route. Activity kind remains the broader format authority.",
+          "additionalProperties": false,
+          "required": [
+            "version",
+            "movementMode",
+            "routeShape",
+            "groupStrategy",
+            "stopCadence",
+            "stopKinds",
+            "roleKinds"
+          ],
+          "properties": {
+            "version": {
+              "type": "integer",
+              "const": 1
+            },
+            "movementMode": {
+              "type": "string",
+              "enum": [
+                "run",
+                "walk",
+                "ride",
+                "mixed"
+              ]
+            },
+            "routeShape": {
+              "type": "string",
+              "enum": [
+                "loop",
+                "outAndBack",
+                "pointToPoint"
+              ]
+            },
+            "groupStrategy": {
+              "type": "string",
+              "enum": [
+                "together",
+                "paceGroups",
+                "selfDirected"
+              ]
+            },
+            "stopCadence": {
+              "type": "string",
+              "enum": [
+                "continuous",
+                "flexibleStops",
+                "hostedStops"
+              ]
+            },
+            "stopKinds": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 7,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "water",
+                  "regroup",
+                  "venue",
+                  "photoSpot",
+                  "viewpoint",
+                  "hazard",
+                  "turnaround"
+                ]
+              }
+            },
+            "roleKinds": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 6,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "routeLead",
+                  "sweep",
+                  "pacer",
+                  "stopHost",
+                  "marshal",
+                  "photographer"
+                ]
+              }
+            }
+          }
+        },
         "eventFormatSnapshot": {
           "type": "object",
           "additionalProperties": false,
@@ -933,7 +1021,12 @@ const model = {
             },
             "activityDetails": {
               "type": "object",
-              "additionalProperties": true
+              "additionalProperties": true,
+              "properties": {
+                "routePlan": {
+                  "$ref": "#/definitions/routeEventPlan"
+                }
+              }
             }
           }
         },
