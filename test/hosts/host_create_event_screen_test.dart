@@ -119,6 +119,30 @@ void main() {
       },
     );
 
+    testWidgets('event type previews the operating format Catch prepares', (
+      tester,
+    ) async {
+      await _pumpCreateEventFlow(tester);
+      await _openCreateEventFlow(tester);
+
+      expect(
+        find.text('Pace pods · timed legs · finish sweep'),
+        findsOneWidget,
+      );
+
+      await _tapActivityKind(tester, 'Pub quiz');
+
+      expect(find.text('Catch prepares'), findsOneWidget);
+      expect(
+        find.text('Teams · points by round · standings reveal'),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const ValueKey('host.event_format_pack_preview')),
+        findsOneWidget,
+      );
+    });
+
     testWidgets('route blocks users outside the club host team', (
       tester,
     ) async {

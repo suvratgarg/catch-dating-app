@@ -3354,6 +3354,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsEventDetailsStepLabelActivityType => 'Activity type';
 
   @override
+  String get hostsEventDetailsStepFormatPackTitle => 'Catch prepares';
+
+  @override
+  String get hostsEventDetailsStepFormatPackPacePods =>
+      'Pace pods · timed legs · finish sweep';
+
+  @override
+  String get hostsEventDetailsStepFormatPackPairedRotations =>
+      'Pair assignments · timed rounds · ranked outcomes';
+
+  @override
+  String get hostsEventDetailsStepFormatPackTeamRotations =>
+      'Teams · points by round · standings reveal';
+
+  @override
+  String get hostsEventDetailsStepFormatPackSeatedTable =>
+      'Tables · course pacing · guided prompts';
+
+  @override
+  String get hostsEventDetailsStepFormatPackFreeFormMixer =>
+      'Social groups · guided rounds · reveal moments';
+
+  @override
+  String get hostsEventDetailsStepFormatPackHostLedProgram =>
+      'Host run-of-show · live prompts · event recap';
+
+  @override
+  String get hostsEventDetailsStepFormatPackOpenFormat =>
+      'Flexible run-of-show · optional groups · event recap';
+
+  @override
   String get hostsEventDetailsStepLabelFormatStructure => 'Format structure';
 
   @override
@@ -12698,6 +12729,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventSuccessLiveControlEmptyUnitsMessage =>
       'Generate the live units before recording outcomes.';
+
+  @override
+  String get eventSuccessLiveControlEmptyScoreTeamsMessage =>
+      'Check in guests and give each team an arrival group before recording points.';
 
   @override
   String get eventSuccessLiveControlSaveRoundLabel => 'Save round for reveal';

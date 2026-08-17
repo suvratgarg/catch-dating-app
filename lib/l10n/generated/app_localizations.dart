@@ -5834,6 +5834,54 @@ abstract class AppLocalizations {
   /// **'Activity type'**
   String get hostsEventDetailsStepLabelActivityType;
 
+  /// Labels the operational runbook automatically selected from an event type.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch prepares'**
+  String get hostsEventDetailsStepFormatPackTitle;
+
+  /// Summarizes the pace-pod event format pack.
+  ///
+  /// In en, this message translates to:
+  /// **'Pace pods · timed legs · finish sweep'**
+  String get hostsEventDetailsStepFormatPackPacePods;
+
+  /// Summarizes the paired-rotation event format pack.
+  ///
+  /// In en, this message translates to:
+  /// **'Pair assignments · timed rounds · ranked outcomes'**
+  String get hostsEventDetailsStepFormatPackPairedRotations;
+
+  /// Summarizes the team-rotation event format pack.
+  ///
+  /// In en, this message translates to:
+  /// **'Teams · points by round · standings reveal'**
+  String get hostsEventDetailsStepFormatPackTeamRotations;
+
+  /// Summarizes the seated-table event format pack.
+  ///
+  /// In en, this message translates to:
+  /// **'Tables · course pacing · guided prompts'**
+  String get hostsEventDetailsStepFormatPackSeatedTable;
+
+  /// Summarizes the free-form mixer event format pack.
+  ///
+  /// In en, this message translates to:
+  /// **'Social groups · guided rounds · reveal moments'**
+  String get hostsEventDetailsStepFormatPackFreeFormMixer;
+
+  /// Summarizes the host-led event format pack.
+  ///
+  /// In en, this message translates to:
+  /// **'Host run-of-show · live prompts · event recap'**
+  String get hostsEventDetailsStepFormatPackHostLedProgram;
+
+  /// Summarizes the open event format pack.
+  ///
+  /// In en, this message translates to:
+  /// **'Flexible run-of-show · optional groups · event recap'**
+  String get hostsEventDetailsStepFormatPackOpenFormat;
+
   /// Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (label).
   ///
   /// In en, this message translates to:
@@ -19764,6 +19812,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Generate the live units before recording outcomes.'**
   String get eventSuccessLiveControlEmptyUnitsMessage;
+
+  /// Explains how quiz teams become scoreable units.
+  ///
+  /// In en, this message translates to:
+  /// **'Check in guests and give each team an arrival group before recording points.'**
+  String get eventSuccessLiveControlEmptyScoreTeamsMessage;
 
   /// Saves the current round outcomes for a later reveal.
   ///

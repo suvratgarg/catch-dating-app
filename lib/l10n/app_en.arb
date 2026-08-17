@@ -6774,6 +6774,62 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
   },
+  "hostsEventDetailsStepFormatPackTitle": "Catch prepares",
+  "@hostsEventDetailsStepFormatPackTitle": {
+    "description": "Labels the operational runbook automatically selected from an event type.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepFormatPackPacePods": "Pace pods · timed legs · finish sweep",
+  "@hostsEventDetailsStepFormatPackPacePods": {
+    "description": "Summarizes the pace-pod event format pack.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepFormatPackPairedRotations": "Pair assignments · timed rounds · ranked outcomes",
+  "@hostsEventDetailsStepFormatPackPairedRotations": {
+    "description": "Summarizes the paired-rotation event format pack.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepFormatPackTeamRotations": "Teams · points by round · standings reveal",
+  "@hostsEventDetailsStepFormatPackTeamRotations": {
+    "description": "Summarizes the team-rotation event format pack.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepFormatPackSeatedTable": "Tables · course pacing · guided prompts",
+  "@hostsEventDetailsStepFormatPackSeatedTable": {
+    "description": "Summarizes the seated-table event format pack.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepFormatPackFreeFormMixer": "Social groups · guided rounds · reveal moments",
+  "@hostsEventDetailsStepFormatPackFreeFormMixer": {
+    "description": "Summarizes the free-form mixer event format pack.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepFormatPackHostLedProgram": "Host run-of-show · live prompts · event recap",
+  "@hostsEventDetailsStepFormatPackHostLedProgram": {
+    "description": "Summarizes the host-led event format pack.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepFormatPackOpenFormat": "Flexible run-of-show · optional groups · event recap",
+  "@hostsEventDetailsStepFormatPackOpenFormat": {
+    "description": "Summarizes the open event format pack.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
   "hostsEventDetailsStepLabelFormatStructure": "Format structure",
   "@hostsEventDetailsStepLabelFormatStructure": {
     "description": "Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (label).",
@@ -20965,6 +21021,8 @@
   "@eventSuccessLiveControlScoreEntryInstructions": {"description": "Explains how the host records scored unit outcomes before reveal.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"},
   "eventSuccessLiveControlEmptyUnitsMessage": "Generate the live units before recording outcomes.",
   "@eventSuccessLiveControlEmptyUnitsMessage": {"description": "Explains why round outcomes cannot be recorded before units exist.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"},
+  "eventSuccessLiveControlEmptyScoreTeamsMessage": "Check in guests and give each team an arrival group before recording points.",
+  "@eventSuccessLiveControlEmptyScoreTeamsMessage": {"description": "Explains how quiz teams become scoreable units.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"},
   "eventSuccessLiveControlSaveRoundLabel": "Save round for reveal",
   "@eventSuccessLiveControlSaveRoundLabel": {"description": "Saves the current round outcomes for a later reveal.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"},
   "@eventSuccessLiveControlPublishRotationConfirmLabel": {"description": "Confirms an irreversible prepared rotation publication.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"},

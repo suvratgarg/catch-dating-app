@@ -232,7 +232,7 @@ class EventSuccessRuntime {
   bool canShowLiveReveal({required bool attended}) =>
       liveRevealEnabled &&
       attended &&
-      (guidedRotationsEnabled || microPodsEnabled);
+      (_usesStandingsReveal || guidedRotationsEnabled || microPodsEnabled);
 
   EventSuccessAttendeeMoment attendeeMoment({
     required EventParticipationStatus? participationStatus,
@@ -412,13 +412,21 @@ class EventSuccessRuntime {
       return contextualOpenersConfigured;
     }
     if (moduleId == EventSuccessModuleCatalog.liveReveal.id) {
-      return liveRevealEnabled && (guidedRotationsEnabled || microPodsEnabled);
+      return liveRevealEnabled &&
+          (_usesStandingsReveal || guidedRotationsEnabled || microPodsEnabled);
     }
     return moduleEnabled(moduleId);
   }
 
   bool _stepHasModule(EventRunOfShowStep step, String moduleId) =>
       step.moduleIds.contains(moduleId);
+
+  bool get _usesStandingsReveal {
+    final profile = EventSuccessActivityProfile.forFormat(event.eventFormat);
+    return profile.unitOutcome == EventSuccessUnitOutcome.score ||
+        (profile.unitOutcome == EventSuccessUnitOutcome.rank &&
+            profile.assignmentResolution.supported);
+  }
 
   bool _canPrioritizeCompatibilityQuestionnaire(
     EventSuccessAttendeeLifecycle lifecycle,

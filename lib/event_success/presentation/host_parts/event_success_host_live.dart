@@ -174,9 +174,10 @@ class LiveTab extends StatelessWidget {
       event: event,
       now: DateTime.now(),
     );
-    final accountability = EventSuccessActivityProfile.forFormat(
+    final eventSuccessProfile = EventSuccessActivityProfile.forFormat(
       event.eventFormat,
-    ).accountability;
+    );
+    final accountability = eventSuccessProfile.accountability;
     final checkedInAccountabilityAttendees = accountabilityAttendees
         .where((attendee) => attendee.isCheckedIn)
         .toList(growable: false);
@@ -351,6 +352,7 @@ class LiveTab extends StatelessWidget {
         plan: plan,
         assignments: assignments,
         rotationAssignments: rotationAssignments,
+        operationalAttendees: accountabilityAttendees,
         profiles: [
           ...rotationParticipantProfiles,
           ...assignmentParticipantProfiles,
@@ -401,9 +403,15 @@ class LiveTab extends StatelessWidget {
             onReleasePinned: onReleaseSpatial,
           );
 
+    final outcomeUsesStandings =
+        eventSuccessProfile.unitOutcome == EventSuccessUnitOutcome.score ||
+        (eventSuccessProfile.unitOutcome == EventSuccessUnitOutcome.rank &&
+            eventSuccessProfile.assignmentResolution.supported);
     final liveRevealAvailable =
         runtime.liveRevealEnabled &&
-        (runtime.guidedRotationsEnabled || runtime.microPodsEnabled);
+        (outcomeUsesStandings ||
+            runtime.guidedRotationsEnabled ||
+            runtime.microPodsEnabled);
     final currentStepCards = compactLiveControls
         ? <Widget>[?accountabilityCard(), ?presenceCard(), ?spatialMapCard()]
         : <Widget>[
@@ -829,6 +837,7 @@ List<EventSuccessOutcomeUnit> _eventSuccessOutcomeUnits({
   required EventSuccessPlan plan,
   required List<EventSuccessAssignment> assignments,
   required List<EventSuccessAssignment> rotationAssignments,
+  required List<EventAttendee> operationalAttendees,
   required List<PublicProfile> profiles,
 }) {
   final outcome = EventSuccessActivityProfile.forFormat(
@@ -836,14 +845,31 @@ List<EventSuccessOutcomeUnit> _eventSuccessOutcomeUnits({
   ).unitOutcome;
   if (outcome == EventSuccessUnitOutcome.score) {
     final units = <String, EventSuccessOutcomeUnit>{};
+    final unitLabels = <String>{};
     for (final assignment in assignments) {
       final unitKey = assignment.unitIndex?.toString() ?? assignment.label;
+      final label = _boundedOutcomeLabel(
+        assignment.unitLabel ?? assignment.label,
+      );
       units.putIfAbsent(
         unitKey,
         () => EventSuccessOutcomeUnit(
           id: _safeOutcomeUnitId('${assignment.moduleId}_unit_$unitKey'),
-          label: _boundedOutcomeLabel(assignment.unitLabel ?? assignment.label),
+          label: label,
         ),
+      );
+      unitLabels.add(_normalizedOutcomeLabelKey(label));
+    }
+    for (final attendee in operationalAttendees) {
+      if (!attendee.isCheckedIn) continue;
+      final arrivalGroup = attendee.arrivalGroup;
+      if (arrivalGroup == null) continue;
+      final label = _boundedOutcomeLabel(arrivalGroup);
+      final labelKey = _normalizedOutcomeLabelKey(label);
+      if (labelKey.isEmpty || !unitLabels.add(labelKey)) continue;
+      units['arrival_group_$labelKey'] = EventSuccessOutcomeUnit(
+        id: _safeOutcomeUnitId('arrival_group_$labelKey'),
+        label: label,
       );
     }
     final result = units.values.toList()
@@ -889,9 +915,13 @@ String _safeOutcomeUnitId(String value) {
 }
 
 String _boundedOutcomeLabel(String value) {
-  final trimmed = value.trim().isEmpty ? 'Unit' : value.trim();
+  final normalized = value.trim().replaceAll(RegExp(r'\s+'), ' ');
+  final trimmed = normalized.isEmpty ? 'Unit' : normalized;
   return trimmed.length <= 80 ? trimmed : trimmed.substring(0, 80);
 }
+
+String _normalizedOutcomeLabelKey(String value) =>
+    value.trim().replaceAll(RegExp(r'\s+'), ' ').toLowerCase();
 
 class LiveNowConsole extends StatelessWidget {
   const LiveNowConsole({

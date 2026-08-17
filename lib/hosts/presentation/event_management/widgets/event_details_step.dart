@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_field_accordion.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -292,6 +293,20 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                     icon: activity.glyph,
                     iconColor: activity.accent,
                   ),
+                  CatchField.content(
+                    key: const ValueKey('host.event_format_pack_preview'),
+                    title: context.l10n.hostsEventDetailsStepFormatPackTitle,
+                    body: _formatPackBody(
+                      context,
+                      widget.selectedInteractionModel,
+                    ),
+                    action: CatchBadge(
+                      label: widget.selectedInteractionModel.label,
+                      accentColor: activity.accent,
+                    ),
+                    icon: _formatPackIcon(widget.selectedInteractionModel),
+                    iconColor: activity.accent,
+                  ),
                   if (widget.selectedActivityKind ==
                       ActivityKind.openActivity) ...[
                     CatchField.input(
@@ -449,4 +464,35 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
       ),
     );
   }
+
+  String _formatPackBody(
+    BuildContext context,
+    EventInteractionModel interactionModel,
+  ) => switch (interactionModel) {
+    EventInteractionModel.pacePods =>
+      context.l10n.hostsEventDetailsStepFormatPackPacePods,
+    EventInteractionModel.pairedRotations =>
+      context.l10n.hostsEventDetailsStepFormatPackPairedRotations,
+    EventInteractionModel.teamRotations =>
+      context.l10n.hostsEventDetailsStepFormatPackTeamRotations,
+    EventInteractionModel.seatedTable =>
+      context.l10n.hostsEventDetailsStepFormatPackSeatedTable,
+    EventInteractionModel.freeFormMixer =>
+      context.l10n.hostsEventDetailsStepFormatPackFreeFormMixer,
+    EventInteractionModel.hostLedProgram =>
+      context.l10n.hostsEventDetailsStepFormatPackHostLedProgram,
+    EventInteractionModel.openFormat =>
+      context.l10n.hostsEventDetailsStepFormatPackOpenFormat,
+  };
+
+  IconData _formatPackIcon(EventInteractionModel interactionModel) =>
+      switch (interactionModel) {
+        EventInteractionModel.pacePods => CatchIcons.routeOutlined,
+        EventInteractionModel.pairedRotations => CatchIcons.syncAltRounded,
+        EventInteractionModel.teamRotations => CatchIcons.groups2Outlined,
+        EventInteractionModel.seatedTable => CatchIcons.tableRestaurantOutlined,
+        EventInteractionModel.freeFormMixer => CatchIcons.groupsOutlined,
+        EventInteractionModel.hostLedProgram => CatchIcons.ruleFolderOutlined,
+        EventInteractionModel.openFormat => CatchIcons.tuneRounded,
+      };
 }

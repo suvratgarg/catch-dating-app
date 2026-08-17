@@ -271,6 +271,27 @@ void main() {
       expect(runtime.canShowLiveReveal(attended: false), isFalse);
     });
 
+    test('allows quiz standings reveal without generated assignments', () {
+      final event = buildEvent(
+        eventFormat: EventFormatSnapshot.fromActivityKind(ActivityKind.pubQuiz),
+      );
+      final plan = EventSuccessPlan.defaultForEvent(
+        event,
+        now: event.startTime,
+      ).copyWith(selectedModuleIds: [EventSuccessModuleCatalog.liveReveal.id]);
+      final runtime = EventSuccessRuntime(
+        plan: plan,
+        event: event,
+        now: event.startTime,
+      );
+
+      expect(runtime.liveRevealEnabled, isTrue);
+      expect(runtime.guidedRotationsEnabled, isFalse);
+      expect(runtime.microPodsEnabled, isFalse);
+      expect(runtime.canShowLiveReveal(attended: true), isTrue);
+      expect(runtime.canShowLiveReveal(attended: false), isFalse);
+    });
+
     test('keeps booked attendees in pre-arrival planning state', () {
       final event = buildEvent();
       final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime)

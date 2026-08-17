@@ -587,6 +587,10 @@ void main() {
         isFalse,
       );
       expect(
+        quiz.defaultModuleIds,
+        contains(EventSuccessModuleCatalog.liveReveal.id),
+      );
+      expect(
         yoga.isSelectable(EventSuccessModuleCatalog.guidedRotations.id),
         isFalse,
       );
@@ -623,7 +627,7 @@ void main() {
       );
       expect(
         profile.isSelectable(EventSuccessModuleCatalog.liveReveal.id),
-        isFalse,
+        isTrue,
       );
       expect(profile.assignmentResolution.supported, isFalse);
       expect(profile.assignmentResolution.reason, contains('not implemented'));

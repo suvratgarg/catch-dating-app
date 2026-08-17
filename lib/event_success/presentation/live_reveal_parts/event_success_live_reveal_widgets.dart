@@ -994,7 +994,9 @@ class _EventSuccessOutcomeRecorderState
           gapH12,
           if (widget.units.isEmpty)
             Text(
-              context.l10n.eventSuccessLiveControlEmptyUnitsMessage,
+              isRank
+                  ? context.l10n.eventSuccessLiveControlEmptyUnitsMessage
+                  : context.l10n.eventSuccessLiveControlEmptyScoreTeamsMessage,
               style: CatchTextStyles.supporting(context, color: t.surface),
             )
           else

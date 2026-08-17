@@ -49,6 +49,7 @@ Map<String, EventSuccessRecommendationLevel> _levelsForFormat(
   EventInteractionModel interactionModel,
   EventSuccessCompatibilityPolicy compatibilityPolicy,
   EventSuccessAssignmentResolution assignmentResolution,
+  EventSuccessUnitOutcome unitOutcome,
 ) {
   final base = <String, EventSuccessRecommendationLevel>{
     EventSuccessModuleCatalog.crowdBalance.id:
@@ -155,8 +156,10 @@ Map<String, EventSuccessRecommendationLevel> _levelsForFormat(
         EventSuccessRecommendationLevel.unsupported;
     base[EventSuccessModuleCatalog.guidedRotations.id] =
         EventSuccessRecommendationLevel.unsupported;
-    base[EventSuccessModuleCatalog.liveReveal.id] =
-        EventSuccessRecommendationLevel.unsupported;
+    if (unitOutcome != EventSuccessUnitOutcome.score) {
+      base[EventSuccessModuleCatalog.liveReveal.id] =
+          EventSuccessRecommendationLevel.unsupported;
+    }
   }
 
   for (final moduleId in format.defaultModuleIds) {
