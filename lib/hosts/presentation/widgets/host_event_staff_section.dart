@@ -16,7 +16,6 @@ import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/hosts/data/host_event_staff_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_staff_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -36,106 +35,123 @@ class HostEventStaffSection extends ConsumerStatefulWidget {
 
 class _HostEventStaffSectionState extends ConsumerState<HostEventStaffSection> {
   AsyncValue<HostEventStaffList> _staff = const AsyncLoading();
+  var _loaded = false;
   var _mutationPending = false;
   Object? _mutationError;
 
   @override
-  void initState() {
-    super.initState();
-    unawaited(_load());
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return CatchSection.contained(
-      title: context.l10n.hostsEventStaffTitle,
-      subtitle: context.l10n.hostsEventStaffSubtitle,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s2,
-            children: [
-              CatchButton(
-                label: context.l10n.hostsEventStaffAdd,
-                icon: Icon(CatchIcons.personAddAlt1Outlined),
-                variant: CatchButtonVariant.secondary,
-                onPressed: _mutationPending ? null : () => unawaited(_grant()),
-              ),
-              CatchButton(
-                label: context.l10n.hostsEventStaffCopyLink,
-                icon: Icon(CatchIcons.linkRounded),
-                variant: CatchButtonVariant.ghost,
-                onPressed: () => unawaited(_copyLink()),
-              ),
-            ],
-          ),
-          gapH12,
-          if (_mutationError case final error?) ...[
-            CatchErrorBanner.fromError(error, context: AppErrorContext.event),
+    return CatchFieldLanes.single(
+      child: CatchField.control(
+        key: const ValueKey<String>('host_event_staff_access_field'),
+        title: context.l10n.hostsEventStaffTitle,
+        body: context.l10n.hostsEventStaffSubtitle,
+        icon: CatchIcons.adminPanelSettingsOutlined,
+        contractExemption:
+            'Disclosure and mutation surface for server-owned temporary event '
+            'access; the field itself does not persist a scalar value.',
+        onOpenChanged: (open) {
+          if (open && !_loaded) unawaited(_load());
+        },
+        control: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Wrap(
+              spacing: CatchSpacing.s2,
+              runSpacing: CatchSpacing.s2,
+              children: [
+                CatchButton(
+                  label: context.l10n.hostsEventStaffAdd,
+                  icon: Icon(CatchIcons.personAddAlt1Outlined),
+                  variant: CatchButtonVariant.secondary,
+                  onPressed: _mutationPending
+                      ? null
+                      : () => unawaited(_grant()),
+                ),
+                CatchButton(
+                  label: context.l10n.hostsEventStaffCopyLink,
+                  icon: Icon(CatchIcons.linkRounded),
+                  variant: CatchButtonVariant.ghost,
+                  onPressed: () => unawaited(_copyLink()),
+                ),
+              ],
+            ),
             gapH12,
-          ],
-          CatchAsyncValueView<HostEventStaffList>(
-            value: _staff,
-            errorContext: AppErrorContext.event,
-            onRetry: _load,
-            builder: (context, list) {
-              if (list.members.isEmpty) {
-                return CatchEmptyState(
-                  layout: CatchEmptyStateLayout.inline,
-                  icon: CatchIcons.groupsOutlined,
-                  title: context.l10n.hostsEventStaffEmptyTitle,
-                  message: context.l10n.hostsEventStaffEmptyMessage,
-                );
-              }
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  for (final indexed in list.members.indexed)
-                    CatchPersonRow(
-                      key: ValueKey(indexed.$2.uid),
-                      divider: indexed.$1 > 0,
-                      data: CatchPersonRowData(
-                        name: indexed.$2.displayName,
-                        seed: indexed.$2.uid,
-                        metaLine: context.l10n.hostsEventStaffPhoneEnding(
-                          digits: indexed.$2.phoneLastFour,
-                        ),
-                        contextLine: context.l10n.hostsEventStaffExpires(
-                          date: AppTimeFormatters.dateTime(
-                            indexed.$2.expiresAt,
-                          ),
-                        ),
-                      ),
-                      trailing: indexed.$2.status == HostEventStaffStatus.active
-                          ? CatchButton(
-                              label: context.l10n.hostsEventStaffRevoke,
-                              variant: CatchButtonVariant.ghost,
-                              onPressed: _mutationPending
-                                  ? null
-                                  : () => unawaited(_revoke(indexed.$2)),
-                            )
-                          : CatchBadge.functional(
-                              label: _statusLabel(context, indexed.$2.status),
-                              tone:
-                                  indexed.$2.status ==
-                                      HostEventStaffStatus.expired
-                                  ? CatchBadgeTone.warning
-                                  : CatchBadgeTone.neutral,
+            if (_mutationError case final error?) ...[
+              CatchErrorBanner.fromError(error, context: AppErrorContext.event),
+              gapH12,
+            ],
+            if (_loaded)
+              CatchAsyncValueView<HostEventStaffList>(
+                value: _staff,
+                errorContext: AppErrorContext.event,
+                onRetry: _load,
+                builder: (context, list) {
+                  if (list.members.isEmpty) {
+                    return CatchEmptyState(
+                      layout: CatchEmptyStateLayout.inline,
+                      icon: CatchIcons.groupsOutlined,
+                      title: context.l10n.hostsEventStaffEmptyTitle,
+                      message: context.l10n.hostsEventStaffEmptyMessage,
+                    );
+                  }
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      for (final indexed in list.members.indexed)
+                        CatchPersonRow(
+                          key: ValueKey(indexed.$2.uid),
+                          divider: indexed.$1 > 0,
+                          data: CatchPersonRowData(
+                            name: indexed.$2.displayName,
+                            seed: indexed.$2.uid,
+                            metaLine: context.l10n.hostsEventStaffPhoneEnding(
+                              digits: indexed.$2.phoneLastFour,
                             ),
-                    ),
-                ],
-              );
-            },
-          ),
-        ],
+                            contextLine: context.l10n.hostsEventStaffExpires(
+                              date: AppTimeFormatters.dateTime(
+                                indexed.$2.expiresAt,
+                              ),
+                            ),
+                          ),
+                          trailing:
+                              indexed.$2.status == HostEventStaffStatus.active
+                              ? CatchButton(
+                                  label: context.l10n.hostsEventStaffRevoke,
+                                  variant: CatchButtonVariant.ghost,
+                                  onPressed: _mutationPending
+                                      ? null
+                                      : () => unawaited(_revoke(indexed.$2)),
+                                )
+                              : CatchBadge.functional(
+                                  label: _statusLabel(
+                                    context,
+                                    indexed.$2.status,
+                                  ),
+                                  tone:
+                                      indexed.$2.status ==
+                                          HostEventStaffStatus.expired
+                                      ? CatchBadgeTone.warning
+                                      : CatchBadgeTone.neutral,
+                                ),
+                        ),
+                    ],
+                  );
+                },
+              ),
+          ],
+        ),
       ),
     );
   }
 
   Future<void> _load() async {
-    if (mounted) setState(() => _staff = const AsyncLoading());
+    if (mounted) {
+      setState(() {
+        _loaded = true;
+        _staff = const AsyncLoading();
+      });
+    }
     try {
       final list = await ref
           .read(hostEventStaffControllerProvider)

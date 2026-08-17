@@ -2743,11 +2743,18 @@ Defined variant:
   invalidation, and initial alias/deep-link inputs. `HostEventManageScreenState`
   resolves the phase from event time/status; the guest roster is a lazy overlay
   drawer that preserves the underlying workspace element and maps old Guests
-  deep links to an initially-open drawer. Provider-free preparation, roster,
-  private-access, invite-link, Event Success, recap, and host-action sections
-  retain explicit display state and typed callbacks. Do not move solved route
-  loading/access work into the workspace adapter, and do not duplicate
-  attendance or Event Success aliases as separate screen contracts.
+  deep links to an initially-open drawer. Preparation owns stable event details,
+  website registration, imported/manual/provider guest sources, private invite
+  access, temporary event-staff access, Event Success setup, and host actions.
+  The roster drawer owns guest status, search/filter, claims, attendance, and
+  reporting; setup-only import, forwarding, provider, registration, and staff
+  controls must not appear there. Live Operations may expose the single urgent
+  Add walk-in escape hatch, while Recap keeps the roster read-only. Provider-free
+  preparation, roster, private-access, invite-link, Event Success, recap, and
+  host-action sections retain explicit display state and typed callbacks. Do
+  not move solved route loading/access work into the workspace adapter, and do
+  not duplicate attendance or Event Success aliases as separate screen
+  contracts.
 
 ```dart
 @override

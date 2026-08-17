@@ -92,14 +92,12 @@ class HostEventOperatorScreen extends ConsumerWidget {
                   HostOperationalRosterPanel(
                     eventId: eventId,
                     organizerId: access.organizerId,
-                    allowRosterIntake: false,
                     allowAttendanceChanges: access.has(
                       HostEventOperatorPermission.setAttendance,
                     ),
                     allowRuntimeClaimReview: access.has(
                       HostEventOperatorPermission.reviewRuntimeClaims,
                     ),
-                    showProviderControls: false,
                     showAudienceInsights:
                         access.actorRole == HostEventOperatorRole.manager,
                   ),

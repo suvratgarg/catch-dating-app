@@ -39,27 +39,172 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HostOperationalRosterPanel extends ConsumerStatefulWidget {
-  const HostOperationalRosterPanel({
+class HostGuestIntakeField extends StatelessWidget {
+  const HostGuestIntakeField({
     super.key,
     required this.eventId,
     required this.organizerId,
-    this.allowRosterIntake = true,
-    this.allowAttendanceChanges = true,
-    this.allowRuntimeClaimReview = true,
-    this.showProviderControls = true,
-    this.showAudienceInsights = true,
     this.bookingProvider,
   });
 
   final String eventId;
   final String organizerId;
-  final bool allowRosterIntake;
+  final ExternalBookingProvider? bookingProvider;
+
+  @override
+  Widget build(BuildContext context) => HostOperationalRosterPanel._guestIntake(
+    eventId: eventId,
+    organizerId: organizerId,
+    bookingProvider: bookingProvider,
+  );
+}
+
+class HostGuestIntakeDisclosure extends StatelessWidget {
+  const HostGuestIntakeDisclosure({
+    super.key,
+    required this.importing,
+    required this.creatingHandoff,
+    required this.providerMutationPending,
+    required this.showsProviderSource,
+    required this.providerSetup,
+    required this.bookingProvider,
+    required this.mutationError,
+    required this.onOpenChanged,
+    required this.onImport,
+    required this.onAddGuest,
+    required this.onForward,
+    required this.onRetryProvider,
+    required this.onConnect,
+    required this.onSync,
+    required this.onDisconnect,
+  });
+
+  final bool importing;
+  final bool creatingHandoff;
+  final bool providerMutationPending;
+  final bool showsProviderSource;
+  final AsyncValue<HostProviderSetup>? providerSetup;
+  final ExternalBookingProvider? bookingProvider;
+  final Object? mutationError;
+  final ValueChanged<bool> onOpenChanged;
+  final VoidCallback onImport;
+  final VoidCallback onAddGuest;
+  final VoidCallback onForward;
+  final VoidCallback onRetryProvider;
+  final VoidCallback onConnect;
+  final VoidCallback onSync;
+  final VoidCallback onDisconnect;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchFieldLanes.single(
+      child: CatchField.control(
+        key: const ValueKey<String>('host_event_guest_intake_field'),
+        title: context.l10n.hostsOperationalRosterGuestIntakeTitle,
+        body: context.l10n.hostsOperationalRosterGuestIntakeBody,
+        contractExemption:
+            'Disclosure and action surface for importing a server-owned event '
+            'guest list; the field itself does not persist a scalar value.',
+        icon: CatchIcons.groupsOutlined,
+        onOpenChanged: onOpenChanged,
+        control: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Wrap(
+              spacing: CatchSpacing.s2,
+              runSpacing: CatchSpacing.s2,
+              children: [
+                CatchButton(
+                  label: context.l10n.hostsOperationalRosterImport,
+                  onPressed: importing ? null : onImport,
+                  isLoading: importing,
+                  variant: CatchButtonVariant.secondary,
+                  icon: Icon(CatchIcons.cloudUploadOutlined),
+                ),
+                CatchButton(
+                  label: context.l10n.hostsOperationalRosterAddGuest,
+                  onPressed: importing ? null : onAddGuest,
+                  variant: CatchButtonVariant.ghost,
+                  icon: Icon(CatchIcons.personAddAlt1Outlined),
+                ),
+                CatchButton(
+                  label: context.l10n.hostsOperationalRosterForwardCsv,
+                  onPressed: importing || creatingHandoff ? null : onForward,
+                  isLoading: creatingHandoff,
+                  variant: CatchButtonVariant.ghost,
+                  icon: Icon(CatchIcons.alternateEmailOutlined),
+                ),
+              ],
+            ),
+            if (mutationError case final error?) ...[
+              gapH12,
+              CatchErrorBanner.fromError(error, context: AppErrorContext.event),
+            ],
+            if (showsProviderSource) ...[
+              gapH20,
+              Text(
+                context.l10n.hostsOperationalRosterProviderTitle,
+                style: CatchTextStyles.sectionTitle(context),
+              ),
+              gapH4,
+              Text(
+                context.l10n.hostsOperationalRosterProviderBody(
+                  provider: _providerDisplayName(context, bookingProvider!),
+                ),
+                style: CatchTextStyles.supporting(context),
+              ),
+              gapH12,
+              _HostProviderControl(
+                value: providerSetup,
+                provider: bookingProvider!,
+                mutationPending: providerMutationPending,
+                allowChanges: true,
+                onRetry: onRetryProvider,
+                onConnect: onConnect,
+                onSync: onSync,
+                onDisconnect: onDisconnect,
+                onImport: onImport,
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+enum _HostOperationalRosterView { guestIntake, roster }
+
+class HostOperationalRosterPanel extends ConsumerStatefulWidget {
+  const HostOperationalRosterPanel({
+    super.key,
+    required this.eventId,
+    required this.organizerId,
+    this.allowAttendanceChanges = true,
+    this.allowRuntimeClaimReview = true,
+    this.showAudienceInsights = true,
+    this.allowManualGuest = false,
+  }) : _view = _HostOperationalRosterView.roster,
+       bookingProvider = null;
+
+  const HostOperationalRosterPanel._guestIntake({
+    required this.eventId,
+    required this.organizerId,
+    required this.bookingProvider,
+  }) : _view = _HostOperationalRosterView.guestIntake,
+       allowAttendanceChanges = false,
+       allowRuntimeClaimReview = false,
+       showAudienceInsights = false,
+       allowManualGuest = false;
+
+  final String eventId;
+  final String organizerId;
   final bool allowAttendanceChanges;
   final bool allowRuntimeClaimReview;
-  final bool showProviderControls;
   final bool showAudienceInsights;
+  final bool allowManualGuest;
   final ExternalBookingProvider? bookingProvider;
+  final _HostOperationalRosterView _view;
 
   @override
   ConsumerState<HostOperationalRosterPanel> createState() =>
@@ -82,17 +227,44 @@ class _HostOperationalRosterPanelState
   @override
   void initState() {
     super.initState();
-    unawaited(_loadAttendanceOutbox());
-    ref.listenManual(appConnectivityProvider, (previous, next) {
-      final results = next.asData?.value;
-      if (results != null && !connectivityResultsAreOffline(results)) {
-        unawaited(_flushAttendanceOutbox());
-      }
-    });
+    if (widget._view == _HostOperationalRosterView.roster) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) unawaited(_loadAttendanceOutbox());
+      });
+      ref.listenManual(appConnectivityProvider, (previous, next) {
+        final results = next.asData?.value;
+        if (results != null && !connectivityResultsAreOffline(results)) {
+          unawaited(_flushAttendanceOutbox());
+        }
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (widget._view == _HostOperationalRosterView.guestIntake) {
+      return HostGuestIntakeDisclosure(
+        importing: _importing,
+        creatingHandoff: _creatingHandoff,
+        providerMutationPending: _providerMutationPending,
+        showsProviderSource: _showsProviderSource,
+        providerSetup: _providerSetup,
+        bookingProvider: widget.bookingProvider,
+        mutationError: _mutationError,
+        onOpenChanged: (open) {
+          if (open && _showsProviderSource) {
+            unawaited(_loadProviderSetup());
+          }
+        },
+        onImport: () => unawaited(_pickRoster()),
+        onAddGuest: () => unawaited(_showManualGuest()),
+        onForward: () => unawaited(_showRosterHandoff()),
+        onRetryProvider: () => unawaited(_loadProviderSetup(force: true)),
+        onConnect: () => unawaited(_connectLuma()),
+        onSync: () => unawaited(_syncProvider()),
+        onDisconnect: () => unawaited(_disconnectProvider()),
+      );
+    }
     final attendeesAsync = ref.watch(
       watchEventAttendeesProvider(widget.eventId),
     );
@@ -108,36 +280,18 @@ class _HostOperationalRosterPanelState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (widget.allowRosterIntake) ...[
-            Wrap(
-              spacing: CatchSpacing.s2,
-              runSpacing: CatchSpacing.s2,
-              children: [
-                CatchButton(
-                  label: context.l10n.hostsOperationalRosterImport,
-                  onPressed: _importing ? null : () => unawaited(_pickRoster()),
-                  isLoading: _importing,
-                  variant: CatchButtonVariant.secondary,
-                  icon: Icon(CatchIcons.cloudUploadOutlined),
-                ),
-                CatchButton(
-                  label: context.l10n.hostsOperationalRosterAddGuest,
-                  onPressed: _importing
-                      ? null
-                      : () => unawaited(_showManualGuest()),
-                  variant: CatchButtonVariant.ghost,
-                  icon: Icon(CatchIcons.personAddAlt1Outlined),
-                ),
-                CatchButton(
-                  label: context.l10n.hostsOperationalRosterForwardCsv,
-                  onPressed: _importing || _creatingHandoff
-                      ? null
-                      : () => unawaited(_showRosterHandoff()),
-                  isLoading: _creatingHandoff,
-                  variant: CatchButtonVariant.ghost,
-                  icon: Icon(CatchIcons.alternateEmailOutlined),
-                ),
-              ],
+          if (widget.allowManualGuest) ...[
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: CatchButton(
+                label: context.l10n.hostsOperationalRosterAddWalkIn,
+                onPressed: _importing
+                    ? null
+                    : () => unawaited(_showManualGuest()),
+                isLoading: _importing,
+                variant: CatchButtonVariant.secondary,
+                icon: Icon(CatchIcons.personAddAlt1Outlined),
+              ),
             ),
             gapH12,
           ],
@@ -223,6 +377,7 @@ class _HostOperationalRosterPanelState
                   if (widget.showAudienceInsights) ...[
                     _HostRosterInsightsBar(
                       insightsAsync: insightsAsync!,
+                      attendeeCount: attendees.length,
                       selected: _insightFilter,
                       onSelected: (filter) =>
                           setState(() => _insightFilter = filter),
@@ -265,52 +420,12 @@ class _HostOperationalRosterPanelState
         ],
       ),
     );
-    if (!_showsProviderSource) return rosterSection;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        CatchSection.fieldRows(
-          first: true,
-          children: [
-            CatchField.control(
-              title: context.l10n.hostsOperationalRosterProviderTitle,
-              contractExemption:
-                  'Disclosure and action surface for a server-owned '
-                  'booking-provider connection; the field itself does not '
-                  'persist an editable scalar value.',
-              body: context.l10n.hostsOperationalRosterProviderBody(
-                provider: _providerDisplayName(
-                  context,
-                  widget.bookingProvider!,
-                ),
-              ),
-              icon: CatchIcons.syncRounded,
-              control: _HostProviderControl(
-                value: _providerSetup,
-                provider: widget.bookingProvider!,
-                mutationPending: _providerMutationPending,
-                allowChanges: widget.allowRosterIntake,
-                onRetry: () => unawaited(_loadProviderSetup(force: true)),
-                onConnect: () => unawaited(_connectLuma()),
-                onSync: () => unawaited(_syncProvider()),
-                onDisconnect: () => unawaited(_disconnectProvider()),
-                onImport: () => unawaited(_pickRoster()),
-              ),
-              onOpenChanged: (open) {
-                if (open) unawaited(_loadProviderSetup());
-              },
-            ),
-          ],
-        ),
-        gapH20,
-        rosterSection,
-      ],
-    );
+    return rosterSection;
   }
 
   bool get _showsProviderSource {
     final provider = widget.bookingProvider;
-    return widget.showProviderControls &&
+    return widget._view == _HostOperationalRosterView.guestIntake &&
         provider != null &&
         provider != ExternalBookingProvider.catchPlatform;
   }
@@ -670,12 +785,14 @@ class _HostOperationalRosterPanelState
 class _HostRosterInsightsBar extends StatelessWidget {
   const _HostRosterInsightsBar({
     required this.insightsAsync,
+    required this.attendeeCount,
     required this.selected,
     required this.onSelected,
     required this.onRetry,
   });
 
   final AsyncValue<HostEventRosterInsights> insightsAsync;
+  final int attendeeCount;
   final HostRosterInsightFilter selected;
   final ValueChanged<HostRosterInsightFilter> onSelected;
   final VoidCallback onRetry;
@@ -729,7 +846,7 @@ class _HostRosterInsightsBar extends StatelessWidget {
                     context,
                     filter,
                     filter == HostRosterInsightFilter.all
-                        ? insights.rows.length
+                        ? attendeeCount
                         : hostRosterInsightFilterCount(filter, insights.rows),
                   ),
                   selected: selected == filter,
