@@ -29,6 +29,7 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_contact_merge_review.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_route_arguments.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_row.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
@@ -247,7 +248,6 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                     textInputAction: TextInputAction.search,
                     onChanged: _scheduleSearch,
                     onSubmitted: _applySearch,
-                    onCloseSearch: _closeSearch,
                   ),
                   gapH16,
                   CatchAsyncValueView<HostCustomersDirectoryState>(
@@ -424,11 +424,6 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     }
   }
 
-  void _closeSearch() {
-    FocusManager.instance.primaryFocus?.unfocus();
-    _applySearch('');
-  }
-
   Future<void> _openFilters(
     Club club,
     HostCustomerFilter activeFilter,
@@ -482,7 +477,11 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     if (!mounted || created == null) return;
     ref.invalidate(hostCrmSummaryProvider(club.id));
     ref.invalidate(hostCustomersDirectoryControllerProvider(request));
-    _openCustomerById(club, created.contactId);
+    _openCustomerById(
+      club,
+      created.contactId,
+      displayName: created.displayName,
+    );
   }
 
   Future<void> _exportCustomers(Club club, HostCustomerFilter filter) async {
@@ -522,13 +521,22 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
   }
 
   void _openCustomer(Club club, HostCustomerDirectoryContact contact) =>
-      _openCustomerById(club, contact.contactId);
+      _openCustomerById(
+        club,
+        contact.contactId,
+        displayName: contact.displayName,
+      );
 
-  void _openCustomerById(Club club, String contactId) {
+  void _openCustomerById(
+    Club club,
+    String contactId, {
+    required String displayName,
+  }) {
     context.pushNamed(
       Routes.hostCustomerDetailScreen.name,
       pathParameters: {'contactId': contactId},
       queryParameters: {'organizerId': club.id},
+      extra: HostCustomerDetailRouteArguments(displayName: displayName),
     );
   }
 }

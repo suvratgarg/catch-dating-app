@@ -487,6 +487,23 @@ function checkContract({root, contract, appBars, findings}) {
     }
   }
 
+  if (contract.role === "compact") {
+    const geometryOverrides = appBars.filter((appBar) =>
+      /\b(?:applySafeArea|contentCrossAxisAlignment|contentPadding|gutter|height)\s*:/u.test(
+        appBar.value,
+      ),
+    );
+    if (geometryOverrides.length > 0) {
+      findings.push({
+        code: "compact-chrome-geometry-override",
+        path: contract.path,
+        message:
+          "Compact route bars cannot override safe-area, alignment, gutter, " +
+          "padding, or height geometry; CatchTopBar owns those values.",
+      });
+    }
+  }
+
   if (contract.leading === "back") {
     const appBarsWithoutBack = appBars.filter(
       (appBar) =>
