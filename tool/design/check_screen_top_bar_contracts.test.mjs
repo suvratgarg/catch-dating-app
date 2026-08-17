@@ -43,6 +43,31 @@ test("accepts canonical route-scaffold top-bar builders", () => {
   assert.deepEqual(result.findings, []);
 });
 
+test("accepts screen-title route-scaffold top-bar builders", () => {
+  const root = fixtureRoot({
+    source: `
+      CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) => CatchScreenTopBar(
+          context: context,
+          title: 'Customer name',
+          leadingType: CatchTopBarLeading.back,
+          divider: scrolledUnder,
+        ),
+        body: ListView(),
+      );
+    `,
+    contract: {
+      ...screenContract(),
+      leading: "back",
+      surface: "CatchRouteScaffold",
+    },
+  });
+
+  const result = checkScreenTopBarContracts({root});
+
+  assert.deepEqual(result.findings, []);
+});
+
 test("flags geometry overrides on compact route bars", () => {
   const root = fixtureRoot({
     source: `

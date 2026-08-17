@@ -3417,7 +3417,7 @@
       "name": "CatchSkeleton",
       "status": "active",
       "kind": "pattern",
-      "summary": "Content-shaped placeholder concept for known loading layouts, including list and screen/sliver placement adapters.",
+      "summary": "Content-shaped placeholder concept for known loading layouts, including structure-derived content and list/screen/sliver placement adapters.",
       "dart": {
         "symbol": "CatchSkeleton",
         "file": "lib/core/widgets/catch_skeleton.dart",
@@ -3497,6 +3497,7 @@
           "text-block",
           "circle",
           "custom",
+          "derived-content",
           "list",
           "async-screen",
           "async-sliver"
@@ -3524,6 +3525,7 @@
           "CatchSkeleton.textBlock",
           "CatchSkeleton.circle",
           "CatchSkeleton.custom",
+          "CatchSkeletonized",
           "CatchSkeletonList",
           "CatchAsyncScreenLoading",
           "CatchAsyncSliverLoading",
@@ -3532,6 +3534,25 @@
         ],
         "goldens": [],
         "members": [
+          {
+            "id": "catch.skeleton.derived_content",
+            "symbol": "CatchSkeletonized",
+            "file": "lib/core/widgets/catch_skeletonized.dart",
+            "summary": "Skeletonizes the real loaded composition so layout edits cannot drift into a parallel placeholder tree.",
+            "states": [
+              "derived-content",
+              "enabled",
+              "disabled",
+              "reduced-motion"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.skeleton",
+              "parentConceptId": "catch.skeleton",
+              "qualifier": "adapter",
+              "decisionRef": "pattern-family:loading-concept-decompression"
+            }
+          },
           {
             "id": "catch.skeleton.list",
             "symbol": "CatchSkeletonList",
@@ -3612,6 +3633,7 @@
         ],
         "notes": [
           "Prefer content-shaped skeletons when the eventual layout is known.",
+          "Prefer CatchSkeletonized for detail or form layouts whose loaded composition can be rendered with representative placeholder data.",
           "Async screen and sliver loading are placement adapters over CatchSkeletonList, not separate visual concepts."
         ]
       },

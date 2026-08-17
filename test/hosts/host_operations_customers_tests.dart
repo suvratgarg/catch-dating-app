@@ -78,6 +78,46 @@ void _registerHostOperationsCustomersTests() {
     );
   });
 
+  testWidgets('customer directory clips pressed rows to its rounded frame', (
+    tester,
+  ) async {
+    await _pumpHostScreen(
+      tester,
+      Scaffold(
+        body: HostCustomersDirectory(
+          state: _customerDirectoryState(),
+          hasActiveQuery: false,
+          onCustomerSelected: (_) {},
+          onLoadMore: null,
+          onRefreshCoverage: () {},
+        ),
+      ),
+    );
+
+    final frame = find.byKey(const ValueKey('host-customers-directory-list'));
+    final clippedContainer = tester
+        .widgetList<AnimatedContainer>(
+          find.descendant(of: frame, matching: find.byType(AnimatedContainer)),
+        )
+        .firstWhere((container) => container.clipBehavior == Clip.hardEdge);
+    expect(clippedContainer.decoration, isA<BoxDecoration>());
+    expect(
+      (clippedContainer.decoration! as BoxDecoration).borderRadius,
+      isNotNull,
+    );
+
+    final row = find.byType(HostCustomerRow);
+    final gesture = await tester.startGesture(tester.getCenter(row));
+    await tester.pump();
+    expect(
+      tester
+          .widget<ColoredBox>(find.byKey(CatchRowPressSurface.overlayKey))
+          .color,
+      isNot(Colors.transparent),
+    );
+    await gesture.up();
+  });
+
   testWidgets('incomplete customer history is honest and can be rechecked', (
     tester,
   ) async {
@@ -286,10 +326,13 @@ void _registerHostOperationsCustomersTests() {
   ) async {
     await _pumpHostScreen(
       tester,
-      const HostCustomerDetailScreen(
-        organizerId: 'organizer-1',
-        contactId: 'contact-1',
-        initialDisplayName: 'Ananya Rao',
+      const MediaQuery(
+        data: MediaQueryData(disableAnimations: true),
+        child: HostCustomerDetailScreen(
+          organizerId: 'organizer-1',
+          contactId: 'contact-1',
+          initialDisplayName: 'Ananya Rao',
+        ),
       ),
       overrides: [
         uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
@@ -309,9 +352,10 @@ void _registerHostOperationsCustomersTests() {
     expect(find.text('Reload customer'), findsOneWidget);
     expect(find.text('Organizer unavailable'), findsNothing);
     expect(
-      tester.widget<CatchTopBar>(find.byType(CatchTopBar)).title,
+      tester.widget<CatchScreenTopBar>(find.byType(CatchScreenTopBar)).title,
       'Ananya Rao',
     );
+    expect(find.byType(CatchScreenHeaderTitle), findsOneWidget);
   });
 
   testWidgets('customer header compresses stats and export into overflow', (
@@ -491,15 +535,11 @@ void _registerHostOperationsCustomersTests() {
 
     expect(find.text('MEMORY'), findsOneWidget);
     expect(find.text('Brings friends'), findsOneWidget);
-    final manualTag = tester.widget<CatchChip>(
-      find.byKey(
-        const ValueKey(
-          'host-customer-manual-tag-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-        ),
-      ),
+    final manualTagsField = tester.widget<CatchField>(
+      find.byKey(const ValueKey('host-customer-edit-tags')),
     );
-    expect(manualTag.tintColor, isNotNull);
-    expect(manualTag.leading, isNotNull);
+    expect(manualTagsField.body, 'Brings friends');
+    expect(manualTagsField.onTap, isNotNull);
     expect(find.text('Introduced three friends.'), findsOneWidget);
     expect(find.textContaining('You ·'), findsOneWidget);
 
@@ -509,6 +549,150 @@ void _registerHostOperationsCustomersTests() {
     expect(tagEdits, 1);
     expect(noteAdds, 1);
     expect(editedNote?.noteId, 'note-1');
+  });
+
+  testWidgets('customer detail skeleton reuses the loaded composition', (
+    tester,
+  ) async {
+    await _pumpHostScreen(
+      tester,
+      const MediaQuery(
+        data: MediaQueryData(disableAnimations: true),
+        child: HostCustomerDetailScreen(
+          organizerId: 'organizer-1',
+          contactId: 'contact-1',
+          initialDisplayName: 'Ananya Rao',
+        ),
+      ),
+      overrides: [
+        uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
+        hostAudienceContactDetailProvider(
+          'organizer-1',
+          'contact-1',
+        ).overrideWithValue(const AsyncLoading()),
+      ],
+    );
+
+    expect(find.byType(CatchSkeletonized), findsOneWidget);
+    expect(find.byType(CatchSkeletonRows), findsNothing);
+    expect(find.byType(HostCustomerIdentityCard), findsOneWidget);
+    expect(find.byType(HostCustomerMemorySection), findsOneWidget);
+    expect(find.byType(HostCustomerAttendanceCard), findsOneWidget);
+    expect(find.byType(HostCustomerConversationCard), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('host-customer-controls')),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('editable customer endpoints are explicit field actions', (
+    tester,
+  ) async {
+    var edits = 0;
+    final customer = _customerDetail(
+      contactDetailsEditable: true,
+      linkedAccount: false,
+      identityState: HostAudienceIdentityState.unlinked,
+      identityConfidence: 'unverified',
+    );
+    await _pumpHostScreen(
+      tester,
+      Scaffold(
+        body: HostCustomerIdentityCard(
+          customer: customer,
+          onManage: () => edits += 1,
+        ),
+      ),
+    );
+
+    expect(find.text('Add mobile number'), findsOneWidget);
+    expect(find.text('Add email'), findsOneWidget);
+    expect(find.text('Added by your team · not verified by Catch'), findsOne);
+
+    await tester.tap(find.byKey(const ValueKey('host-customer-phone-field')));
+    expect(edits, 1);
+  });
+
+  testWidgets('verified customer endpoints stay visibly read-only', (
+    tester,
+  ) async {
+    await _pumpHostScreen(
+      tester,
+      Scaffold(
+        body: HostCustomerIdentityCard(
+          customer: _customerDetail(),
+          onManage: () {},
+        ),
+      ),
+    );
+
+    expect(find.text('Not saved'), findsNWidgets(2));
+    expect(
+      tester
+          .widget<CatchField>(
+            find.byKey(const ValueKey('host-customer-phone-field')),
+          )
+          .onTap,
+      isNull,
+    );
+    expect(
+      tester
+          .widget<CatchField>(
+            find.byKey(const ValueKey('host-customer-email-field')),
+          )
+          .onTap,
+      isNull,
+    );
+    expect(
+      find.text(
+        'Linked Catch profiles stay private. Phone and email can’t be edited here.',
+      ),
+      findsOne,
+    );
+  });
+
+  testWidgets('edit details sheet separates fields from delivery controls', (
+    tester,
+  ) async {
+    final customer = _customerDetail(
+      contactDetailsEditable: true,
+      linkedAccount: false,
+      identityState: HostAudienceIdentityState.unlinked,
+      identityConfidence: 'unverified',
+    );
+    await _pumpHostScreen(
+      tester,
+      Scaffold(body: HostCustomerEditDetailsSheet(customer: customer)),
+    );
+
+    expect(find.byKey(const ValueKey('host-customer-edit-name')), findsOne);
+    expect(find.byKey(const ValueKey('host-customer-edit-phone')), findsOne);
+    expect(find.byKey(const ValueKey('host-customer-edit-email')), findsOne);
+    expect(find.text('Organizer messages'), findsNothing);
+    expect(find.text('Remove customer'), findsNothing);
+  });
+
+  testWidgets('organizer messaging control exposes the requested state', (
+    tester,
+  ) async {
+    bool? requestedValue;
+    await _pumpHostScreen(
+      tester,
+      Scaffold(
+        body: HostCustomerConversationCard(
+          customer: _customerDetail(),
+          loading: false,
+          onOpen: () {},
+          onMessagingEnabledChanged: (value) => requestedValue = value,
+        ),
+      ),
+    );
+
+    expect(find.text('Organizer messages'), findsOneWidget);
+    await tester.tap(
+      find.byKey(const ValueKey('host-customer-organizer-messages')),
+    );
+    expect(requestedValue, isFalse);
   });
 
   testWidgets('customer activity shows campaign delivery history', (
@@ -599,7 +783,12 @@ HostCustomersDirectoryState _emptyCustomerDirectoryState() =>
       projectionVersion: 1,
     );
 
-HostAudienceContactDetail _customerDetail() => HostAudienceContactDetail(
+HostAudienceContactDetail _customerDetail({
+  bool contactDetailsEditable = false,
+  bool linkedAccount = true,
+  HostAudienceIdentityState identityState = HostAudienceIdentityState.verified,
+  String identityConfidence = 'verified_account',
+}) => HostAudienceContactDetail(
   organizerId: 'organizer-1',
   contactId: 'contact-1',
   displayName: 'Ananya Rao',
@@ -607,9 +796,10 @@ HostAudienceContactDetail _customerDetail() => HostAudienceContactDetail(
   displayNameOverride: null,
   phoneE164: null,
   email: null,
-  linkedAccount: true,
-  identityState: HostAudienceIdentityState.verified,
-  identityConfidence: 'verified_account',
+  linkedAccount: linkedAccount,
+  identityState: identityState,
+  identityConfidence: identityConfidence,
+  contactDetailsEditable: contactDetailsEditable,
   ambiguousCandidateCount: 0,
   whatsappAdminSuppressed: false,
   traits: const HostCustomerTraits(

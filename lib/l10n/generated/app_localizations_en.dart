@@ -12440,7 +12440,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostAudienceRemoveAction => 'Remove customer';
 
   @override
-  String get hostsHostAudienceContactSubtitle => 'Organizer-only CRM record';
+  String get hostsHostAudienceContactSubtitle =>
+      'Private to your organizer team';
 
   @override
   String get hostsHostAudienceContactName => 'Name shown to your team';
@@ -12456,24 +12457,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostAudienceContactEmail => 'Email';
 
   @override
-  String get hostsHostAudienceContactConsentTitle =>
-      'Consent controls delivery';
-
-  @override
   String get hostsHostAudienceContactConsentPaused =>
       'Your team has paused WhatsApp campaigns to this person. Their own opt-out remains authoritative.';
 
   @override
   String get hostsHostAudienceContactConsentActive =>
       'Only the person-verified number and active organizer consent can receive a campaign.';
-
-  @override
-  String get hostsHostAudienceContactResumeMessages =>
-      'Resume organizer messages';
-
-  @override
-  String get hostsHostAudienceContactPauseMessages =>
-      'Pause organizer messages';
 
   @override
   String get hostsHostAudienceSegmentNew => 'New to your audience';
@@ -13095,16 +13084,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostSendsClearSchedule => 'Send after approval';
 
   @override
-  String get hostCustomersManage => 'Manage';
-
-  @override
   String get hostCustomersContactDetails => 'Details';
 
   @override
   String get hostCustomersEditDetails => 'Edit details';
 
   @override
-  String get hostCustomersNoContactDetails => 'No phone or email saved yet.';
+  String get hostCustomersNotSaved => 'Not saved';
 
   @override
   String get hostCustomersCheckedIn => 'Checked in';
@@ -13150,7 +13136,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersVerifiedDetailsManagedByCatch =>
-      'Contact details shown here come from this organizer’s records. Linking a Catch account does not reveal additional profile fields.';
+      'Linked Catch profiles stay private. Phone and email can’t be edited here.';
 
   @override
   String get hostCustomersUnverifiedContactDetails =>
@@ -13493,9 +13479,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'The customer details are available. Try reloading to restore note history.';
 
   @override
-  String get hostCustomersActivity => 'Activity';
-
-  @override
   String get hostCustomersSendHistory => 'Messages sent';
 
   @override
@@ -13533,6 +13516,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersControls => 'Controls';
+
+  @override
+  String get hostCustomersOrganizerMessages => 'Organizer messages';
 
   @override
   String get hostCustomersSort => 'Sort customers';

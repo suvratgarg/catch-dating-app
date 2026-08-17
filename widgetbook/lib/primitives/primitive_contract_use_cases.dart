@@ -65,6 +65,7 @@ import 'package:catch_dating_app/core/widgets/catch_scrim.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeletonized.dart';
 import 'package:catch_dating_app/core/widgets/catch_status_dot.dart';
 import 'package:catch_dating_app/core/widgets/catch_status_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
@@ -653,6 +654,7 @@ Widget catchSkeletonContractStates(BuildContext context) {
       'text-block',
       'circle',
       'custom',
+      'derived-content',
       'list',
       'async-screen',
       'async-sliver',
@@ -694,6 +696,18 @@ Widget catchSkeletonContractStates(BuildContext context) {
               color: CatchTokens.of(context).surface,
               borderRadius: BorderRadius.circular(CatchRadius.pill),
             ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'derived-content',
+        child: CatchSkeletonized(
+          child: CatchSection.containedFieldRows(
+            title: 'Customer details',
+            children: const [
+              CatchField.read(title: 'Name', body: 'Customer name'),
+              CatchField.read(title: 'Mobile number', body: '+919876543210'),
+            ],
           ),
         ),
       ),

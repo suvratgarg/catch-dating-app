@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.12.0
-updated: 2026-08-14
+version: 1.13.0
+updated: 2026-08-17
 owner: app_architecture
 status: active
 ---
@@ -966,6 +966,14 @@ empty, retry, stale data, and mutation failure are handled.
 Use `CatchAsyncValueView` for simple body screens with one async value.
 
 Use `CatchAsyncValueSliver` for simple sliver surfaces.
+
+When the loaded detail or form composition is known, render that same
+composition with representative branch data inside `CatchSkeletonized`.
+Do not maintain a second tree of placeholder rows for a detail or form screen:
+section order, field geometry, typography changes, and responsive reflow must
+come from the production body. `CatchSkeletonRows` and `CatchSkeletonList`
+remain appropriate for genuinely repeated collections whose item count and
+row data do not exist yet; they are not substitutes for a known screen body.
 
 Both primitives apply `InitialLoadPolicy.standard` (12 seconds) to the first
 user-visible resolution. When the deadline expires, the skeleton becomes a

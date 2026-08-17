@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
@@ -10,9 +11,10 @@ import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeletonized.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_contact_merge_review.dart';
@@ -46,6 +48,7 @@ class HostCustomerDetailScreen extends ConsumerStatefulWidget {
 class _HostCustomerDetailScreenState
     extends ConsumerState<HostCustomerDetailScreen> {
   bool _openingConversation = false;
+  bool _updatingCustomer = false;
 
   @override
   Widget build(BuildContext context) {
@@ -54,14 +57,14 @@ class _HostCustomerDetailScreenState
       hostAudienceContactDetailProvider(widget.organizerId, widget.contactId),
     );
     final initialDisplayName = widget.initialDisplayName?.trim();
+    final displayName =
+        detail.asData?.value.displayName ??
+        (initialDisplayName?.isNotEmpty ?? false ? initialDisplayName : null) ??
+        context.l10n.hostNavigationCustomers;
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
-        title:
-            detail.asData?.value.displayName ??
-            (initialDisplayName?.isNotEmpty ?? false
-                ? initialDisplayName
-                : null) ??
-            context.l10n.hostNavigationCustomers,
+      topBarBuilder: (context, scrolledUnder) => CatchScreenTopBar(
+        context: context,
+        title: displayName,
         leadingType: CatchTopBarLeading.back,
         divider: scrolledUnder,
       ),
@@ -77,8 +80,27 @@ class _HostCustomerDetailScreenState
             ),
           ),
           initialLoadTimeout: null,
-          loadingBuilder: (_) =>
-              const CatchPageBody(child: CatchSkeletonRows(count: 6)),
+          loadingBuilder: (_) => CatchSkeletonized(
+            child: HostCustomerDetailBody(
+              customer: _hostCustomerSkeletonDetail(
+                organizerId: widget.organizerId,
+                contactId: widget.contactId,
+                displayName: displayName,
+              ),
+              currentUid: currentUid,
+              openingConversation: false,
+              updatingCustomer: false,
+              onEditDetails: _noop,
+              onEditTags: _noop,
+              onAddNote: _noop,
+              onEditNote: (_) {},
+              onReviewDuplicates: _noop,
+              onStartConversation: _noop,
+              onMessagingEnabledChanged: (_) {},
+              onRemove: _noop,
+              onUndoMerge: (_) {},
+            ),
+          ),
           errorBuilder: (_, error, _) => CatchPageBody(
             child: CatchErrorState.fromError(
               error,
@@ -91,73 +113,21 @@ class _HostCustomerDetailScreenState
               ),
             ),
           ),
-          builder: (context, customer) => ListView(
-            padding: CatchInsets.pageBody.copyWith(bottom: 0),
-            children: [
-              HostCustomerIdentityCard(
-                customer: customer,
-                onManage: () => _manageCustomer(customer),
-              ),
-              gapH16,
-              HostCustomerMemorySection(
-                customer: customer,
-                currentUid: currentUid,
-                onEditTags: () => _editTags(customer),
-                onAddNote: () => _editNote(customer),
-                onEditNote: (note) => _editNote(customer, note: note),
-              ),
-              gapH24,
-              Text(
-                context.l10n.hostCustomersActivity,
-                key: const ValueKey('host-customer-activity'),
-                style: CatchTextStyles.sectionTitle(context),
-              ),
-              gapH12,
-              HostCustomerAttendanceCard(customer: customer),
-              gapH16,
-              HostCustomerRevenueCard(revenue: customer.revenue),
-              gapH16,
-              HostCustomerAttendanceHistory(customer: customer),
-              gapH16,
-              HostCustomerSendHistory(customer: customer),
-              if (customer.activeMerges.isNotEmpty) ...[
-                gapH16,
-                HostCustomerActiveMergesSection(
-                  merges: customer.activeMerges,
-                  onUndo: _undoMerge,
-                ),
-              ],
-              gapH24,
-              CatchSection.divided(
-                key: const ValueKey('host-customer-controls'),
-                title: context.l10n.hostCustomersControls,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    HostCustomerConversationCard(
-                      customer: customer,
-                      loading: _openingConversation,
-                      onReview: customer.ambiguousCandidateCount > 0
-                          ? _reviewDuplicates
-                          : null,
-                      onOpen:
-                          customerConversationAvailability(
-                                linkedAccount: customer.linkedAccount,
-                                identityVerified:
-                                    customer.identityState ==
-                                    HostAudienceIdentityState.verified,
-                                ambiguousCandidateCount:
-                                    customer.ambiguousCandidateCount,
-                              ) ==
-                              HostCustomerConversationAvailability.ready
-                          ? () => _startConversation(customer)
-                          : null,
-                    ),
-                  ],
-                ),
-              ),
-              const CatchScrollTerminalPadding(),
-            ],
+          builder: (context, customer) => HostCustomerDetailBody(
+            customer: customer,
+            currentUid: currentUid,
+            openingConversation: _openingConversation,
+            updatingCustomer: _updatingCustomer,
+            onEditDetails: () => _editCustomerDetails(customer),
+            onEditTags: () => _editTags(customer),
+            onAddNote: () => _editNote(customer),
+            onEditNote: (note) => _editNote(customer, note: note),
+            onReviewDuplicates: _reviewDuplicates,
+            onStartConversation: () => _startConversation(customer),
+            onMessagingEnabledChanged: (enabled) =>
+                _setMessagingEnabled(customer, enabled),
+            onRemove: () => _removeCustomer(customer),
+            onUndoMerge: _undoMerge,
           ),
         ),
       ),
@@ -234,18 +204,83 @@ class _HostCustomerDetailScreenState
     }
   }
 
-  Future<void> _manageCustomer(HostAudienceContactDetail customer) async {
-    final result = await showCatchBottomSheet<HostCustomerManageResult>(
+  Future<void> _editCustomerDetails(HostAudienceContactDetail customer) async {
+    final result = await showCatchBottomSheet<HostCustomerEditDetailsResult>(
       context: context,
-      builder: (context) => HostCustomerManageSheet(customer: customer),
+      builder: (context) => HostCustomerEditDetailsSheet(customer: customer),
     );
     if (!mounted || result == null) return;
     ref.invalidate(hostCustomersDirectoryControllerProvider);
     ref.invalidate(hostCrmSummaryProvider(widget.organizerId));
-    ref.invalidate(
-      hostAudienceContactDetailProvider(widget.organizerId, widget.contactId),
+    _refreshDetail();
+  }
+
+  Future<void> _setMessagingEnabled(
+    HostAudienceContactDetail customer,
+    bool enabled,
+  ) async {
+    if (_updatingCustomer) return;
+    setState(() => _updatingCustomer = true);
+    try {
+      await ref
+          .read(hostCustomersControllerProvider)
+          .mutateCustomer(
+            organizerId: customer.organizerId,
+            contactId: customer.contactId,
+            expectedRevision: customer.revision,
+            whatsappAdminSuppressed: !enabled,
+          );
+      if (!mounted) return;
+      ref.invalidate(hostCustomersDirectoryControllerProvider);
+      _refreshDetail();
+    } on Object catch (error) {
+      if (mounted) {
+        showCatchErrorSnackBar(
+          context,
+          error,
+          errorContext: AppErrorContext.club,
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _updatingCustomer = false);
+    }
+  }
+
+  Future<void> _removeCustomer(HostAudienceContactDetail customer) async {
+    if (_updatingCustomer) return;
+    final confirmed = await showCatchConfirmDialog(
+      context: context,
+      title: context.l10n.hostsHostAudienceRemoveTitle,
+      message: context.l10n.hostsHostAudienceRemoveBody,
+      confirmLabel: context.l10n.hostsHostAudienceRemoveConfirm,
+      danger: true,
     );
-    if (result == HostCustomerManageResult.hidden) context.pop();
+    if (confirmed != true || !mounted) return;
+    setState(() => _updatingCustomer = true);
+    try {
+      await ref
+          .read(hostCustomersControllerProvider)
+          .mutateCustomer(
+            organizerId: customer.organizerId,
+            contactId: customer.contactId,
+            expectedRevision: customer.revision,
+            hidden: true,
+          );
+      if (!mounted) return;
+      ref.invalidate(hostCustomersDirectoryControllerProvider);
+      ref.invalidate(hostCrmSummaryProvider(widget.organizerId));
+      context.pop();
+    } on Object catch (error) {
+      if (mounted) {
+        showCatchErrorSnackBar(
+          context,
+          error,
+          errorContext: AppErrorContext.club,
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _updatingCustomer = false);
+    }
   }
 
   Future<void> _startConversation(HostAudienceContactDetail customer) async {
@@ -280,6 +315,191 @@ class _HostCustomerDetailScreenState
   }
 }
 
+void _noop() {}
+
+class HostCustomerDetailBody extends StatelessWidget {
+  const HostCustomerDetailBody({
+    super.key,
+    required this.customer,
+    required this.currentUid,
+    required this.openingConversation,
+    required this.updatingCustomer,
+    required this.onEditDetails,
+    required this.onEditTags,
+    required this.onAddNote,
+    required this.onEditNote,
+    required this.onReviewDuplicates,
+    required this.onStartConversation,
+    required this.onMessagingEnabledChanged,
+    required this.onRemove,
+    required this.onUndoMerge,
+  });
+
+  final HostAudienceContactDetail customer;
+  final String? currentUid;
+  final bool openingConversation;
+  final bool updatingCustomer;
+  final VoidCallback onEditDetails;
+  final VoidCallback onEditTags;
+  final VoidCallback onAddNote;
+  final ValueChanged<HostCustomerNote> onEditNote;
+  final VoidCallback onReviewDuplicates;
+  final VoidCallback onStartConversation;
+  final ValueChanged<bool> onMessagingEnabledChanged;
+  final VoidCallback onRemove;
+  final ValueChanged<HostActiveContactMerge> onUndoMerge;
+
+  @override
+  Widget build(BuildContext context) {
+    final conversationReady =
+        customerConversationAvailability(
+          linkedAccount: customer.linkedAccount,
+          identityVerified:
+              customer.identityState == HostAudienceIdentityState.verified,
+          ambiguousCandidateCount: customer.ambiguousCandidateCount,
+        ) ==
+        HostCustomerConversationAvailability.ready;
+    return ListView(
+      padding: CatchInsets.pageBody.copyWith(bottom: 0),
+      children: [
+        CatchSectionList(
+          emptyStateOmitted: true,
+          children: [
+            HostCustomerIdentityCard(
+              customer: customer,
+              onManage: onEditDetails,
+            ),
+            HostCustomerMemorySection(
+              customer: customer,
+              currentUid: currentUid,
+              onEditTags: onEditTags,
+              onAddNote: onAddNote,
+              onEditNote: onEditNote,
+            ),
+            KeyedSubtree(
+              key: const ValueKey('host-customer-activity'),
+              child: HostCustomerAttendanceCard(customer: customer),
+            ),
+            HostCustomerRevenueCard(revenue: customer.revenue),
+            HostCustomerAttendanceHistory(customer: customer),
+            HostCustomerSendHistory(customer: customer),
+            if (customer.activeMerges.isNotEmpty)
+              HostCustomerActiveMergesSection(
+                merges: customer.activeMerges,
+                onUndo: onUndoMerge,
+              ),
+            HostCustomerConversationCard(
+              customer: customer,
+              loading: openingConversation,
+              onReview: customer.ambiguousCandidateCount > 0
+                  ? onReviewDuplicates
+                  : null,
+              onOpen: conversationReady ? onStartConversation : null,
+              onMessagingEnabledChanged: updatingCustomer
+                  ? null
+                  : onMessagingEnabledChanged,
+            ),
+            CatchSection.fieldRows(
+              key: const ValueKey('host-customer-controls'),
+              title: context.l10n.hostCustomersControls,
+              children: [
+                CatchField.action(
+                  key: const ValueKey('host-customer-remove'),
+                  title: context.l10n.hostsHostAudienceRemoveAction,
+                  body: context.l10n.hostsHostAudienceRemoveBody,
+                  icon: CatchIcons.deleteOutline,
+                  tone: CatchFieldTone.danger,
+                  onTap: updatingCustomer ? null : onRemove,
+                ),
+              ],
+            ),
+          ],
+        ),
+        const CatchScrollTerminalPadding(),
+      ],
+    );
+  }
+}
+
+HostAudienceContactDetail _hostCustomerSkeletonDetail({
+  required String organizerId,
+  required String contactId,
+  required String displayName,
+}) {
+  final now = DateTime(2026, 8, 17);
+  return HostAudienceContactDetail(
+    organizerId: organizerId,
+    contactId: contactId,
+    displayName: displayName,
+    sourceDisplayName: displayName,
+    displayNameOverride: null,
+    phoneE164: '+919876543210',
+    email: 'customer@example.com',
+    linkedAccount: false,
+    identityState: HostAudienceIdentityState.unlinked,
+    identityConfidence: 'unverified',
+    contactDetailsEditable: true,
+    ambiguousCandidateCount: 0,
+    whatsappAdminSuppressed: false,
+    traits: const HostCustomerTraits(
+      expectedEventCount: 3,
+      attendedEventCount: 2,
+      cancelledEventCount: 0,
+      noShowCount: 0,
+      importedEventCount: 0,
+      attendanceRate: 0.67,
+      segments: {HostAudienceSegment.repeatAttendee},
+      sourceCoverage: HostAudienceSourceCoverage.exact,
+    ),
+    revenue: const HostCustomerRevenue(
+      coverage: HostCustomerRevenueCoverage.exact,
+      amounts: [
+        HostCustomerRevenueAmount(
+          currency: 'INR',
+          amountMinor: 250000,
+          paidOrderCount: 2,
+        ),
+      ],
+    ),
+    events: [
+      HostAudienceEventFact(
+        eventId: 'loading-event',
+        displayName: 'Weekend community event',
+        source: 'attendance',
+        status: 'attended',
+        checkedIn: true,
+        eventStartAt: now,
+      ),
+    ],
+    eventsTruncated: false,
+    manualTags: const [
+      HostManualTag(tagId: 'loading-tag', label: 'Community regular'),
+    ],
+    notes: [
+      HostCustomerNote(
+        noteId: 'loading-note',
+        body: 'Private organizer note about this customer.',
+        authorUid: 'loading-author',
+        createdAt: now,
+        updatedAt: now,
+        revision: 1,
+      ),
+    ],
+    sends: [
+      HostCustomerSend(
+        campaignId: 'loading-send',
+        name: 'Upcoming event invitation',
+        messageClass: 'organizerPromotion',
+        deliveryStatus: HostCustomerSendDeliveryStatus.delivered,
+        createdAt: now,
+        sentAt: now,
+        updatedAt: now,
+      ),
+    ],
+    revision: 1,
+  );
+}
+
 class HostCustomerActiveMergesSection extends StatelessWidget {
   const HostCustomerActiveMergesSection({
     super.key,
@@ -291,7 +511,7 @@ class HostCustomerActiveMergesSection extends StatelessWidget {
   final ValueChanged<HostActiveContactMerge> onUndo;
 
   @override
-  Widget build(BuildContext context) => CatchSection.divided(
+  Widget build(BuildContext context) => CatchSection.plain(
     key: const ValueKey('host-customer-active-merges'),
     title: context.l10n.hostCustomersMergedHistory,
     child: Column(

@@ -19423,7 +19423,7 @@ abstract class AppLocalizations {
   /// Audience contact sheet privacy subtitle.
   ///
   /// In en, this message translates to:
-  /// **'Organizer-only CRM record'**
+  /// **'Private to your organizer team'**
   String get hostsHostAudienceContactSubtitle;
 
   /// Organizer-local audience contact name field.
@@ -19450,12 +19450,6 @@ abstract class AppLocalizations {
   /// **'Email'**
   String get hostsHostAudienceContactEmail;
 
-  /// Audience contact consent notice title.
-  ///
-  /// In en, this message translates to:
-  /// **'Consent controls delivery'**
-  String get hostsHostAudienceContactConsentTitle;
-
   /// Organizer-suppressed WhatsApp delivery explanation.
   ///
   /// In en, this message translates to:
@@ -19467,18 +19461,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Only the person-verified number and active organizer consent can receive a campaign.'**
   String get hostsHostAudienceContactConsentActive;
-
-  /// Resume organizer WhatsApp campaigns for a contact CTA.
-  ///
-  /// In en, this message translates to:
-  /// **'Resume organizer messages'**
-  String get hostsHostAudienceContactResumeMessages;
-
-  /// Pause organizer WhatsApp campaigns for a contact CTA.
-  ///
-  /// In en, this message translates to:
-  /// **'Pause organizer messages'**
-  String get hostsHostAudienceContactPauseMessages;
 
   /// New-to-organizer audience segment label.
   ///
@@ -20455,12 +20437,6 @@ abstract class AppLocalizations {
   /// **'Send after approval'**
   String get hostSendsClearSchedule;
 
-  /// Opens organizer-owned customer identity and delivery controls.
-  ///
-  /// In en, this message translates to:
-  /// **'Manage'**
-  String get hostCustomersManage;
-
   /// Customer detail section for organizer-visible phone and email evidence.
   ///
   /// In en, this message translates to:
@@ -20473,11 +20449,11 @@ abstract class AppLocalizations {
   /// **'Edit details'**
   String get hostCustomersEditDetails;
 
-  /// Empty organizer-visible customer contact details.
+  /// Empty value shown for a non-editable customer contact field.
   ///
   /// In en, this message translates to:
-  /// **'No phone or email saved yet.'**
-  String get hostCustomersNoContactDetails;
+  /// **'Not saved'**
+  String get hostCustomersNotSaved;
 
   /// Customer event-history status for a completed check-in.
   ///
@@ -20560,7 +20536,7 @@ abstract class AppLocalizations {
   /// Boundary between organizer-owned contact details and a linked Catch profile.
   ///
   /// In en, this message translates to:
-  /// **'Contact details shown here come from this organizer’s records. Linking a Catch account does not reveal additional profile fields.'**
+  /// **'Linked Catch profiles stay private. Phone and email can’t be edited here.'**
   String get hostCustomersVerifiedDetailsManagedByCatch;
 
   /// Labels manually entered customer endpoints as unverified.
@@ -21094,12 +21070,6 @@ abstract class AppLocalizations {
   /// **'The customer details are available. Try reloading to restore note history.'**
   String get hostCustomersNotesUnavailableBody;
 
-  /// System-computed customer activity group heading.
-  ///
-  /// In en, this message translates to:
-  /// **'Activity'**
-  String get hostCustomersActivity;
-
   /// Per-person campaign delivery history heading.
   ///
   /// In en, this message translates to:
@@ -21141,6 +21111,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Controls'**
   String get hostCustomersControls;
+
+  /// Per-customer organizer campaign delivery toggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer messages'**
+  String get hostCustomersOrganizerMessages;
 
   /// Customers directory sort menu group label.
   ///

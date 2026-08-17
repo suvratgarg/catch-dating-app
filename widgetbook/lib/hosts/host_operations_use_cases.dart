@@ -811,6 +811,32 @@ Widget hostCustomersStates(BuildContext context) {
           ),
         ),
       ),
+      _StateCard(
+        label: 'detail composition',
+        child: _DeviceFrame(
+          child: HostCustomerDetailBody(
+            customer: detail,
+            currentUid: HostOperationsFixtures.hostUid,
+            openingConversation: false,
+            updatingCustomer: false,
+            onEditDetails: () {},
+            onEditTags: () {},
+            onAddNote: () {},
+            onEditNote: (_) {},
+            onReviewDuplicates: () {},
+            onStartConversation: () {},
+            onMessagingEnabledChanged: (_) {},
+            onRemove: () {},
+            onUndoMerge: (_) {},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'edit linked customer details',
+        child: _DeviceFrame(
+          child: Scaffold(body: HostCustomerEditDetailsSheet(customer: detail)),
+        ),
+      ),
     ],
   );
 }
@@ -845,6 +871,22 @@ Widget hostAddCustomerSheetStates(BuildContext context) =>
   path: '[P1 product surfaces]/Host operations/Customers',
 )
 Widget hostCustomerDetailStates(BuildContext context) =>
+    hostCustomersStates(context);
+
+@widgetbook.UseCase(
+  name: 'Detail composition states',
+  type: HostCustomerDetailBody,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostCustomerDetailBodyStates(BuildContext context) =>
+    hostCustomersStates(context);
+
+@widgetbook.UseCase(
+  name: 'Edit details states',
+  type: HostCustomerEditDetailsSheet,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostCustomerEditDetailsStates(BuildContext context) =>
     hostCustomersStates(context);
 
 @widgetbook.UseCase(

@@ -11,7 +11,6 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -882,17 +881,16 @@ class HostCustomersDirectory extends StatelessWidget {
             layout: CatchEmptyStateLayout.inline,
           )
         else
-          CatchFieldLanes.single(
-            child: Column(
-              children: [
-                for (final (index, contact) in contacts.indexed)
-                  HostCustomerRow(
-                    contact: contact,
-                    divider: index < contacts.length - 1,
-                    onTap: () => onCustomerSelected(contact),
-                  ),
-              ],
-            ),
+          CatchSection.containedFieldRows(
+            key: const ValueKey('host-customers-directory-list'),
+            children: [
+              for (final contact in contacts)
+                HostCustomerRow(
+                  contact: contact,
+                  divider: false,
+                  onTap: () => onCustomerSelected(contact),
+                ),
+            ],
           ),
         if (onLoadMore != null) ...[
           gapH12,
@@ -1055,20 +1053,20 @@ class _HostAddCustomerSheetState extends ConsumerState<HostAddCustomerSheet> {
   }
 }
 
-enum HostCustomerManageResult { updated, hidden }
+enum HostCustomerEditDetailsResult { updated }
 
-class HostCustomerManageSheet extends ConsumerStatefulWidget {
-  const HostCustomerManageSheet({super.key, required this.customer});
+class HostCustomerEditDetailsSheet extends ConsumerStatefulWidget {
+  const HostCustomerEditDetailsSheet({super.key, required this.customer});
 
   final HostAudienceContactDetail customer;
 
   @override
-  ConsumerState<HostCustomerManageSheet> createState() =>
-      _HostCustomerManageSheetState();
+  ConsumerState<HostCustomerEditDetailsSheet> createState() =>
+      _HostCustomerEditDetailsSheetState();
 }
 
-class _HostCustomerManageSheetState
-    extends ConsumerState<HostCustomerManageSheet> {
+class _HostCustomerEditDetailsSheetState
+    extends ConsumerState<HostCustomerEditDetailsSheet> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController = TextEditingController(
     text:
@@ -1093,95 +1091,74 @@ class _HostCustomerManageSheetState
 
   @override
   Widget build(BuildContext context) => CatchBottomSheetScaffold(
-    title: widget.customer.displayName,
+    title: context.l10n.hostCustomersEditDetails,
     subtitle: context.l10n.hostsHostAudienceContactSubtitle,
     keyboardSafe: true,
     child: SingleChildScrollView(
       child: Form(
         key: _formKey,
-        child: CatchFieldLanes.custom(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              CatchField.input(
-                title: context.l10n.hostsHostAudienceContactName,
-                contract: CatchContractConstraints
-                    .mutateOrganizerContactCallablePayloadDisplayNameOverride,
-                controller: _nameController,
-                helperText: context.l10n.hostsHostAudienceContactNameHelp,
-                textCapitalization: TextCapitalization.words,
-                textInputAction: TextInputAction.next,
-                validator: (value) => (value ?? '').trim().isEmpty
-                    ? context.l10n.hostCustomersNameRequired
-                    : null,
-              ),
-              if (_canEditContactDetails) ...[
-                gapH12,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            CatchSection.containedFieldRows(
+              children: [
                 CatchField.input(
-                  title: context.l10n.hostCustomersPhone,
+                  key: const ValueKey('host-customer-edit-name'),
+                  title: context.l10n.hostsHostAudienceContactName,
                   contract: CatchContractConstraints
-                      .mutateOrganizerContactCallablePayloadPhoneE164,
-                  controller: _phoneController,
-                  isOptional: true,
-                  keyboardType: TextInputType.phone,
+                      .mutateOrganizerContactCallablePayloadDisplayNameOverride,
+                  controller: _nameController,
+                  helperText: context.l10n.hostsHostAudienceContactNameHelp,
+                  textCapitalization: TextCapitalization.words,
                   textInputAction: TextInputAction.next,
-                  placeholder: '+919876543210',
-                  helperText: context.l10n.hostCustomersPhoneHelp,
-                  validator: (value) => _manualPhoneError(context, value),
+                  validator: (value) => (value ?? '').trim().isEmpty
+                      ? context.l10n.hostCustomersNameRequired
+                      : null,
                 ),
-                gapH12,
-                CatchField.input(
-                  title: context.l10n.hostCustomersEmail,
-                  contract: CatchContractConstraints
-                      .mutateOrganizerContactCallablePayloadEmail,
-                  controller: _emailController,
-                  isOptional: true,
-                  keyboardType: TextInputType.emailAddress,
-                  textInputAction: TextInputAction.done,
-                  validator: (value) => _manualEmailError(context, value),
-                ),
-              ] else ...[
-                gapH12,
-                Text(
-                  context.l10n.hostCustomersVerifiedDetailsManagedByCatch,
-                  style: CatchTextStyles.supporting(context),
-                ),
+                if (_canEditContactDetails) ...[
+                  CatchField.input(
+                    key: const ValueKey('host-customer-edit-phone'),
+                    title: context.l10n.hostCustomersPhone,
+                    contract: CatchContractConstraints
+                        .mutateOrganizerContactCallablePayloadPhoneE164,
+                    controller: _phoneController,
+                    isOptional: true,
+                    keyboardType: TextInputType.phone,
+                    textInputAction: TextInputAction.next,
+                    placeholder: '+919876543210',
+                    helperText: context.l10n.hostCustomersPhoneHelp,
+                    validator: (value) => _manualPhoneError(context, value),
+                  ),
+                  CatchField.input(
+                    key: const ValueKey('host-customer-edit-email'),
+                    title: context.l10n.hostCustomersEmail,
+                    contract: CatchContractConstraints
+                        .mutateOrganizerContactCallablePayloadEmail,
+                    controller: _emailController,
+                    isOptional: true,
+                    keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.done,
+                    validator: (value) => _manualEmailError(context, value),
+                  ),
+                ],
               ],
+            ),
+            if (!_canEditContactDetails) ...[
               gapH12,
-              CatchButton(
-                key: const ValueKey('host-customer-save-details'),
-                label: context.l10n.hostCustomersSaveDetails,
-                size: CatchButtonSize.sm,
-                isLoading: _saving,
-                onPressed: _saving ? null : _saveDetails,
-              ),
-              gapH16,
-              CatchNotice(
-                notice: CatchNoticeData(
-                  id: 'host.customers.contact.delivery-boundary',
-                  title: context.l10n.hostsHostAudienceContactConsentTitle,
-                  message: widget.customer.whatsappAdminSuppressed
-                      ? context.l10n.hostsHostAudienceContactConsentPaused
-                      : context.l10n.hostsHostAudienceContactConsentActive,
-                ),
-              ),
-              gapH12,
-              CatchButton(
-                label: widget.customer.whatsappAdminSuppressed
-                    ? context.l10n.hostsHostAudienceContactResumeMessages
-                    : context.l10n.hostsHostAudienceContactPauseMessages,
-                variant: CatchButtonVariant.secondary,
-                onPressed: _saving ? null : _toggleSuppression,
-              ),
-              gapH8,
-              CatchButton(
-                label: context.l10n.hostsHostAudienceRemoveAction,
-                variant: CatchButtonVariant.ghost,
-                onPressed: _saving ? null : _hideCustomer,
+              Text(
+                context.l10n.hostCustomersVerifiedDetailsManagedByCatch,
+                style: CatchTextStyles.supporting(context),
               ),
             ],
-          ),
+            gapH16,
+            CatchButton(
+              key: const ValueKey('host-customer-save-details'),
+              label: context.l10n.hostCustomersSaveDetails,
+              isLoading: _saving,
+              onPressed: _saving ? null : _saveDetails,
+            ),
+          ],
         ),
       ),
     ),
@@ -1201,25 +1178,7 @@ class _HostCustomerManageSheetState
       updatePhoneE164: _canEditContactDetails,
       email: _optionalNormalizedEmail(_emailController.text),
       updateEmail: _canEditContactDetails,
-      result: HostCustomerManageResult.updated,
     );
-  }
-
-  Future<void> _toggleSuppression() => _mutate(
-    whatsappAdminSuppressed: !widget.customer.whatsappAdminSuppressed,
-    result: HostCustomerManageResult.updated,
-  );
-
-  Future<void> _hideCustomer() async {
-    final confirmed = await showCatchConfirmDialog(
-      context: context,
-      title: context.l10n.hostsHostAudienceRemoveTitle,
-      message: context.l10n.hostsHostAudienceRemoveBody,
-      confirmLabel: context.l10n.hostsHostAudienceRemoveConfirm,
-      danger: true,
-    );
-    if (confirmed != true) return;
-    await _mutate(hidden: true, result: HostCustomerManageResult.hidden);
   }
 
   Future<void> _mutate({
@@ -1229,9 +1188,6 @@ class _HostCustomerManageSheetState
     bool updatePhoneE164 = false,
     String? email,
     bool updateEmail = false,
-    bool? whatsappAdminSuppressed,
-    bool? hidden,
-    required HostCustomerManageResult result,
   }) async {
     if (_saving) return;
     setState(() => _saving = true);
@@ -1248,10 +1204,10 @@ class _HostCustomerManageSheetState
             updatePhoneE164: updatePhoneE164,
             email: email,
             updateEmail: updateEmail,
-            whatsappAdminSuppressed: whatsappAdminSuppressed,
-            hidden: hidden,
           );
-      if (mounted) Navigator.of(context).pop(result);
+      if (mounted) {
+        Navigator.of(context).pop(HostCustomerEditDetailsResult.updated);
+      }
     } on Object catch (error) {
       if (mounted) {
         showCatchErrorSnackBar(
@@ -1277,54 +1233,65 @@ class HostCustomerIdentityCard extends StatelessWidget {
   final VoidCallback onManage;
 
   @override
-  Widget build(BuildContext context) => CatchSection.divided(
+  Widget build(BuildContext context) => CatchSection.containedFieldRows(
+    key: const ValueKey('host-customer-contact-details'),
     title: context.l10n.hostCustomersContactDetails,
     trailing: CatchButton(
-      label: customer.contactDetailsEditable
-          ? context.l10n.hostCustomersEditDetails
-          : context.l10n.hostCustomersManage,
-      variant: CatchButtonVariant.secondary,
+      key: const ValueKey('host-customer-edit-details'),
+      label: context.l10n.hostCustomersEditDetails,
+      variant: CatchButtonVariant.ghost,
       size: CatchButtonSize.sm,
       onPressed: onManage,
     ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (customer.phoneE164 == null && customer.email == null)
-          Text(
-            context.l10n.hostCustomersNoContactDetails,
-            style: CatchTextStyles.supporting(context),
-          )
-        else ...[
-          if (!customer.isIdentityVerified) ...[
-            Text(
-              context.l10n.hostCustomersUnverifiedContactDetails,
-              style: CatchTextStyles.supporting(context),
-            ),
-            gapH8,
-          ],
-          CatchFieldLanes.single(
-            child: Column(
-              children: [
-                if (customer.phoneE164 != null)
-                  CatchField.read(
-                    title: customer.isIdentityVerified
-                        ? context.l10n.hostsHostAudienceContactVerifiedPhone
-                        : context.l10n.hostCustomersPhone,
-                    body: customer.phoneE164,
-                    divider: customer.email != null,
-                  ),
-                if (customer.email != null)
-                  CatchField.read(
-                    title: context.l10n.hostsHostAudienceContactEmail,
-                    body: customer.email,
-                  ),
-              ],
-            ),
-          ),
-        ],
-      ],
+    footer: Text(
+      customer.contactDetailsEditable
+          ? context.l10n.hostCustomersUnverifiedContactDetails
+          : context.l10n.hostCustomersVerifiedDetailsManagedByCatch,
     ),
+    children: [
+      CatchField.read(
+        title: context.l10n.hostsHostAudienceContactName,
+        body: customer.displayName,
+      ),
+      if (customer.contactDetailsEditable)
+        CatchField.nav(
+          key: const ValueKey('host-customer-phone-field'),
+          title: context.l10n.hostCustomersPhone,
+          body: customer.phoneE164,
+          placeholder: CatchField.defaultEmptyValueText(
+            context,
+            context.l10n.hostCustomersPhone,
+          ),
+          onTap: onManage,
+        )
+      else
+        CatchField.read(
+          key: const ValueKey('host-customer-phone-field'),
+          title: customer.isIdentityVerified
+              ? context.l10n.hostsHostAudienceContactVerifiedPhone
+              : context.l10n.hostCustomersPhone,
+          body: customer.phoneE164,
+          placeholder: context.l10n.hostCustomersNotSaved,
+        ),
+      if (customer.contactDetailsEditable)
+        CatchField.nav(
+          key: const ValueKey('host-customer-email-field'),
+          title: context.l10n.hostCustomersEmail,
+          body: customer.email,
+          placeholder: CatchField.defaultEmptyValueText(
+            context,
+            context.l10n.hostCustomersEmail,
+          ),
+          onTap: onManage,
+        )
+      else
+        CatchField.read(
+          key: const ValueKey('host-customer-email-field'),
+          title: context.l10n.hostsHostAudienceContactEmail,
+          body: customer.email,
+          placeholder: context.l10n.hostCustomersNotSaved,
+        ),
+    ],
   );
 }
 
@@ -1334,6 +1301,7 @@ class HostCustomerConversationCard extends StatelessWidget {
     required this.customer,
     required this.loading,
     required this.onOpen,
+    required this.onMessagingEnabledChanged,
     this.onReview,
   });
 
@@ -1341,6 +1309,7 @@ class HostCustomerConversationCard extends StatelessWidget {
   final bool loading;
   final VoidCallback? onOpen;
   final VoidCallback? onReview;
+  final ValueChanged<bool>? onMessagingEnabledChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -1357,32 +1326,35 @@ class HostCustomerConversationCard extends StatelessWidget {
       HostCustomerConversationAvailability.ambiguous =>
         context.l10n.hostCustomersConversationAmbiguous,
     };
-    return CatchSurface(
-      padding: CatchInsets.cardContent,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (message != null) ...[
-            Text(message, style: CatchTextStyles.supporting(context)),
-            gapH12,
-          ],
-          if (availability == HostCustomerConversationAvailability.ambiguous &&
-              onReview != null) ...[
-            CatchButton(
-              label: context.l10n.hostCustomersReviewDuplicates,
-              variant: CatchButtonVariant.secondary,
-              onPressed: onReview,
-            ),
-            gapH12,
-          ],
-          CatchButton(
-            label: context.l10n.hostCustomersNewConversation,
-            icon: Icon(CatchIcons.tabChats),
-            isLoading: loading,
-            onPressed: loading ? null : onOpen,
+    return CatchSection.containedFieldRows(
+      key: const ValueKey('host-customer-messaging'),
+      title: context.l10n.hostInboxTitle,
+      children: [
+        CatchField.action(
+          key: const ValueKey('host-customer-new-conversation'),
+          title: context.l10n.hostCustomersNewConversation,
+          body: message,
+          icon: CatchIcons.tabChats,
+          onTap: loading ? null : onOpen,
+        ),
+        if (availability == HostCustomerConversationAvailability.ambiguous &&
+            onReview != null)
+          CatchField.action(
+            key: const ValueKey('host-customer-review-duplicates'),
+            title: context.l10n.hostCustomersReviewDuplicates,
+            icon: CatchIcons.peopleOutlineRounded,
+            onTap: onReview,
           ),
-        ],
-      ),
+        CatchField.toggle(
+          key: const ValueKey('host-customer-organizer-messages'),
+          title: context.l10n.hostCustomersOrganizerMessages,
+          body: customer.whatsappAdminSuppressed
+              ? context.l10n.hostsHostAudienceContactConsentPaused
+              : context.l10n.hostsHostAudienceContactConsentActive,
+          value: !customer.whatsappAdminSuppressed,
+          onChanged: onMessagingEnabledChanged,
+        ),
+      ],
     );
   }
 }
@@ -1398,7 +1370,7 @@ class HostCustomerAttendanceCard extends StatelessWidget {
     final attendanceRate = traits.attendanceRate == null
         ? '—'
         : '${(traits.attendanceRate! * 100).round()}%';
-    return CatchSection.divided(
+    return CatchSection.plain(
       title: context.l10n.hostCustomersDetailAttendance,
       child: Row(
         children: [
@@ -1435,7 +1407,7 @@ class HostCustomerRevenueCard extends StatelessWidget {
   final HostCustomerRevenue revenue;
 
   @override
-  Widget build(BuildContext context) => CatchSection.divided(
+  Widget build(BuildContext context) => CatchSection.plain(
     title: context.l10n.hostCustomersDetailRevenue,
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1492,7 +1464,7 @@ class HostCustomerAttendanceHistory extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final events = customer.events;
-    return CatchSection.divided(
+    return CatchSection.plain(
       title: context.l10n.hostCustomersEventHistory,
       child: events.isEmpty
           ? Text(
