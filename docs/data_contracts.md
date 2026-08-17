@@ -864,6 +864,15 @@ a verified mirror. Provider-specific questions remain organizer-custom answers;
 they are not added to this catalog merely because one provider or organizer
 uses them.
 
+Historical rows created before this boundary can be assessed with
+`node tool/data/audit_legacy_host_contact_projection.mjs --env <environment>`.
+The command is permanently read-only, omits raw phone/email values, and splits
+exact unprovenanced private-profile matches from rows needing human
+reconciliation. It also counts affected CRM edges and contacts. Any repair must
+be a separate approval-gated operation because stale identity evidence and
+organizer-supplied contact history must be reconciled together; age or source
+labels alone are never deletion proof.
+
 ### Organizer Application Intake
 
 Organizer applications are a provider-neutral intake domain. A Google Form,

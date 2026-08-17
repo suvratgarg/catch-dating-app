@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-08-16",
+  "updated": "2026-08-17",
   "ciImpact": {
     "mandatoryCheckIds": [
       "docs:metadata",
@@ -2314,6 +2314,20 @@
       "checks": [
         "node --check tool/data/backfill_organizer_audience.mjs",
         "node --test tool/data/backfill_organizer_audience.test.mjs"
+      ],
+      "role": "generator"
+    },
+    {
+      "id": "data:audit-legacy-host-contact-projection",
+      "category": "data",
+      "path": "tool/data/audit_legacy_host_contact_projection.mjs",
+      "command": "node tool/data/audit_legacy_host_contact_projection.mjs",
+      "safety": "remote-readonly",
+      "status": "active",
+      "description": "Read-only, PII-redacted audit that separates high-confidence legacy private-profile contact projections from rows requiring human reconciliation.",
+      "checks": [
+        "node --check tool/data/audit_legacy_host_contact_projection.mjs",
+        "node --test tool/data/audit_legacy_host_contact_projection.test.mjs"
       ],
       "role": "generator"
     },
