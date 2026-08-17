@@ -440,6 +440,11 @@ void main() {
 
     expect(open, isTrue);
     expect(openChanges, 1);
+    expect(focusNode.hasFocus, isFalse);
+    expect(tester.testTextInput.isVisible, isFalse);
+
+    await pumpFeatureUi(tester);
+
     expect(focusNode.hasFocus, isTrue);
     expect(tester.testTextInput.isVisible, isTrue);
 
@@ -522,6 +527,10 @@ void main() {
       expect(firstOpen, isFalse);
       expect(secondOpen, isTrue);
       expect(firstCancels, 1);
+      expect(secondFocus.hasFocus, isFalse);
+
+      await pumpFeatureUi(tester);
+
       expect(secondFocus.hasFocus, isTrue);
       expect(tester.testTextInput.isVisible, isTrue);
     },
