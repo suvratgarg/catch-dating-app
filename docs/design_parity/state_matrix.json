@@ -5406,6 +5406,104 @@
           ]
         },
         {
+          "id": "host.applications",
+          "routeId": "hostApplicationsScreen",
+          "routeIds": [
+            "hostApplicationsScreen",
+            "hostApplicationDetailScreen"
+          ],
+          "implementationPaths": [
+            "lib/hosts/presentation/applications/host_applications_screen.dart",
+            "lib/hosts/presentation/applications/host_application_detail_screen.dart",
+            "lib/hosts/presentation/applications/host_applications_controller.dart",
+            "lib/hosts/data/host_application_repository.dart",
+            "lib/hosts/domain/host_application_import.dart"
+          ],
+          "componentIds": [
+            "catch.button",
+            "catch.chip",
+            "catch.empty_state",
+            "catch.error_state",
+            "catch.field",
+            "catch.notice",
+            "catch.search_field",
+            "catch.section",
+            "catch.skeleton",
+            "catch.surface",
+            "catch.top_bar"
+          ],
+          "captureIds": [],
+          "designRefs": [],
+          "states": [
+            {
+              "id": "host_applications_loading",
+              "kind": "loading",
+              "status": "implemented",
+              "notes": "The queue and nested detail routes use deterministic shared skeleton rows while their organizer-scoped callables resolve."
+            },
+            {
+              "id": "host_applications_empty",
+              "kind": "empty",
+              "status": "implemented",
+              "notes": "An empty organizer queue explains that no applications match the current search and review-status scope."
+            },
+            {
+              "id": "host_applications_populated",
+              "kind": "populated",
+              "status": "tested",
+              "tests": [
+                "test/hosts/host_application_import_test.dart"
+              ],
+              "notes": "The organizer-scoped queue owns search, review filters, sorting, pagination, and navigation to immutable submitted answers."
+            },
+            {
+              "id": "host_applications_error",
+              "kind": "error",
+              "status": "implemented",
+              "notes": "Queue and detail callable failures use the shared customer-context error state with route-scoped retry."
+            },
+            {
+              "id": "host_applications_import",
+              "kind": "mutation",
+              "status": "tested",
+              "tests": [
+                "test/hosts/host_application_import_test.dart"
+              ],
+              "notes": "Provider-neutral CSV and XLSX import maps canonical reusable fields separately from organizer-only questions before committing rows."
+            },
+            {
+              "id": "host_application_review",
+              "kind": "mutation",
+              "status": "implemented",
+              "notes": "Revision-fenced review actions and private notes are available only while the participant grant remains reviewable."
+            },
+            {
+              "id": "host_applications_offline",
+              "kind": "offline",
+              "status": "implemented",
+              "notes": "Offline callable failures retain shared error mapping and retry without widening Host data access."
+            },
+            {
+              "id": "host_applications_permission",
+              "kind": "permission",
+              "status": "implemented",
+              "notes": "Manager authorization and exact participant grants fail closed before answers, outreach, or review controls are exposed."
+            }
+          ],
+          "gaps": [
+            {
+              "id": "DP-HOST-APPLICATIONS-001",
+              "status": "open",
+              "nextAction": "Add deterministic queue, detail, import, error, offline, permission, text-scale, reduced-motion, and paired-theme previews and captures."
+            },
+            {
+              "id": "DP-HOST-APPLICATIONS-002",
+              "status": "open",
+              "nextAction": "Add the participant-facing reviewed native form UI over the authenticated provider-neutral submission and revocation callables."
+            }
+          ]
+        },
+        {
           "id": "host.clubs",
           "routeId": "hostClubsScreen",
           "routeIds": [

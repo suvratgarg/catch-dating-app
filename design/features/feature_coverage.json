@@ -154,6 +154,15 @@
     },
     {
       "authority": "flutter_screens",
+      "authorityId": "screen.host.applications",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Host Applications now has provider-neutral queue, detail, import, consent, exact-grant, and revocation contracts; compile the cross-surface feature after the participant-facing Flutter submission flow and deterministic evidence are implemented.",
+      "targetFeature": "feature.host_applications",
+      "debtId": "HOST-APPLICATIONS-FEATURE-001"
+    },
+    {
+      "authority": "flutter_screens",
       "authorityId": "screen.host.clubs",
       "status": "contracted",
       "priority": "P1",

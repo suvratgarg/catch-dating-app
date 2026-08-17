@@ -24913,7 +24913,7 @@
             "status": "implemented_local",
             "layer": "screen-adapter",
             "claudeComponents": [],
-            "flutter": {"file": "lib/hosts/presentation/applications/host_applications_screen.dart", "symbol": "HostApplicationDetailScreen"},
+            "flutter": {"file": "lib/hosts/presentation/applications/host_application_detail_screen.dart", "symbol": "HostApplicationDetailScreen"},
             "currentOwner": "hosts.presentation.applications",
             "targetOwner": "hosts.presentation.applications",
             "dependencies": ["catch.top_bar", "catch.section", "catch.field", "catch.button"],
@@ -24926,7 +24926,7 @@
         {
           "id": "HOST-APPLICATIONS-001",
           "status": "open",
-          "nextAction": "Build the authenticated native participant form, explicit portable-prefill save/reuse, and exact organizer field-grant runtime over the existing provider-neutral contracts."
+          "nextAction": "Build the participant-facing Flutter form over the authenticated reviewed-prefill, submission, exact organizer grant, and revocation callables."
         },
         {
           "id": "HOST-APPLICATIONS-002",

@@ -153,6 +153,14 @@
       "occurrences": 2
     },
     {
+      "path": "lib/hosts/presentation/applications/host_application_detail_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
+      "leading": "back"
+    },
+    {
       "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar",
@@ -174,8 +182,7 @@
       "expression": "CatchTopBar",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
-      "leading": "back",
-      "occurrences": 2
+      "leading": "back"
     },
     {
       "path": "lib/hosts/presentation/inbox/host_messaging_setup_screen.dart",

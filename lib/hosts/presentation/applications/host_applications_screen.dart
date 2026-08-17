@@ -396,46 +396,53 @@ class _HostApplicationRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final submitted = DateFormat.yMMMd().format(application.submittedAt);
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: CatchInsets.tileContent,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      application.applicantDisplayName,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.labelL(context),
-                    ),
-                    gapH4,
-                    Text(
-                      '${_sourceLabel(context, application.sourceKind)} · '
-                      '${context.l10n.hostApplicationsSubmittedOn(date: submitted)}',
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.supporting(context, color: t.ink2),
-                    ),
-                    gapH8,
-                    CatchChip.tag(
-                      label: hostApplicationStatusLabel(
-                        context,
-                        application.reviewStatus,
+    return Semantics(
+      button: true,
+      label: application.applicantDisplayName,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: CatchInsets.tileContent,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        application.applicantDisplayName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: CatchTextStyles.labelL(context),
                       ),
-                    ),
-                  ],
+                      gapH4,
+                      Text(
+                        '${_sourceLabel(context, application.sourceKind)} · '
+                        '${context.l10n.hostApplicationsSubmittedOn(date: submitted)}',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: CatchTextStyles.supporting(
+                          context,
+                          color: t.ink2,
+                        ),
+                      ),
+                      gapH8,
+                      CatchChip.tag(
+                        label: hostApplicationStatusLabel(
+                          context,
+                          application.reviewStatus,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              gapW12,
-              Icon(CatchIcons.chevronRightRounded, color: t.ink3),
-            ],
+                gapW12,
+                Icon(CatchIcons.chevronRightRounded, color: t.ink3),
+              ],
+            ),
           ),
         ),
       ),
