@@ -1431,10 +1431,14 @@ and `./tool/check_data_contract.sh`.
 | Deterministic lookup | 1 | Prefer direct document reads; use only where no deterministic id exists. |
 
 The first cursor adopters are Explore internal/external discovery, chat
-messages, active matches, club/event/user reviews, and activity notifications.
-Payment history uses the same cursor contract. Their realtime methods now
-expose only the bounded first page; their repository page methods advance
-opaque document cursors for older or additional supply.
+messages, active matches, club/event/user reviews, activity notifications,
+Host Customers, and the Host Events timeline. Payment history uses the same
+cursor contract. Their realtime methods now expose only the bounded first
+page; their repository page methods advance opaque document cursors for older
+or additional supply. Host Customers uses the directory page size. Host Events
+holds one session boundary and pages active/future events forward and history
+backward independently, so time advancing while the screen is mounted cannot
+create cursor gaps or re-read the full archive.
 Explore accumulates both discovery cursors, shows `N+` while either has more,
 and exposes a load-more action. Its map count includes only records with a
 complete coordinate pair.

@@ -15,6 +15,7 @@ export type OrganizerRouteReservationStatus =
 
 type OrganizerRouteReservationSource =
   "createOrganizer" |
+  "hostPublishOrganizer" |
   "adminCreateOrganizerDraftFromCandidate" |
   "adminUpdateClubDetails" | "adminSetClubIndexStatus";
 

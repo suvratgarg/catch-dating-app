@@ -541,7 +541,7 @@ void main() {
     expect(find.text('Instagram'), findsOneWidget);
   });
 
-  testWidgets('CatchField row multiline input uses textarea typography', (
+  testWidgets('CatchField row inputs keep value emphasis at any line count', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -561,9 +561,9 @@ void main() {
     var editable = tester.widget<EditableText>(find.byType(EditableText));
     var field = tester.widget<TextField>(find.byType(TextField));
     expect(editable.style.fontSize, CatchFieldTokens.valueFontSize);
-    expect(editable.style.fontWeight, FontWeight.w500);
+    expect(editable.style.fontWeight, FontWeight.w700);
     expect(editable.style.height, CatchFieldTokens.multilineValueLineHeight);
-    expect(field.decoration?.hintStyle?.fontWeight, FontWeight.w500);
+    expect(field.decoration?.hintStyle?.fontWeight, FontWeight.w700);
     expect(
       field.decoration?.hintStyle?.height,
       CatchFieldTokens.multilineValueLineHeight,

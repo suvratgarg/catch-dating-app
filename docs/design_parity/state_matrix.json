@@ -4701,13 +4701,13 @@
           "implementationPaths": [
             "lib/hosts/presentation/host_operations_screen.dart",
             "lib/hosts/presentation/host_home_screen_state.dart",
+            "lib/hosts/presentation/host_events_timeline_controller.dart",
             "lib/clubs/data/clubs_repository.dart",
             "lib/events/data/event_repository.dart"
           ],
           "componentIds": [
             "catch.badge",
             "catch.button",
-            "catch.chip",
             "catch.icon_button",
             "catch.surface",
             "catch.top_bar"
@@ -4846,7 +4846,7 @@
               "id": "club_events_loading",
               "kind": "loading",
               "status": "captured",
-              "notes": "HostEventsClubCard maps the selected club event async branch to HostEventsWorkspaceState.loading, and HostEventsClubSection renders the lifecycle-list skeleton beneath the New/Repeat and Upcoming/Live/Past controls. Event-list loading capture is registered.",
+              "notes": "HostEventsClubCard maps the selected club timeline async branch to HostEventsWorkspaceState.loading, and HostEventsClubSection renders the event-list skeleton. Event-list loading capture is registered.",
               "previewIds": [
                 "hostHomeRouteStates",
                 "hostHomeEventSectionStates"
@@ -4887,7 +4887,7 @@
               "tests": [
                 "test/hosts/host_operations_screen_test.dart"
               ],
-              "notes": "Host Events is the single production HostAppShell destination for operational and lifecycle work. HostEventsClubCard maps one event snapshot into a live-or-next operational spotlight, every truthful event-identified attention task, and the Upcoming/Live/Past workspace while suppressing the featured event from duplicate lifecycle rows. The existing Host Events visual-drift threshold is historical evidence only until an approved consolidated reference replaces the pre-merge composition.",
+              "notes": "Host Events is the single production HostAppShell destination for operational and lifecycle work. HostEventsClubCard maps the paginated schedule/history timeline into a live-or-next operational spotlight, every truthful event-identified attention task, and grouped lifecycle rows while suppressing the featured event from duplicate rows. The existing Host Events visual-drift threshold is historical evidence only until an approved consolidated reference replaces the pre-merge composition.",
               "previewIds": [
                 "hostHomeRouteStates",
                 "hostHomeEventSectionStates",
@@ -4899,10 +4899,37 @@
               ]
             },
             {
+              "id": "event_schedule_paginating",
+              "kind": "mutation",
+              "status": "tested",
+              "tests": [
+                "test/hosts/host_events_timeline_controller_test.dart"
+              ],
+              "notes": "HostEventsTimelineController.loadMoreActive preserves visible schedule and history rows, disables duplicate requests, and appends an event-id-de-duplicated schedule page."
+            },
+            {
+              "id": "event_history_paginating",
+              "kind": "mutation",
+              "status": "tested",
+              "tests": [
+                "test/hosts/host_events_timeline_controller_test.dart"
+              ],
+              "notes": "HostEventsTimelineController.loadMorePast preserves visible schedule and history rows, disables duplicate requests, and appends an event-id-de-duplicated history page."
+            },
+            {
+              "id": "event_history_error",
+              "kind": "error",
+              "status": "tested",
+              "tests": [
+                "test/hosts/host_events_timeline_controller_test.dart"
+              ],
+              "notes": "A history-page failure preserves the loaded schedule and history, renders a scoped inline error, and retries through HostEventsTimelineController.retryPast."
+            },
+            {
               "id": "empty_events",
               "kind": "empty",
               "status": "captured",
-              "notes": "When selected club has no active events, Host Home still shows Add event and No active events yet copy. Add an owner-empty-events capture if it diverges from the co-host empty-events variant.",
+              "notes": "When the selected organizer has no current schedule or completed-event history, Host Events keeps its create action and shows the canonical empty state. Add an owner-empty-events capture if it diverges from the co-host empty-events variant.",
               "previewIds": [
                 "hostHomeRouteStates",
                 "hostHomeEventSectionStates"
@@ -5000,7 +5027,7 @@
             {
               "id": "DP-HOST-HOME-003",
               "status": "closed",
-              "nextAction": "HostHomeRouteState maps uid plus host-club async state into auth-required, loading, error, empty, or loaded branches before shell composition. HostHomeScreenState owns selected organizer; HostEventsOverviewState owns live-or-next spotlight and attention derivation; HostEventsWorkspaceState owns lifecycle loading/error/empty/populated branches, filtering, grouping, featured-event de-duplication, Repeat availability, and render-ready rows."
+              "nextAction": "HostHomeRouteState maps uid plus host-club async state into auth-required, loading, error, empty, or loaded branches before shell composition. HostHomeScreenState owns selected organizer; HostEventsTimelineController owns schedule/history pagination and partial recovery; HostEventsOverviewState owns live-or-next spotlight and attention derivation; HostEventsWorkspaceState owns loading/error/empty/populated branches, grouping, featured-event de-duplication, Repeat availability, and render-ready rows."
             },
             {
               "id": "DP-HOST-HOME-004",

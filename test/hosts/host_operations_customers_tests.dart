@@ -116,6 +116,52 @@ void _registerHostOperationsCustomersTests() {
     expect(requests.last.search, 'ananya');
   });
 
+  testWidgets('customer filter sheet scrolls without loading every count', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 640);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await _pumpHostScreen(
+      tester,
+      const Scaffold(
+        body: Align(
+          alignment: Alignment.bottomCenter,
+          child: HostCustomerFilterSheet(
+            selectedFilter: HostCustomerFilter.newToOrganizer,
+            selectedManualTag: null,
+            manualTagVocabulary: [],
+            selectedCount: HostCustomerSegmentCount(
+              count: 12,
+              coverage: HostCustomerMatchCountCoverage.exact,
+            ),
+            smsReadiness: HostCrmChannelReadiness.currentEventOnly,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('New to your audience · 12 people'), findsOneWidget);
+    expect(find.textContaining('Loading count'), findsNothing);
+    expect(find.text('ADVOCACY').hitTestable(), findsNothing);
+
+    final scrollable = find.descendant(
+      of: find.byKey(const ValueKey('host-customer-filter-scroll')),
+      matching: find.byType(Scrollable),
+    );
+    final position = tester.state<ScrollableState>(scrollable).position;
+    expect(position.maxScrollExtent, greaterThan(0));
+    await tester.drag(scrollable, const Offset(0, -420));
+    await pumpFeatureUi(tester);
+
+    expect(position.pixels, greaterThan(0));
+    expect(find.text('ADVOCACY').hitTestable(), findsOneWidget);
+    expect(find.text('Advocates'), findsOneWidget);
+    expect(find.text('REACHABLE'), findsOneWidget);
+  });
+
   testWidgets('manual customer form captures useful identity and memory', (
     tester,
   ) async {

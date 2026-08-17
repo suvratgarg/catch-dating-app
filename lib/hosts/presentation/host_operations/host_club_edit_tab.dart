@@ -288,9 +288,27 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
     final publicationMutation = ref.watch(
       HostClubEditController.publicationMutation,
     );
-    final publicListingEnabled =
-        club.appVisibility == ClubAppVisibility.discoverable &&
-        club.publicPage?.allowsPublicWebRead == true;
+    final publicationState = HostClubPublicationState.fromClub(club);
+    final publicationBody = switch (publicationState.kind) {
+      HostClubPublicationKind.private =>
+        context.l10n.hostsHostClubPublicationBodyPrivate,
+      HostClubPublicationKind.catchOnly =>
+        context.l10n.hostsHostClubPublicationBodyCatchOnly,
+      HostClubPublicationKind.websiteOnly =>
+        context.l10n.hostsHostClubPublicationBodyWebsiteOnly,
+      HostClubPublicationKind.everywhere =>
+        context.l10n.hostsHostClubPublicationBodyEverywhere,
+    };
+    final publicationAction = switch (publicationState.kind) {
+      HostClubPublicationKind.private =>
+        context.l10n.hostsHostClubPublicationActionMakePublic,
+      HostClubPublicationKind.catchOnly =>
+        context.l10n.hostsHostClubPublicationActionEnableWebsite,
+      HostClubPublicationKind.websiteOnly =>
+        context.l10n.hostsHostClubPublicationActionRestoreCatch,
+      HostClubPublicationKind.everywhere =>
+        context.l10n.hostsHostClubPublicationActionMakePrivate,
+    };
     final cityOptions = <_HostClubCityOption>[
       for (final city in defaultCityOptions.where((city) => city.hostCreatable))
         _HostClubCityOption(value: city.effectiveMarketId, label: city.label),
@@ -322,24 +340,31 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
         if (widget.isOwner)
           CatchSection.contained(
             title: context.l10n.hostsHostClubPublicationTitle,
-            subtitle: publicListingEnabled
-                ? context.l10n.hostsHostClubPublicationSubtitlePublished
-                : context.l10n.hostsHostClubPublicationSubtitlePrivate,
-            trailing: CatchBadge.functional(
-              label: publicListingEnabled
-                  ? context.l10n.hostsHostClubPublicationStatusPublished
-                  : context.l10n.hostsHostClubPublicationStatusPrivate,
-              tone: publicListingEnabled
-                  ? CatchBadgeTone.success
-                  : CatchBadgeTone.neutral,
-            ),
+            tone: CatchSurfaceTone.primarySoft,
+            elevation: CatchSurfaceElevation.none,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                _HostClubPublicationChannelRow(
+                  key: const ValueKey('host-publication-catch-app'),
+                  label: context.l10n.hostsHostClubPublicationChannelCatch,
+                  status: publicationState.catchAppVisible
+                      ? context.l10n.hostsHostClubPublicationStatusVisible
+                      : context.l10n.hostsHostClubPublicationStatusHidden,
+                  visible: publicationState.catchAppVisible,
+                ),
+                gapH8,
+                _HostClubPublicationChannelRow(
+                  key: const ValueKey('host-publication-website'),
+                  label: context.l10n.hostsHostClubPublicationChannelWebsite,
+                  status: publicationState.websiteEnabled
+                      ? context.l10n.hostsHostClubPublicationStatusEnabled
+                      : context.l10n.hostsHostClubPublicationStatusNotEnabled,
+                  visible: publicationState.websiteEnabled,
+                ),
+                gapH16,
                 Text(
-                  publicListingEnabled
-                      ? context.l10n.hostsHostClubPublicationBodyPublished
-                      : context.l10n.hostsHostClubPublicationBodyPrivate,
+                  publicationBody,
                   style: CatchTextStyles.supporting(
                     context,
                     color: CatchTokens.of(context).ink2,
@@ -347,16 +372,18 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
                 ),
                 gapH12,
                 CatchButton(
-                  label: publicListingEnabled
-                      ? context.l10n.hostsHostClubPublicationActionUnpublish
-                      : context.l10n.hostsHostClubPublicationActionPublish,
+                  label: publicationAction,
                   onPressed: publicationMutation.isPending
                       ? null
                       : () => unawaited(
-                          _setPublicListingEnabled(!publicListingEnabled),
+                          _setPublicListingEnabled(
+                            publicationState.targetPublicListingEnabled,
+                          ),
                         ),
                   isLoading: publicationMutation.isPending,
-                  variant: publicListingEnabled
+                  variant:
+                      publicationState.kind ==
+                          HostClubPublicationKind.everywhere
                       ? CatchButtonVariant.secondary
                       : CatchButtonVariant.primary,
                   fullWidth: true,
@@ -683,6 +710,44 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
       return;
     }
     context.pushNamed(route.name, queryParameters: {'clubId': widget.club.id});
+  }
+}
+
+class _HostClubPublicationChannelRow extends StatelessWidget {
+  const _HostClubPublicationChannelRow({
+    super.key,
+    required this.label,
+    required this.status,
+    required this.visible,
+  });
+
+  final String label;
+  final String status;
+  final bool visible;
+
+  @override
+  Widget build(BuildContext context) {
+    final tokens = CatchTokens.of(context);
+    return Semantics(
+      label: '$label: $status',
+      child: ExcludeSemantics(
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                style: CatchTextStyles.labelM(context, color: tokens.ink),
+              ),
+            ),
+            gapW12,
+            CatchBadge.functional(
+              label: status,
+              tone: visible ? CatchBadgeTone.success : CatchBadgeTone.neutral,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

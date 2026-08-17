@@ -2,26 +2,26 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/host_home.feature.json",
-  "generatedFor": "2026-08-15",
-  "sourceDigest": "sha256:707a627b2524ad0d7a0cf1e36753376f1d31827408ca0d0f64cd55a4de270054",
-  "resolvedDigest": "sha256:c2572f7164bc4d44570dc0c8b1ff6ee4a6d2836a89741a3e4027326369acccc0",
+  "generatedFor": "2026-08-18",
+  "sourceDigest": "sha256:0b5daf319152c1a06533ab9c3c1a793d6fa416db771ea018d378f06994f75720",
+  "resolvedDigest": "sha256:222f82f998c7aea34b5d7d4aecf3dc1e6cc7927aea122d0b4a309e5ef6d6f35d",
   "feature": {
     "id": "feature.host_home",
     "name": "Host Events",
     "owner": "hosts",
     "status": "pilot",
-    "description": "Orchestrates the consolidated Host Events workspace across authentication, organizer selection, operational spotlight and attention state, hosted-event lifecycle state, recovery, and typed create, repeat, manage, and task navigation."
+    "description": "Orchestrates the consolidated Host Events workspace across authentication, organizer selection, operational spotlight and attention state, paginated schedule and history state, recovery, and typed create, repeat, manage, and task navigation."
   },
   "coverage": {
     "surfaces": 1,
-    "states": 18,
-    "scenarios": 18,
-    "actionCases": 18,
-    "actions": 11,
+    "states": 21,
+    "scenarios": 21,
+    "actionCases": 21,
+    "actions": 13,
     "captures": 16,
     "previews": 1,
-    "testFiles": 1,
-    "evidenceExceptions": 15
+    "testFiles": 2,
+    "evidenceExceptions": 21
   },
   "surfaces": [
     {
@@ -32,7 +32,7 @@
         "id": "screen.host.home"
       },
       "actionScope": {
-        "included": "Host Events authentication recovery, organizer switching, operational spotlight and attention work, event lifecycle filtering and retry, and typed create, repeat, manage, and task navigation.",
+        "included": "Host Events authentication recovery, organizer switching, operational spotlight and attention work, paginated schedule and history loading and retry, and typed create, repeat, manage, and task navigation.",
         "excluded": [
           "Organizer editing, event creation internals, event management mutations, booking policy, analytics, payouts, and host-team administration retain their owning feature contracts or controllers."
         ]
@@ -61,6 +61,12 @@
             "symbol": "HostEventsClubCard"
           },
           {
+            "id": "events_timeline",
+            "language": "dart",
+            "file": "lib/hosts/presentation/host_events_timeline_controller.dart",
+            "symbol": "HostEventsTimelineController"
+          },
+          {
             "id": "auth_required",
             "language": "dart",
             "file": "lib/hosts/presentation/host_operations/host_auth_required_screen.dart",
@@ -79,7 +85,6 @@
           "catch.error_state",
           "catch.event_card",
           "catch.menu",
-          "catch.option_group",
           "catch.skeleton",
           "catch.surface",
           "catch.top_bar"
@@ -92,14 +97,14 @@
         ]
       },
       "coverage": {
-        "states": 18,
-        "scenarios": 18,
-        "actionCases": 18,
-        "actions": 11,
+        "states": 21,
+        "scenarios": 21,
+        "actionCases": 21,
+        "actions": 13,
         "captures": 16,
         "previews": 1,
-        "testFiles": 1,
-        "evidenceExceptions": 15
+        "testFiles": 2,
+        "evidenceExceptions": 21
       },
       "dimensions": {
         "load": {
@@ -216,7 +221,7 @@
               ]
             }
           ],
-          "description": "Invalidates the selected organizer's hosted-event stream after a nested list failure.",
+          "description": "Invalidates the selected organizer's paginated event timeline after its initial load fails.",
           "implementationStatus": "implemented"
         },
         {
@@ -266,25 +271,73 @@
           "implementationStatus": "implemented"
         },
         {
-          "id": "filter_events",
-          "owner": "workspace",
-          "codeValue": "HostEventsLifecycleFilter",
-          "cardinality": "unbounded",
+          "id": "load_more_schedule",
+          "owner": "events_timeline",
+          "codeValue": "loadMoreActive",
+          "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
             "clubId",
-            "filterSelectionVersion"
+            "sessionBoundary",
+            "activeCursor"
           ],
           "outcomes": [
             {
               "kind": "surface_state",
               "stateIds": [
                 "upcoming_events",
-                "empty_events"
+                "event_schedule_paginating"
               ]
             }
           ],
-          "description": "Selects the Upcoming, Live, or Past lifecycle projection without changing the hosted-event source.",
+          "description": "Loads and event-id de-duplicates the next live-or-future schedule page without replacing the current timeline.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "load_more_history",
+          "owner": "events_timeline",
+          "codeValue": "loadMorePast",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "clubId",
+            "sessionBoundary",
+            "pastCursor"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "upcoming_events",
+                "event_history_paginating",
+                "event_history_error"
+              ]
+            }
+          ],
+          "description": "Loads and event-id de-duplicates the next completed-event history page without replacing the visible schedule.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "retry_event_history",
+          "owner": "events_timeline",
+          "codeValue": "retryPast",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "clubId",
+            "sessionBoundary",
+            "failureStateVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "upcoming_events",
+                "event_history_error"
+              ]
+            }
+          ],
+          "description": "Retries the first completed-event history page while preserving the already loaded schedule.",
           "implementationStatus": "implemented"
         },
         {
@@ -444,6 +497,19 @@
           ],
           "debtId": "FEATURE-CONTRACT-MIGRATION-001",
           "reason": "The typed Host Home route actions are covered by focused widget tests and the route-state catalog but do not yet have standalone deterministic captures."
+        },
+        {
+          "stateIds": [
+            "event_schedule_paginating",
+            "event_history_paginating",
+            "event_history_error"
+          ],
+          "evidence": [
+            "captures",
+            "previews"
+          ],
+          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
+          "reason": "The paginated schedule and history branches are covered by focused state and widget tests but do not yet have standalone capture or Widgetbook scenarios."
         }
       ],
       "scenarios": [
@@ -490,7 +556,9 @@
                   "retry_host_events",
                   "create_organizer",
                   "switch_organizer",
-                  "filter_events",
+                  "load_more_schedule",
+                  "load_more_history",
+                  "retry_event_history",
                   "create_event",
                   "repeat_event",
                   "manage_event",
@@ -543,7 +611,9 @@
                   "retry_host_events",
                   "create_organizer",
                   "switch_organizer",
-                  "filter_events",
+                  "load_more_schedule",
+                  "load_more_history",
+                  "retry_event_history",
                   "create_event",
                   "repeat_event",
                   "manage_event",
@@ -598,7 +668,9 @@
                   "retry_host_events",
                   "create_organizer",
                   "switch_organizer",
-                  "filter_events",
+                  "load_more_schedule",
+                  "load_more_history",
+                  "retry_event_history",
                   "create_event",
                   "repeat_event",
                   "manage_event",
@@ -652,7 +724,9 @@
                   "retry_host_home",
                   "retry_host_events",
                   "switch_organizer",
-                  "filter_events",
+                  "load_more_schedule",
+                  "load_more_history",
+                  "retry_event_history",
                   "create_event",
                   "repeat_event",
                   "manage_event",
@@ -711,7 +785,9 @@
                   "retry_host_events",
                   "create_organizer",
                   "switch_organizer",
-                  "filter_events",
+                  "load_more_schedule",
+                  "load_more_history",
+                  "retry_event_history",
                   "repeat_event",
                   "manage_event"
                 ]
@@ -766,7 +842,9 @@
                   "retry_host_home",
                   "retry_host_events",
                   "create_organizer",
-                  "filter_events",
+                  "load_more_schedule",
+                  "load_more_history",
+                  "retry_event_history",
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
@@ -822,7 +900,9 @@
                   "retry_host_home",
                   "retry_host_events",
                   "create_organizer",
-                  "filter_events",
+                  "load_more_schedule",
+                  "load_more_history",
+                  "retry_event_history",
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
@@ -874,7 +954,9 @@
                   "retry_host_events",
                   "create_organizer",
                   "switch_organizer",
-                  "filter_events",
+                  "load_more_schedule",
+                  "load_more_history",
+                  "retry_event_history",
                   "create_event",
                   "repeat_event",
                   "manage_event",
@@ -928,7 +1010,9 @@
                   "retry_host_home",
                   "create_organizer",
                   "switch_organizer",
-                  "filter_events",
+                  "load_more_schedule",
+                  "load_more_history",
+                  "retry_event_history",
                   "create_event",
                   "repeat_event",
                   "manage_event",
@@ -980,7 +1064,9 @@
                   "retry_host_home",
                   "create_organizer",
                   "switch_organizer",
-                  "filter_events",
+                  "load_more_schedule",
+                  "load_more_history",
+                  "retry_event_history",
                   "create_event",
                   "repeat_event",
                   "manage_event",
@@ -1030,7 +1116,8 @@
               "actions": {
                 "enabled": [
                   "switch_organizer",
-                  "filter_events",
+                  "load_more_schedule",
+                  "load_more_history",
                   "create_event",
                   "repeat_event",
                   "manage_event",
@@ -1042,7 +1129,175 @@
                   "sign_in",
                   "retry_host_home",
                   "retry_host_events",
-                  "create_organizer"
+                  "create_organizer",
+                  "retry_event_history"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "event_schedule_paginating",
+          "stateId": "event_schedule_paginating",
+          "kind": "mutation",
+          "status": "tested",
+          "dimensions": {
+            "load": "ready",
+            "access": "owner",
+            "organizer_supply": "one",
+            "event_supply": "populated",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "test/hosts/host_events_timeline_controller_test.dart",
+              "test/hosts/host_operations_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "schedule_pending",
+              "dimensions": {
+                "load": "ready",
+                "access": "owner",
+                "organizer_supply": "one",
+                "event_supply": "populated",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "load_more_history",
+                  "create_event",
+                  "manage_event"
+                ],
+                "disabled": [
+                  "load_more_schedule"
+                ],
+                "notAllowed": [
+                  "sign_in",
+                  "retry_host_home",
+                  "retry_host_events",
+                  "create_organizer",
+                  "switch_organizer",
+                  "retry_event_history",
+                  "repeat_event",
+                  "open_operational_event",
+                  "open_attention_task"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "event_history_paginating",
+          "stateId": "event_history_paginating",
+          "kind": "mutation",
+          "status": "tested",
+          "dimensions": {
+            "load": "ready",
+            "access": "owner",
+            "organizer_supply": "one",
+            "event_supply": "populated",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "test/hosts/host_events_timeline_controller_test.dart",
+              "test/hosts/host_operations_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "history_pending",
+              "dimensions": {
+                "load": "ready",
+                "access": "owner",
+                "organizer_supply": "one",
+                "event_supply": "populated",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "load_more_schedule",
+                  "create_event",
+                  "manage_event"
+                ],
+                "disabled": [
+                  "load_more_history",
+                  "retry_event_history"
+                ],
+                "notAllowed": [
+                  "sign_in",
+                  "retry_host_home",
+                  "retry_host_events",
+                  "create_organizer",
+                  "switch_organizer",
+                  "repeat_event",
+                  "open_operational_event",
+                  "open_attention_task"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "event_history_error",
+          "stateId": "event_history_error",
+          "kind": "error",
+          "status": "tested",
+          "dimensions": {
+            "load": "error",
+            "access": "owner",
+            "organizer_supply": "one",
+            "event_supply": "populated",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "test/hosts/host_events_timeline_controller_test.dart",
+              "test/hosts/host_operations_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "history_recovery",
+              "dimensions": {
+                "load": "error",
+                "access": "owner",
+                "organizer_supply": "one",
+                "event_supply": "populated",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "retry_event_history",
+                  "load_more_schedule",
+                  "create_event",
+                  "manage_event"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "sign_in",
+                  "retry_host_home",
+                  "retry_host_events",
+                  "create_organizer",
+                  "switch_organizer",
+                  "load_more_history",
+                  "repeat_event",
+                  "open_operational_event",
+                  "open_attention_task"
                 ]
               }
             }
@@ -1084,7 +1339,6 @@
               "actions": {
                 "enabled": [
                   "switch_organizer",
-                  "filter_events",
                   "create_event"
                 ],
                 "disabled": [],
@@ -1093,6 +1347,9 @@
                   "retry_host_home",
                   "retry_host_events",
                   "create_organizer",
+                  "load_more_schedule",
+                  "load_more_history",
+                  "retry_event_history",
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
@@ -1146,7 +1403,9 @@
                   "retry_host_events",
                   "create_organizer",
                   "switch_organizer",
-                  "filter_events",
+                  "load_more_schedule",
+                  "load_more_history",
+                  "retry_event_history",
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
@@ -1202,7 +1461,9 @@
                   "retry_host_events",
                   "create_organizer",
                   "switch_organizer",
-                  "filter_events",
+                  "load_more_schedule",
+                  "load_more_history",
+                  "retry_event_history",
                   "create_event",
                   "repeat_event"
                 ]
@@ -1253,7 +1514,9 @@
                   "retry_host_events",
                   "create_organizer",
                   "switch_organizer",
-                  "filter_events",
+                  "load_more_schedule",
+                  "load_more_history",
+                  "retry_event_history",
                   "create_event",
                   "repeat_event",
                   "manage_event",
@@ -1306,7 +1569,9 @@
                   "retry_host_events",
                   "create_organizer",
                   "switch_organizer",
-                  "filter_events",
+                  "load_more_schedule",
+                  "load_more_history",
+                  "retry_event_history",
                   "create_event",
                   "repeat_event",
                   "manage_event",
@@ -1359,7 +1624,9 @@
                   "retry_host_events",
                   "create_organizer",
                   "switch_organizer",
-                  "filter_events",
+                  "load_more_schedule",
+                  "load_more_history",
+                  "retry_event_history",
                   "create_event",
                   "repeat_event",
                   "manage_event",
@@ -1412,7 +1679,9 @@
                   "retry_host_events",
                   "create_organizer",
                   "switch_organizer",
-                  "filter_events",
+                  "load_more_schedule",
+                  "load_more_history",
+                  "retry_event_history",
                   "create_event",
                   "repeat_event",
                   "manage_event",
@@ -1490,17 +1759,6 @@
               "file": "lib/core/widgets/catch_menu.dart",
               "constructors": [
                 "CatchMenu"
-              ]
-            }
-          },
-          {
-            "id": "catch.option_group",
-            "kind": "composite",
-            "dart": {
-              "symbol": "CatchOptionGroup",
-              "file": "lib/core/widgets/catch_option_group.dart",
-              "constructors": [
-                "CatchOptionGroup"
               ]
             }
           },

@@ -696,6 +696,12 @@
           "status": "aligned"
         },
         {
+          "path": "lib/hosts/presentation/host_club_publication_state.dart",
+          "role": "provider-free Host organizer publication adapter that preserves the independently governed Catch discovery and public-website channels, derives all four display states, and exposes the owner mutation target",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
           "path": "lib/hosts/presentation/host_operations_screen_state.dart",
           "role": "provider-free Host Operations clubs and club insights display-state adapter for selected club/tab ownership, analytics query range, granularity, event scope, and custom date windows",
           "providerFree": true,
@@ -705,6 +711,11 @@
           "path": "lib/hosts/presentation/host_team_workspace_state.dart",
           "role": "provider-free Host Team workspace state for profile and hosted-club async branches, create/edit/sign-out action policy, owner-versus-team role labels, and typed edit-or-preview navigation intent",
           "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "test/hosts/host_club_publication_state_test.dart",
+          "role": "Host organizer publication-state coverage for legacy Catch-only organizers and all four independent channel combinations",
           "status": "aligned"
         },
         {
@@ -959,6 +970,7 @@
         "flutter test test/profile/self_profile_screen_state_test.dart test/profile/self_profile_edit_tab_state_test.dart",
         "flutter test test/profile/profile_widgets_test.dart --plain-name 'text edit failure keeps the inline editor open with an error'",
         "flutter test test/chats/chat_screen_test.dart test/chats/chat_inbox_screen_test.dart",
+        "flutter test test/hosts/host_club_publication_state_test.dart",
         "flutter analyze --no-fatal-infos",
         "node tool/architecture/check_adopted_architecture_boundaries.mjs",
         "flutter test test/swipes/filters_screen_test.dart test/swipes/event_recap_screen_state_test.dart test/swipes/event_recap_screen_test.dart",

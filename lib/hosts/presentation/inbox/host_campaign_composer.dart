@@ -308,7 +308,13 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                       key: ValueKey(
                         'host-campaign-segment-${segment.wireValue}',
                       ),
-                      label: _segmentLabelWithCount(context, segment),
+                      label: _segmentLabelWithOptionalCount(
+                        context,
+                        segment,
+                        includeCount: selectedEligibleSegments.contains(
+                          segment,
+                        ),
+                      ),
                       selected: selectedEligibleSegments.contains(segment),
                       enabled: _campaign == null,
                       contract: CatchContractConstraints
@@ -434,10 +440,13 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
     ),
   );
 
-  String _segmentLabelWithCount(
+  String _segmentLabelWithOptionalCount(
     BuildContext context,
-    HostAudienceSegment segment,
-  ) {
+    HostAudienceSegment segment, {
+    required bool includeCount,
+  }) {
+    final label = _segmentLabel(context, segment);
+    if (!includeCount) return label;
     final count = ref.watch(
       hostCustomerSegmentCountProvider(
         HostCustomerSegmentCountRequest(
@@ -458,7 +467,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
       error: (_, _) => context.l10n.hostCustomersCountUnavailable,
     );
     return context.l10n.hostCustomersFilterOption(
-      label: _segmentLabel(context, segment),
+      label: label,
       countLabel: countLabel,
     );
   }

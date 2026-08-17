@@ -63,27 +63,6 @@ class HostCustomersDirectoryController
 }
 
 @riverpod
-Future<HostCustomerSegmentCount> hostCustomerManualTagCount(
-  Ref ref,
-  HostCustomerManualTagCountRequest request,
-) async {
-  final page = await ref
-      .read(hostCrmRepositoryProvider)
-      .listContacts(
-        request.organizerId,
-        query: HostAudienceQuery(
-          search: request.search,
-          manualTagId: request.manualTagId,
-        ),
-        limit: 1,
-      );
-  return HostCustomerSegmentCount(
-    count: page.matchCount,
-    coverage: _matchCountCoverage(page.matchCountCoverage),
-  );
-}
-
-@riverpod
 Future<HostCustomerSegmentCount> hostCustomerSegmentCount(
   Ref ref,
   HostCustomerSegmentCountRequest request,

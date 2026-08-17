@@ -2,8 +2,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart';
 import 'package:flutter/material.dart';
@@ -75,7 +73,7 @@ void main() {
     expect(addCount, 1);
   });
 
-  testWidgets('edit logo square exposes bottom-right add badge', (
+  testWidgets('edit logo empty state exposes one labelled add action', (
     tester,
   ) async {
     var tapCount = 0;
@@ -90,20 +88,65 @@ void main() {
     );
 
     expect(find.text('CLUB LOGO'), findsNothing);
-    expect(find.bySemanticsLabel('Add organizer logo'), findsOneWidget);
+    expect(find.text('Add logo'), findsOneWidget);
+    expect(find.bySemanticsLabel('Add logo'), findsOneWidget);
     expect(
-      find.byWidgetPredicate(
-        (widget) =>
-            widget is CatchIconTile &&
-            widget.icon == CatchIcons.addPhotoAlternateOutlined,
+      find.descendant(
+        of: find.byType(ClubProfileImageTile),
+        matching: find.byType(GestureDetector),
       ),
-      findsOneWidget,
+      findsNothing,
     );
 
-    await tester.tap(find.bySemanticsLabel('Add organizer logo'));
+    await tester.tap(find.text('Add logo'));
     await tester.pump();
 
     expect(tapCount, 1);
+
+    await tester.tap(find.byType(ClubProfileImageTile));
+    await tester.pump();
+
+    expect(tapCount, 1);
+  });
+
+  testWidgets('edit logo preview stays separate from replace and remove', (
+    tester,
+  ) async {
+    var replaceCount = 0;
+    var removeCount = 0;
+
+    await _pumpPhotosWidget(
+      tester,
+      CreateClubProfileImagePicker(
+        imageBytes: _pngBytes(),
+        onTap: () => replaceCount++,
+        onRemove: () => removeCount++,
+        variant: CreateClubProfileImagePickerVariant.editLogo,
+      ),
+    );
+
+    expect(find.bySemanticsLabel('Organizer logo'), findsOneWidget);
+    expect(find.text('Replace'), findsOneWidget);
+    expect(find.text('Remove'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(ClubProfileImageTile),
+        matching: find.byType(GestureDetector),
+      ),
+      findsNothing,
+    );
+
+    await tester.tap(find.byType(ClubProfileImageTile));
+    await tester.pump();
+    expect(replaceCount, 0);
+
+    await tester.tap(find.text('Replace'));
+    await tester.pump();
+    expect(replaceCount, 1);
+
+    await tester.tap(find.text('Remove'));
+    await tester.pump();
+    expect(removeCount, 1);
   });
 }
 

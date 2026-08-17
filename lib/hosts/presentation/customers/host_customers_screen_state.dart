@@ -72,29 +72,6 @@ class HostCustomerSegmentCountRequest {
 }
 
 @immutable
-class HostCustomerManualTagCountRequest {
-  const HostCustomerManualTagCountRequest({
-    required this.organizerId,
-    required this.manualTagId,
-    this.search,
-  });
-
-  final String organizerId;
-  final String manualTagId;
-  final String? search;
-
-  @override
-  bool operator ==(Object other) =>
-      other is HostCustomerManualTagCountRequest &&
-      other.organizerId == organizerId &&
-      other.manualTagId == manualTagId &&
-      other.search == search;
-
-  @override
-  int get hashCode => Object.hash(organizerId, manualTagId, search);
-}
-
-@immutable
 class HostCustomerSegmentCount {
   const HostCustomerSegmentCount({required this.count, required this.coverage});
 

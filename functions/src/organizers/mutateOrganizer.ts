@@ -23,6 +23,9 @@ import {
   normalizeUploadedPhotosForFirestore,
 } from "../shared/uploadedPhotoNormalization";
 import {marketForIdOrAlias} from "../locations/marketConfig";
+import {reserveOrganizerCanonicalRoute} from
+  "../admin/organizerPublishingGuards";
+import {defaultOrganizerPublicSlug} from "./organizerIdentity";
 import {
   normalizeArchiveOrganizerPayload,
   normalizeOrganizerIdPayload,
@@ -37,12 +40,14 @@ interface OrganizerLifecycleDeps {
     uid: string,
     action: string
   ) => Promise<void>;
+  reserveCanonicalRoute?: typeof reserveOrganizerCanonicalRoute;
 }
 
 const defaultDeps: OrganizerLifecycleDeps = {
   firestore: () => admin.firestore(),
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
   checkRateLimit: defaultCheckRateLimit,
+  reserveCanonicalRoute: reserveOrganizerCanonicalRoute,
 };
 
 export async function updateOrganizerHandler(
@@ -67,18 +72,44 @@ export async function updateOrganizerHandler(
       tx.get(legacyClubRef),
       tx.get(deletedUserRef),
     ]);
-    assertCanUpdateOrganizer(
+    const organizer = assertCanUpdateOrganizer(
       organizerSnap,
       deletedUserSnap,
       actorUid,
       data.fields
     );
-    const patch = organizerPatch(
-      data.fields,
-      actorUid,
-      deps.serverTimestamp?.() ??
-        admin.firestore.FieldValue.serverTimestamp()
-    );
+    const timestamp = deps.serverTimestamp?.() ??
+      admin.firestore.FieldValue.serverTimestamp();
+    let publicationIdentityPatch: Record<string, unknown> = {};
+    if (data.fields.publicListingEnabled === true) {
+      const route = organizerPublicationRoute(data.organizerId, organizer);
+      await (deps.reserveCanonicalRoute ?? reserveOrganizerCanonicalRoute)(
+        tx,
+        db,
+        {
+          clubId: data.organizerId,
+          canonicalPath: route.canonicalPath,
+          slug: route.slug,
+          citySlug: route.citySlug,
+          previousCanonicalPath: organizer.publicPage?.canonicalPath ?? null,
+          adminUid: actorUid,
+          source: "hostPublishOrganizer",
+          serverTimestamp: () => timestamp,
+        }
+      );
+      if (route.needsIdentityPatch) {
+        publicationIdentityPatch = {
+          "publicPage.slug": route.slug,
+          "publicPage.citySlug": route.citySlug,
+          "publicPage.canonicalPath": route.canonicalPath,
+          "publicPage.seoTitle": null,
+          "publicPage.seoDescription": null,
+          "publicPage.lastRenderedAt": null,
+        };
+      }
+    }
+    const patch = organizerPatch(data.fields, actorUid, timestamp);
+    Object.assign(patch, publicationIdentityPatch);
     tx.update(organizerRef, patch);
     if (legacyClubSnap.exists) {
       tx.update(legacyClubRef, legacyClubPatch(patch));
@@ -230,7 +261,7 @@ function assertCanUpdateOrganizer(
   deletedUserSnap: FirebaseFirestore.DocumentSnapshot,
   actorUid: string,
   fields: UpdateOrganizerCallablePayload["fields"]
-) {
+): OrganizerDocument {
   if (deletedUserSnap.exists) {
     throw new HttpsError(
       "failed-precondition",
@@ -260,7 +291,7 @@ function assertCanUpdateOrganizer(
       );
     }
   }
-  if (isOrganizerOwner(organizer, actorUid)) return;
+  if (isOrganizerOwner(organizer, actorUid)) return organizer;
   if (
     isOrganizerManager(organizer, actorUid) &&
     Object.keys(fields).every((field) =>
@@ -269,11 +300,58 @@ function assertCanUpdateOrganizer(
       field === "organizerPhotos" ||
       field === "logoPhoto"
     )
-  ) return;
+  ) return organizer;
   throw new HttpsError(
     "permission-denied",
     "Only the organizer owner can change organizer identity."
   );
+}
+
+type OrganizerPublicationRouteSource = Pick<
+  OrganizerDocument,
+  "name" | "location" | "publicPage"
+>;
+
+interface OrganizerPublicationRoute {
+  slug: string;
+  citySlug: string;
+  canonicalPath: string;
+  needsIdentityPatch: boolean;
+}
+
+/**
+ * Resolves or creates the stable route identity needed before Host can enable
+ * an organizer website page. Legacy organizers may predate publicPage.
+ * @param {string} organizerId Canonical organizer id.
+ * @param {OrganizerPublicationRouteSource} organizer Current organizer data.
+ * @return {OrganizerPublicationRoute} Existing or deterministic route data.
+ */
+export function organizerPublicationRoute(
+  organizerId: string,
+  organizer: OrganizerPublicationRouteSource
+): OrganizerPublicationRoute {
+  if (organizer.publicPage) {
+    return {
+      slug: organizer.publicPage.slug,
+      citySlug: organizer.publicPage.citySlug,
+      canonicalPath: organizer.publicPage.canonicalPath,
+      needsIdentityPatch: false,
+    };
+  }
+  const market = marketForIdOrAlias(organizer.location);
+  if (!market) {
+    throw new HttpsError(
+      "failed-precondition",
+      "Choose a supported organizer city before enabling the website page."
+    );
+  }
+  const slug = defaultOrganizerPublicSlug(organizer.name, organizerId);
+  return {
+    slug,
+    citySlug: market.slug,
+    canonicalPath: `/organizers/${slug}/`,
+    needsIdentityPatch: true,
+  };
 }
 
 function organizerPatch(

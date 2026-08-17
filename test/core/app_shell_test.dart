@@ -76,7 +76,10 @@ void main() {
       expect(scaffold.bottomNavigationBar, isNull);
       expect(find.byKey(navigationKey), findsOneWidget);
       expect(activeTab.bottomBarPlacement, AppShellBottomBarPlacement.floating);
-      expect(activeTab.bottomOverlayInset, 102);
+      expect(
+        activeTab.bottomOverlayInset,
+        CatchLayout.tabBarReservedBottomInset(34),
+      );
     });
 
     testWidgets(

@@ -259,7 +259,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                     loadingBuilder: (_) => const CatchSkeletonRows(count: 5),
                     errorBuilder: (_, error, _) => CatchErrorState.fromError(
                       error,
-                      context: AppErrorContext.club,
+                      context: AppErrorContext.customer,
                       mode: CatchErrorStateMode.compact,
                       onRetry: () => ref.invalidate(
                         hostCustomersDirectoryControllerProvider(request),
@@ -283,7 +283,6 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                                 )
                               : null,
                           onOpenFilters: () => _openFilters(
-                            selectedClub,
                             effectiveFilter,
                             _manualTag,
                             state,
@@ -425,7 +424,6 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
   }
 
   Future<void> _openFilters(
-    Club club,
     HostCustomerFilter activeFilter,
     HostCustomerManualTag? activeManualTag,
     HostCustomersDirectoryState directory,
@@ -434,8 +432,6 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     final selected = await showCatchBottomSheet<HostCustomerFilterSelection>(
       context: context,
       builder: (_) => HostCustomerFilterSheet(
-        organizerId: club.id,
-        search: _search,
         selectedFilter: activeFilter,
         selectedManualTag: activeManualTag,
         manualTagVocabulary: directory.manualTagVocabulary,
@@ -512,7 +508,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
         showCatchErrorSnackBar(
           context,
           error,
-          errorContext: AppErrorContext.club,
+          errorContext: AppErrorContext.customer,
         );
       }
     } finally {
@@ -669,20 +665,16 @@ class HostCustomerFilterSummary extends StatelessWidget {
   }
 }
 
-class HostCustomerFilterSheet extends ConsumerWidget {
+class HostCustomerFilterSheet extends StatelessWidget {
   const HostCustomerFilterSheet({
     super.key,
-    required this.organizerId,
     required this.selectedFilter,
     required this.selectedManualTag,
     required this.manualTagVocabulary,
     required this.selectedCount,
     required this.smsReadiness,
-    this.search,
   });
 
-  final String organizerId;
-  final String? search;
   final HostCustomerFilter selectedFilter;
   final HostCustomerManualTag? selectedManualTag;
   final List<HostCustomerManualTag> manualTagVocabulary;
@@ -690,100 +682,94 @@ class HostCustomerFilterSheet extends ConsumerWidget {
   final HostCrmChannelReadiness? smsReadiness;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final groups = hostCustomerFilterGroupsForSmsReadiness(smsReadiness);
-    return CatchBottomSheetScaffold(
-      title: context.l10n.hostCustomersFilterSheetTitle,
-      subtitle: context.l10n.hostCustomersFilterSheetSubtitle,
-      child: SingleChildScrollView(
-        child: CatchSectionList(
-          emptyStateOmitted: true,
-          children: [
-            for (final entry in groups.entries)
-              CatchSection.divided(
-                title: _customerFilterGroupLabel(context, entry.key),
-                child: Wrap(
-                  spacing: CatchSpacing.s2,
-                  runSpacing: CatchSpacing.s2,
-                  children: [
-                    for (final filter in entry.value)
-                      _HostCustomerFilterCountChip(
-                        organizerId: organizerId,
-                        search: search,
-                        filter: filter,
-                        selected:
-                            selectedManualTag == null &&
-                            selectedFilter == filter,
-                        selectedCount: selectedCount,
+    final maxHeight =
+        MediaQuery.sizeOf(context).height * CatchLayout.sheetMaxHeightFraction;
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: maxHeight),
+      child: CatchBottomSheetScaffold(
+        title: context.l10n.hostCustomersFilterSheetTitle,
+        subtitle: context.l10n.hostCustomersFilterSheetSubtitle,
+        child: Flexible(
+          child: ListView(
+            key: const ValueKey('host-customer-filter-scroll'),
+            shrinkWrap: true,
+            padding: EdgeInsets.zero,
+            children: [
+              CatchSectionList(
+                emptyStateOmitted: true,
+                children: [
+                  for (final entry in groups.entries)
+                    CatchSection.divided(
+                      title: _customerFilterGroupLabel(context, entry.key),
+                      child: Wrap(
+                        spacing: CatchSpacing.s2,
+                        runSpacing: CatchSpacing.s2,
+                        children: [
+                          for (final filter in entry.value)
+                            _HostCustomerFilterChip(
+                              filter: filter,
+                              selected:
+                                  selectedManualTag == null &&
+                                  selectedFilter == filter,
+                              selectedCount: selectedCount,
+                            ),
+                        ],
                       ),
-                  ],
-                ),
-              ),
-            if (manualTagVocabulary.isNotEmpty)
-              CatchSection.divided(
-                title: context.l10n.hostCustomersFilterGroupYourTags,
-                child: Wrap(
-                  spacing: CatchSpacing.s2,
-                  runSpacing: CatchSpacing.s2,
-                  children: [
-                    for (final tag in manualTagVocabulary)
-                      _HostCustomerManualTagCountChip(
-                        organizerId: organizerId,
-                        search: search,
-                        tag: tag,
-                        selected: selectedManualTag?.tagId == tag.tagId,
-                        selectedCount: selectedCount,
+                    ),
+                  if (manualTagVocabulary.isNotEmpty)
+                    CatchSection.divided(
+                      title: context.l10n.hostCustomersFilterGroupYourTags,
+                      child: Wrap(
+                        spacing: CatchSpacing.s2,
+                        runSpacing: CatchSpacing.s2,
+                        children: [
+                          for (final tag in manualTagVocabulary)
+                            _HostCustomerManualTagChip(
+                              tag: tag,
+                              selected: selectedManualTag?.tagId == tag.tagId,
+                              selectedCount: selectedCount,
+                            ),
+                        ],
                       ),
-                  ],
-                ),
+                    ),
+                ],
               ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class _HostCustomerFilterCountChip extends ConsumerWidget {
-  const _HostCustomerFilterCountChip({
-    required this.organizerId,
-    required this.search,
+class _HostCustomerFilterChip extends StatelessWidget {
+  const _HostCustomerFilterChip({
     required this.filter,
     required this.selected,
     required this.selectedCount,
   });
 
-  final String organizerId;
-  final String? search;
   final HostCustomerFilter filter;
   final bool selected;
   final HostCustomerSegmentCount selectedCount;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final count = selected
-        ? AsyncValue.data(selectedCount)
-        : ref.watch(
-            hostCustomerSegmentCountProvider(
-              HostCustomerSegmentCountRequest(
-                organizerId: organizerId,
-                search: search,
-                filter: filter,
-              ),
-            ),
-          );
-    final countLabel = count.when(
-      data: (value) =>
-          _customerPeopleCountLabel(context, value.count, value.coverage),
-      loading: () => context.l10n.hostCustomersCountLoading,
-      error: (_, _) => context.l10n.hostCustomersCountUnavailable,
-    );
+  Widget build(BuildContext context) {
+    final filterLabel = _customerFilterLabel(context, filter);
     return CatchChip.selectable(
       key: ValueKey('host-customer-filter-${filter.name}'),
-      label: context.l10n.hostCustomersFilterOption(
-        label: _customerFilterLabel(context, filter),
-        countLabel: countLabel,
-      ),
+      label: selected
+          ? context.l10n.hostCustomersFilterOption(
+              label: filterLabel,
+              countLabel: _customerPeopleCountLabel(
+                context,
+                selectedCount.count,
+                selectedCount.coverage,
+              ),
+            )
+          : filterLabel,
       selected: selected,
       contractExemption: 'Customer filters map to reviewed CRM segments.',
       onChanged: (_) => Navigator.of(
@@ -793,46 +779,31 @@ class _HostCustomerFilterCountChip extends ConsumerWidget {
   }
 }
 
-class _HostCustomerManualTagCountChip extends ConsumerWidget {
-  const _HostCustomerManualTagCountChip({
-    required this.organizerId,
-    required this.search,
+class _HostCustomerManualTagChip extends StatelessWidget {
+  const _HostCustomerManualTagChip({
     required this.tag,
     required this.selected,
     required this.selectedCount,
   });
 
-  final String organizerId;
-  final String? search;
   final HostCustomerManualTag tag;
   final bool selected;
   final HostCustomerSegmentCount selectedCount;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final count = selected
-        ? AsyncValue.data(selectedCount)
-        : ref.watch(
-            hostCustomerManualTagCountProvider(
-              HostCustomerManualTagCountRequest(
-                organizerId: organizerId,
-                manualTagId: tag.tagId,
-                search: search,
-              ),
-            ),
-          );
-    final countLabel = count.when(
-      data: (value) =>
-          _customerPeopleCountLabel(context, value.count, value.coverage),
-      loading: () => context.l10n.hostCustomersCountLoading,
-      error: (_, _) => context.l10n.hostCustomersCountUnavailable,
-    );
+  Widget build(BuildContext context) {
     return CatchChip.selectable(
       key: ValueKey('host-customer-manual-tag-${tag.tagId}'),
-      label: context.l10n.hostCustomersFilterOption(
-        label: tag.label,
-        countLabel: countLabel,
-      ),
+      label: selected
+          ? context.l10n.hostCustomersFilterOption(
+              label: tag.label,
+              countLabel: _customerPeopleCountLabel(
+                context,
+                selectedCount.count,
+                selectedCount.coverage,
+              ),
+            )
+          : tag.label,
       leading: Icon(CatchIcons.editNoteOutlined),
       selected: selected,
       accent: CatchTokens.of(context).ink2,

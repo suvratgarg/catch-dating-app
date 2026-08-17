@@ -103,6 +103,7 @@ import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dar
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_roster_drawer.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_edit_screen_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_home_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
@@ -1206,12 +1207,11 @@ Widget hostHomeEventSectionStates(BuildContext context) {
         child: _HostHomeSectionFrame(
           child: HostEventsClubCard(
             club: _club,
-            selectedFilter: HostEventsLifecycleFilter.upcoming,
-            onFilterChanged: (_) {},
             onEventEntrySelected: (_, _, _) {},
             onManageEvent: (_, _) {},
             onOpenTask: (_, _, _) {},
             now: HostOperationsFixtures.now,
+            sessionBoundary: HostOperationsFixtures.now,
           ),
         ),
       ),
@@ -1236,12 +1236,11 @@ Widget hostHomeEventSectionStates(BuildContext context) {
           },
           child: HostEventsClubCard(
             club: _club,
-            selectedFilter: HostEventsLifecycleFilter.past,
-            onFilterChanged: (_) {},
             onEventEntrySelected: (_, _, _) {},
             onManageEvent: (_, _) {},
             onOpenTask: (_, _, _) {},
             now: HostOperationsFixtures.now,
+            sessionBoundary: HostOperationsFixtures.now,
           ),
         ),
       ),
@@ -1253,12 +1252,11 @@ Widget hostHomeEventSectionStates(BuildContext context) {
           },
           child: HostEventsClubCard(
             club: _club,
-            selectedFilter: HostEventsLifecycleFilter.upcoming,
-            onFilterChanged: (_) {},
             onEventEntrySelected: (_, _, _) {},
             onManageEvent: (_, _) {},
             onOpenTask: (_, _, _) {},
             now: HostOperationsFixtures.now,
+            sessionBoundary: HostOperationsFixtures.now,
           ),
         ),
       ),
@@ -1272,12 +1270,11 @@ Widget hostHomeEventSectionStates(BuildContext context) {
           },
           child: HostEventsClubCard(
             club: _club,
-            selectedFilter: HostEventsLifecycleFilter.upcoming,
-            onFilterChanged: (_) {},
             onEventEntrySelected: (_, _, _) {},
             onManageEvent: (_, _) {},
             onOpenTask: (_, _, _) {},
             now: HostOperationsFixtures.now,
+            sessionBoundary: HostOperationsFixtures.now,
           ),
         ),
       ),
@@ -1292,12 +1289,11 @@ Widget hostHomeEventSectionStates(BuildContext context) {
           },
           child: HostEventsClubCard(
             club: _club,
-            selectedFilter: HostEventsLifecycleFilter.upcoming,
-            onFilterChanged: (_) {},
             onEventEntrySelected: (_, _, _) {},
             onManageEvent: (_, _) {},
             onOpenTask: (_, _, _) {},
             now: HostOperationsFixtures.now,
+            sessionBoundary: HostOperationsFixtures.now,
           ),
         ),
       ),
@@ -1307,12 +1303,11 @@ Widget hostHomeEventSectionStates(BuildContext context) {
           clubEventStreams: {_club.id: Stream<List<Event>>.value(const [])},
           child: HostEventsClubCard(
             club: _club,
-            selectedFilter: HostEventsLifecycleFilter.upcoming,
-            onFilterChanged: (_) {},
             onEventEntrySelected: (_, _, _) {},
             onManageEvent: (_, _) {},
             onOpenTask: (_, _, _) {},
             now: HostOperationsFixtures.now,
+            sessionBoundary: HostOperationsFixtures.now,
           ),
         ),
       ),
@@ -1326,12 +1321,11 @@ Widget hostHomeEventSectionStates(BuildContext context) {
           },
           child: HostEventsClubCard(
             club: _club,
-            selectedFilter: HostEventsLifecycleFilter.upcoming,
-            onFilterChanged: (_) {},
             onEventEntrySelected: (_, _, _) {},
             onManageEvent: (_, _) {},
             onOpenTask: (_, _, _) {},
             now: HostOperationsFixtures.now,
+            sessionBoundary: HostOperationsFixtures.now,
           ),
         ),
       ),
@@ -1974,12 +1968,11 @@ Widget _hostClubPreviewFor(String focus) {
     ),
     'HostEventsClubCard' => HostEventsClubCard(
       club: club,
-      selectedFilter: HostEventsLifecycleFilter.upcoming,
-      onFilterChanged: (_) {},
       onEventEntrySelected: (_, _, _) {},
       onManageEvent: (_, _) {},
       onOpenTask: (_, _, _) {},
       now: HostOperationsFixtures.now,
+      sessionBoundary: HostOperationsFixtures.now,
     ),
     'HostOrganizerMetricGrid' => HostOrganizerMetricGrid(
       club: club,
@@ -6307,6 +6300,9 @@ class _HostShellScope extends StatelessWidget {
       for (final club in effectiveOwnedClubs) club.id: club,
     };
     final overrides = [
+      hostEventsTimelineControllerProvider.overrideWith2(
+        (_) => _WidgetbookHostEventsTimelineController(clubEventStreams),
+      ),
       uidProvider.overrideWithValue(AsyncData<String?>(uid)),
       watchHostProfileProvider(effectiveUid).overrideWith(
         (ref) =>
@@ -6388,6 +6384,50 @@ class _HostShellScope extends StatelessWidget {
         overrides: overrides,
         child: _ThemedHostPreview(themeMode: themeMode, child: child),
       ),
+    );
+  }
+}
+
+class _WidgetbookHostEventsTimelineController
+    extends HostEventsTimelineController {
+  _WidgetbookHostEventsTimelineController(this.eventStreamsByOrganizer);
+
+  final Map<String, Stream<List<Event>>> eventStreamsByOrganizer;
+
+  @override
+  Future<HostEventsTimelineData> build(
+    HostEventsTimelineRequest request,
+  ) async {
+    final stream =
+        eventStreamsByOrganizer[request.organizerId] ??
+        Stream<List<Event>>.value(
+          HostOperationsFixtures.eventsByClub[request.organizerId] ?? const [],
+        );
+    final completer = Completer<List<Event>>();
+    late final StreamSubscription<List<Event>> subscription;
+    subscription = stream.listen(
+      (events) {
+        if (!completer.isCompleted) completer.complete(events);
+        unawaited(subscription.cancel());
+      },
+      onError: (Object error, StackTrace stackTrace) {
+        if (!completer.isCompleted) completer.completeError(error, stackTrace);
+        unawaited(subscription.cancel());
+      },
+    );
+    ref.onDispose(() => unawaited(subscription.cancel()));
+    final events = await completer.future;
+    return HostEventsTimelineData(
+      activeEvents: events
+          .where((event) => event.endTime.isAfter(request.sessionBoundary))
+          .toList(growable: false),
+      pastEvents: events
+          .where((event) => !event.endTime.isAfter(request.sessionBoundary))
+          .toList(growable: false),
+      activeCursor: null,
+      pastCursor: null,
+      hasMoreActive: false,
+      hasMorePast: false,
     );
   }
 }

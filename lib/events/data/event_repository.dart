@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/core/data/cursor_page.dart';
 import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_chunks.dart';
@@ -151,6 +152,77 @@ class EventRepository {
           resource: _collectionPath,
         ),
       );
+
+  /// Fetches the organizer's nearest live and future events as a cursor page.
+  ///
+  /// The fixed [sessionBoundary] keeps paging stable while the Host Events
+  /// screen is open. Presentation logic can still move an event from live to
+  /// past as its clock advances without reissuing the Firestore query.
+  Future<CursorPage<Event, DocumentSnapshot<Event>>> fetchActiveEventsPage({
+    required String organizerId,
+    required DateTime sessionBoundary,
+    DocumentSnapshot<Event>? startAfter,
+    int limit = ReadLimitPolicy.directoryPage,
+  }) => _fetchOrganizerEventsPage(
+    // firestore-index: events (organizerId:ASCENDING,status:ASCENDING,endTime:ASCENDING,__name__:ASCENDING)
+    _eventsRef
+        .where('organizerId', isEqualTo: organizerId)
+        .where('status', isEqualTo: EventLifecycleStatus.active.name)
+        .where('endTime', isGreaterThan: Timestamp.fromDate(sessionBoundary))
+        .orderBy('endTime')
+        .orderBy(FieldPath.documentId),
+    startAfter: startAfter,
+    limit: limit,
+    action: 'fetch active organizer events page',
+  );
+
+  /// Fetches completed organizer events newest-first with an opaque cursor.
+  Future<CursorPage<Event, DocumentSnapshot<Event>>> fetchPastEventsPage({
+    required String organizerId,
+    required DateTime sessionBoundary,
+    DocumentSnapshot<Event>? startAfter,
+    int limit = ReadLimitPolicy.directoryPage,
+  }) => _fetchOrganizerEventsPage(
+    // firestore-index: events (organizerId:ASCENDING,status:ASCENDING,endTime:DESCENDING,__name__:DESCENDING)
+    _eventsRef
+        .where('organizerId', isEqualTo: organizerId)
+        .where('status', isEqualTo: EventLifecycleStatus.active.name)
+        .where(
+          'endTime',
+          isLessThanOrEqualTo: Timestamp.fromDate(sessionBoundary),
+        )
+        .orderBy('endTime', descending: true)
+        .orderBy(FieldPath.documentId, descending: true),
+    startAfter: startAfter,
+    limit: limit,
+    action: 'fetch past organizer events page',
+  );
+
+  Future<CursorPage<Event, DocumentSnapshot<Event>>> _fetchOrganizerEventsPage(
+    Query<Event> query, {
+    required DocumentSnapshot<Event>? startAfter,
+    required int limit,
+    required String action,
+  }) async {
+    final page = await query.fetchDocumentCursorPage(
+      limit: limit,
+      startAfter: startAfter,
+      errorContext: BackendErrorContext(
+        service: BackendService.firestore,
+        action: action,
+        resource: _collectionPath,
+      ),
+    );
+    return CursorPage(
+      items: List.unmodifiable(
+        page.items
+            .map((document) => document.data())
+            .where((event) => !event.synthetic),
+      ),
+      nextCursor: page.nextCursor,
+      hasMore: page.hasMore,
+    );
+  }
 
   Stream<List<Event>> watchEventsForClubs({required List<String> clubIds}) =>
       watchEventsForClubIdsStream(
