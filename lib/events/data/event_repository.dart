@@ -164,9 +164,10 @@ class EventRepository {
     DocumentSnapshot<Event>? startAfter,
     int limit = ReadLimitPolicy.directoryPage,
   }) => _fetchOrganizerEventsPage(
-    // firestore-index: events (organizerId:ASCENDING,endTime:ASCENDING,__name__:ASCENDING)
+    // firestore-index: events (organizerId:ASCENDING,status:ASCENDING,endTime:ASCENDING,__name__:ASCENDING)
     _eventsRef
         .where('organizerId', isEqualTo: organizerId)
+        .where('status', isEqualTo: EventLifecycleStatus.active.name)
         .where('endTime', isGreaterThan: Timestamp.fromDate(sessionBoundary))
         .orderBy('endTime')
         .orderBy(FieldPath.documentId),
@@ -182,9 +183,10 @@ class EventRepository {
     DocumentSnapshot<Event>? startAfter,
     int limit = ReadLimitPolicy.directoryPage,
   }) => _fetchOrganizerEventsPage(
-    // firestore-index: events (organizerId:ASCENDING,endTime:DESCENDING,__name__:DESCENDING)
+    // firestore-index: events (organizerId:ASCENDING,status:ASCENDING,endTime:DESCENDING,__name__:DESCENDING)
     _eventsRef
         .where('organizerId', isEqualTo: organizerId)
+        .where('status', isEqualTo: EventLifecycleStatus.active.name)
         .where(
           'endTime',
           isLessThanOrEqualTo: Timestamp.fromDate(sessionBoundary),

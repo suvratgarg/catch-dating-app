@@ -12774,35 +12774,11 @@ abstract class AppLocalizations {
   /// **'No upcoming events'**
   String get hostsHostHomeScreenStateEmptytitleNoUpcomingEvents;
 
-  /// Product copy used by lib/hosts/presentation/host_home_screen_state.dart (emptyTitle).
-  ///
-  /// In en, this message translates to:
-  /// **'Nothing live right now'**
-  String get hostsHostHomeScreenStateEmptytitleNothingLiveRightNow;
-
-  /// Product copy used by lib/hosts/presentation/host_home_screen_state.dart (emptyTitle).
-  ///
-  /// In en, this message translates to:
-  /// **'No past events yet'**
-  String get hostsHostHomeScreenStateEmptytitleNoPastEventsYet;
-
   /// Product copy used by lib/hosts/presentation/host_home_screen_state.dart (emptyBody).
   ///
   /// In en, this message translates to:
   /// **'Create your next event to start filling this list.'**
   String get hostsHostHomeScreenStateEmptybodyCreateYourNextEvent;
-
-  /// Product copy used by lib/hosts/presentation/host_home_screen_state.dart (emptyBody).
-  ///
-  /// In en, this message translates to:
-  /// **'Your next event appears here when it starts.'**
-  String get hostsHostHomeScreenStateEmptybodyYourNextEventAppears;
-
-  /// Product copy used by lib/hosts/presentation/host_home_screen_state.dart (emptyBody).
-  ///
-  /// In en, this message translates to:
-  /// **'Completed events and their attendance will appear here.'**
-  String get hostsHostHomeScreenStateEmptybodyCompletedEventsAndTheir;
 
   /// Product copy used by lib/hosts/presentation/host_home_screen_state.dart (visibleCopy).
   ///

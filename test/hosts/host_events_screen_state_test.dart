@@ -189,6 +189,14 @@ void main() {
       expect(emptyState.status, HostEventsWorkspaceStatus.empty);
       expect(emptyState.emptyTitle(_l10n), 'No upcoming events');
       expect(emptyState.emptyBody(_l10n), contains('Create your next event'));
+
+      final continuationState = HostEventsWorkspaceState.fromEvents(
+        events: [cancelled],
+        now: now,
+        hasMoreActive: true,
+      );
+      expect(continuationState.status, HostEventsWorkspaceStatus.populated);
+      expect(continuationState.canLoadMoreActive, isTrue);
     },
   );
 

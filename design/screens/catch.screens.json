@@ -8573,7 +8573,7 @@
         "symbol": "HostOperationsHomeScreen"
       },
       "stateController": {
-        "primary": "uidProvider + _hostClubsForUserProvider + watchEventsForClubProvider",
+        "primary": "uidProvider + _hostClubsForUserProvider + hostEventsTimelineControllerProvider",
         "files": [
           {
             "file": "lib/hosts/presentation/host_operations/host_operations_home_screen.dart",
@@ -8593,11 +8593,15 @@
           },
           {
             "file": "lib/events/data/event_repository.dart",
-            "symbol": "watchEventsForClub"
+            "symbol": "EventRepository"
+          },
+          {
+            "file": "lib/hosts/presentation/host_events_timeline_controller.dart",
+            "symbol": "HostEventsTimelineController"
           }
         ],
         "mutationOwners": [],
-    "notes": "HostOperationsHomeScreen reads uidProvider and _hostClubsForUserProvider, then maps them through HostHomeRouteState before composing auth/loading/error/empty/loaded route branches. HostHomeScreenState owns selected-club, owner/co-host role, title, and switcher state; HostEventsOverviewState owns the operational spotlight and event-attention work; HostEventsWorkspaceState owns Events loading/error/empty/populated lifecycle branches, ordering, month grouping, Repeat availability, featured-event de-duplication, and render-ready row data; HostEventsScaffold owns New/Repeat/lifecycle-aware Manage/task route callbacks."
+    "notes": "HostOperationsHomeScreen reads uidProvider and _hostClubsForUserProvider, then maps them through HostHomeRouteState before composing auth/loading/error/empty/loaded route branches. HostHomeScreenState owns selected-club, owner/co-host role, title, and switcher state; HostEventsTimelineController owns cursor-paginated schedule/history loading and partial recovery; HostEventsOverviewState owns the operational spotlight and event-attention work; HostEventsWorkspaceState owns Events loading/error/empty/populated branches, ordering, month grouping, Repeat availability, featured-event de-duplication, and render-ready row data; HostEventsScaffold owns New/Repeat/lifecycle-aware Manage/task route callbacks."
       },
       "designRefs": [
         {
@@ -8619,7 +8623,7 @@
           "kind": "repo",
           "status": "available",
           "path": "test/hosts/host_operations_screen_test.dart",
-      "notes": "Host operations tests cover operational spotlight/task routing, lifecycle filtering, owned club and co-host switching, event actions, and opening lifecycle-aware Host Event Manage sections."
+      "notes": "Host operations tests cover operational spotlight/task routing, paginated schedule/history rendering and recovery, owned club and co-host switching, event actions, and opening lifecycle-aware Host Event Manage sections."
         },
         {
           "id": "claude.host-home",
@@ -8645,7 +8649,7 @@
         {
           "id": "host_home_events_list",
           "status": "captured",
-      "notes": "The deterministic full-shell capture is the canonical Host Events evidence ID. Events now combines the operational spotlight and Needs You work with New/exact-policy-gated Repeat actions, minute-refreshed Upcoming/Live/Past filters, month groups, activity-spined rows, and truthful fill progress. The pre-merge reference drift remains tracked by HOST-V2-EVENTS-VISUAL-DRIFT-001; canonical references are not refreshed merely to clear CI."
+      "notes": "The deterministic full-shell capture is the canonical Host Events evidence ID. Events now combines the operational spotlight and Needs You work with New/exact-policy-gated Repeat actions, paginated Schedule and History sections, month groups, activity-spined rows, and truthful fill progress. The pre-merge reference drift remains tracked by HOST-V2-EVENTS-VISUAL-DRIFT-001; canonical references are not refreshed merely to clear CI."
         },
         {
           "id": "host_home_switcher_cohost",
@@ -8825,8 +8829,8 @@
           "id": "club_events_loading",
           "kind": "loading",
           "status": "captured",
-          "source": "HostEventsClubCard maps the selected club event async branch into HostEventsWorkspaceState.loading before HostEventsClubSection renders the lifecycle-list skeleton beneath its controls.",
-          "nextAction": "Keep the event-list loading capture synced with lifecycle workspace geometry.",
+          "source": "HostEventsClubCard maps the selected club timeline async branch into HostEventsWorkspaceState.loading before HostEventsClubSection renders the event-list skeleton.",
+          "nextAction": "Keep the event-list loading capture synced with timeline workspace geometry.",
           "previewIds": [
             "hostHomeRouteStates"
           ],
@@ -8851,7 +8855,7 @@
           "id": "club_events_offline",
           "kind": "offline",
           "status": "captured",
-          "source": "watchEventsForClubProvider offline errors render CatchInlineErrorState.fromError with retryable connection issue copy inside the selected club event card.",
+          "source": "hostEventsTimelineControllerProvider offline errors render CatchInlineErrorState.fromError with retryable connection issue copy inside the selected club event card.",
           "captureIds": [
             "host_home_events_offline"
           ],
@@ -8861,7 +8865,7 @@
           "id": "upcoming_events",
           "kind": "populated",
           "status": "captured",
-          "source": "HostEventsWorkspaceState excludes cancelled events, classifies exact Upcoming/Live/Past boundaries, orders and month-groups them, and feeds HostEventLifecycleRow with provider-free display data.",
+          "source": "HostEventsWorkspaceState excludes cancelled events, classifies exact Upcoming/Live/Past boundaries from the paginated timeline, orders and month-groups them, and feeds HostEventLifecycleRow with provider-free display data.",
           "tests": [
             "test/hosts/host_operations_screen_test.dart"
           ],
@@ -8875,10 +8879,43 @@
           ]
         },
         {
+          "id": "event_schedule_paginating",
+          "kind": "mutation",
+          "status": "tested",
+          "source": "HostEventsTimelineController.loadMoreActive preserves visible schedule and history rows, disables duplicate requests, and appends an event-id-de-duplicated page.",
+          "tests": [
+            "test/hosts/host_events_timeline_controller_test.dart",
+            "test/hosts/host_operations_screen_test.dart"
+          ],
+          "nextAction": "Add a deterministic load-more-schedule capture only if the loading treatment becomes visually distinct."
+        },
+        {
+          "id": "event_history_paginating",
+          "kind": "mutation",
+          "status": "tested",
+          "source": "HostEventsTimelineController.loadMorePast preserves visible schedule and history rows, disables duplicate requests, and appends an event-id-de-duplicated history page.",
+          "tests": [
+            "test/hosts/host_events_timeline_controller_test.dart",
+            "test/hosts/host_operations_screen_test.dart"
+          ],
+          "nextAction": "Add a deterministic load-more-history capture only if the loading treatment becomes visually distinct."
+        },
+        {
+          "id": "event_history_error",
+          "kind": "error",
+          "status": "tested",
+          "source": "A history-page failure preserves the loaded schedule and history, renders a scoped inline error, and retries through HostEventsTimelineController.retryPast.",
+          "tests": [
+            "test/hosts/host_events_timeline_controller_test.dart",
+            "test/hosts/host_operations_screen_test.dart"
+          ],
+          "nextAction": "Add a deterministic partial-history-error capture if this branch needs standalone visual evidence."
+        },
+        {
           "id": "empty_events",
           "kind": "empty",
           "status": "captured",
-      "source": "When the selected organizer has no events in the chosen lifecycle projection, Events retains its create actions and renders the canonical filter-specific empty state.",
+      "source": "When the selected organizer has no current schedule or completed-event history, Events retains its create action and renders the canonical empty state.",
           "nextAction": "Add owner-empty-events capture if it diverges from the co-host empty-events variant.",
           "previewIds": [
             "hostHomeRouteStates"
@@ -8967,8 +9004,8 @@
         }
       ],
       "composition": {
-    "currentLayout": "HostOperationsHomeScreen reads auth and organizer streams through HostHomeRouteState, then HostEventsScaffold follows the shell-selected organizer and owns New/Repeat/lifecycle-aware Manage/task route callbacks. HostEventsClubCard is the single provider adapter over watchEventsForClubProvider; it derives HostEventsOverviewState plus HostEventsWorkspaceState from the same event snapshot and delegates the operational spotlight, attention work, filters, empty/error/loading states, and lifecycle rows to provider-free sections.",
-    "targetLayout": "Keep Host Events as one lifecycle workspace: route-state selection in the adapter, one selected-organizer context, a truthful operational spotlight and attention queue, lifecycle filtering and rows, canonical empty/access/loading/error states, and typed route callbacks. Reserve separate Host shell destinations for distinct domains such as Customers rather than duplicating an event projection.",
+    "currentLayout": "HostOperationsHomeScreen reads auth and organizer streams through HostHomeRouteState, then HostEventsScaffold follows the shell-selected organizer and owns New/Repeat/lifecycle-aware Manage/task route callbacks. HostEventsClubCard is the single provider adapter over HostEventsTimelineController; it derives HostEventsOverviewState plus HostEventsWorkspaceState from the paginated schedule/history timeline and delegates the operational spotlight, attention work, pagination, empty/error/loading states, and lifecycle rows to provider-free sections.",
+    "targetLayout": "Keep Host Events as one timeline workspace: route-state selection in the adapter, one selected-organizer context, a truthful operational spotlight and attention queue, paginated schedule/history rows, canonical empty/access/loading/error states, and typed route callbacks. Reserve separate Host shell destinations for distinct domains such as Customers rather than duplicating an event projection.",
         "sections": [
           {
             "id": "section.host.home_screen_adapter",
@@ -8996,7 +9033,7 @@
               "loaded_club",
               "event_loading"
             ],
-        "migration": "HostHomeRouteState owns auth-required, loading, error, empty, and loaded route selection from uid plus host-club async state. HostHomeScreenState owns selected-club, title, switcher visibility, and owner/co-host display state; HostEventsOverviewState owns operational-event/task derivation; HostEventsWorkspaceState owns lifecycle/filter/group/repeat derivation and featured-event de-duplication; HostEventsScaffold owns navigation callbacks.",
+        "migration": "HostHomeRouteState owns auth-required, loading, error, empty, and loaded route selection from uid plus host-club async state. HostHomeScreenState owns selected-club, title, switcher visibility, and owner/co-host display state; HostEventsTimelineController owns paginated schedule/history loading; HostEventsOverviewState owns operational-event/task derivation; HostEventsWorkspaceState owns lifecycle/group/repeat derivation and featured-event de-duplication; HostEventsScaffold owns navigation callbacks.",
             "previewIds": [
               "hostHomeRouteStates"
             ]
@@ -9059,10 +9096,13 @@
               "empty",
               "one_event",
               "multiple_events",
+              "schedule_paginating",
+              "history_paginating",
+              "history_error",
               "cancelled_filtered",
               "long_titles"
             ],
-        "migration": "HostEventsClubCard maps one event snapshot into HostEventsOverviewState and HostEventsWorkspaceState. The overview owns the live-or-next spotlight and truthful attention tasks; the workspace owns loading/error/empty/populated mapping, lifecycle classification, sorting, month grouping, Repeat availability, featured-event de-duplication, and row display data. Provider-free sections receive typed retry/filter/New/Repeat/Manage/task callbacks.",
+        "migration": "HostEventsClubCard maps the paginated event timeline into HostEventsOverviewState and HostEventsWorkspaceState. The overview owns the live-or-next spotlight and truthful attention tasks; the timeline controller owns schedule/history paging and partial recovery; the workspace owns loading/error/empty/populated mapping, lifecycle classification, sorting, month grouping, Repeat availability, featured-event de-duplication, and row display data. Provider-free sections receive typed retry/pagination/New/Repeat/Manage/task callbacks.",
             "previewIds": [
               "hostHomeRouteStates",
               "hostHomeEventSectionStates"
@@ -9174,7 +9214,7 @@
         {
           "id": "DS-HOST-HOME-003",
           "status": "closed",
-          "nextAction": "HostHomeRouteState maps uid plus host-club async state into auth-required, loading, error, empty, or loaded branches. HostEventsWorkspaceState maps lifecycle loading/error/empty/populated branches and render-ready rows; HostEventsClubSection renders New/Repeat actions, filters, groups, and lifecycle rows while HostEventsClubCard remains the narrow provider adapter."
+          "nextAction": "HostHomeRouteState maps uid plus host-club async state into auth-required, loading, error, empty, or loaded branches. HostEventsTimelineController owns schedule/history pagination and partial recovery; HostEventsWorkspaceState maps loading/error/empty/populated branches and render-ready rows; HostEventsClubSection renders New/Repeat actions, groups, pagination, and lifecycle rows while HostEventsClubCard remains the narrow provider adapter."
         },
         {
           "id": "DS-HOST-HOME-004",

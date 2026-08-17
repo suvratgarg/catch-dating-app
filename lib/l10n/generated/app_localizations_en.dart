@@ -8070,24 +8070,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'No upcoming events';
 
   @override
-  String get hostsHostHomeScreenStateEmptytitleNothingLiveRightNow =>
-      'Nothing live right now';
-
-  @override
-  String get hostsHostHomeScreenStateEmptytitleNoPastEventsYet =>
-      'No past events yet';
-
-  @override
   String get hostsHostHomeScreenStateEmptybodyCreateYourNextEvent =>
       'Create your next event to start filling this list.';
-
-  @override
-  String get hostsHostHomeScreenStateEmptybodyYourNextEventAppears =>
-      'Your next event appears here when it starts.';
-
-  @override
-  String get hostsHostHomeScreenStateEmptybodyCompletedEventsAndTheir =>
-      'Completed events and their attendance will appear here.';
 
   @override
   String hostsHostHomeScreenStateVisiblecopySpotsremainingSpotsOpen({

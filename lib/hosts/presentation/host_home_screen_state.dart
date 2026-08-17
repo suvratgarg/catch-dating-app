@@ -132,7 +132,13 @@ class HostEventsWorkspaceState {
       // The operational spotlight is the richer representation of the
       // featured event, so the timeline remains populated when it has no
       // additional condensed rows.
-      status: currentAndUpcoming.isEmpty && past.isEmpty && pastError == null
+      status:
+          currentAndUpcoming.isEmpty &&
+              past.isEmpty &&
+              !hasMoreActive &&
+              !hasMorePast &&
+              activeLoadMoreError == null &&
+              pastError == null
           ? HostEventsWorkspaceStatus.empty
           : HostEventsWorkspaceStatus.populated,
       activeSections: activeSections,

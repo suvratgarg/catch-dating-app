@@ -202,19 +202,38 @@ void main() {
           startTime: boundary.add(const Duration(days: 1)),
           endTime: boundary.add(const Duration(days: 1, hours: 1)),
         );
+        final cancelledSoon = buildEvent(
+          id: 'cancelled-soon',
+          clubId: 'club-2',
+          startTime: boundary.add(const Duration(hours: 2)),
+          endTime: boundary.add(const Duration(hours: 3)),
+        ).copyWith(status: EventLifecycleStatus.cancelled);
         final recentPast = buildEvent(
           id: 'recent-past',
           clubId: 'club-2',
           startTime: boundary.subtract(const Duration(hours: 2)),
           endTime: boundary.subtract(const Duration(hours: 1)),
         );
+        final cancelledPast = buildEvent(
+          id: 'cancelled-past',
+          clubId: 'club-2',
+          startTime: boundary.subtract(const Duration(minutes: 45)),
+          endTime: boundary.subtract(const Duration(minutes: 15)),
+        ).copyWith(status: EventLifecycleStatus.cancelled);
         final olderPast = buildEvent(
           id: 'older-past',
           clubId: 'club-2',
           startTime: boundary.subtract(const Duration(days: 2)),
           endTime: boundary.subtract(const Duration(days: 2, hours: -1)),
         );
-        for (final event in [later, olderPast, next, recentPast]) {
+        for (final event in [
+          later,
+          olderPast,
+          next,
+          recentPast,
+          cancelledSoon,
+          cancelledPast,
+        ]) {
           await _seedEvent(firestore, event);
         }
 

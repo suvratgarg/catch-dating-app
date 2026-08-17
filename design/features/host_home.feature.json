@@ -1,12 +1,12 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-08-15",
+  "updated": "2026-08-18",
   "id": "feature.host_home",
   "name": "Host Events",
   "owner": "hosts",
   "status": "pilot",
-  "description": "Orchestrates the consolidated Host Events workspace across authentication, organizer selection, operational spotlight and attention state, hosted-event lifecycle state, recovery, and typed create, repeat, manage, and task navigation.",
+  "description": "Orchestrates the consolidated Host Events workspace across authentication, organizer selection, operational spotlight and attention state, paginated schedule and history state, recovery, and typed create, repeat, manage, and task navigation.",
   "surfaces": [
     {
       "id": "host_flutter",
@@ -16,7 +16,7 @@
         "id": "screen.host.home"
       },
       "actionScope": {
-        "included": "Host Events authentication recovery, organizer switching, operational spotlight and attention work, event lifecycle filtering and retry, and typed create, repeat, manage, and task navigation.",
+        "included": "Host Events authentication recovery, organizer switching, operational spotlight and attention work, paginated schedule and history loading and retry, and typed create, repeat, manage, and task navigation.",
         "excluded": [
           "Organizer editing, event creation internals, event management mutations, booking policy, analytics, payouts, and host-team administration retain their owning feature contracts or controllers."
         ]
@@ -45,6 +45,12 @@
             "symbol": "HostEventsClubCard"
           },
           {
+            "id": "events_timeline",
+            "language": "dart",
+            "file": "lib/hosts/presentation/host_events_timeline_controller.dart",
+            "symbol": "HostEventsTimelineController"
+          },
+          {
             "id": "auth_required",
             "language": "dart",
             "file": "lib/hosts/presentation/host_operations/host_auth_required_screen.dart",
@@ -63,7 +69,6 @@
           "catch.error_state",
           "catch.event_card",
           "catch.menu",
-          "catch.option_group",
           "catch.skeleton",
           "catch.surface",
           "catch.top_bar"
@@ -142,7 +147,7 @@
               "stateIds": ["club_events_loading", "upcoming_events", "empty_events"]
             }
           ],
-          "description": "Invalidates the selected organizer's hosted-event stream after a nested list failure."
+          "description": "Invalidates the selected organizer's paginated event timeline after its initial load fails."
         },
         {
           "id": "create_organizer",
@@ -173,18 +178,46 @@
           "description": "Long-presses the Organizer navigation avatar, provides haptic feedback, and switches the global Host scope to another organizer the viewer hosts."
         },
         {
-          "id": "filter_events",
-          "owner": "workspace",
-          "codeValue": "HostEventsLifecycleFilter",
-          "cardinality": "unbounded",
-          "scopeKeys": ["viewerUid", "clubId", "filterSelectionVersion"],
+          "id": "load_more_schedule",
+          "owner": "events_timeline",
+          "codeValue": "loadMoreActive",
+          "cardinality": "singleton",
+          "scopeKeys": ["viewerUid", "clubId", "sessionBoundary", "activeCursor"],
           "outcomes": [
             {
               "kind": "surface_state",
-              "stateIds": ["upcoming_events", "empty_events"]
+              "stateIds": ["upcoming_events", "event_schedule_paginating"]
             }
           ],
-          "description": "Selects the Upcoming, Live, or Past lifecycle projection without changing the hosted-event source."
+          "description": "Loads and event-id de-duplicates the next live-or-future schedule page without replacing the current timeline."
+        },
+        {
+          "id": "load_more_history",
+          "owner": "events_timeline",
+          "codeValue": "loadMorePast",
+          "cardinality": "singleton",
+          "scopeKeys": ["viewerUid", "clubId", "sessionBoundary", "pastCursor"],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": ["upcoming_events", "event_history_paginating", "event_history_error"]
+            }
+          ],
+          "description": "Loads and event-id de-duplicates the next completed-event history page without replacing the visible schedule."
+        },
+        {
+          "id": "retry_event_history",
+          "owner": "events_timeline",
+          "codeValue": "retryPast",
+          "cardinality": "singleton",
+          "scopeKeys": ["viewerUid", "clubId", "sessionBoundary", "failureStateVersion"],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": ["upcoming_events", "event_history_error"]
+            }
+          ],
+          "description": "Retries the first completed-event history page while preserving the already loaded schedule."
         },
         {
           "id": "create_event",
@@ -269,6 +302,9 @@
         "club_events_error",
         "club_events_offline",
         "upcoming_events",
+        "event_schedule_paginating",
+        "event_history_paginating",
+        "event_history_error",
         "empty_events",
         "create_event_action",
         "manage_event_navigation",
@@ -317,11 +353,21 @@
         },
         "upcoming_events": {
           "dimensions": {},
-          "actionCases": [{"id": "events", "enabledActions": ["switch_organizer", "filter_events", "create_event", "repeat_event", "manage_event", "open_operational_event", "open_attention_task"]}]
+          "actionCases": [{"id": "events", "enabledActions": ["switch_organizer", "load_more_schedule", "load_more_history", "create_event", "repeat_event", "manage_event", "open_operational_event", "open_attention_task"]}]
+        },
+        "event_schedule_paginating": {
+          "actionCases": [{"id": "schedule_pending", "disabledActions": ["load_more_schedule"], "enabledActions": ["load_more_history", "create_event", "manage_event"]}]
+        },
+        "event_history_paginating": {
+          "actionCases": [{"id": "history_pending", "disabledActions": ["load_more_history", "retry_event_history"], "enabledActions": ["load_more_schedule", "create_event", "manage_event"]}]
+        },
+        "event_history_error": {
+          "dimensions": {"load": "error"},
+          "actionCases": [{"id": "history_recovery", "enabledActions": ["retry_event_history", "load_more_schedule", "create_event", "manage_event"]}]
         },
         "empty_events": {
           "dimensions": {"event_supply": "empty"},
-          "actionCases": [{"id": "empty", "enabledActions": ["switch_organizer", "filter_events", "create_event"]}]
+          "actionCases": [{"id": "empty", "enabledActions": ["switch_organizer", "create_event"]}]
         },
         "create_event_action": {
           "actionCases": [{"id": "create", "enabledActions": ["create_event"]}]
@@ -360,6 +406,12 @@
           "evidence": ["captures"],
           "debtId": "FEATURE-CONTRACT-MIGRATION-001",
           "reason": "The typed Host Home route actions are covered by focused widget tests and the route-state catalog but do not yet have standalone deterministic captures."
+        },
+        {
+          "stateIds": ["event_schedule_paginating", "event_history_paginating", "event_history_error"],
+          "evidence": ["captures", "previews"],
+          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
+          "reason": "The paginated schedule and history branches are covered by focused state and widget tests but do not yet have standalone capture or Widgetbook scenarios."
         }
       ]
     }
