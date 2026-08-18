@@ -13064,7 +13064,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostSendsFollowerUpdateDescription =>
-      'Open Organizer to post · Home and Activity · preference-gated push';
+      'Followers in Catch · Home and Activity · preference-gated push';
+
+  @override
+  String get hostSendsFollowerUpdateQuotaUsed =>
+      'This organizer has used its three follower updates for the rolling seven-day window.';
+
+  @override
+  String get hostSendsWeeklyLimit => 'Weekly limit reached';
+
+  @override
+  String get hostSendsFollowersAudience => 'Followers in Catch';
+
+  @override
+  String get hostSendsLinkedEventUpdate => 'Linked event';
 
   @override
   String get hostSendsCatchWhatsappChannel => 'WhatsApp · Catch';

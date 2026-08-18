@@ -20398,8 +20398,32 @@ abstract class AppLocalizations {
   /// Delivery semantics for organizer follower posts.
   ///
   /// In en, this message translates to:
-  /// **'Open Organizer to post · Home and Activity · preference-gated push'**
+  /// **'Followers in Catch · Home and Activity · preference-gated push'**
   String get hostSendsFollowerUpdateDescription;
+
+  /// Follower-update quota blocker in the Host route picker.
+  ///
+  /// In en, this message translates to:
+  /// **'This organizer has used its three follower updates for the rolling seven-day window.'**
+  String get hostSendsFollowerUpdateQuotaUsed;
+
+  /// Compact follower-update quota status.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly limit reached'**
+  String get hostSendsWeeklyLimit;
+
+  /// Audience label for an organizer follower update in Sends history.
+  ///
+  /// In en, this message translates to:
+  /// **'Followers in Catch'**
+  String get hostSendsFollowersAudience;
+
+  /// Follower-update history marker for a linked event.
+  ///
+  /// In en, this message translates to:
+  /// **'Linked event'**
+  String get hostSendsLinkedEventUpdate;
 
   /// Channel and sender label for the separate Catch-owned WhatsApp route.
   ///

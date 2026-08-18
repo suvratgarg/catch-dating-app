@@ -26310,8 +26310,6 @@ abstract final class CatchContractConstraints {
   static const listOrganizerCampaignsCallableResponseSendsItemsAudience = CatchContractFieldConstraints(
     path: 'listOrganizerCampaignsCallableResponse.sends.items.audience',
     required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['booked', 'prospective', 'everyone'],
   );
 
   static const listOrganizerCampaignsCallableResponseSendsItemsAudienceCountsDuplicate = CatchContractFieldConstraints(
@@ -26402,6 +26400,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const listOrganizerCampaignsCallableResponseSendsItemsCreatedAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerCampaignsCallableResponse.sends.items.createdAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
   static const listOrganizerCampaignsCallableResponseSendsItemsDeliveryCountsAccepted = CatchContractFieldConstraints(
     path: 'listOrganizerCampaignsCallableResponse.sends.items.deliveryCounts.accepted',
     required: true,
@@ -26484,7 +26489,6 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerCampaignsCallableResponse.sends.items.eventId',
     maxLength: 180,
     minLength: 1,
-    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -26513,6 +26517,14 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerCampaignsCallableResponse.sends.items.partialFailure',
     required: true,
     valueTypes: <String>['boolean'],
+  );
+
+  static const listOrganizerCampaignsCallableResponseSendsItemsPostId = CatchContractFieldConstraints(
+    path: 'listOrganizerCampaignsCallableResponse.sends.items.postId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const listOrganizerCampaignsCallableResponseSendsItemsRecipientCount = CatchContractFieldConstraints(
@@ -26558,7 +26570,7 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerCampaignsCallableResponse.sends.items.status',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['draft', 'previewed', 'approved', 'scheduled', 'resolving', 'sending', 'completed', 'partiallyFailed', 'cancelled', 'blocked'],
+    enumValues: <String>['active', 'removed'],
   );
 
   static const listOrganizerCampaignsCallableResponseSendsItemsTemplateId = CatchContractFieldConstraints(
@@ -57079,6 +57091,7 @@ abstract final class CatchContractConstraints {
     'listOrganizerCampaignsCallableResponse.sends.items.audienceCounts.unsupported': listOrganizerCampaignsCallableResponseSendsItemsAudienceCountsUnsupported,
     'listOrganizerCampaignsCallableResponse.sends.items.broadcastId': listOrganizerCampaignsCallableResponseSendsItemsBroadcastId,
     'listOrganizerCampaignsCallableResponse.sends.items.campaignId': listOrganizerCampaignsCallableResponseSendsItemsCampaignId,
+    'listOrganizerCampaignsCallableResponse.sends.items.createdAtMillis': listOrganizerCampaignsCallableResponseSendsItemsCreatedAtMillis,
     'listOrganizerCampaignsCallableResponse.sends.items.deliveryCounts.accepted': listOrganizerCampaignsCallableResponseSendsItemsDeliveryCountsAccepted,
     'listOrganizerCampaignsCallableResponse.sends.items.deliveryCounts.delivered': listOrganizerCampaignsCallableResponseSendsItemsDeliveryCountsDelivered,
     'listOrganizerCampaignsCallableResponse.sends.items.deliveryCounts.failed': listOrganizerCampaignsCallableResponseSendsItemsDeliveryCountsFailed,
@@ -57094,6 +57107,7 @@ abstract final class CatchContractConstraints {
     'listOrganizerCampaignsCallableResponse.sends.items.kind': listOrganizerCampaignsCallableResponseSendsItemsKind,
     'listOrganizerCampaignsCallableResponse.sends.items.name': listOrganizerCampaignsCallableResponseSendsItemsName,
     'listOrganizerCampaignsCallableResponse.sends.items.partialFailure': listOrganizerCampaignsCallableResponseSendsItemsPartialFailure,
+    'listOrganizerCampaignsCallableResponse.sends.items.postId': listOrganizerCampaignsCallableResponseSendsItemsPostId,
     'listOrganizerCampaignsCallableResponse.sends.items.recipientCount': listOrganizerCampaignsCallableResponseSendsItemsRecipientCount,
     'listOrganizerCampaignsCallableResponse.sends.items.scheduledAtMillis': listOrganizerCampaignsCallableResponseSendsItemsScheduledAtMillis,
     'listOrganizerCampaignsCallableResponse.sends.items.segmentIds': listOrganizerCampaignsCallableResponseSendsItemsSegmentIds,

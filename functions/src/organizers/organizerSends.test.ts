@@ -58,14 +58,31 @@ const announcement = (id: string, activityAtMillis: number): SendRow => ({
   activityAtMillis,
 });
 
+const followerUpdate = (id: string, activityAtMillis: number): SendRow => ({
+  kind: "followerUpdate",
+  postId: id,
+  eventId: null,
+  audience: "followers",
+  status: "active",
+  createdAtMillis: activityAtMillis,
+  activityAtMillis,
+});
+
 test("Sends rows mix kinds in stable reverse chronology", () => {
   assert.deepEqual(
     sortOrganizerSendRows([
       campaign("campaign-a", 100),
       announcement("broadcast-a", 300),
       campaign("campaign-z", 300),
-    ]).map((row) => row.kind === "campaign" ? row.campaignId : row.broadcastId),
-    ["campaign-z", "broadcast-a", "campaign-a"],
+      followerUpdate("post-y", 300),
+    ]).map((row) => {
+      switch (row.kind) {
+      case "campaign": return row.campaignId;
+      case "announcement": return row.broadcastId;
+      case "followerUpdate": return row.postId;
+      }
+    }),
+    ["post-y", "campaign-z", "broadcast-a", "campaign-a"],
   );
 });
 
@@ -80,4 +97,12 @@ test("Sends cursor round trips the union ordering key", () => {
     (error: unknown) => error instanceof HttpsError &&
       error.code === "invalid-argument",
   );
+});
+
+test("Sends cursor round trips a follower update ordering key", () => {
+  const row = followerUpdate("post-1", 1720000000001);
+  assert.deepEqual(decodeOrganizerSendCursor(encodeOrganizerSendCursor(row)), {
+    activityAtMillis: 1720000000001,
+    sendId: "post-1",
+  });
 });

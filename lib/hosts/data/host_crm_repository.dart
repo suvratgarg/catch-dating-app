@@ -1487,6 +1487,7 @@ sealed class HostSendSummary {
       switch (_requiredString(map, 'kind')) {
         'campaign' => HostCampaignSendSummary.fromMap(map),
         'announcement' => HostAnnouncementSendSummary.fromMap(map),
+        'followerUpdate' => HostFollowerUpdateSendSummary.fromMap(map),
         _ => throw const FormatException('Send row had an unsupported kind.'),
       };
 
@@ -1582,6 +1583,36 @@ final class HostAnnouncementSendSummary extends HostSendSummary {
 
   @override
   String get id => broadcastId;
+}
+
+final class HostFollowerUpdateSendSummary extends HostSendSummary {
+  const HostFollowerUpdateSendSummary({
+    required this.postId,
+    required this.eventId,
+    required this.audience,
+    required this.status,
+    required this.createdAt,
+    required super.activityAt,
+  });
+
+  factory HostFollowerUpdateSendSummary.fromMap(Map<Object?, Object?> map) =>
+      HostFollowerUpdateSendSummary(
+        postId: _requiredString(map, 'postId'),
+        eventId: _nullableString(map['eventId']),
+        audience: _requiredString(map, 'audience'),
+        status: _requiredString(map, 'status'),
+        createdAt: _requiredDateTimeFromMillis(map, 'createdAtMillis'),
+        activityAt: _requiredDateTimeFromMillis(map, 'activityAtMillis'),
+      );
+
+  final String postId;
+  final String? eventId;
+  final String audience;
+  final String status;
+  final DateTime createdAt;
+
+  @override
+  String get id => postId;
 }
 
 class HostSendsPage {

@@ -15142,7 +15142,7 @@
         "symbol": "HostInboxScreen"
       },
       "stateController": {
-        "primary": "hostOrganizerSelectionProvider + HostMessagingWorkspace + HostInboxViewModel.compose + HostSendsWorkspaceSliver + HostCampaignComposer + resolveHostInboxScope + chatsListViewModelProvider + hostSendsProvider + hostMessagingSetupProvider + chatSearchQueryProvider",
+        "primary": "hostOrganizerSelectionProvider + HostMessagingWorkspace + HostInboxViewModel.compose + HostSendsWorkspaceSliver + HostCampaignComposer + showHostFollowerUpdateComposer + resolveHostInboxScope + chatsListViewModelProvider + hostSendsProvider + hostMessagingSetupProvider + watchClubPostRemainingWeeklyQuotaProvider + chatSearchQueryProvider",
         "files": [
           {
             "file": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
@@ -15217,6 +15217,10 @@
             "symbol": "HostSendsWorkspaceSliver"
           },
           {
+            "file": "lib/hosts/presentation/inbox/host_follower_update_composer.dart",
+            "symbol": "showHostFollowerUpdateComposer"
+          },
+          {
             "file": "lib/hosts/presentation/inbox/host_whatsapp_thread_sheet.dart",
             "symbol": "HostWhatsappThreadSheet"
           },
@@ -15241,9 +15245,13 @@
           {
             "file": "lib/hosts/presentation/inbox/host_whatsapp_thread_sheet.dart",
             "symbol": "HostWhatsappThreadSheet"
+          },
+          {
+            "file": "lib/hosts/presentation/host_club_post_controller.dart",
+            "symbol": "HostClubPostController"
           }
         ],
-        "notes": "HostInboxScreen is the Host-owned Messaging surface and follows the shell-selected organizer. Inbox selects that organizer's live or nearest-upcoming event, keeps General explicit, scopes personal inquiry threads by organizer and event, classifies Booked and Prospective rows, and derives broadcast counts from eventParticipations rather than conversation count. The user-facing Sends workspace owns mixed Campaign/Announcement history and the complete campaign lifecycle; its compatibility wire value remains campaigns. WhatsApp sender setup lives on the dedicated organizer messaging route. Event broadcasts create Activity plus preference-gated push and never create chat fan-out."
+        "notes": "HostInboxScreen is the Host-owned Messaging surface and follows the shell-selected organizer. Inbox selects that organizer's live or nearest-upcoming event, keeps General explicit, scopes personal inquiry threads by organizer and event, classifies Booked and Prospective rows, and derives broadcast counts from eventParticipations rather than conversation count. The user-facing Sends workspace owns mixed Campaign/Announcement/Follower update history, the route-specific follower composer, and the complete campaign lifecycle; its compatibility wire value remains campaigns. WhatsApp sender setup lives on the dedicated organizer messaging route. Event broadcasts and follower updates create durable Activity plus preference-gated push and never create chat fan-out."
       },
       "designRefs": [
         {
@@ -15587,6 +15595,18 @@
             "test/communications/communication_route_test.dart"
           ],
           "nextAction": "Add a deterministic Sends route-picker preview and capture after its baseline is approved."
+        },
+        {
+          "id": "follower_update_composer",
+          "kind": "mutation",
+          "status": "tested",
+          "source": "HostSendsWorkspaceSliver + showHostFollowerUpdateComposer + HostClubPostController",
+          "tests": [
+            "test/hosts/host_follower_update_composer_test.dart",
+            "test/hosts/host_inbox_screen_test.dart",
+            "test/hosts/host_crm_repository_test.dart"
+          ],
+          "nextAction": "Add a deterministic follower composer capture after its baseline is approved; keep quota and Sends-history refresh aligned with createOrganizerPost."
         },
         {
           "id": "campaign_compose_deep_link",

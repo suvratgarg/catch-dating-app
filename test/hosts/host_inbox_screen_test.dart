@@ -2,6 +2,7 @@
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
+import 'package:catch_dating_app/clubs/data/club_posts_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -256,7 +257,39 @@ void main() {
     expect(find.byType(HostInboxAudienceRail), findsNothing);
   });
 
-  testWidgets('Sends history renders Campaign and Announcement rows', (
+  testWidgets('Follower update route opens its route-specific composer', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _app(
+        event: null,
+        previews: const [],
+        participations: const [],
+        now: now,
+        remainingFollowerQuota: 2,
+      ),
+    );
+    await pumpFeatureUi(tester);
+
+    await tester.tap(find.text('Sends'));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Choose channel'));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Follower update · Organizer'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Post to followers'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('host-follower-update-text')),
+      findsOneWidget,
+    );
+    expect(
+      find.textContaining('Followers in Catch · Home and Activity'),
+      findsWidgets,
+    );
+  });
+
+  testWidgets('Sends history renders every server-managed send route', (
     tester,
   ) async {
     final event = event_test.buildEvent(
@@ -287,6 +320,14 @@ void main() {
         dispatchedAt: now.subtract(const Duration(days: 1)),
         activityAt: now.subtract(const Duration(days: 1)),
       ),
+      HostFollowerUpdateSendSummary(
+        postId: 'post-1',
+        eventId: null,
+        audience: 'followers',
+        status: 'active',
+        createdAt: now.subtract(const Duration(hours: 12)),
+        activityAt: now.subtract(const Duration(hours: 12)),
+      ),
     ];
 
     await tester.pumpWidget(
@@ -305,6 +346,7 @@ void main() {
 
     expect(find.text('Doors open update'), findsOneWidget);
     expect(find.text('Bring regulars back'), findsOneWidget);
+    expect(find.text('Follower update · Organizer'), findsOneWidget);
     expect(
       find.textContaining('Catch announcement · Organizer'),
       findsOneWidget,
@@ -467,6 +509,7 @@ Widget _app({
   List<HostSendSummary> sends = const [],
   List<HostWhatsappThreadSummary> whatsappThreads = const [],
   AsyncValue<HostWhatsappThreadPage>? whatsappThreadsValue,
+  int remainingFollowerQuota = 3,
 }) {
   final club = club_test.buildClub(id: event?.clubId ?? 'club-1');
   final inbox = ChatsListViewModel(
@@ -493,6 +536,9 @@ Widget _app({
           HostSendsPage(organizerId: club.id, sends: sends, nextCursor: null),
         ),
       ),
+      watchClubPostRemainingWeeklyQuotaProvider(
+        club.id,
+      ).overrideWith((ref) => Stream.value(remainingFollowerQuota)),
       hostWhatsappThreadsProvider(club.id).overrideWithValue(
         whatsappThreadsValue ??
             AsyncData(

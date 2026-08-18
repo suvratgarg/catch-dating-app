@@ -20,6 +20,9 @@ import {
   allowsPushPreference,
   sendFcmNotification,
   setActivityNotification,
+  type ActivityNotificationParams,
+  type FcmParams,
+  type NotificationPreferenceDocument,
 } from "../shared/notifications";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 
@@ -196,7 +199,6 @@ async function notifyOrganizerFollowers(params: {
     const userSnaps = await Promise.all(followers.map((follow) =>
       params.db.collection("users").doc(follow.uid).get()
     ));
-    const title = `New update from ${params.organizerName}`;
     await Promise.all(userSnaps.map(async (snap, index) => {
       const follow = followers[index];
       const user = snap.data() as {
@@ -204,30 +206,23 @@ async function notifyOrganizerFollowers(params: {
         prefsClubUpdates?: boolean;
       } | undefined;
       if (!user) return;
-      await setActivityNotification(params.db, {
-        id: activityNotificationId("organizerUpdate", params.postId),
+      const delivery = buildOrganizerFollowerDelivery({
         uid: follow.uid,
-        type: "organizerUpdate",
-        title,
-        body: params.text,
-        createdAt: params.deps.serverTimestamp(),
-        eventId: params.eventId,
+        followPushNotificationsEnabled: follow.pushNotificationsEnabled,
+        user,
         organizerId: params.organizerId,
+        authorUid: params.authorUid,
+        organizerName: params.organizerName,
         postId: params.postId,
-        actorUid: params.authorUid,
-        actorName: params.organizerName,
+        text: params.text,
+        eventId: params.eventId,
       });
-      if (follow.pushNotificationsEnabled === true && user.fcmToken &&
-          allowsPushPreference(user, "clubUpdates")) {
-        await params.deps.sendNotification?.({
-          token: user.fcmToken,
-          title,
-          body: params.text,
-          type: "organizerUpdate",
-          eventId: params.eventId,
-          organizerId: params.organizerId,
-          postId: params.postId,
-        });
+      await setActivityNotification(params.db, {
+        ...delivery.activity,
+        createdAt: params.deps.serverTimestamp(),
+      });
+      if (delivery.push) {
+        await params.deps.sendNotification?.(delivery.push);
       }
     }));
   } catch (error) {
@@ -237,6 +232,58 @@ async function notifyOrganizerFollowers(params: {
       error,
     });
   }
+}
+
+interface OrganizerFollowerUser extends NotificationPreferenceDocument {
+  fcmToken?: string;
+}
+
+export interface OrganizerFollowerDelivery {
+  activity: Omit<ActivityNotificationParams, "createdAt">;
+  push: FcmParams | null;
+}
+
+/** Builds the durable Activity route and its independently gated push. */
+export function buildOrganizerFollowerDelivery(params: {
+  uid: string;
+  followPushNotificationsEnabled?: boolean;
+  user: OrganizerFollowerUser;
+  organizerId: string;
+  authorUid: string;
+  organizerName: string;
+  postId: string;
+  text: string;
+  eventId?: string;
+}): OrganizerFollowerDelivery {
+  const title = `New update from ${params.organizerName}`;
+  const activity: OrganizerFollowerDelivery["activity"] = {
+    id: activityNotificationId("organizerUpdate", params.postId),
+    uid: params.uid,
+    type: "organizerUpdate",
+    title,
+    body: params.text,
+    eventId: params.eventId,
+    organizerId: params.organizerId,
+    postId: params.postId,
+    actorUid: params.authorUid,
+    actorName: params.organizerName,
+  };
+  const token = params.user.fcmToken;
+  const canPush = params.followPushNotificationsEnabled === true &&
+    typeof token === "string" && token.length > 0 &&
+    allowsPushPreference(params.user, "clubUpdates");
+  return {
+    activity,
+    push: canPush && token ? {
+      token,
+      title,
+      body: params.text,
+      type: "organizerUpdate",
+      eventId: params.eventId,
+      organizerId: params.organizerId,
+      postId: params.postId,
+    } : null,
+  };
 }
 
 export const createOrganizerPost = onCall(

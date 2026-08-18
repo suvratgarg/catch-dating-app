@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/list_organizer_campaigns_response.schema.json",
   "title": "ListOrganizerCampaignsCallableResponse",
-  "description": "Reverse-chronological organizer Sends rows mixing WhatsApp campaigns and event announcements.",
+  "description": "Reverse-chronological organizer Sends rows mixing WhatsApp campaigns, event announcements, and follower updates.",
   "type": "object",
   "additionalProperties": false,
   "required": ["organizerId", "sends", "nextCursor"],
@@ -15,7 +15,8 @@
     "send": {
       "oneOf": [
         {"$ref": "#/definitions/campaign"},
-        {"$ref": "#/definitions/announcement"}
+        {"$ref": "#/definitions/announcement"},
+        {"$ref": "#/definitions/followerUpdate"}
       ]
     },
     "campaign": {
@@ -50,6 +51,20 @@
         "recipientCount": {"type": "integer", "minimum": 0, "maximum": 500},
         "sentAtMillis": {"type": "integer", "minimum": 0},
         "partialFailure": {"type": "boolean"},
+        "activityAtMillis": {"type": "integer", "minimum": 0}
+      }
+    },
+    "followerUpdate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "postId", "eventId", "audience", "status", "createdAtMillis", "activityAtMillis"],
+      "properties": {
+        "kind": {"const": "followerUpdate"},
+        "postId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "eventId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
+        "audience": {"const": "followers"},
+        "status": {"$ref": "../firestore/organizer_posts.schema.json#/properties/status"},
+        "createdAtMillis": {"type": "integer", "minimum": 0},
         "activityAtMillis": {"type": "integer", "minimum": 0}
       }
     }

@@ -1314,12 +1314,18 @@ similar.
 | Catch-owned WhatsApp | Meta/BSP adapter; clearly named Catch number | Narrow Catch service or platform purpose only; never impersonates an organizer | Separate Catch-scoped permission, notices, suppression, retention and policy basis | Separate Catch sender/webhook/thread/support records; never organizer campaign receipts | Visible as **Catch WhatsApp · Catch number**, **not active** until the product and external gates below close |
 | Catch chat | Catch app; organizer-managed professional identity | One linked, verified, unambiguous Catch account | Linked Catch account and conversation authority | Catch message/activity state; two-way reply | Customer detail or Messaging Inbox → **Catch chat · Organizer**; **Implemented** |
 | Catch event announcement | Catch Activity plus preference-gated push; organizer identity | Booked, Prospective, or Everyone for one event; roster-derived recipients | Event-service authority and notification preference | Durable Activity receipt plus aggregate push outcome; no reply thread | Messaging Inbox → **Catch announcement · Event audience**; **Implemented** |
-| Organizer follower update | Catch Home/Activity plus preference-gated push; organizer identity | Users following the organizer, optionally linked to an event | Follow relationship and organizer-update preference | Durable Home/Activity item; no reply thread | Organizer post composer → **Organizer update · Followers**; **Implemented** |
+| Organizer follower update | Catch Home/Activity plus preference-gated push; organizer identity | Users following the organizer, optionally linked to an event | Follow relationship and organizer-update preference | Durable Home/Activity item plus organizer Sends history; no reply thread | Messaging → **Follower update · Organizer** → route-specific composer; **Implemented** |
 
 Host Messaging first presents the route picker, then the route-specific
 composer or its exact readiness explanation. History rows repeat the route
 label. Unavailable routes remain explanatory page content with the owning entry
 point, not disabled commands in an overflow menu.
+
+The follower-update route opens its composer in place, enforces the rolling
+three-per-seven-days quota before entry, and refreshes unified Sends history
+after the callable succeeds. The history projection intentionally omits the
+post body while retaining post identity, status, audience, optional linked
+event, and timestamps.
 
 Organizer WhatsApp activation is complete only when all of these are true:
 
