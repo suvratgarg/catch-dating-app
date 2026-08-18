@@ -98,6 +98,7 @@ const schemaOrganizerPostDeliveryRecipientDocumentSchema = <String, Object?>{
         },
       },
       'x-catch-ownership': 'server-only',
+      'x-firestore-ttl': true,
     },
     'createdAt': <String, Object?>{
       'type': 'object',
