@@ -9,18 +9,21 @@
 final class CreateOrganizerPostCallableRequest {
   const CreateOrganizerPostCallableRequest({
     required this.organizerId,
+    required this.requestId,
     required this.text,
     this.photoPath,
     this.eventId,
   });
 
   final String organizerId;
+  final String requestId;
   final String text;
   final String? photoPath;
   final String? eventId;
 
   Map<String, Object?> toJson() => {
     'organizerId': organizerId,
+    'requestId': requestId,
     'text': text,
     'photoPath': ?photoPath,
     'eventId': ?eventId,

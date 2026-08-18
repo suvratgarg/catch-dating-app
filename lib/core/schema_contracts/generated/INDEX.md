@@ -34,6 +34,8 @@ Do not edit it by hand.
 | ClubDocument | `firestore/clubs.schema.json` | `functions/src/shared/generated/clubDocument.ts` |
 | OrganizerDocument | `firestore/organizers.schema.json` | `functions/src/shared/generated/organizerDocument.ts` |
 | OrganizerPostDocument | `firestore/organizer_posts.schema.json` | `functions/src/shared/generated/organizerPostDocument.ts` |
+| OrganizerPostDeliveryOperationDocument | `firestore/organizer_post_delivery_operations.schema.json` | `functions/src/shared/generated/organizerPostDeliveryOperationDocument.ts` |
+| OrganizerPostDeliveryRecipientDocument | `firestore/organizer_post_delivery_recipients.schema.json` | `functions/src/shared/generated/organizerPostDeliveryRecipientDocument.ts` |
 | OrganizerTeamMembershipDocument | `firestore/organizer_team_memberships.schema.json` | `functions/src/shared/generated/organizerTeamMembershipDocument.ts` |
 | OrganizerFollowDocument | `firestore/organizer_follows.schema.json` | `functions/src/shared/generated/organizerFollowDocument.ts` |
 | OrganizerCommunicationPreferenceDocument | `firestore/organizer_communication_preferences.schema.json` | `functions/src/shared/generated/organizerCommunicationPreferenceDocument.ts` |
@@ -512,6 +514,8 @@ Do not edit it by hand.
 | `schemaClubDocumentSchema` | ClubDocument | `firestore/clubs.schema.json` | `lib/core/schema_contracts/generated/schemas/club_document.g.dart` |
 | `schemaOrganizerDocumentSchema` | OrganizerDocument | `firestore/organizers.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_document.g.dart` |
 | `schemaOrganizerPostDocumentSchema` | OrganizerPostDocument | `firestore/organizer_posts.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_post_document.g.dart` |
+| `schemaOrganizerPostDeliveryOperationDocumentSchema` | OrganizerPostDeliveryOperationDocument | `firestore/organizer_post_delivery_operations.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_post_delivery_operation_document.g.dart` |
+| `schemaOrganizerPostDeliveryRecipientDocumentSchema` | OrganizerPostDeliveryRecipientDocument | `firestore/organizer_post_delivery_recipients.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_post_delivery_recipient_document.g.dart` |
 | `schemaOrganizerTeamMembershipDocumentSchema` | OrganizerTeamMembershipDocument | `firestore/organizer_team_memberships.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_team_membership_document.g.dart` |
 | `schemaOrganizerFollowDocumentSchema` | OrganizerFollowDocument | `firestore/organizer_follows.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_follow_document.g.dart` |
 | `schemaOrganizerCommunicationPreferenceDocumentSchema` | OrganizerCommunicationPreferenceDocument | `firestore/organizer_communication_preferences.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_communication_preference_document.g.dart` |

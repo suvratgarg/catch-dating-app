@@ -1556,6 +1556,53 @@ export interface OrganizerPostDocument {
 }
 
 /**
+ * Server-owned retry state and aggregate delivery receipt for one organizer follower update.
+ */
+export interface OrganizerPostDeliveryOperationDocument {
+  organizerId: string;
+  postId: string;
+  authorUid: string;
+  requestId: string;
+  payloadHash: string;
+  status: "pending" | "processing" | "completed" | "partial";
+  remainingWeeklyQuota: number;
+  cursorFollowId: string | null;
+  recipientCount: number;
+  excludedCount: number;
+  activityAvailableCount: number;
+  pushAttemptedCount: number;
+  pushAcceptedCount: number;
+  pushFailedCount: number;
+  pushUnknownCount: number;
+  /**
+   * @maxItems 20
+   */
+  errorCodes: string[];
+  attemptCount: number;
+  leaseOwner: string | null;
+  leaseExpiresAt: FirebaseFirestore.Timestamp | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  completedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Server-only post-scoped, de-identified per-recipient retry evidence for an organizer follower update.
+ */
+export interface OrganizerPostDeliveryRecipientDocument {
+  organizerId: string;
+  postId: string;
+  activityStatus: "created" | "existing" | "failed";
+  pushStatus: "ineligible" | "accepted" | "failed" | "unknown";
+  activityNotificationId: string;
+  excluded: boolean;
+  errorCode: string | null;
+  expiresAt: FirebaseFirestore.Timestamp;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
  * Canonical owner or manager edge stored at organizerTeamMemberships/{organizerId_uid}.
  */
 export interface OrganizerTeamMembershipDocument {

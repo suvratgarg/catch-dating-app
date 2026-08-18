@@ -20527,6 +20527,12 @@ abstract class AppLocalizations {
   /// **'Some deliveries need attention'**
   String get hostSendsPartial;
 
+  /// User-facing delivery state for an organizer follower update.
+  ///
+  /// In en, this message translates to:
+  /// **'{status, select, pending{Delivering in Catch} completed{Available in Catch} partial{Some deliveries need attention} unknown{Delivery was not tracked} other{Delivery status unavailable}}'**
+  String hostSendsFollowerDeliveryStatus({required String status});
+
   /// Channel facet label for retained WhatsApp threads.
   ///
   /// In en, this message translates to:

@@ -8,4 +8,13 @@
 export interface CreateOrganizerPostCallableResponse {
   postId: string;
   remainingWeeklyQuota: number;
+  deliveryStatus: "pending" | "completed" | "partial";
+  recipientCount: number;
+  excludedCount: number;
+  activityAvailableCount: number;
+  pushAttemptedCount: number;
+  pushAcceptedCount: number;
+  pushFailedCount: number;
+  pushUnknownCount: number;
+  idempotentReplay: boolean;
 }

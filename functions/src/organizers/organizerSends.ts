@@ -10,6 +10,7 @@ import {
   OrganizerBroadcastSummaryDocument,
   OrganizerCampaignDocument,
   OrganizerMessageTemplateDocument,
+  OrganizerPostDeliveryOperationDocument,
   OrganizerPostDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {ListOrganizerCampaignsCallablePayload} from
@@ -118,6 +119,16 @@ export async function listOrganizerCampaignsHandler(
       snapshot.id,
       (snapshot.data() as OrganizerMessageTemplateDocument).name,
     ]));
+  const followerOperationSnapshots = followerUpdateSnapshot.docs.length === 0 ?
+    [] : await db.getAll(...followerUpdateSnapshot.docs.map((snapshot) =>
+      db.collection("organizerPostDeliveryOperations").doc(snapshot.id),
+    ));
+  const followerOperations = new Map(followerOperationSnapshots
+    .filter((snapshot) => snapshot.exists)
+    .map((snapshot) => [
+      snapshot.id,
+      snapshot.data() as OrganizerPostDeliveryOperationDocument,
+    ]));
   const sends = sortOrganizerSendRows([
     ...campaigns.map(({id, data: campaign}): SendRow => ({
       kind: "campaign",
@@ -154,15 +165,28 @@ export async function listOrganizerCampaignsHandler(
         id: snapshot.id,
         data: snapshot.data() as OrganizerPostDocument,
       }))
-      .map(({id, data: post}): SendRow => ({
-        kind: "followerUpdate",
-        postId: id,
-        eventId: post.eventId ?? null,
-        audience: post.audience,
-        status: post.status,
-        createdAtMillis: post.createdAt.toMillis(),
-        activityAtMillis: post.createdAt.toMillis(),
-      })),
+      .map(({id, data: post}): SendRow => {
+        const operation = followerOperations.get(id);
+        const deliveryStatus = operation?.status === "processing" ?
+          "pending" : operation?.status ?? "unknown";
+        return {
+          kind: "followerUpdate",
+          postId: id,
+          eventId: post.eventId ?? null,
+          audience: post.audience,
+          status: post.status,
+          deliveryStatus,
+          recipientCount: operation?.recipientCount ?? 0,
+          excludedCount: operation?.excludedCount ?? 0,
+          activityAvailableCount: operation?.activityAvailableCount ?? 0,
+          pushAttemptedCount: operation?.pushAttemptedCount ?? 0,
+          pushAcceptedCount: operation?.pushAcceptedCount ?? 0,
+          pushFailedCount: operation?.pushFailedCount ?? 0,
+          pushUnknownCount: operation?.pushUnknownCount ?? 0,
+          createdAtMillis: post.createdAt.toMillis(),
+          activityAtMillis: post.createdAt.toMillis(),
+        };
+      }),
   ]);
   const page = sends.slice(0, limit);
   return {

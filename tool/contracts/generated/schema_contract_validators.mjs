@@ -25,6 +25,8 @@ import {
   clubDocumentSchema,
   organizerDocumentSchema,
   organizerPostDocumentSchema,
+  organizerPostDeliveryOperationDocumentSchema,
+  organizerPostDeliveryRecipientDocumentSchema,
   organizerTeamMembershipDocumentSchema,
   organizerFollowDocumentSchema,
   organizerCommunicationPreferenceDocumentSchema,
@@ -522,6 +524,8 @@ export const validateHostProfileDocument = ajv.compile(hostProfileDocumentSchema
 export const validateClubDocument = ajv.compile(clubDocumentSchema);
 export const validateOrganizerDocument = ajv.compile(organizerDocumentSchema);
 export const validateOrganizerPostDocument = ajv.compile(organizerPostDocumentSchema);
+export const validateOrganizerPostDeliveryOperationDocument = ajv.compile(organizerPostDeliveryOperationDocumentSchema);
+export const validateOrganizerPostDeliveryRecipientDocument = ajv.compile(organizerPostDeliveryRecipientDocumentSchema);
 export const validateOrganizerTeamMembershipDocument = ajv.compile(organizerTeamMembershipDocumentSchema);
 export const validateOrganizerFollowDocument = ajv.compile(organizerFollowDocumentSchema);
 export const validateOrganizerCommunicationPreferenceDocument = ajv.compile(organizerCommunicationPreferenceDocumentSchema);

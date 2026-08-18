@@ -131,6 +131,20 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/organizerPostDocument.ts",
   },
   {
+    name: "OrganizerPostDeliveryOperationDocument",
+    source: "firestore/organizer_post_delivery_operations.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerPostDeliveryOperationDocument.ts",
+  },
+  {
+    name: "OrganizerPostDeliveryRecipientDocument",
+    source: "firestore/organizer_post_delivery_recipients.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerPostDeliveryRecipientDocument.ts",
+  },
+  {
     name: "OrganizerTeamMembershipDocument",
     source: "firestore/organizer_team_memberships.schema.json",
     typeOutput:

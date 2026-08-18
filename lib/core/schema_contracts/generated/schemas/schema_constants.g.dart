@@ -335,6 +335,8 @@ export 'organizer_message_template_document.g.dart';
 export 'organizer_messaging_setup_callable_response.g.dart';
 export 'organizer_messaging_webhook_event_document.g.dart';
 export 'organizer_policy_gap_review_decision_document.g.dart';
+export 'organizer_post_delivery_operation_document.g.dart';
+export 'organizer_post_delivery_recipient_document.g.dart';
 export 'organizer_post_document.g.dart';
 export 'organizer_provider_connection_document.g.dart';
 export 'organizer_provider_setup_callable_response.g.dart';

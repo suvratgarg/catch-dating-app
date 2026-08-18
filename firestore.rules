@@ -1366,6 +1366,14 @@ service cloud.firestore {
 
     // Server-owned event-announcement receipts contain frozen recipient and
     // per-delivery evidence. V1 exposes only the sanitized callable response.
+    match /organizerPostDeliveryOperations/{postId} {
+      allow read, write: if false;
+    }
+
+    match /organizerPostDeliveryRecipients/{receiptId} {
+      allow read, write: if false;
+    }
+
     match /eventBroadcasts/{broadcastId} {
       allow read, write: if false;
     }

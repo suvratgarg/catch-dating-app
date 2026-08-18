@@ -13,10 +13,16 @@ const schemaCreateOrganizerPostCallablePayloadSchema = <String, Object?>{
   'additionalProperties': false,
   'required': <Object?>[
     'organizerId',
+    'requestId',
     'text',
   ],
   'properties': <String, Object?>{
     'organizerId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'requestId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,

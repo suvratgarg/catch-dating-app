@@ -14,6 +14,15 @@ const schemaCreateOrganizerPostCallableResponseSchema = <String, Object?>{
   'required': <Object?>[
     'postId',
     'remainingWeeklyQuota',
+    'deliveryStatus',
+    'recipientCount',
+    'excludedCount',
+    'activityAvailableCount',
+    'pushAttemptedCount',
+    'pushAcceptedCount',
+    'pushFailedCount',
+    'pushUnknownCount',
+    'idempotentReplay',
   ],
   'properties': <String, Object?>{
     'postId': <String, Object?>{
@@ -25,6 +34,45 @@ const schemaCreateOrganizerPostCallableResponseSchema = <String, Object?>{
       'type': 'integer',
       'minimum': 0,
       'maximum': 3,
+    },
+    'deliveryStatus': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'pending',
+        'completed',
+        'partial',
+      ],
+    },
+    'recipientCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+    },
+    'excludedCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+    },
+    'activityAvailableCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+    },
+    'pushAttemptedCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+    },
+    'pushAcceptedCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+    },
+    'pushFailedCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+    },
+    'pushUnknownCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+    },
+    'idempotentReplay': <String, Object?>{
+      'type': 'boolean',
     },
   },
 };

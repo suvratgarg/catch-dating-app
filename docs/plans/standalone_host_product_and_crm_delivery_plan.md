@@ -1314,7 +1314,7 @@ similar.
 | Catch-owned WhatsApp | Meta/BSP adapter; clearly named Catch number | Narrow Catch service or platform purpose only; never impersonates an organizer | Separate Catch-scoped permission, notices, suppression, retention and policy basis | Separate Catch sender/webhook/thread/support records; never organizer campaign receipts | Visible as **Catch WhatsApp · Catch number**, **not active** until the product and external gates below close |
 | Catch chat | Catch app; organizer-managed professional identity | One linked, verified, unambiguous Catch account | Linked Catch account and conversation authority | Catch message/activity state; two-way reply | Customer detail or Messaging Inbox → **Catch chat · Organizer**; **Implemented** |
 | Catch event announcement | Catch Activity plus preference-gated push; organizer identity | Booked, Prospective, or Everyone for one event; roster-derived recipients | Event-service authority and notification preference | Durable Activity receipt plus aggregate push outcome; no reply thread | Messaging Inbox → **Catch announcement · Event audience**; **Implemented** |
-| Organizer follower update | Catch Home/Activity plus preference-gated push; organizer identity | Users following the organizer, optionally linked to an event | Follow relationship and organizer-update preference | Durable Home/Activity item plus organizer Sends history; no reply thread | Messaging → **Follower update · Organizer** → route-specific composer; **Implemented** |
+| Organizer follower update | Catch Home/Activity plus preference-gated push; organizer identity | Users following the organizer, optionally linked to an event | Follow relationship and organizer-update preference; author, deleted accounts and blocked relationships are excluded | Durable Home post, deterministic Activity item, de-identified per-recipient retry receipt and aggregate organizer Sends delivery state; push is at-most-once and may be accepted, failed or unknown; no reply thread | Messaging → **Follower update · Organizer** → route-specific composer; **Implemented in source; retry scheduler deployment required** |
 
 Host Messaging first presents the route picker, then the route-specific
 composer or its exact readiness explanation. History rows repeat the route
@@ -1325,7 +1325,15 @@ The follower-update route opens its composer in place, enforces the rolling
 three-per-seven-days quota before entry, and refreshes unified Sends history
 after the callable succeeds. The history projection intentionally omits the
 post body while retaining post identity, status, audience, optional linked
-event, and timestamps.
+event, timestamps and sanitized aggregate delivery counts. A required
+client-generated request id is bound to the exact payload and deterministically
+owns both the post and delivery operation. One bounded follower page is
+attempted synchronously; a five-minute scheduler drains up to ten pages per
+operation and resumes pending or expired-lease work. Cursor replay cannot
+double-count a recipient, and an
+existing Activity item prevents an unknowable prior push attempt from being
+sent again. Legacy posts without an operation are labeled `unknown`, never
+inferred successful.
 
 Organizer WhatsApp activation is complete only when all of these are true:
 
@@ -1348,10 +1356,11 @@ retention policy. The unresolved product decision is its first narrow purpose:
 transactional event service, account/support messages, or a separately
 permissioned Catch campaign. No organizer permission may be reused.
 
-**In-app:** extend the existing event broadcast from current-event Consumer
-participations to organizer-scoped, permissioned linked attendees and followers.
-Preserve notification preferences and Activity as the durable user-visible
-receipt.
+**In-app:** the current event-announcement route resolves exact event rosters,
+and the follower-update route resolves active organizer follows. Both preserve
+notification preferences and use Activity as the durable user-visible receipt.
+Any future repeat-audience or CRM-segment route must add its own authority and
+permission contract rather than widening either existing route implicitly.
 
 **WhatsApp:** follow the detailed WhatsApp Business contract below.
 
