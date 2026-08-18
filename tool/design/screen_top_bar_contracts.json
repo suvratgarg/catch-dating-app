@@ -52,6 +52,14 @@
       ]
     },
     {
+      "branchKey": "keys.hostForms",
+      "routeName": "Routes.hostFormsScreen.name",
+      "surfaces": [
+        {"path": "lib/hosts/presentation/forms/host_forms_screen.dart", "symbol": "_HostFormsScreenState", "owner": "CatchScreenHeaderTitle.block"},
+        {"path": "lib/hosts/presentation/forms/host_forms_screen.dart", "symbol": "HostFormsNoOrganizer", "owner": "CatchScreenHeaderTitle.block"}
+      ]
+    },
+    {
       "branchKey": "keys.hostInbox",
       "routeName": "Routes.hostInboxScreen.name",
       "surfaces": [
