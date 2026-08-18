@@ -41,6 +41,45 @@ enum HostFormValidationSeverity { error, warning }
 
 enum HostFormLifecycleAction { pause, resume, archive }
 
+enum HostFormPrivacyClass { contact, profile, sensitive, organizerCustom }
+
+enum HostFormPrefillPolicy { never, participantReviewRequired }
+
+enum HostFormPresentation { detailOnly, filterable, sortable }
+
+enum HostFormPatternPreset {
+  lettersAndSpaces,
+  alphanumeric,
+  postalCode,
+  handle,
+}
+
+enum HostFormAppearancePreset { editorial, minimal, activity }
+
+enum HostFormCompletionAction { none, externalUrl, event, eventRuntime }
+
+enum HostFormLogicOperator {
+  equals,
+  notEquals,
+  contains,
+  notContains,
+  greaterThan,
+  lessThan,
+  answered,
+  notAnswered,
+}
+
+enum HostFormLogicAction {
+  showQuestion,
+  hideQuestion,
+  showSection,
+  hideSection,
+  routeToSection,
+  finish,
+}
+
+const Object _unset = Object();
+
 @immutable
 class HostFormShareAssets {
   const HostFormShareAssets({
@@ -381,6 +420,39 @@ class HostFormDefinition {
       _stringValue(_deepStringMap(_json['completion'])['title']);
   String? get completionMessage =>
       _nullableString(_deepStringMap(_json['completion'])['message']);
+  HostFormCompletionAction get completionAction => _enumByName(
+    HostFormCompletionAction.values,
+    _stringValue(_deepStringMap(_json['completion'])['actionKind']),
+    'form completion action',
+  );
+  String? get completionActionLabel =>
+      _nullableString(_deepStringMap(_json['completion'])['actionLabel']);
+  String? get completionActionUrl =>
+      _nullableString(_deepStringMap(_json['completion'])['actionUrl']);
+  HostFormAppearancePreset get appearancePreset => _enumByName(
+    HostFormAppearancePreset.values,
+    _stringValue(_deepStringMap(_json['appearance'])['preset']),
+    'form appearance preset',
+  );
+  String? get activityKind =>
+      _nullableString(_deepStringMap(_json['appearance'])['activityKind']);
+  DateTime? get opensAt =>
+      _nullableWireDateTime(_deepStringMap(_json['availability'])['opensAt']);
+  DateTime? get closesAt =>
+      _nullableWireDateTime(_deepStringMap(_json['availability'])['closesAt']);
+  int? get responseLimit =>
+      _nullableInt(_deepStringMap(_json['availability'])['responseLimit']);
+  String? get closedMessage =>
+      _nullableString(_deepStringMap(_json['availability'])['closedMessage']);
+  String get consentCopy =>
+      _stringValue(_deepStringMap(_json['consent'])['consentCopy']);
+  String get consentVersion =>
+      _stringValue(_deepStringMap(_json['consent'])['consentVersion']);
+  String get retentionCopy =>
+      _stringValue(_deepStringMap(_json['consent'])['retentionCopy']);
+  List<HostFormLogicRule> get logicRules => _jsonList(
+    _json['logicRules'],
+  ).map(HostFormLogicRule._).toList(growable: false);
 
   Map<String, Object?> toJson() => _deepStringMap(_json);
 
@@ -392,6 +464,26 @@ class HostFormDefinition {
     HostFormIdentityPolicy? identityPolicy,
     String? completionTitle,
     String? completionMessage,
+    bool clearCompletionMessage = false,
+    HostFormCompletionAction? completionAction,
+    String? completionActionLabel,
+    bool clearCompletionActionLabel = false,
+    String? completionActionUrl,
+    bool clearCompletionActionUrl = false,
+    HostFormAppearancePreset? appearancePreset,
+    String? activityKind,
+    bool clearActivityKind = false,
+    DateTime? opensAt,
+    bool setOpensAt = false,
+    DateTime? closesAt,
+    bool setClosesAt = false,
+    int? responseLimit,
+    bool setResponseLimit = false,
+    String? closedMessage,
+    bool clearClosedMessage = false,
+    String? consentCopy,
+    String? consentVersion,
+    String? retentionCopy,
   }) {
     final next = toJson();
     if (title != null) next['title'] = title;
@@ -402,13 +494,70 @@ class HostFormDefinition {
     if (identityPolicy != null) {
       next['identityPolicy'] = identityPolicy.name;
     }
-    if (completionTitle != null || completionMessage != null) {
+    if (completionTitle != null ||
+        completionMessage != null ||
+        clearCompletionMessage ||
+        completionAction != null ||
+        completionActionLabel != null ||
+        clearCompletionActionLabel ||
+        completionActionUrl != null ||
+        clearCompletionActionUrl) {
       final completion = _deepStringMap(next['completion']);
       if (completionTitle != null) completion['title'] = completionTitle;
-      if (completionMessage != null) {
-        completion['message'] = completionMessage;
+      if (completionMessage != null || clearCompletionMessage) {
+        completion['message'] = clearCompletionMessage
+            ? null
+            : completionMessage;
+      }
+      if (completionAction != null) {
+        completion['actionKind'] = completionAction.name;
+      }
+      if (completionActionLabel != null || clearCompletionActionLabel) {
+        completion['actionLabel'] = clearCompletionActionLabel
+            ? null
+            : completionActionLabel;
+      }
+      if (completionActionUrl != null || clearCompletionActionUrl) {
+        completion['actionUrl'] = clearCompletionActionUrl
+            ? null
+            : completionActionUrl;
       }
       next['completion'] = completion;
+    }
+    if (appearancePreset != null || activityKind != null || clearActivityKind) {
+      final appearance = _deepStringMap(next['appearance']);
+      if (appearancePreset != null) {
+        appearance['preset'] = appearancePreset.name;
+      }
+      if (activityKind != null || clearActivityKind) {
+        appearance['activityKind'] = clearActivityKind ? null : activityKind;
+      }
+      next['appearance'] = appearance;
+    }
+    if (setOpensAt ||
+        setClosesAt ||
+        setResponseLimit ||
+        closedMessage != null ||
+        clearClosedMessage) {
+      final availability = _deepStringMap(next['availability']);
+      if (setOpensAt) availability['opensAt'] = _wireDateTime(opensAt);
+      if (setClosesAt) availability['closesAt'] = _wireDateTime(closesAt);
+      if (setResponseLimit) availability['responseLimit'] = responseLimit;
+      if (closedMessage != null || clearClosedMessage) {
+        availability['closedMessage'] = clearClosedMessage
+            ? null
+            : closedMessage;
+      }
+      next['availability'] = availability;
+    }
+    if (consentCopy != null ||
+        consentVersion != null ||
+        retentionCopy != null) {
+      final consent = _deepStringMap(next['consent']);
+      if (consentCopy != null) consent['consentCopy'] = consentCopy;
+      if (consentVersion != null) consent['consentVersion'] = consentVersion;
+      if (retentionCopy != null) consent['retentionCopy'] = retentionCopy;
+      next['consent'] = consent;
     }
     return HostFormDefinition._(next);
   }
@@ -442,6 +591,122 @@ class HostFormDefinition {
     sections.insert(newIndex, section);
     next['sections'] = sections;
     return HostFormDefinition._(next);
+  }
+
+  HostFormDefinition addLogicRule(HostFormLogicRule rule) {
+    final next = toJson();
+    final rules = _jsonList(next['logicRules'])..add(rule.toJson());
+    next['logicRules'] = rules;
+    return HostFormDefinition._(next);
+  }
+
+  HostFormDefinition removeLogicRule(int index) {
+    final next = toJson();
+    final rules = _jsonList(next['logicRules'])..removeAt(index);
+    next['logicRules'] = rules;
+    return HostFormDefinition._(next);
+  }
+
+  List<HostFormSection> reachableSections(Map<String, Object?> answers) {
+    final matchingRules = logicRules
+        .where((rule) => rule.matches(answers))
+        .toList(growable: false);
+    final allShowSections = _logicTargets(
+      logicRules,
+      HostFormLogicAction.showSection,
+      section: true,
+    );
+    final shownSections = _logicTargets(
+      matchingRules,
+      HostFormLogicAction.showSection,
+      section: true,
+    );
+    final hiddenSections = _logicTargets(
+      matchingRules,
+      HostFormLogicAction.hideSection,
+      section: true,
+    );
+    final allShowQuestions = _logicTargets(
+      logicRules,
+      HostFormLogicAction.showQuestion,
+      section: false,
+    );
+    final shownQuestions = _logicTargets(
+      matchingRules,
+      HostFormLogicAction.showQuestion,
+      section: false,
+    );
+    final hiddenQuestions = _logicTargets(
+      matchingRules,
+      HostFormLogicAction.hideQuestion,
+      section: false,
+    );
+    final visible = <({int index, HostFormSection section})>[];
+    for (final entry in sections.indexed) {
+      final section = entry.$2;
+      if ((allShowSections.contains(section.sectionId) &&
+              !shownSections.contains(section.sectionId)) ||
+          hiddenSections.contains(section.sectionId)) {
+        continue;
+      }
+      final json = section.toJson();
+      json['questions'] = section.questions
+          .where(
+            (question) =>
+                (!allShowQuestions.contains(question.questionId) ||
+                    shownQuestions.contains(question.questionId)) &&
+                !hiddenQuestions.contains(question.questionId),
+          )
+          .map((question) => question.toJson())
+          .toList(growable: false);
+      visible.add((index: entry.$1, section: HostFormSection._(json)));
+    }
+    final questionSections = <String, int>{
+      for (final entry in sections.indexed)
+        for (final question in entry.$2.questions)
+          question.questionId: entry.$1,
+    };
+    final result = <HostFormSection>[];
+    var cursor = 0;
+    while (cursor < visible.length) {
+      final current = visible[cursor];
+      result.add(current.section);
+      final navigation = matchingRules
+          .where(
+            (rule) =>
+                rule.action == HostFormLogicAction.routeToSection ||
+                rule.action == HostFormLogicAction.finish,
+          )
+          .where(
+            (rule) =>
+                rule.conditions
+                    .map(
+                      (condition) =>
+                          questionSections[condition.questionId] ?? -1,
+                    )
+                    .fold<int>(
+                      -1,
+                      (maximum, value) => value > maximum ? value : maximum,
+                    ) ==
+                current.index,
+          )
+          .firstOrNull;
+      if (navigation?.action == HostFormLogicAction.finish) break;
+      if (navigation?.action == HostFormLogicAction.routeToSection &&
+          navigation?.targetSectionId != null) {
+        final targetIndex = sections.indexWhere(
+          (section) => section.sectionId == navigation!.targetSectionId,
+        );
+        final next = visible.indexWhere(
+          (section) => section.index >= targetIndex,
+        );
+        if (next <= cursor) break;
+        cursor = next;
+      } else {
+        cursor += 1;
+      }
+    }
+    return List.unmodifiable(result);
   }
 }
 
@@ -584,6 +849,23 @@ class HostFormQuestion {
     'form question kind',
   );
   bool get required => _json['required'] == true;
+  HostFormPrivacyClass get privacyClass => _enumByName(
+    HostFormPrivacyClass.values,
+    _stringValue(_json['privacyClass']),
+    'form privacy class',
+  );
+  HostFormPrefillPolicy get prefillPolicy => _enumByName(
+    HostFormPrefillPolicy.values,
+    _stringValue(_json['prefillPolicy']),
+    'form prefill policy',
+  );
+  HostFormPresentation get hostPresentation => _enumByName(
+    HostFormPresentation.values,
+    _stringValue(_json['hostPresentation']),
+    'form host presentation',
+  );
+  HostFormQuestionValidation get validation =>
+      HostFormQuestionValidation._(_deepStringMap(_json['validation']));
   List<HostFormQuestionOption> get options => _jsonList(_json['options'])
       .map((item) => HostFormQuestionOption._(_deepStringMap(item)))
       .toList(growable: false);
@@ -596,6 +878,10 @@ class HostFormQuestion {
     bool clearHelpText = false,
     HostFormQuestionKind? kind,
     bool? required,
+    HostFormPrivacyClass? privacyClass,
+    HostFormPrefillPolicy? prefillPolicy,
+    HostFormPresentation? hostPresentation,
+    HostFormQuestionValidation? validation,
   }) {
     final next = toJson();
     if (label != null) next['label'] = label;
@@ -603,6 +889,12 @@ class HostFormQuestion {
       next['helpText'] = clearHelpText ? null : helpText;
     }
     if (required != null) next['required'] = required;
+    if (privacyClass != null) next['privacyClass'] = privacyClass.name;
+    if (prefillPolicy != null) next['prefillPolicy'] = prefillPolicy.name;
+    if (hostPresentation != null) {
+      next['hostPresentation'] = hostPresentation.name;
+    }
+    if (validation != null) next['validation'] = validation.toJson();
     if (kind != null && kind != this.kind) {
       next['kind'] = kind.name;
       final choice =
@@ -650,6 +942,197 @@ class HostFormQuestion {
     return HostFormQuestion._(next);
   }
 }
+
+@immutable
+class HostFormQuestionValidation {
+  HostFormQuestionValidation._(Map<String, Object?> json)
+    : _json = Map.unmodifiable(_deepStringMap(json));
+
+  final Map<String, Object?> _json;
+
+  int? get minLength => _nullableInt(_json['minLength']);
+  int? get maxLength => _nullableInt(_json['maxLength']);
+  num? get minNumber => _nullableNum(_json['minNumber']);
+  num? get maxNumber => _nullableNum(_json['maxNumber']);
+  String? get earliestDate => _nullableString(_json['earliestDate']);
+  String? get latestDate => _nullableString(_json['latestDate']);
+  int? get minSelections => _nullableInt(_json['minSelections']);
+  int? get maxSelections => _nullableInt(_json['maxSelections']);
+  int? get maxFileCount => _nullableInt(_json['maxFileCount']);
+  int? get maxFileSizeBytes => _nullableInt(_json['maxFileSizeBytes']);
+  List<String> get allowedMimeTypes =>
+      (_json['allowedMimeTypes'] as List?)?.whereType<String>().toList(
+        growable: false,
+      ) ??
+      const [];
+  HostFormPatternPreset? get patternPreset {
+    final value = _nullableString(_json['patternPreset']);
+    return value == null
+        ? null
+        : _enumByName(
+            HostFormPatternPreset.values,
+            value,
+            'form validation pattern',
+          );
+  }
+
+  String? get customError => _nullableString(_json['customError']);
+
+  Map<String, Object?> toJson() => _deepStringMap(_json);
+
+  HostFormQuestionValidation copyWith({
+    Object? minLength = _unset,
+    Object? maxLength = _unset,
+    Object? minNumber = _unset,
+    Object? maxNumber = _unset,
+    Object? earliestDate = _unset,
+    Object? latestDate = _unset,
+    Object? minSelections = _unset,
+    Object? maxSelections = _unset,
+    Object? maxFileCount = _unset,
+    Object? maxFileSizeBytes = _unset,
+    List<String>? allowedMimeTypes,
+    Object? patternPreset = _unset,
+    Object? customError = _unset,
+  }) {
+    final next = toJson();
+    final updates = <String, Object?>{
+      if (!identical(minLength, _unset)) 'minLength': minLength,
+      if (!identical(maxLength, _unset)) 'maxLength': maxLength,
+      if (!identical(minNumber, _unset)) 'minNumber': minNumber,
+      if (!identical(maxNumber, _unset)) 'maxNumber': maxNumber,
+      if (!identical(earliestDate, _unset)) 'earliestDate': earliestDate,
+      if (!identical(latestDate, _unset)) 'latestDate': latestDate,
+      if (!identical(minSelections, _unset)) 'minSelections': minSelections,
+      if (!identical(maxSelections, _unset)) 'maxSelections': maxSelections,
+      if (!identical(maxFileCount, _unset)) 'maxFileCount': maxFileCount,
+      if (!identical(maxFileSizeBytes, _unset))
+        'maxFileSizeBytes': maxFileSizeBytes,
+      if (!identical(patternPreset, _unset))
+        'patternPreset': (patternPreset as HostFormPatternPreset?)?.name,
+      if (!identical(customError, _unset)) 'customError': customError,
+    };
+    if (allowedMimeTypes != null) {
+      updates['allowedMimeTypes'] = allowedMimeTypes;
+    }
+    next.addAll(updates);
+    return HostFormQuestionValidation._(next);
+  }
+}
+
+@immutable
+class HostFormLogicRule {
+  HostFormLogicRule._(Map<String, Object?> json)
+    : _json = Map.unmodifiable(_deepStringMap(json));
+
+  factory HostFormLogicRule.create({
+    required String ruleId,
+    required String questionId,
+    required HostFormLogicOperator operator,
+    required List<Object?> expectedValues,
+    required HostFormLogicAction action,
+    String? targetQuestionId,
+    String? targetSectionId,
+  }) => HostFormLogicRule._({
+    'ruleId': ruleId,
+    'conditionMode': 'all',
+    'conditions': [
+      {
+        'questionId': questionId,
+        'operator': operator.name,
+        'expectedValues': expectedValues,
+      },
+    ],
+    'action': action.name,
+    'targetQuestionId': targetQuestionId,
+    'targetSectionId': targetSectionId,
+  });
+
+  final Map<String, Object?> _json;
+
+  String get ruleId => _stringValue(_json['ruleId']);
+  HostFormLogicAction get action => _enumByName(
+    HostFormLogicAction.values,
+    _stringValue(_json['action']),
+    'form logic action',
+  );
+  String? get targetQuestionId => _nullableString(_json['targetQuestionId']);
+  String? get targetSectionId => _nullableString(_json['targetSectionId']);
+  bool get allConditionsRequired => _json['conditionMode'] == 'all';
+  List<HostFormLogicCondition> get conditions => _jsonList(
+    _json['conditions'],
+  ).map(HostFormLogicCondition._).toList(growable: false);
+  HostFormLogicCondition get condition =>
+      HostFormLogicCondition._(_jsonList(_json['conditions']).first);
+
+  Map<String, Object?> toJson() => _deepStringMap(_json);
+
+  bool matches(Map<String, Object?> answers) {
+    final results = conditions.map((condition) => condition.matches(answers));
+    return allConditionsRequired
+        ? results.every((value) => value)
+        : results.any((value) => value);
+  }
+}
+
+@immutable
+class HostFormLogicCondition {
+  HostFormLogicCondition._(Map<String, Object?> json)
+    : _json = Map.unmodifiable(_deepStringMap(json));
+
+  final Map<String, Object?> _json;
+
+  String get questionId => _stringValue(_json['questionId']);
+  HostFormLogicOperator get operator => _enumByName(
+    HostFormLogicOperator.values,
+    _stringValue(_json['operator']),
+    'form logic operator',
+  );
+  List<Object?> get expectedValues =>
+      List<Object?>.unmodifiable(_json['expectedValues'] as List? ?? const []);
+
+  bool matches(Map<String, Object?> answers) {
+    final answer = answers[questionId];
+    final values = answer is Iterable ? answer.toList() : [answer];
+    return switch (operator) {
+      HostFormLogicOperator.answered => !_emptyFormAnswer(answer),
+      HostFormLogicOperator.notAnswered => _emptyFormAnswer(answer),
+      HostFormLogicOperator.equals => expectedValues.any(
+        (value) => answer == value,
+      ),
+      HostFormLogicOperator.notEquals => expectedValues.every(
+        (value) => answer != value,
+      ),
+      HostFormLogicOperator.contains => expectedValues.any(
+        (value) => values.contains(value),
+      ),
+      HostFormLogicOperator.notContains => expectedValues.every(
+        (value) => !values.contains(value),
+      ),
+      HostFormLogicOperator.greaterThan =>
+        answer is num &&
+            expectedValues.firstOrNull is num &&
+            answer > (expectedValues.first as num),
+      HostFormLogicOperator.lessThan =>
+        answer is num &&
+            expectedValues.firstOrNull is num &&
+            answer < (expectedValues.first as num),
+    };
+  }
+}
+
+Set<String> _logicTargets(
+  Iterable<HostFormLogicRule> rules,
+  HostFormLogicAction action, {
+  required bool section,
+}) => rules
+    .where((rule) => rule.action == action)
+    .map((rule) => section ? rule.targetSectionId : rule.targetQuestionId)
+    .whereType<String>()
+    .toSet();
+
+bool _emptyFormAnswer(Object? value) =>
+    value == null || value == '' || (value is Iterable && value.isEmpty);
 
 @immutable
 class HostFormQuestionOption {
@@ -712,6 +1195,40 @@ int _requiredInt(Map<Object?, Object?> map, String key) {
   final value = map[key];
   if (value is num && value >= 0) return value.toInt();
   throw FormatException('Response was missing $key.');
+}
+
+int? _nullableInt(Object? value) {
+  if (value == null) return null;
+  if (value is num) return value.toInt();
+  throw const FormatException('Expected a nullable integer.');
+}
+
+num? _nullableNum(Object? value) {
+  if (value == null || value is num) return value as num?;
+  throw const FormatException('Expected a nullable number.');
+}
+
+DateTime? _nullableWireDateTime(Object? value) {
+  if (value == null) return null;
+  final map = _deepStringMap(value);
+  final seconds = map['seconds'];
+  final nanoseconds = map['nanoseconds'];
+  if (seconds is num && nanoseconds is num) {
+    return DateTime.fromMillisecondsSinceEpoch(
+      seconds.toInt() * 1000 + nanoseconds.toInt() ~/ 1000000,
+      isUtc: true,
+    );
+  }
+  throw const FormatException('Expected a nullable form timestamp.');
+}
+
+Map<String, Object?>? _wireDateTime(DateTime? value) {
+  if (value == null) return null;
+  final micros = value.toUtc().microsecondsSinceEpoch;
+  return {
+    'seconds': micros ~/ Duration.microsecondsPerSecond,
+    'nanoseconds': (micros % Duration.microsecondsPerSecond) * 1000,
+  };
 }
 
 DateTime _dateTimeFromMillis(Map<Object?, Object?> map, String key) =>

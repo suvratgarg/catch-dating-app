@@ -1084,6 +1084,12 @@ function validateLogicTarget(params: {
     params.add("invalidQuestionTarget", `${params.path}.targetQuestionId`,
       "Choose a question that still exists.");
   }
+  if (questionAction && params.rule.targetQuestionId &&
+      params.rule.conditions.some((condition) =>
+        condition.questionId === params.rule.targetQuestionId)) {
+    params.add("selfReferentialVisibility", `${params.path}.targetQuestionId`,
+      "A visibility rule cannot depend on the question it controls.");
+  }
   if (sectionAction &&
       (!params.rule.targetSectionId ||
        !params.sectionIds.has(params.rule.targetSectionId))) {
@@ -1097,6 +1103,18 @@ function validateLogicTarget(params: {
   if (!sectionAction && params.rule.targetSectionId !== null) {
     params.add("unexpectedSectionTarget", `${params.path}.targetSectionId`,
       "This logic action cannot target a section.");
+  }
+  if ((params.rule.action === "showSection" ||
+       params.rule.action === "hideSection") &&
+      params.rule.targetSectionId) {
+    const targetOrder = params.sectionOrder.get(params.rule.targetSectionId);
+    if (targetOrder !== undefined && params.rule.conditions.some(
+      (condition) =>
+        params.questionSectionOrder.get(condition.questionId) === targetOrder
+    )) {
+      params.add("selfReferentialVisibility", `${params.path}.targetSectionId`,
+        "A section visibility rule must depend on an earlier section.");
+    }
   }
   if (params.rule.action === "routeToSection" &&
       params.rule.targetSectionId) {

@@ -14317,4 +14317,260 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostFormTypeSignature => 'Signature';
+
+  @override
+  String get hostFormQuestionHelpLabel => 'Help text';
+
+  @override
+  String get hostFormPrivacyLabel => 'Data classification';
+
+  @override
+  String get hostFormPrivacyContact => 'Contact information';
+
+  @override
+  String get hostFormPrivacyProfile => 'Profile information';
+
+  @override
+  String get hostFormPrivacySensitive => 'Sensitive information';
+
+  @override
+  String get hostFormPrivacyCustom => 'Organizer-specific answer';
+
+  @override
+  String get hostFormPrefillLabel => 'Prefill behavior';
+
+  @override
+  String get hostFormPrefillNever => 'Never prefill';
+
+  @override
+  String get hostFormPrefillReview => 'Prefill, then require review';
+
+  @override
+  String get hostFormPresentationLabel => 'Host response view';
+
+  @override
+  String get hostFormPresentationDetail => 'Response detail only';
+
+  @override
+  String get hostFormPresentationFilter => 'Filterable column';
+
+  @override
+  String get hostFormPresentationSort => 'Sortable column';
+
+  @override
+  String get hostFormValidationSettings => 'Answer validation';
+
+  @override
+  String get hostFormMinimumLength => 'Minimum characters';
+
+  @override
+  String get hostFormMaximumLength => 'Maximum characters';
+
+  @override
+  String get hostFormMinimumNumber => 'Minimum value';
+
+  @override
+  String get hostFormMaximumNumber => 'Maximum value';
+
+  @override
+  String get hostFormEarliestDate => 'Earliest date (YYYY-MM-DD)';
+
+  @override
+  String get hostFormLatestDate => 'Latest date (YYYY-MM-DD)';
+
+  @override
+  String get hostFormMinimumSelections => 'Minimum choices';
+
+  @override
+  String get hostFormMaximumSelections => 'Maximum choices';
+
+  @override
+  String get hostFormMaximumFiles => 'Maximum files';
+
+  @override
+  String get hostFormMaximumFileMegabytes => 'Maximum size per file (MB)';
+
+  @override
+  String get hostFormAllowedFileTypes => 'Allowed types (comma separated)';
+
+  @override
+  String get hostFormPatternLabel => 'Text format';
+
+  @override
+  String get hostFormPatternNone => 'Any text';
+
+  @override
+  String get hostFormPatternLetters => 'Letters and spaces';
+
+  @override
+  String get hostFormPatternAlphanumeric => 'Letters and numbers';
+
+  @override
+  String get hostFormPatternPostal => 'Postal code';
+
+  @override
+  String get hostFormPatternHandle => 'Social handle';
+
+  @override
+  String get hostFormCustomError => 'Custom validation message';
+
+  @override
+  String get hostFormAppearance => 'Appearance';
+
+  @override
+  String get hostFormAppearancePreset => 'Layout style';
+
+  @override
+  String get hostFormAppearanceEditorial => 'Editorial';
+
+  @override
+  String get hostFormAppearanceMinimal => 'Minimal';
+
+  @override
+  String get hostFormAppearanceActivity => 'Activity-led';
+
+  @override
+  String get hostFormActivityKind => 'Activity label';
+
+  @override
+  String get hostFormAvailability => 'Availability';
+
+  @override
+  String get hostFormOpensAt => 'Opens on';
+
+  @override
+  String get hostFormClosesAt => 'Closes on';
+
+  @override
+  String get hostFormDateNotSet => 'No date set';
+
+  @override
+  String get hostFormClearDate => 'Clear date';
+
+  @override
+  String get hostFormResponseLimit => 'Response limit';
+
+  @override
+  String get hostFormClosedMessage => 'Closed-form message';
+
+  @override
+  String get hostFormConsent => 'Consent and retention';
+
+  @override
+  String get hostFormConsentCopy => 'Consent statement';
+
+  @override
+  String get hostFormConsentVersion => 'Consent version';
+
+  @override
+  String get hostFormRetentionCopy => 'Retention statement';
+
+  @override
+  String get hostFormCompletion => 'After submission';
+
+  @override
+  String get hostFormCompletionMessageLabel => 'Confirmation message';
+
+  @override
+  String get hostFormCompletionActionLabel => 'Next action';
+
+  @override
+  String get hostFormCompletionActionNone => 'No action';
+
+  @override
+  String get hostFormCompletionActionExternal => 'Open a link';
+
+  @override
+  String get hostFormCompletionActionEvent => 'Open linked event';
+
+  @override
+  String get hostFormCompletionActionRuntime => 'Open event runtime';
+
+  @override
+  String get hostFormCompletionButtonLabel => 'Button label';
+
+  @override
+  String get hostFormCompletionUrl => 'Destination URL';
+
+  @override
+  String get hostFormLogic => 'Conditional logic';
+
+  @override
+  String get hostFormLogicHelp =>
+      'Show, hide, skip, or finish based on an earlier answer. Routes must move forward.';
+
+  @override
+  String get hostFormAddRule => 'Add rule';
+
+  @override
+  String get hostFormRemoveRule => 'Remove rule';
+
+  @override
+  String get hostFormRuleQuestion => 'When this answer';
+
+  @override
+  String get hostFormRuleOperator => 'Condition';
+
+  @override
+  String get hostFormRuleValue => 'Comparison value';
+
+  @override
+  String get hostFormRuleTrue => 'Yes';
+
+  @override
+  String get hostFormRuleFalse => 'No';
+
+  @override
+  String get hostFormRuleAction => 'Then';
+
+  @override
+  String get hostFormRuleTargetQuestion => 'Target question';
+
+  @override
+  String get hostFormRuleTargetSection => 'Target section';
+
+  @override
+  String get hostFormRuleSave => 'Save rule';
+
+  @override
+  String get hostFormOperatorEquals => 'equals';
+
+  @override
+  String get hostFormOperatorNotEquals => 'does not equal';
+
+  @override
+  String get hostFormOperatorContains => 'contains';
+
+  @override
+  String get hostFormOperatorNotContains => 'does not contain';
+
+  @override
+  String get hostFormOperatorGreater => 'is greater than';
+
+  @override
+  String get hostFormOperatorLess => 'is less than';
+
+  @override
+  String get hostFormOperatorAnswered => 'is answered';
+
+  @override
+  String get hostFormOperatorNotAnswered => 'is not answered';
+
+  @override
+  String get hostFormActionShowQuestion => 'Show a question';
+
+  @override
+  String get hostFormActionHideQuestion => 'Hide a question';
+
+  @override
+  String get hostFormActionShowSection => 'Show a section';
+
+  @override
+  String get hostFormActionHideSection => 'Hide a section';
+
+  @override
+  String get hostFormActionRouteSection => 'Skip to a section';
+
+  @override
+  String get hostFormActionFinish => 'Finish the form';
 }

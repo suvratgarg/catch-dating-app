@@ -22435,6 +22435,516 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Signature'**
   String get hostFormTypeSignature;
+
+  /// Optional guidance shown below a form question.
+  ///
+  /// In en, this message translates to:
+  /// **'Help text'**
+  String get hostFormQuestionHelpLabel;
+
+  /// Form answer privacy classification field.
+  ///
+  /// In en, this message translates to:
+  /// **'Data classification'**
+  String get hostFormPrivacyLabel;
+
+  /// Contact data classification.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact information'**
+  String get hostFormPrivacyContact;
+
+  /// Profile data classification.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile information'**
+  String get hostFormPrivacyProfile;
+
+  /// Sensitive data classification.
+  ///
+  /// In en, this message translates to:
+  /// **'Sensitive information'**
+  String get hostFormPrivacySensitive;
+
+  /// Organizer custom data classification.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer-specific answer'**
+  String get hostFormPrivacyCustom;
+
+  /// Form question prefill policy field.
+  ///
+  /// In en, this message translates to:
+  /// **'Prefill behavior'**
+  String get hostFormPrefillLabel;
+
+  /// No automatic respondent answer prefill.
+  ///
+  /// In en, this message translates to:
+  /// **'Never prefill'**
+  String get hostFormPrefillNever;
+
+  /// Prefill known data with explicit respondent review.
+  ///
+  /// In en, this message translates to:
+  /// **'Prefill, then require review'**
+  String get hostFormPrefillReview;
+
+  /// Controls how answers are exposed in response management.
+  ///
+  /// In en, this message translates to:
+  /// **'Host response view'**
+  String get hostFormPresentationLabel;
+
+  /// Answer appears only on response detail.
+  ///
+  /// In en, this message translates to:
+  /// **'Response detail only'**
+  String get hostFormPresentationDetail;
+
+  /// Answer can filter response lists.
+  ///
+  /// In en, this message translates to:
+  /// **'Filterable column'**
+  String get hostFormPresentationFilter;
+
+  /// Answer can sort response lists.
+  ///
+  /// In en, this message translates to:
+  /// **'Sortable column'**
+  String get hostFormPresentationSort;
+
+  /// Question validation settings group.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer validation'**
+  String get hostFormValidationSettings;
+
+  /// Minimum text answer length.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum characters'**
+  String get hostFormMinimumLength;
+
+  /// Maximum text answer length.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum characters'**
+  String get hostFormMaximumLength;
+
+  /// Minimum numeric answer value.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum value'**
+  String get hostFormMinimumNumber;
+
+  /// Maximum numeric answer value.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum value'**
+  String get hostFormMaximumNumber;
+
+  /// Earliest accepted form date.
+  ///
+  /// In en, this message translates to:
+  /// **'Earliest date (YYYY-MM-DD)'**
+  String get hostFormEarliestDate;
+
+  /// Latest accepted form date.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest date (YYYY-MM-DD)'**
+  String get hostFormLatestDate;
+
+  /// Minimum multiple-choice selections.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum choices'**
+  String get hostFormMinimumSelections;
+
+  /// Maximum multiple-choice selections.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum choices'**
+  String get hostFormMaximumSelections;
+
+  /// Maximum files accepted by one upload question.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum files'**
+  String get hostFormMaximumFiles;
+
+  /// Maximum uploaded file size in megabytes.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum size per file (MB)'**
+  String get hostFormMaximumFileMegabytes;
+
+  /// Accepted upload MIME types.
+  ///
+  /// In en, this message translates to:
+  /// **'Allowed types (comma separated)'**
+  String get hostFormAllowedFileTypes;
+
+  /// Preset text validation pattern field.
+  ///
+  /// In en, this message translates to:
+  /// **'Text format'**
+  String get hostFormPatternLabel;
+
+  /// No preset text pattern.
+  ///
+  /// In en, this message translates to:
+  /// **'Any text'**
+  String get hostFormPatternNone;
+
+  /// Letters and spaces text pattern.
+  ///
+  /// In en, this message translates to:
+  /// **'Letters and spaces'**
+  String get hostFormPatternLetters;
+
+  /// Alphanumeric text pattern.
+  ///
+  /// In en, this message translates to:
+  /// **'Letters and numbers'**
+  String get hostFormPatternAlphanumeric;
+
+  /// Postal code text pattern.
+  ///
+  /// In en, this message translates to:
+  /// **'Postal code'**
+  String get hostFormPatternPostal;
+
+  /// Social handle text pattern.
+  ///
+  /// In en, this message translates to:
+  /// **'Social handle'**
+  String get hostFormPatternHandle;
+
+  /// Optional respondent-facing answer error copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom validation message'**
+  String get hostFormCustomError;
+
+  /// Form appearance settings group.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get hostFormAppearance;
+
+  /// Public form appearance preset.
+  ///
+  /// In en, this message translates to:
+  /// **'Layout style'**
+  String get hostFormAppearancePreset;
+
+  /// Editorial form appearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Editorial'**
+  String get hostFormAppearanceEditorial;
+
+  /// Minimal form appearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimal'**
+  String get hostFormAppearanceMinimal;
+
+  /// Activity-specific form appearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity-led'**
+  String get hostFormAppearanceActivity;
+
+  /// Optional event or activity label for an activity-led form.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity label'**
+  String get hostFormActivityKind;
+
+  /// Form response availability settings group.
+  ///
+  /// In en, this message translates to:
+  /// **'Availability'**
+  String get hostFormAvailability;
+
+  /// Optional form opening date.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens on'**
+  String get hostFormOpensAt;
+
+  /// Optional form closing date.
+  ///
+  /// In en, this message translates to:
+  /// **'Closes on'**
+  String get hostFormClosesAt;
+
+  /// Empty optional form availability date.
+  ///
+  /// In en, this message translates to:
+  /// **'No date set'**
+  String get hostFormDateNotSet;
+
+  /// Clears an optional form availability date.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear date'**
+  String get hostFormClearDate;
+
+  /// Optional form response capacity.
+  ///
+  /// In en, this message translates to:
+  /// **'Response limit'**
+  String get hostFormResponseLimit;
+
+  /// Message shown when a form is unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed-form message'**
+  String get hostFormClosedMessage;
+
+  /// Form consent settings group.
+  ///
+  /// In en, this message translates to:
+  /// **'Consent and retention'**
+  String get hostFormConsent;
+
+  /// Respondent consent statement.
+  ///
+  /// In en, this message translates to:
+  /// **'Consent statement'**
+  String get hostFormConsentCopy;
+
+  /// Stable consent policy version identifier.
+  ///
+  /// In en, this message translates to:
+  /// **'Consent version'**
+  String get hostFormConsentVersion;
+
+  /// Respondent data retention statement.
+  ///
+  /// In en, this message translates to:
+  /// **'Retention statement'**
+  String get hostFormRetentionCopy;
+
+  /// Form completion settings group.
+  ///
+  /// In en, this message translates to:
+  /// **'After submission'**
+  String get hostFormCompletion;
+
+  /// Successful response completion message.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmation message'**
+  String get hostFormCompletionMessageLabel;
+
+  /// Action shown after response submission.
+  ///
+  /// In en, this message translates to:
+  /// **'Next action'**
+  String get hostFormCompletionActionLabel;
+
+  /// No post-submission action.
+  ///
+  /// In en, this message translates to:
+  /// **'No action'**
+  String get hostFormCompletionActionNone;
+
+  /// Post-submission external URL action.
+  ///
+  /// In en, this message translates to:
+  /// **'Open a link'**
+  String get hostFormCompletionActionExternal;
+
+  /// Post-submission linked event action.
+  ///
+  /// In en, this message translates to:
+  /// **'Open linked event'**
+  String get hostFormCompletionActionEvent;
+
+  /// Post-submission event runtime action.
+  ///
+  /// In en, this message translates to:
+  /// **'Open event runtime'**
+  String get hostFormCompletionActionRuntime;
+
+  /// Post-submission action button label.
+  ///
+  /// In en, this message translates to:
+  /// **'Button label'**
+  String get hostFormCompletionButtonLabel;
+
+  /// Post-submission external URL.
+  ///
+  /// In en, this message translates to:
+  /// **'Destination URL'**
+  String get hostFormCompletionUrl;
+
+  /// Form branching rules group.
+  ///
+  /// In en, this message translates to:
+  /// **'Conditional logic'**
+  String get hostFormLogic;
+
+  /// Explains form branching constraints.
+  ///
+  /// In en, this message translates to:
+  /// **'Show, hide, skip, or finish based on an earlier answer. Routes must move forward.'**
+  String get hostFormLogicHelp;
+
+  /// Adds a conditional form rule.
+  ///
+  /// In en, this message translates to:
+  /// **'Add rule'**
+  String get hostFormAddRule;
+
+  /// Removes a conditional form rule.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove rule'**
+  String get hostFormRemoveRule;
+
+  /// Conditional rule source question field.
+  ///
+  /// In en, this message translates to:
+  /// **'When this answer'**
+  String get hostFormRuleQuestion;
+
+  /// Conditional rule comparison operator field.
+  ///
+  /// In en, this message translates to:
+  /// **'Condition'**
+  String get hostFormRuleOperator;
+
+  /// Conditional rule comparison value field.
+  ///
+  /// In en, this message translates to:
+  /// **'Comparison value'**
+  String get hostFormRuleValue;
+
+  /// True boolean answer label in form logic.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get hostFormRuleTrue;
+
+  /// False boolean answer label in form logic.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get hostFormRuleFalse;
+
+  /// Conditional rule action field.
+  ///
+  /// In en, this message translates to:
+  /// **'Then'**
+  String get hostFormRuleAction;
+
+  /// Conditional rule question target field.
+  ///
+  /// In en, this message translates to:
+  /// **'Target question'**
+  String get hostFormRuleTargetQuestion;
+
+  /// Conditional rule section target field.
+  ///
+  /// In en, this message translates to:
+  /// **'Target section'**
+  String get hostFormRuleTargetSection;
+
+  /// Commits a conditional form rule.
+  ///
+  /// In en, this message translates to:
+  /// **'Save rule'**
+  String get hostFormRuleSave;
+
+  /// Equals form rule operator.
+  ///
+  /// In en, this message translates to:
+  /// **'equals'**
+  String get hostFormOperatorEquals;
+
+  /// Not-equals form rule operator.
+  ///
+  /// In en, this message translates to:
+  /// **'does not equal'**
+  String get hostFormOperatorNotEquals;
+
+  /// Contains form rule operator.
+  ///
+  /// In en, this message translates to:
+  /// **'contains'**
+  String get hostFormOperatorContains;
+
+  /// Not-contains form rule operator.
+  ///
+  /// In en, this message translates to:
+  /// **'does not contain'**
+  String get hostFormOperatorNotContains;
+
+  /// Greater-than form rule operator.
+  ///
+  /// In en, this message translates to:
+  /// **'is greater than'**
+  String get hostFormOperatorGreater;
+
+  /// Less-than form rule operator.
+  ///
+  /// In en, this message translates to:
+  /// **'is less than'**
+  String get hostFormOperatorLess;
+
+  /// Answered form rule operator.
+  ///
+  /// In en, this message translates to:
+  /// **'is answered'**
+  String get hostFormOperatorAnswered;
+
+  /// Not-answered form rule operator.
+  ///
+  /// In en, this message translates to:
+  /// **'is not answered'**
+  String get hostFormOperatorNotAnswered;
+
+  /// Show-question form rule action.
+  ///
+  /// In en, this message translates to:
+  /// **'Show a question'**
+  String get hostFormActionShowQuestion;
+
+  /// Hide-question form rule action.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide a question'**
+  String get hostFormActionHideQuestion;
+
+  /// Show-section form rule action.
+  ///
+  /// In en, this message translates to:
+  /// **'Show a section'**
+  String get hostFormActionShowSection;
+
+  /// Hide-section form rule action.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide a section'**
+  String get hostFormActionHideSection;
+
+  /// Forward section route form rule action.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip to a section'**
+  String get hostFormActionRouteSection;
+
+  /// Early finish form rule action.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish the form'**
+  String get hostFormActionFinish;
 }
 
 class _AppLocalizationsDelegate

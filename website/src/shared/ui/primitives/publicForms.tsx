@@ -4,25 +4,41 @@ import {Button, PlainLink} from "./actions";
 import {Form} from "./forms";
 
 export function PublicFormFrame({
+  activityKind,
+  appearance,
   brandLabel,
   brandWord,
   children,
   embed,
+  logoUrl,
   organizerName,
 }: {
+  activityKind?: string | null;
+  appearance?: "editorial" | "minimal" | "activity";
   brandLabel: string;
   brandWord: string;
   children: ReactNode;
   embed: boolean;
+  logoUrl?: string | null;
   organizerName?: string | null;
 }) {
   return (
-    <div className="public-form" data-embed={embed || undefined}>
+    <div
+      className="public-form"
+      data-appearance={appearance ?? "minimal"}
+      data-embed={embed || undefined}
+    >
       <header className="public-form__brand">
         <PlainLink aria-label={brandLabel} href="/">
           {brandWord}<span>●</span>
         </PlainLink>
-        {organizerName ? <span>{organizerName}</span> : null}
+        {organizerName ? (
+          <span className="public-form__organizer">
+            {logoUrl ? <img alt="" src={logoUrl} /> : null}
+            <span>{organizerName}</span>
+            {activityKind ? <small>{activityKind}</small> : null}
+          </span>
+        ) : null}
       </header>
       {children}
     </div>

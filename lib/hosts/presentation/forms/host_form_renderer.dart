@@ -31,6 +31,7 @@ class _HostFormRendererState extends State<HostFormRenderer> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final sections = widget.definition.reachableSections(_answers);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -45,7 +46,16 @@ class _HostFormRendererState extends State<HostFormRenderer> {
             style: CatchTextStyles.bodyM(context, color: t.ink2),
           ),
         ],
-        for (final indexedSection in widget.definition.sections.indexed)
+        if (widget.definition.appearancePreset ==
+                HostFormAppearancePreset.activity &&
+            widget.definition.activityKind != null) ...[
+          gapH12,
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Chip(label: Text(widget.definition.activityKind!)),
+          ),
+        ],
+        for (final indexedSection in sections.indexed)
           CatchSection.fieldRows(
             key: ValueKey(
               'host-form-renderer-section-${indexedSection.$2.sectionId}',
@@ -104,13 +114,20 @@ class _HostFormRendererState extends State<HostFormRenderer> {
           isOptional: optional,
           maxLines: question.kind == HostFormQuestionKind.longText ? 5 : 1,
           keyboardType: _keyboardType(question.kind),
-          onChanged: (value) => _answers[question.questionId] = value,
+          onChanged: (value) => setState(
+            () => _answers[question.questionId] =
+                question.kind == HostFormQuestionKind.number
+                ? num.tryParse(value)
+                : value,
+          ),
         );
       case HostFormQuestionKind.singleChoice:
       case HostFormQuestionKind.multiChoice:
         final values = question.options.map((option) => option.value).toList();
         final selected = switch (_answers[question.questionId]) {
           final Set<String> values => values,
+          final List<String> values => values.toSet(),
+          final String value => {value},
           _ => <String>{},
         };
         return CatchField.choices<String>(
@@ -128,9 +145,12 @@ class _HostFormRendererState extends State<HostFormRenderer> {
           multi: question.kind == HostFormQuestionKind.multiChoice,
           allowEmptySelection: optional,
           isOptional: optional,
-          onSelectionChanged: (values) => setState(
-            () => _answers[question.questionId] = Set<String>.from(values),
-          ),
+          onSelectionChanged: (values) => setState(() {
+            _answers[question.questionId] =
+                question.kind == HostFormQuestionKind.multiChoice
+                ? values.toList(growable: false)
+                : values.firstOrNull;
+          }),
         );
       case HostFormQuestionKind.boolean:
       case HostFormQuestionKind.acknowledgement:

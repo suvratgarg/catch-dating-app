@@ -143,6 +143,27 @@ test("form validator requires identity when collecting a signature", () => {
   );
 });
 
+test("form validator prevents self-referential visibility", () => {
+  const value = definition();
+  value.logicRules = [{
+    ruleId: "rule-1",
+    conditionMode: "all",
+    conditions: [{
+      questionId: "question-1",
+      operator: "answered",
+      expectedValues: [],
+    }],
+    action: "showQuestion",
+    targetQuestionId: "question-1",
+    targetSectionId: null,
+  }];
+  assert.equal(
+    validateOrganizerFormDefinition(value)
+      .some((issue) => issue.code === "selfReferentialVisibility"),
+    true
+  );
+});
+
 function definition(): Definition {
   return {
     title: "Feedback",

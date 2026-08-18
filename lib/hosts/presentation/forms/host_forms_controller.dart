@@ -138,6 +138,26 @@ class HostFormEditorController extends _$HostFormEditorController {
     HostFormIdentityPolicy? identityPolicy,
     String? completionTitle,
     String? completionMessage,
+    bool clearCompletionMessage = false,
+    HostFormCompletionAction? completionAction,
+    String? completionActionLabel,
+    bool clearCompletionActionLabel = false,
+    String? completionActionUrl,
+    bool clearCompletionActionUrl = false,
+    HostFormAppearancePreset? appearancePreset,
+    String? activityKind,
+    bool clearActivityKind = false,
+    DateTime? opensAt,
+    bool setOpensAt = false,
+    DateTime? closesAt,
+    bool setClosesAt = false,
+    int? responseLimit,
+    bool setResponseLimit = false,
+    String? closedMessage,
+    bool clearClosedMessage = false,
+    String? consentCopy,
+    String? consentVersion,
+    String? retentionCopy,
   }) => _mutate(
     (definition) => definition.copyWith(
       title: title,
@@ -147,6 +167,26 @@ class HostFormEditorController extends _$HostFormEditorController {
       identityPolicy: identityPolicy,
       completionTitle: completionTitle,
       completionMessage: completionMessage,
+      clearCompletionMessage: clearCompletionMessage,
+      completionAction: completionAction,
+      completionActionLabel: completionActionLabel,
+      clearCompletionActionLabel: clearCompletionActionLabel,
+      completionActionUrl: completionActionUrl,
+      clearCompletionActionUrl: clearCompletionActionUrl,
+      appearancePreset: appearancePreset,
+      activityKind: activityKind,
+      clearActivityKind: clearActivityKind,
+      opensAt: opensAt,
+      setOpensAt: setOpensAt,
+      closesAt: closesAt,
+      setClosesAt: setClosesAt,
+      responseLimit: responseLimit,
+      setResponseLimit: setResponseLimit,
+      closedMessage: closedMessage,
+      clearClosedMessage: clearClosedMessage,
+      consentCopy: consentCopy,
+      consentVersion: consentVersion,
+      retentionCopy: retentionCopy,
     ),
   );
 
@@ -199,6 +239,10 @@ class HostFormEditorController extends _$HostFormEditorController {
     bool clearHelpText = false,
     HostFormQuestionKind? kind,
     bool? required,
+    HostFormPrivacyClass? privacyClass,
+    HostFormPrefillPolicy? prefillPolicy,
+    HostFormPresentation? hostPresentation,
+    HostFormQuestionValidation? validation,
   }) => _mutate((definition) {
     final currentSection = definition.sections[sectionIndex];
     final question = currentSection.questions[questionIndex].copyWith(
@@ -207,6 +251,10 @@ class HostFormEditorController extends _$HostFormEditorController {
       clearHelpText: clearHelpText,
       kind: kind,
       required: required,
+      privacyClass: privacyClass,
+      prefillPolicy: prefillPolicy,
+      hostPresentation: hostPresentation,
+      validation: validation,
     );
     final section = currentSection.replaceQuestion(questionIndex, question);
     return definition.replaceSection(sectionIndex, section);
@@ -276,6 +324,30 @@ class HostFormEditorController extends _$HostFormEditorController {
           currentSection.replaceQuestion(questionIndex, question),
         );
       });
+
+  void addLogicRule({
+    required String questionId,
+    required HostFormLogicOperator operator,
+    required List<Object?> expectedValues,
+    required HostFormLogicAction action,
+    String? targetQuestionId,
+    String? targetSectionId,
+  }) => _mutate(
+    (definition) => definition.addLogicRule(
+      HostFormLogicRule.create(
+        ruleId: _newId('rule'),
+        questionId: questionId,
+        operator: operator,
+        expectedValues: expectedValues,
+        action: action,
+        targetQuestionId: targetQuestionId,
+        targetSectionId: targetSectionId,
+      ),
+    ),
+  );
+
+  void removeLogicRule(int index) =>
+      _mutate((definition) => definition.removeLogicRule(index));
 
   Future<bool> saveNow() async {
     _saveTimer?.cancel();

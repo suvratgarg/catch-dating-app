@@ -44,6 +44,119 @@ void main() {
       expect(moved.sections.first.sectionId, 'section_2');
       expect(definition.sections.single.sectionId, 'section_1');
     });
+
+    test(
+      'edits advanced settings, validation, and logic without data loss',
+      () {
+        final definition = HostFormDefinition.fromMap(_definitionMap());
+        final question = definition.sections.single.questions.single;
+        final validation = question.validation.copyWith(
+          minLength: 2,
+          maxLength: 80,
+          patternPreset: HostFormPatternPreset.lettersAndSpaces,
+        );
+        final withQuestion = definition.replaceSection(
+          0,
+          definition.sections.single.replaceQuestion(
+            0,
+            question.copyWith(
+              privacyClass: HostFormPrivacyClass.sensitive,
+              prefillPolicy: HostFormPrefillPolicy.participantReviewRequired,
+              hostPresentation: HostFormPresentation.filterable,
+              validation: validation,
+            ),
+          ),
+        );
+        final opensAt = DateTime.utc(2026, 9, 1);
+        final updated = withQuestion
+            .copyWith(
+              appearancePreset: HostFormAppearancePreset.activity,
+              activityKind: 'Run club',
+              opensAt: opensAt,
+              setOpensAt: true,
+              responseLimit: 120,
+              setResponseLimit: true,
+              completionAction: HostFormCompletionAction.externalUrl,
+              completionActionLabel: 'See schedule',
+              completionActionUrl: 'https://catchdates.com/events/',
+            )
+            .addLogicRule(
+              HostFormLogicRule.create(
+                ruleId: 'rule_1',
+                questionId: question.questionId,
+                operator: HostFormLogicOperator.answered,
+                expectedValues: const [],
+                action: HostFormLogicAction.finish,
+              ),
+            );
+
+        expect(updated.appearancePreset, HostFormAppearancePreset.activity);
+        expect(updated.opensAt, opensAt);
+        expect(updated.responseLimit, 120);
+        expect(updated.logicRules.single.action, HostFormLogicAction.finish);
+        expect(
+          updated.sections.single.questions.single.validation.patternPreset,
+          HostFormPatternPreset.lettersAndSpaces,
+        );
+        expect(updated.toJson()['customFutureField'], 'preserved');
+      },
+    );
+
+    test('resolves forward routes and early finish for preview parity', () {
+      final map = _definitionMap();
+      final sections = List<Object?>.from(map['sections']! as Iterable);
+      map['sections'] = sections;
+      sections.addAll([
+        _sectionMap('section_2', 'Middle', 'question_2'),
+        _sectionMap('section_3', 'Finish', 'question_3'),
+      ]);
+      map['logicRules'] = [
+        {
+          'ruleId': 'route_1',
+          'conditionMode': 'all',
+          'conditions': [
+            {
+              'questionId': 'question_1',
+              'operator': 'equals',
+              'expectedValues': ['skip'],
+            },
+          ],
+          'action': 'routeToSection',
+          'targetQuestionId': null,
+          'targetSectionId': 'section_3',
+        },
+      ];
+      final definition = HostFormDefinition.fromMap(map);
+
+      expect(
+        definition
+            .reachableSections({'question_1': 'skip'})
+            .map((section) => section.sectionId),
+        ['section_1', 'section_3'],
+      );
+      map['logicRules'] = [
+        {
+          'ruleId': 'finish_1',
+          'conditionMode': 'all',
+          'conditions': [
+            {
+              'questionId': 'question_1',
+              'operator': 'answered',
+              'expectedValues': <Object?>[],
+            },
+          ],
+          'action': 'finish',
+          'targetQuestionId': null,
+          'targetSectionId': null,
+        },
+      ];
+      expect(
+        HostFormDefinition.fromMap(
+          map,
+        ).reachableSections({'question_1': 'done'}),
+        hasLength(1),
+      );
+    });
   });
 
   group('HostFormSummary', () {
@@ -128,15 +241,94 @@ Map<String, Object?> _definitionMap() => {
           'options': <Object?>[],
           'canonicalFieldId': 'fullName',
           'privacyClass': 'contact',
-          'prefillPolicy': 'verifiedOnly',
-          'hostPresentation': 'directory',
-          'validation': <String, Object?>{},
+          'prefillPolicy': 'never',
+          'hostPresentation': 'detailOnly',
+          'validation': {
+            'minLength': null,
+            'maxLength': null,
+            'minNumber': null,
+            'maxNumber': null,
+            'earliestDate': null,
+            'latestDate': null,
+            'minSelections': null,
+            'maxSelections': null,
+            'maxFileCount': null,
+            'maxFileSizeBytes': null,
+            'allowedMimeTypes': <Object?>[],
+            'patternPreset': null,
+            'customError': null,
+          },
         },
       ],
     },
   ],
-  'completion': {'title': 'Thanks', 'message': 'We will be in touch.'},
+  'logicRules': <Object?>[],
+  'appearance': {
+    'preset': 'minimal',
+    'logoAssetId': null,
+    'coverAssetId': null,
+    'activityKind': null,
+  },
+  'availability': {
+    'opensAt': null,
+    'closesAt': null,
+    'responseLimit': null,
+    'closedMessage': null,
+  },
+  'consent': {
+    'consentCopy': 'I consent.',
+    'consentVersion': 'v1',
+    'retentionCopy': 'Retained for this form purpose.',
+  },
+  'completion': {
+    'title': 'Thanks',
+    'message': 'We will be in touch.',
+    'actionKind': 'none',
+    'actionLabel': null,
+    'actionUrl': null,
+  },
   'customFutureField': 'preserved',
+};
+
+Map<String, Object?> _sectionMap(
+  String sectionId,
+  String title,
+  String questionId,
+) => {
+  'sectionId': sectionId,
+  'title': title,
+  'description': null,
+  'pageBreak': true,
+  'questions': [
+    {
+      'questionId': questionId,
+      'key': questionId,
+      'label': title,
+      'helpText': null,
+      'kind': 'shortText',
+      'required': false,
+      'options': <Object?>[],
+      'canonicalFieldId': null,
+      'privacyClass': 'organizerCustom',
+      'prefillPolicy': 'never',
+      'hostPresentation': 'detailOnly',
+      'validation': {
+        'minLength': null,
+        'maxLength': null,
+        'minNumber': null,
+        'maxNumber': null,
+        'earliestDate': null,
+        'latestDate': null,
+        'minSelections': null,
+        'maxSelections': null,
+        'maxFileCount': null,
+        'maxFileSizeBytes': null,
+        'allowedMimeTypes': <Object?>[],
+        'patternPreset': null,
+        'customError': null,
+      },
+    },
+  ],
 };
 
 Map<String, Object?> _summaryMap({

@@ -41,6 +41,9 @@ export function PublicFormPage() {
       brandLabel={publicFormsCopy.brand}
       brandWord={publicFormsCopy.brandWord}
       embed={controller.embed}
+      appearance={controller.form?.definition.appearance.preset}
+      activityKind={controller.form?.definition.appearance.activityKind}
+      logoUrl={controller.form?.organizer.logoUrl}
       organizerName={organizerName}
     >
       <PublicFormStage controller={controller} />
