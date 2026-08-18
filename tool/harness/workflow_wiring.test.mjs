@@ -435,6 +435,12 @@ test("fast structural ratchets block dependency-heavy full tool buckets", () => 
   assert.match(fullBuckets, /needs\.fast-gates\.result == 'success'/u);
   assert.match(fullBuckets, /timeout-minutes: 30/u);
   assert.doesNotMatch(fullBuckets, /playwright install --with-deps/u);
+  assert.match(fullBuckets, /if command -v rg >\/dev\/null 2>&1/u);
+  assert.doesNotMatch(fullBuckets, /apt-get/u);
+  assert.match(
+    fullBuckets,
+    /4cf9f2741e6c465ffdb7c26f38056a59e2a2544b51f7cc128ef28337eeae4d8e/u,
+  );
 
   const resultJob = tools.match(/  tools:\n(?<body>[\s\S]*)$/u)?.groups?.body;
   assert.ok(resultJob, "tools result job must remain present");
@@ -547,6 +553,12 @@ test("affected tools install only planner-declared setup requirements", () => {
     );
   }
   assert.doesNotMatch(affectedJob, /playwright install --with-deps/u);
+  assert.match(affectedJob, /if command -v rg >\/dev\/null 2>&1/u);
+  assert.doesNotMatch(affectedJob, /apt-get/u);
+  assert.match(
+    affectedJob,
+    /4cf9f2741e6c465ffdb7c26f38056a59e2a2544b51f7cc128ef28337eeae4d8e/u,
+  );
   const pubSetup = affectedJob.match(
     /      - name: Resolve Flutter and standalone Dart tool dependencies(?<body>[\s\S]*?)(?=\n      - |$)/u,
   )?.groups?.body;
