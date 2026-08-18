@@ -32,7 +32,7 @@ options when specific functions need higher or lower limits.
 | `joinClub` / `leaveClub` / `setClubNotificationPreference` | `src/clubs/` | Join/leave a club and manage member notifications |
 | `followOrganizer` / `unfollowOrganizer` / `setOrganizerNotificationPreference` | `src/organizers/` | Follow/unfollow an organizer and manage follower notifications |
 | `createClubPost` | `src/clubs/` | Host-only follower update with weekly quota and activity fan-out |
-| `createOrganizerPost` | `src/organizers/` | Idempotent organizer follower update with quota, durable delivery operation and bounded immediate fan-out |
+| `createOrganizerPost` | `src/organizers/` | Moderated, idempotent organizer follower update with quota, durable delivery operation and bounded immediate fan-out |
 | `requestClubClaim` / `adminDecideClubClaim` | `src/clubs/clubClaims.ts` | Public organizer claim submission and audited admin decision |
 | `requestOrganizerClaim` / `adminDecideOrganizerClaim` | `src/organizers/organizerClaims.ts` | Canonical organizer claim submission and audited admin decision |
 | `startOrganizerConversation` | `src/clubs/clubHostConversations.ts` | Start or resume a viewer conversation with an organizer |
@@ -56,7 +56,7 @@ options when specific functions need higher or lower limits.
 | `listOrganizerContactMergeCandidates` / `reviewOrganizerContactMergeCandidate` | `src/organizers/organizerContactMergeReview.ts` | Review verified or proposed identity evidence, durably dismiss distinct people, and reopen only the reviewing manager's decision |
 | `getOrganizerMessagingSetup` / `completeOrganizerWhatsappConnection` / `syncOrganizerWhatsappTemplates` / `sendOrganizerWhatsappTest` / `disconnectOrganizerWhatsappConnection` | `src/organizers/organizerMessagingSetup.ts` | Connect and verify an organizer-owned Meta WhatsApp sender and synchronize approved templates |
 | `upsertOrganizerCampaign` / `previewOrganizerCampaign` / `approveOrganizerCampaign` / `cancelOrganizerCampaign` / `getOrganizerCampaignReport` | `src/organizers/organizerCampaigns.ts` | Draft, freeze, approve, cancel, and report consent-gated organizer campaigns |
-| `listOrganizerCampaigns` | `src/organizers/organizerSends.ts` | Page through the organizer's reverse-chronological Campaign and Announcement Sends history |
+| `listOrganizerCampaigns` | `src/organizers/organizerSends.ts` | Page through the organizer's reverse-chronological Campaign, Announcement and Follower update Sends history |
 | `listOrganizerWhatsappThreads` / `getOrganizerWhatsappThread` / `sendOrganizerWhatsappReply` | `src/organizers/organizerWhatsappThreads.ts` | Read retained inbound WhatsApp conversations and reply only inside the current customer-service window |
 | `dispatchOrganizerCampaign` | `src/organizers/organizerCampaignDispatcher.ts` | Dispatch one approved organizer campaign snapshot |
 | `createAttendeeInviteLink` / `getEventInviteLinkToken` / `recordEventShareIntent` / `resolveEventInviteLanding` | `src/events/inviteLinks.ts` | Issue opaque attributable attendee links, record Catch share intent, and resolve verified invite landings |

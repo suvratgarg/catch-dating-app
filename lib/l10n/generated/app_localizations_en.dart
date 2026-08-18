@@ -13038,6 +13038,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostSendsChooseChannel => 'Choose channel';
 
   @override
+  String get hostSendsInCatchChannels => 'In Catch';
+
+  @override
+  String get hostSendsWhatsappChannels => 'WhatsApp';
+
+  @override
   String get hostSendsSettings => 'WhatsApp Business settings';
 
   @override

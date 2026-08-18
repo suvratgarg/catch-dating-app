@@ -233,7 +233,7 @@
             {"kind": "surface_state", "stateIds": ["communication_route_picker", "customer_campaign_draft", "follower_update_composer"]},
             {"kind": "route", "authority": {"registry": "flutter_screens", "id": "screen.host.inbox"}}
           ],
-          "description": "Shows every communication route with its sender and delivery semantics, opens Catch Inbox, an eligible organizer WhatsApp composer, or the in-place follower-update composer, and gives read-only ownership or activation guidance for routes that start elsewhere or are not active."
+          "description": "Shows every registered communication route exactly once, grouped under In Catch or WhatsApp with its sender and delivery semantics; opens Catch Inbox, an eligible organizer WhatsApp composer, or the in-place follower-update composer; and gives read-only ownership or activation guidance for routes that start elsewhere or are not active."
         },
         {
           "id": "send_follower_update",

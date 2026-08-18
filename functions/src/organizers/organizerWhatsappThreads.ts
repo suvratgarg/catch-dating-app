@@ -40,6 +40,8 @@ import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
+import {assertOutboundContentAllowed} from
+  "../communications/outboundContentPolicy";
 import {organizerContactChannelStateId} from "./organizerCampaignModel";
 import {
   metaWhatsappAppId,
@@ -345,6 +347,10 @@ export async function sendOrganizerWhatsappReplyHandler(
     request,
     validateSendOrganizerWhatsappReplyCallablePayload,
     normalizePayload
+  );
+  assertOutboundContentAllowed(
+    [data.body],
+    "This WhatsApp reply contains language that cannot be delivered.",
   );
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "sendOrganizerWhatsappReply");

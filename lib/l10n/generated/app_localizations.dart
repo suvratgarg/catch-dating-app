@@ -20353,6 +20353,18 @@ abstract class AppLocalizations {
   /// **'Choose channel'**
   String get hostSendsChooseChannel;
 
+  /// Groups Host routes delivered inside Catch.
+  ///
+  /// In en, this message translates to:
+  /// **'In Catch'**
+  String get hostSendsInCatchChannels;
+
+  /// Groups distinct personal, organizer-owned, and Catch-owned WhatsApp routes.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp'**
+  String get hostSendsWhatsappChannels;
+
   /// Opens organizer WhatsApp sender setup.
   ///
   /// In en, this message translates to:

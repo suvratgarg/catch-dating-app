@@ -36,6 +36,8 @@ import {validateCallableWithAjv} from "../shared/validation";
 import {eventInviteToken, inviteLinkTokenHash} from "../events/inviteLinks";
 import {organizerWhatsappCampaignRoute} from
   "../communications/communicationRoutes";
+import {assertOutboundContentAllowed} from
+  "../communications/outboundContentPolicy";
 import {
   emptyCampaignAudienceCounts,
   emptyCampaignDeliveryCounts,
@@ -94,6 +96,10 @@ export async function upsertOrganizerCampaignHandler(
     request,
     validateUpsertOrganizerCampaignCallablePayload,
     normalizePayload,
+  );
+  assertOutboundContentAllowed(
+    Object.values(data.templateVariables),
+    "A WhatsApp template value contains language that cannot be delivered.",
   );
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "upsertOrganizerCampaign");

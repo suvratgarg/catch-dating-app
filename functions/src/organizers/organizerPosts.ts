@@ -22,6 +22,8 @@ import {
   organizerPostPayloadHash,
 } from "./organizerPostDelivery";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
+import {assertOutboundContentAllowed} from
+  "../communications/outboundContentPolicy";
 
 export {buildOrganizerFollowerDelivery} from "./organizerPostDelivery";
 
@@ -61,6 +63,10 @@ export async function createOrganizerPostHandler(
     request,
     validateCreateOrganizerPostCallablePayload,
     normalizeCreateOrganizerPostPayload
+  );
+  assertOutboundContentAllowed(
+    [data.text],
+    "This follower update contains language that cannot be delivered.",
   );
   const db = deps.firestore();
   const postId = organizerPostId({

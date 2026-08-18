@@ -2137,9 +2137,19 @@ campaign, Catch-owned WhatsApp, Catch chat, Catch event announcement and
 organizer follower update. A future market transport extends this registry and
 implements its adapter; it must not add provider conditionals to route-neutral
 widgets or weaken an existing consent boundary. `HostSendsWorkspaceSliver`
-renders the route choice, readiness state, route-specific follower composer and
-mixed Campaign/Announcement/Follower update history. Route-specific controllers
-retain mutation ownership.
+groups every catalog route by recipient surface (`In Catch` or `WhatsApp`),
+renders its readiness state, route-specific follower composer and mixed
+Campaign/Announcement/Follower update history. A widget contract requires one
+picker row for every catalog id, so adding a market route cannot silently omit
+its Host affordance. Route-specific controllers retain mutation ownership.
+
+Every server-managed Host outbound free-text boundary calls
+`assertOutboundContentAllowed` before persistence or provider handoff. This
+currently covers follower updates, WhatsApp campaign/test variables and
+service-window replies; event announcements retain the same fail-closed policy
+at their callable boundary. Catch chat retains its message-trigger moderation
+and redaction path. Personal WhatsApp handoff stays outside this managed-delivery
+rule because the Host edits and sends the final message in the external app.
 
 External handoff is intentionally a weak-observability route:
 `ExternalLinks.openWhatsappHandoff` may report only whether the device accepted

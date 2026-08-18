@@ -419,6 +419,72 @@ class _HostSendsRoutePicker extends ConsumerWidget {
     final followerUpdate = communicationRouteCapability(
       CommunicationRouteId.organizerFollowerUpdate,
     );
+    final whatsappBusinessField = setup.when<Widget>(
+      loading: () => CatchFieldLanes.single(
+        child: CatchField.read(
+          key: ValueKey('host-route-${whatsappBusiness.id.name}'),
+          title: context.l10n.hostSendsWhatsappBusinessChannel,
+          body: context.l10n.hostSendsChannelChecking,
+        ),
+      ),
+      error: (_, _) => CatchFieldLanes.single(
+        child: CatchField.read(
+          key: ValueKey('host-route-${whatsappBusiness.id.name}'),
+          title: context.l10n.hostSendsWhatsappBusinessChannel,
+          body: context.l10n.hostSendsChannelUnavailable,
+          valueText: context.l10n.hostSendsSetupRequired,
+        ),
+      ),
+      data: (value) => CatchFieldLanes.single(
+        child: value.canComposeCampaign
+            ? CatchField.nav(
+                key: ValueKey('host-route-${whatsappBusiness.id.name}'),
+                title: context.l10n.hostSendsWhatsappBusinessChannel,
+                body: context.l10n.hostSendsWhatsappBusinessDescription,
+                onTap: onStartCampaign,
+              )
+            : CatchField.read(
+                key: ValueKey('host-route-${whatsappBusiness.id.name}'),
+                title: context.l10n.hostSendsWhatsappBusinessChannel,
+                body: _whatsappReadinessMessage(
+                  context,
+                  value.campaignReadiness,
+                ),
+                valueText: context.l10n.hostSendsSetupRequired,
+              ),
+      ),
+    );
+    final followerUpdateField = followerQuota.when<Widget>(
+      loading: () => CatchFieldLanes.single(
+        child: CatchField.read(
+          key: ValueKey('host-route-${followerUpdate.id.name}'),
+          title: context.l10n.hostSendsFollowerUpdateChannel,
+          body: context.l10n.hostSendsChannelChecking,
+        ),
+      ),
+      error: (_, _) => CatchFieldLanes.single(
+        child: CatchField.read(
+          key: ValueKey('host-route-${followerUpdate.id.name}'),
+          title: context.l10n.hostSendsFollowerUpdateChannel,
+          body: context.l10n.hostSendsChannelUnavailable,
+        ),
+      ),
+      data: (remainingQuota) => CatchFieldLanes.single(
+        child: remainingQuota > 0
+            ? CatchField.nav(
+                key: ValueKey('host-route-${followerUpdate.id.name}'),
+                title: context.l10n.hostSendsFollowerUpdateChannel,
+                body: context.l10n.hostSendsFollowerUpdateDescription,
+                onTap: () => unawaited(onStartFollowerUpdate(remainingQuota)),
+              )
+            : CatchField.read(
+                key: ValueKey('host-route-${followerUpdate.id.name}'),
+                title: context.l10n.hostSendsFollowerUpdateChannel,
+                body: context.l10n.hostSendsFollowerUpdateQuotaUsed,
+                valueText: context.l10n.hostSendsWeeklyLimit,
+              ),
+      ),
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -426,7 +492,7 @@ class _HostSendsRoutePicker extends ConsumerWidget {
         _HostSendsBackButton(onPressed: onBack),
         gapH12,
         CatchSection.divided(
-          title: context.l10n.hostSendsChooseChannel,
+          title: context.l10n.hostSendsInCatchChannels,
           child: CatchFieldLanes.single(
             child: Column(
               children: [
@@ -442,92 +508,23 @@ class _HostSendsRoutePicker extends ConsumerWidget {
                   body: context.l10n.hostSendsCatchAnnouncementDescription,
                   onTap: onOpenInbox,
                 ),
-                setup.when(
-                  loading: () => CatchFieldLanes.single(
-                    child: CatchField.read(
-                      key: ValueKey('host-route-${whatsappBusiness.id.name}'),
-                      title: context.l10n.hostSendsWhatsappBusinessChannel,
-                      body: context.l10n.hostSendsChannelChecking,
-                    ),
-                  ),
-                  error: (_, _) => CatchFieldLanes.single(
-                    child: CatchField.read(
-                      key: ValueKey('host-route-${whatsappBusiness.id.name}'),
-                      title: context.l10n.hostSendsWhatsappBusinessChannel,
-                      body: context.l10n.hostSendsChannelUnavailable,
-                      valueText: context.l10n.hostSendsSetupRequired,
-                    ),
-                  ),
-                  data: (value) => CatchFieldLanes.single(
-                    child: value.canComposeCampaign
-                        ? CatchField.nav(
-                            key: ValueKey(
-                              'host-route-${whatsappBusiness.id.name}',
-                            ),
-                            title:
-                                context.l10n.hostSendsWhatsappBusinessChannel,
-                            body: context
-                                .l10n
-                                .hostSendsWhatsappBusinessDescription,
-                            onTap: onStartCampaign,
-                          )
-                        : CatchField.read(
-                            key: ValueKey(
-                              'host-route-${whatsappBusiness.id.name}',
-                            ),
-                            title:
-                                context.l10n.hostSendsWhatsappBusinessChannel,
-                            body: _whatsappReadinessMessage(
-                              context,
-                              value.campaignReadiness,
-                            ),
-                            valueText: context.l10n.hostSendsSetupRequired,
-                          ),
-                  ),
-                ),
+                followerUpdateField,
+              ],
+            ),
+          ),
+        ),
+        gapH12,
+        CatchSection.divided(
+          title: context.l10n.hostSendsWhatsappChannels,
+          child: CatchFieldLanes.single(
+            child: Column(
+              children: [
+                whatsappBusinessField,
                 CatchField.nav(
                   key: ValueKey('host-route-${whatsappApp.id.name}'),
                   title: context.l10n.hostSendsWhatsappAppChannel,
                   body: context.l10n.hostSendsWhatsappAppDescription,
                   onTap: () => context.goNamed(Routes.hostCustomersScreen.name),
-                ),
-                followerQuota.when(
-                  loading: () => CatchFieldLanes.single(
-                    child: CatchField.read(
-                      key: ValueKey('host-route-${followerUpdate.id.name}'),
-                      title: context.l10n.hostSendsFollowerUpdateChannel,
-                      body: context.l10n.hostSendsChannelChecking,
-                    ),
-                  ),
-                  error: (_, _) => CatchFieldLanes.single(
-                    child: CatchField.read(
-                      key: ValueKey('host-route-${followerUpdate.id.name}'),
-                      title: context.l10n.hostSendsFollowerUpdateChannel,
-                      body: context.l10n.hostSendsChannelUnavailable,
-                    ),
-                  ),
-                  data: (remainingQuota) => CatchFieldLanes.single(
-                    child: remainingQuota > 0
-                        ? CatchField.nav(
-                            key: ValueKey(
-                              'host-route-${followerUpdate.id.name}',
-                            ),
-                            title: context.l10n.hostSendsFollowerUpdateChannel,
-                            body:
-                                context.l10n.hostSendsFollowerUpdateDescription,
-                            onTap: () => unawaited(
-                              onStartFollowerUpdate(remainingQuota),
-                            ),
-                          )
-                        : CatchField.read(
-                            key: ValueKey(
-                              'host-route-${followerUpdate.id.name}',
-                            ),
-                            title: context.l10n.hostSendsFollowerUpdateChannel,
-                            body: context.l10n.hostSendsFollowerUpdateQuotaUsed,
-                            valueText: context.l10n.hostSendsWeeklyLimit,
-                          ),
-                  ),
                 ),
                 CatchField.read(
                   key: ValueKey('host-route-${catchWhatsapp.id.name}'),

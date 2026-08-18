@@ -4,6 +4,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/clubs/data/club_posts_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/communications/domain/communication_route.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
@@ -240,12 +241,21 @@ void main() {
     await tester.tap(find.text('Choose channel'));
     await pumpFeatureUi(tester);
 
+    expect(find.text('IN CATCH'), findsOneWidget);
+    expect(find.text('WHATSAPP'), findsOneWidget);
     expect(find.text('Catch chat · Organizer'), findsOneWidget);
     expect(find.text('Catch announcement · Organizer'), findsOneWidget);
     expect(find.text('WhatsApp Business · Organizer number'), findsOneWidget);
     expect(find.text('WhatsApp app · You'), findsOneWidget);
     expect(find.text('Follower update · Organizer'), findsOneWidget);
     expect(find.text('Catch WhatsApp · Catch number'), findsOneWidget);
+    for (final routeId in CommunicationRouteId.values) {
+      expect(
+        find.byKey(ValueKey('host-route-${routeId.name}')),
+        findsOneWidget,
+        reason: '${routeId.name} must remain represented in the route picker',
+      );
+    }
     expect(find.byType(HostCampaignComposer), findsNothing);
 
     await tester.tap(find.text('WhatsApp Business · Organizer number'));
