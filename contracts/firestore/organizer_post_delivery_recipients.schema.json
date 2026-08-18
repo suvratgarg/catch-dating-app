@@ -29,7 +29,7 @@
     "activityNotificationId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "server-only"},
     "excluded": {"type": "boolean", "x-catch-ownership": "server-only"},
     "errorCode": {"type": ["string", "null"], "minLength": 1, "maxLength": 120, "x-catch-ownership": "server-only"},
-    "expiresAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "server-only"},
+    "expiresAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "server-only", "x-firestore-ttl": true},
     "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "server-only"},
     "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "server-only"}
   }

@@ -49,7 +49,7 @@ test("checked manifest validates offline without invoking gcloud", () => {
 
   assert.equal(execution.exitCode, 0);
   assert.equal(execution.report.secretCount, 16);
-  assert.equal(execution.report.requirementCount, 17);
+  assert.equal(execution.report.requirementCount, 18);
   assert.equal(commandCalls, 0);
 });
 
@@ -153,7 +153,7 @@ test("target and capability filtering selects only relevant prerequisites", () =
     ).length,
     16,
   );
-  assert.equal(selected("dev", ["functions"]).length, 17);
+  assert.equal(selected("dev", ["functions"]).length, 18);
   for (const target of [
     "functions:checkInEventRuntime",
     "functions:createEventVenueSession",
@@ -177,6 +177,15 @@ test("target and capability filtering selects only relevant prerequisites", () =
     selected("dev", [], ["cross-paths"]).map((entry) => entry.id),
     ["firestore.ttl.cross-paths-suggestion-exposures"],
   );
+  for (const target of [
+    "functions:createOrganizerPost",
+    "functions:dispatchPendingOrganizerFollowerUpdates",
+  ]) {
+    assert.deepEqual(
+      selected("dev", [target]).map((entry) => entry.id),
+      ["firestore.ttl.organizer-post-delivery-recipients"],
+    );
+  }
   assert.deepEqual(selected("dev", ["hosting"]), []);
 });
 

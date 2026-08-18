@@ -11936,7 +11936,8 @@ export const organizerPostDeliveryRecipientDocumentSchema = {
           "maximum": 999999999
         }
       },
-      "x-catch-ownership": "server-only"
+      "x-catch-ownership": "server-only",
+      "x-firestore-ttl": true
     },
     "createdAt": {
       "type": "object",

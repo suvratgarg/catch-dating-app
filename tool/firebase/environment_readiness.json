@@ -456,6 +456,31 @@
       "sourcePaths": [
         "functions/src/crossPaths/getCrossPathsSuggestions.ts"
       ]
+    },
+    {
+      "id": "firestore.ttl.organizer-post-delivery-recipients",
+      "kind": "firestore-ttl",
+      "collectionGroup": "organizerPostDeliveryRecipients",
+      "field": "expiresAt",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyDeployTarget": [
+          "functions:createOrganizerPost",
+          "functions:dispatchPendingOrganizerFollowerUpdates"
+        ]
+      },
+      "acceptedStates": [
+        "ACTIVE"
+      ],
+      "owner": "organizer-communications",
+      "sourcePaths": [
+        "contracts/firestore/organizer_post_delivery_recipients.schema.json",
+        "functions/src/organizers/organizerPostDelivery.ts"
+      ]
     }
   ]
 }
