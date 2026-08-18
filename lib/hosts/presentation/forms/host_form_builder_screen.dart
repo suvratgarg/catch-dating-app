@@ -68,6 +68,20 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
         leadingType: CatchTopBarLeading.back,
         divider: scrolledUnder,
         actions: [
+          CatchIconAction(
+            icon: CatchIcons.undoRounded,
+            tooltip: context.l10n.hostFormUndo,
+            onPressed: editorValue != null && notifier.canUndo
+                ? notifier.undo
+                : null,
+          ),
+          CatchIconAction(
+            icon: CatchIcons.redoRounded,
+            tooltip: context.l10n.hostFormRedo,
+            onPressed: editorValue != null && notifier.canRedo
+                ? notifier.redo
+                : null,
+          ),
           if (editorValue?.editor.form.activeVersionId != null)
             CatchIconAction(
               icon: CatchIcons.share,

@@ -406,7 +406,7 @@ async function responseRows(
   const versionIds = [...new Set(responses.map((item) => item.versionId))];
   const sourceIds = [...new Set(responses.flatMap((item) =>
     item.sourceLinkId ? [item.sourceLinkId] : []))];
-  const [formSnaps, versionSnaps, sourceSnaps, conversions] =
+  const [formSnaps, versionSnaps, sourceSnaps, conversionsByResponseId] =
     await Promise.all([
       db.getAll(...formIds.map((id) =>
         db.collection("organizerForms").doc(id))),
@@ -414,8 +414,10 @@ async function responseRows(
         db.collection("organizerFormVersions").doc(id))),
       sourceIds.length ? db.getAll(...sourceIds.map((id) =>
         db.collection("organizerFormShareLinks").doc(id))) : [],
-      Promise.all(snapshots.map((snap) =>
-        completedConversionKinds(db, snap.id))),
+      completedConversionKindsForResponses(
+        db,
+        snapshots.map((snap) => snap.id)
+      ),
     ]);
   const forms = new Map(formSnaps.filter((snap) => snap.exists).map((snap) =>
     [snap.id, snap.data() as OrganizerFormDocument]));
@@ -436,7 +438,7 @@ async function responseRows(
       version,
       response.sourceLinkId ? sources.get(response.sourceLinkId)?.label ??
         null : null,
-      conversions[index]
+      conversionsByResponseId.get(snap.id) ?? []
     )];
   });
 }
@@ -487,6 +489,28 @@ async function completedConversionKinds(
     .get();
   return snapshot.docs.map((doc) =>
     (doc.data() as OrganizerFormConversionReceiptDocument).kind);
+}
+
+async function completedConversionKindsForResponses(
+  db: FirebaseFirestore.Firestore,
+  responseIds: string[]
+): Promise<Map<string, ResponseRow["conversionKinds"]>> {
+  const byResponseId = new Map<string, ResponseRow["conversionKinds"]>();
+  for (let offset = 0; offset < responseIds.length; offset += 30) {
+    const ids = responseIds.slice(offset, offset + 30);
+    if (ids.length === 0) continue;
+    const snapshot = await db.collection("organizerFormConversionReceipts")
+      .where("responseId", "in", ids)
+      .where("status", "==", "completed")
+      .get();
+    for (const doc of snapshot.docs) {
+      const receipt = doc.data() as OrganizerFormConversionReceiptDocument;
+      const kinds = byResponseId.get(receipt.responseId) ?? [];
+      if (!kinds.includes(receipt.kind)) kinds.push(receipt.kind);
+      byResponseId.set(receipt.responseId, kinds);
+    }
+  }
+  return byResponseId;
 }
 
 function requireOwnedForm(

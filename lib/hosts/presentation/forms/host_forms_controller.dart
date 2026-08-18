@@ -120,10 +120,17 @@ class HostFormEditorController extends _$HostFormEditorController {
   int _generation = 0;
   int _idCounter = 0;
   bool _saveRunning = false;
+  final List<HostFormDefinition> _undoStack = [];
+  final List<HostFormDefinition> _redoStack = [];
+
+  bool get canUndo => _undoStack.isNotEmpty;
+  bool get canRedo => _redoStack.isNotEmpty;
 
   @override
   Future<HostFormEditorState> build(String organizerId, String formId) async {
     ref.onDispose(() => _saveTimer?.cancel());
+    _undoStack.clear();
+    _redoStack.clear();
     final editor = await ref
         .read(hostFormsRepositoryProvider)
         .getEditor(organizerId: organizerId, formId: formId);
@@ -422,6 +429,8 @@ class HostFormEditorController extends _$HostFormEditorController {
           .read(hostFormsRepositoryProvider)
           .getEditor(organizerId: organizerId, formId: formId);
       _generation = 0;
+      _undoStack.clear();
+      _redoStack.clear();
       return HostFormEditorState(editor: editor);
     });
   }
@@ -529,6 +538,32 @@ class HostFormEditorController extends _$HostFormEditorController {
     if (current == null || current.operationInProgress) return;
     final definition = transform(current.editor.definition);
     if (identical(definition, current.editor.definition)) return;
+    _undoStack.add(current.editor.definition);
+    if (_undoStack.length > 50) _undoStack.removeAt(0);
+    _redoStack.clear();
+    _replaceLocalDefinition(current, definition);
+  }
+
+  void undo() {
+    final current = state.asData?.value;
+    if (current == null || current.operationInProgress || !canUndo) return;
+    final definition = _undoStack.removeLast();
+    _redoStack.add(current.editor.definition);
+    _replaceLocalDefinition(current, definition);
+  }
+
+  void redo() {
+    final current = state.asData?.value;
+    if (current == null || current.operationInProgress || !canRedo) return;
+    final definition = _redoStack.removeLast();
+    _undoStack.add(current.editor.definition);
+    _replaceLocalDefinition(current, definition);
+  }
+
+  void _replaceLocalDefinition(
+    HostFormEditorState current,
+    HostFormDefinition definition,
+  ) {
     _generation += 1;
     state = AsyncData(
       current.copyWith(

@@ -23501,6 +23501,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Skipped'**
   String get hostFormAutomationSkipped;
+
+  /// Undoes the most recent local form-builder edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo last edit'**
+  String get hostFormUndo;
+
+  /// Reapplies the most recently undone form-builder edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Redo edit'**
+  String get hostFormRedo;
 }
 
 class _AppLocalizationsDelegate

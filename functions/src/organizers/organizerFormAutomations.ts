@@ -52,6 +52,7 @@ type AutomationCondition = NonNullable<
   OrganizerFormAutomationRuleDocument["condition"]>;
 type AnswerValue = OrganizerFormResponseDocument["answers"][string];
 type ActionResult = OrganizerFormAutomationRunDocument["actionResults"][number];
+export type FormAutomationEventKind = "submitted" | "withdrawn";
 
 interface AutomationDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -286,9 +287,7 @@ export async function dispatchOrganizerFormAutomations(
   deps: AutomationDeps = defaultDeps
 ): Promise<void> {
   const response = after ?? before;
-  const eventKind = !before && after ? "submitted" :
-    before?.status === "submitted" && after?.status === "withdrawn" ?
-      "withdrawn" : null;
+  const eventKind = formAutomationEventKind(before, after);
   if (!response || !eventKind) return;
   const rules = await deps.firestore()
     .collection("organizerFormAutomationRules")
@@ -304,6 +303,85 @@ export async function dispatchOrganizerFormAutomations(
   const settled = await Promise.allSettled(executions);
   const failure = settled.find((result) => result.status === "rejected");
   if (failure?.status === "rejected") throw failure.reason;
+}
+
+/** Returns only meaningful response lifecycle edges; drafts never execute. */
+export function formAutomationEventKind(
+  before: OrganizerFormResponseDocument | undefined,
+  after: OrganizerFormResponseDocument | undefined
+): FormAutomationEventKind | null {
+  if (after?.status === "submitted" && before?.status !== "submitted") {
+    return "submitted";
+  }
+  if (after?.status === "withdrawn" && before?.status === "submitted") {
+    return "withdrawn";
+  }
+  return null;
+}
+
+/**
+ * Keeps application-purpose forms compatible with the established Host
+ * application queue without requiring every organizer to configure a rule.
+ */
+export async function projectApplicationPurposeResponse(
+  responseId: string,
+  before: OrganizerFormResponseDocument | undefined,
+  after: OrganizerFormResponseDocument | undefined,
+  deps: AutomationDeps = defaultDeps
+): Promise<void> {
+  const eventKind = formAutomationEventKind(before, after);
+  if (!after || !eventKind) return;
+  const versionSnap = await deps.firestore()
+    .collection("organizerFormVersions")
+    .doc(after.versionId)
+    .get();
+  if (!versionSnap.exists) return;
+  const version = requireDoc<OrganizerFormVersionDocument>(
+    versionSnap,
+    "OrganizerFormVersionDocument"
+  );
+  if (version.formId !== after.formId ||
+      version.organizerId !== after.organizerId ||
+      version.definition.purpose !== "application") {
+    return;
+  }
+  if (eventKind === "withdrawn") {
+    const applicationId = deterministicId("formapplication", responseId);
+    const ref = deps.firestore().collection("organizerApplications")
+      .doc(applicationId);
+    await deps.firestore().runTransaction(async (tx) => {
+      const snapshot = await tx.get(ref);
+      if (!snapshot.exists) return;
+      const application = snapshot.data() as {reviewStatus?: string};
+      if (application.reviewStatus === "withdrawn") return;
+      tx.update(ref, {
+        reviewStatus: "withdrawn",
+        updatedAt: deps.timestamp(),
+      });
+    });
+    return;
+  }
+  const request = {
+    data: {
+      organizerId: after.organizerId,
+      responseId,
+      kind: "application",
+      eventId: null,
+      overrides: {},
+      requestId: `application_projection_${responseId}`,
+    },
+    auth: {uid: "system_form_application_projection", token: {}},
+  } as unknown as CallableRequest<unknown>;
+  const result = await convertOrganizerFormResponseHandler(request, {
+    firestore: deps.firestore,
+    checkRateLimit: async () => undefined,
+    timestamp: deps.timestamp,
+    identitySecret: deps.identitySecret,
+    requireManagerAuthority: false,
+  });
+  if (result.status !== "completed") {
+    throw new Error("Application response projection did not complete.");
+  }
 }
 
 async function executeRule(
@@ -853,10 +931,17 @@ export const onOrganizerFormResponseAutomated = onDocumentWritten(
       OrganizerFormResponseDocument | undefined;
     const after = event.data?.after.data() as
       OrganizerFormResponseDocument | undefined;
-    await dispatchOrganizerFormAutomations(
-      event.params.responseId,
-      before,
-      after
-    );
+    await Promise.all([
+      projectApplicationPurposeResponse(
+        event.params.responseId,
+        before,
+        after
+      ),
+      dispatchOrganizerFormAutomations(
+        event.params.responseId,
+        before,
+        after
+      ),
+    ]);
   }
 );

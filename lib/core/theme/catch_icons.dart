@@ -352,6 +352,7 @@ abstract final class CatchIcons {
   static IconData get rateReviewOutlined => Icons.rate_review_outlined;
   static IconData get receiptLongOutlined => Icons.receipt_long_outlined;
   static IconData get refreshRounded => Icons.refresh_rounded;
+  static IconData get redoRounded => Icons.redo_rounded;
   static IconData get removeCircleOutlineRounded =>
       Icons.remove_circle_outline_rounded;
   static IconData get removeRounded => Icons.remove_rounded;
@@ -405,6 +406,7 @@ abstract final class CatchIcons {
   static IconData get tune => Icons.tune;
   static IconData get tuneRounded => Icons.tune_rounded;
   static IconData get updateRounded => Icons.update_rounded;
+  static IconData get undoRounded => Icons.undo_rounded;
   static IconData get verifiedRounded => Icons.verified_rounded;
   static IconData get verifiedUserOutlined => Icons.verified_user_outlined;
   static IconData get visibilityOffOutlined => Icons.visibility_off_outlined;

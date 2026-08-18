@@ -14904,4 +14904,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostFormAutomationSkipped => 'Skipped';
+
+  @override
+  String get hostFormUndo => 'Undo last edit';
+
+  @override
+  String get hostFormRedo => 'Redo edit';
 }

@@ -36,6 +36,11 @@ import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {organizerContactIdentityKey} from "./organizerAudienceSecrets";
 import {createOrganizerContactRecord} from "./organizerContacts";
+import {
+  eventAttendeeId,
+  importEventAttendeesForHost,
+  normalizeRosterPhone,
+} from "../events/eventAttendees";
 
 type ConversionKind = PreviewOrganizerFormConversionCallablePayload["kind"];
 type ConversionFields =
@@ -52,6 +57,7 @@ interface FormConversionDeps {
   checkRateLimit: typeof checkRateLimit;
   timestamp: () => FirebaseFirestore.Timestamp;
   identitySecret: () => string;
+  requireManagerAuthority?: boolean;
 }
 
 const defaultDeps: FormConversionDeps = {
@@ -116,7 +122,13 @@ export async function convertOrganizerFormResponseHandler(
   );
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "convertOrganizerFormResponse");
-  await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
+  if (deps.requireManagerAuthority !== false) {
+    await requireOrganizerManager({
+      db,
+      organizerId: data.organizerId,
+      actorUid,
+    });
+  }
   const context = await conversionContext(db, data);
   if (!context.allowed) {
     throw new HttpsError(
@@ -337,17 +349,64 @@ async function applyConversion(params: {
   case "application":
     return applyApplicationConversion(params);
   case "eventAttendeeProposal":
-    return deterministicResultId(
-      "formattendeeproposal",
-      params.data.responseId,
-      params.data.eventId!
-    );
+    return applyEventAttendeeConversion(params);
   case "followUp":
     return deterministicResultId(
       "formfollowupproposal",
       params.data.responseId
     );
   }
+}
+
+async function applyEventAttendeeConversion(params: {
+  db: FirebaseFirestore.Firestore;
+  data: ConvertOrganizerFormResponseCallablePayload;
+  actorUid: string;
+  context: ConversionContext;
+  now: FirebaseFirestore.Timestamp;
+}): Promise<string> {
+  const eventId = params.data.eventId!;
+  const displayName = String(
+    fieldValue(params.context.fields, "displayName") ??
+    params.context.response.identity.displayName ?? "Form respondent"
+  ).slice(0, 120);
+  const phone = stringField(params.context.fields, "phoneNumber") ??
+    params.context.response.identity.phoneE164;
+  const normalizedPhone = normalizeRosterPhone(phone).value;
+  const email = (stringField(params.context.fields, "email") ??
+    params.context.response.identity.email)?.toLocaleLowerCase("en") ?? null;
+  const stableKey = normalizedPhone ? `phone:${normalizedPhone}` :
+    email ? `email:${email}` : `external:${params.data.responseId}`;
+  const result = await importEventAttendeesForHost({
+    hostUid: params.actorUid,
+    payload: {
+      eventId,
+      importKey: `form_${params.data.responseId}`.slice(0, 120),
+      fileName: "Catch form response",
+      format: "manual",
+      rows: [{
+        rowId: params.data.responseId.slice(0, 120),
+        displayName,
+        phone: normalizedPhone,
+        email,
+        externalReference: params.data.responseId,
+        arrivalGroup: null,
+        ticketType: null,
+        status: "registered",
+      }],
+    },
+  }, {
+    firestore: () => params.db,
+    checkRateLimit: async () => undefined,
+    timestamp: () => params.now,
+  });
+  if (result.createdCount + result.updatedCount !== 1) {
+    throw new HttpsError(
+      "failed-precondition",
+      result.errors[0]?.message ?? "The attendee could not be added."
+    );
+  }
+  return eventAttendeeId(eventId, stableKey);
 }
 
 async function applyApplicationConversion(params: {

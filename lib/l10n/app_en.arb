@@ -22421,5 +22421,9 @@
   "hostFormAutomationFailed": "Failed",
   "@hostFormAutomationFailed": {"description": "Failed automation run status.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostFormAutomationSkipped": "Skipped",
-  "@hostFormAutomationSkipped": {"description": "Skipped automation run status.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"}
+  "@hostFormAutomationSkipped": {"description": "Skipped automation run status.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormUndo": "Undo last edit",
+  "@hostFormUndo": {"description": "Undoes the most recent local form-builder edit.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormRedo": "Redo edit",
+  "@hostFormRedo": {"description": "Reapplies the most recently undone form-builder edit.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"}
 }
