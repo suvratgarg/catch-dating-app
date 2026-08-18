@@ -14358,9 +14358,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormPresentationSort => 'Sortable column';
 
   @override
-  String get hostFormValidationSettings => 'Answer validation';
-
-  @override
   String get hostFormMinimumLength => 'Minimum characters';
 
   @override
@@ -14747,9 +14744,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormExportXlsx => 'Export Excel';
 
   @override
-  String get hostFormExportPreparing => 'Preparing export…';
-
-  @override
   String get hostFormExportReady => 'Export ready';
 
   @override
@@ -14880,12 +14874,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostFormExportStillPreparing =>
       'The export is still preparing. You can retry without creating a duplicate.';
-
-  @override
-  String get hostFormAutomationEnabled => 'Enabled';
-
-  @override
-  String get hostFormAutomationDisabled => 'Disabled';
 
   @override
   String get hostFormAutomationPending => 'Pending';

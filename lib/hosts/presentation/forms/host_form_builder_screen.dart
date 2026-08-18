@@ -1,10 +1,12 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
@@ -144,14 +146,35 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
               onRetry: notifier.reload,
             ),
           ),
-          builder: (context, value) => LayoutBuilder(
-            builder: (context, constraints) {
-              if (constraints.maxWidth >= 1040) {
-                return _expandedEditor(context, value, notifier);
-              }
-              return CatchScreenBody(
-                pb: CatchSpacing.s10,
-                child: _compactEditor(context, value, notifier),
+          builder: (context, value) => ComponentResponsiveBuilder(
+            breakpoint: CatchLayout.formBuilderExpandedBreakpoint,
+            compact: (context) => CatchScreenBody(
+              pb: CatchSpacing.s10,
+              child: _CompactFormEditor(
+                state: value,
+                notifier: notifier,
+                onSelectionChanged: (section, question) => setState(() {
+                  _selectedSection = section;
+                  _selectedQuestion = question;
+                }),
+              ),
+            ),
+            expanded: (context) {
+              final definition = value.editor.definition;
+              final sectionIndex = _validSectionIndex(definition);
+              final questionIndex = _validQuestionIndex(
+                definition,
+                sectionIndex,
+              );
+              return _ExpandedFormEditor(
+                state: value,
+                notifier: notifier,
+                sectionIndex: sectionIndex,
+                questionIndex: questionIndex,
+                onSelectionChanged: (section, question) => setState(() {
+                  _selectedSection = section;
+                  _selectedQuestion = question;
+                }),
               );
             },
           ),
@@ -159,152 +182,6 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
       ),
     );
   }
-
-  Widget _compactEditor(
-    BuildContext context,
-    HostFormEditorState state,
-    HostFormEditorController notifier,
-  ) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      ..._statusNotices(context, state, notifier),
-      _FormSettings(definition: state.editor.definition, notifier: notifier),
-      gapH24,
-      _SectionsEditor(
-        definition: state.editor.definition,
-        notifier: notifier,
-        onSelectionChanged: (section, question) => setState(() {
-          _selectedSection = section;
-          _selectedQuestion = question;
-        }),
-      ),
-    ],
-  );
-
-  Widget _expandedEditor(
-    BuildContext context,
-    HostFormEditorState state,
-    HostFormEditorController notifier,
-  ) {
-    final t = CatchTokens.of(context);
-    final definition = state.editor.definition;
-    final sectionIndex = _validSectionIndex(definition);
-    final questionIndex = _validQuestionIndex(definition, sectionIndex);
-    return Column(
-      children: [
-        if (_statusNotices(context, state, notifier) case final notices
-            when notices.isNotEmpty)
-          Padding(
-            padding: CatchInsets.pageBody.copyWith(bottom: CatchSpacing.s2),
-            child: Column(children: notices),
-          ),
-        Expanded(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(
-                width: 260,
-                child: SingleChildScrollView(
-                  padding: CatchInsets.pageBody,
-                  child: _FormOutline(
-                    definition: definition,
-                    selectedSection: sectionIndex,
-                    selectedQuestion: questionIndex,
-                    onSelected: (section, question) => setState(() {
-                      _selectedSection = section;
-                      _selectedQuestion = question;
-                    }),
-                    notifier: notifier,
-                  ),
-                ),
-              ),
-              VerticalDivider(width: 1, color: t.line),
-              Expanded(
-                child: ColoredBox(
-                  color: t.surface,
-                  child: SingleChildScrollView(
-                    padding: CatchInsets.pageBody,
-                    child: Center(
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(
-                          maxWidth: CatchLayout.maxContentWidth,
-                        ),
-                        child: HostFormRenderer(definition: definition),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              VerticalDivider(width: 1, color: t.line),
-              SizedBox(
-                width: 340,
-                child: SingleChildScrollView(
-                  padding: CatchInsets.pageBody,
-                  child: _Inspector(
-                    definition: definition,
-                    sectionIndex: sectionIndex,
-                    questionIndex: questionIndex,
-                    notifier: notifier,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  List<Widget> _statusNotices(
-    BuildContext context,
-    HostFormEditorState state,
-    HostFormEditorController notifier,
-  ) => [
-    if (state.saveState == HostFormSaveState.conflict) ...[
-      CatchNotice(
-        notice: CatchNoticeData(
-          id: 'form-save-conflict',
-          title: context.l10n.hostFormConflictTitle,
-          message: context.l10n.hostFormConflictBody,
-          tone: CatchNoticeTone.warning,
-          actionLabel: context.l10n.hostFormReload,
-          onAction: notifier.reload,
-          duration: null,
-        ),
-      ),
-      gapH12,
-    ] else if (state.saveState == HostFormSaveState.failed) ...[
-      CatchNotice(
-        notice: CatchNoticeData(
-          id: 'form-save-failed',
-          title: context.l10n.hostFormSaveFailed,
-          message: state.error?.toString(),
-          tone: CatchNoticeTone.danger,
-          actionLabel: context.l10n.hostFormRetrySave,
-          onAction: () => notifier.saveNow(),
-          duration: null,
-        ),
-      ),
-      gapH12,
-    ],
-    if (state.editor.validationIssues.isNotEmpty) ...[
-      CatchNotice(
-        notice: CatchNoticeData(
-          id: 'form-validation',
-          title: context.l10n.hostFormValidationTitle(
-            count: state.editor.validationIssues.length,
-          ),
-          message: state.editor.validationIssues.first.message,
-          tone: state.hasBlockingValidationErrors
-              ? CatchNoticeTone.danger
-              : CatchNoticeTone.warning,
-          duration: null,
-          dismissible: false,
-        ),
-      ),
-      gapH12,
-    ],
-  ];
 
   int? _validSectionIndex(HostFormDefinition definition) {
     if (definition.sections.isEmpty) return null;
@@ -391,6 +268,177 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
   }
 }
 
+class _CompactFormEditor extends StatelessWidget {
+  const _CompactFormEditor({
+    required this.state,
+    required this.notifier,
+    required this.onSelectionChanged,
+  });
+
+  final HostFormEditorState state;
+  final HostFormEditorController notifier;
+  final void Function(int section, int? question) onSelectionChanged;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      _FormStatusNotices(state: state, notifier: notifier),
+      _FormSettings(definition: state.editor.definition, notifier: notifier),
+      gapH24,
+      _SectionsEditor(
+        definition: state.editor.definition,
+        notifier: notifier,
+        onSelectionChanged: onSelectionChanged,
+      ),
+    ],
+  );
+}
+
+class _ExpandedFormEditor extends StatelessWidget {
+  const _ExpandedFormEditor({
+    required this.state,
+    required this.notifier,
+    required this.sectionIndex,
+    required this.questionIndex,
+    required this.onSelectionChanged,
+  });
+
+  final HostFormEditorState state;
+  final HostFormEditorController notifier;
+  final int? sectionIndex;
+  final int? questionIndex;
+  final void Function(int section, int? question) onSelectionChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final definition = state.editor.definition;
+    return Column(
+      children: [
+        _FormStatusNotices(state: state, notifier: notifier, padded: true),
+        Expanded(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(
+                width: CatchLayout.formBuilderOutlineWidth,
+                child: SingleChildScrollView(
+                  padding: CatchInsets.pageBody,
+                  child: _FormOutline(
+                    definition: definition,
+                    selectedSection: sectionIndex,
+                    selectedQuestion: questionIndex,
+                    onSelected: onSelectionChanged,
+                    notifier: notifier,
+                  ),
+                ),
+              ),
+              VerticalDivider(width: CatchStroke.hairline, color: t.line),
+              Expanded(
+                child: ColoredBox(
+                  color: t.surface,
+                  child: SingleChildScrollView(
+                    padding: CatchInsets.pageBody,
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: CatchLayout.maxContentWidth,
+                        ),
+                        child: HostFormRenderer(definition: definition),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              VerticalDivider(width: CatchStroke.hairline, color: t.line),
+              SizedBox(
+                width: CatchLayout.formBuilderInspectorWidth,
+                child: SingleChildScrollView(
+                  padding: CatchInsets.pageBody,
+                  child: _Inspector(
+                    definition: definition,
+                    sectionIndex: sectionIndex,
+                    questionIndex: questionIndex,
+                    notifier: notifier,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _FormStatusNotices extends StatelessWidget {
+  const _FormStatusNotices({
+    required this.state,
+    required this.notifier,
+    this.padded = false,
+  });
+
+  final HostFormEditorState state;
+  final HostFormEditorController notifier;
+  final bool padded;
+
+  @override
+  Widget build(BuildContext context) {
+    final notices = <Widget>[
+      if (state.saveState == HostFormSaveState.conflict) ...[
+        CatchNotice(
+          notice: CatchNoticeData(
+            id: 'form-save-conflict',
+            title: context.l10n.hostFormConflictTitle,
+            message: context.l10n.hostFormConflictBody,
+            tone: CatchNoticeTone.warning,
+            actionLabel: context.l10n.hostFormReload,
+            onAction: notifier.reload,
+            duration: null,
+          ),
+        ),
+        gapH12,
+      ] else if (state.saveState == HostFormSaveState.failed) ...[
+        CatchNotice(
+          notice: CatchNoticeData(
+            id: 'form-save-failed',
+            title: context.l10n.hostFormSaveFailed,
+            message: state.error?.toString(),
+            tone: CatchNoticeTone.danger,
+            actionLabel: context.l10n.hostFormRetrySave,
+            onAction: () => notifier.saveNow(),
+            duration: null,
+          ),
+        ),
+        gapH12,
+      ],
+      if (state.editor.validationIssues.isNotEmpty) ...[
+        CatchNotice(
+          notice: CatchNoticeData(
+            id: 'form-validation',
+            title: context.l10n.hostFormValidationTitle(
+              count: state.editor.validationIssues.length,
+            ),
+            message: state.editor.validationIssues.first.message,
+            tone: state.hasBlockingValidationErrors
+                ? CatchNoticeTone.danger
+                : CatchNoticeTone.warning,
+            duration: null,
+            dismissible: false,
+          ),
+        ),
+        gapH12,
+      ],
+    ];
+    if (notices.isEmpty) return const SizedBox.shrink();
+    final content = Column(children: notices);
+    return padded
+        ? Padding(padding: CatchInsets.formBuilderNotices, child: content)
+        : content;
+  }
+}
+
 class _FormSettings extends StatelessWidget {
   const _FormSettings({required this.definition, required this.notifier});
 
@@ -455,6 +503,9 @@ class _FormSettings extends StatelessWidget {
         children: [
           CatchField.select<HostFormAppearancePreset>(
             title: context.l10n.hostFormAppearancePreset,
+            contract: CatchContractConstraints
+                .organizerFormDraftDocumentDefinitionAppearancePreset,
+            contractValue: (value) => value.name,
             values: HostFormAppearancePreset.values,
             value: definition.appearancePreset,
             itemLabel: (value) => _appearanceLabel(context, value),
@@ -480,15 +531,13 @@ class _FormSettings extends StatelessWidget {
       CatchSection.fieldRows(
         title: context.l10n.hostFormAvailability,
         children: [
-          _dateField(
-            context,
+          _DateFormSchemaField(
             title: context.l10n.hostFormOpensAt,
             value: definition.opensAt,
             onChanged: (value) =>
                 notifier.updateMetadata(opensAt: value, setOpensAt: true),
           ),
-          _dateField(
-            context,
+          _DateFormSchemaField(
             title: context.l10n.hostFormClosesAt,
             value: definition.closesAt,
             endOfDay: true,
@@ -583,6 +632,9 @@ class _FormSettings extends StatelessWidget {
           ),
           CatchField.select<HostFormCompletionAction>(
             title: context.l10n.hostFormCompletionActionLabel,
+            contract: CatchContractConstraints
+                .organizerFormDraftDocumentDefinitionCompletionActionKind,
+            contractValue: (value) => value.name,
             values: HostFormCompletionAction.values,
             value: definition.completionAction,
             itemLabel: (value) => _completionActionLabel(context, value),
@@ -629,7 +681,10 @@ class _FormSettings extends StatelessWidget {
       gapH20,
       CatchSection.fieldRows(
         title: context.l10n.hostFormLogic,
-        footer: Text(context.l10n.hostFormLogicHelp),
+        footer: Text(
+          context.l10n.hostFormLogicHelp,
+          style: CatchTextStyles.supporting(context),
+        ),
         children: [
           for (final ruleEntry in definition.logicRules.indexed)
             CatchField.action(
@@ -783,162 +838,191 @@ class _QuestionEditor extends StatelessWidget {
   final VoidCallback onSelected;
 
   @override
-  Widget build(BuildContext context) => CatchField.control(
-    title: question.label,
-    body: hostFormQuestionKindLabel(context, question.kind),
-    contractExemption:
-        'Disclosure container; nested question fields bind the form contract.',
-    onOpenChanged: (open) {
-      if (open) onSelected();
-    },
-    control: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        CatchField.input(
-          key: ValueKey(
-            'question-label-${question.questionId}-${question.label}',
-          ),
-          title: context.l10n.hostFormQuestionLabel,
-          initialValue: question.label,
-          contractExemption: 'The backend form definition validates questions.',
-          onBlur: (value) => notifier.updateQuestion(
-            sectionIndex,
-            questionIndex,
-            label: value.trim(),
-          ),
-        ),
-        CatchField.select<HostFormQuestionKind>(
-          title: context.l10n.hostFormQuestionType,
-          contract: CatchContractConstraints
-              .organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsKind,
-          contractValue: (value) => value.name,
-          values: HostFormQuestionKind.values,
-          value: question.kind,
-          itemLabel: (value) => hostFormQuestionKindLabel(context, value),
-          onChanged: (value) =>
-              notifier.updateQuestion(sectionIndex, questionIndex, kind: value),
-        ),
-        CatchField.input(
-          key: ValueKey(
-            'question-help-${question.questionId}-${question.helpText}',
-          ),
-          title: context.l10n.hostFormQuestionHelpLabel,
-          initialValue: question.helpText,
-          isOptional: true,
-          maxLines: 3,
-          contractExemption: 'The form contract validates question help.',
-          onBlur: (value) => notifier.updateQuestion(
-            sectionIndex,
-            questionIndex,
-            helpText: value.trim(),
-            clearHelpText: value.trim().isEmpty,
-          ),
-        ),
-        CatchField.toggle(
-          title: context.l10n.hostFormQuestionRequired,
-          value: question.required,
-          contractExemption: 'Requiredness is part of the form definition.',
-          onChanged: (value) => notifier.updateQuestion(
-            sectionIndex,
-            questionIndex,
-            required: value,
-          ),
-        ),
-        CatchField.select<HostFormPrivacyClass>(
-          title: context.l10n.hostFormPrivacyLabel,
-          values: HostFormPrivacyClass.values,
-          value: question.privacyClass,
-          itemLabel: (value) => _privacyLabel(context, value),
-          onChanged: (value) => notifier.updateQuestion(
-            sectionIndex,
-            questionIndex,
-            privacyClass: value,
-          ),
-        ),
-        CatchField.select<HostFormPrefillPolicy>(
-          title: context.l10n.hostFormPrefillLabel,
-          values: HostFormPrefillPolicy.values,
-          value: question.prefillPolicy,
-          itemLabel: (value) => _prefillLabel(context, value),
-          onChanged: (value) => notifier.updateQuestion(
-            sectionIndex,
-            questionIndex,
-            prefillPolicy: value,
-          ),
-        ),
-        CatchField.select<HostFormPresentation>(
-          title: context.l10n.hostFormPresentationLabel,
-          values: HostFormPresentation.values,
-          value: question.hostPresentation,
-          itemLabel: (value) => _presentationLabel(context, value),
-          onChanged: (value) => notifier.updateQuestion(
-            sectionIndex,
-            questionIndex,
-            hostPresentation: value,
-          ),
-        ),
-        for (final optionEntry in question.options.indexed)
+  Widget build(BuildContext context) => _HostFormSchemaBoundary(
+    child: CatchField.control(
+      title: question.label,
+      body: hostFormQuestionKindLabel(context, question.kind),
+      contractExemption:
+          'Disclosure container; nested question fields bind the form contract.',
+      onOpenChanged: (open) {
+        if (open) onSelected();
+      },
+      control: CatchSection.containedFieldRows(
+        children: [
           CatchField.input(
             key: ValueKey(
-              'question-option-${question.questionId}-${optionEntry.$2.optionId}',
+              'question-label-${question.questionId}-${question.label}',
             ),
-            title: context.l10n.hostFormOptionNumber(
-              number: optionEntry.$1 + 1,
-            ),
-            initialValue: optionEntry.$2.label,
-            contractExemption: 'The backend validates form choice options.',
-            onBlur: (value) => notifier.updateOption(
+            title: context.l10n.hostFormQuestionLabel,
+            initialValue: question.label,
+            contractExemption:
+                'The backend form definition validates questions.',
+            onBlur: (value) => notifier.updateQuestion(
               sectionIndex,
               questionIndex,
-              optionEntry.$1,
               label: value.trim(),
             ),
           ),
-        if (question.options.isNotEmpty)
-          CatchField.add(
-            title: context.l10n.hostFormAddOption,
-            onTap: () => notifier.addOption(sectionIndex, questionIndex),
+          CatchField.select<HostFormQuestionKind>(
+            title: context.l10n.hostFormQuestionType,
+            contract: CatchContractConstraints
+                .organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsKind,
+            contractValue: (value) => value.name,
+            values: HostFormQuestionKind.values,
+            value: question.kind,
+            itemLabel: (value) => hostFormQuestionKindLabel(context, value),
+            onChanged: (value) => notifier.updateQuestion(
+              sectionIndex,
+              questionIndex,
+              kind: value,
+            ),
           ),
-        ..._validationFields(context),
-        Row(
-          children: [
-            Expanded(
-              child: CatchButton(
-                label: context.l10n.hostFormMoveUp,
-                variant: CatchButtonVariant.ghost,
-                onPressed: questionIndex == 0
-                    ? null
-                    : () => notifier.moveQuestion(
-                        sectionIndex,
-                        questionIndex,
-                        -1,
-                      ),
+          CatchField.input(
+            key: ValueKey(
+              'question-help-${question.questionId}-${question.helpText}',
+            ),
+            title: context.l10n.hostFormQuestionHelpLabel,
+            initialValue: question.helpText,
+            isOptional: true,
+            maxLines: 3,
+            contractExemption: 'The form contract validates question help.',
+            onBlur: (value) => notifier.updateQuestion(
+              sectionIndex,
+              questionIndex,
+              helpText: value.trim(),
+              clearHelpText: value.trim().isEmpty,
+            ),
+          ),
+          CatchField.toggle(
+            title: context.l10n.hostFormQuestionRequired,
+            value: question.required,
+            contractExemption: 'Requiredness is part of the form definition.',
+            onChanged: (value) => notifier.updateQuestion(
+              sectionIndex,
+              questionIndex,
+              required: value,
+            ),
+          ),
+          CatchField.select<HostFormPrivacyClass>(
+            title: context.l10n.hostFormPrivacyLabel,
+            values: HostFormPrivacyClass.values,
+            value: question.privacyClass,
+            itemLabel: (value) => _privacyLabel(context, value),
+            onChanged: (value) => notifier.updateQuestion(
+              sectionIndex,
+              questionIndex,
+              privacyClass: value,
+            ),
+          ),
+          CatchField.select<HostFormPrefillPolicy>(
+            title: context.l10n.hostFormPrefillLabel,
+            values: HostFormPrefillPolicy.values,
+            value: question.prefillPolicy,
+            itemLabel: (value) => _prefillLabel(context, value),
+            onChanged: (value) => notifier.updateQuestion(
+              sectionIndex,
+              questionIndex,
+              prefillPolicy: value,
+            ),
+          ),
+          CatchField.select<HostFormPresentation>(
+            title: context.l10n.hostFormPresentationLabel,
+            values: HostFormPresentation.values,
+            value: question.hostPresentation,
+            itemLabel: (value) => _presentationLabel(context, value),
+            onChanged: (value) => notifier.updateQuestion(
+              sectionIndex,
+              questionIndex,
+              hostPresentation: value,
+            ),
+          ),
+          for (final optionEntry in question.options.indexed)
+            CatchField.input(
+              key: ValueKey(
+                'question-option-${question.questionId}-${optionEntry.$2.optionId}',
+              ),
+              title: context.l10n.hostFormOptionNumber(
+                number: optionEntry.$1 + 1,
+              ),
+              initialValue: optionEntry.$2.label,
+              contractExemption: 'The backend validates form choice options.',
+              onBlur: (value) => notifier.updateOption(
+                sectionIndex,
+                questionIndex,
+                optionEntry.$1,
+                label: value.trim(),
               ),
             ),
-            gapW8,
-            Expanded(
-              child: CatchButton(
-                label: context.l10n.hostFormMoveDown,
-                variant: CatchButtonVariant.ghost,
-                onPressed: questionIndex == questionCount - 1
-                    ? null
-                    : () =>
-                          notifier.moveQuestion(sectionIndex, questionIndex, 1),
-              ),
+          if (question.options.isNotEmpty)
+            CatchField.add(
+              title: context.l10n.hostFormAddOption,
+              onTap: () => notifier.addOption(sectionIndex, questionIndex),
             ),
-          ],
-        ),
-        CatchButton(
-          label: context.l10n.hostFormRemoveQuestion,
-          variant: CatchButtonVariant.danger,
-          fullWidth: true,
-          onPressed: () => notifier.removeQuestion(sectionIndex, questionIndex),
-        ),
-      ],
+          _QuestionValidationFormSchemaFields(
+            sectionIndex: sectionIndex,
+            questionIndex: questionIndex,
+            question: question,
+            notifier: notifier,
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: CatchButton(
+                  label: context.l10n.hostFormMoveUp,
+                  variant: CatchButtonVariant.ghost,
+                  onPressed: questionIndex == 0
+                      ? null
+                      : () => notifier.moveQuestion(
+                          sectionIndex,
+                          questionIndex,
+                          -1,
+                        ),
+                ),
+              ),
+              gapW8,
+              Expanded(
+                child: CatchButton(
+                  label: context.l10n.hostFormMoveDown,
+                  variant: CatchButtonVariant.ghost,
+                  onPressed: questionIndex == questionCount - 1
+                      ? null
+                      : () => notifier.moveQuestion(
+                          sectionIndex,
+                          questionIndex,
+                          1,
+                        ),
+                ),
+              ),
+            ],
+          ),
+          CatchButton(
+            label: context.l10n.hostFormRemoveQuestion,
+            variant: CatchButtonVariant.danger,
+            fullWidth: true,
+            onPressed: () =>
+                notifier.removeQuestion(sectionIndex, questionIndex),
+          ),
+        ],
+      ),
     ),
   );
+}
 
-  List<Widget> _validationFields(BuildContext context) {
+class _QuestionValidationFormSchemaFields extends StatelessWidget {
+  const _QuestionValidationFormSchemaFields({
+    required this.sectionIndex,
+    required this.questionIndex,
+    required this.question,
+    required this.notifier,
+  });
+
+  final int sectionIndex;
+  final int questionIndex;
+  final HostFormQuestion question;
+  final HostFormEditorController notifier;
+
+  @override
+  Widget build(BuildContext context) {
     final validation = question.validation;
     void update(HostFormQuestionValidation next) =>
         notifier.updateQuestion(sectionIndex, questionIndex, validation: next);
@@ -946,42 +1030,60 @@ class _QuestionEditor extends StatelessWidget {
     if (question.kind == HostFormQuestionKind.shortText ||
         question.kind == HostFormQuestionKind.longText) {
       fields.addAll([
-        _numberField(
-          key: 'min-length',
+        _NumberFormSchemaField(
+          fieldKey: 'min-length',
+          questionId: question.questionId,
           title: context.l10n.hostFormMinimumLength,
           value: validation.minLength,
           onChanged: (value) => update(validation.copyWith(minLength: value)),
         ),
-        _numberField(
-          key: 'max-length',
+        _NumberFormSchemaField(
+          fieldKey: 'max-length',
+          questionId: question.questionId,
           title: context.l10n.hostFormMaximumLength,
           value: validation.maxLength,
           onChanged: (value) => update(validation.copyWith(maxLength: value)),
         ),
-        CatchField.select<_TextPattern>(
-          title: context.l10n.hostFormPatternLabel,
-          values: _TextPattern.values,
-          value: _patternChoice(validation.patternPreset),
-          itemLabel: (value) => _patternLabel(context, value),
-          onChanged: (value) {
-            if (value != null) {
-              update(validation.copyWith(patternPreset: _patternPreset(value)));
-            }
-          },
+        _HostFormSchemaBoundary(
+          child: CatchField.select<HostFormPatternPreset>(
+            title: context.l10n.hostFormPatternLabel,
+            contract: CatchContractConstraints
+                .organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationPatternPreset,
+            contractValue: (value) => value.name,
+            values: HostFormPatternPreset.values,
+            value: validation.patternPreset,
+            hintText: context.l10n.hostFormPatternNone,
+            itemLabel: (value) => _patternLabel(context, value),
+            onChanged: (value) {
+              if (value != null) {
+                update(validation.copyWith(patternPreset: value));
+              }
+            },
+          ),
         ),
+        if (validation.patternPreset != null)
+          _HostFormSchemaBoundary(
+            child: CatchField.action(
+              title: context.l10n.hostFormPatternNone,
+              icon: CatchIcons.closeRounded,
+              onTap: () => update(validation.copyWith(patternPreset: null)),
+            ),
+          ),
       ]);
     }
     if (question.kind == HostFormQuestionKind.number) {
       fields.addAll([
-        _numberField(
-          key: 'min-number',
+        _NumberFormSchemaField(
+          fieldKey: 'min-number',
+          questionId: question.questionId,
           title: context.l10n.hostFormMinimumNumber,
           value: validation.minNumber,
           decimal: true,
           onChanged: (value) => update(validation.copyWith(minNumber: value)),
         ),
-        _numberField(
-          key: 'max-number',
+        _NumberFormSchemaField(
+          fieldKey: 'max-number',
+          questionId: question.questionId,
           title: context.l10n.hostFormMaximumNumber,
           value: validation.maxNumber,
           decimal: true,
@@ -991,15 +1093,17 @@ class _QuestionEditor extends StatelessWidget {
     }
     if (question.kind == HostFormQuestionKind.date) {
       fields.addAll([
-        _textValidationField(
-          key: 'earliest-date',
+        _TextValidationFormSchemaField(
+          fieldKey: 'earliest-date',
+          questionId: question.questionId,
           title: context.l10n.hostFormEarliestDate,
           value: validation.earliestDate,
           onChanged: (value) =>
               update(validation.copyWith(earliestDate: value)),
         ),
-        _textValidationField(
-          key: 'latest-date',
+        _TextValidationFormSchemaField(
+          fieldKey: 'latest-date',
+          questionId: question.questionId,
           title: context.l10n.hostFormLatestDate,
           value: validation.latestDate,
           onChanged: (value) => update(validation.copyWith(latestDate: value)),
@@ -1008,15 +1112,17 @@ class _QuestionEditor extends StatelessWidget {
     }
     if (question.kind == HostFormQuestionKind.multiChoice) {
       fields.addAll([
-        _numberField(
-          key: 'min-selections',
+        _NumberFormSchemaField(
+          fieldKey: 'min-selections',
+          questionId: question.questionId,
           title: context.l10n.hostFormMinimumSelections,
           value: validation.minSelections,
           onChanged: (value) =>
               update(validation.copyWith(minSelections: value)),
         ),
-        _numberField(
-          key: 'max-selections',
+        _NumberFormSchemaField(
+          fieldKey: 'max-selections',
+          questionId: question.questionId,
           title: context.l10n.hostFormMaximumSelections,
           value: validation.maxSelections,
           onChanged: (value) =>
@@ -1026,15 +1132,17 @@ class _QuestionEditor extends StatelessWidget {
     }
     if (question.kind == HostFormQuestionKind.file) {
       fields.addAll([
-        _numberField(
-          key: 'max-files',
+        _NumberFormSchemaField(
+          fieldKey: 'max-files',
+          questionId: question.questionId,
           title: context.l10n.hostFormMaximumFiles,
           value: validation.maxFileCount,
           onChanged: (value) =>
               update(validation.copyWith(maxFileCount: value)),
         ),
-        _numberField(
-          key: 'max-file-size',
+        _NumberFormSchemaField(
+          fieldKey: 'max-file-size',
+          questionId: question.questionId,
           title: context.l10n.hostFormMaximumFileMegabytes,
           value: validation.maxFileSizeBytes == null
               ? null
@@ -1045,8 +1153,9 @@ class _QuestionEditor extends StatelessWidget {
             ),
           ),
         ),
-        _textValidationField(
-          key: 'mime-types',
+        _TextValidationFormSchemaField(
+          fieldKey: 'mime-types',
+          questionId: question.questionId,
           title: context.l10n.hostFormAllowedFileTypes,
           value: validation.allowedMimeTypes.join(', '),
           onChanged: (value) => update(
@@ -1065,54 +1174,98 @@ class _QuestionEditor extends StatelessWidget {
       ]);
     }
     fields.add(
-      _textValidationField(
-        key: 'custom-error',
+      _TextValidationFormSchemaField(
+        fieldKey: 'custom-error',
+        questionId: question.questionId,
         title: context.l10n.hostFormCustomError,
         value: validation.customError,
         onChanged: (value) => update(validation.copyWith(customError: value)),
       ),
     );
-    return fields;
+    return _HostFormSchemaBoundary(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: fields,
+      ),
+    );
   }
+}
 
-  Widget _numberField({
-    required String key,
-    required String title,
-    required num? value,
-    required ValueChanged<num?> onChanged,
-    bool decimal = false,
-  }) => CatchField.input(
-    key: ValueKey('$key-${question.questionId}-$value'),
-    title: title,
-    initialValue: value?.toString(),
-    isOptional: true,
-    keyboardType: TextInputType.numberWithOptions(
-      decimal: decimal,
-      signed: decimal,
-    ),
-    contractExemption: 'The form contract validates numeric answer limits.',
-    onBlur: (text) => onChanged(
-      text.trim().isEmpty
-          ? null
-          : decimal
-          ? num.tryParse(text.trim())
-          : int.tryParse(text.trim()),
+class _NumberFormSchemaField extends StatelessWidget {
+  const _NumberFormSchemaField({
+    required this.fieldKey,
+    required this.questionId,
+    required this.title,
+    required this.value,
+    required this.onChanged,
+    this.decimal = false,
+  });
+
+  final String fieldKey;
+  final String questionId;
+  final String title;
+  final num? value;
+  final ValueChanged<num?> onChanged;
+  final bool decimal;
+
+  @override
+  Widget build(BuildContext context) => _HostFormSchemaBoundary(
+    child: CatchField.input(
+      key: ValueKey('$fieldKey-$questionId-$value'),
+      title: title,
+      initialValue: value?.toString(),
+      isOptional: true,
+      keyboardType: TextInputType.numberWithOptions(
+        decimal: decimal,
+        signed: decimal,
+      ),
+      contractExemption: 'The form contract validates numeric answer limits.',
+      onBlur: (text) => onChanged(
+        text.trim().isEmpty
+            ? null
+            : decimal
+            ? num.tryParse(text.trim())
+            : int.tryParse(text.trim()),
+      ),
     ),
   );
+}
 
-  Widget _textValidationField({
-    required String key,
-    required String title,
-    required String? value,
-    required ValueChanged<String?> onChanged,
-  }) => CatchField.input(
-    key: ValueKey('$key-${question.questionId}-$value'),
-    title: title,
-    initialValue: value,
-    isOptional: true,
-    contractExemption: 'The form contract validates this answer rule.',
-    onBlur: (text) => onChanged(text.trim().isEmpty ? null : text.trim()),
+class _TextValidationFormSchemaField extends StatelessWidget {
+  const _TextValidationFormSchemaField({
+    required this.fieldKey,
+    required this.questionId,
+    required this.title,
+    required this.value,
+    required this.onChanged,
+  });
+
+  final String fieldKey;
+  final String questionId;
+  final String title;
+  final String? value;
+  final ValueChanged<String?> onChanged;
+
+  @override
+  Widget build(BuildContext context) => _HostFormSchemaBoundary(
+    child: CatchField.input(
+      key: ValueKey('$fieldKey-$questionId-$value'),
+      title: title,
+      initialValue: value,
+      isOptional: true,
+      contractExemption: 'The form contract validates this answer rule.',
+      onBlur: (text) => onChanged(text.trim().isEmpty ? null : text.trim()),
+    ),
   );
+}
+
+class _HostFormSchemaBoundary extends StatelessWidget {
+  const _HostFormSchemaBoundary({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => child;
 }
 
 class _FormOutline extends StatelessWidget {
@@ -1139,30 +1292,34 @@ class _FormOutline extends StatelessWidget {
         style: CatchTextStyles.sectionTitle(context),
       ),
       gapH12,
-      for (final sectionEntry in definition.sections.indexed) ...[
-        CatchField.nav(
-          title: sectionEntry.$2.title,
-          body: context.l10n.hostFormQuestionCount(
-            count: sectionEntry.$2.questions.length,
-          ),
-          emphasis:
-              selectedSection == sectionEntry.$1 && selectedQuestion == null
-              ? CatchFieldEmphasis.title
-              : CatchFieldEmphasis.body,
-          onTap: () => onSelected(sectionEntry.$1, null),
-        ),
-        for (final questionEntry in sectionEntry.$2.questions.indexed)
-          CatchField.nav(
-            title: questionEntry.$2.label,
-            body: hostFormQuestionKindLabel(context, questionEntry.$2.kind),
-            emphasis:
-                selectedSection == sectionEntry.$1 &&
-                    selectedQuestion == questionEntry.$1
-                ? CatchFieldEmphasis.title
-                : CatchFieldEmphasis.body,
-            onTap: () => onSelected(sectionEntry.$1, questionEntry.$1),
-          ),
-      ],
+      CatchSection.containedFieldRows(
+        children: [
+          for (final sectionEntry in definition.sections.indexed) ...[
+            CatchField.nav(
+              title: sectionEntry.$2.title,
+              body: context.l10n.hostFormQuestionCount(
+                count: sectionEntry.$2.questions.length,
+              ),
+              emphasis:
+                  selectedSection == sectionEntry.$1 && selectedQuestion == null
+                  ? CatchFieldEmphasis.title
+                  : CatchFieldEmphasis.body,
+              onTap: () => onSelected(sectionEntry.$1, null),
+            ),
+            for (final questionEntry in sectionEntry.$2.questions.indexed)
+              CatchField.nav(
+                title: questionEntry.$2.label,
+                body: hostFormQuestionKindLabel(context, questionEntry.$2.kind),
+                emphasis:
+                    selectedSection == sectionEntry.$1 &&
+                        selectedQuestion == questionEntry.$1
+                    ? CatchFieldEmphasis.title
+                    : CatchFieldEmphasis.body,
+                onTap: () => onSelected(sectionEntry.$1, questionEntry.$1),
+              ),
+          ],
+        ],
+      ),
       gapH12,
       CatchButton(
         label: context.l10n.hostFormAddSection,
@@ -1217,78 +1374,79 @@ Future<void> _showQuestionTypePicker(
   BuildContext context, {
   required ValueChanged<HostFormQuestionKind> onSelected,
 }) async {
-  final kind = await showModalBottomSheet<HostFormQuestionKind>(
+  final kind = await showCatchBottomSheet<HostFormQuestionKind>(
     context: context,
-    useSafeArea: true,
-    showDragHandle: true,
-    builder: (context) => ListView(
-      shrinkWrap: true,
-      padding: CatchInsets.pageBody,
-      children: [
-        Text(
-          context.l10n.hostFormChooseQuestionType,
-          style: CatchTextStyles.headlineS(context),
-        ),
-        gapH12,
-        CatchSection.containedFieldRows(
-          children: [
-            for (final value in HostFormQuestionKind.values)
-              CatchField.nav(
-                title: hostFormQuestionKindLabel(context, value),
-                onTap: () => Navigator.of(context).pop(value),
-              ),
-          ],
-        ),
-      ],
+    builder: (context) => CatchBottomSheetScaffold(
+      title: context.l10n.hostFormChooseQuestionType,
+      child: CatchSection.containedFieldRows(
+        children: [
+          for (final value in HostFormQuestionKind.values)
+            CatchField.nav(
+              title: hostFormQuestionKindLabel(context, value),
+              onTap: () => Navigator.of(context).pop(value),
+            ),
+        ],
+      ),
     ),
   );
   if (kind != null) onSelected(kind);
 }
 
-enum _TextPattern { any, lettersAndSpaces, alphanumeric, postalCode, handle }
+class _DateFormSchemaField extends StatelessWidget {
+  const _DateFormSchemaField({
+    required this.title,
+    required this.value,
+    required this.onChanged,
+    this.endOfDay = false,
+  });
 
-Widget _dateField(
-  BuildContext context, {
-  required String title,
-  required DateTime? value,
-  required ValueChanged<DateTime?> onChanged,
-  bool endOfDay = false,
-}) => CatchField.action(
-  title: title,
-  body: value == null
-      ? context.l10n.hostFormDateNotSet
-      : MaterialLocalizations.of(context).formatMediumDate(value.toLocal()),
-  action: value == null
-      ? null
-      : IconButton(
-          tooltip: context.l10n.hostFormClearDate,
-          icon: Icon(CatchIcons.closeRounded),
-          onPressed: () => onChanged(null),
-        ),
-  onTap: () async {
-    final now = DateTime.now();
-    final selected = await showDatePicker(
-      context: context,
-      initialDate: value?.toLocal() ?? now,
-      firstDate: DateTime(now.year - 1),
-      lastDate: DateTime(now.year + 10, 12, 31),
-    );
-    if (selected != null) {
-      final local = endOfDay
-          ? DateTime(
-              selected.year,
-              selected.month,
-              selected.day,
-              23,
-              59,
-              59,
-              999,
-            )
-          : DateTime(selected.year, selected.month, selected.day);
-      onChanged(local.toUtc());
-    }
-  },
-);
+  final String title;
+  final DateTime? value;
+  final ValueChanged<DateTime?> onChanged;
+  final bool endOfDay;
+
+  @override
+  Widget build(BuildContext context) => _HostFormSchemaBoundary(
+    child: CatchField.action(
+      title: title,
+      body: value == null
+          ? context.l10n.hostFormDateNotSet
+          : MaterialLocalizations.of(
+              context,
+            ).formatMediumDate(value!.toLocal()),
+      action: value == null
+          ? null
+          : IconButton(
+              tooltip: context.l10n.hostFormClearDate,
+              icon: Icon(CatchIcons.closeRounded),
+              onPressed: () => onChanged(null),
+            ),
+      onTap: () async {
+        final now = DateTime.now();
+        final selected = await showDatePicker(
+          context: context,
+          initialDate: value?.toLocal() ?? now,
+          firstDate: DateTime(now.year - 1),
+          lastDate: DateTime(now.year + 10, 12, 31),
+        );
+        if (selected != null) {
+          final local = endOfDay
+              ? DateTime(
+                  selected.year,
+                  selected.month,
+                  selected.day,
+                  23,
+                  59,
+                  59,
+                  999,
+                )
+              : DateTime(selected.year, selected.month, selected.day);
+          onChanged(local.toUtc());
+        }
+      },
+    ),
+  );
+}
 
 int? _nullableInt(String value) =>
     value.trim().isEmpty ? null : int.tryParse(value.trim());
@@ -1340,29 +1498,14 @@ String _presentationLabel(
   HostFormPresentation.sortable => context.l10n.hostFormPresentationSort,
 };
 
-_TextPattern _patternChoice(HostFormPatternPreset? value) => switch (value) {
-  null => _TextPattern.any,
-  HostFormPatternPreset.lettersAndSpaces => _TextPattern.lettersAndSpaces,
-  HostFormPatternPreset.alphanumeric => _TextPattern.alphanumeric,
-  HostFormPatternPreset.postalCode => _TextPattern.postalCode,
-  HostFormPatternPreset.handle => _TextPattern.handle,
-};
-
-HostFormPatternPreset? _patternPreset(_TextPattern value) => switch (value) {
-  _TextPattern.any => null,
-  _TextPattern.lettersAndSpaces => HostFormPatternPreset.lettersAndSpaces,
-  _TextPattern.alphanumeric => HostFormPatternPreset.alphanumeric,
-  _TextPattern.postalCode => HostFormPatternPreset.postalCode,
-  _TextPattern.handle => HostFormPatternPreset.handle,
-};
-
-String _patternLabel(BuildContext context, _TextPattern value) =>
+String _patternLabel(BuildContext context, HostFormPatternPreset value) =>
     switch (value) {
-      _TextPattern.any => context.l10n.hostFormPatternNone,
-      _TextPattern.lettersAndSpaces => context.l10n.hostFormPatternLetters,
-      _TextPattern.alphanumeric => context.l10n.hostFormPatternAlphanumeric,
-      _TextPattern.postalCode => context.l10n.hostFormPatternPostal,
-      _TextPattern.handle => context.l10n.hostFormPatternHandle,
+      HostFormPatternPreset.lettersAndSpaces =>
+        context.l10n.hostFormPatternLetters,
+      HostFormPatternPreset.alphanumeric =>
+        context.l10n.hostFormPatternAlphanumeric,
+      HostFormPatternPreset.postalCode => context.l10n.hostFormPatternPostal,
+      HostFormPatternPreset.handle => context.l10n.hostFormPatternHandle,
     };
 
 String _logicOperatorLabel(
@@ -1438,11 +1581,8 @@ Future<void> _showLogicRuleBuilder(
       ? questions[1].questionId
       : null;
   String? targetSectionId = definition.sections.first.sectionId;
-  await showModalBottomSheet<void>(
+  await showCatchBottomSheet<void>(
     context: context,
-    useSafeArea: true,
-    isScrollControlled: true,
-    showDragHandle: true,
     builder: (sheetContext) => StatefulBuilder(
       builder: (sheetContext, setState) {
         final source = questions.firstWhere(
@@ -1512,144 +1652,146 @@ Future<void> _showLogicRuleBuilder(
                 )) &&
             (!questionAction || targetQuestionId != null) &&
             (!sectionAction || targetSectionId != null);
-        return SingleChildScrollView(
-          padding: CatchInsets.pageBody.copyWith(
-            bottom:
-                MediaQuery.viewInsetsOf(sheetContext).bottom + CatchSpacing.s8,
+        return CatchBottomSheetScaffold(
+          title: context.l10n.hostFormAddRule,
+          keyboardSafe: true,
+          action: CatchButton(
+            label: context.l10n.hostFormRuleSave,
+            fullWidth: true,
+            onPressed: !canSave
+                ? null
+                : () {
+                    notifier.addLogicRule(
+                      questionId: sourceId,
+                      operator: operator,
+                      expectedValues: expectedValues,
+                      action: action,
+                      targetQuestionId: questionAction
+                          ? targetQuestionId
+                          : null,
+                      targetSectionId: sectionAction ? targetSectionId : null,
+                    );
+                    Navigator.of(sheetContext).pop();
+                  },
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                context.l10n.hostFormAddRule,
-                style: CatchTextStyles.headlineS(context),
-              ),
-              gapH12,
-              CatchSection.containedFieldRows(
-                children: [
+          child: SingleChildScrollView(
+            child: CatchSection.containedFieldRows(
+              children: [
+                CatchField.select<String>(
+                  key: ValueKey('logic-source-$sourceId'),
+                  title: context.l10n.hostFormRuleQuestion,
+                  contract: CatchContractConstraints
+                      .organizerFormDraftDocumentDefinitionLogicRulesItemsConditionsItemsQuestionId,
+                  contractValue: (value) => value,
+                  values: questions
+                      .map((question) => question.questionId)
+                      .toList(),
+                  value: sourceId,
+                  itemLabel: (value) => questions
+                      .firstWhere((question) => question.questionId == value)
+                      .label,
+                  onChanged: (value) => setState(() {
+                    if (value == null) return;
+                    sourceId = value;
+                    expectedText = '';
+                    expectedChoice = null;
+                  }),
+                ),
+                CatchField.select<HostFormLogicOperator>(
+                  key: ValueKey('logic-operator-$operator-$sourceId'),
+                  title: context.l10n.hostFormRuleOperator,
+                  contract: CatchContractConstraints
+                      .organizerFormDraftDocumentDefinitionLogicRulesItemsConditionsItemsOperator,
+                  contractValue: (value) => value.name,
+                  values: operators,
+                  value: operator,
+                  itemLabel: (value) => _logicOperatorLabel(context, value),
+                  onChanged: (value) {
+                    if (value != null) setState(() => operator = value);
+                  },
+                ),
+                if (needsValue && choiceValues.isNotEmpty)
                   CatchField.select<String>(
-                    key: ValueKey('logic-source-$sourceId'),
-                    title: context.l10n.hostFormRuleQuestion,
-                    values: questions
+                    key: ValueKey('logic-value-$sourceId-$expectedChoice'),
+                    title: context.l10n.hostFormRuleValue,
+                    contract: CatchContractConstraints
+                        .organizerFormDraftDocumentDefinitionLogicRulesItemsConditionsItemsExpectedValuesItems,
+                    contractValue: (value) => value,
+                    values: choiceValues,
+                    value: expectedChoice!,
+                    itemLabel: (value) =>
+                        source.kind == HostFormQuestionKind.boolean
+                        ? value == 'true'
+                              ? context.l10n.hostFormRuleTrue
+                              : context.l10n.hostFormRuleFalse
+                        : source.options
+                              .firstWhere((option) => option.value == value)
+                              .label,
+                    onChanged: (value) =>
+                        setState(() => expectedChoice = value),
+                  )
+                else if (needsValue)
+                  CatchField.input(
+                    key: ValueKey('logic-value-$sourceId'),
+                    title: context.l10n.hostFormRuleValue,
+                    initialValue: expectedText,
+                    keyboardType: source.kind == HostFormQuestionKind.number
+                        ? const TextInputType.numberWithOptions(
+                            decimal: true,
+                            signed: true,
+                          )
+                        : TextInputType.text,
+                    contractExemption:
+                        'The form contract validates comparison values.',
+                    onChanged: (value) => setState(() => expectedText = value),
+                  ),
+                CatchField.select<HostFormLogicAction>(
+                  key: ValueKey('logic-action-$action'),
+                  title: context.l10n.hostFormRuleAction,
+                  contract: CatchContractConstraints
+                      .organizerFormDraftDocumentDefinitionLogicRulesItemsAction,
+                  contractValue: (value) => value.name,
+                  values: HostFormLogicAction.values,
+                  value: action,
+                  itemLabel: (value) => _logicActionLabel(context, value),
+                  onChanged: (value) {
+                    if (value != null) setState(() => action = value);
+                  },
+                ),
+                if (questionAction && targetQuestions.isNotEmpty)
+                  CatchField.select<String>(
+                    title: context.l10n.hostFormRuleTargetQuestion,
+                    contract: CatchContractConstraints
+                        .organizerFormDraftDocumentDefinitionLogicRulesItemsTargetQuestionId,
+                    contractValue: (value) => value,
+                    values: targetQuestions
                         .map((question) => question.questionId)
                         .toList(),
-                    value: sourceId,
-                    itemLabel: (value) => questions
+                    value: targetQuestionId!,
+                    itemLabel: (value) => targetQuestions
                         .firstWhere((question) => question.questionId == value)
                         .label,
-                    onChanged: (value) => setState(() {
-                      if (value == null) return;
-                      sourceId = value;
-                      expectedText = '';
-                      expectedChoice = null;
-                    }),
+                    onChanged: (value) =>
+                        setState(() => targetQuestionId = value),
                   ),
-                  CatchField.select<HostFormLogicOperator>(
-                    key: ValueKey('logic-operator-$operator-$sourceId'),
-                    title: context.l10n.hostFormRuleOperator,
-                    values: operators,
-                    value: operator,
-                    itemLabel: (value) => _logicOperatorLabel(context, value),
-                    onChanged: (value) {
-                      if (value != null) setState(() => operator = value);
-                    },
+                if (sectionAction && targetSections.isNotEmpty)
+                  CatchField.select<String>(
+                    title: context.l10n.hostFormRuleTargetSection,
+                    contract: CatchContractConstraints
+                        .organizerFormDraftDocumentDefinitionLogicRulesItemsTargetSectionId,
+                    contractValue: (value) => value,
+                    values: targetSections
+                        .map((section) => section.sectionId)
+                        .toList(),
+                    value: targetSectionId!,
+                    itemLabel: (value) => targetSections
+                        .firstWhere((section) => section.sectionId == value)
+                        .title,
+                    onChanged: (value) =>
+                        setState(() => targetSectionId = value),
                   ),
-                  if (needsValue && choiceValues.isNotEmpty)
-                    CatchField.select<String>(
-                      key: ValueKey('logic-value-$sourceId-$expectedChoice'),
-                      title: context.l10n.hostFormRuleValue,
-                      values: choiceValues,
-                      value: expectedChoice!,
-                      itemLabel: (value) =>
-                          source.kind == HostFormQuestionKind.boolean
-                          ? value == 'true'
-                                ? context.l10n.hostFormRuleTrue
-                                : context.l10n.hostFormRuleFalse
-                          : source.options
-                                .firstWhere((option) => option.value == value)
-                                .label,
-                      onChanged: (value) =>
-                          setState(() => expectedChoice = value),
-                    )
-                  else if (needsValue)
-                    CatchField.input(
-                      key: ValueKey('logic-value-$sourceId'),
-                      title: context.l10n.hostFormRuleValue,
-                      initialValue: expectedText,
-                      keyboardType: source.kind == HostFormQuestionKind.number
-                          ? const TextInputType.numberWithOptions(
-                              decimal: true,
-                              signed: true,
-                            )
-                          : TextInputType.text,
-                      contractExemption:
-                          'The form contract validates comparison values.',
-                      onChanged: (value) =>
-                          setState(() => expectedText = value),
-                    ),
-                  CatchField.select<HostFormLogicAction>(
-                    key: ValueKey('logic-action-$action'),
-                    title: context.l10n.hostFormRuleAction,
-                    values: HostFormLogicAction.values,
-                    value: action,
-                    itemLabel: (value) => _logicActionLabel(context, value),
-                    onChanged: (value) {
-                      if (value != null) setState(() => action = value);
-                    },
-                  ),
-                  if (questionAction && targetQuestions.isNotEmpty)
-                    CatchField.select<String>(
-                      title: context.l10n.hostFormRuleTargetQuestion,
-                      values: targetQuestions
-                          .map((question) => question.questionId)
-                          .toList(),
-                      value: targetQuestionId!,
-                      itemLabel: (value) => targetQuestions
-                          .firstWhere(
-                            (question) => question.questionId == value,
-                          )
-                          .label,
-                      onChanged: (value) =>
-                          setState(() => targetQuestionId = value),
-                    ),
-                  if (sectionAction && targetSections.isNotEmpty)
-                    CatchField.select<String>(
-                      title: context.l10n.hostFormRuleTargetSection,
-                      values: targetSections
-                          .map((section) => section.sectionId)
-                          .toList(),
-                      value: targetSectionId!,
-                      itemLabel: (value) => targetSections
-                          .firstWhere((section) => section.sectionId == value)
-                          .title,
-                      onChanged: (value) =>
-                          setState(() => targetSectionId = value),
-                    ),
-                ],
-              ),
-              gapH20,
-              CatchButton(
-                label: context.l10n.hostFormRuleSave,
-                fullWidth: true,
-                onPressed: !canSave
-                    ? null
-                    : () {
-                        notifier.addLogicRule(
-                          questionId: sourceId,
-                          operator: operator,
-                          expectedValues: expectedValues,
-                          action: action,
-                          targetQuestionId: questionAction
-                              ? targetQuestionId
-                              : null,
-                          targetSectionId: sectionAction
-                              ? targetSectionId
-                              : null,
-                        );
-                        Navigator.of(sheetContext).pop();
-                      },
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },

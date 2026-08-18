@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-08-17",
+  "updated": "2026-08-18",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Phase 1 UI capture coverage policy. Every route from go_router.dart must be captured, aliased to a canonical capture surface, planned, or explicitly excluded.",
   "routes": [
@@ -653,6 +653,54 @@
         "host_customers_populated"
       ],
       "reason": "The production Customers directory has a deterministic populated full-shell capture aligned with the direct people workspace; broader loading, empty, filtering, pagination, manual-add, accessibility, and theme states remain future coverage."
+    },
+    {
+      "routeId": "hostFormsScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "The standalone Forms library and response inbox are implemented; populated, empty, loading, pagination, accessibility, and theme captures remain planned."
+    },
+    {
+      "routeId": "hostFormTemplatesScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "The versioned template gallery is implemented; blank and event-format template capture states remain planned."
+    },
+    {
+      "routeId": "hostFormResponseDetailScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "The immutable answer and reviewed-conversion route is implemented; deterministic identity, file, conversion, error, and accessibility captures remain planned."
+    },
+    {
+      "routeId": "hostFormBuilderScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "The responsive builder is implemented; compact and expanded editing, undo, logic, validation, conflict, and publish capture states remain planned."
+    },
+    {
+      "routeId": "hostFormPreviewScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "The shared-renderer preview is implemented; phone, desktop, branching, validation, confirmation, and unavailable capture states remain planned."
+    },
+    {
+      "routeId": "hostFormShareScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "The canonical link, tracked link, QR, share, and embed workspace is implemented; deterministic distribution captures remain planned."
+    },
+    {
+      "routeId": "hostFormAnalyticsScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "The precomputed analytics and asynchronous export workspace is implemented; populated, sparse, loading, failure, and export captures remain planned."
+    },
+    {
+      "routeId": "hostFormAutomationsScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "The rules and paginated run-history workspace is implemented; configured, disabled, partial-failure, and empty capture states remain planned."
     },
     {
       "routeId": "hostApplicationsScreen",

@@ -564,6 +564,14 @@ abstract final class CatchInsets {
   /// Default padding for multi-step creation/edit forms.
   static const EdgeInsets formStepBody = pageBody;
 
+  /// Page-gutter notices above the three-pane Host form builder.
+  static const EdgeInsets formBuilderNotices = EdgeInsets.fromLTRB(
+    CatchSpacing.screenPx,
+    CatchSpacing.screenPt,
+    CatchSpacing.screenPx,
+    CatchSpacing.s2,
+  );
+
   /// Form-step padding with more bottom space for final/action-heavy steps.
   static const EdgeInsets formStepBodyRelaxed = pageBodyRelaxed;
 
@@ -1799,6 +1807,7 @@ abstract final class CatchMotion {
   static const Duration cinematicShort = Duration(seconds: 4);
   static const Duration cinematicMedium = Duration(seconds: 6);
   static const Duration noticeAutoDismiss = Duration(seconds: 6);
+  static const Duration formExportPoll = Duration(seconds: 5);
   static const Duration liveRevealClockTick = Duration(milliseconds: 250);
   static const Duration pulse = Duration(milliseconds: 700);
   static const Duration skeletonShimmer = Duration(milliseconds: 1200);
@@ -1970,6 +1979,16 @@ abstract final class CatchLayout {
   static const double pageBodyHorizontalGutters = CatchSpacing.screenPx * 2;
   static const double tabbedPageMaxExtent =
       maxContentWidth + pageBodyHorizontalGutters;
+
+  /// Width at which the Host form builder can fit outline, preview, and
+  /// inspector panes without compressing any one pane below its useful size.
+  static const double formBuilderExpandedBreakpoint = 1040;
+
+  /// Navigation outline width in the expanded Host form builder.
+  static const double formBuilderOutlineWidth = 260;
+
+  /// Property inspector width in the expanded Host form builder.
+  static const double formBuilderInspectorWidth = 340;
 
   /// Plot height for the compact host demand/bookings trend.
   static const double analyticsTrendHeight = 120;

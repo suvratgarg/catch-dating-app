@@ -22514,12 +22514,6 @@ abstract class AppLocalizations {
   /// **'Sortable column'**
   String get hostFormPresentationSort;
 
-  /// Question validation settings group.
-  ///
-  /// In en, this message translates to:
-  /// **'Answer validation'**
-  String get hostFormValidationSettings;
-
   /// Minimum text answer length.
   ///
   /// In en, this message translates to:
@@ -23267,12 +23261,6 @@ abstract class AppLocalizations {
   /// **'Export Excel'**
   String get hostFormExportXlsx;
 
-  /// Pending form response export feedback.
-  ///
-  /// In en, this message translates to:
-  /// **'Preparing export…'**
-  String get hostFormExportPreparing;
-
   /// Completed form response export feedback.
   ///
   /// In en, this message translates to:
@@ -23453,18 +23441,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The export is still preparing. You can retry without creating a duplicate.'**
   String get hostFormExportStillPreparing;
-
-  /// Enabled automation state label.
-  ///
-  /// In en, this message translates to:
-  /// **'Enabled'**
-  String get hostFormAutomationEnabled;
-
-  /// Disabled automation state label.
-  ///
-  /// In en, this message translates to:
-  /// **'Disabled'**
-  String get hostFormAutomationDisabled;
 
   /// Pending automation run status.
   ///

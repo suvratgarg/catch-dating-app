@@ -34,6 +34,7 @@ class HostFormAutomationsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final provider = hostFormAutomationsControllerProvider(organizerId, formId);
     final automations = ref.watch(provider);
+    final controller = ref.read(provider.notifier);
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: context.l10n.hostFormAutomationsTitle,
@@ -79,7 +80,8 @@ class HostFormAutomationsScreen extends ConsumerWidget {
                         ? null
                         : () => _createPreset(
                             context,
-                            ref,
+                            controller,
+                            () => ref.read(provider).asData?.value.error,
                             context.l10n.hostFormAutomationNotifyPreset,
                             const [HostFormAutomationActionKind.notifyTeam],
                           ),
@@ -93,7 +95,8 @@ class HostFormAutomationsScreen extends ConsumerWidget {
                         ? null
                         : () => _createPreset(
                             context,
-                            ref,
+                            controller,
+                            () => ref.read(provider).asData?.value.error,
                             context.l10n.hostFormAutomationCrmPreset,
                             const [
                               HostFormAutomationActionKind.createCrmContact,
@@ -125,6 +128,8 @@ class HostFormAutomationsScreen extends ConsumerWidget {
                     for (final rule in state.rules)
                       CatchField.toggle(
                         title: rule.name,
+                        contract: CatchContractConstraints
+                            .organizerFormAutomationRuleDocumentEnabled,
                         body:
                             '${_triggerLabel(context, rule.trigger)} · '
                             '${context.l10n.hostFormAutomationActionCount(count: rule.actions.length)}',
@@ -187,20 +192,18 @@ class HostFormAutomationsScreen extends ConsumerWidget {
 
   Future<void> _createPreset(
     BuildContext context,
-    WidgetRef ref,
+    HostFormAutomationsController controller,
+    Object? Function() readError,
     String name,
     List<HostFormAutomationActionKind> actions,
   ) async {
-    final provider = hostFormAutomationsControllerProvider(organizerId, formId);
-    final saved = await ref
-        .read(provider.notifier)
-        .createPreset(
-          name: name,
-          trigger: HostFormAutomationTrigger.responseSubmitted,
-          actions: actions,
-        );
+    final saved = await controller.createPreset(
+      name: name,
+      trigger: HostFormAutomationTrigger.responseSubmitted,
+      actions: actions,
+    );
     if (!saved && context.mounted) {
-      final error = ref.read(provider).asData?.value.error;
+      final error = readError();
       if (error != null) showCatchErrorSnackBar(context, error);
     }
   }

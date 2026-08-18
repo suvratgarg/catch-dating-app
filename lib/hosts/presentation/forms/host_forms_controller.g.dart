@@ -158,7 +158,7 @@ final class HostFormEditorControllerProvider
 }
 
 String _$hostFormEditorControllerHash() =>
-    r'408c099f9e4c99ca84c632902fa09ecdefd10dea';
+    r'9c12a2330a1af07a78d131a83e62f229cab2e761';
 
 final class HostFormEditorControllerFamily extends $Family
     with
@@ -212,6 +212,99 @@ abstract class _$HostFormEditorController
   }
 }
 
+@ProviderFor(hostFormShareAssetsController)
+final hostFormShareAssetsControllerProvider =
+    HostFormShareAssetsControllerFamily._();
+
+final class HostFormShareAssetsControllerProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<HostFormShareAssets>,
+          HostFormShareAssets,
+          FutureOr<HostFormShareAssets>
+        >
+    with
+        $FutureModifier<HostFormShareAssets>,
+        $FutureProvider<HostFormShareAssets> {
+  HostFormShareAssetsControllerProvider._({
+    required HostFormShareAssetsControllerFamily super.from,
+    required ({String organizerId, String formId}) super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostFormShareAssetsControllerProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostFormShareAssetsControllerHash();
+
+  @override
+  String toString() {
+    return r'hostFormShareAssetsControllerProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<HostFormShareAssets> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<HostFormShareAssets> create(Ref ref) {
+    final argument = this.argument as ({String organizerId, String formId});
+    return hostFormShareAssetsController(
+      ref,
+      organizerId: argument.organizerId,
+      formId: argument.formId,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostFormShareAssetsControllerProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostFormShareAssetsControllerHash() =>
+    r'8fef45385f72a7b9219b152c2abd2ce82109f0b0';
+
+final class HostFormShareAssetsControllerFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<HostFormShareAssets>,
+          ({String organizerId, String formId})
+        > {
+  HostFormShareAssetsControllerFamily._()
+    : super(
+        retry: null,
+        name: r'hostFormShareAssetsControllerProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  HostFormShareAssetsControllerProvider call({
+    required String organizerId,
+    required String formId,
+  }) => HostFormShareAssetsControllerProvider._(
+    argument: (organizerId: organizerId, formId: formId),
+    from: this,
+  );
+
+  @override
+  String toString() => r'hostFormShareAssetsControllerProvider';
+}
+
 @ProviderFor(hostFormsController)
 final hostFormsControllerProvider = HostFormsControllerProvider._();
 
@@ -258,4 +351,4 @@ final class HostFormsControllerProvider
 }
 
 String _$hostFormsControllerHash() =>
-    r'f03b4f93e3fa5e51b077347f0d87d0deced7e5b8';
+    r'b6ea9e9a8411ed939d1e10bec121069bffecfb3c';

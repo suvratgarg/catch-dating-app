@@ -16,8 +16,8 @@ import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/hosts/data/host_forms_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_form.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -45,7 +45,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
   @override
   Widget build(BuildContext context) {
     final assets = ref.watch(
-      hostFormShareAssetsProvider(
+      hostFormShareAssetsControllerProvider(
         organizerId: widget.organizerId,
         formId: widget.formId,
       ),
@@ -63,7 +63,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
         child: CatchAsyncValueView<HostFormShareAssets>(
           value: assets,
           onRetry: () => ref.invalidate(
-            hostFormShareAssetsProvider(
+            hostFormShareAssetsControllerProvider(
               organizerId: widget.organizerId,
               formId: widget.formId,
             ),
@@ -76,7 +76,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
               error,
               context: AppErrorContext.club,
               onRetry: () => ref.invalidate(
-                hostFormShareAssetsProvider(
+                hostFormShareAssetsControllerProvider(
                   organizerId: widget.organizerId,
                   formId: widget.formId,
                 ),
@@ -163,7 +163,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
     setState(() => _creatingLink = true);
     try {
       final link = await ref
-          .read(hostFormsRepositoryProvider)
+          .read(hostFormsControllerProvider)
           .createShareLink(
             organizerId: widget.organizerId,
             formId: widget.formId,
@@ -220,10 +220,14 @@ class _CanonicalLinkCard extends StatelessWidget {
           ),
         ),
         gapH16,
-        CatchField.read(
-          title: context.l10n.hostFormCanonicalLink,
-          body: assets.canonicalUrl,
-          bodyMaxLines: 3,
+        CatchSection.containedFieldRows(
+          children: [
+            CatchField.read(
+              title: context.l10n.hostFormCanonicalLink,
+              body: assets.canonicalUrl,
+              bodyMaxLines: 3,
+            ),
+          ],
         ),
         gapH12,
         Wrap(
@@ -271,7 +275,15 @@ class _TrackedLinkCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (link != null) ...[
-          CatchField.read(title: link!.label, body: link!.url, bodyMaxLines: 3),
+          CatchSection.containedFieldRows(
+            children: [
+              CatchField.read(
+                title: link!.label,
+                body: link!.url,
+                bodyMaxLines: 3,
+              ),
+            ],
+          ),
           gapH12,
         ],
         Wrap(
@@ -315,10 +327,14 @@ class _EmbedCard extends StatelessWidget {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchField.read(
-          title: context.l10n.hostFormEmbed,
-          body: assets.embedSnippet,
-          bodyMaxLines: 6,
+        CatchSection.containedFieldRows(
+          children: [
+            CatchField.read(
+              title: context.l10n.hostFormEmbed,
+              body: assets.embedSnippet,
+              bodyMaxLines: 6,
+            ),
+          ],
         ),
         gapH12,
         Align(
@@ -397,8 +413,7 @@ Future<_TrackedLinkInput?> _showTrackedLinkDialog(BuildContext context) async {
           },
         ),
       ],
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+      child: CatchSection.containedFieldRows(
         children: [
           CatchField.input(
             title: context.l10n.hostFormTrackedLinkLabel,

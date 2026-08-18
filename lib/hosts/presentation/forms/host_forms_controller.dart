@@ -1,9 +1,12 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/data/host_forms_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_form.dart';
+import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -587,13 +590,25 @@ class HostFormEditorController extends _$HostFormEditorController {
 }
 
 @riverpod
-HostFormsController hostFormsController(Ref ref) =>
-    HostFormsController(ref.watch(hostFormsRepositoryProvider));
+Future<HostFormShareAssets> hostFormShareAssetsController(
+  Ref ref, {
+  required String organizerId,
+  required String formId,
+}) => ref
+    .read(hostFormsRepositoryProvider)
+    .getShareAssets(organizerId: organizerId, formId: formId);
+
+@riverpod
+HostFormsController hostFormsController(Ref ref) => HostFormsController(
+  ref.watch(hostFormsRepositoryProvider),
+  ref.watch(eventRepositoryProvider),
+);
 
 class HostFormsController {
-  const HostFormsController(this._repository);
+  const HostFormsController(this._repository, this._eventRepository);
 
   final HostFormsRepository _repository;
+  final EventRepository _eventRepository;
 
   Future<HostFormEditor> create({
     required String organizerId,
@@ -621,4 +636,76 @@ class HostFormsController {
     formId: form.formId,
     expectedRevision: form.draftRevision,
   );
+
+  Future<void> setLifecycle({
+    required HostFormSummary form,
+    required HostFormLifecycleAction action,
+  }) => _repository.setLifecycle(
+    organizerId: form.organizerId,
+    formId: form.formId,
+    expectedStatus: form.status,
+    action: action,
+  );
+
+  Future<HostFormShareLink> createShareLink({
+    required String organizerId,
+    required String formId,
+    required String label,
+    required String? source,
+    required String requestId,
+  }) => _repository.createShareLink(
+    organizerId: organizerId,
+    formId: formId,
+    label: label,
+    source: source,
+    requestId: requestId,
+  );
+
+  Future<HostFormExportReceipt> requestExport({
+    required String organizerId,
+    required String formId,
+    required String requestId,
+    required HostFormExportFormat format,
+    required Set<HostFormResponseStatus> statuses,
+  }) => _repository.requestExport(
+    organizerId: organizerId,
+    formId: formId,
+    requestId: requestId,
+    format: format,
+    statuses: statuses,
+  );
+
+  Future<HostFormConversionPreview> previewConversion({
+    required String organizerId,
+    required String responseId,
+    required HostFormConversionKind kind,
+    String? eventId,
+  }) => _repository.previewConversion(
+    organizerId: organizerId,
+    responseId: responseId,
+    kind: kind,
+    eventId: eventId,
+  );
+
+  Future<HostFormConversionReceipt> convertResponse({
+    required String organizerId,
+    required String responseId,
+    required HostFormConversionKind kind,
+    required String requestId,
+    String? eventId,
+  }) => _repository.convertResponse(
+    organizerId: organizerId,
+    responseId: responseId,
+    kind: kind,
+    eventId: eventId,
+    requestId: requestId,
+  );
+
+  Future<List<Event>> activeEvents({required String organizerId}) async {
+    final page = await _eventRepository.fetchActiveEventsPage(
+      organizerId: organizerId,
+      sessionBoundary: DateTime.now(),
+    );
+    return page.items;
+  }
 }

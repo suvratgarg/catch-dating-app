@@ -15,11 +15,10 @@ import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/hosts/data/host_forms_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -149,29 +148,49 @@ class _HostFormResponseDetailScreenState
                 CatchSection.fieldRows(
                   title: context.l10n.hostFormResponseOperationsSection,
                   children: [
-                    _conversionRow(
-                      value,
-                      HostFormConversionKind.crmContact,
-                      context.l10n.hostFormConvertCrm,
-                      CatchIcons.peopleOutlineRounded,
+                    _ConversionFormSchemaField(
+                      detail: value,
+                      kind: HostFormConversionKind.crmContact,
+                      label: context.l10n.hostFormConvertCrm,
+                      icon: CatchIcons.peopleOutlineRounded,
+                      converting: _converting,
+                      onTap: () => _reviewConversion(
+                        value,
+                        HostFormConversionKind.crmContact,
+                      ),
                     ),
-                    _conversionRow(
-                      value,
-                      HostFormConversionKind.application,
-                      context.l10n.hostFormConvertApplication,
-                      CatchIcons.assignmentTurnedInOutlined,
+                    _ConversionFormSchemaField(
+                      detail: value,
+                      kind: HostFormConversionKind.application,
+                      label: context.l10n.hostFormConvertApplication,
+                      icon: CatchIcons.assignmentTurnedInOutlined,
+                      converting: _converting,
+                      onTap: () => _reviewConversion(
+                        value,
+                        HostFormConversionKind.application,
+                      ),
                     ),
-                    _conversionRow(
-                      value,
-                      HostFormConversionKind.eventAttendeeProposal,
-                      context.l10n.hostFormConvertAttendee,
-                      CatchIcons.eventAvailableOutlined,
+                    _ConversionFormSchemaField(
+                      detail: value,
+                      kind: HostFormConversionKind.eventAttendeeProposal,
+                      label: context.l10n.hostFormConvertAttendee,
+                      icon: CatchIcons.eventAvailableOutlined,
+                      converting: _converting,
+                      onTap: () => _reviewConversion(
+                        value,
+                        HostFormConversionKind.eventAttendeeProposal,
+                      ),
                     ),
-                    _conversionRow(
-                      value,
-                      HostFormConversionKind.followUp,
-                      context.l10n.hostFormConvertFollowUp,
-                      CatchIcons.chatOutlined,
+                    _ConversionFormSchemaField(
+                      detail: value,
+                      kind: HostFormConversionKind.followUp,
+                      label: context.l10n.hostFormConvertFollowUp,
+                      icon: CatchIcons.chatOutlined,
+                      converting: _converting,
+                      onTap: () => _reviewConversion(
+                        value,
+                        HostFormConversionKind.followUp,
+                      ),
                     ),
                   ],
                 ),
@@ -181,28 +200,6 @@ class _HostFormResponseDetailScreenState
           ),
         ),
       ),
-    );
-  }
-
-  Widget _conversionRow(
-    HostFormResponseDetail detail,
-    HostFormConversionKind kind,
-    String label,
-    IconData icon,
-  ) {
-    final complete = detail.response.conversionKinds.contains(kind);
-    return CatchField.action(
-      title: label,
-      body: complete ? context.l10n.hostFormConversionComplete : null,
-      icon: icon,
-      status: _converting == kind
-          ? CatchFieldStatus.saving
-          : complete
-          ? CatchFieldStatus.saved
-          : CatchFieldStatus.idle,
-      onTap: complete || _converting != null
-          ? null
-          : () => _reviewConversion(detail, kind),
     );
   }
 
@@ -236,8 +233,8 @@ class _HostFormResponseDetailScreenState
     }
     setState(() => _converting = kind);
     try {
-      final repository = ref.read(hostFormsRepositoryProvider);
-      final preview = await repository.previewConversion(
+      final controller = ref.read(hostFormsControllerProvider);
+      final preview = await controller.previewConversion(
         organizerId: widget.organizerId,
         responseId: widget.responseId,
         kind: kind,
@@ -246,7 +243,7 @@ class _HostFormResponseDetailScreenState
       if (!mounted) return;
       final confirmed = await _showConversionPreview(preview);
       if (confirmed != true || !mounted) return;
-      await repository.convertResponse(
+      await controller.convertResponse(
         organizerId: widget.organizerId,
         responseId: widget.responseId,
         kind: kind,
@@ -317,7 +314,7 @@ class _HostFormResponseDetailScreenState
                     gapH12,
                     for (final warning in preview.warnings)
                       Padding(
-                        padding: const EdgeInsets.only(bottom: CatchSpacing.s2),
+                        padding: CatchInsets.detailInlineRowBottomGap,
                         child: Text(
                           warning,
                           style: CatchTextStyles.supporting(
@@ -349,12 +346,9 @@ class _HostFormResponseDetailScreenState
 
   Future<Event?> _selectEvent() async {
     try {
-      final page = await ref
-          .read(eventRepositoryProvider)
-          .fetchActiveEventsPage(
-            organizerId: widget.organizerId,
-            sessionBoundary: DateTime.now(),
-          );
+      final events = await ref
+          .read(hostFormsControllerProvider)
+          .activeEvents(organizerId: widget.organizerId);
       if (!mounted) return null;
       return showDialog<Event>(
         context: context,
@@ -369,12 +363,15 @@ class _HostFormResponseDetailScreenState
           ],
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxHeight: 420),
-            child: page.items.isEmpty
-                ? Text(context.l10n.hostFormSelectEventEmpty)
+            child: events.isEmpty
+                ? Text(
+                    context.l10n.hostFormSelectEventEmpty,
+                    style: CatchTextStyles.supporting(context),
+                  )
                 : SingleChildScrollView(
                     child: CatchSection.containedFieldRows(
                       children: [
-                        for (final event in page.items)
+                        for (final event in events)
                           CatchField.nav(
                             title: event.title,
                             body: AppTimeFormatters.dateTime(event.startTime),
@@ -391,6 +388,51 @@ class _HostFormResponseDetailScreenState
       return null;
     }
   }
+}
+
+class _ConversionFormSchemaField extends StatelessWidget {
+  const _ConversionFormSchemaField({
+    required this.detail,
+    required this.kind,
+    required this.label,
+    required this.icon,
+    required this.converting,
+    required this.onTap,
+  });
+
+  final HostFormResponseDetail detail;
+  final HostFormConversionKind kind;
+  final String label;
+  final IconData icon;
+  final HostFormConversionKind? converting;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final complete = detail.response.conversionKinds.contains(kind);
+    return _ResponseFormSchemaBoundary(
+      child: CatchField.action(
+        title: label,
+        body: complete ? context.l10n.hostFormConversionComplete : null,
+        icon: icon,
+        status: converting == kind
+            ? CatchFieldStatus.saving
+            : complete
+            ? CatchFieldStatus.saved
+            : CatchFieldStatus.idle,
+        onTap: complete || converting != null ? null : onTap,
+      ),
+    );
+  }
+}
+
+class _ResponseFormSchemaBoundary extends StatelessWidget {
+  const _ResponseFormSchemaBoundary({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => child;
 }
 
 String _originLabel(BuildContext context, HostFormDataOrigin origin) =>

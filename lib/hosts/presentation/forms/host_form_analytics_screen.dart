@@ -16,9 +16,9 @@ import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/hosts/data/host_forms_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -193,10 +193,10 @@ class _HostFormAnalyticsScreenState
 
   Future<void> _export(HostFormExportFormat format) async {
     setState(() => _exporting = format);
-    final repository = ref.read(hostFormsRepositoryProvider);
+    final controller = ref.read(hostFormsControllerProvider);
     final requestId = 'export_${DateTime.now().microsecondsSinceEpoch}';
     try {
-      var receipt = await repository.requestExport(
+      var receipt = await controller.requestExport(
         organizerId: widget.organizerId,
         formId: widget.formId,
         requestId: requestId,
@@ -211,8 +211,8 @@ class _HostFormAnalyticsScreenState
                 receipt.status == HostFormExportStatus.running);
         attempt++
       ) {
-        await Future<void>.delayed(const Duration(seconds: 5));
-        receipt = await repository.requestExport(
+        await Future<void>.delayed(CatchMotion.formExportPoll);
+        receipt = await controller.requestExport(
           organizerId: widget.organizerId,
           formId: widget.formId,
           requestId: requestId,
