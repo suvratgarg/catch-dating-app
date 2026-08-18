@@ -50,7 +50,7 @@ class HostFormPreviewScreen extends ConsumerWidget {
           errorBuilder: (_, error, _) => CatchPageBody(
             child: CatchErrorState.fromError(
               error,
-              context: AppErrorContext.club,
+              context: AppErrorContext.forms,
               onRetry: () => ref
                   .read(
                     hostFormEditorControllerProvider(

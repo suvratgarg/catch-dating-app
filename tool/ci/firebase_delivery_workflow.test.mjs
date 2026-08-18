@@ -182,7 +182,7 @@ test("Delivery consumes the always-present plan before deciding package or no-op
   assert.match(delivery, /It is not the queue:[\s\S]*cursor makes replacement safe/);
 });
 
-test("Delivery selects one cursor and the oldest pending authority with bounded API work", () => {
+test("Delivery selects the oldest pending authority after a cursor and current main for bootstrap", () => {
   const delivery = workflow("delivery.yml");
   assert.match(delivery, /repository_dispatch:[\s\S]*types: \[backend-delivery-drain\]/);
   assert.equal((delivery.match(/actions\/artifacts\?per_page=100/g) ?? []).length, 1);
@@ -206,13 +206,17 @@ test("Delivery selects one cursor and the oldest pending authority with bounded 
   assert.match(source, /catch\.ci-delivery-authority\/v3/);
   assert.match(source, /source_ambiguity_count/);
   assert.match(source, /group_by\(\.sourceCiRunNumber\)[\s\S]*sourceCiRunAttempt \| tonumber[\s\S]*min_by\(\.sourceCiRunNumber\)/);
+  assert.match(source, /bootstrap-source-winner-begin[\s\S]*max_by\(\.sourceCiRunNumber\)/);
   assert.match(source, /actions\/runs\/\$source_ci_run_id\/attempts\/\$source_ci_run_attempt/);
   assert.match(source, /\.workflow_id == \$workflow_id[\s\S]*\.status == "completed"[\s\S]*\.conclusion == "success"/);
   assert.match(source, /planArtifact[\s\S]*packageArtifact[\s\S]*digest/);
   assert.doesNotMatch(cursor, /while\s/);
   assert.doesNotMatch(source.slice(0, source.indexOf('if [[ "$EVENT_NAME" == "workflow_dispatch" ]]')), /while\s/);
   assert.doesNotMatch(delivery, /actions\/workflows\/ci\.yml\/runs/);
-  assert.match(delivery, /Bootstrapping from the oldest successful immutable CI authority in the current workflow generation/);
+  assert.match(delivery, /source_sha" != "\$current_main_sha"/);
+  assert.match(delivery, /No-cursor bootstrap requires the exact current main head/);
+  assert.match(delivery, /No-cursor bootstrap requires a current-main backend package/);
+  assert.match(delivery, /Bootstrapping the delivery cursor from the exact backend package for current main/);
   assert.match(delivery, /base_sha" != "\$CURSOR_SOURCE_SHA"[\s\S]*refusing to skip that release window/);
   assert.doesNotMatch(delivery, /EVENT_RUN_ID|first cursor may bootstrap/);
   assert.match(delivery, /work_required=false/);
@@ -328,6 +332,13 @@ test("high-cardinality queue metadata still resolves one cursor and one oldest a
   );
   assert.equal(sourceWinner.sourceCiRunNumber, 2501);
   assert.equal(sourceWinner.sourceCiRunAttempt, "10");
+
+  const bootstrapWinner = runJq(
+    queueSelector(delivery, "bootstrap-source-winner"),
+    sourceCandidates,
+  );
+  assert.equal(bootstrapWinner.sourceCiRunNumber, 5000);
+  assert.equal(bootstrapWinner.sourceCiRunAttempt, "1");
 
   const boundedSelection = delivery.slice(
     delivery.indexOf("      - id: cursor"),

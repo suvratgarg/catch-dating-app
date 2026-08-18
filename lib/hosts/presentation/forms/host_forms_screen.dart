@@ -253,7 +253,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
                       loadingBuilder: (_) => const CatchSkeletonRows(count: 6),
                       errorBuilder: (_, error, _) => CatchErrorState.fromError(
                         error,
-                        context: AppErrorContext.club,
+                        context: AppErrorContext.forms,
                         mode: CatchErrorStateMode.compact,
                         onRetry: () => ref.invalidate(
                           hostFormsDirectoryControllerProvider(request),
@@ -332,7 +332,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
                               gapH12,
                               CatchErrorState.fromError(
                                 state.loadMoreError!,
-                                context: AppErrorContext.club,
+                                context: AppErrorContext.forms,
                                 mode: CatchErrorStateMode.compact,
                                 onRetry: () => ref
                                     .read(

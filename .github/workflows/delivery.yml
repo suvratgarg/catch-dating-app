@@ -34,7 +34,9 @@ permissions:
 
 # This key serializes one drain worker. It is not the queue: GitHub may replace
 # a pending run. The cursor makes replacement safe because every surviving
-# worker independently selects the oldest unprocessed successful CI run.
+# worker independently selects the oldest unprocessed successful CI run after
+# a cursor exists. With no cursor, it can establish a baseline only from an
+# exact backend-changing CI authority for the current main head.
 concurrency:
   group: backend-delivery
   cancel-in-progress: false
@@ -264,7 +266,7 @@ jobs:
           echo "cursor_artifact_id=$cursor_artifact_id" >> "$GITHUB_OUTPUT"
 
       - id: source
-        name: Select the oldest successful unprocessed main CI run
+        name: Select the next successful main CI authority
         env:
           CURSOR_RUN_NUMBER: ${{ steps.cursor.outputs.source_ci_run_number }}
           CURRENT_CI_WORKFLOW_ID: ${{ steps.cursor.outputs.source_ci_workflow_id }}
@@ -349,6 +351,16 @@ jobs:
               if length == 0 then null else min_by(.sourceCiRunNumber) end
             ' <<< "$source_candidates")"
           # queue-selector: source-winner-end
+          # queue-selector: bootstrap-source-winner-begin
+          bootstrap_source_candidate="$(jq -c '
+              group_by(.sourceCiRunNumber) |
+              map(sort_by(.sourceCiRunAttempt | tonumber) | last) |
+              if length == 0 then null else max_by(.sourceCiRunNumber) end
+            ' <<< "$source_candidates")"
+          # queue-selector: bootstrap-source-winner-end
+          if [[ "$HAS_CURSOR" != "true" ]]; then
+            source_candidate="$bootstrap_source_candidate"
+          fi
           if [[ "$source_candidate" == "null" ]]; then
             if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
               echo "There is no pending successful immutable main CI attempt to resume."
@@ -363,7 +375,7 @@ jobs:
             exit 0
           fi
           if [[ "$HAS_CURSOR" != "true" ]]; then
-            echo "Bootstrapping from the oldest successful immutable CI authority in the current workflow generation."
+            echo "Preparing to bootstrap from the current main head's latest successful immutable CI authority."
           fi
 
           authority_artifact_id="$(jq -er '.artifactId | tostring' <<< "$source_candidate")"
@@ -443,6 +455,31 @@ jobs:
           package_artifact_id="$(jq -r '.packageArtifact.id // ""' "$authority_file")"
           package_artifact_name="$(jq -r '.packageArtifact.name // ""' "$authority_file")"
           package_artifact_digest="$(jq -r '.packageArtifact.digest // ""' "$authority_file")"
+
+          if [[ "$HAS_CURSOR" != "true" ]]; then
+            current_main_ref="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main")"
+            current_main_sha="$(jq -er '.object.sha' <<< "$current_main_ref")"
+            [[ "$current_main_sha" =~ ^[0-9a-f]{40}$ ]]
+            if [[ "$source_sha" != "$current_main_sha" ]]; then
+              if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+                echo "No-cursor bootstrap requires the exact current main head to own a successful immutable CI authority."
+                exit 64
+              fi
+              echo "Current main does not have a successful immutable CI authority yet; waiting for a later queue wakeup."
+              echo "work_required=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            if [[ "$(jq -r '.deployRequired' "$authority_file")" != "true" ]]; then
+              if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+                echo "No-cursor bootstrap requires a current-main backend package; a no-op CI authority cannot establish the backend baseline."
+                exit 64
+              fi
+              echo "Current main has no backend package, so it cannot establish the delivery baseline."
+              echo "work_required=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            echo "Bootstrapping the delivery cursor from the exact backend package for current main."
+          fi
 
           historical_attempt="$(gh api \
             "repos/$GITHUB_REPOSITORY/actions/runs/$source_ci_run_id/attempts/$source_ci_run_attempt")"

@@ -53,7 +53,7 @@ class HostFormAutomationsScreen extends ConsumerWidget {
           errorBuilder: (_, error, _) => CatchPageBody(
             child: CatchErrorState.fromError(
               error,
-              context: AppErrorContext.club,
+              context: AppErrorContext.forms,
               onRetry: () => ref.invalidate(provider),
             ),
           ),
@@ -109,7 +109,7 @@ class HostFormAutomationsScreen extends ConsumerWidget {
                 gapH12,
                 CatchErrorState.fromError(
                   error,
-                  context: AppErrorContext.club,
+                  context: AppErrorContext.forms,
                   mode: CatchErrorStateMode.compact,
                   onRetry: () => ref.invalidate(provider),
                 ),

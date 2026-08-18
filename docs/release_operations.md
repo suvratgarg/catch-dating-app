@@ -763,6 +763,16 @@ normalization changes no query capability because Firestore's built-in
 single-field index already owns the shape; all other packaged bytes and stages
 remain bound to the original CI authority.
 
+When no verified delivery cursor exists, automatic selection has a separate,
+fail-closed bootstrap rule: it may select only the latest successful immutable
+CI authority whose source SHA is the live `main` head, and that authority must
+contain an actual backend package. This establishes the baseline from current
+source instead of replaying an unrelated historical package. A no-op current
+head, a successful ancestor, a branch artifact, or any selection while a cursor
+exists cannot use this rule. Once the bootstrap promotion reaches protected
+production, ordinary oldest-pending cursor order and the manual recovery rules
+above apply again.
+
 The promotion process also supplies a fixed disabled profile for the
 non-secret Meta WhatsApp parameters during Functions discovery. This lets an
 older verified package deploy non-interactively without inventing live Meta
@@ -965,7 +975,9 @@ verified v4 cursor remains authoritative if its later drain-dispatch step fails
 or the originating run is subsequently rerun; selection uses the greatest
 verified source run number within the exact CI workflow id, never the mutable
 latest conclusion of that Delivery run. One artifact-catalogue scan selects the
-cursor and oldest pending `catch.ci-delivery-authority/v3`; Delivery then
+cursor and oldest pending `catch.ci-delivery-authority/v3`; when no cursor
+exists, it instead selects the latest authority and proves that its SHA is the
+current `main` head and that it owns a backend package. Delivery then
 downloads and verifies only those selected artifacts and their historical run
 attempts. It does not perform an API call or ZIP download per retained merge.
 The selected plan's base SHA must equal the cursor source SHA, so a missing or

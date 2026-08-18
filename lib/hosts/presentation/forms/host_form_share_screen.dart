@@ -74,7 +74,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
           errorBuilder: (_, error, _) => CatchPageBody(
             child: CatchErrorState.fromError(
               error,
-              context: AppErrorContext.club,
+              context: AppErrorContext.forms,
               onRetry: () => ref.invalidate(
                 hostFormShareAssetsControllerProvider(
                   organizerId: widget.organizerId,
