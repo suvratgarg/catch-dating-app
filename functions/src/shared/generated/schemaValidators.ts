@@ -26,6 +26,8 @@ import {HostProfileDocument} from "./hostProfileDocument";
 import {ClubDocument} from "./clubDocument";
 import {OrganizerDocument} from "./organizerDocument";
 import {OrganizerPostDocument} from "./organizerPostDocument";
+import {OrganizerPostDeliveryOperationDocument} from "./organizerPostDeliveryOperationDocument";
+import {OrganizerPostDeliveryRecipientDocument} from "./organizerPostDeliveryRecipientDocument";
 import {OrganizerTeamMembershipDocument} from "./organizerTeamMembershipDocument";
 import {OrganizerFollowDocument} from "./organizerFollowDocument";
 import {OrganizerCommunicationPreferenceDocument} from "./organizerCommunicationPreferenceDocument";
@@ -431,6 +433,8 @@ import {
   clubDocumentSchema,
   organizerDocumentSchema,
   organizerPostDocumentSchema,
+  organizerPostDeliveryOperationDocumentSchema,
+  organizerPostDeliveryRecipientDocumentSchema,
   organizerTeamMembershipDocumentSchema,
   organizerFollowDocumentSchema,
   organizerCommunicationPreferenceDocumentSchema,
@@ -906,6 +910,14 @@ export const validateOrganizerPostDocument:
   ValidateFunction<OrganizerPostDocument> =
     ajv.compile(organizerPostDocumentSchema) as
       ValidateFunction<OrganizerPostDocument>;
+export const validateOrganizerPostDeliveryOperationDocument:
+  ValidateFunction<OrganizerPostDeliveryOperationDocument> =
+    ajv.compile(organizerPostDeliveryOperationDocumentSchema) as
+      ValidateFunction<OrganizerPostDeliveryOperationDocument>;
+export const validateOrganizerPostDeliveryRecipientDocument:
+  ValidateFunction<OrganizerPostDeliveryRecipientDocument> =
+    ajv.compile(organizerPostDeliveryRecipientDocumentSchema) as
+      ValidateFunction<OrganizerPostDeliveryRecipientDocument>;
 export const validateOrganizerTeamMembershipDocument:
   ValidateFunction<OrganizerTeamMembershipDocument> =
     ajv.compile(organizerTeamMembershipDocumentSchema) as

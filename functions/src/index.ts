@@ -131,6 +131,8 @@ export {
   transferOrganizerOwnership,
 } from "./organizers/manageOrganizerTeam";
 export {createOrganizerPost} from "./organizers/organizerPosts";
+export {dispatchPendingOrganizerFollowerUpdates} from
+  "./organizers/organizerPostDelivery";
 export {getOrganizerCrmSummary} from "./organizers/organizerCrm";
 export {getEventRosterInsights} from "./organizers/eventRosterInsights";
 export {

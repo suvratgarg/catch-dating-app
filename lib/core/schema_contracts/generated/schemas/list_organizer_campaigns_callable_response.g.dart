@@ -317,6 +317,14 @@ const schemaListOrganizerCampaignsCallableResponseSchema = <String, Object?>{
               'eventId',
               'audience',
               'status',
+              'deliveryStatus',
+              'recipientCount',
+              'excludedCount',
+              'activityAvailableCount',
+              'pushAttemptedCount',
+              'pushAcceptedCount',
+              'pushFailedCount',
+              'pushUnknownCount',
               'createdAtMillis',
               'activityAtMillis',
             ],
@@ -347,6 +355,43 @@ const schemaListOrganizerCampaignsCallableResponseSchema = <String, Object?>{
                   'removed',
                 ],
                 'x-catch-ownership': 'callable-owned',
+              },
+              'deliveryStatus': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'pending',
+                  'completed',
+                  'partial',
+                  'unknown',
+                ],
+              },
+              'recipientCount': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+              'excludedCount': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+              'activityAvailableCount': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+              'pushAttemptedCount': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+              'pushAcceptedCount': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+              'pushFailedCount': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+              'pushUnknownCount': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
               },
               'createdAtMillis': <String, Object?>{
                 'type': 'integer',
@@ -662,6 +707,14 @@ const schemaListOrganizerCampaignsCallableResponseSchema = <String, Object?>{
             'eventId',
             'audience',
             'status',
+            'deliveryStatus',
+            'recipientCount',
+            'excludedCount',
+            'activityAvailableCount',
+            'pushAttemptedCount',
+            'pushAcceptedCount',
+            'pushFailedCount',
+            'pushUnknownCount',
             'createdAtMillis',
             'activityAtMillis',
           ],
@@ -692,6 +745,43 @@ const schemaListOrganizerCampaignsCallableResponseSchema = <String, Object?>{
                 'removed',
               ],
               'x-catch-ownership': 'callable-owned',
+            },
+            'deliveryStatus': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'pending',
+                'completed',
+                'partial',
+                'unknown',
+              ],
+            },
+            'recipientCount': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+            },
+            'excludedCount': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+            },
+            'activityAvailableCount': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+            },
+            'pushAttemptedCount': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+            },
+            'pushAcceptedCount': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+            },
+            'pushFailedCount': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+            },
+            'pushUnknownCount': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
             },
             'createdAtMillis': <String, Object?>{
               'type': 'integer',
@@ -995,6 +1085,14 @@ const schemaListOrganizerCampaignsCallableResponseSchema = <String, Object?>{
         'eventId',
         'audience',
         'status',
+        'deliveryStatus',
+        'recipientCount',
+        'excludedCount',
+        'activityAvailableCount',
+        'pushAttemptedCount',
+        'pushAcceptedCount',
+        'pushFailedCount',
+        'pushUnknownCount',
         'createdAtMillis',
         'activityAtMillis',
       ],
@@ -1025,6 +1123,43 @@ const schemaListOrganizerCampaignsCallableResponseSchema = <String, Object?>{
             'removed',
           ],
           'x-catch-ownership': 'callable-owned',
+        },
+        'deliveryStatus': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'pending',
+            'completed',
+            'partial',
+            'unknown',
+          ],
+        },
+        'recipientCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+        'excludedCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+        'activityAvailableCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+        'pushAttemptedCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+        'pushAcceptedCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+        'pushFailedCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+        'pushUnknownCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
         },
         'createdAtMillis': <String, Object?>{
           'type': 'integer',

@@ -188,12 +188,17 @@ class _HostSendsWorkspaceSliverState
       context: context,
       club: widget.club,
       remainingQuota: remainingQuota,
-      onSubmitPost: (text) async {
+      requestIdFactory: HostClubPostController.generateRequestId,
+      onSubmitPost: ({required requestId, required text}) async {
         _setBusy(true);
         try {
           await ref
               .read(hostClubPostControllerProvider)
-              .createPost(clubId: widget.club.id, text: text);
+              .createPost(
+                clubId: widget.club.id,
+                requestId: requestId,
+                text: text,
+              );
         } finally {
           _setBusy(false);
         }
@@ -667,9 +672,15 @@ class _HostSendRow extends StatelessWidget {
         title: context.l10n.hostSendsFollowerUpdateChannel,
         body: [
           context.l10n.hostSendsFollowersAudience,
+          if (update.deliveryStatus != 'unknown')
+            context.l10n.hostSendsRecipients(
+              count: update.activityAvailableCount,
+            ),
           AppTimeFormatters.shortDate(update.createdAt),
         ].join(' · '),
-        valueText: update.status,
+        valueText: context.l10n.hostSendsFollowerDeliveryStatus(
+          status: update.deliveryStatus,
+        ),
         divider: divider,
       ),
     },
@@ -811,9 +822,15 @@ class _HostSendsFollowerUpdateReport extends StatelessWidget {
               AppTimeFormatters.dateTime(update.createdAt),
               if (update.eventId != null)
                 context.l10n.hostSendsLinkedEventUpdate,
-              update.status,
+              context.l10n.hostSendsFollowerDeliveryStatus(
+                status: update.deliveryStatus,
+              ),
+              if (update.deliveryStatus != 'unknown')
+                context.l10n.hostSendsRecipients(
+                  count: update.activityAvailableCount,
+                ),
             ].join(' · '),
-            tone: update.status == 'active'
+            tone: update.deliveryStatus == 'completed'
                 ? CatchNoticeTone.status
                 : CatchNoticeTone.warning,
           ),

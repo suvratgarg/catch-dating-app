@@ -13152,6 +13152,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostSendsPartial => 'Some deliveries need attention';
 
   @override
+  String hostSendsFollowerDeliveryStatus({required String status}) {
+    String _temp0 = intl.Intl.selectLogic(status, {
+      'pending': 'Delivering in Catch',
+      'completed': 'Available in Catch',
+      'partial': 'Some deliveries need attention',
+      'unknown': 'Delivery was not tracked',
+      'other': 'Delivery status unavailable',
+    });
+    return '$_temp0';
+  }
+
+  @override
   String get hostInboxWhatsappChannel => 'WhatsApp Business · Organizer number';
 
   @override

@@ -21446,6 +21446,8 @@
   "@hostSendsRecipients": {"description": "Recipient count in a Sends row.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
   "hostSendsPartial": "Some deliveries need attention",
   "@hostSendsPartial": {"description": "Announcement partial failure status.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
+  "hostSendsFollowerDeliveryStatus": "{status, select, pending{Delivering in Catch} completed{Available in Catch} partial{Some deliveries need attention} unknown{Delivery was not tracked} other{Delivery status unavailable}}",
+  "@hostSendsFollowerDeliveryStatus": {"description": "User-facing delivery state for an organizer follower update.", "placeholders": {"status": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
   "hostInboxWhatsappChannel": "WhatsApp Business · Organizer number",
   "@hostInboxWhatsappChannel": {"description": "Channel facet label for retained WhatsApp threads.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
   "hostInboxCatchChatPreview": "Catch chat · Organizer · {details}",

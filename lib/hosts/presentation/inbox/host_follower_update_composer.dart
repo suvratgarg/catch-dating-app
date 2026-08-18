@@ -19,13 +19,19 @@ Future<bool> showHostFollowerUpdateComposer({
   required BuildContext context,
   required Club club,
   required int remainingQuota,
-  required Future<void> Function(String text) onSubmitPost,
+  required String Function() requestIdFactory,
+  required Future<void> Function({
+    required String requestId,
+    required String text,
+  })
+  onSubmitPost,
 }) async {
   final result = await showCatchBottomSheet<bool>(
     context: context,
     builder: (_) => HostFollowerUpdateComposerSheet(
       club: club,
       remainingQuota: remainingQuota,
+      requestIdFactory: requestIdFactory,
       onSubmitPost: onSubmitPost,
     ),
   );
@@ -43,12 +49,15 @@ class HostFollowerUpdateComposerSheet extends StatefulWidget {
     super.key,
     required this.club,
     required this.remainingQuota,
+    required this.requestIdFactory,
     required this.onSubmitPost,
   });
 
   final Club club;
   final int remainingQuota;
-  final Future<void> Function(String text) onSubmitPost;
+  final String Function() requestIdFactory;
+  final Future<void> Function({required String requestId, required String text})
+  onSubmitPost;
 
   @override
   State<HostFollowerUpdateComposerSheet> createState() =>
@@ -60,6 +69,13 @@ class _HostFollowerUpdateComposerSheetState
   final TextEditingController _controller = TextEditingController();
   Object? _error;
   bool _pending = false;
+  late String _requestId;
+
+  @override
+  void initState() {
+    super.initState();
+    _requestId = widget.requestIdFactory();
+  }
 
   @override
   void dispose() {
@@ -119,7 +135,9 @@ class _HostFollowerUpdateComposerSheetState
                     value1: 500 - _controller.text.length,
                   ),
               enabled: !_pending,
-              onChanged: (_) => setState(() {}),
+              onChanged: (_) => setState(() {
+                _requestId = widget.requestIdFactory();
+              }),
             ),
           ),
           if (_error != null) ...[
@@ -144,7 +162,7 @@ class _HostFollowerUpdateComposerSheetState
       _error = null;
     });
     try {
-      await widget.onSubmitPost(text);
+      await widget.onSubmitPost(requestId: _requestId, text: text);
       if (mounted) Navigator.of(context).pop(true);
     } catch (error) {
       if (!mounted) return;

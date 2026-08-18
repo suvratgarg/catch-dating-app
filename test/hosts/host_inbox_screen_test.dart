@@ -325,6 +325,14 @@ void main() {
         eventId: null,
         audience: 'followers',
         status: 'active',
+        deliveryStatus: 'completed',
+        recipientCount: 20,
+        excludedCount: 1,
+        activityAvailableCount: 19,
+        pushAttemptedCount: 15,
+        pushAcceptedCount: 15,
+        pushFailedCount: 0,
+        pushUnknownCount: 0,
         createdAt: now.subtract(const Duration(hours: 12)),
         activityAt: now.subtract(const Duration(hours: 12)),
       ),
@@ -347,6 +355,7 @@ void main() {
     expect(find.text('Doors open update'), findsOneWidget);
     expect(find.text('Bring regulars back'), findsOneWidget);
     expect(find.text('Follower update · Organizer'), findsOneWidget);
+    expect(find.text('Available in Catch'), findsOneWidget);
     expect(
       find.textContaining('Catch announcement · Organizer'),
       findsOneWidget,

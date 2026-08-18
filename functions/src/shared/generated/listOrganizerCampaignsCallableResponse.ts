@@ -85,6 +85,14 @@ export interface ListOrganizerCampaignsCallableResponse {
         eventId: string | null;
         audience: "followers";
         status: "active" | "removed";
+        deliveryStatus: "pending" | "completed" | "partial" | "unknown";
+        recipientCount: number;
+        excludedCount: number;
+        activityAvailableCount: number;
+        pushAttemptedCount: number;
+        pushAcceptedCount: number;
+        pushFailedCount: number;
+        pushUnknownCount: number;
         createdAtMillis: number;
         activityAtMillis: number;
       }

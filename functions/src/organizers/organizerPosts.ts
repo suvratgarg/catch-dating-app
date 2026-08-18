@@ -1,11 +1,11 @@
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import * as logger from "firebase-functions/logger";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
 import {
   EventDocument,
   OrganizerDocument,
+  OrganizerPostDeliveryOperationDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {CreateOrganizerPostCallablePayload} from
   "../shared/generated/createOrganizerPostCallablePayload";
@@ -16,15 +16,14 @@ import {validateCreateOrganizerPostCallablePayload} from
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {isOrganizerManager} from "../shared/organizerHosts";
 import {
-  activityNotificationId,
-  allowsPushPreference,
-  sendFcmNotification,
-  setActivityNotification,
-  type ActivityNotificationParams,
-  type FcmParams,
-  type NotificationPreferenceDocument,
-} from "../shared/notifications";
+  dispatchOrganizerPostDelivery,
+  operationResponse,
+  organizerPostId,
+  organizerPostPayloadHash,
+} from "./organizerPostDelivery";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
+
+export {buildOrganizerFollowerDelivery} from "./organizerPostDelivery";
 
 const weeklyQuota = 3;
 const quotaWindowMs = 7 * 24 * 60 * 60 * 1000;
@@ -34,12 +33,14 @@ interface CreateOrganizerPostDeps {
   now: () => Date;
   timestampFromMillis: (millis: number) => FirebaseFirestore.Timestamp;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
-  sendNotification?: typeof sendFcmNotification;
   checkRateLimit?: (
     db: FirebaseFirestore.Firestore,
     uid: string,
     action: string
   ) => Promise<void>;
+  dispatchDelivery?: (
+    postId: string
+  ) => Promise<CreateOrganizerPostCallableResponse | null>;
 }
 
 const defaultDeps: CreateOrganizerPostDeps = {
@@ -47,8 +48,8 @@ const defaultDeps: CreateOrganizerPostDeps = {
   now: () => new Date(),
   timestampFromMillis: (millis) => admin.firestore.Timestamp.fromMillis(millis),
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
-  sendNotification: sendFcmNotification,
   checkRateLimit: defaultCheckRateLimit,
+  dispatchDelivery: dispatchOrganizerPostDelivery,
 };
 
 export async function createOrganizerPostHandler(
@@ -62,17 +63,45 @@ export async function createOrganizerPostHandler(
     normalizeCreateOrganizerPostPayload
   );
   const db = deps.firestore();
+  const postId = organizerPostId({
+    organizerId: data.organizerId,
+    authorUid,
+    requestId: data.requestId,
+  });
+  const payloadHash = organizerPostPayloadHash({
+    organizerId: data.organizerId,
+    authorUid,
+    text: data.text,
+    photoPath: data.photoPath,
+    eventId: data.eventId,
+  });
+  const operationRef = db.collection("organizerPostDeliveryOperations")
+    .doc(postId);
+  const existingOperation = await operationRef.get();
+  if (existingOperation.exists) {
+    const operation = existingOperation.data() as
+      OrganizerPostDeliveryOperationDocument;
+    requireMatchingReplay(operation, {authorUid, payloadHash, data});
+    const dispatched = await deps.dispatchDelivery?.(postId);
+    if (dispatched) return {...dispatched, idempotentReplay: true};
+    const refreshed = await operationRef.get();
+    return operationResponse(
+      refreshed.data() as OrganizerPostDeliveryOperationDocument,
+      true,
+    );
+  }
+
   await deps.checkRateLimit?.(db, authorUid, "createOrganizerPost");
   const organizerRef = db.collection("organizers").doc(data.organizerId);
   const legacyClubRef = db.collection("clubs").doc(data.organizerId);
   const postsRef = organizerRef.collection("posts");
-  const postRef = postsRef.doc();
+  const postRef = postsRef.doc(postId);
   const legacyPostRef = legacyClubRef.collection("posts").doc(postRef.id);
   const quotaWindowStart = deps.timestampFromMillis(
     deps.now().getTime() - quotaWindowMs
   );
-  let organizerName = "";
   let remainingWeeklyQuota = 0;
+  let idempotentReplay = false;
 
   await db.runTransaction(async (tx) => {
     const eventRef = data.eventId ?
@@ -83,13 +112,27 @@ export async function createOrganizerPostHandler(
       deletedUserSnap,
       eventSnap,
       postsSnap,
+      operationSnap,
     ] = await Promise.all([
       tx.get(organizerRef),
       tx.get(legacyClubRef),
       tx.get(db.collection("deletedUsers").doc(authorUid)),
       eventRef ? tx.get(eventRef) : Promise.resolve(null),
       tx.get(postsRef.where("createdAt", ">=", quotaWindowStart)),
+      tx.get(operationRef),
     ]);
+    if (operationSnap.exists) {
+      const operation = operationSnap.data() as
+        OrganizerPostDeliveryOperationDocument;
+      requireMatchingReplay(operation, {
+        authorUid,
+        payloadHash,
+        data,
+      });
+      remainingWeeklyQuota = operation.remainingWeeklyQuota;
+      idempotentReplay = true;
+      return;
+    }
     if (deletedUserSnap.exists) {
       throw new HttpsError(
         "failed-precondition",
@@ -129,7 +172,6 @@ export async function createOrganizerPostHandler(
         "This organizer has used its 3 follower posts for the last 7 days."
       );
     }
-    organizerName = organizer.name;
     remainingWeeklyQuota = Math.max(0, weeklyQuota - activeCount - 1);
     const post = {
       authorUid,
@@ -142,26 +184,48 @@ export async function createOrganizerPostHandler(
     };
     tx.create(postRef, post);
     if (legacyClubSnap.exists) tx.create(legacyPostRef, post);
+    const createdAt = deps.timestampFromMillis(deps.now().getTime());
+    const operation: OrganizerPostDeliveryOperationDocument = {
+      organizerId: data.organizerId,
+      postId,
+      authorUid,
+      requestId: data.requestId,
+      payloadHash,
+      status: "pending",
+      remainingWeeklyQuota,
+      cursorFollowId: null,
+      recipientCount: 0,
+      excludedCount: 0,
+      activityAvailableCount: 0,
+      pushAttemptedCount: 0,
+      pushAcceptedCount: 0,
+      pushFailedCount: 0,
+      pushUnknownCount: 0,
+      errorCodes: [],
+      attemptCount: 0,
+      leaseOwner: null,
+      leaseExpiresAt: null,
+      createdAt,
+      updatedAt: createdAt,
+      completedAt: null,
+    };
+    tx.create(operationRef, operation);
   });
 
-  await notifyOrganizerFollowers({
-    db,
-    deps,
-    organizerId: data.organizerId,
-    organizerName,
-    authorUid,
-    postId: postRef.id,
-    text: data.text,
-    eventId: data.eventId,
-  });
-  return {postId: postRef.id, remainingWeeklyQuota};
+  const dispatched = await deps.dispatchDelivery?.(postId);
+  if (dispatched) return {...dispatched, idempotentReplay};
+  const operation = (await operationRef.get()).data() as
+    OrganizerPostDeliveryOperationDocument;
+  return operationResponse(operation, idempotentReplay);
 }
 
 function normalizeCreateOrganizerPostPayload(raw: unknown): unknown {
   if (typeof raw !== "object" || raw === null || Array.isArray(raw)) return raw;
   const input = raw as Record<string, unknown>;
   const normalized = {...input};
-  for (const field of ["organizerId", "text", "photoPath", "eventId"]) {
+  for (const field of [
+    "organizerId", "requestId", "text", "photoPath", "eventId",
+  ]) {
     if (typeof normalized[field] === "string") {
       normalized[field] = normalized[field].trim();
       if ((field === "photoPath" || field === "eventId") &&
@@ -173,117 +237,23 @@ function normalizeCreateOrganizerPostPayload(raw: unknown): unknown {
   return normalized;
 }
 
-async function notifyOrganizerFollowers(params: {
-  db: FirebaseFirestore.Firestore;
-  deps: CreateOrganizerPostDeps;
-  organizerId: string;
-  organizerName: string;
-  authorUid: string;
-  postId: string;
-  text: string;
-  eventId?: string;
-}): Promise<void> {
-  try {
-    const follows = await params.db.collection("organizerFollows")
-      .where("organizerId", "==", params.organizerId)
-      .where("status", "==", "active").get();
-    const followers = follows.docs.map((doc) => doc.data() as {
-      uid?: string;
-      pushNotificationsEnabled?: boolean;
-    }).filter(
-      (follow): follow is {
-        uid: string;
-        pushNotificationsEnabled?: boolean;
-      } => typeof follow.uid === "string" && follow.uid !== params.authorUid
+function requireMatchingReplay(
+  operation: OrganizerPostDeliveryOperationDocument,
+  params: {
+    authorUid: string;
+    payloadHash: string;
+    data: CreateOrganizerPostCallablePayload;
+  },
+): void {
+  if (operation.organizerId !== params.data.organizerId ||
+      operation.authorUid !== params.authorUid ||
+      operation.requestId !== params.data.requestId ||
+      operation.payloadHash !== params.payloadHash) {
+    throw new HttpsError(
+      "already-exists",
+      "This request id is already bound to different post content.",
     );
-    const userSnaps = await Promise.all(followers.map((follow) =>
-      params.db.collection("users").doc(follow.uid).get()
-    ));
-    await Promise.all(userSnaps.map(async (snap, index) => {
-      const follow = followers[index];
-      const user = snap.data() as {
-        fcmToken?: string;
-        prefsClubUpdates?: boolean;
-      } | undefined;
-      if (!user) return;
-      const delivery = buildOrganizerFollowerDelivery({
-        uid: follow.uid,
-        followPushNotificationsEnabled: follow.pushNotificationsEnabled,
-        user,
-        organizerId: params.organizerId,
-        authorUid: params.authorUid,
-        organizerName: params.organizerName,
-        postId: params.postId,
-        text: params.text,
-        eventId: params.eventId,
-      });
-      await setActivityNotification(params.db, {
-        ...delivery.activity,
-        createdAt: params.deps.serverTimestamp(),
-      });
-      if (delivery.push) {
-        await params.deps.sendNotification?.(delivery.push);
-      }
-    }));
-  } catch (error) {
-    logger.error("Failed to fan out organizer post notifications", {
-      organizerId: params.organizerId,
-      postId: params.postId,
-      error,
-    });
   }
-}
-
-interface OrganizerFollowerUser extends NotificationPreferenceDocument {
-  fcmToken?: string;
-}
-
-export interface OrganizerFollowerDelivery {
-  activity: Omit<ActivityNotificationParams, "createdAt">;
-  push: FcmParams | null;
-}
-
-/** Builds the durable Activity route and its independently gated push. */
-export function buildOrganizerFollowerDelivery(params: {
-  uid: string;
-  followPushNotificationsEnabled?: boolean;
-  user: OrganizerFollowerUser;
-  organizerId: string;
-  authorUid: string;
-  organizerName: string;
-  postId: string;
-  text: string;
-  eventId?: string;
-}): OrganizerFollowerDelivery {
-  const title = `New update from ${params.organizerName}`;
-  const activity: OrganizerFollowerDelivery["activity"] = {
-    id: activityNotificationId("organizerUpdate", params.postId),
-    uid: params.uid,
-    type: "organizerUpdate",
-    title,
-    body: params.text,
-    eventId: params.eventId,
-    organizerId: params.organizerId,
-    postId: params.postId,
-    actorUid: params.authorUid,
-    actorName: params.organizerName,
-  };
-  const token = params.user.fcmToken;
-  const canPush = params.followPushNotificationsEnabled === true &&
-    typeof token === "string" && token.length > 0 &&
-    allowsPushPreference(params.user, "clubUpdates");
-  return {
-    activity,
-    push: canPush && token ? {
-      token,
-      title,
-      body: params.text,
-      type: "organizerUpdate",
-      eventId: params.eventId,
-      organizerId: params.organizerId,
-      postId: params.postId,
-    } : null,
-  };
 }
 
 export const createOrganizerPost = onCall(

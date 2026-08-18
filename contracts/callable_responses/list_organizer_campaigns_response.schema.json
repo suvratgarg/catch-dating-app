@@ -57,13 +57,21 @@
     "followerUpdate": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["kind", "postId", "eventId", "audience", "status", "createdAtMillis", "activityAtMillis"],
+      "required": ["kind", "postId", "eventId", "audience", "status", "deliveryStatus", "recipientCount", "excludedCount", "activityAvailableCount", "pushAttemptedCount", "pushAcceptedCount", "pushFailedCount", "pushUnknownCount", "createdAtMillis", "activityAtMillis"],
       "properties": {
         "kind": {"const": "followerUpdate"},
         "postId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
         "eventId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
         "audience": {"const": "followers"},
         "status": {"$ref": "../firestore/organizer_posts.schema.json#/properties/status"},
+        "deliveryStatus": {"type": "string", "enum": ["pending", "completed", "partial", "unknown"]},
+        "recipientCount": {"type": "integer", "minimum": 0},
+        "excludedCount": {"type": "integer", "minimum": 0},
+        "activityAvailableCount": {"type": "integer", "minimum": 0},
+        "pushAttemptedCount": {"type": "integer", "minimum": 0},
+        "pushAcceptedCount": {"type": "integer", "minimum": 0},
+        "pushFailedCount": {"type": "integer", "minimum": 0},
+        "pushUnknownCount": {"type": "integer", "minimum": 0},
         "createdAtMillis": {"type": "integer", "minimum": 0},
         "activityAtMillis": {"type": "integer", "minimum": 0}
       }

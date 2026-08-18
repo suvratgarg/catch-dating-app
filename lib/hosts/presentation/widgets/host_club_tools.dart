@@ -176,11 +176,18 @@ class HostClubManagementPanel extends StatelessWidget {
                               context: context,
                               club: club,
                               remainingQuota: remainingQuota,
-                              onSubmitPost: (text) async {
-                                await ref
-                                    .read(hostClubPostControllerProvider)
-                                    .createPost(clubId: club.id, text: text);
-                              },
+                              requestIdFactory:
+                                  HostClubPostController.generateRequestId,
+                              onSubmitPost:
+                                  ({required requestId, required text}) async {
+                                    await ref
+                                        .read(hostClubPostControllerProvider)
+                                        .createPost(
+                                          clubId: club.id,
+                                          requestId: requestId,
+                                          text: text,
+                                        );
+                                  },
                             ),
                       icon: Icon(CatchIcons.megaphone, size: CatchIcon.md),
                       variant: CatchButtonVariant.secondary,

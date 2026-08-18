@@ -1591,6 +1591,14 @@ final class HostFollowerUpdateSendSummary extends HostSendSummary {
     required this.eventId,
     required this.audience,
     required this.status,
+    required this.deliveryStatus,
+    required this.recipientCount,
+    required this.excludedCount,
+    required this.activityAvailableCount,
+    required this.pushAttemptedCount,
+    required this.pushAcceptedCount,
+    required this.pushFailedCount,
+    required this.pushUnknownCount,
     required this.createdAt,
     required super.activityAt,
   });
@@ -1601,6 +1609,14 @@ final class HostFollowerUpdateSendSummary extends HostSendSummary {
         eventId: _nullableString(map['eventId']),
         audience: _requiredString(map, 'audience'),
         status: _requiredString(map, 'status'),
+        deliveryStatus: _requiredString(map, 'deliveryStatus'),
+        recipientCount: _requiredInt(map, 'recipientCount'),
+        excludedCount: _requiredInt(map, 'excludedCount'),
+        activityAvailableCount: _requiredInt(map, 'activityAvailableCount'),
+        pushAttemptedCount: _requiredInt(map, 'pushAttemptedCount'),
+        pushAcceptedCount: _requiredInt(map, 'pushAcceptedCount'),
+        pushFailedCount: _requiredInt(map, 'pushFailedCount'),
+        pushUnknownCount: _requiredInt(map, 'pushUnknownCount'),
         createdAt: _requiredDateTimeFromMillis(map, 'createdAtMillis'),
         activityAt: _requiredDateTimeFromMillis(map, 'activityAtMillis'),
       );
@@ -1609,6 +1625,14 @@ final class HostFollowerUpdateSendSummary extends HostSendSummary {
   final String? eventId;
   final String audience;
   final String status;
+  final String deliveryStatus;
+  final int recipientCount;
+  final int excludedCount;
+  final int activityAvailableCount;
+  final int pushAttemptedCount;
+  final int pushAcceptedCount;
+  final int pushFailedCount;
+  final int pushUnknownCount;
   final DateTime createdAt;
 
   @override

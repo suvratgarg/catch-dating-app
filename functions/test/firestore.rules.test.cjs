@@ -1555,6 +1555,41 @@ describe("firestore.rules", () => {
       ), exposure));
     });
 
+    it("keeps organizer follower delivery receipts server-only", async () => {
+      await seed(["organizerPostDeliveryOperations", "post-1"], {
+        organizerId: "organizer-1",
+        postId: "post-1",
+        authorUid: "host-1",
+        status: "pending",
+      });
+      await seed(["organizerPostDeliveryRecipients", "receipt-1"], {
+        organizerId: "organizer-1",
+        postId: "post-1",
+        activityStatus: "created",
+        pushStatus: "accepted",
+      });
+
+      for (const collectionName of [
+        "organizerPostDeliveryOperations",
+        "organizerPostDeliveryRecipients",
+      ]) {
+        await assertFails(getDoc(doc(
+          authedDb("host-1"),
+          collectionName,
+          collectionName.endsWith("Operations") ? "post-1" : "receipt-1",
+        )));
+        await assertFails(getDocs(collection(
+          authedDb("host-1"),
+          collectionName,
+        )));
+        await assertFails(setDoc(doc(
+          authedDb("host-1"),
+          collectionName,
+          "new-receipt",
+        ), {organizerId: "organizer-1", postId: "post-1"}));
+      }
+    });
+
     it("keeps event broadcast receipts and organizer summaries server-only", async () => {
       await seed(["eventBroadcasts", "broadcast-1"], {
         eventId: "event-1",

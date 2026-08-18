@@ -9249,6 +9249,14 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const createOrganizerPostCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'createOrganizerPostCallablePayload.requestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const createOrganizerPostCallablePayloadText = CatchContractFieldConstraints(
     path: 'createOrganizerPostCallablePayload.text',
     maxLength: 500,
@@ -9257,12 +9265,74 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const createOrganizerPostCallableResponseActivityAvailableCount = CatchContractFieldConstraints(
+    path: 'createOrganizerPostCallableResponse.activityAvailableCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const createOrganizerPostCallableResponseDeliveryStatus = CatchContractFieldConstraints(
+    path: 'createOrganizerPostCallableResponse.deliveryStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'completed', 'partial'],
+  );
+
+  static const createOrganizerPostCallableResponseExcludedCount = CatchContractFieldConstraints(
+    path: 'createOrganizerPostCallableResponse.excludedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const createOrganizerPostCallableResponseIdempotentReplay = CatchContractFieldConstraints(
+    path: 'createOrganizerPostCallableResponse.idempotentReplay',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
   static const createOrganizerPostCallableResponsePostId = CatchContractFieldConstraints(
     path: 'createOrganizerPostCallableResponse.postId',
     maxLength: 180,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerPostCallableResponsePushAcceptedCount = CatchContractFieldConstraints(
+    path: 'createOrganizerPostCallableResponse.pushAcceptedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const createOrganizerPostCallableResponsePushAttemptedCount = CatchContractFieldConstraints(
+    path: 'createOrganizerPostCallableResponse.pushAttemptedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const createOrganizerPostCallableResponsePushFailedCount = CatchContractFieldConstraints(
+    path: 'createOrganizerPostCallableResponse.pushFailedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const createOrganizerPostCallableResponsePushUnknownCount = CatchContractFieldConstraints(
+    path: 'createOrganizerPostCallableResponse.pushUnknownCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const createOrganizerPostCallableResponseRecipientCount = CatchContractFieldConstraints(
+    path: 'createOrganizerPostCallableResponse.recipientCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
   );
 
   static const createOrganizerPostCallableResponseRemainingWeeklyQuota = CatchContractFieldConstraints(
@@ -24992,6 +25062,13 @@ abstract final class CatchContractConstraints {
     minimum: 0,
   );
 
+  static const listOrganizerCampaignsCallableResponseSendsItemsActivityAvailableCount = CatchContractFieldConstraints(
+    path: 'listOrganizerCampaignsCallableResponse.sends.items.activityAvailableCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
   static const listOrganizerCampaignsCallableResponseSendsItemsAudience = CatchContractFieldConstraints(
     path: 'listOrganizerCampaignsCallableResponse.sends.items.audience',
     required: true,
@@ -25164,6 +25241,13 @@ abstract final class CatchContractConstraints {
     maximum: 1000000,
   );
 
+  static const listOrganizerCampaignsCallableResponseSendsItemsDeliveryStatus = CatchContractFieldConstraints(
+    path: 'listOrganizerCampaignsCallableResponse.sends.items.deliveryStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'completed', 'partial', 'unknown'],
+  );
+
   static const listOrganizerCampaignsCallableResponseSendsItemsDispatchedAtMillis = CatchContractFieldConstraints(
     path: 'listOrganizerCampaignsCallableResponse.sends.items.dispatchedAtMillis',
     valueTypes: <String>['integer'],
@@ -25183,6 +25267,13 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerCampaignsCallableResponseSendsItemsExcludedCount = CatchContractFieldConstraints(
+    path: 'listOrganizerCampaignsCallableResponse.sends.items.excludedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
   );
 
   static const listOrganizerCampaignsCallableResponseSendsItemsKind = CatchContractFieldConstraints(
@@ -25212,12 +25303,39 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const listOrganizerCampaignsCallableResponseSendsItemsPushAcceptedCount = CatchContractFieldConstraints(
+    path: 'listOrganizerCampaignsCallableResponse.sends.items.pushAcceptedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const listOrganizerCampaignsCallableResponseSendsItemsPushAttemptedCount = CatchContractFieldConstraints(
+    path: 'listOrganizerCampaignsCallableResponse.sends.items.pushAttemptedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const listOrganizerCampaignsCallableResponseSendsItemsPushFailedCount = CatchContractFieldConstraints(
+    path: 'listOrganizerCampaignsCallableResponse.sends.items.pushFailedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const listOrganizerCampaignsCallableResponseSendsItemsPushUnknownCount = CatchContractFieldConstraints(
+    path: 'listOrganizerCampaignsCallableResponse.sends.items.pushUnknownCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
   static const listOrganizerCampaignsCallableResponseSendsItemsRecipientCount = CatchContractFieldConstraints(
     path: 'listOrganizerCampaignsCallableResponse.sends.items.recipientCount',
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
-    maximum: 500,
   );
 
   static const listOrganizerCampaignsCallableResponseSendsItemsScheduledAtMillis = CatchContractFieldConstraints(
@@ -35695,6 +35813,296 @@ abstract final class CatchContractConstraints {
 
   static const organizerPolicyGapReviewDecisionDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
     path: 'organizerPolicyGapReviewDecisionDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerPostDeliveryOperationDocumentActivityAvailableCount = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryOperationDocument.activityAvailableCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerPostDeliveryOperationDocumentAttemptCount = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryOperationDocument.attemptCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerPostDeliveryOperationDocumentAuthorUid = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryOperationDocument.authorUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPostDeliveryOperationDocumentCompletedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryOperationDocument.completedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerPostDeliveryOperationDocumentCompletedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryOperationDocument.completedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerPostDeliveryOperationDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryOperationDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerPostDeliveryOperationDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryOperationDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerPostDeliveryOperationDocumentCursorFollowId = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryOperationDocument.cursorFollowId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPostDeliveryOperationDocumentErrorCodes = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryOperationDocument.errorCodes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const organizerPostDeliveryOperationDocumentErrorCodesItems = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryOperationDocument.errorCodes.items',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPostDeliveryOperationDocumentExcludedCount = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryOperationDocument.excludedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerPostDeliveryOperationDocumentLeaseExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryOperationDocument.leaseExpiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerPostDeliveryOperationDocumentLeaseExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryOperationDocument.leaseExpiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerPostDeliveryOperationDocumentLeaseOwner = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryOperationDocument.leaseOwner',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPostDeliveryOperationDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryOperationDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPostDeliveryOperationDocumentPayloadHash = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryOperationDocument.payloadHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerPostDeliveryOperationDocumentPostId = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryOperationDocument.postId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPostDeliveryOperationDocumentPushAcceptedCount = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryOperationDocument.pushAcceptedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerPostDeliveryOperationDocumentPushAttemptedCount = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryOperationDocument.pushAttemptedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerPostDeliveryOperationDocumentPushFailedCount = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryOperationDocument.pushFailedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerPostDeliveryOperationDocumentPushUnknownCount = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryOperationDocument.pushUnknownCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerPostDeliveryOperationDocumentRecipientCount = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryOperationDocument.recipientCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerPostDeliveryOperationDocumentRemainingWeeklyQuota = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryOperationDocument.remainingWeeklyQuota',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 3,
+  );
+
+  static const organizerPostDeliveryOperationDocumentRequestId = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryOperationDocument.requestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPostDeliveryOperationDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryOperationDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'processing', 'completed', 'partial'],
+  );
+
+  static const organizerPostDeliveryOperationDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryOperationDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerPostDeliveryOperationDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryOperationDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerPostDeliveryRecipientDocumentActivityNotificationId = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryRecipientDocument.activityNotificationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPostDeliveryRecipientDocumentActivityStatus = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryRecipientDocument.activityStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['created', 'existing', 'failed'],
+  );
+
+  static const organizerPostDeliveryRecipientDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryRecipientDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerPostDeliveryRecipientDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryRecipientDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerPostDeliveryRecipientDocumentErrorCode = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryRecipientDocument.errorCode',
+    maxLength: 120,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPostDeliveryRecipientDocumentExcluded = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryRecipientDocument.excluded',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerPostDeliveryRecipientDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryRecipientDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerPostDeliveryRecipientDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryRecipientDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerPostDeliveryRecipientDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryRecipientDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPostDeliveryRecipientDocumentPostId = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryRecipientDocument.postId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPostDeliveryRecipientDocumentPushStatus = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryRecipientDocument.pushStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['ineligible', 'accepted', 'failed', 'unknown'],
+  );
+
+  static const organizerPostDeliveryRecipientDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryRecipientDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerPostDeliveryRecipientDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerPostDeliveryRecipientDocument.updatedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
   );
@@ -48190,8 +48598,18 @@ abstract final class CatchContractConstraints {
     'createOrganizerPostCallablePayload.eventId': createOrganizerPostCallablePayloadEventId,
     'createOrganizerPostCallablePayload.organizerId': createOrganizerPostCallablePayloadOrganizerId,
     'createOrganizerPostCallablePayload.photoPath': createOrganizerPostCallablePayloadPhotoPath,
+    'createOrganizerPostCallablePayload.requestId': createOrganizerPostCallablePayloadRequestId,
     'createOrganizerPostCallablePayload.text': createOrganizerPostCallablePayloadText,
+    'createOrganizerPostCallableResponse.activityAvailableCount': createOrganizerPostCallableResponseActivityAvailableCount,
+    'createOrganizerPostCallableResponse.deliveryStatus': createOrganizerPostCallableResponseDeliveryStatus,
+    'createOrganizerPostCallableResponse.excludedCount': createOrganizerPostCallableResponseExcludedCount,
+    'createOrganizerPostCallableResponse.idempotentReplay': createOrganizerPostCallableResponseIdempotentReplay,
     'createOrganizerPostCallableResponse.postId': createOrganizerPostCallableResponsePostId,
+    'createOrganizerPostCallableResponse.pushAcceptedCount': createOrganizerPostCallableResponsePushAcceptedCount,
+    'createOrganizerPostCallableResponse.pushAttemptedCount': createOrganizerPostCallableResponsePushAttemptedCount,
+    'createOrganizerPostCallableResponse.pushFailedCount': createOrganizerPostCallableResponsePushFailedCount,
+    'createOrganizerPostCallableResponse.pushUnknownCount': createOrganizerPostCallableResponsePushUnknownCount,
+    'createOrganizerPostCallableResponse.recipientCount': createOrganizerPostCallableResponseRecipientCount,
     'createOrganizerPostCallableResponse.remainingWeeklyQuota': createOrganizerPostCallableResponseRemainingWeeklyQuota,
     'createProfileDecisionClientWrite.data.comment': createProfileDecisionClientWriteDataComment,
     'createProfileDecisionClientWrite.data.createdAt._nanoseconds': createProfileDecisionClientWriteDataCreatedAtNanoseconds,
@@ -50365,6 +50783,7 @@ abstract final class CatchContractConstraints {
     'listOrganizerCampaignsCallableResponse.organizerId': listOrganizerCampaignsCallableResponseOrganizerId,
     'listOrganizerCampaignsCallableResponse.sends': listOrganizerCampaignsCallableResponseSends,
     'listOrganizerCampaignsCallableResponse.sends.items.activityAtMillis': listOrganizerCampaignsCallableResponseSendsItemsActivityAtMillis,
+    'listOrganizerCampaignsCallableResponse.sends.items.activityAvailableCount': listOrganizerCampaignsCallableResponseSendsItemsActivityAvailableCount,
     'listOrganizerCampaignsCallableResponse.sends.items.audience': listOrganizerCampaignsCallableResponseSendsItemsAudience,
     'listOrganizerCampaignsCallableResponse.sends.items.audienceCounts.duplicate': listOrganizerCampaignsCallableResponseSendsItemsAudienceCountsDuplicate,
     'listOrganizerCampaignsCallableResponse.sends.items.audienceCounts.frequencyCapped': listOrganizerCampaignsCallableResponseSendsItemsAudienceCountsFrequencyCapped,
@@ -50387,13 +50806,19 @@ abstract final class CatchContractConstraints {
     'listOrganizerCampaignsCallableResponse.sends.items.deliveryCounts.replied': listOrganizerCampaignsCallableResponseSendsItemsDeliveryCountsReplied,
     'listOrganizerCampaignsCallableResponse.sends.items.deliveryCounts.sent': listOrganizerCampaignsCallableResponseSendsItemsDeliveryCountsSent,
     'listOrganizerCampaignsCallableResponse.sends.items.deliveryCounts.suppressed': listOrganizerCampaignsCallableResponseSendsItemsDeliveryCountsSuppressed,
+    'listOrganizerCampaignsCallableResponse.sends.items.deliveryStatus': listOrganizerCampaignsCallableResponseSendsItemsDeliveryStatus,
     'listOrganizerCampaignsCallableResponse.sends.items.dispatchedAtMillis': listOrganizerCampaignsCallableResponseSendsItemsDispatchedAtMillis,
     'listOrganizerCampaignsCallableResponse.sends.items.eventId': listOrganizerCampaignsCallableResponseSendsItemsEventId,
     'listOrganizerCampaignsCallableResponse.sends.items.eventName': listOrganizerCampaignsCallableResponseSendsItemsEventName,
+    'listOrganizerCampaignsCallableResponse.sends.items.excludedCount': listOrganizerCampaignsCallableResponseSendsItemsExcludedCount,
     'listOrganizerCampaignsCallableResponse.sends.items.kind': listOrganizerCampaignsCallableResponseSendsItemsKind,
     'listOrganizerCampaignsCallableResponse.sends.items.name': listOrganizerCampaignsCallableResponseSendsItemsName,
     'listOrganizerCampaignsCallableResponse.sends.items.partialFailure': listOrganizerCampaignsCallableResponseSendsItemsPartialFailure,
     'listOrganizerCampaignsCallableResponse.sends.items.postId': listOrganizerCampaignsCallableResponseSendsItemsPostId,
+    'listOrganizerCampaignsCallableResponse.sends.items.pushAcceptedCount': listOrganizerCampaignsCallableResponseSendsItemsPushAcceptedCount,
+    'listOrganizerCampaignsCallableResponse.sends.items.pushAttemptedCount': listOrganizerCampaignsCallableResponseSendsItemsPushAttemptedCount,
+    'listOrganizerCampaignsCallableResponse.sends.items.pushFailedCount': listOrganizerCampaignsCallableResponseSendsItemsPushFailedCount,
+    'listOrganizerCampaignsCallableResponse.sends.items.pushUnknownCount': listOrganizerCampaignsCallableResponseSendsItemsPushUnknownCount,
     'listOrganizerCampaignsCallableResponse.sends.items.recipientCount': listOrganizerCampaignsCallableResponseSendsItemsRecipientCount,
     'listOrganizerCampaignsCallableResponse.sends.items.scheduledAtMillis': listOrganizerCampaignsCallableResponseSendsItemsScheduledAtMillis,
     'listOrganizerCampaignsCallableResponse.sends.items.segmentIds': listOrganizerCampaignsCallableResponseSendsItemsSegmentIds,
@@ -51841,6 +52266,46 @@ abstract final class CatchContractConstraints {
     'organizerPolicyGapReviewDecisionDocument.schemaVersion': organizerPolicyGapReviewDecisionDocumentSchemaVersion,
     'organizerPolicyGapReviewDecisionDocument.updatedAt._nanoseconds': organizerPolicyGapReviewDecisionDocumentUpdatedAtNanoseconds,
     'organizerPolicyGapReviewDecisionDocument.updatedAt._seconds': organizerPolicyGapReviewDecisionDocumentUpdatedAtSeconds,
+    'organizerPostDeliveryOperationDocument.activityAvailableCount': organizerPostDeliveryOperationDocumentActivityAvailableCount,
+    'organizerPostDeliveryOperationDocument.attemptCount': organizerPostDeliveryOperationDocumentAttemptCount,
+    'organizerPostDeliveryOperationDocument.authorUid': organizerPostDeliveryOperationDocumentAuthorUid,
+    'organizerPostDeliveryOperationDocument.completedAt._nanoseconds': organizerPostDeliveryOperationDocumentCompletedAtNanoseconds,
+    'organizerPostDeliveryOperationDocument.completedAt._seconds': organizerPostDeliveryOperationDocumentCompletedAtSeconds,
+    'organizerPostDeliveryOperationDocument.createdAt._nanoseconds': organizerPostDeliveryOperationDocumentCreatedAtNanoseconds,
+    'organizerPostDeliveryOperationDocument.createdAt._seconds': organizerPostDeliveryOperationDocumentCreatedAtSeconds,
+    'organizerPostDeliveryOperationDocument.cursorFollowId': organizerPostDeliveryOperationDocumentCursorFollowId,
+    'organizerPostDeliveryOperationDocument.errorCodes': organizerPostDeliveryOperationDocumentErrorCodes,
+    'organizerPostDeliveryOperationDocument.errorCodes.items': organizerPostDeliveryOperationDocumentErrorCodesItems,
+    'organizerPostDeliveryOperationDocument.excludedCount': organizerPostDeliveryOperationDocumentExcludedCount,
+    'organizerPostDeliveryOperationDocument.leaseExpiresAt._nanoseconds': organizerPostDeliveryOperationDocumentLeaseExpiresAtNanoseconds,
+    'organizerPostDeliveryOperationDocument.leaseExpiresAt._seconds': organizerPostDeliveryOperationDocumentLeaseExpiresAtSeconds,
+    'organizerPostDeliveryOperationDocument.leaseOwner': organizerPostDeliveryOperationDocumentLeaseOwner,
+    'organizerPostDeliveryOperationDocument.organizerId': organizerPostDeliveryOperationDocumentOrganizerId,
+    'organizerPostDeliveryOperationDocument.payloadHash': organizerPostDeliveryOperationDocumentPayloadHash,
+    'organizerPostDeliveryOperationDocument.postId': organizerPostDeliveryOperationDocumentPostId,
+    'organizerPostDeliveryOperationDocument.pushAcceptedCount': organizerPostDeliveryOperationDocumentPushAcceptedCount,
+    'organizerPostDeliveryOperationDocument.pushAttemptedCount': organizerPostDeliveryOperationDocumentPushAttemptedCount,
+    'organizerPostDeliveryOperationDocument.pushFailedCount': organizerPostDeliveryOperationDocumentPushFailedCount,
+    'organizerPostDeliveryOperationDocument.pushUnknownCount': organizerPostDeliveryOperationDocumentPushUnknownCount,
+    'organizerPostDeliveryOperationDocument.recipientCount': organizerPostDeliveryOperationDocumentRecipientCount,
+    'organizerPostDeliveryOperationDocument.remainingWeeklyQuota': organizerPostDeliveryOperationDocumentRemainingWeeklyQuota,
+    'organizerPostDeliveryOperationDocument.requestId': organizerPostDeliveryOperationDocumentRequestId,
+    'organizerPostDeliveryOperationDocument.status': organizerPostDeliveryOperationDocumentStatus,
+    'organizerPostDeliveryOperationDocument.updatedAt._nanoseconds': organizerPostDeliveryOperationDocumentUpdatedAtNanoseconds,
+    'organizerPostDeliveryOperationDocument.updatedAt._seconds': organizerPostDeliveryOperationDocumentUpdatedAtSeconds,
+    'organizerPostDeliveryRecipientDocument.activityNotificationId': organizerPostDeliveryRecipientDocumentActivityNotificationId,
+    'organizerPostDeliveryRecipientDocument.activityStatus': organizerPostDeliveryRecipientDocumentActivityStatus,
+    'organizerPostDeliveryRecipientDocument.createdAt._nanoseconds': organizerPostDeliveryRecipientDocumentCreatedAtNanoseconds,
+    'organizerPostDeliveryRecipientDocument.createdAt._seconds': organizerPostDeliveryRecipientDocumentCreatedAtSeconds,
+    'organizerPostDeliveryRecipientDocument.errorCode': organizerPostDeliveryRecipientDocumentErrorCode,
+    'organizerPostDeliveryRecipientDocument.excluded': organizerPostDeliveryRecipientDocumentExcluded,
+    'organizerPostDeliveryRecipientDocument.expiresAt._nanoseconds': organizerPostDeliveryRecipientDocumentExpiresAtNanoseconds,
+    'organizerPostDeliveryRecipientDocument.expiresAt._seconds': organizerPostDeliveryRecipientDocumentExpiresAtSeconds,
+    'organizerPostDeliveryRecipientDocument.organizerId': organizerPostDeliveryRecipientDocumentOrganizerId,
+    'organizerPostDeliveryRecipientDocument.postId': organizerPostDeliveryRecipientDocumentPostId,
+    'organizerPostDeliveryRecipientDocument.pushStatus': organizerPostDeliveryRecipientDocumentPushStatus,
+    'organizerPostDeliveryRecipientDocument.updatedAt._nanoseconds': organizerPostDeliveryRecipientDocumentUpdatedAtNanoseconds,
+    'organizerPostDeliveryRecipientDocument.updatedAt._seconds': organizerPostDeliveryRecipientDocumentUpdatedAtSeconds,
     'organizerPostDocument.audience': organizerPostDocumentAudience,
     'organizerPostDocument.authorUid': organizerPostDocumentAuthorUid,
     'organizerPostDocument.createdAt._nanoseconds': organizerPostDocumentCreatedAtNanoseconds,
