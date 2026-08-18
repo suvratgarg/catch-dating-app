@@ -51379,7 +51379,7 @@ export const listOrganizerCampaignsCallableResponseSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/list_organizer_campaigns_response.schema.json",
   "title": "ListOrganizerCampaignsCallableResponse",
-  "description": "Reverse-chronological organizer Sends rows mixing WhatsApp campaigns and event announcements.",
+  "description": "Reverse-chronological organizer Sends rows mixing WhatsApp campaigns, event announcements, and follower updates.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -51672,6 +51672,56 @@ export const listOrganizerCampaignsCallableResponseSchema = {
               },
               "partialFailure": {
                 "type": "boolean"
+              },
+              "activityAtMillis": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "postId",
+              "eventId",
+              "audience",
+              "status",
+              "createdAtMillis",
+              "activityAtMillis"
+            ],
+            "properties": {
+              "kind": {
+                "const": "followerUpdate"
+              },
+              "postId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "eventId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "audience": {
+                "const": "followers"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "removed"
+                ],
+                "x-catch-ownership": "callable-owned"
+              },
+              "createdAtMillis": {
+                "type": "integer",
+                "minimum": 0
               },
               "activityAtMillis": {
                 "type": "integer",
@@ -51973,6 +52023,56 @@ export const listOrganizerCampaignsCallableResponseSchema = {
               "minimum": 0
             }
           }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "postId",
+            "eventId",
+            "audience",
+            "status",
+            "createdAtMillis",
+            "activityAtMillis"
+          ],
+          "properties": {
+            "kind": {
+              "const": "followerUpdate"
+            },
+            "postId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "eventId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "audience": {
+              "const": "followers"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "active",
+                "removed"
+              ],
+              "x-catch-ownership": "callable-owned"
+            },
+            "createdAtMillis": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "activityAtMillis": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
         }
       ]
     },
@@ -52250,6 +52350,56 @@ export const listOrganizerCampaignsCallableResponseSchema = {
         },
         "partialFailure": {
           "type": "boolean"
+        },
+        "activityAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "followerUpdate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "postId",
+        "eventId",
+        "audience",
+        "status",
+        "createdAtMillis",
+        "activityAtMillis"
+      ],
+      "properties": {
+        "kind": {
+          "const": "followerUpdate"
+        },
+        "postId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "eventId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "audience": {
+          "const": "followers"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "removed"
+          ],
+          "x-catch-ownership": "callable-owned"
+        },
+        "createdAtMillis": {
+          "type": "integer",
+          "minimum": 0
         },
         "activityAtMillis": {
           "type": "integer",

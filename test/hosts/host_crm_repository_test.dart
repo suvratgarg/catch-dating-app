@@ -581,6 +581,15 @@ void main() {
           'dispatchedAtMillis': null,
           'activityAtMillis': 2000,
         },
+        {
+          'kind': 'followerUpdate',
+          'postId': 'post-1',
+          'eventId': null,
+          'audience': 'followers',
+          'status': 'active',
+          'createdAtMillis': 1000,
+          'activityAtMillis': 1000,
+        },
       ],
       'nextCursor': 'next-page',
     });
@@ -590,8 +599,13 @@ void main() {
       (page.sends.first as HostAnnouncementSendSummary).partialFailure,
       isTrue,
     );
-    expect(page.sends.last, isA<HostCampaignSendSummary>());
-    expect((page.sends.last as HostCampaignSendSummary).scheduledAt, isNotNull);
+    expect(page.sends[1], isA<HostCampaignSendSummary>());
+    expect((page.sends[1] as HostCampaignSendSummary).scheduledAt, isNotNull);
+    expect(page.sends.last, isA<HostFollowerUpdateSendSummary>());
+    final followerUpdate = page.sends.last as HostFollowerUpdateSendSummary;
+    expect(followerUpdate.postId, 'post-1');
+    expect(followerUpdate.audience, 'followers');
+    expect(followerUpdate.eventId, isNull);
     expect(page.nextCursor, 'next-page');
   });
 

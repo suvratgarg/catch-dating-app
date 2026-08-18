@@ -3,25 +3,25 @@
   "version": 2,
   "generatedFrom": "design/features/host_inbox.feature.json",
   "generatedFor": "2026-08-18",
-  "sourceDigest": "sha256:8b0110cad6822d4a70925be65f920b1a9f8e3085cd402980041b769051e3007d",
-  "resolvedDigest": "sha256:0a80e5e7dfcffbedec6cfb2cf1b57c82e1dd93ec102d7249feb29a852334f838",
+  "sourceDigest": "sha256:74a9acfd165f9e742e0afb34c3a4977a40fc6e1287b4e27ae3718418ccfb9a0e",
+  "resolvedDigest": "sha256:3f6c8f69c2fc9e5604e7936e377a2227745c5bc03a9d516ebd31e98c9534f47a",
   "feature": {
     "id": "feature.host_inbox",
     "name": "Host Messaging",
     "owner": "hosts",
     "status": "pilot",
-    "description": "Orchestrates organizer-scoped Host messaging through one Inbox for explicit Catch chat, organizer WhatsApp and event-announcement facets plus Sends for route selection, mixed outbound history and cross-event audience messaging, including deep-linked customer segments."
+    "description": "Orchestrates organizer-scoped Host messaging through one Inbox for explicit Catch chat, organizer WhatsApp and event-announcement facets plus Sends for route selection, mixed outbound history, follower-update composition and cross-event audience messaging, including deep-linked customer segments."
   },
   "coverage": {
     "surfaces": 1,
-    "states": 38,
-    "scenarios": 38,
-    "actionCases": 41,
-    "actions": 16,
+    "states": 39,
+    "scenarios": 39,
+    "actionCases": 43,
+    "actions": 17,
     "captures": 19,
     "previews": 3,
-    "testFiles": 11,
-    "evidenceExceptions": 36
+    "testFiles": 12,
+    "evidenceExceptions": 38
   },
   "surfaces": [
     {
@@ -32,7 +32,7 @@
         "id": "screen.host.inbox"
       },
       "actionScope": {
-        "included": "Messaging workspace switching; Inbox retry, search, event/general scope, booked/prospective audience selection, explicit Catch chat routing, organizer-scoped inbound WhatsApp thread facets with 12-month retention and service-window-aware replies, and Catch event-announcement lifecycle; communication-route selection with sender, delivery, consent and readiness explanations; reverse-chronological WhatsApp Business and Catch Announcement history; dedicated WhatsApp sender setup; and deep-linked campaign create, schedule, preview, approve, dispatch, cancel, and report controls.",
+        "included": "Messaging workspace switching; Inbox retry, search, event/general scope, booked/prospective audience selection, explicit Catch chat routing, organizer-scoped inbound WhatsApp thread facets with 12-month retention and service-window-aware replies, and Catch event-announcement lifecycle; communication-route selection with sender, delivery, consent and readiness explanations; reverse-chronological WhatsApp Business, Catch Announcement and follower-update history; route-specific follower-update composition with rolling quota; dedicated WhatsApp sender setup; and deep-linked campaign create, schedule, preview, approve, dispatch, cancel, and report controls.",
         "excluded": [
           "Raw broadcast body edits are form data; the contract cardinalizes template/audience decisions and the send mutation instead of individual keystrokes.",
           "Conversation thread behavior and safety actions retain the shared chat-thread contract."
@@ -79,6 +79,12 @@
             "language": "dart",
             "file": "lib/hosts/presentation/inbox/host_sends_workspace.dart",
             "symbol": "HostSendsWorkspaceSliver"
+          },
+          {
+            "id": "follower_update_composer",
+            "language": "dart",
+            "file": "lib/hosts/presentation/inbox/host_follower_update_composer.dart",
+            "symbol": "showHostFollowerUpdateComposer"
           },
           {
             "id": "messaging_setup_screen",
@@ -130,6 +136,7 @@
         ],
         "dataContracts": [
           "contracts/callable_responses/organizer_campaign_response.schema.json",
+          "contracts/callable_responses/create_organizer_post_response.schema.json",
           "contracts/callable_responses/list_organizer_campaigns_response.schema.json",
           "contracts/callable_responses/list_organizer_whatsapp_threads_response.schema.json",
           "contracts/callable_responses/get_organizer_whatsapp_thread_response.schema.json",
@@ -137,6 +144,7 @@
           "contracts/callable_responses/send_event_broadcast_response.schema.json",
           "contracts/callable_responses/send_organizer_whatsapp_reply_response.schema.json",
           "contracts/callables/complete_organizer_whatsapp_connection_payload.schema.json",
+          "contracts/callables/create_organizer_post_payload.schema.json",
           "contracts/callables/list_organizer_campaigns_payload.schema.json",
           "contracts/callables/list_organizer_whatsapp_threads_payload.schema.json",
           "contracts/callables/get_organizer_whatsapp_thread_payload.schema.json",
@@ -154,6 +162,7 @@
           "contracts/firestore/organizer_broadcast_summaries.schema.json",
           "contracts/firestore/organizer_campaign_webhook_receipts.schema.json",
           "contracts/firestore/organizer_campaigns.schema.json",
+          "contracts/firestore/organizer_posts.schema.json",
           "contracts/firestore/organizer_whatsapp_threads.schema.json",
           "contracts/firestore/organizer_whatsapp_messages.schema.json",
           "contracts/firestore/organizer_whatsapp_reply_operations.schema.json"
@@ -181,6 +190,11 @@
             "test/hosts/host_inbox_screen_test.dart",
             "test/communications/communication_route_test.dart"
           ],
+          "follower_update_composer": [
+            "test/hosts/host_follower_update_composer_test.dart",
+            "test/hosts/host_inbox_screen_test.dart",
+            "test/hosts/host_crm_repository_test.dart"
+          ],
           "whatsapp_inbound_thread": [
             "test/hosts/host_crm_repository_test.dart"
           ],
@@ -193,14 +207,14 @@
         }
       },
       "coverage": {
-        "states": 38,
-        "scenarios": 38,
-        "actionCases": 41,
-        "actions": 16,
+        "states": 39,
+        "scenarios": 39,
+        "actionCases": 43,
+        "actions": 17,
         "captures": 19,
         "previews": 3,
-        "testFiles": 11,
-        "evidenceExceptions": 36
+        "testFiles": 12,
+        "evidenceExceptions": 38
       },
       "dimensions": {
         "workspace": {
@@ -308,7 +322,8 @@
           "values": [
             "history",
             "picker",
-            "organizer_whatsapp_campaign"
+            "organizer_whatsapp_campaign",
+            "follower_update"
           ]
         },
         "accessibility": {
@@ -651,7 +666,8 @@
               "kind": "surface_state",
               "stateIds": [
                 "communication_route_picker",
-                "customer_campaign_draft"
+                "customer_campaign_draft",
+                "follower_update_composer"
               ]
             },
             {
@@ -662,7 +678,33 @@
               }
             }
           ],
-          "description": "Shows every communication route with its sender and delivery semantics, opens Catch Inbox or an eligible organizer WhatsApp composer, and gives read-only ownership or activation guidance for routes that start elsewhere or are not active.",
+          "description": "Shows every communication route with its sender and delivery semantics, opens Catch Inbox, an eligible organizer WhatsApp composer, or the in-place follower-update composer, and gives read-only ownership or activation guidance for routes that start elsewhere or are not active.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "send_follower_update",
+          "owner": "follower_update_composer",
+          "codeValue": "showHostFollowerUpdateComposer",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "organizerId",
+            "text",
+            "submitAttemptId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "follower_update_composer"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "host_messaging.follower_update_created"
+            }
+          ],
+          "description": "Creates one organizer update for active followers, freezes submission while pending, and returns to refreshed Sends history only after the callable accepts the post.",
           "implementationStatus": "implemented"
         },
         {
@@ -779,14 +821,15 @@
         },
         {
           "stateIds": [
-            "communication_route_picker"
+            "communication_route_picker",
+            "follower_update_composer"
           ],
           "evidence": [
             "captures",
             "previews"
           ],
           "debtId": "HOST-MESSAGING-EVIDENCE-001",
-          "reason": "The route capability registry and rendered picker have focused tests; a dedicated deterministic preview and capture remain follow-up evidence."
+          "reason": "The route capability registry, rendered picker, and follower-update composer have focused tests; dedicated deterministic previews and captures remain follow-up evidence."
         },
         {
           "stateIds": [
@@ -901,6 +944,7 @@
                   "select_broadcast_template",
                   "send_broadcast",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -979,6 +1023,7 @@
                   "select_broadcast_template",
                   "send_broadcast",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -1058,6 +1103,7 @@
                   "select_broadcast_template",
                   "send_broadcast",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -1135,6 +1181,7 @@
                   "select_broadcast_template",
                   "send_broadcast",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -1212,6 +1259,7 @@
                   "select_broadcast_template",
                   "send_broadcast",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -1293,6 +1341,7 @@
                   "select_broadcast_template",
                   "send_broadcast",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -1374,6 +1423,7 @@
                   "select_broadcast_template",
                   "send_broadcast",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -1454,6 +1504,7 @@
                   "select_broadcast_template",
                   "send_broadcast",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -1534,6 +1585,7 @@
                   "select_broadcast_template",
                   "send_broadcast",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -1614,6 +1666,7 @@
                   "select_broadcast_template",
                   "send_broadcast",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -1689,6 +1742,7 @@
                   "select_broadcast_template",
                   "send_broadcast",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -1764,6 +1818,7 @@
                   "select_broadcast_template",
                   "send_broadcast",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -1839,6 +1894,7 @@
                   "select_broadcast_template",
                   "send_broadcast",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -1912,6 +1968,7 @@
                   "select_broadcast_template",
                   "send_broadcast",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -1994,6 +2051,7 @@
                   "send_whatsapp_reply",
                   "open_broadcast_composer",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -2038,6 +2096,7 @@
                   "send_whatsapp_reply",
                   "open_broadcast_composer",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -2081,6 +2140,7 @@
                   "send_whatsapp_reply",
                   "open_broadcast_composer",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -2124,6 +2184,7 @@
                   "send_whatsapp_reply",
                   "open_broadcast_composer",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -2201,6 +2262,129 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "send_follower_update",
+                  "manage_campaign"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "follower_update_composer",
+          "stateId": "follower_update_composer",
+          "kind": "mutation",
+          "status": "tested",
+          "dimensions": {
+            "workspace": "campaigns",
+            "load": "ready",
+            "scope": "event",
+            "segment": "booked",
+            "content": "populated",
+            "channel": "catch",
+            "whatsapp_window": "open",
+            "search": "collapsed",
+            "profile": "ready",
+            "broadcast": "idle",
+            "messaging": "ready",
+            "campaign": "draft",
+            "send_route": "follower_update",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "test/hosts/host_follower_update_composer_test.dart",
+              "test/hosts/host_inbox_screen_test.dart",
+              "test/hosts/host_crm_repository_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "ready",
+              "dimensions": {
+                "workspace": "campaigns",
+                "load": "ready",
+                "scope": "event",
+                "segment": "booked",
+                "content": "populated",
+                "channel": "catch",
+                "whatsapp_window": "open",
+                "search": "collapsed",
+                "profile": "ready",
+                "broadcast": "idle",
+                "messaging": "ready",
+                "campaign": "draft",
+                "send_route": "follower_update",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "send_follower_update"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "select_workspace",
+                  "retry_inbox",
+                  "toggle_search",
+                  "search_inquiries",
+                  "select_scope",
+                  "select_audience_segment",
+                  "open_conversation",
+                  "open_whatsapp_thread",
+                  "send_whatsapp_reply",
+                  "open_broadcast_composer",
+                  "select_broadcast_audience",
+                  "select_broadcast_template",
+                  "send_broadcast",
+                  "select_communication_route",
+                  "manage_whatsapp_sender",
+                  "manage_campaign"
+                ]
+              }
+            },
+            {
+              "id": "pending",
+              "dimensions": {
+                "workspace": "campaigns",
+                "load": "ready",
+                "scope": "event",
+                "segment": "booked",
+                "content": "populated",
+                "channel": "catch",
+                "whatsapp_window": "open",
+                "search": "collapsed",
+                "profile": "ready",
+                "broadcast": "idle",
+                "messaging": "ready",
+                "campaign": "draft",
+                "send_route": "follower_update",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "send_follower_update"
+                ],
+                "notAllowed": [
+                  "select_workspace",
+                  "retry_inbox",
+                  "toggle_search",
+                  "search_inquiries",
+                  "select_scope",
+                  "select_audience_segment",
+                  "open_conversation",
+                  "open_whatsapp_thread",
+                  "send_whatsapp_reply",
+                  "open_broadcast_composer",
+                  "select_broadcast_audience",
+                  "select_broadcast_template",
+                  "send_broadcast",
+                  "select_communication_route",
+                  "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
               }
@@ -2277,6 +2461,7 @@
                   "select_broadcast_template",
                   "send_broadcast",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender"
                 ]
               }
@@ -2353,7 +2538,8 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route"
+                  "select_communication_route",
+                  "send_follower_update"
                 ]
               }
             }
@@ -2430,6 +2616,7 @@
                   "select_broadcast_template",
                   "send_broadcast",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_campaign"
                 ]
               }
@@ -2503,7 +2690,8 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route"
+                  "select_communication_route",
+                  "send_follower_update"
                 ]
               }
             }
@@ -2583,7 +2771,8 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route"
+                  "select_communication_route",
+                  "send_follower_update"
                 ]
               }
             }
@@ -2661,6 +2850,7 @@
                   "select_broadcast_template",
                   "send_broadcast",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender"
                 ]
               }
@@ -2734,6 +2924,7 @@
                   "select_broadcast_template",
                   "send_broadcast",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender"
                 ]
               }
@@ -2811,6 +3002,7 @@
                   "select_broadcast_template",
                   "send_broadcast",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender"
                 ]
               }
@@ -2890,6 +3082,7 @@
                   "select_broadcast_template",
                   "send_broadcast",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -2969,6 +3162,7 @@
                   "select_broadcast_template",
                   "send_broadcast",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -3048,6 +3242,7 @@
                   "select_broadcast_template",
                   "send_broadcast",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -3125,6 +3320,7 @@
                   "select_broadcast_template",
                   "send_broadcast",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -3205,6 +3401,7 @@
                   "select_broadcast_template",
                   "send_broadcast",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -3285,6 +3482,7 @@
                   "select_broadcast_template",
                   "send_broadcast",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -3363,6 +3561,7 @@
                   "select_broadcast_template",
                   "send_broadcast",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -3438,6 +3637,7 @@
                   "select_broadcast_template",
                   "send_broadcast",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -3515,6 +3715,7 @@
                   "select_broadcast_template",
                   "send_broadcast",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -3592,6 +3793,7 @@
                   "select_broadcast_template",
                   "send_broadcast",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -3669,6 +3871,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -3745,6 +3948,7 @@
                   "select_broadcast_template",
                   "send_broadcast",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -3821,6 +4025,7 @@
                   "select_broadcast_template",
                   "send_broadcast",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -3897,6 +4102,7 @@
                   "select_broadcast_template",
                   "send_broadcast",
                   "select_communication_route",
+                  "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]

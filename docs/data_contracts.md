@@ -1087,6 +1087,9 @@ validates optional linked events against the same organizer, enforces the
 rolling three-posts-per-seven-days quota, writes the canonical post, and fans
 out durable `organizerUpdate` activity notifications to active followers.
 `createClubPost` and the nested club post are compatibility shadows.
+Manager Sends history reads the same organizer-scoped collection through
+`listOrganizerCampaigns` and returns post identity, audience, status, optional
+linked event and timestamps without returning the message body.
 
 ## Event Broadcast Receipts
 
@@ -1103,9 +1106,10 @@ event/activity label, audience, recipient count, send timestamp, partial-failure
 flag and bounded contact delivery states, but no message body, UID, endpoint or
 raw provider receipt. Direct client reads and writes are denied.
 `listOrganizerCampaigns` is the manager-authorized, rate-limited pagination
-boundary for the Host Sends workspace: it merges campaign summaries with these
-Announcement summaries in reverse chronological order using an opaque stable
-cursor. The query is organizer-scoped and never uses a collection-group scan.
+boundary for the Host Sends workspace: it merges campaign summaries, these
+Announcement summaries and organizer follower updates in reverse chronological
+order using an opaque stable cursor. The queries are organizer-scoped and never
+use a collection-group scan.
 
 The callable verifies current event-host authority and freezes a server-resolved
 audience from `eventParticipations`. Booked means `signedUp` plus `attended`;

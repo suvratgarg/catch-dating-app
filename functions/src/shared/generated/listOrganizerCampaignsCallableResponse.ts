@@ -3,7 +3,7 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Reverse-chronological organizer Sends rows mixing WhatsApp campaigns and event announcements.
+ * Reverse-chronological organizer Sends rows mixing WhatsApp campaigns, event announcements, and follower updates.
  */
 export interface ListOrganizerCampaignsCallableResponse {
   organizerId: string;
@@ -77,6 +77,15 @@ export interface ListOrganizerCampaignsCallableResponse {
         recipientCount: number;
         sentAtMillis: number;
         partialFailure: boolean;
+        activityAtMillis: number;
+      }
+    | {
+        kind: "followerUpdate";
+        postId: string;
+        eventId: string | null;
+        audience: "followers";
+        status: "active" | "removed";
+        createdAtMillis: number;
         activityAtMillis: number;
       }
   )[];

@@ -2098,8 +2098,9 @@ The Host Messaging contract is:
   the same selected organizer;
 - Inbox and Sends are first-class local workspaces. Inbox owns personal
   inquiries and event broadcasts; Sends owns the route picker, mixed outbound
-  history and cross-event organizer WhatsApp campaign lifecycle; sender setup
-  stays on the dedicated organizer messaging route;
+  history, route-specific follower-update composition and cross-event organizer
+  WhatsApp campaign lifecycle; sender setup stays on the dedicated organizer
+  messaging route;
 - an explicit selected Event or explicit General scope; General is never an
   event-id sentinel;
 - personal two-party contacted-host inquiry threads, separated by event;
@@ -2117,7 +2118,9 @@ filtering, scope, classification, roster/thread separation, search, lifecycle,
 and row-status policy. `HostInboxScreen` owns selected-organizer provider reads,
 workspace composition, typed route effects, and sheets;
 `HostInboxBroadcastController` owns the event-broadcast mutation and
-`HostAudienceController` owns campaign mutations.
+`HostAudienceController` owns campaign mutations. `HostClubPostController`
+owns follower-update submission while the shared route-specific composer owns
+only pending/error presentation and closes after callable acceptance.
 
 `communicationRouteCatalog` is the canonical provider-free capability model
 for communication choices. Transport alone is never sufficient routing or
@@ -2133,8 +2136,9 @@ campaign, Catch-owned WhatsApp, Catch chat, Catch event announcement and
 organizer follower update. A future market transport extends this registry and
 implements its adapter; it must not add provider conditionals to route-neutral
 widgets or weaken an existing consent boundary. `HostSendsWorkspaceSliver`
-renders the route choice and readiness state. Route-specific controllers retain
-mutation ownership.
+renders the route choice, readiness state, route-specific follower composer and
+mixed Campaign/Announcement/Follower update history. Route-specific controllers
+retain mutation ownership.
 
 External handoff is intentionally a weak-observability route:
 `ExternalLinks.openWhatsappHandoff` may report only whether the device accepted
