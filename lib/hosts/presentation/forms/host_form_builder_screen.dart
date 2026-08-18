@@ -941,6 +941,9 @@ class _QuestionEditorState extends State<_QuestionEditor> {
                       ),
                       CatchField.select<HostFormPrivacyClass>(
                         title: context.l10n.hostFormPrivacyLabel,
+                        contract: CatchContractConstraints
+                            .organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsPrivacyClass,
+                        contractValue: (value) => value.name,
                         values: HostFormPrivacyClass.values,
                         value: question.privacyClass,
                         itemLabel: (value) => _privacyLabel(context, value),
@@ -952,6 +955,9 @@ class _QuestionEditorState extends State<_QuestionEditor> {
                       ),
                       CatchField.select<HostFormPrefillPolicy>(
                         title: context.l10n.hostFormPrefillLabel,
+                        contract: CatchContractConstraints
+                            .organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsPrefillPolicy,
+                        contractValue: (value) => value.name,
                         values: HostFormPrefillPolicy.values,
                         value: question.prefillPolicy,
                         itemLabel: (value) => _prefillLabel(context, value),
@@ -963,6 +969,9 @@ class _QuestionEditorState extends State<_QuestionEditor> {
                       ),
                       CatchField.select<HostFormPresentation>(
                         title: context.l10n.hostFormPresentationLabel,
+                        contract: CatchContractConstraints
+                            .organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsHostPresentation,
+                        contractValue: (value) => value.name,
                         values: HostFormPresentation.values,
                         value: question.hostPresentation,
                         itemLabel: (value) =>

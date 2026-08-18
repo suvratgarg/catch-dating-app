@@ -21909,7 +21909,7 @@
   "hostFormPreviewSubmitDisabled": "Preview only",
   "@hostFormPreviewSubmitDisabled": {"description": "Disabled submit label in a non-submitting preview.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostFormSubmit": "Submit response",
-  "@hostFormSubmit": {"description": "Public form response submission action.", "x-audience": "public", "x-owner": "product", "x-surface": "forms.respondent"},
+  "@hostFormSubmit": {"description": "Public form response submission action.", "x-audience": "host", "x-owner": "product", "x-surface": "forms.respondent"},
   "hostFormPreviewNoResponses": "Preview mode · nothing entered here is saved",
   "@hostFormPreviewNoResponses": {"description": "Clarifies preview data is discarded.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostFormPreviewUploadPlaceholder": "File upload appears here",
