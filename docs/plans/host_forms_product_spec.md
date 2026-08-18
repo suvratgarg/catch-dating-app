@@ -562,4 +562,3 @@ For the first 100 Hosts, onboarding should remain manual and instrumented. The
 team must measure time to publish, share-to-start rate, completion rate, failed
 question rate, review turnaround, downstream conversion, and repeat form use.
 Feature count is not evidence of distribution.
-
