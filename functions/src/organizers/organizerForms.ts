@@ -1537,57 +1537,57 @@ function normalizeFormMutationPayload(value: unknown): unknown {
   });
 }
 
-const callableLimits = {
+const organizerFormCallableLimits = {
   timeoutSeconds: 60,
   maxInstances: 20,
 };
 
 export const createOrganizerForm = onCall(
-  appCheckCallableOptionsWithLimits(callableLimits),
+  appCheckCallableOptionsWithLimits(organizerFormCallableLimits),
   (request) => createOrganizerFormHandler(request)
 );
 
 export const updateOrganizerFormDraft = onCall(
-  appCheckCallableOptionsWithLimits(callableLimits),
+  appCheckCallableOptionsWithLimits(organizerFormCallableLimits),
   (request) => updateOrganizerFormDraftHandler(request)
 );
 
 export const getOrganizerFormEditor = onCall(
-  appCheckCallableOptionsWithLimits(callableLimits),
+  appCheckCallableOptionsWithLimits(organizerFormCallableLimits),
   (request) => getOrganizerFormEditorHandler(request)
 );
 
 export const listOrganizerForms = onCall(
-  appCheckCallableOptionsWithLimits(callableLimits),
+  appCheckCallableOptionsWithLimits(organizerFormCallableLimits),
   (request) => listOrganizerFormsHandler(request)
 );
 
 export const validateOrganizerFormDraft = onCall(
-  appCheckCallableOptionsWithLimits(callableLimits),
+  appCheckCallableOptionsWithLimits(organizerFormCallableLimits),
   (request) => validateOrganizerFormDraftHandler(request)
 );
 
 export const publishOrganizerForm = onCall(
-  appCheckCallableOptionsWithLimits(callableLimits),
+  appCheckCallableOptionsWithLimits(organizerFormCallableLimits),
   (request) => publishOrganizerFormHandler(request)
 );
 
 export const setOrganizerFormLifecycle = onCall(
-  appCheckCallableOptionsWithLimits(callableLimits),
+  appCheckCallableOptionsWithLimits(organizerFormCallableLimits),
   (request) => setOrganizerFormLifecycleHandler(request)
 );
 
 export const duplicateOrganizerForm = onCall(
-  appCheckCallableOptionsWithLimits(callableLimits),
+  appCheckCallableOptionsWithLimits(organizerFormCallableLimits),
   (request) => duplicateOrganizerFormHandler(request)
 );
 
 export const deleteOrganizerFormDraft = onCall(
-  appCheckCallableOptionsWithLimits(callableLimits),
+  appCheckCallableOptionsWithLimits(organizerFormCallableLimits),
   (request) => deleteOrganizerFormDraftHandler(request)
 );
 
 export const listOrganizerFormTemplates = onCall(
-  appCheckCallableOptionsWithLimits(callableLimits),
+  appCheckCallableOptionsWithLimits(organizerFormCallableLimits),
   (request) => listOrganizerFormTemplatesHandler(request)
 );
