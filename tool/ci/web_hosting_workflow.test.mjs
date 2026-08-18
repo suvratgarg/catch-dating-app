@@ -180,6 +180,8 @@ test("three pushes and manual interference cannot replace a pending promotion", 
 
 test("main builds the deployable Vite output once while validation-only dispatch remains a no-op", () => {
   const validation = workflow("react-surface-validation.yml");
+  assert.match(validation, /npx playwright install chromium/u);
+  assert.doesNotMatch(validation, /playwright install --with-deps/u);
   assert.match(validation, /skip_deployable_build:[\s\S]*type: boolean[\s\S]*default: false/u);
   assert.match(validation,
     /inputs\.surface == 'marketing' && !inputs\.skip_deployable_build/u);

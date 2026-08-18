@@ -135,7 +135,7 @@ jobs:
         run: npm run web:admin:build
 
       - name: Install Storybook accessibility browser
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install chromium
 
       - name: Build marketing Storybook
         if: ${{ inputs.surface == 'marketing' }}

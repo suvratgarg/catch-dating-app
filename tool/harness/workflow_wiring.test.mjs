@@ -433,6 +433,8 @@ test("fast structural ratchets block dependency-heavy full tool buckets", () => 
   assert.ok(fullBuckets, "tool-buckets job must remain present");
   assert.match(fullBuckets, /- preflight\s*\n\s+- fast-gates/u);
   assert.match(fullBuckets, /needs\.fast-gates\.result == 'success'/u);
+  assert.match(fullBuckets, /timeout-minutes: 30/u);
+  assert.doesNotMatch(fullBuckets, /playwright install --with-deps/u);
 
   const resultJob = tools.match(/  tools:\n(?<body>[\s\S]*)$/u)?.groups?.body;
   assert.ok(resultJob, "tools result job must remain present");
@@ -544,6 +546,7 @@ test("affected tools install only planner-declared setup requirements", () => {
       ),
     );
   }
+  assert.doesNotMatch(affectedJob, /playwright install --with-deps/u);
   const pubSetup = affectedJob.match(
     /      - name: Resolve Flutter and standalone Dart tool dependencies(?<body>[\s\S]*?)(?=\n      - |$)/u,
   )?.groups?.body;
