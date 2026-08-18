@@ -375,7 +375,7 @@ abstract final class CatchContractConstraints {
     path: 'activityNotificationDocument.type',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['message', 'match', 'eventReminder', 'eventSignup', 'waitlistPromotion', 'waitlistOffer', 'waitlistOfferExpiring', 'waitlistOfferExpired', 'eventCancelled', 'eventUpdated', 'clubUpdate', 'organizerUpdate', 'crossPathsInvitation', 'crossPathsInvitationAccepted', 'crossPathsInvitationDeclined', 'crossPathsPlanCancelled'],
+    enumValues: <String>['message', 'match', 'eventReminder', 'eventSignup', 'waitlistPromotion', 'waitlistOffer', 'waitlistOfferExpiring', 'waitlistOfferExpired', 'eventCancelled', 'eventUpdated', 'clubUpdate', 'organizerUpdate', 'formResponse', 'crossPathsInvitation', 'crossPathsInvitationAccepted', 'crossPathsInvitationDeclined', 'crossPathsPlanCancelled'],
   );
 
   static const activityNotificationDocumentUid = CatchContractFieldConstraints(
@@ -3903,6 +3903,26 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const beginOrganizerFormResponseCallablePayloadPublicFormId = CatchContractFieldConstraints(
+    path: 'beginOrganizerFormResponseCallablePayload.publicFormId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{20,80}\$',
+  );
+
+  static const beginOrganizerFormResponseCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'beginOrganizerFormResponseCallablePayload.requestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{16,120}\$',
+  );
+
+  static const beginOrganizerFormResponseCallablePayloadSourceToken = CatchContractFieldConstraints(
+    path: 'beginOrganizerFormResponseCallablePayload.sourceToken',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{20,160}\$',
+  );
+
   static const blockDocumentBlockedUserId = CatchContractFieldConstraints(
     path: 'blockDocument.blockedUserId',
     maxLength: 180,
@@ -6586,6 +6606,159 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const convertOrganizerFormResponseCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'convertOrganizerFormResponseCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const convertOrganizerFormResponseCallablePayloadKind = CatchContractFieldConstraints(
+    path: 'convertOrganizerFormResponseCallablePayload.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['crmContact', 'application', 'eventAttendeeProposal', 'followUp'],
+  );
+
+  static const convertOrganizerFormResponseCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'convertOrganizerFormResponseCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const convertOrganizerFormResponseCallablePayloadOverrides = CatchContractFieldConstraints(
+    path: 'convertOrganizerFormResponseCallablePayload.overrides',
+    required: true,
+    valueTypes: <String>['object'],
+  );
+
+  static const convertOrganizerFormResponseCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'convertOrganizerFormResponseCallablePayload.requestId',
+    maxLength: 128,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const convertOrganizerFormResponseCallablePayloadResponseId = CatchContractFieldConstraints(
+    path: 'convertOrganizerFormResponseCallablePayload.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const convertOrganizerFormResponseCallableResponseCompletedAtMillis = CatchContractFieldConstraints(
+    path: 'convertOrganizerFormResponseCallableResponse.completedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const convertOrganizerFormResponseCallableResponseFields = CatchContractFieldConstraints(
+    path: 'convertOrganizerFormResponseCallableResponse.fields',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const convertOrganizerFormResponseCallableResponseFieldsItemsConflict = CatchContractFieldConstraints(
+    path: 'convertOrganizerFormResponseCallableResponse.fields.items.conflict',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const convertOrganizerFormResponseCallableResponseFieldsItemsDestinationField = CatchContractFieldConstraints(
+    path: 'convertOrganizerFormResponseCallableResponse.fields.items.destinationField',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const convertOrganizerFormResponseCallableResponseFieldsItemsLabel = CatchContractFieldConstraints(
+    path: 'convertOrganizerFormResponseCallableResponse.fields.items.label',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const convertOrganizerFormResponseCallableResponseFieldsItemsOrigin = CatchContractFieldConstraints(
+    path: 'convertOrganizerFormResponseCallableResponse.fields.items.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['verifiedIdentity', 'formAnswer', 'hostOverride'],
+  );
+
+  static const convertOrganizerFormResponseCallableResponseFieldsItemsValue = CatchContractFieldConstraints(
+    path: 'convertOrganizerFormResponseCallableResponse.fields.items.value',
+    maxLength: 1000,
+    valueTypes: <String>['string', 'number', 'boolean'],
+  );
+
+  static const convertOrganizerFormResponseCallableResponseFormId = CatchContractFieldConstraints(
+    path: 'convertOrganizerFormResponseCallableResponse.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const convertOrganizerFormResponseCallableResponseKind = CatchContractFieldConstraints(
+    path: 'convertOrganizerFormResponseCallableResponse.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['crmContact', 'application', 'eventAttendeeProposal', 'followUp'],
+  );
+
+  static const convertOrganizerFormResponseCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'convertOrganizerFormResponseCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const convertOrganizerFormResponseCallableResponseReceiptId = CatchContractFieldConstraints(
+    path: 'convertOrganizerFormResponseCallableResponse.receiptId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const convertOrganizerFormResponseCallableResponseResponseId = CatchContractFieldConstraints(
+    path: 'convertOrganizerFormResponseCallableResponse.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const convertOrganizerFormResponseCallableResponseResultId = CatchContractFieldConstraints(
+    path: 'convertOrganizerFormResponseCallableResponse.resultId',
+    maxLength: 200,
+    valueTypes: <String>['string'],
+  );
+
+  static const convertOrganizerFormResponseCallableResponseStatus = CatchContractFieldConstraints(
+    path: 'convertOrganizerFormResponseCallableResponse.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'completed', 'failed'],
+  );
+
+  static const convertOrganizerFormResponseCallableResponseUndoStatus = CatchContractFieldConstraints(
+    path: 'convertOrganizerFormResponseCallableResponse.undoStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notAvailable', 'available', 'used', 'expired'],
+  );
+
   static const createChatMessageClientWriteDataImageUrl = CatchContractFieldConstraints(
     path: 'createChatMessageClientWrite.data.imageUrl',
     maxLength: 2048,
@@ -9225,6 +9398,366 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const createOrganizerFormAssetIntentCallablePayloadContentType = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAssetIntentCallablePayload.contentType',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['image/jpeg', 'image/png', 'image/webp', 'application/pdf'],
+  );
+
+  static const createOrganizerFormAssetIntentCallablePayloadDraftId = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAssetIntentCallablePayload.draftId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerFormAssetIntentCallablePayloadDraftToken = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAssetIntentCallablePayload.draftToken',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{32,160}\$',
+  );
+
+  static const createOrganizerFormAssetIntentCallablePayloadOriginalFileName = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAssetIntentCallablePayload.originalFileName',
+    maxLength: 255,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerFormAssetIntentCallablePayloadQuestionId = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAssetIntentCallablePayload.questionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerFormAssetIntentCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAssetIntentCallablePayload.requestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{8,160}\$',
+  );
+
+  static const createOrganizerFormAssetIntentCallablePayloadSha256 = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAssetIntentCallablePayload.sha256',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const createOrganizerFormAssetIntentCallablePayloadSizeBytes = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAssetIntentCallablePayload.sizeBytes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 26214400,
+  );
+
+  static const createOrganizerFormAssetIntentCallableResponseAssetId = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAssetIntentCallableResponse.assetId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerFormAssetIntentCallableResponseExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAssetIntentCallableResponse.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const createOrganizerFormAssetIntentCallableResponseUploadFields = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAssetIntentCallableResponse.uploadFields',
+    required: true,
+    valueTypes: <String>['object'],
+  );
+
+  static const createOrganizerFormAssetIntentCallableResponseUploadToken = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAssetIntentCallableResponse.uploadToken',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{32,160}\$',
+  );
+
+  static const createOrganizerFormAssetIntentCallableResponseUploadUrl = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAssetIntentCallableResponse.uploadUrl',
+    maxLength: 2000,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const createOrganizerFormAutomationCallablePayloadActions = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAutomationCallablePayload.actions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 10,
+  );
+
+  static const createOrganizerFormAutomationCallablePayloadActionsItemsActionId = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAutomationCallablePayload.actions.items.actionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerFormAutomationCallablePayloadActionsItemsChannel = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAutomationCallablePayload.actions.items.channel',
+    valueTypes: <String>['string'],
+    enumValues: <String>['whatsapp', 'email'],
+  );
+
+  static const createOrganizerFormAutomationCallablePayloadActionsItemsEventId = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAutomationCallablePayload.actions.items.eventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerFormAutomationCallablePayloadActionsItemsKind = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAutomationCallablePayload.actions.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notifyTeam', 'addOrganizerTag', 'createCrmContact', 'addApplicationQueue', 'proposeEventAttendee', 'signedWebhook', 'campaignHandoff'],
+  );
+
+  static const createOrganizerFormAutomationCallablePayloadActionsItemsTagId = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAutomationCallablePayload.actions.items.tagId',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerFormAutomationCallablePayloadActionsItemsWebhookSecret = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAutomationCallablePayload.actions.items.webhookSecret',
+    maxLength: 128,
+    minLength: 32,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerFormAutomationCallablePayloadActionsItemsWebhookUrl = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAutomationCallablePayload.actions.items.webhookUrl',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const createOrganizerFormAutomationCallablePayloadConditionExpectedValues = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAutomationCallablePayload.condition.expectedValues',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string', 'number', 'boolean'],
+    maxItems: 20,
+  );
+
+  static const createOrganizerFormAutomationCallablePayloadConditionExpectedValuesItems = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAutomationCallablePayload.condition.expectedValues.items',
+    required: true,
+    valueTypes: <String>['string', 'number', 'boolean'],
+  );
+
+  static const createOrganizerFormAutomationCallablePayloadConditionOperator = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAutomationCallablePayload.condition.operator',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['equals', 'notEquals', 'contains', 'notContains', 'greaterThan', 'lessThan', 'answered', 'notAnswered'],
+  );
+
+  static const createOrganizerFormAutomationCallablePayloadConditionQuestionId = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAutomationCallablePayload.condition.questionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerFormAutomationCallablePayloadEnabled = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAutomationCallablePayload.enabled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const createOrganizerFormAutomationCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAutomationCallablePayload.expectedRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const createOrganizerFormAutomationCallablePayloadFormId = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAutomationCallablePayload.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerFormAutomationCallablePayloadName = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAutomationCallablePayload.name',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerFormAutomationCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAutomationCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerFormAutomationCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAutomationCallablePayload.requestId',
+    maxLength: 128,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerFormAutomationCallablePayloadRuleId = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAutomationCallablePayload.ruleId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerFormAutomationCallablePayloadTrigger = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAutomationCallablePayload.trigger',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['responseSubmitted', 'responseWithdrawn', 'answerMatches'],
+  );
+
+  static const createOrganizerFormCallablePayloadDefaultTargetId = CatchContractFieldConstraints(
+    path: 'createOrganizerFormCallablePayload.defaultTargetId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerFormCallablePayloadDefaultTargetKind = CatchContractFieldConstraints(
+    path: 'createOrganizerFormCallablePayload.defaultTargetKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'campaign'],
+  );
+
+  static const createOrganizerFormCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'createOrganizerFormCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerFormCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'createOrganizerFormCallablePayload.requestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerFormCallablePayloadTemplateId = CatchContractFieldConstraints(
+    path: 'createOrganizerFormCallablePayload.templateId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerFormCallablePayloadTitle = CatchContractFieldConstraints(
+    path: 'createOrganizerFormCallablePayload.title',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerFormShareLinkCallablePayloadFormId = CatchContractFieldConstraints(
+    path: 'createOrganizerFormShareLinkCallablePayload.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerFormShareLinkCallablePayloadLabel = CatchContractFieldConstraints(
+    path: 'createOrganizerFormShareLinkCallablePayload.label',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerFormShareLinkCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'createOrganizerFormShareLinkCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerFormShareLinkCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'createOrganizerFormShareLinkCallablePayload.requestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{16,120}\$',
+  );
+
+  static const createOrganizerFormShareLinkCallablePayloadSource = CatchContractFieldConstraints(
+    path: 'createOrganizerFormShareLinkCallablePayload.source',
+    maxLength: 120,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerFormShareLinkCallableResponseLabel = CatchContractFieldConstraints(
+    path: 'createOrganizerFormShareLinkCallableResponse.label',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerFormShareLinkCallableResponseLinkId = CatchContractFieldConstraints(
+    path: 'createOrganizerFormShareLinkCallableResponse.linkId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerFormShareLinkCallableResponseSource = CatchContractFieldConstraints(
+    path: 'createOrganizerFormShareLinkCallableResponse.source',
+    maxLength: 120,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerFormShareLinkCallableResponseSourceToken = CatchContractFieldConstraints(
+    path: 'createOrganizerFormShareLinkCallableResponse.sourceToken',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{20,160}\$',
+  );
+
+  static const createOrganizerFormShareLinkCallableResponseUrl = CatchContractFieldConstraints(
+    path: 'createOrganizerFormShareLinkCallableResponse.url',
+    maxLength: 2000,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
   static const createOrganizerPostCallablePayloadEventId = CatchContractFieldConstraints(
     path: 'createOrganizerPostCallablePayload.eventId',
     maxLength: 180,
@@ -10439,6 +10972,52 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const deleteOrganizerFormDraftCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'deleteOrganizerFormDraftCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const deleteOrganizerFormDraftCallablePayloadFormId = CatchContractFieldConstraints(
+    path: 'deleteOrganizerFormDraftCallablePayload.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const deleteOrganizerFormDraftCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'deleteOrganizerFormDraftCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const deleteOrganizerFormDraftCallableResponseDeleted = CatchContractFieldConstraints(
+    path: 'deleteOrganizerFormDraftCallableResponse.deleted',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const deleteOrganizerFormDraftCallableResponseFormId = CatchContractFieldConstraints(
+    path: 'deleteOrganizerFormDraftCallableResponse.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const deleteOrganizerFormDraftCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'deleteOrganizerFormDraftCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const deleteSavedEventClientWritePathSavedEventId = CatchContractFieldConstraints(
     path: 'deleteSavedEventClientWrite.path.savedEventId',
     maxLength: 180,
@@ -10484,6 +11063,37 @@ abstract final class CatchContractConstraints {
     maxLength: 180,
     minLength: 1,
     required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const duplicateOrganizerFormCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'duplicateOrganizerFormCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const duplicateOrganizerFormCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'duplicateOrganizerFormCallablePayload.requestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const duplicateOrganizerFormCallablePayloadSourceFormId = CatchContractFieldConstraints(
+    path: 'duplicateOrganizerFormCallablePayload.sourceFormId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const duplicateOrganizerFormCallablePayloadTitle = CatchContractFieldConstraints(
+    path: 'duplicateOrganizerFormCallablePayload.title',
+    maxLength: 160,
+    minLength: 1,
     valueTypes: <String>['string'],
   );
 
@@ -19736,6 +20346,58 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const finalizeOrganizerFormAssetCallablePayloadAssetId = CatchContractFieldConstraints(
+    path: 'finalizeOrganizerFormAssetCallablePayload.assetId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const finalizeOrganizerFormAssetCallablePayloadDraftId = CatchContractFieldConstraints(
+    path: 'finalizeOrganizerFormAssetCallablePayload.draftId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const finalizeOrganizerFormAssetCallablePayloadDraftToken = CatchContractFieldConstraints(
+    path: 'finalizeOrganizerFormAssetCallablePayload.draftToken',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{32,160}\$',
+  );
+
+  static const finalizeOrganizerFormAssetCallablePayloadUploadToken = CatchContractFieldConstraints(
+    path: 'finalizeOrganizerFormAssetCallablePayload.uploadToken',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{32,160}\$',
+  );
+
+  static const finalizeOrganizerFormAssetCallableResponseAssetId = CatchContractFieldConstraints(
+    path: 'finalizeOrganizerFormAssetCallableResponse.assetId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const finalizeOrganizerFormAssetCallableResponseSizeBytes = CatchContractFieldConstraints(
+    path: 'finalizeOrganizerFormAssetCallableResponse.sizeBytes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 26214400,
+  );
+
+  static const finalizeOrganizerFormAssetCallableResponseStatus = CatchContractFieldConstraints(
+    path: 'finalizeOrganizerFormAssetCallableResponse.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['ready'],
+  );
+
   static const functionEventReceiptDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'functionEventReceiptDocument.createdAt._nanoseconds',
     required: true,
@@ -21924,6 +22586,646 @@ abstract final class CatchContractConstraints {
     maximum: 2147483647,
   );
 
+  static const getOrganizerFormAnalyticsCallablePayloadFormId = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallablePayload.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormAnalyticsCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormAnalyticsCallablePayloadVersionId = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallablePayload.versionId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormAnalyticsCallableResponseCompletionRate = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallableResponse.completionRate',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const getOrganizerFormAnalyticsCallableResponseFormId = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallableResponse.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormAnalyticsCallableResponseMedianCompletionMillis = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallableResponse.medianCompletionMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 604800000,
+  );
+
+  static const getOrganizerFormAnalyticsCallableResponseOpens = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallableResponse.opens',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000,
+  );
+
+  static const getOrganizerFormAnalyticsCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormAnalyticsCallableResponsePrivacyThreshold = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallableResponse.privacyThreshold',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 100,
+  );
+
+  static const getOrganizerFormAnalyticsCallableResponseQuestions = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallableResponse.questions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 200,
+  );
+
+  static const getOrganizerFormAnalyticsCallableResponseQuestionsItemsChoiceCounts = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallableResponse.questions.items.choiceCounts',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const getOrganizerFormAnalyticsCallableResponseQuestionsItemsChoiceCountsItemsCount = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallableResponse.questions.items.choiceCounts.items.count',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000,
+  );
+
+  static const getOrganizerFormAnalyticsCallableResponseQuestionsItemsChoiceCountsItemsLabel = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallableResponse.questions.items.choiceCounts.items.label',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormAnalyticsCallableResponseQuestionsItemsChoiceCountsItemsValue = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallableResponse.questions.items.choiceCounts.items.value',
+    maxLength: 160,
+    required: true,
+    valueTypes: <String>['string', 'boolean'],
+  );
+
+  static const getOrganizerFormAnalyticsCallableResponseQuestionsItemsKind = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallableResponse.questions.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['shortText', 'longText', 'singleChoice', 'multiChoice', 'date', 'phone', 'email', 'url', 'number', 'boolean', 'file', 'acknowledgement', 'signature'],
+  );
+
+  static const getOrganizerFormAnalyticsCallableResponseQuestionsItemsLabel = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallableResponse.questions.items.label',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormAnalyticsCallableResponseQuestionsItemsNumericCount = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallableResponse.questions.items.numericCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000,
+  );
+
+  static const getOrganizerFormAnalyticsCallableResponseQuestionsItemsNumericMax = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallableResponse.questions.items.numericMax',
+    valueTypes: <String>['number'],
+  );
+
+  static const getOrganizerFormAnalyticsCallableResponseQuestionsItemsNumericMin = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallableResponse.questions.items.numericMin',
+    valueTypes: <String>['number'],
+  );
+
+  static const getOrganizerFormAnalyticsCallableResponseQuestionsItemsNumericSum = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallableResponse.questions.items.numericSum',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -1000000000000000000,
+    maximum: 1000000000000000000,
+  );
+
+  static const getOrganizerFormAnalyticsCallableResponseQuestionsItemsPrivacyClass = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallableResponse.questions.items.privacyClass',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['contact', 'profile', 'sensitive', 'organizerCustom'],
+  );
+
+  static const getOrganizerFormAnalyticsCallableResponseQuestionsItemsQuestionId = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallableResponse.questions.items.questionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormAnalyticsCallableResponseQuestionsItemsResponseCount = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallableResponse.questions.items.responseCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000,
+  );
+
+  static const getOrganizerFormAnalyticsCallableResponseSources = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallableResponse.sources',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 200,
+  );
+
+  static const getOrganizerFormAnalyticsCallableResponseSourcesItemsLabel = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallableResponse.sources.items.label',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormAnalyticsCallableResponseSourcesItemsOpens = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallableResponse.sources.items.opens',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000,
+  );
+
+  static const getOrganizerFormAnalyticsCallableResponseSourcesItemsSourceLinkId = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallableResponse.sources.items.sourceLinkId',
+    maxLength: 128,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormAnalyticsCallableResponseSourcesItemsStarts = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallableResponse.sources.items.starts',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000,
+  );
+
+  static const getOrganizerFormAnalyticsCallableResponseSourcesItemsSubmissions = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallableResponse.sources.items.submissions',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000,
+  );
+
+  static const getOrganizerFormAnalyticsCallableResponseStarts = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallableResponse.starts',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000,
+  );
+
+  static const getOrganizerFormAnalyticsCallableResponseSubmissions = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallableResponse.submissions',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000,
+  );
+
+  static const getOrganizerFormAnalyticsCallableResponseVersion = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallableResponse.version',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const getOrganizerFormAnalyticsCallableResponseVersionId = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallableResponse.versionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormAnalyticsCallableResponseWithdrawals = CatchContractFieldConstraints(
+    path: 'getOrganizerFormAnalyticsCallableResponse.withdrawals',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000,
+  );
+
+  static const getOrganizerFormEditorCallablePayloadFormId = CatchContractFieldConstraints(
+    path: 'getOrganizerFormEditorCallablePayload.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormEditorCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'getOrganizerFormEditorCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormResponseDetailCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormResponseDetailCallablePayloadResponseId = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallablePayload.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseAnswers = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.answers',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 200,
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseAnswersItemsAnswer = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.answers.items.answer',
+    maxLength: 10000,
+    valueTypes: <String>['string', 'number', 'boolean', 'array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 100,
+    uniqueItems: true,
+    minimum: -1000000000,
+    maximum: 1000000000,
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseAnswersItemsAssetDownloads = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.answers.items.assetDownloads',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 10,
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseAnswersItemsAssetDownloadsItemsAssetId = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.answers.items.assetDownloads.items.assetId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseAnswersItemsAssetDownloadsItemsContentType = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.answers.items.assetDownloads.items.contentType',
+    maxLength: 100,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseAnswersItemsAssetDownloadsItemsDownloadUrl = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.answers.items.assetDownloads.items.downloadUrl',
+    maxLength: 4000,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseAnswersItemsAssetDownloadsItemsExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.answers.items.assetDownloads.items.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseAnswersItemsAssetDownloadsItemsFileName = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.answers.items.assetDownloads.items.fileName',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseAnswersItemsAssetDownloadsItemsSizeBytes = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.answers.items.assetDownloads.items.sizeBytes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 26214400,
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseAnswersItemsHostPresentation = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.answers.items.hostPresentation',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['detailOnly', 'filterable', 'sortable'],
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseAnswersItemsKey = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.answers.items.key',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseAnswersItemsKind = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.answers.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['shortText', 'longText', 'singleChoice', 'multiChoice', 'date', 'phone', 'email', 'url', 'number', 'boolean', 'file', 'acknowledgement', 'signature'],
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseAnswersItemsLabel = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.answers.items.label',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseAnswersItemsOrigin = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.answers.items.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['anonymous', 'respondentGranted', 'organizerAcquired', 'revoked'],
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseAnswersItemsPrivacyClass = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.answers.items.privacyClass',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['contact', 'profile', 'sensitive', 'organizerCustom'],
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseAnswersItemsQuestionId = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.answers.items.questionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseCompletionMillis = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.completionMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 604800000,
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseConsentVersion = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.consentVersion',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseResponseConversionKinds = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.response.conversionKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['crmContact', 'application', 'eventAttendeeProposal', 'followUp'],
+    maxItems: 4,
+    uniqueItems: true,
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseResponseConversionKindsItems = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.response.conversionKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['crmContact', 'application', 'eventAttendeeProposal', 'followUp'],
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseResponseFormId = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.response.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseResponseFormTitle = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.response.formTitle',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseResponseHighlights = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.response.highlights',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 12,
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseResponseHighlightsItemsAnswer = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.response.highlights.items.answer',
+    maxLength: 10000,
+    valueTypes: <String>['string', 'number', 'boolean', 'array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 100,
+    uniqueItems: true,
+    minimum: -1000000000,
+    maximum: 1000000000,
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseResponseHighlightsItemsLabel = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.response.highlights.items.label',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseResponseHighlightsItemsQuestionId = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.response.highlights.items.questionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseResponseIdentityDisplayName = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.response.identity.displayName',
+    maxLength: 160,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseResponseIdentityEmail = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.response.identity.email',
+    maxLength: 320,
+    valueTypes: <String>['string'],
+    format: 'email',
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseResponseIdentityOrigin = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.response.identity.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['anonymous', 'respondentGranted', 'organizerAcquired'],
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseResponseIdentityPhoneE164 = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.response.identity.phoneE164',
+    valueTypes: <String>['string'],
+    pattern: '^\\+[1-9][0-9]{7,14}\$',
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseResponseIdentitySearchName = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.response.identity.searchName',
+    maxLength: 160,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseResponseIdentityKind = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.response.identityKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['anonymous', 'emailVerified', 'phoneVerified', 'catchAccount'],
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseResponseResponseId = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.response.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseResponseSourceLabel = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.response.sourceLabel',
+    maxLength: 120,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseResponseSourceLinkId = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.response.sourceLinkId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseResponseStatus = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.response.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['submitted', 'withdrawn'],
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseResponseSubmittedAtMillis = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.response.submittedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseResponseVersion = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.response.version',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseResponseVersionId = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.response.versionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponseResponseWithdrawnAtMillis = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.response.withdrawnAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getOrganizerFormShareAssetsCallablePayloadFormId = CatchContractFieldConstraints(
+    path: 'getOrganizerFormShareAssetsCallablePayload.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormShareAssetsCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'getOrganizerFormShareAssetsCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormShareAssetsCallableResponseCanonicalUrl = CatchContractFieldConstraints(
+    path: 'getOrganizerFormShareAssetsCallableResponse.canonicalUrl',
+    maxLength: 2000,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const getOrganizerFormShareAssetsCallableResponseEmbedSnippet = CatchContractFieldConstraints(
+    path: 'getOrganizerFormShareAssetsCallableResponse.embedSnippet',
+    maxLength: 4000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormShareAssetsCallableResponseEmbedUrl = CatchContractFieldConstraints(
+    path: 'getOrganizerFormShareAssetsCallableResponse.embedUrl',
+    maxLength: 2000,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
   static const getOrganizerProviderSetupCallablePayloadEventId = CatchContractFieldConstraints(
     path: 'getOrganizerProviderSetupCallablePayload.eventId',
     maxLength: 180,
@@ -22342,6 +23644,19 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const getPublicOrganizerFormCallablePayloadPublicFormId = CatchContractFieldConstraints(
+    path: 'getPublicOrganizerFormCallablePayload.publicFormId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{20,80}\$',
+  );
+
+  static const getPublicOrganizerFormCallablePayloadSourceToken = CatchContractFieldConstraints(
+    path: 'getPublicOrganizerFormCallablePayload.sourceToken',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{20,160}\$',
   );
 
   static const grantEventStaffCallablePayloadEventId = CatchContractFieldConstraints(
@@ -25909,6 +27224,871 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['exact', 'partial'],
+  );
+
+  static const listOrganizerFormAutomationRunsCallablePayloadCursor = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallablePayload.cursor',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormAutomationRunsCallablePayloadFormId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallablePayload.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormAutomationRunsCallablePayloadLimit = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallablePayload.limit',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 100,
+  );
+
+  static const listOrganizerFormAutomationRunsCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormAutomationRunsCallablePayloadRuleId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallablePayload.ruleId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseNextCursor = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.nextCursor',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRules = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.rules',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRulesItemsActions = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.rules.items.actions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 10,
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRulesItemsActionsItemsActionId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.rules.items.actions.items.actionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRulesItemsActionsItemsChannel = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.rules.items.actions.items.channel',
+    valueTypes: <String>['string'],
+    enumValues: <String>['whatsapp', 'email'],
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRulesItemsActionsItemsEventId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.rules.items.actions.items.eventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRulesItemsActionsItemsKind = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.rules.items.actions.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notifyTeam', 'addOrganizerTag', 'createCrmContact', 'addApplicationQueue', 'proposeEventAttendee', 'signedWebhook', 'campaignHandoff'],
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRulesItemsActionsItemsTagId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.rules.items.actions.items.tagId',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRulesItemsActionsItemsWebhookSecretConfigured = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.rules.items.actions.items.webhookSecretConfigured',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRulesItemsActionsItemsWebhookUrl = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.rules.items.actions.items.webhookUrl',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRulesItemsConditionExpectedValues = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.rules.items.condition.expectedValues',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string', 'number', 'boolean'],
+    maxItems: 20,
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRulesItemsConditionExpectedValuesItems = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.rules.items.condition.expectedValues.items',
+    required: true,
+    valueTypes: <String>['string', 'number', 'boolean'],
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRulesItemsConditionOperator = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.rules.items.condition.operator',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['equals', 'notEquals', 'contains', 'notContains', 'greaterThan', 'lessThan', 'answered', 'notAnswered'],
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRulesItemsConditionQuestionId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.rules.items.condition.questionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRulesItemsEnabled = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.rules.items.enabled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRulesItemsFormId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.rules.items.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRulesItemsName = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.rules.items.name',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRulesItemsOrganizerId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.rules.items.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRulesItemsRevision = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.rules.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRulesItemsRuleId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.rules.items.ruleId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRulesItemsTrigger = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.rules.items.trigger',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['responseSubmitted', 'responseWithdrawn', 'answerMatches'],
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRulesItemsUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.rules.items.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRuns = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.runs',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRunsItemsActionResults = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.runs.items.actionResults',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 10,
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRunsItemsActionResultsItems = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.runs.items.actionResults.items',
+    required: true,
+    valueTypes: <String>['object'],
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRunsItemsAttemptCount = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.runs.items.attemptCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRunsItemsCompletedAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.runs.items.completedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRunsItemsCreatedAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.runs.items.createdAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRunsItemsErrorMessage = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.runs.items.errorMessage',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRunsItemsEventKind = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.runs.items.eventKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['submitted', 'withdrawn'],
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRunsItemsResponseId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.runs.items.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRunsItemsRuleId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.runs.items.ruleId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRunsItemsRuleRevision = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.runs.items.ruleRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRunsItemsRunId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.runs.items.runId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRunsItemsStatus = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.runs.items.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'running', 'succeeded', 'partiallyFailed', 'failed', 'skipped'],
+  );
+
+  static const listOrganizerFormResponsesCallablePayloadCursor = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallablePayload.cursor',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormResponsesCallablePayloadFormId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallablePayload.formId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormResponsesCallablePayloadFromMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallablePayload.fromMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listOrganizerFormResponsesCallablePayloadIdentityKinds = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallablePayload.identityKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['anonymous', 'emailVerified', 'phoneVerified', 'catchAccount'],
+    maxItems: 4,
+    uniqueItems: true,
+  );
+
+  static const listOrganizerFormResponsesCallablePayloadIdentityKindsItems = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallablePayload.identityKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['anonymous', 'emailVerified', 'phoneVerified', 'catchAccount'],
+  );
+
+  static const listOrganizerFormResponsesCallablePayloadLimit = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallablePayload.limit',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 100,
+  );
+
+  static const listOrganizerFormResponsesCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormResponsesCallablePayloadQuery = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallablePayload.query',
+    maxLength: 160,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormResponsesCallablePayloadSourceLinkId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallablePayload.sourceLinkId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormResponsesCallablePayloadStatuses = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallablePayload.statuses',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['submitted', 'withdrawn'],
+    maxItems: 2,
+    uniqueItems: true,
+  );
+
+  static const listOrganizerFormResponsesCallablePayloadStatusesItems = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallablePayload.statuses.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['submitted', 'withdrawn'],
+  );
+
+  static const listOrganizerFormResponsesCallablePayloadToMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallablePayload.toMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listOrganizerFormResponsesCallablePayloadVersionId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallablePayload.versionId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormResponsesCallableResponseItems = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.items',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const listOrganizerFormResponsesCallableResponseItemsItemsConversionKinds = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.items.items.conversionKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['crmContact', 'application', 'eventAttendeeProposal', 'followUp'],
+    maxItems: 4,
+    uniqueItems: true,
+  );
+
+  static const listOrganizerFormResponsesCallableResponseItemsItemsConversionKindsItems = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.items.items.conversionKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['crmContact', 'application', 'eventAttendeeProposal', 'followUp'],
+  );
+
+  static const listOrganizerFormResponsesCallableResponseItemsItemsFormId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.items.items.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormResponsesCallableResponseItemsItemsFormTitle = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.items.items.formTitle',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormResponsesCallableResponseItemsItemsHighlights = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.items.items.highlights',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 12,
+  );
+
+  static const listOrganizerFormResponsesCallableResponseItemsItemsHighlightsItemsAnswer = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.items.items.highlights.items.answer',
+    maxLength: 10000,
+    valueTypes: <String>['string', 'number', 'boolean', 'array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 100,
+    uniqueItems: true,
+    minimum: -1000000000,
+    maximum: 1000000000,
+  );
+
+  static const listOrganizerFormResponsesCallableResponseItemsItemsHighlightsItemsLabel = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.items.items.highlights.items.label',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormResponsesCallableResponseItemsItemsHighlightsItemsQuestionId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.items.items.highlights.items.questionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormResponsesCallableResponseItemsItemsIdentityDisplayName = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.items.items.identity.displayName',
+    maxLength: 160,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormResponsesCallableResponseItemsItemsIdentityEmail = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.items.items.identity.email',
+    maxLength: 320,
+    valueTypes: <String>['string'],
+    format: 'email',
+  );
+
+  static const listOrganizerFormResponsesCallableResponseItemsItemsIdentityOrigin = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.items.items.identity.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['anonymous', 'respondentGranted', 'organizerAcquired'],
+  );
+
+  static const listOrganizerFormResponsesCallableResponseItemsItemsIdentityPhoneE164 = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.items.items.identity.phoneE164',
+    valueTypes: <String>['string'],
+    pattern: '^\\+[1-9][0-9]{7,14}\$',
+  );
+
+  static const listOrganizerFormResponsesCallableResponseItemsItemsIdentitySearchName = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.items.items.identity.searchName',
+    maxLength: 160,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormResponsesCallableResponseItemsItemsIdentityKind = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.items.items.identityKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['anonymous', 'emailVerified', 'phoneVerified', 'catchAccount'],
+  );
+
+  static const listOrganizerFormResponsesCallableResponseItemsItemsResponseId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.items.items.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormResponsesCallableResponseItemsItemsSourceLabel = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.items.items.sourceLabel',
+    maxLength: 120,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormResponsesCallableResponseItemsItemsSourceLinkId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.items.items.sourceLinkId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormResponsesCallableResponseItemsItemsStatus = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.items.items.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['submitted', 'withdrawn'],
+  );
+
+  static const listOrganizerFormResponsesCallableResponseItemsItemsSubmittedAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.items.items.submittedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listOrganizerFormResponsesCallableResponseItemsItemsVersion = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.items.items.version',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const listOrganizerFormResponsesCallableResponseItemsItemsVersionId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.items.items.versionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormResponsesCallableResponseItemsItemsWithdrawnAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.items.items.withdrawnAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listOrganizerFormResponsesCallableResponseNextCursor = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.nextCursor',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormResponsesCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormsCallablePayloadCursor = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallablePayload.cursor',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormsCallablePayloadLimit = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallablePayload.limit',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 100,
+  );
+
+  static const listOrganizerFormsCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormsCallablePayloadPurposes = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallablePayload.purposes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['application', 'registration', 'intake', 'waiver', 'feedback', 'survey'],
+    maxItems: 6,
+    uniqueItems: true,
+  );
+
+  static const listOrganizerFormsCallablePayloadPurposesItems = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallablePayload.purposes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['application', 'registration', 'intake', 'waiver', 'feedback', 'survey'],
+  );
+
+  static const listOrganizerFormsCallablePayloadQuery = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallablePayload.query',
+    maxLength: 120,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormsCallablePayloadStatuses = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallablePayload.statuses',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['draft', 'published', 'paused', 'archived'],
+    maxItems: 4,
+    uniqueItems: true,
+  );
+
+  static const listOrganizerFormsCallablePayloadStatusesItems = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallablePayload.statuses.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['draft', 'published', 'paused', 'archived'],
+  );
+
+  static const listOrganizerFormsCallableResponseItems = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallableResponse.items',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const listOrganizerFormsCallableResponseItemsItemsActiveVersionId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallableResponse.items.items.activeVersionId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormsCallableResponseItemsItemsDefaultTargetId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallableResponse.items.items.defaultTargetId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormsCallableResponseItemsItemsDefaultTargetKind = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallableResponse.items.items.defaultTargetKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'campaign'],
+  );
+
+  static const listOrganizerFormsCallableResponseItemsItemsDescription = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallableResponse.items.items.description',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormsCallableResponseItemsItemsDraftRevision = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallableResponse.items.items.draftRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const listOrganizerFormsCallableResponseItemsItemsFormId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallableResponse.items.items.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormsCallableResponseItemsItemsLastResponseAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallableResponse.items.items.lastResponseAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listOrganizerFormsCallableResponseItemsItemsOrganizerId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallableResponse.items.items.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormsCallableResponseItemsItemsPublicFormId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallableResponse.items.items.publicFormId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{20,80}\$',
+  );
+
+  static const listOrganizerFormsCallableResponseItemsItemsPublishedAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallableResponse.items.items.publishedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listOrganizerFormsCallableResponseItemsItemsPublishedVersion = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallableResponse.items.items.publishedVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const listOrganizerFormsCallableResponseItemsItemsPurpose = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallableResponse.items.items.purpose',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['application', 'registration', 'intake', 'waiver', 'feedback', 'survey'],
+  );
+
+  static const listOrganizerFormsCallableResponseItemsItemsStatus = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallableResponse.items.items.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['draft', 'published', 'paused', 'archived'],
+  );
+
+  static const listOrganizerFormsCallableResponseItemsItemsSubmittedResponseCount = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallableResponse.items.items.submittedResponseCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000,
+  );
+
+  static const listOrganizerFormsCallableResponseItemsItemsTemplateId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallableResponse.items.items.templateId',
+    maxLength: 120,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormsCallableResponseItemsItemsTitle = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallableResponse.items.items.title',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormsCallableResponseItemsItemsUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallableResponse.items.items.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listOrganizerFormsCallableResponseNextCursor = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallableResponse.nextCursor',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormsCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormTemplatesCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormTemplatesCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormTemplatesCallableResponseTemplates = CatchContractFieldConstraints(
+    path: 'listOrganizerFormTemplatesCallableResponse.templates',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 100,
+  );
+
+  static const listOrganizerFormTemplatesCallableResponseTemplatesItemsDescription = CatchContractFieldConstraints(
+    path: 'listOrganizerFormTemplatesCallableResponse.templates.items.description',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormTemplatesCallableResponseTemplatesItemsIdentityPolicy = CatchContractFieldConstraints(
+    path: 'listOrganizerFormTemplatesCallableResponse.templates.items.identityPolicy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['anonymous', 'emailVerified', 'phoneVerified', 'emailOrPhoneVerified', 'catchAccount'],
+  );
+
+  static const listOrganizerFormTemplatesCallableResponseTemplatesItemsPurpose = CatchContractFieldConstraints(
+    path: 'listOrganizerFormTemplatesCallableResponse.templates.items.purpose',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['application', 'registration', 'intake', 'waiver', 'feedback', 'survey'],
+  );
+
+  static const listOrganizerFormTemplatesCallableResponseTemplatesItemsQuestionCount = CatchContractFieldConstraints(
+    path: 'listOrganizerFormTemplatesCallableResponse.templates.items.questionCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 4000,
+  );
+
+  static const listOrganizerFormTemplatesCallableResponseTemplatesItemsSectionCount = CatchContractFieldConstraints(
+    path: 'listOrganizerFormTemplatesCallableResponse.templates.items.sectionCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 40,
+  );
+
+  static const listOrganizerFormTemplatesCallableResponseTemplatesItemsTemplateId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormTemplatesCallableResponse.templates.items.templateId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormTemplatesCallableResponseTemplatesItemsTitle = CatchContractFieldConstraints(
+    path: 'listOrganizerFormTemplatesCallableResponse.templates.items.title',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormTemplatesCallableResponseTemplatesItemsVersion = CatchContractFieldConstraints(
+    path: 'listOrganizerFormTemplatesCallableResponse.templates.items.version',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
   );
 
   static const listOrganizerLumaEventsCallablePayloadApiKey = CatchContractFieldConstraints(
@@ -34422,6 +36602,2816 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const organizerFormAggregateDocumentChoiceCounts = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateDocument.choiceCounts',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const organizerFormAggregateDocumentChoiceCountsItemsCount = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateDocument.choiceCounts.items.count',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000,
+  );
+
+  static const organizerFormAggregateDocumentChoiceCountsItemsLabel = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateDocument.choiceCounts.items.label',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAggregateDocumentChoiceCountsItemsValue = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateDocument.choiceCounts.items.value',
+    maxLength: 160,
+    required: true,
+    valueTypes: <String>['string', 'boolean'],
+  );
+
+  static const organizerFormAggregateDocumentCompletionBuckets = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateDocument.completionBuckets',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 12,
+  );
+
+  static const organizerFormAggregateDocumentCompletionBucketsItemsCount = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateDocument.completionBuckets.items.count',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000,
+  );
+
+  static const organizerFormAggregateDocumentCompletionBucketsItemsUpperBoundMillis = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateDocument.completionBuckets.items.upperBoundMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1000,
+    maximum: 604800000,
+  );
+
+  static const organizerFormAggregateDocumentCompletionMillisTotal = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateDocument.completionMillisTotal',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerFormAggregateDocumentFormId = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateDocument.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAggregateDocumentNumericCount = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateDocument.numericCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000,
+  );
+
+  static const organizerFormAggregateDocumentNumericMax = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateDocument.numericMax',
+    valueTypes: <String>['number'],
+  );
+
+  static const organizerFormAggregateDocumentNumericMin = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateDocument.numericMin',
+    valueTypes: <String>['number'],
+  );
+
+  static const organizerFormAggregateDocumentNumericSum = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateDocument.numericSum',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -1000000000000000000,
+    maximum: 1000000000000000000,
+  );
+
+  static const organizerFormAggregateDocumentOpens = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateDocument.opens',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000,
+  );
+
+  static const organizerFormAggregateDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAggregateDocumentPrivacyClass = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateDocument.privacyClass',
+    valueTypes: <String>['string'],
+    enumValues: <String>['contact', 'profile', 'sensitive', 'organizerCustom'],
+  );
+
+  static const organizerFormAggregateDocumentQuestionId = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateDocument.questionId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAggregateDocumentQuestionKind = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateDocument.questionKind',
+    valueTypes: <String>['string'],
+    enumValues: <String>['shortText', 'longText', 'singleChoice', 'multiChoice', 'date', 'phone', 'email', 'url', 'number', 'boolean', 'file', 'acknowledgement', 'signature'],
+  );
+
+  static const organizerFormAggregateDocumentQuestionLabel = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateDocument.questionLabel',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAggregateDocumentScope = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateDocument.scope',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['version', 'question'],
+  );
+
+  static const organizerFormAggregateDocumentStarts = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateDocument.starts',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000,
+  );
+
+  static const organizerFormAggregateDocumentSubmissions = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateDocument.submissions',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000,
+  );
+
+  static const organizerFormAggregateDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormAggregateDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormAggregateDocumentVersionId = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateDocument.versionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAggregateDocumentWithdrawals = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateDocument.withdrawals',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000,
+  );
+
+  static const organizerFormAggregateEventDocumentEventKind = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateEventDocument.eventKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['submitted', 'withdrawn'],
+  );
+
+  static const organizerFormAggregateEventDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateEventDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormAggregateEventDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateEventDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormAggregateEventDocumentFormId = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateEventDocument.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAggregateEventDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateEventDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAggregateEventDocumentProjectedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateEventDocument.projectedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormAggregateEventDocumentProjectedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateEventDocument.projectedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormAggregateEventDocumentResponseId = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateEventDocument.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAggregateEventDocumentVersionId = CatchContractFieldConstraints(
+    path: 'organizerFormAggregateEventDocument.versionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAssetDocumentContentType = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.contentType',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['image/jpeg', 'image/png', 'image/webp', 'application/pdf'],
+  );
+
+  static const organizerFormAssetDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormAssetDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormAssetDocumentDeclaredSha256 = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.declaredSha256',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerFormAssetDocumentDeclaredSizeBytes = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.declaredSizeBytes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 26214400,
+  );
+
+  static const organizerFormAssetDocumentDeletedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.deletedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormAssetDocumentDeletedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.deletedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormAssetDocumentDraftId = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.draftId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAssetDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormAssetDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormAssetDocumentFinalizedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.finalizedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormAssetDocumentFinalizedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.finalizedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormAssetDocumentFormId = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAssetDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAssetDocumentOriginalFileName = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.originalFileName',
+    maxLength: 255,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAssetDocumentQuestionId = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.questionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAssetDocumentRespondentUid = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.respondentUid',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAssetDocumentSizeBytes = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.sizeBytes',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 26214400,
+  );
+
+  static const organizerFormAssetDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['uploading', 'ready', 'rejected', 'deleted'],
+  );
+
+  static const organizerFormAssetDocumentStoragePath = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.storagePath',
+    maxLength: 600,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^organizerForms/[^/]+/[^/]+/[^/]+\$',
+  );
+
+  static const organizerFormAssetDocumentUploadTokenHash = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.uploadTokenHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerFormAssetDocumentVersionId = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.versionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAutomationRuleDocumentActions = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRuleDocument.actions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 10,
+  );
+
+  static const organizerFormAutomationRuleDocumentActionsItemsActionId = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRuleDocument.actions.items.actionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAutomationRuleDocumentActionsItemsChannel = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRuleDocument.actions.items.channel',
+    valueTypes: <String>['string'],
+    enumValues: <String>['whatsapp', 'email'],
+  );
+
+  static const organizerFormAutomationRuleDocumentActionsItemsEventId = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRuleDocument.actions.items.eventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAutomationRuleDocumentActionsItemsKind = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRuleDocument.actions.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notifyTeam', 'addOrganizerTag', 'createCrmContact', 'addApplicationQueue', 'proposeEventAttendee', 'signedWebhook', 'campaignHandoff'],
+  );
+
+  static const organizerFormAutomationRuleDocumentActionsItemsTagId = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRuleDocument.actions.items.tagId',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAutomationRuleDocumentActionsItemsWebhookSecret = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRuleDocument.actions.items.webhookSecret',
+    maxLength: 128,
+    minLength: 32,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAutomationRuleDocumentActionsItemsWebhookUrl = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRuleDocument.actions.items.webhookUrl',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const organizerFormAutomationRuleDocumentConditionExpectedValues = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRuleDocument.condition.expectedValues',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string', 'number', 'boolean'],
+    maxItems: 20,
+  );
+
+  static const organizerFormAutomationRuleDocumentConditionExpectedValuesItems = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRuleDocument.condition.expectedValues.items',
+    required: true,
+    valueTypes: <String>['string', 'number', 'boolean'],
+  );
+
+  static const organizerFormAutomationRuleDocumentConditionOperator = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRuleDocument.condition.operator',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['equals', 'notEquals', 'contains', 'notContains', 'greaterThan', 'lessThan', 'answered', 'notAnswered'],
+  );
+
+  static const organizerFormAutomationRuleDocumentConditionQuestionId = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRuleDocument.condition.questionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAutomationRuleDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRuleDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormAutomationRuleDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRuleDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormAutomationRuleDocumentCreatedByUid = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRuleDocument.createdByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAutomationRuleDocumentEnabled = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRuleDocument.enabled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerFormAutomationRuleDocumentFormId = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRuleDocument.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAutomationRuleDocumentName = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRuleDocument.name',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAutomationRuleDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRuleDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAutomationRuleDocumentRevision = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRuleDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerFormAutomationRuleDocumentTrigger = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRuleDocument.trigger',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['responseSubmitted', 'responseWithdrawn', 'answerMatches'],
+  );
+
+  static const organizerFormAutomationRuleDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRuleDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormAutomationRuleDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRuleDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormAutomationRuleDocumentUpdatedByUid = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRuleDocument.updatedByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAutomationRunDocumentActionResults = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRunDocument.actionResults',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 10,
+  );
+
+  static const organizerFormAutomationRunDocumentActionResultsItemsActionId = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRunDocument.actionResults.items.actionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAutomationRunDocumentActionResultsItemsErrorCode = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRunDocument.actionResults.items.errorCode',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAutomationRunDocumentActionResultsItemsKind = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRunDocument.actionResults.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notifyTeam', 'addOrganizerTag', 'createCrmContact', 'addApplicationQueue', 'proposeEventAttendee', 'signedWebhook', 'campaignHandoff'],
+  );
+
+  static const organizerFormAutomationRunDocumentActionResultsItemsResultId = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRunDocument.actionResults.items.resultId',
+    maxLength: 200,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAutomationRunDocumentActionResultsItemsStatus = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRunDocument.actionResults.items.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['succeeded', 'failed', 'skipped'],
+  );
+
+  static const organizerFormAutomationRunDocumentAttemptCount = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRunDocument.attemptCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const organizerFormAutomationRunDocumentCompletedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRunDocument.completedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormAutomationRunDocumentCompletedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRunDocument.completedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormAutomationRunDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRunDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormAutomationRunDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRunDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormAutomationRunDocumentErrorCode = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRunDocument.errorCode',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAutomationRunDocumentErrorMessage = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRunDocument.errorMessage',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAutomationRunDocumentEventKind = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRunDocument.eventKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['submitted', 'withdrawn'],
+  );
+
+  static const organizerFormAutomationRunDocumentFormId = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRunDocument.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAutomationRunDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRunDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAutomationRunDocumentResponseId = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRunDocument.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAutomationRunDocumentRuleId = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRunDocument.ruleId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAutomationRunDocumentRuleRevision = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRunDocument.ruleRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerFormAutomationRunDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRunDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'running', 'succeeded', 'partiallyFailed', 'failed', 'skipped'],
+  );
+
+  static const organizerFormAutomationRunDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRunDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormAutomationRunDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRunDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormConversionReceiptDocumentActorUid = CatchContractFieldConstraints(
+    path: 'organizerFormConversionReceiptDocument.actorUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormConversionReceiptDocumentCompletedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormConversionReceiptDocument.completedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormConversionReceiptDocumentCompletedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormConversionReceiptDocument.completedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormConversionReceiptDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormConversionReceiptDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormConversionReceiptDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormConversionReceiptDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormConversionReceiptDocumentFields = CatchContractFieldConstraints(
+    path: 'organizerFormConversionReceiptDocument.fields',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const organizerFormConversionReceiptDocumentFieldsItemsConflict = CatchContractFieldConstraints(
+    path: 'organizerFormConversionReceiptDocument.fields.items.conflict',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormConversionReceiptDocumentFieldsItemsDestinationField = CatchContractFieldConstraints(
+    path: 'organizerFormConversionReceiptDocument.fields.items.destinationField',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormConversionReceiptDocumentFieldsItemsLabel = CatchContractFieldConstraints(
+    path: 'organizerFormConversionReceiptDocument.fields.items.label',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormConversionReceiptDocumentFieldsItemsOrigin = CatchContractFieldConstraints(
+    path: 'organizerFormConversionReceiptDocument.fields.items.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['verifiedIdentity', 'formAnswer', 'hostOverride'],
+  );
+
+  static const organizerFormConversionReceiptDocumentFieldsItemsValue = CatchContractFieldConstraints(
+    path: 'organizerFormConversionReceiptDocument.fields.items.value',
+    maxLength: 1000,
+    valueTypes: <String>['string', 'number', 'boolean'],
+  );
+
+  static const organizerFormConversionReceiptDocumentFormId = CatchContractFieldConstraints(
+    path: 'organizerFormConversionReceiptDocument.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormConversionReceiptDocumentKind = CatchContractFieldConstraints(
+    path: 'organizerFormConversionReceiptDocument.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['crmContact', 'application', 'eventAttendeeProposal', 'followUp'],
+  );
+
+  static const organizerFormConversionReceiptDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerFormConversionReceiptDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormConversionReceiptDocumentRequestId = CatchContractFieldConstraints(
+    path: 'organizerFormConversionReceiptDocument.requestId',
+    maxLength: 128,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormConversionReceiptDocumentResponseId = CatchContractFieldConstraints(
+    path: 'organizerFormConversionReceiptDocument.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormConversionReceiptDocumentResultId = CatchContractFieldConstraints(
+    path: 'organizerFormConversionReceiptDocument.resultId',
+    maxLength: 200,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormConversionReceiptDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerFormConversionReceiptDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'completed', 'failed'],
+  );
+
+  static const organizerFormConversionReceiptDocumentUndoStatus = CatchContractFieldConstraints(
+    path: 'organizerFormConversionReceiptDocument.undoStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notAvailable', 'available', 'used', 'expired'],
+  );
+
+  static const organizerFormConversionReceiptDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormConversionReceiptDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormConversionReceiptDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormConversionReceiptDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormDocumentActiveVersionId = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.activeVersionId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDocumentArchivedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.archivedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormDocumentArchivedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.archivedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormDocumentCreatedByUid = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.createdByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDocumentDefaultTargetId = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.defaultTargetId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDocumentDefaultTargetKind = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.defaultTargetKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'campaign'],
+  );
+
+  static const organizerFormDocumentDescription = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.description',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDocumentDraftRevision = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.draftRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerFormDocumentLastResponseAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.lastResponseAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormDocumentLastResponseAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.lastResponseAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDocumentPausedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.pausedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormDocumentPausedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.pausedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormDocumentPublicFormId = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.publicFormId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{20,80}\$',
+  );
+
+  static const organizerFormDocumentPublishedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.publishedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormDocumentPublishedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.publishedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormDocumentPublishedVersion = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.publishedVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerFormDocumentPurpose = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.purpose',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['application', 'registration', 'intake', 'waiver', 'feedback', 'survey'],
+  );
+
+  static const organizerFormDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['draft', 'published', 'paused', 'archived'],
+  );
+
+  static const organizerFormDocumentSubmittedResponseCount = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.submittedResponseCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000,
+  );
+
+  static const organizerFormDocumentTemplateId = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.templateId',
+    maxLength: 120,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDocumentTitle = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.title',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormDraftDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormDraftDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionAppearanceActivityKind = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.appearance.activityKind',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionAppearanceCoverAssetId = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.appearance.coverAssetId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionAppearanceLogoAssetId = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.appearance.logoAssetId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionAppearancePreset = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.appearance.preset',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['editorial', 'minimal', 'activity'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionAvailabilityClosedMessage = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.availability.closedMessage',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionAvailabilityClosesAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.availability.closesAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormDraftDocumentDefinitionAvailabilityClosesAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.availability.closesAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionAvailabilityOpensAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.availability.opensAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormDraftDocumentDefinitionAvailabilityOpensAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.availability.opensAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionAvailabilityResponseLimit = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.availability.responseLimit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const organizerFormDraftDocumentDefinitionCompletionActionKind = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.completion.actionKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'externalUrl', 'event', 'eventRuntime'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionCompletionActionLabel = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.completion.actionLabel',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionCompletionActionUrl = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.completion.actionUrl',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const organizerFormDraftDocumentDefinitionCompletionMessage = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.completion.message',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionCompletionTitle = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.completion.title',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionConsentConsentCopy = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.consent.consentCopy',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionConsentConsentVersion = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.consent.consentVersion',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionConsentRetentionCopy = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.consent.retentionCopy',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionDefaultTargetId = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.defaultTargetId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionDefaultTargetKind = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.defaultTargetKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'campaign'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionDescription = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.description',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionIdentityPolicy = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.identityPolicy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['anonymous', 'emailVerified', 'phoneVerified', 'emailOrPhoneVerified', 'catchAccount'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionLogicRules = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.logicRules',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const organizerFormDraftDocumentDefinitionLogicRulesItemsAction = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.logicRules.items.action',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['showQuestion', 'hideQuestion', 'showSection', 'hideSection', 'routeToSection', 'finish'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionLogicRulesItemsConditionMode = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.logicRules.items.conditionMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['all', 'any'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionLogicRulesItemsConditions = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.logicRules.items.conditions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 20,
+  );
+
+  static const organizerFormDraftDocumentDefinitionLogicRulesItemsConditionsItemsExpectedValues = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.logicRules.items.conditions.items.expectedValues',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string', 'number', 'boolean'],
+    maxItems: 20,
+  );
+
+  static const organizerFormDraftDocumentDefinitionLogicRulesItemsConditionsItemsExpectedValuesItems = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.logicRules.items.conditions.items.expectedValues.items',
+    required: true,
+    valueTypes: <String>['string', 'number', 'boolean'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionLogicRulesItemsConditionsItemsOperator = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.logicRules.items.conditions.items.operator',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['equals', 'notEquals', 'contains', 'notContains', 'greaterThan', 'lessThan', 'answered', 'notAnswered'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionLogicRulesItemsConditionsItemsQuestionId = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.logicRules.items.conditions.items.questionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionLogicRulesItemsRuleId = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.logicRules.items.ruleId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionLogicRulesItemsTargetQuestionId = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.logicRules.items.targetQuestionId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionLogicRulesItemsTargetSectionId = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.logicRules.items.targetSectionId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionPurpose = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.purpose',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['application', 'registration', 'intake', 'waiver', 'feedback', 'survey'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionSections = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 40,
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsDescription = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.description',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsPageBreak = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.pageBreak',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsQuestions = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.questions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsCanonicalFieldId = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.questions.items.canonicalFieldId',
+    valueTypes: <String>['string'],
+    enumValues: <String>['givenName', 'familyName', 'displayName', 'dateOfBirth', 'age', 'gender', 'phoneNumber', 'email', 'instagramHandle', 'linkedinUrl', 'profilePhoto', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'interestedInGenders', 'drinking', 'smoking', 'religion', 'workout', 'diet', 'children'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsHelpText = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.questions.items.helpText',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsHostPresentation = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.questions.items.hostPresentation',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['detailOnly', 'filterable', 'sortable'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsKey = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.questions.items.key',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z][A-Za-z0-9_]{0,79}\$',
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsKind = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.questions.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['shortText', 'longText', 'singleChoice', 'multiChoice', 'date', 'phone', 'email', 'url', 'number', 'boolean', 'file', 'acknowledgement', 'signature'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsLabel = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.questions.items.label',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsOptions = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.questions.items.options',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsOptionsItemsLabel = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.questions.items.options.items.label',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsOptionsItemsOptionId = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.questions.items.options.items.optionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsOptionsItemsValue = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.questions.items.options.items.value',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsPrefillPolicy = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.questions.items.prefillPolicy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['never', 'participantReviewRequired'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsPrivacyClass = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.questions.items.privacyClass',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['contact', 'profile', 'sensitive', 'organizerCustom'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsQuestionId = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.questions.items.questionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsRequired = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.questions.items.required',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationAllowedMimeTypes = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.questions.items.validation.allowedMimeTypes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationAllowedMimeTypesItems = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.questions.items.validation.allowedMimeTypes.items',
+    maxLength: 100,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z0-9.+-]+/[a-z0-9.+*-]+\$',
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationCustomError = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.questions.items.validation.customError',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationEarliestDate = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.questions.items.validation.earliestDate',
+    valueTypes: <String>['string'],
+    format: 'date',
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationLatestDate = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.questions.items.validation.latestDate',
+    valueTypes: <String>['string'],
+    format: 'date',
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationMaxFileCount = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.questions.items.validation.maxFileCount',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 10,
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationMaxFileSizeBytes = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.questions.items.validation.maxFileSizeBytes',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 26214400,
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationMaxLength = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.questions.items.validation.maxLength',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 4000,
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationMaxNumber = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.questions.items.validation.maxNumber',
+    valueTypes: <String>['number'],
+    minimum: -1000000000,
+    maximum: 1000000000,
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationMaxSelections = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.questions.items.validation.maxSelections',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 100,
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationMinLength = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.questions.items.validation.minLength',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 4000,
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationMinNumber = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.questions.items.validation.minNumber',
+    valueTypes: <String>['number'],
+    minimum: -1000000000,
+    maximum: 1000000000,
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationMinSelections = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.questions.items.validation.minSelections',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationPatternPreset = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.questions.items.validation.patternPreset',
+    valueTypes: <String>['string'],
+    enumValues: <String>['lettersAndSpaces', 'alphanumeric', 'postalCode', 'handle'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsSectionId = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.sectionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsTitle = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.title',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionTitle = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.title',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDraftDocumentFormId = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDraftDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDraftDocumentRevision = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerFormDraftDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormDraftDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormDraftDocumentUpdatedByUid = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.updatedByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormExportDocumentCompletedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormExportDocument.completedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormExportDocumentCompletedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormExportDocument.completedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormExportDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormExportDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormExportDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormExportDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormExportDocumentErrorCode = CatchContractFieldConstraints(
+    path: 'organizerFormExportDocument.errorCode',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormExportDocumentErrorMessage = CatchContractFieldConstraints(
+    path: 'organizerFormExportDocument.errorMessage',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormExportDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormExportDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormExportDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormExportDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormExportDocumentFormat = CatchContractFieldConstraints(
+    path: 'organizerFormExportDocument.format',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['csv', 'xlsx'],
+  );
+
+  static const organizerFormExportDocumentFormId = CatchContractFieldConstraints(
+    path: 'organizerFormExportDocument.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormExportDocumentFromMillis = CatchContractFieldConstraints(
+    path: 'organizerFormExportDocument.fromMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerFormExportDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerFormExportDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormExportDocumentRequestedByUid = CatchContractFieldConstraints(
+    path: 'organizerFormExportDocument.requestedByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormExportDocumentRequestId = CatchContractFieldConstraints(
+    path: 'organizerFormExportDocument.requestId',
+    maxLength: 128,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormExportDocumentRowCount = CatchContractFieldConstraints(
+    path: 'organizerFormExportDocument.rowCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const organizerFormExportDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerFormExportDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'running', 'completed', 'failed', 'expired'],
+  );
+
+  static const organizerFormExportDocumentStatuses = CatchContractFieldConstraints(
+    path: 'organizerFormExportDocument.statuses',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['submitted', 'withdrawn'],
+    minItems: 1,
+    maxItems: 2,
+    uniqueItems: true,
+  );
+
+  static const organizerFormExportDocumentStatusesItems = CatchContractFieldConstraints(
+    path: 'organizerFormExportDocument.statuses.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['submitted', 'withdrawn'],
+  );
+
+  static const organizerFormExportDocumentStoragePath = CatchContractFieldConstraints(
+    path: 'organizerFormExportDocument.storagePath',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormExportDocumentToMillis = CatchContractFieldConstraints(
+    path: 'organizerFormExportDocument.toMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerFormExportDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormExportDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormExportDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormExportDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormExportDocumentVersionId = CatchContractFieldConstraints(
+    path: 'organizerFormExportDocument.versionId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormResponseDocumentAnswers = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDocument.answers',
+    required: true,
+    valueTypes: <String>['object'],
+  );
+
+  static const organizerFormResponseDocumentAnswerSnapshots = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDocument.answerSnapshots',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 4000,
+  );
+
+  static const organizerFormResponseDocumentAnswerSnapshotsItemsAnswer = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDocument.answerSnapshots.items.answer',
+    maxLength: 10000,
+    valueTypes: <String>['string', 'number', 'boolean', 'array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 100,
+    uniqueItems: true,
+    minimum: -1000000000,
+    maximum: 1000000000,
+  );
+
+  static const organizerFormResponseDocumentAnswerSnapshotsItemsKey = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDocument.answerSnapshots.items.key',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormResponseDocumentAnswerSnapshotsItemsKind = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDocument.answerSnapshots.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['shortText', 'longText', 'singleChoice', 'multiChoice', 'date', 'phone', 'email', 'url', 'number', 'boolean', 'file', 'acknowledgement', 'signature'],
+  );
+
+  static const organizerFormResponseDocumentAnswerSnapshotsItemsLabel = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDocument.answerSnapshots.items.label',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormResponseDocumentAnswerSnapshotsItemsQuestionId = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDocument.answerSnapshots.items.questionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormResponseDocumentCompletionMillis = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDocument.completionMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 604800000,
+  );
+
+  static const organizerFormResponseDocumentConsentVersion = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDocument.consentVersion',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormResponseDocumentDraftId = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDocument.draftId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormResponseDocumentFormId = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDocument.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormResponseDocumentIdentityDisplayName = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDocument.identity.displayName',
+    maxLength: 160,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormResponseDocumentIdentityEmail = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDocument.identity.email',
+    maxLength: 320,
+    valueTypes: <String>['string'],
+    format: 'email',
+  );
+
+  static const organizerFormResponseDocumentIdentityOrigin = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDocument.identity.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['anonymous', 'respondentGranted', 'organizerAcquired'],
+  );
+
+  static const organizerFormResponseDocumentIdentityPhoneE164 = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDocument.identity.phoneE164',
+    valueTypes: <String>['string'],
+    pattern: '^\\+[1-9][0-9]{7,14}\$',
+  );
+
+  static const organizerFormResponseDocumentIdentitySearchName = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDocument.identity.searchName',
+    maxLength: 160,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormResponseDocumentIdentityKind = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDocument.identityKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['anonymous', 'emailVerified', 'phoneVerified', 'catchAccount'],
+  );
+
+  static const organizerFormResponseDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormResponseDocumentPublicFormId = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDocument.publicFormId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{20,80}\$',
+  );
+
+  static const organizerFormResponseDocumentRespondentUid = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDocument.respondentUid',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormResponseDocumentSourceLinkId = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDocument.sourceLinkId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormResponseDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['submitted', 'withdrawn'],
+  );
+
+  static const organizerFormResponseDocumentSubmittedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDocument.submittedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormResponseDocumentSubmittedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDocument.submittedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormResponseDocumentVersionId = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDocument.versionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormResponseDocumentWithdrawalTokenHash = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDocument.withdrawalTokenHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerFormResponseDocumentWithdrawnAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDocument.withdrawnAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormResponseDocumentWithdrawnAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDocument.withdrawnAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormResponseDraftDocumentAnswers = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDraftDocument.answers',
+    required: true,
+    valueTypes: <String>['object'],
+  );
+
+  static const organizerFormResponseDraftDocumentConsentAccepted = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDraftDocument.consentAccepted',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerFormResponseDraftDocumentConsentVersion = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDraftDocument.consentVersion',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormResponseDraftDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDraftDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormResponseDraftDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDraftDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormResponseDraftDocumentDraftTokenHash = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDraftDocument.draftTokenHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerFormResponseDraftDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDraftDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormResponseDraftDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDraftDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormResponseDraftDocumentFormId = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDraftDocument.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormResponseDraftDocumentIdentityKind = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDraftDocument.identityKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['anonymous', 'emailVerified', 'phoneVerified', 'catchAccount'],
+  );
+
+  static const organizerFormResponseDraftDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDraftDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormResponseDraftDocumentPublicFormId = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDraftDocument.publicFormId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{20,80}\$',
+  );
+
+  static const organizerFormResponseDraftDocumentRespondentUid = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDraftDocument.respondentUid',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormResponseDraftDocumentRevision = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDraftDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerFormResponseDraftDocumentSourceLinkId = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDraftDocument.sourceLinkId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormResponseDraftDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDraftDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['active', 'submitted', 'expired', 'withdrawn'],
+  );
+
+  static const organizerFormResponseDraftDocumentSubmittedResponseId = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDraftDocument.submittedResponseId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormResponseDraftDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDraftDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormResponseDraftDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDraftDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormResponseDraftDocumentVersionId = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDraftDocument.versionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormShareLinkDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormShareLinkDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormShareLinkDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormShareLinkDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormShareLinkDocumentCreatedByUid = CatchContractFieldConstraints(
+    path: 'organizerFormShareLinkDocument.createdByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormShareLinkDocumentFormId = CatchContractFieldConstraints(
+    path: 'organizerFormShareLinkDocument.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormShareLinkDocumentLabel = CatchContractFieldConstraints(
+    path: 'organizerFormShareLinkDocument.label',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormShareLinkDocumentOpenCount = CatchContractFieldConstraints(
+    path: 'organizerFormShareLinkDocument.openCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000,
+  );
+
+  static const organizerFormShareLinkDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerFormShareLinkDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormShareLinkDocumentPublicFormId = CatchContractFieldConstraints(
+    path: 'organizerFormShareLinkDocument.publicFormId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{20,80}\$',
+  );
+
+  static const organizerFormShareLinkDocumentSource = CatchContractFieldConstraints(
+    path: 'organizerFormShareLinkDocument.source',
+    maxLength: 120,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormShareLinkDocumentStartCount = CatchContractFieldConstraints(
+    path: 'organizerFormShareLinkDocument.startCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000,
+  );
+
+  static const organizerFormShareLinkDocumentSubmissionCount = CatchContractFieldConstraints(
+    path: 'organizerFormShareLinkDocument.submissionCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000,
+  );
+
+  static const organizerFormShareLinkDocumentTokenHash = CatchContractFieldConstraints(
+    path: 'organizerFormShareLinkDocument.tokenHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerFormVersionDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormVersionDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormVersionDocumentCreatedByUid = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.createdByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionAppearanceActivityKind = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.appearance.activityKind',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionAppearanceCoverAssetId = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.appearance.coverAssetId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionAppearanceLogoAssetId = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.appearance.logoAssetId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionAppearancePreset = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.appearance.preset',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['editorial', 'minimal', 'activity'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionAvailabilityClosedMessage = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.availability.closedMessage',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionAvailabilityClosesAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.availability.closesAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormVersionDocumentDefinitionAvailabilityClosesAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.availability.closesAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionAvailabilityOpensAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.availability.opensAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormVersionDocumentDefinitionAvailabilityOpensAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.availability.opensAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionAvailabilityResponseLimit = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.availability.responseLimit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const organizerFormVersionDocumentDefinitionCompletionActionKind = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.completion.actionKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'externalUrl', 'event', 'eventRuntime'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionCompletionActionLabel = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.completion.actionLabel',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionCompletionActionUrl = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.completion.actionUrl',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const organizerFormVersionDocumentDefinitionCompletionMessage = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.completion.message',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionCompletionTitle = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.completion.title',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionConsentConsentCopy = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.consent.consentCopy',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionConsentConsentVersion = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.consent.consentVersion',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionConsentRetentionCopy = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.consent.retentionCopy',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionDefaultTargetId = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.defaultTargetId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionDefaultTargetKind = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.defaultTargetKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'campaign'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionDescription = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.description',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionIdentityPolicy = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.identityPolicy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['anonymous', 'emailVerified', 'phoneVerified', 'emailOrPhoneVerified', 'catchAccount'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionLogicRules = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.logicRules',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const organizerFormVersionDocumentDefinitionLogicRulesItemsAction = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.logicRules.items.action',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['showQuestion', 'hideQuestion', 'showSection', 'hideSection', 'routeToSection', 'finish'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionLogicRulesItemsConditionMode = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.logicRules.items.conditionMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['all', 'any'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionLogicRulesItemsConditions = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.logicRules.items.conditions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 20,
+  );
+
+  static const organizerFormVersionDocumentDefinitionLogicRulesItemsConditionsItemsExpectedValues = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.logicRules.items.conditions.items.expectedValues',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string', 'number', 'boolean'],
+    maxItems: 20,
+  );
+
+  static const organizerFormVersionDocumentDefinitionLogicRulesItemsConditionsItemsExpectedValuesItems = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.logicRules.items.conditions.items.expectedValues.items',
+    required: true,
+    valueTypes: <String>['string', 'number', 'boolean'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionLogicRulesItemsConditionsItemsOperator = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.logicRules.items.conditions.items.operator',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['equals', 'notEquals', 'contains', 'notContains', 'greaterThan', 'lessThan', 'answered', 'notAnswered'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionLogicRulesItemsConditionsItemsQuestionId = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.logicRules.items.conditions.items.questionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionLogicRulesItemsRuleId = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.logicRules.items.ruleId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionLogicRulesItemsTargetQuestionId = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.logicRules.items.targetQuestionId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionLogicRulesItemsTargetSectionId = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.logicRules.items.targetSectionId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionPurpose = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.purpose',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['application', 'registration', 'intake', 'waiver', 'feedback', 'survey'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionSections = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 40,
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsDescription = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.description',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsPageBreak = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.pageBreak',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsQuestions = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.questions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsCanonicalFieldId = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.questions.items.canonicalFieldId',
+    valueTypes: <String>['string'],
+    enumValues: <String>['givenName', 'familyName', 'displayName', 'dateOfBirth', 'age', 'gender', 'phoneNumber', 'email', 'instagramHandle', 'linkedinUrl', 'profilePhoto', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'interestedInGenders', 'drinking', 'smoking', 'religion', 'workout', 'diet', 'children'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsHelpText = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.questions.items.helpText',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsHostPresentation = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.questions.items.hostPresentation',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['detailOnly', 'filterable', 'sortable'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsKey = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.questions.items.key',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z][A-Za-z0-9_]{0,79}\$',
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsKind = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.questions.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['shortText', 'longText', 'singleChoice', 'multiChoice', 'date', 'phone', 'email', 'url', 'number', 'boolean', 'file', 'acknowledgement', 'signature'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsLabel = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.questions.items.label',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsOptions = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.questions.items.options',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsOptionsItemsLabel = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.questions.items.options.items.label',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsOptionsItemsOptionId = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.questions.items.options.items.optionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsOptionsItemsValue = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.questions.items.options.items.value',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsPrefillPolicy = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.questions.items.prefillPolicy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['never', 'participantReviewRequired'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsPrivacyClass = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.questions.items.privacyClass',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['contact', 'profile', 'sensitive', 'organizerCustom'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsQuestionId = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.questions.items.questionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsRequired = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.questions.items.required',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsValidationAllowedMimeTypes = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.questions.items.validation.allowedMimeTypes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsValidationAllowedMimeTypesItems = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.questions.items.validation.allowedMimeTypes.items',
+    maxLength: 100,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z0-9.+-]+/[a-z0-9.+*-]+\$',
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsValidationCustomError = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.questions.items.validation.customError',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsValidationEarliestDate = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.questions.items.validation.earliestDate',
+    valueTypes: <String>['string'],
+    format: 'date',
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsValidationLatestDate = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.questions.items.validation.latestDate',
+    valueTypes: <String>['string'],
+    format: 'date',
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsValidationMaxFileCount = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.questions.items.validation.maxFileCount',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 10,
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsValidationMaxFileSizeBytes = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.questions.items.validation.maxFileSizeBytes',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 26214400,
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsValidationMaxLength = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.questions.items.validation.maxLength',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 4000,
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsValidationMaxNumber = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.questions.items.validation.maxNumber',
+    valueTypes: <String>['number'],
+    minimum: -1000000000,
+    maximum: 1000000000,
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsValidationMaxSelections = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.questions.items.validation.maxSelections',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 100,
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsValidationMinLength = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.questions.items.validation.minLength',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 4000,
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsValidationMinNumber = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.questions.items.validation.minNumber',
+    valueTypes: <String>['number'],
+    minimum: -1000000000,
+    maximum: 1000000000,
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsValidationMinSelections = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.questions.items.validation.minSelections',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsValidationPatternPreset = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.questions.items.validation.patternPreset',
+    valueTypes: <String>['string'],
+    enumValues: <String>['lettersAndSpaces', 'alphanumeric', 'postalCode', 'handle'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsSectionId = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.sectionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsTitle = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.title',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionTitle = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.title',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormVersionDocumentFormId = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormVersionDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormVersionDocumentPublishedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.publishedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormVersionDocumentPublishedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.publishedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormVersionDocumentSourceDraftRevision = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.sourceDraftRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerFormVersionDocumentVersion = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.version',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
   static const organizerIntakeCurationDecisionDocumentDecision = CatchContractFieldConstraints(
     path: 'organizerIntakeCurationDecisionDocument.decision',
     valueTypes: <String>['string'],
@@ -38041,6 +43031,150 @@ abstract final class CatchContractConstraints {
     maximum: 200,
   );
 
+  static const previewOrganizerFormConversionCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormConversionCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const previewOrganizerFormConversionCallablePayloadKind = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormConversionCallablePayload.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['crmContact', 'application', 'eventAttendeeProposal', 'followUp'],
+  );
+
+  static const previewOrganizerFormConversionCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormConversionCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const previewOrganizerFormConversionCallablePayloadOverrides = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormConversionCallablePayload.overrides',
+    required: true,
+    valueTypes: <String>['object'],
+  );
+
+  static const previewOrganizerFormConversionCallablePayloadResponseId = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormConversionCallablePayload.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const previewOrganizerFormConversionCallableResponseAllowed = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormConversionCallableResponse.allowed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const previewOrganizerFormConversionCallableResponseEventId = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormConversionCallableResponse.eventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const previewOrganizerFormConversionCallableResponseExistingResultId = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormConversionCallableResponse.existingResultId',
+    maxLength: 200,
+    valueTypes: <String>['string'],
+  );
+
+  static const previewOrganizerFormConversionCallableResponseFields = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormConversionCallableResponse.fields',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const previewOrganizerFormConversionCallableResponseFieldsItemsConflict = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormConversionCallableResponse.fields.items.conflict',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const previewOrganizerFormConversionCallableResponseFieldsItemsDestinationField = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormConversionCallableResponse.fields.items.destinationField',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const previewOrganizerFormConversionCallableResponseFieldsItemsLabel = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormConversionCallableResponse.fields.items.label',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const previewOrganizerFormConversionCallableResponseFieldsItemsOrigin = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormConversionCallableResponse.fields.items.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['verifiedIdentity', 'formAnswer', 'hostOverride'],
+  );
+
+  static const previewOrganizerFormConversionCallableResponseFieldsItemsValue = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormConversionCallableResponse.fields.items.value',
+    maxLength: 1000,
+    valueTypes: <String>['string', 'number', 'boolean'],
+  );
+
+  static const previewOrganizerFormConversionCallableResponseFormId = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormConversionCallableResponse.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const previewOrganizerFormConversionCallableResponseKind = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormConversionCallableResponse.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['crmContact', 'application', 'eventAttendeeProposal', 'followUp'],
+  );
+
+  static const previewOrganizerFormConversionCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormConversionCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const previewOrganizerFormConversionCallableResponseResponseId = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormConversionCallableResponse.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const previewOrganizerFormConversionCallableResponseWarnings = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormConversionCallableResponse.warnings',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+  );
+
+  static const previewOrganizerFormConversionCallableResponseWarningsItems = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormConversionCallableResponse.warnings.items',
+    maxLength: 500,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const profilePhotoCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'profilePhoto.createdAt._nanoseconds',
     required: true,
@@ -39194,6 +44328,30 @@ abstract final class CatchContractConstraints {
     maximum: 1000000,
   );
 
+  static const publishOrganizerFormCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'publishOrganizerFormCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const publishOrganizerFormCallablePayloadFormId = CatchContractFieldConstraints(
+    path: 'publishOrganizerFormCallablePayload.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const publishOrganizerFormCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'publishOrganizerFormCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const rateLimitDocumentAction = CatchContractFieldConstraints(
     path: 'rateLimitDocument.action',
     maxLength: 120,
@@ -39907,6 +45065,127 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['pending'],
+  );
+
+  static const requestOrganizerFormExportCallablePayloadFormat = CatchContractFieldConstraints(
+    path: 'requestOrganizerFormExportCallablePayload.format',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['csv', 'xlsx'],
+  );
+
+  static const requestOrganizerFormExportCallablePayloadFormId = CatchContractFieldConstraints(
+    path: 'requestOrganizerFormExportCallablePayload.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const requestOrganizerFormExportCallablePayloadFromMillis = CatchContractFieldConstraints(
+    path: 'requestOrganizerFormExportCallablePayload.fromMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const requestOrganizerFormExportCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'requestOrganizerFormExportCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const requestOrganizerFormExportCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'requestOrganizerFormExportCallablePayload.requestId',
+    maxLength: 128,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const requestOrganizerFormExportCallablePayloadStatuses = CatchContractFieldConstraints(
+    path: 'requestOrganizerFormExportCallablePayload.statuses',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['submitted', 'withdrawn'],
+    minItems: 1,
+    maxItems: 2,
+    uniqueItems: true,
+  );
+
+  static const requestOrganizerFormExportCallablePayloadStatusesItems = CatchContractFieldConstraints(
+    path: 'requestOrganizerFormExportCallablePayload.statuses.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['submitted', 'withdrawn'],
+  );
+
+  static const requestOrganizerFormExportCallablePayloadToMillis = CatchContractFieldConstraints(
+    path: 'requestOrganizerFormExportCallablePayload.toMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const requestOrganizerFormExportCallablePayloadVersionId = CatchContractFieldConstraints(
+    path: 'requestOrganizerFormExportCallablePayload.versionId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const requestOrganizerFormExportCallableResponseDownloadUrl = CatchContractFieldConstraints(
+    path: 'requestOrganizerFormExportCallableResponse.downloadUrl',
+    maxLength: 4000,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const requestOrganizerFormExportCallableResponseErrorMessage = CatchContractFieldConstraints(
+    path: 'requestOrganizerFormExportCallableResponse.errorMessage',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const requestOrganizerFormExportCallableResponseExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'requestOrganizerFormExportCallableResponse.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const requestOrganizerFormExportCallableResponseExportId = CatchContractFieldConstraints(
+    path: 'requestOrganizerFormExportCallableResponse.exportId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const requestOrganizerFormExportCallableResponseFormat = CatchContractFieldConstraints(
+    path: 'requestOrganizerFormExportCallableResponse.format',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['csv', 'xlsx'],
+  );
+
+  static const requestOrganizerFormExportCallableResponseRowCount = CatchContractFieldConstraints(
+    path: 'requestOrganizerFormExportCallableResponse.rowCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const requestOrganizerFormExportCallableResponseStatus = CatchContractFieldConstraints(
+    path: 'requestOrganizerFormExportCallableResponse.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'running', 'completed', 'failed', 'expired'],
   );
 
   static const requestSuvbotDemoOperationCallablePayloadAction = CatchContractFieldConstraints(
@@ -40649,6 +45928,64 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const saveOrganizerFormResponseDraftCallablePayloadAnswers = CatchContractFieldConstraints(
+    path: 'saveOrganizerFormResponseDraftCallablePayload.answers',
+    required: true,
+    valueTypes: <String>['object'],
+  );
+
+  static const saveOrganizerFormResponseDraftCallablePayloadConsentAccepted = CatchContractFieldConstraints(
+    path: 'saveOrganizerFormResponseDraftCallablePayload.consentAccepted',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const saveOrganizerFormResponseDraftCallablePayloadDraftId = CatchContractFieldConstraints(
+    path: 'saveOrganizerFormResponseDraftCallablePayload.draftId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const saveOrganizerFormResponseDraftCallablePayloadDraftToken = CatchContractFieldConstraints(
+    path: 'saveOrganizerFormResponseDraftCallablePayload.draftToken',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{32,160}\$',
+  );
+
+  static const saveOrganizerFormResponseDraftCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'saveOrganizerFormResponseDraftCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const saveOrganizerFormResponseDraftCallableResponseDraftId = CatchContractFieldConstraints(
+    path: 'saveOrganizerFormResponseDraftCallableResponse.draftId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const saveOrganizerFormResponseDraftCallableResponseExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'saveOrganizerFormResponseDraftCallableResponse.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const saveOrganizerFormResponseDraftCallableResponseRevision = CatchContractFieldConstraints(
+    path: 'saveOrganizerFormResponseDraftCallableResponse.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const seedEventManifestDocumentAnchorUserIds = CatchContractFieldConstraints(
     path: 'seedEventManifestDocument.anchorUserIds',
     required: true,
@@ -41242,6 +46579,66 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['returned', 'departed', 'unresolved'],
   );
 
+  static const setOrganizerFormAutomationStateCallablePayloadEnabled = CatchContractFieldConstraints(
+    path: 'setOrganizerFormAutomationStateCallablePayload.enabled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const setOrganizerFormAutomationStateCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'setOrganizerFormAutomationStateCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const setOrganizerFormAutomationStateCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'setOrganizerFormAutomationStateCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setOrganizerFormAutomationStateCallablePayloadRuleId = CatchContractFieldConstraints(
+    path: 'setOrganizerFormAutomationStateCallablePayload.ruleId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setOrganizerFormLifecycleCallablePayloadAction = CatchContractFieldConstraints(
+    path: 'setOrganizerFormLifecycleCallablePayload.action',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pause', 'resume', 'archive'],
+  );
+
+  static const setOrganizerFormLifecycleCallablePayloadExpectedStatus = CatchContractFieldConstraints(
+    path: 'setOrganizerFormLifecycleCallablePayload.expectedStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['draft', 'published', 'paused', 'archived'],
+  );
+
+  static const setOrganizerFormLifecycleCallablePayloadFormId = CatchContractFieldConstraints(
+    path: 'setOrganizerFormLifecycleCallablePayload.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setOrganizerFormLifecycleCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'setOrganizerFormLifecycleCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const setOrganizerNotificationPreferenceCallablePayloadEnabled = CatchContractFieldConstraints(
     path: 'setOrganizerNotificationPreferenceCallablePayload.enabled',
     required: true,
@@ -41632,6 +47029,35 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const submitOrganizerFormResponseCallablePayloadDraftId = CatchContractFieldConstraints(
+    path: 'submitOrganizerFormResponseCallablePayload.draftId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const submitOrganizerFormResponseCallablePayloadDraftToken = CatchContractFieldConstraints(
+    path: 'submitOrganizerFormResponseCallablePayload.draftToken',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{32,160}\$',
+  );
+
+  static const submitOrganizerFormResponseCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'submitOrganizerFormResponseCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const submitOrganizerFormResponseCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'submitOrganizerFormResponseCallablePayload.requestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{16,120}\$',
   );
 
   static const submitParticipantOrganizerApplicationCallablePayloadAnswers = CatchContractFieldConstraints(
@@ -43947,6 +49373,523 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const updateOrganizerFormDraftCallablePayloadDefinitionAppearanceActivityKind = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.appearance.activityKind',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionAppearanceCoverAssetId = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.appearance.coverAssetId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionAppearanceLogoAssetId = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.appearance.logoAssetId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionAppearancePreset = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.appearance.preset',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['editorial', 'minimal', 'activity'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionAvailabilityClosedMessage = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.availability.closedMessage',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionAvailabilityClosesAtNanoseconds = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.availability.closesAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionAvailabilityClosesAtSeconds = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.availability.closesAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionAvailabilityOpensAtNanoseconds = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.availability.opensAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionAvailabilityOpensAtSeconds = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.availability.opensAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionAvailabilityResponseLimit = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.availability.responseLimit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionCompletionActionKind = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.completion.actionKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'externalUrl', 'event', 'eventRuntime'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionCompletionActionLabel = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.completion.actionLabel',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionCompletionActionUrl = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.completion.actionUrl',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionCompletionMessage = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.completion.message',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionCompletionTitle = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.completion.title',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionConsentConsentCopy = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.consent.consentCopy',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionConsentConsentVersion = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.consent.consentVersion',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionConsentRetentionCopy = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.consent.retentionCopy',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionDefaultTargetId = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.defaultTargetId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionDefaultTargetKind = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.defaultTargetKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'campaign'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionDescription = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.description',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionIdentityPolicy = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.identityPolicy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['anonymous', 'emailVerified', 'phoneVerified', 'emailOrPhoneVerified', 'catchAccount'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionLogicRules = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.logicRules',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsAction = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.logicRules.items.action',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['showQuestion', 'hideQuestion', 'showSection', 'hideSection', 'routeToSection', 'finish'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsConditionMode = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.logicRules.items.conditionMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['all', 'any'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsConditions = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.logicRules.items.conditions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 20,
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsConditionsItemsExpectedValues = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.logicRules.items.conditions.items.expectedValues',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string', 'number', 'boolean'],
+    maxItems: 20,
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsConditionsItemsExpectedValuesItems = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.logicRules.items.conditions.items.expectedValues.items',
+    required: true,
+    valueTypes: <String>['string', 'number', 'boolean'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsConditionsItemsOperator = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.logicRules.items.conditions.items.operator',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['equals', 'notEquals', 'contains', 'notContains', 'greaterThan', 'lessThan', 'answered', 'notAnswered'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsConditionsItemsQuestionId = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.logicRules.items.conditions.items.questionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsRuleId = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.logicRules.items.ruleId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsTargetQuestionId = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.logicRules.items.targetQuestionId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsTargetSectionId = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.logicRules.items.targetSectionId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionPurpose = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.purpose',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['application', 'registration', 'intake', 'waiver', 'feedback', 'survey'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSections = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 40,
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsDescription = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.description',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsPageBreak = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.pageBreak',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestions = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsCanonicalFieldId = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.canonicalFieldId',
+    valueTypes: <String>['string'],
+    enumValues: <String>['givenName', 'familyName', 'displayName', 'dateOfBirth', 'age', 'gender', 'phoneNumber', 'email', 'instagramHandle', 'linkedinUrl', 'profilePhoto', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'interestedInGenders', 'drinking', 'smoking', 'religion', 'workout', 'diet', 'children'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsHelpText = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.helpText',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsHostPresentation = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.hostPresentation',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['detailOnly', 'filterable', 'sortable'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsKey = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.key',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z][A-Za-z0-9_]{0,79}\$',
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsKind = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['shortText', 'longText', 'singleChoice', 'multiChoice', 'date', 'phone', 'email', 'url', 'number', 'boolean', 'file', 'acknowledgement', 'signature'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsLabel = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.label',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsOptions = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.options',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsOptionsItemsLabel = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.options.items.label',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsOptionsItemsOptionId = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.options.items.optionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsOptionsItemsValue = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.options.items.value',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsPrefillPolicy = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.prefillPolicy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['never', 'participantReviewRequired'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsPrivacyClass = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.privacyClass',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['contact', 'profile', 'sensitive', 'organizerCustom'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsQuestionId = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.questionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsRequired = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.required',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationAllowedMimeTypes = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.allowedMimeTypes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationAllowedMimeTypesItems = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.allowedMimeTypes.items',
+    maxLength: 100,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z0-9.+-]+/[a-z0-9.+*-]+\$',
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationCustomError = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.customError',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationEarliestDate = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.earliestDate',
+    valueTypes: <String>['string'],
+    format: 'date',
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationLatestDate = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.latestDate',
+    valueTypes: <String>['string'],
+    format: 'date',
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationMaxFileCount = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.maxFileCount',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 10,
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationMaxFileSizeBytes = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.maxFileSizeBytes',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 26214400,
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationMaxLength = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.maxLength',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 4000,
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationMaxNumber = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.maxNumber',
+    valueTypes: <String>['number'],
+    minimum: -1000000000,
+    maximum: 1000000000,
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationMaxSelections = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.maxSelections',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 100,
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationMinLength = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.minLength',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 4000,
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationMinNumber = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.minNumber',
+    valueTypes: <String>['number'],
+    minimum: -1000000000,
+    maximum: 1000000000,
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationMinSelections = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.minSelections',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationPatternPreset = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.patternPreset',
+    valueTypes: <String>['string'],
+    enumValues: <String>['lettersAndSpaces', 'alphanumeric', 'postalCode', 'handle'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsSectionId = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.sectionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsTitle = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.title',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionTitle = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.title',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadFormId = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const updateUserProfilePatchActivityPreferencesRunningPaceMaxSecsPerKm = CatchContractFieldConstraints(
     path: 'updateUserProfilePatch.activityPreferences.running.paceMaxSecsPerKm',
     required: true,
@@ -45906,6 +51849,559 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const validateOrganizerFormDraftCallablePayloadDefinitionAppearanceActivityKind = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.appearance.activityKind',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionAppearanceCoverAssetId = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.appearance.coverAssetId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionAppearanceLogoAssetId = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.appearance.logoAssetId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionAppearancePreset = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.appearance.preset',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['editorial', 'minimal', 'activity'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionAvailabilityClosedMessage = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.availability.closedMessage',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionAvailabilityClosesAtNanoseconds = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.availability.closesAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionAvailabilityClosesAtSeconds = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.availability.closesAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionAvailabilityOpensAtNanoseconds = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.availability.opensAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionAvailabilityOpensAtSeconds = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.availability.opensAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionAvailabilityResponseLimit = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.availability.responseLimit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionCompletionActionKind = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.completion.actionKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'externalUrl', 'event', 'eventRuntime'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionCompletionActionLabel = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.completion.actionLabel',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionCompletionActionUrl = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.completion.actionUrl',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionCompletionMessage = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.completion.message',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionCompletionTitle = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.completion.title',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionConsentConsentCopy = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.consent.consentCopy',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionConsentConsentVersion = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.consent.consentVersion',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionConsentRetentionCopy = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.consent.retentionCopy',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionDefaultTargetId = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.defaultTargetId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionDefaultTargetKind = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.defaultTargetKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'campaign'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionDescription = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.description',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionIdentityPolicy = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.identityPolicy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['anonymous', 'emailVerified', 'phoneVerified', 'emailOrPhoneVerified', 'catchAccount'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionLogicRules = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.logicRules',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsAction = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.logicRules.items.action',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['showQuestion', 'hideQuestion', 'showSection', 'hideSection', 'routeToSection', 'finish'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsConditionMode = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.logicRules.items.conditionMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['all', 'any'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsConditions = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.logicRules.items.conditions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 20,
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsConditionsItemsExpectedValues = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.logicRules.items.conditions.items.expectedValues',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string', 'number', 'boolean'],
+    maxItems: 20,
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsConditionsItemsExpectedValuesItems = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.logicRules.items.conditions.items.expectedValues.items',
+    required: true,
+    valueTypes: <String>['string', 'number', 'boolean'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsConditionsItemsOperator = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.logicRules.items.conditions.items.operator',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['equals', 'notEquals', 'contains', 'notContains', 'greaterThan', 'lessThan', 'answered', 'notAnswered'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsConditionsItemsQuestionId = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.logicRules.items.conditions.items.questionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsRuleId = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.logicRules.items.ruleId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsTargetQuestionId = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.logicRules.items.targetQuestionId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsTargetSectionId = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.logicRules.items.targetSectionId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionPurpose = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.purpose',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['application', 'registration', 'intake', 'waiver', 'feedback', 'survey'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSections = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 40,
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsDescription = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.description',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsPageBreak = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.pageBreak',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestions = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsCanonicalFieldId = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.canonicalFieldId',
+    valueTypes: <String>['string'],
+    enumValues: <String>['givenName', 'familyName', 'displayName', 'dateOfBirth', 'age', 'gender', 'phoneNumber', 'email', 'instagramHandle', 'linkedinUrl', 'profilePhoto', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'interestedInGenders', 'drinking', 'smoking', 'religion', 'workout', 'diet', 'children'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsHelpText = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.helpText',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsHostPresentation = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.hostPresentation',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['detailOnly', 'filterable', 'sortable'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsKey = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.key',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z][A-Za-z0-9_]{0,79}\$',
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsKind = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['shortText', 'longText', 'singleChoice', 'multiChoice', 'date', 'phone', 'email', 'url', 'number', 'boolean', 'file', 'acknowledgement', 'signature'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsLabel = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.label',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsOptions = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.options',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsOptionsItemsLabel = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.options.items.label',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsOptionsItemsOptionId = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.options.items.optionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsOptionsItemsValue = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.options.items.value',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsPrefillPolicy = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.prefillPolicy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['never', 'participantReviewRequired'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsPrivacyClass = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.privacyClass',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['contact', 'profile', 'sensitive', 'organizerCustom'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsQuestionId = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.questionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsRequired = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.required',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationAllowedMimeTypes = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.allowedMimeTypes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationAllowedMimeTypesItems = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.allowedMimeTypes.items',
+    maxLength: 100,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z0-9.+-]+/[a-z0-9.+*-]+\$',
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationCustomError = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.customError',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationEarliestDate = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.earliestDate',
+    valueTypes: <String>['string'],
+    format: 'date',
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationLatestDate = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.latestDate',
+    valueTypes: <String>['string'],
+    format: 'date',
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationMaxFileCount = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.maxFileCount',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 10,
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationMaxFileSizeBytes = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.maxFileSizeBytes',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 26214400,
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationMaxLength = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.maxLength',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 4000,
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationMaxNumber = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.maxNumber',
+    valueTypes: <String>['number'],
+    minimum: -1000000000,
+    maximum: 1000000000,
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationMaxSelections = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.maxSelections',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 100,
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationMinLength = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.minLength',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 4000,
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationMinNumber = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.minNumber',
+    valueTypes: <String>['number'],
+    minimum: -1000000000,
+    maximum: 1000000000,
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationMinSelections = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.minSelections',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationPatternPreset = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.patternPreset',
+    valueTypes: <String>['string'],
+    enumValues: <String>['lettersAndSpaces', 'alphanumeric', 'postalCode', 'handle'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsSectionId = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.sectionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsTitle = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.title',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionTitle = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.title',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadFormId = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.formId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallableResponseIssues = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallableResponse.issues',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 250,
+  );
+
+  static const validateOrganizerFormDraftCallableResponseIssuesItemsCode = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallableResponse.issues.items.code',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallableResponseIssuesItemsMessage = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallableResponse.issues.items.message',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallableResponseIssuesItemsPath = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallableResponse.issues.items.path',
+    maxLength: 300,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallableResponseIssuesItemsSeverity = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallableResponse.issues.items.severity',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['error', 'warning'],
+  );
+
+  static const validateOrganizerFormDraftCallableResponseValid = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallableResponse.valid',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
   static const verifyRazorpayPaymentCallablePayloadOrderId = CatchContractFieldConstraints(
     path: 'verifyRazorpayPaymentCallablePayload.orderId',
     maxLength: 180,
@@ -46881,6 +53377,49 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const withdrawOrganizerFormResponseCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'withdrawOrganizerFormResponseCallablePayload.requestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{16,120}\$',
+  );
+
+  static const withdrawOrganizerFormResponseCallablePayloadResponseId = CatchContractFieldConstraints(
+    path: 'withdrawOrganizerFormResponseCallablePayload.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const withdrawOrganizerFormResponseCallablePayloadWithdrawalToken = CatchContractFieldConstraints(
+    path: 'withdrawOrganizerFormResponseCallablePayload.withdrawalToken',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{32,160}\$',
+  );
+
+  static const withdrawOrganizerFormResponseCallableResponseResponseId = CatchContractFieldConstraints(
+    path: 'withdrawOrganizerFormResponseCallableResponse.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const withdrawOrganizerFormResponseCallableResponseStatus = CatchContractFieldConstraints(
+    path: 'withdrawOrganizerFormResponseCallableResponse.status',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const withdrawOrganizerFormResponseCallableResponseWithdrawnAtMillis = CatchContractFieldConstraints(
+    path: 'withdrawOrganizerFormResponseCallableResponse.withdrawnAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const all = <String, CatchContractFieldConstraints>{
     'accessApplicationDocument.applicationVersion': accessApplicationDocumentApplicationVersion,
     'accessApplicationDocument.availabilityWindows': accessApplicationDocumentAvailabilityWindows,
@@ -47433,6 +53972,9 @@ abstract final class CatchContractConstraints {
     'archiveClubCallablePayload.reason': archiveClubCallablePayloadReason,
     'archiveOrganizerCallablePayload.organizerId': archiveOrganizerCallablePayloadOrganizerId,
     'archiveOrganizerCallablePayload.reason': archiveOrganizerCallablePayloadReason,
+    'beginOrganizerFormResponseCallablePayload.publicFormId': beginOrganizerFormResponseCallablePayloadPublicFormId,
+    'beginOrganizerFormResponseCallablePayload.requestId': beginOrganizerFormResponseCallablePayloadRequestId,
+    'beginOrganizerFormResponseCallablePayload.sourceToken': beginOrganizerFormResponseCallablePayloadSourceToken,
     'blockDocument.blockedUserId': blockDocumentBlockedUserId,
     'blockDocument.blockerUserId': blockDocumentBlockerUserId,
     'blockDocument.createdAt._nanoseconds': blockDocumentCreatedAtNanoseconds,
@@ -47805,6 +54347,27 @@ abstract final class CatchContractConstraints {
     'connectOrganizerLumaProviderCallablePayload.eventId': connectOrganizerLumaProviderCallablePayloadEventId,
     'connectOrganizerLumaProviderCallablePayload.externalEventId': connectOrganizerLumaProviderCallablePayloadExternalEventId,
     'connectOrganizerLumaProviderCallablePayload.organizerId': connectOrganizerLumaProviderCallablePayloadOrganizerId,
+    'convertOrganizerFormResponseCallablePayload.eventId': convertOrganizerFormResponseCallablePayloadEventId,
+    'convertOrganizerFormResponseCallablePayload.kind': convertOrganizerFormResponseCallablePayloadKind,
+    'convertOrganizerFormResponseCallablePayload.organizerId': convertOrganizerFormResponseCallablePayloadOrganizerId,
+    'convertOrganizerFormResponseCallablePayload.overrides': convertOrganizerFormResponseCallablePayloadOverrides,
+    'convertOrganizerFormResponseCallablePayload.requestId': convertOrganizerFormResponseCallablePayloadRequestId,
+    'convertOrganizerFormResponseCallablePayload.responseId': convertOrganizerFormResponseCallablePayloadResponseId,
+    'convertOrganizerFormResponseCallableResponse.completedAtMillis': convertOrganizerFormResponseCallableResponseCompletedAtMillis,
+    'convertOrganizerFormResponseCallableResponse.fields': convertOrganizerFormResponseCallableResponseFields,
+    'convertOrganizerFormResponseCallableResponse.fields.items.conflict': convertOrganizerFormResponseCallableResponseFieldsItemsConflict,
+    'convertOrganizerFormResponseCallableResponse.fields.items.destinationField': convertOrganizerFormResponseCallableResponseFieldsItemsDestinationField,
+    'convertOrganizerFormResponseCallableResponse.fields.items.label': convertOrganizerFormResponseCallableResponseFieldsItemsLabel,
+    'convertOrganizerFormResponseCallableResponse.fields.items.origin': convertOrganizerFormResponseCallableResponseFieldsItemsOrigin,
+    'convertOrganizerFormResponseCallableResponse.fields.items.value': convertOrganizerFormResponseCallableResponseFieldsItemsValue,
+    'convertOrganizerFormResponseCallableResponse.formId': convertOrganizerFormResponseCallableResponseFormId,
+    'convertOrganizerFormResponseCallableResponse.kind': convertOrganizerFormResponseCallableResponseKind,
+    'convertOrganizerFormResponseCallableResponse.organizerId': convertOrganizerFormResponseCallableResponseOrganizerId,
+    'convertOrganizerFormResponseCallableResponse.receiptId': convertOrganizerFormResponseCallableResponseReceiptId,
+    'convertOrganizerFormResponseCallableResponse.responseId': convertOrganizerFormResponseCallableResponseResponseId,
+    'convertOrganizerFormResponseCallableResponse.resultId': convertOrganizerFormResponseCallableResponseResultId,
+    'convertOrganizerFormResponseCallableResponse.status': convertOrganizerFormResponseCallableResponseStatus,
+    'convertOrganizerFormResponseCallableResponse.undoStatus': convertOrganizerFormResponseCallableResponseUndoStatus,
     'createChatMessageClientWrite.data.imageUrl': createChatMessageClientWriteDataImageUrl,
     'createChatMessageClientWrite.data.senderId': createChatMessageClientWriteDataSenderId,
     'createChatMessageClientWrite.data.sentAt._nanoseconds': createChatMessageClientWriteDataSentAtNanoseconds,
@@ -48175,6 +54738,55 @@ abstract final class CatchContractConstraints {
     'createOrganizerContactNoteCallablePayload.body': createOrganizerContactNoteCallablePayloadBody,
     'createOrganizerContactNoteCallablePayload.contactId': createOrganizerContactNoteCallablePayloadContactId,
     'createOrganizerContactNoteCallablePayload.organizerId': createOrganizerContactNoteCallablePayloadOrganizerId,
+    'createOrganizerFormAssetIntentCallablePayload.contentType': createOrganizerFormAssetIntentCallablePayloadContentType,
+    'createOrganizerFormAssetIntentCallablePayload.draftId': createOrganizerFormAssetIntentCallablePayloadDraftId,
+    'createOrganizerFormAssetIntentCallablePayload.draftToken': createOrganizerFormAssetIntentCallablePayloadDraftToken,
+    'createOrganizerFormAssetIntentCallablePayload.originalFileName': createOrganizerFormAssetIntentCallablePayloadOriginalFileName,
+    'createOrganizerFormAssetIntentCallablePayload.questionId': createOrganizerFormAssetIntentCallablePayloadQuestionId,
+    'createOrganizerFormAssetIntentCallablePayload.requestId': createOrganizerFormAssetIntentCallablePayloadRequestId,
+    'createOrganizerFormAssetIntentCallablePayload.sha256': createOrganizerFormAssetIntentCallablePayloadSha256,
+    'createOrganizerFormAssetIntentCallablePayload.sizeBytes': createOrganizerFormAssetIntentCallablePayloadSizeBytes,
+    'createOrganizerFormAssetIntentCallableResponse.assetId': createOrganizerFormAssetIntentCallableResponseAssetId,
+    'createOrganizerFormAssetIntentCallableResponse.expiresAtMillis': createOrganizerFormAssetIntentCallableResponseExpiresAtMillis,
+    'createOrganizerFormAssetIntentCallableResponse.uploadFields': createOrganizerFormAssetIntentCallableResponseUploadFields,
+    'createOrganizerFormAssetIntentCallableResponse.uploadToken': createOrganizerFormAssetIntentCallableResponseUploadToken,
+    'createOrganizerFormAssetIntentCallableResponse.uploadUrl': createOrganizerFormAssetIntentCallableResponseUploadUrl,
+    'createOrganizerFormAutomationCallablePayload.actions': createOrganizerFormAutomationCallablePayloadActions,
+    'createOrganizerFormAutomationCallablePayload.actions.items.actionId': createOrganizerFormAutomationCallablePayloadActionsItemsActionId,
+    'createOrganizerFormAutomationCallablePayload.actions.items.channel': createOrganizerFormAutomationCallablePayloadActionsItemsChannel,
+    'createOrganizerFormAutomationCallablePayload.actions.items.eventId': createOrganizerFormAutomationCallablePayloadActionsItemsEventId,
+    'createOrganizerFormAutomationCallablePayload.actions.items.kind': createOrganizerFormAutomationCallablePayloadActionsItemsKind,
+    'createOrganizerFormAutomationCallablePayload.actions.items.tagId': createOrganizerFormAutomationCallablePayloadActionsItemsTagId,
+    'createOrganizerFormAutomationCallablePayload.actions.items.webhookSecret': createOrganizerFormAutomationCallablePayloadActionsItemsWebhookSecret,
+    'createOrganizerFormAutomationCallablePayload.actions.items.webhookUrl': createOrganizerFormAutomationCallablePayloadActionsItemsWebhookUrl,
+    'createOrganizerFormAutomationCallablePayload.condition.expectedValues': createOrganizerFormAutomationCallablePayloadConditionExpectedValues,
+    'createOrganizerFormAutomationCallablePayload.condition.expectedValues.items': createOrganizerFormAutomationCallablePayloadConditionExpectedValuesItems,
+    'createOrganizerFormAutomationCallablePayload.condition.operator': createOrganizerFormAutomationCallablePayloadConditionOperator,
+    'createOrganizerFormAutomationCallablePayload.condition.questionId': createOrganizerFormAutomationCallablePayloadConditionQuestionId,
+    'createOrganizerFormAutomationCallablePayload.enabled': createOrganizerFormAutomationCallablePayloadEnabled,
+    'createOrganizerFormAutomationCallablePayload.expectedRevision': createOrganizerFormAutomationCallablePayloadExpectedRevision,
+    'createOrganizerFormAutomationCallablePayload.formId': createOrganizerFormAutomationCallablePayloadFormId,
+    'createOrganizerFormAutomationCallablePayload.name': createOrganizerFormAutomationCallablePayloadName,
+    'createOrganizerFormAutomationCallablePayload.organizerId': createOrganizerFormAutomationCallablePayloadOrganizerId,
+    'createOrganizerFormAutomationCallablePayload.requestId': createOrganizerFormAutomationCallablePayloadRequestId,
+    'createOrganizerFormAutomationCallablePayload.ruleId': createOrganizerFormAutomationCallablePayloadRuleId,
+    'createOrganizerFormAutomationCallablePayload.trigger': createOrganizerFormAutomationCallablePayloadTrigger,
+    'createOrganizerFormCallablePayload.defaultTargetId': createOrganizerFormCallablePayloadDefaultTargetId,
+    'createOrganizerFormCallablePayload.defaultTargetKind': createOrganizerFormCallablePayloadDefaultTargetKind,
+    'createOrganizerFormCallablePayload.organizerId': createOrganizerFormCallablePayloadOrganizerId,
+    'createOrganizerFormCallablePayload.requestId': createOrganizerFormCallablePayloadRequestId,
+    'createOrganizerFormCallablePayload.templateId': createOrganizerFormCallablePayloadTemplateId,
+    'createOrganizerFormCallablePayload.title': createOrganizerFormCallablePayloadTitle,
+    'createOrganizerFormShareLinkCallablePayload.formId': createOrganizerFormShareLinkCallablePayloadFormId,
+    'createOrganizerFormShareLinkCallablePayload.label': createOrganizerFormShareLinkCallablePayloadLabel,
+    'createOrganizerFormShareLinkCallablePayload.organizerId': createOrganizerFormShareLinkCallablePayloadOrganizerId,
+    'createOrganizerFormShareLinkCallablePayload.requestId': createOrganizerFormShareLinkCallablePayloadRequestId,
+    'createOrganizerFormShareLinkCallablePayload.source': createOrganizerFormShareLinkCallablePayloadSource,
+    'createOrganizerFormShareLinkCallableResponse.label': createOrganizerFormShareLinkCallableResponseLabel,
+    'createOrganizerFormShareLinkCallableResponse.linkId': createOrganizerFormShareLinkCallableResponseLinkId,
+    'createOrganizerFormShareLinkCallableResponse.source': createOrganizerFormShareLinkCallableResponseSource,
+    'createOrganizerFormShareLinkCallableResponse.sourceToken': createOrganizerFormShareLinkCallableResponseSourceToken,
+    'createOrganizerFormShareLinkCallableResponse.url': createOrganizerFormShareLinkCallableResponseUrl,
     'createOrganizerPostCallablePayload.eventId': createOrganizerPostCallablePayloadEventId,
     'createOrganizerPostCallablePayload.organizerId': createOrganizerPostCallablePayloadOrganizerId,
     'createOrganizerPostCallablePayload.photoPath': createOrganizerPostCallablePayloadPhotoPath,
@@ -48342,12 +54954,22 @@ abstract final class CatchContractConstraints {
     'deleteEventCallablePayload.eventId': deleteEventCallablePayloadEventId,
     'deleteEventReviewCallablePayload.reviewId': deleteEventReviewCallablePayloadReviewId,
     'deleteOrganizerCallablePayload.organizerId': deleteOrganizerCallablePayloadOrganizerId,
+    'deleteOrganizerFormDraftCallablePayload.expectedRevision': deleteOrganizerFormDraftCallablePayloadExpectedRevision,
+    'deleteOrganizerFormDraftCallablePayload.formId': deleteOrganizerFormDraftCallablePayloadFormId,
+    'deleteOrganizerFormDraftCallablePayload.organizerId': deleteOrganizerFormDraftCallablePayloadOrganizerId,
+    'deleteOrganizerFormDraftCallableResponse.deleted': deleteOrganizerFormDraftCallableResponseDeleted,
+    'deleteOrganizerFormDraftCallableResponse.formId': deleteOrganizerFormDraftCallableResponseFormId,
+    'deleteOrganizerFormDraftCallableResponse.organizerId': deleteOrganizerFormDraftCallableResponseOrganizerId,
     'deleteSavedEventClientWrite.path.savedEventId': deleteSavedEventClientWritePathSavedEventId,
     'disableEventInviteLinkCallablePayload.eventId': disableEventInviteLinkCallablePayloadEventId,
     'disableEventInviteLinkCallablePayload.inviteLinkId': disableEventInviteLinkCallablePayloadInviteLinkId,
     'disconnectOrganizerProviderCallablePayload.connectionId': disconnectOrganizerProviderCallablePayloadConnectionId,
     'disconnectOrganizerProviderCallablePayload.eventId': disconnectOrganizerProviderCallablePayloadEventId,
     'disconnectOrganizerProviderCallablePayload.organizerId': disconnectOrganizerProviderCallablePayloadOrganizerId,
+    'duplicateOrganizerFormCallablePayload.organizerId': duplicateOrganizerFormCallablePayloadOrganizerId,
+    'duplicateOrganizerFormCallablePayload.requestId': duplicateOrganizerFormCallablePayloadRequestId,
+    'duplicateOrganizerFormCallablePayload.sourceFormId': duplicateOrganizerFormCallablePayloadSourceFormId,
+    'duplicateOrganizerFormCallablePayload.title': duplicateOrganizerFormCallablePayloadTitle,
     'eventAttendeeAttendanceReceiptDocument.acceptedRevision': eventAttendeeAttendanceReceiptDocumentAcceptedRevision,
     'eventAttendeeAttendanceReceiptDocument.actorUid': eventAttendeeAttendanceReceiptDocumentActorUid,
     'eventAttendeeAttendanceReceiptDocument.attendeeId': eventAttendeeAttendanceReceiptDocumentAttendeeId,
@@ -49626,6 +56248,13 @@ abstract final class CatchContractConstraints {
     'fetchEventSuccessWingmanCandidatesCallableResponse.profiles.items.uid': fetchEventSuccessWingmanCandidatesCallableResponseProfilesItemsUid,
     'fetchSwipeCandidatesCallableResponse.profiles': fetchSwipeCandidatesCallableResponseProfiles,
     'fetchSwipeCandidatesCallableResponse.profiles.items.uid': fetchSwipeCandidatesCallableResponseProfilesItemsUid,
+    'finalizeOrganizerFormAssetCallablePayload.assetId': finalizeOrganizerFormAssetCallablePayloadAssetId,
+    'finalizeOrganizerFormAssetCallablePayload.draftId': finalizeOrganizerFormAssetCallablePayloadDraftId,
+    'finalizeOrganizerFormAssetCallablePayload.draftToken': finalizeOrganizerFormAssetCallablePayloadDraftToken,
+    'finalizeOrganizerFormAssetCallablePayload.uploadToken': finalizeOrganizerFormAssetCallablePayloadUploadToken,
+    'finalizeOrganizerFormAssetCallableResponse.assetId': finalizeOrganizerFormAssetCallableResponseAssetId,
+    'finalizeOrganizerFormAssetCallableResponse.sizeBytes': finalizeOrganizerFormAssetCallableResponseSizeBytes,
+    'finalizeOrganizerFormAssetCallableResponse.status': finalizeOrganizerFormAssetCallableResponseStatus,
     'functionEventReceiptDocument.createdAt._nanoseconds': functionEventReceiptDocumentCreatedAtNanoseconds,
     'functionEventReceiptDocument.createdAt._seconds': functionEventReceiptDocumentCreatedAtSeconds,
     'functionEventReceiptDocument.eventId': functionEventReceiptDocumentEventId,
@@ -49919,6 +56548,89 @@ abstract final class CatchContractConstraints {
     'getOrganizerCrmSummaryCallableResponse.smsOptInCount': getOrganizerCrmSummaryCallableResponseSmsOptInCount,
     'getOrganizerCrmSummaryCallableResponse.truncated': getOrganizerCrmSummaryCallableResponseTruncated,
     'getOrganizerCrmSummaryCallableResponse.whatsappOptInCount': getOrganizerCrmSummaryCallableResponseWhatsappOptInCount,
+    'getOrganizerFormAnalyticsCallablePayload.formId': getOrganizerFormAnalyticsCallablePayloadFormId,
+    'getOrganizerFormAnalyticsCallablePayload.organizerId': getOrganizerFormAnalyticsCallablePayloadOrganizerId,
+    'getOrganizerFormAnalyticsCallablePayload.versionId': getOrganizerFormAnalyticsCallablePayloadVersionId,
+    'getOrganizerFormAnalyticsCallableResponse.completionRate': getOrganizerFormAnalyticsCallableResponseCompletionRate,
+    'getOrganizerFormAnalyticsCallableResponse.formId': getOrganizerFormAnalyticsCallableResponseFormId,
+    'getOrganizerFormAnalyticsCallableResponse.medianCompletionMillis': getOrganizerFormAnalyticsCallableResponseMedianCompletionMillis,
+    'getOrganizerFormAnalyticsCallableResponse.opens': getOrganizerFormAnalyticsCallableResponseOpens,
+    'getOrganizerFormAnalyticsCallableResponse.organizerId': getOrganizerFormAnalyticsCallableResponseOrganizerId,
+    'getOrganizerFormAnalyticsCallableResponse.privacyThreshold': getOrganizerFormAnalyticsCallableResponsePrivacyThreshold,
+    'getOrganizerFormAnalyticsCallableResponse.questions': getOrganizerFormAnalyticsCallableResponseQuestions,
+    'getOrganizerFormAnalyticsCallableResponse.questions.items.choiceCounts': getOrganizerFormAnalyticsCallableResponseQuestionsItemsChoiceCounts,
+    'getOrganizerFormAnalyticsCallableResponse.questions.items.choiceCounts.items.count': getOrganizerFormAnalyticsCallableResponseQuestionsItemsChoiceCountsItemsCount,
+    'getOrganizerFormAnalyticsCallableResponse.questions.items.choiceCounts.items.label': getOrganizerFormAnalyticsCallableResponseQuestionsItemsChoiceCountsItemsLabel,
+    'getOrganizerFormAnalyticsCallableResponse.questions.items.choiceCounts.items.value': getOrganizerFormAnalyticsCallableResponseQuestionsItemsChoiceCountsItemsValue,
+    'getOrganizerFormAnalyticsCallableResponse.questions.items.kind': getOrganizerFormAnalyticsCallableResponseQuestionsItemsKind,
+    'getOrganizerFormAnalyticsCallableResponse.questions.items.label': getOrganizerFormAnalyticsCallableResponseQuestionsItemsLabel,
+    'getOrganizerFormAnalyticsCallableResponse.questions.items.numericCount': getOrganizerFormAnalyticsCallableResponseQuestionsItemsNumericCount,
+    'getOrganizerFormAnalyticsCallableResponse.questions.items.numericMax': getOrganizerFormAnalyticsCallableResponseQuestionsItemsNumericMax,
+    'getOrganizerFormAnalyticsCallableResponse.questions.items.numericMin': getOrganizerFormAnalyticsCallableResponseQuestionsItemsNumericMin,
+    'getOrganizerFormAnalyticsCallableResponse.questions.items.numericSum': getOrganizerFormAnalyticsCallableResponseQuestionsItemsNumericSum,
+    'getOrganizerFormAnalyticsCallableResponse.questions.items.privacyClass': getOrganizerFormAnalyticsCallableResponseQuestionsItemsPrivacyClass,
+    'getOrganizerFormAnalyticsCallableResponse.questions.items.questionId': getOrganizerFormAnalyticsCallableResponseQuestionsItemsQuestionId,
+    'getOrganizerFormAnalyticsCallableResponse.questions.items.responseCount': getOrganizerFormAnalyticsCallableResponseQuestionsItemsResponseCount,
+    'getOrganizerFormAnalyticsCallableResponse.sources': getOrganizerFormAnalyticsCallableResponseSources,
+    'getOrganizerFormAnalyticsCallableResponse.sources.items.label': getOrganizerFormAnalyticsCallableResponseSourcesItemsLabel,
+    'getOrganizerFormAnalyticsCallableResponse.sources.items.opens': getOrganizerFormAnalyticsCallableResponseSourcesItemsOpens,
+    'getOrganizerFormAnalyticsCallableResponse.sources.items.sourceLinkId': getOrganizerFormAnalyticsCallableResponseSourcesItemsSourceLinkId,
+    'getOrganizerFormAnalyticsCallableResponse.sources.items.starts': getOrganizerFormAnalyticsCallableResponseSourcesItemsStarts,
+    'getOrganizerFormAnalyticsCallableResponse.sources.items.submissions': getOrganizerFormAnalyticsCallableResponseSourcesItemsSubmissions,
+    'getOrganizerFormAnalyticsCallableResponse.starts': getOrganizerFormAnalyticsCallableResponseStarts,
+    'getOrganizerFormAnalyticsCallableResponse.submissions': getOrganizerFormAnalyticsCallableResponseSubmissions,
+    'getOrganizerFormAnalyticsCallableResponse.version': getOrganizerFormAnalyticsCallableResponseVersion,
+    'getOrganizerFormAnalyticsCallableResponse.versionId': getOrganizerFormAnalyticsCallableResponseVersionId,
+    'getOrganizerFormAnalyticsCallableResponse.withdrawals': getOrganizerFormAnalyticsCallableResponseWithdrawals,
+    'getOrganizerFormEditorCallablePayload.formId': getOrganizerFormEditorCallablePayloadFormId,
+    'getOrganizerFormEditorCallablePayload.organizerId': getOrganizerFormEditorCallablePayloadOrganizerId,
+    'getOrganizerFormResponseDetailCallablePayload.organizerId': getOrganizerFormResponseDetailCallablePayloadOrganizerId,
+    'getOrganizerFormResponseDetailCallablePayload.responseId': getOrganizerFormResponseDetailCallablePayloadResponseId,
+    'getOrganizerFormResponseDetailCallableResponse.answers': getOrganizerFormResponseDetailCallableResponseAnswers,
+    'getOrganizerFormResponseDetailCallableResponse.answers.items.answer': getOrganizerFormResponseDetailCallableResponseAnswersItemsAnswer,
+    'getOrganizerFormResponseDetailCallableResponse.answers.items.assetDownloads': getOrganizerFormResponseDetailCallableResponseAnswersItemsAssetDownloads,
+    'getOrganizerFormResponseDetailCallableResponse.answers.items.assetDownloads.items.assetId': getOrganizerFormResponseDetailCallableResponseAnswersItemsAssetDownloadsItemsAssetId,
+    'getOrganizerFormResponseDetailCallableResponse.answers.items.assetDownloads.items.contentType': getOrganizerFormResponseDetailCallableResponseAnswersItemsAssetDownloadsItemsContentType,
+    'getOrganizerFormResponseDetailCallableResponse.answers.items.assetDownloads.items.downloadUrl': getOrganizerFormResponseDetailCallableResponseAnswersItemsAssetDownloadsItemsDownloadUrl,
+    'getOrganizerFormResponseDetailCallableResponse.answers.items.assetDownloads.items.expiresAtMillis': getOrganizerFormResponseDetailCallableResponseAnswersItemsAssetDownloadsItemsExpiresAtMillis,
+    'getOrganizerFormResponseDetailCallableResponse.answers.items.assetDownloads.items.fileName': getOrganizerFormResponseDetailCallableResponseAnswersItemsAssetDownloadsItemsFileName,
+    'getOrganizerFormResponseDetailCallableResponse.answers.items.assetDownloads.items.sizeBytes': getOrganizerFormResponseDetailCallableResponseAnswersItemsAssetDownloadsItemsSizeBytes,
+    'getOrganizerFormResponseDetailCallableResponse.answers.items.hostPresentation': getOrganizerFormResponseDetailCallableResponseAnswersItemsHostPresentation,
+    'getOrganizerFormResponseDetailCallableResponse.answers.items.key': getOrganizerFormResponseDetailCallableResponseAnswersItemsKey,
+    'getOrganizerFormResponseDetailCallableResponse.answers.items.kind': getOrganizerFormResponseDetailCallableResponseAnswersItemsKind,
+    'getOrganizerFormResponseDetailCallableResponse.answers.items.label': getOrganizerFormResponseDetailCallableResponseAnswersItemsLabel,
+    'getOrganizerFormResponseDetailCallableResponse.answers.items.origin': getOrganizerFormResponseDetailCallableResponseAnswersItemsOrigin,
+    'getOrganizerFormResponseDetailCallableResponse.answers.items.privacyClass': getOrganizerFormResponseDetailCallableResponseAnswersItemsPrivacyClass,
+    'getOrganizerFormResponseDetailCallableResponse.answers.items.questionId': getOrganizerFormResponseDetailCallableResponseAnswersItemsQuestionId,
+    'getOrganizerFormResponseDetailCallableResponse.completionMillis': getOrganizerFormResponseDetailCallableResponseCompletionMillis,
+    'getOrganizerFormResponseDetailCallableResponse.consentVersion': getOrganizerFormResponseDetailCallableResponseConsentVersion,
+    'getOrganizerFormResponseDetailCallableResponse.response.conversionKinds': getOrganizerFormResponseDetailCallableResponseResponseConversionKinds,
+    'getOrganizerFormResponseDetailCallableResponse.response.conversionKinds.items': getOrganizerFormResponseDetailCallableResponseResponseConversionKindsItems,
+    'getOrganizerFormResponseDetailCallableResponse.response.formId': getOrganizerFormResponseDetailCallableResponseResponseFormId,
+    'getOrganizerFormResponseDetailCallableResponse.response.formTitle': getOrganizerFormResponseDetailCallableResponseResponseFormTitle,
+    'getOrganizerFormResponseDetailCallableResponse.response.highlights': getOrganizerFormResponseDetailCallableResponseResponseHighlights,
+    'getOrganizerFormResponseDetailCallableResponse.response.highlights.items.answer': getOrganizerFormResponseDetailCallableResponseResponseHighlightsItemsAnswer,
+    'getOrganizerFormResponseDetailCallableResponse.response.highlights.items.label': getOrganizerFormResponseDetailCallableResponseResponseHighlightsItemsLabel,
+    'getOrganizerFormResponseDetailCallableResponse.response.highlights.items.questionId': getOrganizerFormResponseDetailCallableResponseResponseHighlightsItemsQuestionId,
+    'getOrganizerFormResponseDetailCallableResponse.response.identity.displayName': getOrganizerFormResponseDetailCallableResponseResponseIdentityDisplayName,
+    'getOrganizerFormResponseDetailCallableResponse.response.identity.email': getOrganizerFormResponseDetailCallableResponseResponseIdentityEmail,
+    'getOrganizerFormResponseDetailCallableResponse.response.identity.origin': getOrganizerFormResponseDetailCallableResponseResponseIdentityOrigin,
+    'getOrganizerFormResponseDetailCallableResponse.response.identity.phoneE164': getOrganizerFormResponseDetailCallableResponseResponseIdentityPhoneE164,
+    'getOrganizerFormResponseDetailCallableResponse.response.identity.searchName': getOrganizerFormResponseDetailCallableResponseResponseIdentitySearchName,
+    'getOrganizerFormResponseDetailCallableResponse.response.identityKind': getOrganizerFormResponseDetailCallableResponseResponseIdentityKind,
+    'getOrganizerFormResponseDetailCallableResponse.response.responseId': getOrganizerFormResponseDetailCallableResponseResponseResponseId,
+    'getOrganizerFormResponseDetailCallableResponse.response.sourceLabel': getOrganizerFormResponseDetailCallableResponseResponseSourceLabel,
+    'getOrganizerFormResponseDetailCallableResponse.response.sourceLinkId': getOrganizerFormResponseDetailCallableResponseResponseSourceLinkId,
+    'getOrganizerFormResponseDetailCallableResponse.response.status': getOrganizerFormResponseDetailCallableResponseResponseStatus,
+    'getOrganizerFormResponseDetailCallableResponse.response.submittedAtMillis': getOrganizerFormResponseDetailCallableResponseResponseSubmittedAtMillis,
+    'getOrganizerFormResponseDetailCallableResponse.response.version': getOrganizerFormResponseDetailCallableResponseResponseVersion,
+    'getOrganizerFormResponseDetailCallableResponse.response.versionId': getOrganizerFormResponseDetailCallableResponseResponseVersionId,
+    'getOrganizerFormResponseDetailCallableResponse.response.withdrawnAtMillis': getOrganizerFormResponseDetailCallableResponseResponseWithdrawnAtMillis,
+    'getOrganizerFormShareAssetsCallablePayload.formId': getOrganizerFormShareAssetsCallablePayloadFormId,
+    'getOrganizerFormShareAssetsCallablePayload.organizerId': getOrganizerFormShareAssetsCallablePayloadOrganizerId,
+    'getOrganizerFormShareAssetsCallableResponse.canonicalUrl': getOrganizerFormShareAssetsCallableResponseCanonicalUrl,
+    'getOrganizerFormShareAssetsCallableResponse.embedSnippet': getOrganizerFormShareAssetsCallableResponseEmbedSnippet,
+    'getOrganizerFormShareAssetsCallableResponse.embedUrl': getOrganizerFormShareAssetsCallableResponseEmbedUrl,
     'getOrganizerProviderSetupCallablePayload.eventId': getOrganizerProviderSetupCallablePayloadEventId,
     'getOrganizerProviderSetupCallablePayload.organizerId': getOrganizerProviderSetupCallablePayloadOrganizerId,
     'getOrganizerWhatsappThreadCallablePayload.organizerId': getOrganizerWhatsappThreadCallablePayloadOrganizerId,
@@ -49976,6 +56688,8 @@ abstract final class CatchContractConstraints {
     'getParticipantOrganizerApplicationFormCallableResponse.targetId': getParticipantOrganizerApplicationFormCallableResponseTargetId,
     'getParticipantOrganizerApplicationFormCallableResponse.targetKind': getParticipantOrganizerApplicationFormCallableResponseTargetKind,
     'getParticipantOrganizerApplicationFormCallableResponse.title': getParticipantOrganizerApplicationFormCallableResponseTitle,
+    'getPublicOrganizerFormCallablePayload.publicFormId': getPublicOrganizerFormCallablePayloadPublicFormId,
+    'getPublicOrganizerFormCallablePayload.sourceToken': getPublicOrganizerFormCallablePayloadSourceToken,
     'grantEventStaffCallablePayload.eventId': grantEventStaffCallablePayloadEventId,
     'grantEventStaffCallablePayload.expiresAtMillis': grantEventStaffCallablePayloadExpiresAtMillis,
     'grantEventStaffCallablePayload.phoneNumber': grantEventStaffCallablePayloadPhoneNumber,
@@ -50475,6 +57189,122 @@ abstract final class CatchContractConstraints {
     'listOrganizerContactsCallableResponse.organizerId': listOrganizerContactsCallableResponseOrganizerId,
     'listOrganizerContactsCallableResponse.projectionVersion': listOrganizerContactsCallableResponseProjectionVersion,
     'listOrganizerContactsCallableResponse.sourceCoverage': listOrganizerContactsCallableResponseSourceCoverage,
+    'listOrganizerFormAutomationRunsCallablePayload.cursor': listOrganizerFormAutomationRunsCallablePayloadCursor,
+    'listOrganizerFormAutomationRunsCallablePayload.formId': listOrganizerFormAutomationRunsCallablePayloadFormId,
+    'listOrganizerFormAutomationRunsCallablePayload.limit': listOrganizerFormAutomationRunsCallablePayloadLimit,
+    'listOrganizerFormAutomationRunsCallablePayload.organizerId': listOrganizerFormAutomationRunsCallablePayloadOrganizerId,
+    'listOrganizerFormAutomationRunsCallablePayload.ruleId': listOrganizerFormAutomationRunsCallablePayloadRuleId,
+    'listOrganizerFormAutomationRunsCallableResponse.nextCursor': listOrganizerFormAutomationRunsCallableResponseNextCursor,
+    'listOrganizerFormAutomationRunsCallableResponse.rules': listOrganizerFormAutomationRunsCallableResponseRules,
+    'listOrganizerFormAutomationRunsCallableResponse.rules.items.actions': listOrganizerFormAutomationRunsCallableResponseRulesItemsActions,
+    'listOrganizerFormAutomationRunsCallableResponse.rules.items.actions.items.actionId': listOrganizerFormAutomationRunsCallableResponseRulesItemsActionsItemsActionId,
+    'listOrganizerFormAutomationRunsCallableResponse.rules.items.actions.items.channel': listOrganizerFormAutomationRunsCallableResponseRulesItemsActionsItemsChannel,
+    'listOrganizerFormAutomationRunsCallableResponse.rules.items.actions.items.eventId': listOrganizerFormAutomationRunsCallableResponseRulesItemsActionsItemsEventId,
+    'listOrganizerFormAutomationRunsCallableResponse.rules.items.actions.items.kind': listOrganizerFormAutomationRunsCallableResponseRulesItemsActionsItemsKind,
+    'listOrganizerFormAutomationRunsCallableResponse.rules.items.actions.items.tagId': listOrganizerFormAutomationRunsCallableResponseRulesItemsActionsItemsTagId,
+    'listOrganizerFormAutomationRunsCallableResponse.rules.items.actions.items.webhookSecretConfigured': listOrganizerFormAutomationRunsCallableResponseRulesItemsActionsItemsWebhookSecretConfigured,
+    'listOrganizerFormAutomationRunsCallableResponse.rules.items.actions.items.webhookUrl': listOrganizerFormAutomationRunsCallableResponseRulesItemsActionsItemsWebhookUrl,
+    'listOrganizerFormAutomationRunsCallableResponse.rules.items.condition.expectedValues': listOrganizerFormAutomationRunsCallableResponseRulesItemsConditionExpectedValues,
+    'listOrganizerFormAutomationRunsCallableResponse.rules.items.condition.expectedValues.items': listOrganizerFormAutomationRunsCallableResponseRulesItemsConditionExpectedValuesItems,
+    'listOrganizerFormAutomationRunsCallableResponse.rules.items.condition.operator': listOrganizerFormAutomationRunsCallableResponseRulesItemsConditionOperator,
+    'listOrganizerFormAutomationRunsCallableResponse.rules.items.condition.questionId': listOrganizerFormAutomationRunsCallableResponseRulesItemsConditionQuestionId,
+    'listOrganizerFormAutomationRunsCallableResponse.rules.items.enabled': listOrganizerFormAutomationRunsCallableResponseRulesItemsEnabled,
+    'listOrganizerFormAutomationRunsCallableResponse.rules.items.formId': listOrganizerFormAutomationRunsCallableResponseRulesItemsFormId,
+    'listOrganizerFormAutomationRunsCallableResponse.rules.items.name': listOrganizerFormAutomationRunsCallableResponseRulesItemsName,
+    'listOrganizerFormAutomationRunsCallableResponse.rules.items.organizerId': listOrganizerFormAutomationRunsCallableResponseRulesItemsOrganizerId,
+    'listOrganizerFormAutomationRunsCallableResponse.rules.items.revision': listOrganizerFormAutomationRunsCallableResponseRulesItemsRevision,
+    'listOrganizerFormAutomationRunsCallableResponse.rules.items.ruleId': listOrganizerFormAutomationRunsCallableResponseRulesItemsRuleId,
+    'listOrganizerFormAutomationRunsCallableResponse.rules.items.trigger': listOrganizerFormAutomationRunsCallableResponseRulesItemsTrigger,
+    'listOrganizerFormAutomationRunsCallableResponse.rules.items.updatedAtMillis': listOrganizerFormAutomationRunsCallableResponseRulesItemsUpdatedAtMillis,
+    'listOrganizerFormAutomationRunsCallableResponse.runs': listOrganizerFormAutomationRunsCallableResponseRuns,
+    'listOrganizerFormAutomationRunsCallableResponse.runs.items.actionResults': listOrganizerFormAutomationRunsCallableResponseRunsItemsActionResults,
+    'listOrganizerFormAutomationRunsCallableResponse.runs.items.actionResults.items': listOrganizerFormAutomationRunsCallableResponseRunsItemsActionResultsItems,
+    'listOrganizerFormAutomationRunsCallableResponse.runs.items.attemptCount': listOrganizerFormAutomationRunsCallableResponseRunsItemsAttemptCount,
+    'listOrganizerFormAutomationRunsCallableResponse.runs.items.completedAtMillis': listOrganizerFormAutomationRunsCallableResponseRunsItemsCompletedAtMillis,
+    'listOrganizerFormAutomationRunsCallableResponse.runs.items.createdAtMillis': listOrganizerFormAutomationRunsCallableResponseRunsItemsCreatedAtMillis,
+    'listOrganizerFormAutomationRunsCallableResponse.runs.items.errorMessage': listOrganizerFormAutomationRunsCallableResponseRunsItemsErrorMessage,
+    'listOrganizerFormAutomationRunsCallableResponse.runs.items.eventKind': listOrganizerFormAutomationRunsCallableResponseRunsItemsEventKind,
+    'listOrganizerFormAutomationRunsCallableResponse.runs.items.responseId': listOrganizerFormAutomationRunsCallableResponseRunsItemsResponseId,
+    'listOrganizerFormAutomationRunsCallableResponse.runs.items.ruleId': listOrganizerFormAutomationRunsCallableResponseRunsItemsRuleId,
+    'listOrganizerFormAutomationRunsCallableResponse.runs.items.ruleRevision': listOrganizerFormAutomationRunsCallableResponseRunsItemsRuleRevision,
+    'listOrganizerFormAutomationRunsCallableResponse.runs.items.runId': listOrganizerFormAutomationRunsCallableResponseRunsItemsRunId,
+    'listOrganizerFormAutomationRunsCallableResponse.runs.items.status': listOrganizerFormAutomationRunsCallableResponseRunsItemsStatus,
+    'listOrganizerFormResponsesCallablePayload.cursor': listOrganizerFormResponsesCallablePayloadCursor,
+    'listOrganizerFormResponsesCallablePayload.formId': listOrganizerFormResponsesCallablePayloadFormId,
+    'listOrganizerFormResponsesCallablePayload.fromMillis': listOrganizerFormResponsesCallablePayloadFromMillis,
+    'listOrganizerFormResponsesCallablePayload.identityKinds': listOrganizerFormResponsesCallablePayloadIdentityKinds,
+    'listOrganizerFormResponsesCallablePayload.identityKinds.items': listOrganizerFormResponsesCallablePayloadIdentityKindsItems,
+    'listOrganizerFormResponsesCallablePayload.limit': listOrganizerFormResponsesCallablePayloadLimit,
+    'listOrganizerFormResponsesCallablePayload.organizerId': listOrganizerFormResponsesCallablePayloadOrganizerId,
+    'listOrganizerFormResponsesCallablePayload.query': listOrganizerFormResponsesCallablePayloadQuery,
+    'listOrganizerFormResponsesCallablePayload.sourceLinkId': listOrganizerFormResponsesCallablePayloadSourceLinkId,
+    'listOrganizerFormResponsesCallablePayload.statuses': listOrganizerFormResponsesCallablePayloadStatuses,
+    'listOrganizerFormResponsesCallablePayload.statuses.items': listOrganizerFormResponsesCallablePayloadStatusesItems,
+    'listOrganizerFormResponsesCallablePayload.toMillis': listOrganizerFormResponsesCallablePayloadToMillis,
+    'listOrganizerFormResponsesCallablePayload.versionId': listOrganizerFormResponsesCallablePayloadVersionId,
+    'listOrganizerFormResponsesCallableResponse.items': listOrganizerFormResponsesCallableResponseItems,
+    'listOrganizerFormResponsesCallableResponse.items.items.conversionKinds': listOrganizerFormResponsesCallableResponseItemsItemsConversionKinds,
+    'listOrganizerFormResponsesCallableResponse.items.items.conversionKinds.items': listOrganizerFormResponsesCallableResponseItemsItemsConversionKindsItems,
+    'listOrganizerFormResponsesCallableResponse.items.items.formId': listOrganizerFormResponsesCallableResponseItemsItemsFormId,
+    'listOrganizerFormResponsesCallableResponse.items.items.formTitle': listOrganizerFormResponsesCallableResponseItemsItemsFormTitle,
+    'listOrganizerFormResponsesCallableResponse.items.items.highlights': listOrganizerFormResponsesCallableResponseItemsItemsHighlights,
+    'listOrganizerFormResponsesCallableResponse.items.items.highlights.items.answer': listOrganizerFormResponsesCallableResponseItemsItemsHighlightsItemsAnswer,
+    'listOrganizerFormResponsesCallableResponse.items.items.highlights.items.label': listOrganizerFormResponsesCallableResponseItemsItemsHighlightsItemsLabel,
+    'listOrganizerFormResponsesCallableResponse.items.items.highlights.items.questionId': listOrganizerFormResponsesCallableResponseItemsItemsHighlightsItemsQuestionId,
+    'listOrganizerFormResponsesCallableResponse.items.items.identity.displayName': listOrganizerFormResponsesCallableResponseItemsItemsIdentityDisplayName,
+    'listOrganizerFormResponsesCallableResponse.items.items.identity.email': listOrganizerFormResponsesCallableResponseItemsItemsIdentityEmail,
+    'listOrganizerFormResponsesCallableResponse.items.items.identity.origin': listOrganizerFormResponsesCallableResponseItemsItemsIdentityOrigin,
+    'listOrganizerFormResponsesCallableResponse.items.items.identity.phoneE164': listOrganizerFormResponsesCallableResponseItemsItemsIdentityPhoneE164,
+    'listOrganizerFormResponsesCallableResponse.items.items.identity.searchName': listOrganizerFormResponsesCallableResponseItemsItemsIdentitySearchName,
+    'listOrganizerFormResponsesCallableResponse.items.items.identityKind': listOrganizerFormResponsesCallableResponseItemsItemsIdentityKind,
+    'listOrganizerFormResponsesCallableResponse.items.items.responseId': listOrganizerFormResponsesCallableResponseItemsItemsResponseId,
+    'listOrganizerFormResponsesCallableResponse.items.items.sourceLabel': listOrganizerFormResponsesCallableResponseItemsItemsSourceLabel,
+    'listOrganizerFormResponsesCallableResponse.items.items.sourceLinkId': listOrganizerFormResponsesCallableResponseItemsItemsSourceLinkId,
+    'listOrganizerFormResponsesCallableResponse.items.items.status': listOrganizerFormResponsesCallableResponseItemsItemsStatus,
+    'listOrganizerFormResponsesCallableResponse.items.items.submittedAtMillis': listOrganizerFormResponsesCallableResponseItemsItemsSubmittedAtMillis,
+    'listOrganizerFormResponsesCallableResponse.items.items.version': listOrganizerFormResponsesCallableResponseItemsItemsVersion,
+    'listOrganizerFormResponsesCallableResponse.items.items.versionId': listOrganizerFormResponsesCallableResponseItemsItemsVersionId,
+    'listOrganizerFormResponsesCallableResponse.items.items.withdrawnAtMillis': listOrganizerFormResponsesCallableResponseItemsItemsWithdrawnAtMillis,
+    'listOrganizerFormResponsesCallableResponse.nextCursor': listOrganizerFormResponsesCallableResponseNextCursor,
+    'listOrganizerFormResponsesCallableResponse.organizerId': listOrganizerFormResponsesCallableResponseOrganizerId,
+    'listOrganizerFormsCallablePayload.cursor': listOrganizerFormsCallablePayloadCursor,
+    'listOrganizerFormsCallablePayload.limit': listOrganizerFormsCallablePayloadLimit,
+    'listOrganizerFormsCallablePayload.organizerId': listOrganizerFormsCallablePayloadOrganizerId,
+    'listOrganizerFormsCallablePayload.purposes': listOrganizerFormsCallablePayloadPurposes,
+    'listOrganizerFormsCallablePayload.purposes.items': listOrganizerFormsCallablePayloadPurposesItems,
+    'listOrganizerFormsCallablePayload.query': listOrganizerFormsCallablePayloadQuery,
+    'listOrganizerFormsCallablePayload.statuses': listOrganizerFormsCallablePayloadStatuses,
+    'listOrganizerFormsCallablePayload.statuses.items': listOrganizerFormsCallablePayloadStatusesItems,
+    'listOrganizerFormsCallableResponse.items': listOrganizerFormsCallableResponseItems,
+    'listOrganizerFormsCallableResponse.items.items.activeVersionId': listOrganizerFormsCallableResponseItemsItemsActiveVersionId,
+    'listOrganizerFormsCallableResponse.items.items.defaultTargetId': listOrganizerFormsCallableResponseItemsItemsDefaultTargetId,
+    'listOrganizerFormsCallableResponse.items.items.defaultTargetKind': listOrganizerFormsCallableResponseItemsItemsDefaultTargetKind,
+    'listOrganizerFormsCallableResponse.items.items.description': listOrganizerFormsCallableResponseItemsItemsDescription,
+    'listOrganizerFormsCallableResponse.items.items.draftRevision': listOrganizerFormsCallableResponseItemsItemsDraftRevision,
+    'listOrganizerFormsCallableResponse.items.items.formId': listOrganizerFormsCallableResponseItemsItemsFormId,
+    'listOrganizerFormsCallableResponse.items.items.lastResponseAtMillis': listOrganizerFormsCallableResponseItemsItemsLastResponseAtMillis,
+    'listOrganizerFormsCallableResponse.items.items.organizerId': listOrganizerFormsCallableResponseItemsItemsOrganizerId,
+    'listOrganizerFormsCallableResponse.items.items.publicFormId': listOrganizerFormsCallableResponseItemsItemsPublicFormId,
+    'listOrganizerFormsCallableResponse.items.items.publishedAtMillis': listOrganizerFormsCallableResponseItemsItemsPublishedAtMillis,
+    'listOrganizerFormsCallableResponse.items.items.publishedVersion': listOrganizerFormsCallableResponseItemsItemsPublishedVersion,
+    'listOrganizerFormsCallableResponse.items.items.purpose': listOrganizerFormsCallableResponseItemsItemsPurpose,
+    'listOrganizerFormsCallableResponse.items.items.status': listOrganizerFormsCallableResponseItemsItemsStatus,
+    'listOrganizerFormsCallableResponse.items.items.submittedResponseCount': listOrganizerFormsCallableResponseItemsItemsSubmittedResponseCount,
+    'listOrganizerFormsCallableResponse.items.items.templateId': listOrganizerFormsCallableResponseItemsItemsTemplateId,
+    'listOrganizerFormsCallableResponse.items.items.title': listOrganizerFormsCallableResponseItemsItemsTitle,
+    'listOrganizerFormsCallableResponse.items.items.updatedAtMillis': listOrganizerFormsCallableResponseItemsItemsUpdatedAtMillis,
+    'listOrganizerFormsCallableResponse.nextCursor': listOrganizerFormsCallableResponseNextCursor,
+    'listOrganizerFormsCallableResponse.organizerId': listOrganizerFormsCallableResponseOrganizerId,
+    'listOrganizerFormTemplatesCallablePayload.organizerId': listOrganizerFormTemplatesCallablePayloadOrganizerId,
+    'listOrganizerFormTemplatesCallableResponse.templates': listOrganizerFormTemplatesCallableResponseTemplates,
+    'listOrganizerFormTemplatesCallableResponse.templates.items.description': listOrganizerFormTemplatesCallableResponseTemplatesItemsDescription,
+    'listOrganizerFormTemplatesCallableResponse.templates.items.identityPolicy': listOrganizerFormTemplatesCallableResponseTemplatesItemsIdentityPolicy,
+    'listOrganizerFormTemplatesCallableResponse.templates.items.purpose': listOrganizerFormTemplatesCallableResponseTemplatesItemsPurpose,
+    'listOrganizerFormTemplatesCallableResponse.templates.items.questionCount': listOrganizerFormTemplatesCallableResponseTemplatesItemsQuestionCount,
+    'listOrganizerFormTemplatesCallableResponse.templates.items.sectionCount': listOrganizerFormTemplatesCallableResponseTemplatesItemsSectionCount,
+    'listOrganizerFormTemplatesCallableResponse.templates.items.templateId': listOrganizerFormTemplatesCallableResponseTemplatesItemsTemplateId,
+    'listOrganizerFormTemplatesCallableResponse.templates.items.title': listOrganizerFormTemplatesCallableResponseTemplatesItemsTitle,
+    'listOrganizerFormTemplatesCallableResponse.templates.items.version': listOrganizerFormTemplatesCallableResponseTemplatesItemsVersion,
     'listOrganizerLumaEventsCallablePayload.apiKey': listOrganizerLumaEventsCallablePayloadApiKey,
     'listOrganizerLumaEventsCallablePayload.eventId': listOrganizerLumaEventsCallablePayloadEventId,
     'listOrganizerLumaEventsCallablePayload.organizerId': listOrganizerLumaEventsCallablePayloadOrganizerId,
@@ -51646,6 +58476,394 @@ abstract final class CatchContractConstraints {
     'organizerFollowDocument.uid': organizerFollowDocumentUid,
     'organizerFollowDocument.unfollowedAt._nanoseconds': organizerFollowDocumentUnfollowedAtNanoseconds,
     'organizerFollowDocument.unfollowedAt._seconds': organizerFollowDocumentUnfollowedAtSeconds,
+    'organizerFormAggregateDocument.choiceCounts': organizerFormAggregateDocumentChoiceCounts,
+    'organizerFormAggregateDocument.choiceCounts.items.count': organizerFormAggregateDocumentChoiceCountsItemsCount,
+    'organizerFormAggregateDocument.choiceCounts.items.label': organizerFormAggregateDocumentChoiceCountsItemsLabel,
+    'organizerFormAggregateDocument.choiceCounts.items.value': organizerFormAggregateDocumentChoiceCountsItemsValue,
+    'organizerFormAggregateDocument.completionBuckets': organizerFormAggregateDocumentCompletionBuckets,
+    'organizerFormAggregateDocument.completionBuckets.items.count': organizerFormAggregateDocumentCompletionBucketsItemsCount,
+    'organizerFormAggregateDocument.completionBuckets.items.upperBoundMillis': organizerFormAggregateDocumentCompletionBucketsItemsUpperBoundMillis,
+    'organizerFormAggregateDocument.completionMillisTotal': organizerFormAggregateDocumentCompletionMillisTotal,
+    'organizerFormAggregateDocument.formId': organizerFormAggregateDocumentFormId,
+    'organizerFormAggregateDocument.numericCount': organizerFormAggregateDocumentNumericCount,
+    'organizerFormAggregateDocument.numericMax': organizerFormAggregateDocumentNumericMax,
+    'organizerFormAggregateDocument.numericMin': organizerFormAggregateDocumentNumericMin,
+    'organizerFormAggregateDocument.numericSum': organizerFormAggregateDocumentNumericSum,
+    'organizerFormAggregateDocument.opens': organizerFormAggregateDocumentOpens,
+    'organizerFormAggregateDocument.organizerId': organizerFormAggregateDocumentOrganizerId,
+    'organizerFormAggregateDocument.privacyClass': organizerFormAggregateDocumentPrivacyClass,
+    'organizerFormAggregateDocument.questionId': organizerFormAggregateDocumentQuestionId,
+    'organizerFormAggregateDocument.questionKind': organizerFormAggregateDocumentQuestionKind,
+    'organizerFormAggregateDocument.questionLabel': organizerFormAggregateDocumentQuestionLabel,
+    'organizerFormAggregateDocument.scope': organizerFormAggregateDocumentScope,
+    'organizerFormAggregateDocument.starts': organizerFormAggregateDocumentStarts,
+    'organizerFormAggregateDocument.submissions': organizerFormAggregateDocumentSubmissions,
+    'organizerFormAggregateDocument.updatedAt._nanoseconds': organizerFormAggregateDocumentUpdatedAtNanoseconds,
+    'organizerFormAggregateDocument.updatedAt._seconds': organizerFormAggregateDocumentUpdatedAtSeconds,
+    'organizerFormAggregateDocument.versionId': organizerFormAggregateDocumentVersionId,
+    'organizerFormAggregateDocument.withdrawals': organizerFormAggregateDocumentWithdrawals,
+    'organizerFormAggregateEventDocument.eventKind': organizerFormAggregateEventDocumentEventKind,
+    'organizerFormAggregateEventDocument.expiresAt._nanoseconds': organizerFormAggregateEventDocumentExpiresAtNanoseconds,
+    'organizerFormAggregateEventDocument.expiresAt._seconds': organizerFormAggregateEventDocumentExpiresAtSeconds,
+    'organizerFormAggregateEventDocument.formId': organizerFormAggregateEventDocumentFormId,
+    'organizerFormAggregateEventDocument.organizerId': organizerFormAggregateEventDocumentOrganizerId,
+    'organizerFormAggregateEventDocument.projectedAt._nanoseconds': organizerFormAggregateEventDocumentProjectedAtNanoseconds,
+    'organizerFormAggregateEventDocument.projectedAt._seconds': organizerFormAggregateEventDocumentProjectedAtSeconds,
+    'organizerFormAggregateEventDocument.responseId': organizerFormAggregateEventDocumentResponseId,
+    'organizerFormAggregateEventDocument.versionId': organizerFormAggregateEventDocumentVersionId,
+    'organizerFormAssetDocument.contentType': organizerFormAssetDocumentContentType,
+    'organizerFormAssetDocument.createdAt._nanoseconds': organizerFormAssetDocumentCreatedAtNanoseconds,
+    'organizerFormAssetDocument.createdAt._seconds': organizerFormAssetDocumentCreatedAtSeconds,
+    'organizerFormAssetDocument.declaredSha256': organizerFormAssetDocumentDeclaredSha256,
+    'organizerFormAssetDocument.declaredSizeBytes': organizerFormAssetDocumentDeclaredSizeBytes,
+    'organizerFormAssetDocument.deletedAt._nanoseconds': organizerFormAssetDocumentDeletedAtNanoseconds,
+    'organizerFormAssetDocument.deletedAt._seconds': organizerFormAssetDocumentDeletedAtSeconds,
+    'organizerFormAssetDocument.draftId': organizerFormAssetDocumentDraftId,
+    'organizerFormAssetDocument.expiresAt._nanoseconds': organizerFormAssetDocumentExpiresAtNanoseconds,
+    'organizerFormAssetDocument.expiresAt._seconds': organizerFormAssetDocumentExpiresAtSeconds,
+    'organizerFormAssetDocument.finalizedAt._nanoseconds': organizerFormAssetDocumentFinalizedAtNanoseconds,
+    'organizerFormAssetDocument.finalizedAt._seconds': organizerFormAssetDocumentFinalizedAtSeconds,
+    'organizerFormAssetDocument.formId': organizerFormAssetDocumentFormId,
+    'organizerFormAssetDocument.organizerId': organizerFormAssetDocumentOrganizerId,
+    'organizerFormAssetDocument.originalFileName': organizerFormAssetDocumentOriginalFileName,
+    'organizerFormAssetDocument.questionId': organizerFormAssetDocumentQuestionId,
+    'organizerFormAssetDocument.respondentUid': organizerFormAssetDocumentRespondentUid,
+    'organizerFormAssetDocument.sizeBytes': organizerFormAssetDocumentSizeBytes,
+    'organizerFormAssetDocument.status': organizerFormAssetDocumentStatus,
+    'organizerFormAssetDocument.storagePath': organizerFormAssetDocumentStoragePath,
+    'organizerFormAssetDocument.uploadTokenHash': organizerFormAssetDocumentUploadTokenHash,
+    'organizerFormAssetDocument.versionId': organizerFormAssetDocumentVersionId,
+    'organizerFormAutomationRuleDocument.actions': organizerFormAutomationRuleDocumentActions,
+    'organizerFormAutomationRuleDocument.actions.items.actionId': organizerFormAutomationRuleDocumentActionsItemsActionId,
+    'organizerFormAutomationRuleDocument.actions.items.channel': organizerFormAutomationRuleDocumentActionsItemsChannel,
+    'organizerFormAutomationRuleDocument.actions.items.eventId': organizerFormAutomationRuleDocumentActionsItemsEventId,
+    'organizerFormAutomationRuleDocument.actions.items.kind': organizerFormAutomationRuleDocumentActionsItemsKind,
+    'organizerFormAutomationRuleDocument.actions.items.tagId': organizerFormAutomationRuleDocumentActionsItemsTagId,
+    'organizerFormAutomationRuleDocument.actions.items.webhookSecret': organizerFormAutomationRuleDocumentActionsItemsWebhookSecret,
+    'organizerFormAutomationRuleDocument.actions.items.webhookUrl': organizerFormAutomationRuleDocumentActionsItemsWebhookUrl,
+    'organizerFormAutomationRuleDocument.condition.expectedValues': organizerFormAutomationRuleDocumentConditionExpectedValues,
+    'organizerFormAutomationRuleDocument.condition.expectedValues.items': organizerFormAutomationRuleDocumentConditionExpectedValuesItems,
+    'organizerFormAutomationRuleDocument.condition.operator': organizerFormAutomationRuleDocumentConditionOperator,
+    'organizerFormAutomationRuleDocument.condition.questionId': organizerFormAutomationRuleDocumentConditionQuestionId,
+    'organizerFormAutomationRuleDocument.createdAt._nanoseconds': organizerFormAutomationRuleDocumentCreatedAtNanoseconds,
+    'organizerFormAutomationRuleDocument.createdAt._seconds': organizerFormAutomationRuleDocumentCreatedAtSeconds,
+    'organizerFormAutomationRuleDocument.createdByUid': organizerFormAutomationRuleDocumentCreatedByUid,
+    'organizerFormAutomationRuleDocument.enabled': organizerFormAutomationRuleDocumentEnabled,
+    'organizerFormAutomationRuleDocument.formId': organizerFormAutomationRuleDocumentFormId,
+    'organizerFormAutomationRuleDocument.name': organizerFormAutomationRuleDocumentName,
+    'organizerFormAutomationRuleDocument.organizerId': organizerFormAutomationRuleDocumentOrganizerId,
+    'organizerFormAutomationRuleDocument.revision': organizerFormAutomationRuleDocumentRevision,
+    'organizerFormAutomationRuleDocument.trigger': organizerFormAutomationRuleDocumentTrigger,
+    'organizerFormAutomationRuleDocument.updatedAt._nanoseconds': organizerFormAutomationRuleDocumentUpdatedAtNanoseconds,
+    'organizerFormAutomationRuleDocument.updatedAt._seconds': organizerFormAutomationRuleDocumentUpdatedAtSeconds,
+    'organizerFormAutomationRuleDocument.updatedByUid': organizerFormAutomationRuleDocumentUpdatedByUid,
+    'organizerFormAutomationRunDocument.actionResults': organizerFormAutomationRunDocumentActionResults,
+    'organizerFormAutomationRunDocument.actionResults.items.actionId': organizerFormAutomationRunDocumentActionResultsItemsActionId,
+    'organizerFormAutomationRunDocument.actionResults.items.errorCode': organizerFormAutomationRunDocumentActionResultsItemsErrorCode,
+    'organizerFormAutomationRunDocument.actionResults.items.kind': organizerFormAutomationRunDocumentActionResultsItemsKind,
+    'organizerFormAutomationRunDocument.actionResults.items.resultId': organizerFormAutomationRunDocumentActionResultsItemsResultId,
+    'organizerFormAutomationRunDocument.actionResults.items.status': organizerFormAutomationRunDocumentActionResultsItemsStatus,
+    'organizerFormAutomationRunDocument.attemptCount': organizerFormAutomationRunDocumentAttemptCount,
+    'organizerFormAutomationRunDocument.completedAt._nanoseconds': organizerFormAutomationRunDocumentCompletedAtNanoseconds,
+    'organizerFormAutomationRunDocument.completedAt._seconds': organizerFormAutomationRunDocumentCompletedAtSeconds,
+    'organizerFormAutomationRunDocument.createdAt._nanoseconds': organizerFormAutomationRunDocumentCreatedAtNanoseconds,
+    'organizerFormAutomationRunDocument.createdAt._seconds': organizerFormAutomationRunDocumentCreatedAtSeconds,
+    'organizerFormAutomationRunDocument.errorCode': organizerFormAutomationRunDocumentErrorCode,
+    'organizerFormAutomationRunDocument.errorMessage': organizerFormAutomationRunDocumentErrorMessage,
+    'organizerFormAutomationRunDocument.eventKind': organizerFormAutomationRunDocumentEventKind,
+    'organizerFormAutomationRunDocument.formId': organizerFormAutomationRunDocumentFormId,
+    'organizerFormAutomationRunDocument.organizerId': organizerFormAutomationRunDocumentOrganizerId,
+    'organizerFormAutomationRunDocument.responseId': organizerFormAutomationRunDocumentResponseId,
+    'organizerFormAutomationRunDocument.ruleId': organizerFormAutomationRunDocumentRuleId,
+    'organizerFormAutomationRunDocument.ruleRevision': organizerFormAutomationRunDocumentRuleRevision,
+    'organizerFormAutomationRunDocument.status': organizerFormAutomationRunDocumentStatus,
+    'organizerFormAutomationRunDocument.updatedAt._nanoseconds': organizerFormAutomationRunDocumentUpdatedAtNanoseconds,
+    'organizerFormAutomationRunDocument.updatedAt._seconds': organizerFormAutomationRunDocumentUpdatedAtSeconds,
+    'organizerFormConversionReceiptDocument.actorUid': organizerFormConversionReceiptDocumentActorUid,
+    'organizerFormConversionReceiptDocument.completedAt._nanoseconds': organizerFormConversionReceiptDocumentCompletedAtNanoseconds,
+    'organizerFormConversionReceiptDocument.completedAt._seconds': organizerFormConversionReceiptDocumentCompletedAtSeconds,
+    'organizerFormConversionReceiptDocument.createdAt._nanoseconds': organizerFormConversionReceiptDocumentCreatedAtNanoseconds,
+    'organizerFormConversionReceiptDocument.createdAt._seconds': organizerFormConversionReceiptDocumentCreatedAtSeconds,
+    'organizerFormConversionReceiptDocument.fields': organizerFormConversionReceiptDocumentFields,
+    'organizerFormConversionReceiptDocument.fields.items.conflict': organizerFormConversionReceiptDocumentFieldsItemsConflict,
+    'organizerFormConversionReceiptDocument.fields.items.destinationField': organizerFormConversionReceiptDocumentFieldsItemsDestinationField,
+    'organizerFormConversionReceiptDocument.fields.items.label': organizerFormConversionReceiptDocumentFieldsItemsLabel,
+    'organizerFormConversionReceiptDocument.fields.items.origin': organizerFormConversionReceiptDocumentFieldsItemsOrigin,
+    'organizerFormConversionReceiptDocument.fields.items.value': organizerFormConversionReceiptDocumentFieldsItemsValue,
+    'organizerFormConversionReceiptDocument.formId': organizerFormConversionReceiptDocumentFormId,
+    'organizerFormConversionReceiptDocument.kind': organizerFormConversionReceiptDocumentKind,
+    'organizerFormConversionReceiptDocument.organizerId': organizerFormConversionReceiptDocumentOrganizerId,
+    'organizerFormConversionReceiptDocument.requestId': organizerFormConversionReceiptDocumentRequestId,
+    'organizerFormConversionReceiptDocument.responseId': organizerFormConversionReceiptDocumentResponseId,
+    'organizerFormConversionReceiptDocument.resultId': organizerFormConversionReceiptDocumentResultId,
+    'organizerFormConversionReceiptDocument.status': organizerFormConversionReceiptDocumentStatus,
+    'organizerFormConversionReceiptDocument.undoStatus': organizerFormConversionReceiptDocumentUndoStatus,
+    'organizerFormConversionReceiptDocument.updatedAt._nanoseconds': organizerFormConversionReceiptDocumentUpdatedAtNanoseconds,
+    'organizerFormConversionReceiptDocument.updatedAt._seconds': organizerFormConversionReceiptDocumentUpdatedAtSeconds,
+    'organizerFormDocument.activeVersionId': organizerFormDocumentActiveVersionId,
+    'organizerFormDocument.archivedAt._nanoseconds': organizerFormDocumentArchivedAtNanoseconds,
+    'organizerFormDocument.archivedAt._seconds': organizerFormDocumentArchivedAtSeconds,
+    'organizerFormDocument.createdAt._nanoseconds': organizerFormDocumentCreatedAtNanoseconds,
+    'organizerFormDocument.createdAt._seconds': organizerFormDocumentCreatedAtSeconds,
+    'organizerFormDocument.createdByUid': organizerFormDocumentCreatedByUid,
+    'organizerFormDocument.defaultTargetId': organizerFormDocumentDefaultTargetId,
+    'organizerFormDocument.defaultTargetKind': organizerFormDocumentDefaultTargetKind,
+    'organizerFormDocument.description': organizerFormDocumentDescription,
+    'organizerFormDocument.draftRevision': organizerFormDocumentDraftRevision,
+    'organizerFormDocument.lastResponseAt._nanoseconds': organizerFormDocumentLastResponseAtNanoseconds,
+    'organizerFormDocument.lastResponseAt._seconds': organizerFormDocumentLastResponseAtSeconds,
+    'organizerFormDocument.organizerId': organizerFormDocumentOrganizerId,
+    'organizerFormDocument.pausedAt._nanoseconds': organizerFormDocumentPausedAtNanoseconds,
+    'organizerFormDocument.pausedAt._seconds': organizerFormDocumentPausedAtSeconds,
+    'organizerFormDocument.publicFormId': organizerFormDocumentPublicFormId,
+    'organizerFormDocument.publishedAt._nanoseconds': organizerFormDocumentPublishedAtNanoseconds,
+    'organizerFormDocument.publishedAt._seconds': organizerFormDocumentPublishedAtSeconds,
+    'organizerFormDocument.publishedVersion': organizerFormDocumentPublishedVersion,
+    'organizerFormDocument.purpose': organizerFormDocumentPurpose,
+    'organizerFormDocument.status': organizerFormDocumentStatus,
+    'organizerFormDocument.submittedResponseCount': organizerFormDocumentSubmittedResponseCount,
+    'organizerFormDocument.templateId': organizerFormDocumentTemplateId,
+    'organizerFormDocument.title': organizerFormDocumentTitle,
+    'organizerFormDocument.updatedAt._nanoseconds': organizerFormDocumentUpdatedAtNanoseconds,
+    'organizerFormDocument.updatedAt._seconds': organizerFormDocumentUpdatedAtSeconds,
+    'organizerFormDraftDocument.createdAt._nanoseconds': organizerFormDraftDocumentCreatedAtNanoseconds,
+    'organizerFormDraftDocument.createdAt._seconds': organizerFormDraftDocumentCreatedAtSeconds,
+    'organizerFormDraftDocument.definition.appearance.activityKind': organizerFormDraftDocumentDefinitionAppearanceActivityKind,
+    'organizerFormDraftDocument.definition.appearance.coverAssetId': organizerFormDraftDocumentDefinitionAppearanceCoverAssetId,
+    'organizerFormDraftDocument.definition.appearance.logoAssetId': organizerFormDraftDocumentDefinitionAppearanceLogoAssetId,
+    'organizerFormDraftDocument.definition.appearance.preset': organizerFormDraftDocumentDefinitionAppearancePreset,
+    'organizerFormDraftDocument.definition.availability.closedMessage': organizerFormDraftDocumentDefinitionAvailabilityClosedMessage,
+    'organizerFormDraftDocument.definition.availability.closesAt._nanoseconds': organizerFormDraftDocumentDefinitionAvailabilityClosesAtNanoseconds,
+    'organizerFormDraftDocument.definition.availability.closesAt._seconds': organizerFormDraftDocumentDefinitionAvailabilityClosesAtSeconds,
+    'organizerFormDraftDocument.definition.availability.opensAt._nanoseconds': organizerFormDraftDocumentDefinitionAvailabilityOpensAtNanoseconds,
+    'organizerFormDraftDocument.definition.availability.opensAt._seconds': organizerFormDraftDocumentDefinitionAvailabilityOpensAtSeconds,
+    'organizerFormDraftDocument.definition.availability.responseLimit': organizerFormDraftDocumentDefinitionAvailabilityResponseLimit,
+    'organizerFormDraftDocument.definition.completion.actionKind': organizerFormDraftDocumentDefinitionCompletionActionKind,
+    'organizerFormDraftDocument.definition.completion.actionLabel': organizerFormDraftDocumentDefinitionCompletionActionLabel,
+    'organizerFormDraftDocument.definition.completion.actionUrl': organizerFormDraftDocumentDefinitionCompletionActionUrl,
+    'organizerFormDraftDocument.definition.completion.message': organizerFormDraftDocumentDefinitionCompletionMessage,
+    'organizerFormDraftDocument.definition.completion.title': organizerFormDraftDocumentDefinitionCompletionTitle,
+    'organizerFormDraftDocument.definition.consent.consentCopy': organizerFormDraftDocumentDefinitionConsentConsentCopy,
+    'organizerFormDraftDocument.definition.consent.consentVersion': organizerFormDraftDocumentDefinitionConsentConsentVersion,
+    'organizerFormDraftDocument.definition.consent.retentionCopy': organizerFormDraftDocumentDefinitionConsentRetentionCopy,
+    'organizerFormDraftDocument.definition.defaultTargetId': organizerFormDraftDocumentDefinitionDefaultTargetId,
+    'organizerFormDraftDocument.definition.defaultTargetKind': organizerFormDraftDocumentDefinitionDefaultTargetKind,
+    'organizerFormDraftDocument.definition.description': organizerFormDraftDocumentDefinitionDescription,
+    'organizerFormDraftDocument.definition.identityPolicy': organizerFormDraftDocumentDefinitionIdentityPolicy,
+    'organizerFormDraftDocument.definition.logicRules': organizerFormDraftDocumentDefinitionLogicRules,
+    'organizerFormDraftDocument.definition.logicRules.items.action': organizerFormDraftDocumentDefinitionLogicRulesItemsAction,
+    'organizerFormDraftDocument.definition.logicRules.items.conditionMode': organizerFormDraftDocumentDefinitionLogicRulesItemsConditionMode,
+    'organizerFormDraftDocument.definition.logicRules.items.conditions': organizerFormDraftDocumentDefinitionLogicRulesItemsConditions,
+    'organizerFormDraftDocument.definition.logicRules.items.conditions.items.expectedValues': organizerFormDraftDocumentDefinitionLogicRulesItemsConditionsItemsExpectedValues,
+    'organizerFormDraftDocument.definition.logicRules.items.conditions.items.expectedValues.items': organizerFormDraftDocumentDefinitionLogicRulesItemsConditionsItemsExpectedValuesItems,
+    'organizerFormDraftDocument.definition.logicRules.items.conditions.items.operator': organizerFormDraftDocumentDefinitionLogicRulesItemsConditionsItemsOperator,
+    'organizerFormDraftDocument.definition.logicRules.items.conditions.items.questionId': organizerFormDraftDocumentDefinitionLogicRulesItemsConditionsItemsQuestionId,
+    'organizerFormDraftDocument.definition.logicRules.items.ruleId': organizerFormDraftDocumentDefinitionLogicRulesItemsRuleId,
+    'organizerFormDraftDocument.definition.logicRules.items.targetQuestionId': organizerFormDraftDocumentDefinitionLogicRulesItemsTargetQuestionId,
+    'organizerFormDraftDocument.definition.logicRules.items.targetSectionId': organizerFormDraftDocumentDefinitionLogicRulesItemsTargetSectionId,
+    'organizerFormDraftDocument.definition.purpose': organizerFormDraftDocumentDefinitionPurpose,
+    'organizerFormDraftDocument.definition.sections': organizerFormDraftDocumentDefinitionSections,
+    'organizerFormDraftDocument.definition.sections.items.description': organizerFormDraftDocumentDefinitionSectionsItemsDescription,
+    'organizerFormDraftDocument.definition.sections.items.pageBreak': organizerFormDraftDocumentDefinitionSectionsItemsPageBreak,
+    'organizerFormDraftDocument.definition.sections.items.questions': organizerFormDraftDocumentDefinitionSectionsItemsQuestions,
+    'organizerFormDraftDocument.definition.sections.items.questions.items.canonicalFieldId': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsCanonicalFieldId,
+    'organizerFormDraftDocument.definition.sections.items.questions.items.helpText': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsHelpText,
+    'organizerFormDraftDocument.definition.sections.items.questions.items.hostPresentation': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsHostPresentation,
+    'organizerFormDraftDocument.definition.sections.items.questions.items.key': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsKey,
+    'organizerFormDraftDocument.definition.sections.items.questions.items.kind': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsKind,
+    'organizerFormDraftDocument.definition.sections.items.questions.items.label': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsLabel,
+    'organizerFormDraftDocument.definition.sections.items.questions.items.options': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsOptions,
+    'organizerFormDraftDocument.definition.sections.items.questions.items.options.items.label': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsOptionsItemsLabel,
+    'organizerFormDraftDocument.definition.sections.items.questions.items.options.items.optionId': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsOptionsItemsOptionId,
+    'organizerFormDraftDocument.definition.sections.items.questions.items.options.items.value': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsOptionsItemsValue,
+    'organizerFormDraftDocument.definition.sections.items.questions.items.prefillPolicy': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsPrefillPolicy,
+    'organizerFormDraftDocument.definition.sections.items.questions.items.privacyClass': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsPrivacyClass,
+    'organizerFormDraftDocument.definition.sections.items.questions.items.questionId': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsQuestionId,
+    'organizerFormDraftDocument.definition.sections.items.questions.items.required': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsRequired,
+    'organizerFormDraftDocument.definition.sections.items.questions.items.validation.allowedMimeTypes': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationAllowedMimeTypes,
+    'organizerFormDraftDocument.definition.sections.items.questions.items.validation.allowedMimeTypes.items': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationAllowedMimeTypesItems,
+    'organizerFormDraftDocument.definition.sections.items.questions.items.validation.customError': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationCustomError,
+    'organizerFormDraftDocument.definition.sections.items.questions.items.validation.earliestDate': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationEarliestDate,
+    'organizerFormDraftDocument.definition.sections.items.questions.items.validation.latestDate': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationLatestDate,
+    'organizerFormDraftDocument.definition.sections.items.questions.items.validation.maxFileCount': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationMaxFileCount,
+    'organizerFormDraftDocument.definition.sections.items.questions.items.validation.maxFileSizeBytes': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationMaxFileSizeBytes,
+    'organizerFormDraftDocument.definition.sections.items.questions.items.validation.maxLength': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationMaxLength,
+    'organizerFormDraftDocument.definition.sections.items.questions.items.validation.maxNumber': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationMaxNumber,
+    'organizerFormDraftDocument.definition.sections.items.questions.items.validation.maxSelections': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationMaxSelections,
+    'organizerFormDraftDocument.definition.sections.items.questions.items.validation.minLength': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationMinLength,
+    'organizerFormDraftDocument.definition.sections.items.questions.items.validation.minNumber': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationMinNumber,
+    'organizerFormDraftDocument.definition.sections.items.questions.items.validation.minSelections': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationMinSelections,
+    'organizerFormDraftDocument.definition.sections.items.questions.items.validation.patternPreset': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationPatternPreset,
+    'organizerFormDraftDocument.definition.sections.items.sectionId': organizerFormDraftDocumentDefinitionSectionsItemsSectionId,
+    'organizerFormDraftDocument.definition.sections.items.title': organizerFormDraftDocumentDefinitionSectionsItemsTitle,
+    'organizerFormDraftDocument.definition.title': organizerFormDraftDocumentDefinitionTitle,
+    'organizerFormDraftDocument.formId': organizerFormDraftDocumentFormId,
+    'organizerFormDraftDocument.organizerId': organizerFormDraftDocumentOrganizerId,
+    'organizerFormDraftDocument.revision': organizerFormDraftDocumentRevision,
+    'organizerFormDraftDocument.updatedAt._nanoseconds': organizerFormDraftDocumentUpdatedAtNanoseconds,
+    'organizerFormDraftDocument.updatedAt._seconds': organizerFormDraftDocumentUpdatedAtSeconds,
+    'organizerFormDraftDocument.updatedByUid': organizerFormDraftDocumentUpdatedByUid,
+    'organizerFormExportDocument.completedAt._nanoseconds': organizerFormExportDocumentCompletedAtNanoseconds,
+    'organizerFormExportDocument.completedAt._seconds': organizerFormExportDocumentCompletedAtSeconds,
+    'organizerFormExportDocument.createdAt._nanoseconds': organizerFormExportDocumentCreatedAtNanoseconds,
+    'organizerFormExportDocument.createdAt._seconds': organizerFormExportDocumentCreatedAtSeconds,
+    'organizerFormExportDocument.errorCode': organizerFormExportDocumentErrorCode,
+    'organizerFormExportDocument.errorMessage': organizerFormExportDocumentErrorMessage,
+    'organizerFormExportDocument.expiresAt._nanoseconds': organizerFormExportDocumentExpiresAtNanoseconds,
+    'organizerFormExportDocument.expiresAt._seconds': organizerFormExportDocumentExpiresAtSeconds,
+    'organizerFormExportDocument.format': organizerFormExportDocumentFormat,
+    'organizerFormExportDocument.formId': organizerFormExportDocumentFormId,
+    'organizerFormExportDocument.fromMillis': organizerFormExportDocumentFromMillis,
+    'organizerFormExportDocument.organizerId': organizerFormExportDocumentOrganizerId,
+    'organizerFormExportDocument.requestedByUid': organizerFormExportDocumentRequestedByUid,
+    'organizerFormExportDocument.requestId': organizerFormExportDocumentRequestId,
+    'organizerFormExportDocument.rowCount': organizerFormExportDocumentRowCount,
+    'organizerFormExportDocument.status': organizerFormExportDocumentStatus,
+    'organizerFormExportDocument.statuses': organizerFormExportDocumentStatuses,
+    'organizerFormExportDocument.statuses.items': organizerFormExportDocumentStatusesItems,
+    'organizerFormExportDocument.storagePath': organizerFormExportDocumentStoragePath,
+    'organizerFormExportDocument.toMillis': organizerFormExportDocumentToMillis,
+    'organizerFormExportDocument.updatedAt._nanoseconds': organizerFormExportDocumentUpdatedAtNanoseconds,
+    'organizerFormExportDocument.updatedAt._seconds': organizerFormExportDocumentUpdatedAtSeconds,
+    'organizerFormExportDocument.versionId': organizerFormExportDocumentVersionId,
+    'organizerFormResponseDocument.answers': organizerFormResponseDocumentAnswers,
+    'organizerFormResponseDocument.answerSnapshots': organizerFormResponseDocumentAnswerSnapshots,
+    'organizerFormResponseDocument.answerSnapshots.items.answer': organizerFormResponseDocumentAnswerSnapshotsItemsAnswer,
+    'organizerFormResponseDocument.answerSnapshots.items.key': organizerFormResponseDocumentAnswerSnapshotsItemsKey,
+    'organizerFormResponseDocument.answerSnapshots.items.kind': organizerFormResponseDocumentAnswerSnapshotsItemsKind,
+    'organizerFormResponseDocument.answerSnapshots.items.label': organizerFormResponseDocumentAnswerSnapshotsItemsLabel,
+    'organizerFormResponseDocument.answerSnapshots.items.questionId': organizerFormResponseDocumentAnswerSnapshotsItemsQuestionId,
+    'organizerFormResponseDocument.completionMillis': organizerFormResponseDocumentCompletionMillis,
+    'organizerFormResponseDocument.consentVersion': organizerFormResponseDocumentConsentVersion,
+    'organizerFormResponseDocument.draftId': organizerFormResponseDocumentDraftId,
+    'organizerFormResponseDocument.formId': organizerFormResponseDocumentFormId,
+    'organizerFormResponseDocument.identity.displayName': organizerFormResponseDocumentIdentityDisplayName,
+    'organizerFormResponseDocument.identity.email': organizerFormResponseDocumentIdentityEmail,
+    'organizerFormResponseDocument.identity.origin': organizerFormResponseDocumentIdentityOrigin,
+    'organizerFormResponseDocument.identity.phoneE164': organizerFormResponseDocumentIdentityPhoneE164,
+    'organizerFormResponseDocument.identity.searchName': organizerFormResponseDocumentIdentitySearchName,
+    'organizerFormResponseDocument.identityKind': organizerFormResponseDocumentIdentityKind,
+    'organizerFormResponseDocument.organizerId': organizerFormResponseDocumentOrganizerId,
+    'organizerFormResponseDocument.publicFormId': organizerFormResponseDocumentPublicFormId,
+    'organizerFormResponseDocument.respondentUid': organizerFormResponseDocumentRespondentUid,
+    'organizerFormResponseDocument.sourceLinkId': organizerFormResponseDocumentSourceLinkId,
+    'organizerFormResponseDocument.status': organizerFormResponseDocumentStatus,
+    'organizerFormResponseDocument.submittedAt._nanoseconds': organizerFormResponseDocumentSubmittedAtNanoseconds,
+    'organizerFormResponseDocument.submittedAt._seconds': organizerFormResponseDocumentSubmittedAtSeconds,
+    'organizerFormResponseDocument.versionId': organizerFormResponseDocumentVersionId,
+    'organizerFormResponseDocument.withdrawalTokenHash': organizerFormResponseDocumentWithdrawalTokenHash,
+    'organizerFormResponseDocument.withdrawnAt._nanoseconds': organizerFormResponseDocumentWithdrawnAtNanoseconds,
+    'organizerFormResponseDocument.withdrawnAt._seconds': organizerFormResponseDocumentWithdrawnAtSeconds,
+    'organizerFormResponseDraftDocument.answers': organizerFormResponseDraftDocumentAnswers,
+    'organizerFormResponseDraftDocument.consentAccepted': organizerFormResponseDraftDocumentConsentAccepted,
+    'organizerFormResponseDraftDocument.consentVersion': organizerFormResponseDraftDocumentConsentVersion,
+    'organizerFormResponseDraftDocument.createdAt._nanoseconds': organizerFormResponseDraftDocumentCreatedAtNanoseconds,
+    'organizerFormResponseDraftDocument.createdAt._seconds': organizerFormResponseDraftDocumentCreatedAtSeconds,
+    'organizerFormResponseDraftDocument.draftTokenHash': organizerFormResponseDraftDocumentDraftTokenHash,
+    'organizerFormResponseDraftDocument.expiresAt._nanoseconds': organizerFormResponseDraftDocumentExpiresAtNanoseconds,
+    'organizerFormResponseDraftDocument.expiresAt._seconds': organizerFormResponseDraftDocumentExpiresAtSeconds,
+    'organizerFormResponseDraftDocument.formId': organizerFormResponseDraftDocumentFormId,
+    'organizerFormResponseDraftDocument.identityKind': organizerFormResponseDraftDocumentIdentityKind,
+    'organizerFormResponseDraftDocument.organizerId': organizerFormResponseDraftDocumentOrganizerId,
+    'organizerFormResponseDraftDocument.publicFormId': organizerFormResponseDraftDocumentPublicFormId,
+    'organizerFormResponseDraftDocument.respondentUid': organizerFormResponseDraftDocumentRespondentUid,
+    'organizerFormResponseDraftDocument.revision': organizerFormResponseDraftDocumentRevision,
+    'organizerFormResponseDraftDocument.sourceLinkId': organizerFormResponseDraftDocumentSourceLinkId,
+    'organizerFormResponseDraftDocument.status': organizerFormResponseDraftDocumentStatus,
+    'organizerFormResponseDraftDocument.submittedResponseId': organizerFormResponseDraftDocumentSubmittedResponseId,
+    'organizerFormResponseDraftDocument.updatedAt._nanoseconds': organizerFormResponseDraftDocumentUpdatedAtNanoseconds,
+    'organizerFormResponseDraftDocument.updatedAt._seconds': organizerFormResponseDraftDocumentUpdatedAtSeconds,
+    'organizerFormResponseDraftDocument.versionId': organizerFormResponseDraftDocumentVersionId,
+    'organizerFormShareLinkDocument.createdAt._nanoseconds': organizerFormShareLinkDocumentCreatedAtNanoseconds,
+    'organizerFormShareLinkDocument.createdAt._seconds': organizerFormShareLinkDocumentCreatedAtSeconds,
+    'organizerFormShareLinkDocument.createdByUid': organizerFormShareLinkDocumentCreatedByUid,
+    'organizerFormShareLinkDocument.formId': organizerFormShareLinkDocumentFormId,
+    'organizerFormShareLinkDocument.label': organizerFormShareLinkDocumentLabel,
+    'organizerFormShareLinkDocument.openCount': organizerFormShareLinkDocumentOpenCount,
+    'organizerFormShareLinkDocument.organizerId': organizerFormShareLinkDocumentOrganizerId,
+    'organizerFormShareLinkDocument.publicFormId': organizerFormShareLinkDocumentPublicFormId,
+    'organizerFormShareLinkDocument.source': organizerFormShareLinkDocumentSource,
+    'organizerFormShareLinkDocument.startCount': organizerFormShareLinkDocumentStartCount,
+    'organizerFormShareLinkDocument.submissionCount': organizerFormShareLinkDocumentSubmissionCount,
+    'organizerFormShareLinkDocument.tokenHash': organizerFormShareLinkDocumentTokenHash,
+    'organizerFormVersionDocument.createdAt._nanoseconds': organizerFormVersionDocumentCreatedAtNanoseconds,
+    'organizerFormVersionDocument.createdAt._seconds': organizerFormVersionDocumentCreatedAtSeconds,
+    'organizerFormVersionDocument.createdByUid': organizerFormVersionDocumentCreatedByUid,
+    'organizerFormVersionDocument.definition.appearance.activityKind': organizerFormVersionDocumentDefinitionAppearanceActivityKind,
+    'organizerFormVersionDocument.definition.appearance.coverAssetId': organizerFormVersionDocumentDefinitionAppearanceCoverAssetId,
+    'organizerFormVersionDocument.definition.appearance.logoAssetId': organizerFormVersionDocumentDefinitionAppearanceLogoAssetId,
+    'organizerFormVersionDocument.definition.appearance.preset': organizerFormVersionDocumentDefinitionAppearancePreset,
+    'organizerFormVersionDocument.definition.availability.closedMessage': organizerFormVersionDocumentDefinitionAvailabilityClosedMessage,
+    'organizerFormVersionDocument.definition.availability.closesAt._nanoseconds': organizerFormVersionDocumentDefinitionAvailabilityClosesAtNanoseconds,
+    'organizerFormVersionDocument.definition.availability.closesAt._seconds': organizerFormVersionDocumentDefinitionAvailabilityClosesAtSeconds,
+    'organizerFormVersionDocument.definition.availability.opensAt._nanoseconds': organizerFormVersionDocumentDefinitionAvailabilityOpensAtNanoseconds,
+    'organizerFormVersionDocument.definition.availability.opensAt._seconds': organizerFormVersionDocumentDefinitionAvailabilityOpensAtSeconds,
+    'organizerFormVersionDocument.definition.availability.responseLimit': organizerFormVersionDocumentDefinitionAvailabilityResponseLimit,
+    'organizerFormVersionDocument.definition.completion.actionKind': organizerFormVersionDocumentDefinitionCompletionActionKind,
+    'organizerFormVersionDocument.definition.completion.actionLabel': organizerFormVersionDocumentDefinitionCompletionActionLabel,
+    'organizerFormVersionDocument.definition.completion.actionUrl': organizerFormVersionDocumentDefinitionCompletionActionUrl,
+    'organizerFormVersionDocument.definition.completion.message': organizerFormVersionDocumentDefinitionCompletionMessage,
+    'organizerFormVersionDocument.definition.completion.title': organizerFormVersionDocumentDefinitionCompletionTitle,
+    'organizerFormVersionDocument.definition.consent.consentCopy': organizerFormVersionDocumentDefinitionConsentConsentCopy,
+    'organizerFormVersionDocument.definition.consent.consentVersion': organizerFormVersionDocumentDefinitionConsentConsentVersion,
+    'organizerFormVersionDocument.definition.consent.retentionCopy': organizerFormVersionDocumentDefinitionConsentRetentionCopy,
+    'organizerFormVersionDocument.definition.defaultTargetId': organizerFormVersionDocumentDefinitionDefaultTargetId,
+    'organizerFormVersionDocument.definition.defaultTargetKind': organizerFormVersionDocumentDefinitionDefaultTargetKind,
+    'organizerFormVersionDocument.definition.description': organizerFormVersionDocumentDefinitionDescription,
+    'organizerFormVersionDocument.definition.identityPolicy': organizerFormVersionDocumentDefinitionIdentityPolicy,
+    'organizerFormVersionDocument.definition.logicRules': organizerFormVersionDocumentDefinitionLogicRules,
+    'organizerFormVersionDocument.definition.logicRules.items.action': organizerFormVersionDocumentDefinitionLogicRulesItemsAction,
+    'organizerFormVersionDocument.definition.logicRules.items.conditionMode': organizerFormVersionDocumentDefinitionLogicRulesItemsConditionMode,
+    'organizerFormVersionDocument.definition.logicRules.items.conditions': organizerFormVersionDocumentDefinitionLogicRulesItemsConditions,
+    'organizerFormVersionDocument.definition.logicRules.items.conditions.items.expectedValues': organizerFormVersionDocumentDefinitionLogicRulesItemsConditionsItemsExpectedValues,
+    'organizerFormVersionDocument.definition.logicRules.items.conditions.items.expectedValues.items': organizerFormVersionDocumentDefinitionLogicRulesItemsConditionsItemsExpectedValuesItems,
+    'organizerFormVersionDocument.definition.logicRules.items.conditions.items.operator': organizerFormVersionDocumentDefinitionLogicRulesItemsConditionsItemsOperator,
+    'organizerFormVersionDocument.definition.logicRules.items.conditions.items.questionId': organizerFormVersionDocumentDefinitionLogicRulesItemsConditionsItemsQuestionId,
+    'organizerFormVersionDocument.definition.logicRules.items.ruleId': organizerFormVersionDocumentDefinitionLogicRulesItemsRuleId,
+    'organizerFormVersionDocument.definition.logicRules.items.targetQuestionId': organizerFormVersionDocumentDefinitionLogicRulesItemsTargetQuestionId,
+    'organizerFormVersionDocument.definition.logicRules.items.targetSectionId': organizerFormVersionDocumentDefinitionLogicRulesItemsTargetSectionId,
+    'organizerFormVersionDocument.definition.purpose': organizerFormVersionDocumentDefinitionPurpose,
+    'organizerFormVersionDocument.definition.sections': organizerFormVersionDocumentDefinitionSections,
+    'organizerFormVersionDocument.definition.sections.items.description': organizerFormVersionDocumentDefinitionSectionsItemsDescription,
+    'organizerFormVersionDocument.definition.sections.items.pageBreak': organizerFormVersionDocumentDefinitionSectionsItemsPageBreak,
+    'organizerFormVersionDocument.definition.sections.items.questions': organizerFormVersionDocumentDefinitionSectionsItemsQuestions,
+    'organizerFormVersionDocument.definition.sections.items.questions.items.canonicalFieldId': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsCanonicalFieldId,
+    'organizerFormVersionDocument.definition.sections.items.questions.items.helpText': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsHelpText,
+    'organizerFormVersionDocument.definition.sections.items.questions.items.hostPresentation': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsHostPresentation,
+    'organizerFormVersionDocument.definition.sections.items.questions.items.key': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsKey,
+    'organizerFormVersionDocument.definition.sections.items.questions.items.kind': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsKind,
+    'organizerFormVersionDocument.definition.sections.items.questions.items.label': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsLabel,
+    'organizerFormVersionDocument.definition.sections.items.questions.items.options': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsOptions,
+    'organizerFormVersionDocument.definition.sections.items.questions.items.options.items.label': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsOptionsItemsLabel,
+    'organizerFormVersionDocument.definition.sections.items.questions.items.options.items.optionId': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsOptionsItemsOptionId,
+    'organizerFormVersionDocument.definition.sections.items.questions.items.options.items.value': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsOptionsItemsValue,
+    'organizerFormVersionDocument.definition.sections.items.questions.items.prefillPolicy': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsPrefillPolicy,
+    'organizerFormVersionDocument.definition.sections.items.questions.items.privacyClass': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsPrivacyClass,
+    'organizerFormVersionDocument.definition.sections.items.questions.items.questionId': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsQuestionId,
+    'organizerFormVersionDocument.definition.sections.items.questions.items.required': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsRequired,
+    'organizerFormVersionDocument.definition.sections.items.questions.items.validation.allowedMimeTypes': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsValidationAllowedMimeTypes,
+    'organizerFormVersionDocument.definition.sections.items.questions.items.validation.allowedMimeTypes.items': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsValidationAllowedMimeTypesItems,
+    'organizerFormVersionDocument.definition.sections.items.questions.items.validation.customError': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsValidationCustomError,
+    'organizerFormVersionDocument.definition.sections.items.questions.items.validation.earliestDate': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsValidationEarliestDate,
+    'organizerFormVersionDocument.definition.sections.items.questions.items.validation.latestDate': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsValidationLatestDate,
+    'organizerFormVersionDocument.definition.sections.items.questions.items.validation.maxFileCount': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsValidationMaxFileCount,
+    'organizerFormVersionDocument.definition.sections.items.questions.items.validation.maxFileSizeBytes': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsValidationMaxFileSizeBytes,
+    'organizerFormVersionDocument.definition.sections.items.questions.items.validation.maxLength': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsValidationMaxLength,
+    'organizerFormVersionDocument.definition.sections.items.questions.items.validation.maxNumber': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsValidationMaxNumber,
+    'organizerFormVersionDocument.definition.sections.items.questions.items.validation.maxSelections': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsValidationMaxSelections,
+    'organizerFormVersionDocument.definition.sections.items.questions.items.validation.minLength': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsValidationMinLength,
+    'organizerFormVersionDocument.definition.sections.items.questions.items.validation.minNumber': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsValidationMinNumber,
+    'organizerFormVersionDocument.definition.sections.items.questions.items.validation.minSelections': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsValidationMinSelections,
+    'organizerFormVersionDocument.definition.sections.items.questions.items.validation.patternPreset': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsValidationPatternPreset,
+    'organizerFormVersionDocument.definition.sections.items.sectionId': organizerFormVersionDocumentDefinitionSectionsItemsSectionId,
+    'organizerFormVersionDocument.definition.sections.items.title': organizerFormVersionDocumentDefinitionSectionsItemsTitle,
+    'organizerFormVersionDocument.definition.title': organizerFormVersionDocumentDefinitionTitle,
+    'organizerFormVersionDocument.formId': organizerFormVersionDocumentFormId,
+    'organizerFormVersionDocument.organizerId': organizerFormVersionDocumentOrganizerId,
+    'organizerFormVersionDocument.publishedAt._nanoseconds': organizerFormVersionDocumentPublishedAtNanoseconds,
+    'organizerFormVersionDocument.publishedAt._seconds': organizerFormVersionDocumentPublishedAtSeconds,
+    'organizerFormVersionDocument.sourceDraftRevision': organizerFormVersionDocumentSourceDraftRevision,
+    'organizerFormVersionDocument.version': organizerFormVersionDocumentVersion,
     'organizerIntakeCurationDecisionDocument.decision': organizerIntakeCurationDecisionDocumentDecision,
     'organizerIntakeCurationDecisionDocument.entityId': organizerIntakeCurationDecisionDocumentEntityId,
     'organizerIntakeCurationDecisionDocument.fieldProvenance': organizerIntakeCurationDecisionDocumentFieldProvenance,
@@ -52159,6 +59377,26 @@ abstract final class CatchContractConstraints {
     'previewOrganizerApplicationImportCallableResponse.sampleRows.items.errors.items.questionId': previewOrganizerApplicationImportCallableResponseSampleRowsItemsErrorsItemsQuestionId,
     'previewOrganizerApplicationImportCallableResponse.sampleRows.items.rowId': previewOrganizerApplicationImportCallableResponseSampleRowsItemsRowId,
     'previewOrganizerApplicationImportCallableResponse.validRowCount': previewOrganizerApplicationImportCallableResponseValidRowCount,
+    'previewOrganizerFormConversionCallablePayload.eventId': previewOrganizerFormConversionCallablePayloadEventId,
+    'previewOrganizerFormConversionCallablePayload.kind': previewOrganizerFormConversionCallablePayloadKind,
+    'previewOrganizerFormConversionCallablePayload.organizerId': previewOrganizerFormConversionCallablePayloadOrganizerId,
+    'previewOrganizerFormConversionCallablePayload.overrides': previewOrganizerFormConversionCallablePayloadOverrides,
+    'previewOrganizerFormConversionCallablePayload.responseId': previewOrganizerFormConversionCallablePayloadResponseId,
+    'previewOrganizerFormConversionCallableResponse.allowed': previewOrganizerFormConversionCallableResponseAllowed,
+    'previewOrganizerFormConversionCallableResponse.eventId': previewOrganizerFormConversionCallableResponseEventId,
+    'previewOrganizerFormConversionCallableResponse.existingResultId': previewOrganizerFormConversionCallableResponseExistingResultId,
+    'previewOrganizerFormConversionCallableResponse.fields': previewOrganizerFormConversionCallableResponseFields,
+    'previewOrganizerFormConversionCallableResponse.fields.items.conflict': previewOrganizerFormConversionCallableResponseFieldsItemsConflict,
+    'previewOrganizerFormConversionCallableResponse.fields.items.destinationField': previewOrganizerFormConversionCallableResponseFieldsItemsDestinationField,
+    'previewOrganizerFormConversionCallableResponse.fields.items.label': previewOrganizerFormConversionCallableResponseFieldsItemsLabel,
+    'previewOrganizerFormConversionCallableResponse.fields.items.origin': previewOrganizerFormConversionCallableResponseFieldsItemsOrigin,
+    'previewOrganizerFormConversionCallableResponse.fields.items.value': previewOrganizerFormConversionCallableResponseFieldsItemsValue,
+    'previewOrganizerFormConversionCallableResponse.formId': previewOrganizerFormConversionCallableResponseFormId,
+    'previewOrganizerFormConversionCallableResponse.kind': previewOrganizerFormConversionCallableResponseKind,
+    'previewOrganizerFormConversionCallableResponse.organizerId': previewOrganizerFormConversionCallableResponseOrganizerId,
+    'previewOrganizerFormConversionCallableResponse.responseId': previewOrganizerFormConversionCallableResponseResponseId,
+    'previewOrganizerFormConversionCallableResponse.warnings': previewOrganizerFormConversionCallableResponseWarnings,
+    'previewOrganizerFormConversionCallableResponse.warnings.items': previewOrganizerFormConversionCallableResponseWarningsItems,
     'profilePhoto.createdAt._nanoseconds': profilePhotoCreatedAtNanoseconds,
     'profilePhoto.createdAt._seconds': profilePhotoCreatedAtSeconds,
     'profilePhoto.id': profilePhotoId,
@@ -52314,6 +59552,9 @@ abstract final class CatchContractConstraints {
     'publishOrganizerApplicationFormCallableResponse.organizerId': publishOrganizerApplicationFormCallableResponseOrganizerId,
     'publishOrganizerApplicationFormCallableResponse.revision': publishOrganizerApplicationFormCallableResponseRevision,
     'publishOrganizerApplicationFormCallableResponse.version': publishOrganizerApplicationFormCallableResponseVersion,
+    'publishOrganizerFormCallablePayload.expectedRevision': publishOrganizerFormCallablePayloadExpectedRevision,
+    'publishOrganizerFormCallablePayload.formId': publishOrganizerFormCallablePayloadFormId,
+    'publishOrganizerFormCallablePayload.organizerId': publishOrganizerFormCallablePayloadOrganizerId,
     'rateLimitDocument.action': rateLimitDocumentAction,
     'rateLimitDocument.count': rateLimitDocumentCount,
     'rateLimitDocument.expiresAt._nanoseconds': rateLimitDocumentExpiresAtNanoseconds,
@@ -52412,6 +59653,22 @@ abstract final class CatchContractConstraints {
     'requestOrganizerClaimCallablePayload.requesterRole': requestOrganizerClaimCallablePayloadRequesterRole,
     'requestOrganizerClaimCallableResponse.requestId': requestOrganizerClaimCallableResponseRequestId,
     'requestOrganizerClaimCallableResponse.status': requestOrganizerClaimCallableResponseStatus,
+    'requestOrganizerFormExportCallablePayload.format': requestOrganizerFormExportCallablePayloadFormat,
+    'requestOrganizerFormExportCallablePayload.formId': requestOrganizerFormExportCallablePayloadFormId,
+    'requestOrganizerFormExportCallablePayload.fromMillis': requestOrganizerFormExportCallablePayloadFromMillis,
+    'requestOrganizerFormExportCallablePayload.organizerId': requestOrganizerFormExportCallablePayloadOrganizerId,
+    'requestOrganizerFormExportCallablePayload.requestId': requestOrganizerFormExportCallablePayloadRequestId,
+    'requestOrganizerFormExportCallablePayload.statuses': requestOrganizerFormExportCallablePayloadStatuses,
+    'requestOrganizerFormExportCallablePayload.statuses.items': requestOrganizerFormExportCallablePayloadStatusesItems,
+    'requestOrganizerFormExportCallablePayload.toMillis': requestOrganizerFormExportCallablePayloadToMillis,
+    'requestOrganizerFormExportCallablePayload.versionId': requestOrganizerFormExportCallablePayloadVersionId,
+    'requestOrganizerFormExportCallableResponse.downloadUrl': requestOrganizerFormExportCallableResponseDownloadUrl,
+    'requestOrganizerFormExportCallableResponse.errorMessage': requestOrganizerFormExportCallableResponseErrorMessage,
+    'requestOrganizerFormExportCallableResponse.expiresAtMillis': requestOrganizerFormExportCallableResponseExpiresAtMillis,
+    'requestOrganizerFormExportCallableResponse.exportId': requestOrganizerFormExportCallableResponseExportId,
+    'requestOrganizerFormExportCallableResponse.format': requestOrganizerFormExportCallableResponseFormat,
+    'requestOrganizerFormExportCallableResponse.rowCount': requestOrganizerFormExportCallableResponseRowCount,
+    'requestOrganizerFormExportCallableResponse.status': requestOrganizerFormExportCallableResponseStatus,
     'requestSuvbotDemoOperationCallablePayload.action': requestSuvbotDemoOperationCallablePayloadAction,
     'requestSuvbotDemoOperationCallablePayload.text': requestSuvbotDemoOperationCallablePayloadText,
     'resetMatchUnreadCountClientWrite.data.unreadCounts': resetMatchUnreadCountClientWriteDataUnreadCounts,
@@ -52513,6 +59770,14 @@ abstract final class CatchContractConstraints {
     'savedEventDocument.seedPrefix': savedEventDocumentSeedPrefix,
     'savedEventDocument.synthetic': savedEventDocumentSynthetic,
     'savedEventDocument.uid': savedEventDocumentUid,
+    'saveOrganizerFormResponseDraftCallablePayload.answers': saveOrganizerFormResponseDraftCallablePayloadAnswers,
+    'saveOrganizerFormResponseDraftCallablePayload.consentAccepted': saveOrganizerFormResponseDraftCallablePayloadConsentAccepted,
+    'saveOrganizerFormResponseDraftCallablePayload.draftId': saveOrganizerFormResponseDraftCallablePayloadDraftId,
+    'saveOrganizerFormResponseDraftCallablePayload.draftToken': saveOrganizerFormResponseDraftCallablePayloadDraftToken,
+    'saveOrganizerFormResponseDraftCallablePayload.expectedRevision': saveOrganizerFormResponseDraftCallablePayloadExpectedRevision,
+    'saveOrganizerFormResponseDraftCallableResponse.draftId': saveOrganizerFormResponseDraftCallableResponseDraftId,
+    'saveOrganizerFormResponseDraftCallableResponse.expiresAtMillis': saveOrganizerFormResponseDraftCallableResponseExpiresAtMillis,
+    'saveOrganizerFormResponseDraftCallableResponse.revision': saveOrganizerFormResponseDraftCallableResponseRevision,
     'seedEventManifestDocument.anchorUserIds': seedEventManifestDocumentAnchorUserIds,
     'seedEventManifestDocument.anchorUserIds.items': seedEventManifestDocumentAnchorUserIdsItems,
     'seedEventManifestDocument.appendedAnchorUserIds': seedEventManifestDocumentAppendedAnchorUserIds,
@@ -52593,6 +59858,14 @@ abstract final class CatchContractConstraints {
     'setEventSuccessAccountabilityResolutionCallablePayload.attendeeId': setEventSuccessAccountabilityResolutionCallablePayloadAttendeeId,
     'setEventSuccessAccountabilityResolutionCallablePayload.eventId': setEventSuccessAccountabilityResolutionCallablePayloadEventId,
     'setEventSuccessAccountabilityResolutionCallablePayload.resolution': setEventSuccessAccountabilityResolutionCallablePayloadResolution,
+    'setOrganizerFormAutomationStateCallablePayload.enabled': setOrganizerFormAutomationStateCallablePayloadEnabled,
+    'setOrganizerFormAutomationStateCallablePayload.expectedRevision': setOrganizerFormAutomationStateCallablePayloadExpectedRevision,
+    'setOrganizerFormAutomationStateCallablePayload.organizerId': setOrganizerFormAutomationStateCallablePayloadOrganizerId,
+    'setOrganizerFormAutomationStateCallablePayload.ruleId': setOrganizerFormAutomationStateCallablePayloadRuleId,
+    'setOrganizerFormLifecycleCallablePayload.action': setOrganizerFormLifecycleCallablePayloadAction,
+    'setOrganizerFormLifecycleCallablePayload.expectedStatus': setOrganizerFormLifecycleCallablePayloadExpectedStatus,
+    'setOrganizerFormLifecycleCallablePayload.formId': setOrganizerFormLifecycleCallablePayloadFormId,
+    'setOrganizerFormLifecycleCallablePayload.organizerId': setOrganizerFormLifecycleCallablePayloadOrganizerId,
     'setOrganizerNotificationPreferenceCallablePayload.enabled': setOrganizerNotificationPreferenceCallablePayloadEnabled,
     'setOrganizerNotificationPreferenceCallablePayload.organizerId': setOrganizerNotificationPreferenceCallablePayloadOrganizerId,
     'setReviewResponseCallablePayload.message': setReviewResponseCallablePayloadMessage,
@@ -52646,6 +59919,10 @@ abstract final class CatchContractConstraints {
     'submitEventSuccessWingmanRequestCallablePayload.eventId': submitEventSuccessWingmanRequestCallablePayloadEventId,
     'submitEventSuccessWingmanRequestCallablePayload.note': submitEventSuccessWingmanRequestCallablePayloadNote,
     'submitEventSuccessWingmanRequestCallablePayload.targetUid': submitEventSuccessWingmanRequestCallablePayloadTargetUid,
+    'submitOrganizerFormResponseCallablePayload.draftId': submitOrganizerFormResponseCallablePayloadDraftId,
+    'submitOrganizerFormResponseCallablePayload.draftToken': submitOrganizerFormResponseCallablePayloadDraftToken,
+    'submitOrganizerFormResponseCallablePayload.expectedRevision': submitOrganizerFormResponseCallablePayloadExpectedRevision,
+    'submitOrganizerFormResponseCallablePayload.requestId': submitOrganizerFormResponseCallablePayloadRequestId,
     'submitParticipantOrganizerApplicationCallablePayload.answers': submitParticipantOrganizerApplicationCallablePayloadAnswers,
     'submitParticipantOrganizerApplicationCallablePayload.answers.items.questionId': submitParticipantOrganizerApplicationCallablePayloadAnswersItemsQuestionId,
     'submitParticipantOrganizerApplicationCallablePayload.answers.items.value.assetIds': submitParticipantOrganizerApplicationCallablePayloadAnswersItemsValueAssetIds,
@@ -52971,6 +60248,78 @@ abstract final class CatchContractConstraints {
     'updateOrganizerCallablePayload.fields.tags': updateOrganizerCallablePayloadFieldsTags,
     'updateOrganizerCallablePayload.fields.tags.items': updateOrganizerCallablePayloadFieldsTagsItems,
     'updateOrganizerCallablePayload.organizerId': updateOrganizerCallablePayloadOrganizerId,
+    'updateOrganizerFormDraftCallablePayload.definition.appearance.activityKind': updateOrganizerFormDraftCallablePayloadDefinitionAppearanceActivityKind,
+    'updateOrganizerFormDraftCallablePayload.definition.appearance.coverAssetId': updateOrganizerFormDraftCallablePayloadDefinitionAppearanceCoverAssetId,
+    'updateOrganizerFormDraftCallablePayload.definition.appearance.logoAssetId': updateOrganizerFormDraftCallablePayloadDefinitionAppearanceLogoAssetId,
+    'updateOrganizerFormDraftCallablePayload.definition.appearance.preset': updateOrganizerFormDraftCallablePayloadDefinitionAppearancePreset,
+    'updateOrganizerFormDraftCallablePayload.definition.availability.closedMessage': updateOrganizerFormDraftCallablePayloadDefinitionAvailabilityClosedMessage,
+    'updateOrganizerFormDraftCallablePayload.definition.availability.closesAt._nanoseconds': updateOrganizerFormDraftCallablePayloadDefinitionAvailabilityClosesAtNanoseconds,
+    'updateOrganizerFormDraftCallablePayload.definition.availability.closesAt._seconds': updateOrganizerFormDraftCallablePayloadDefinitionAvailabilityClosesAtSeconds,
+    'updateOrganizerFormDraftCallablePayload.definition.availability.opensAt._nanoseconds': updateOrganizerFormDraftCallablePayloadDefinitionAvailabilityOpensAtNanoseconds,
+    'updateOrganizerFormDraftCallablePayload.definition.availability.opensAt._seconds': updateOrganizerFormDraftCallablePayloadDefinitionAvailabilityOpensAtSeconds,
+    'updateOrganizerFormDraftCallablePayload.definition.availability.responseLimit': updateOrganizerFormDraftCallablePayloadDefinitionAvailabilityResponseLimit,
+    'updateOrganizerFormDraftCallablePayload.definition.completion.actionKind': updateOrganizerFormDraftCallablePayloadDefinitionCompletionActionKind,
+    'updateOrganizerFormDraftCallablePayload.definition.completion.actionLabel': updateOrganizerFormDraftCallablePayloadDefinitionCompletionActionLabel,
+    'updateOrganizerFormDraftCallablePayload.definition.completion.actionUrl': updateOrganizerFormDraftCallablePayloadDefinitionCompletionActionUrl,
+    'updateOrganizerFormDraftCallablePayload.definition.completion.message': updateOrganizerFormDraftCallablePayloadDefinitionCompletionMessage,
+    'updateOrganizerFormDraftCallablePayload.definition.completion.title': updateOrganizerFormDraftCallablePayloadDefinitionCompletionTitle,
+    'updateOrganizerFormDraftCallablePayload.definition.consent.consentCopy': updateOrganizerFormDraftCallablePayloadDefinitionConsentConsentCopy,
+    'updateOrganizerFormDraftCallablePayload.definition.consent.consentVersion': updateOrganizerFormDraftCallablePayloadDefinitionConsentConsentVersion,
+    'updateOrganizerFormDraftCallablePayload.definition.consent.retentionCopy': updateOrganizerFormDraftCallablePayloadDefinitionConsentRetentionCopy,
+    'updateOrganizerFormDraftCallablePayload.definition.defaultTargetId': updateOrganizerFormDraftCallablePayloadDefinitionDefaultTargetId,
+    'updateOrganizerFormDraftCallablePayload.definition.defaultTargetKind': updateOrganizerFormDraftCallablePayloadDefinitionDefaultTargetKind,
+    'updateOrganizerFormDraftCallablePayload.definition.description': updateOrganizerFormDraftCallablePayloadDefinitionDescription,
+    'updateOrganizerFormDraftCallablePayload.definition.identityPolicy': updateOrganizerFormDraftCallablePayloadDefinitionIdentityPolicy,
+    'updateOrganizerFormDraftCallablePayload.definition.logicRules': updateOrganizerFormDraftCallablePayloadDefinitionLogicRules,
+    'updateOrganizerFormDraftCallablePayload.definition.logicRules.items.action': updateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsAction,
+    'updateOrganizerFormDraftCallablePayload.definition.logicRules.items.conditionMode': updateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsConditionMode,
+    'updateOrganizerFormDraftCallablePayload.definition.logicRules.items.conditions': updateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsConditions,
+    'updateOrganizerFormDraftCallablePayload.definition.logicRules.items.conditions.items.expectedValues': updateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsConditionsItemsExpectedValues,
+    'updateOrganizerFormDraftCallablePayload.definition.logicRules.items.conditions.items.expectedValues.items': updateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsConditionsItemsExpectedValuesItems,
+    'updateOrganizerFormDraftCallablePayload.definition.logicRules.items.conditions.items.operator': updateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsConditionsItemsOperator,
+    'updateOrganizerFormDraftCallablePayload.definition.logicRules.items.conditions.items.questionId': updateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsConditionsItemsQuestionId,
+    'updateOrganizerFormDraftCallablePayload.definition.logicRules.items.ruleId': updateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsRuleId,
+    'updateOrganizerFormDraftCallablePayload.definition.logicRules.items.targetQuestionId': updateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsTargetQuestionId,
+    'updateOrganizerFormDraftCallablePayload.definition.logicRules.items.targetSectionId': updateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsTargetSectionId,
+    'updateOrganizerFormDraftCallablePayload.definition.purpose': updateOrganizerFormDraftCallablePayloadDefinitionPurpose,
+    'updateOrganizerFormDraftCallablePayload.definition.sections': updateOrganizerFormDraftCallablePayloadDefinitionSections,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.description': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsDescription,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.pageBreak': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsPageBreak,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestions,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.canonicalFieldId': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsCanonicalFieldId,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.helpText': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsHelpText,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.hostPresentation': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsHostPresentation,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.key': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsKey,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.kind': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsKind,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.label': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsLabel,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.options': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsOptions,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.options.items.label': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsOptionsItemsLabel,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.options.items.optionId': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsOptionsItemsOptionId,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.options.items.value': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsOptionsItemsValue,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.prefillPolicy': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsPrefillPolicy,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.privacyClass': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsPrivacyClass,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.questionId': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsQuestionId,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.required': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsRequired,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.allowedMimeTypes': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationAllowedMimeTypes,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.allowedMimeTypes.items': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationAllowedMimeTypesItems,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.customError': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationCustomError,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.earliestDate': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationEarliestDate,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.latestDate': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationLatestDate,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.maxFileCount': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationMaxFileCount,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.maxFileSizeBytes': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationMaxFileSizeBytes,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.maxLength': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationMaxLength,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.maxNumber': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationMaxNumber,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.maxSelections': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationMaxSelections,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.minLength': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationMinLength,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.minNumber': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationMinNumber,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.minSelections': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationMinSelections,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.patternPreset': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationPatternPreset,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.sectionId': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsSectionId,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.title': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsTitle,
+    'updateOrganizerFormDraftCallablePayload.definition.title': updateOrganizerFormDraftCallablePayloadDefinitionTitle,
+    'updateOrganizerFormDraftCallablePayload.expectedRevision': updateOrganizerFormDraftCallablePayloadExpectedRevision,
+    'updateOrganizerFormDraftCallablePayload.formId': updateOrganizerFormDraftCallablePayloadFormId,
+    'updateOrganizerFormDraftCallablePayload.organizerId': updateOrganizerFormDraftCallablePayloadOrganizerId,
     'updateUserProfilePatch.activityPreferences.running.paceMaxSecsPerKm': updateUserProfilePatchActivityPreferencesRunningPaceMaxSecsPerKm,
     'updateUserProfilePatch.activityPreferences.running.paceMinSecsPerKm': updateUserProfilePatchActivityPreferencesRunningPaceMinSecsPerKm,
     'updateUserProfilePatch.activityPreferences.running.preferredDistances': updateUserProfilePatchActivityPreferencesRunningPreferredDistances,
@@ -53245,6 +60594,83 @@ abstract final class CatchContractConstraints {
     'userProfileExposureEvent.subject_uid': userProfileExposureEventSubjectUid,
     'userProfileExposureEvent.surface': userProfileExposureEventSurface,
     'userProfileExposureEvent.viewer_uid': userProfileExposureEventViewerUid,
+    'validateOrganizerFormDraftCallablePayload.definition.appearance.activityKind': validateOrganizerFormDraftCallablePayloadDefinitionAppearanceActivityKind,
+    'validateOrganizerFormDraftCallablePayload.definition.appearance.coverAssetId': validateOrganizerFormDraftCallablePayloadDefinitionAppearanceCoverAssetId,
+    'validateOrganizerFormDraftCallablePayload.definition.appearance.logoAssetId': validateOrganizerFormDraftCallablePayloadDefinitionAppearanceLogoAssetId,
+    'validateOrganizerFormDraftCallablePayload.definition.appearance.preset': validateOrganizerFormDraftCallablePayloadDefinitionAppearancePreset,
+    'validateOrganizerFormDraftCallablePayload.definition.availability.closedMessage': validateOrganizerFormDraftCallablePayloadDefinitionAvailabilityClosedMessage,
+    'validateOrganizerFormDraftCallablePayload.definition.availability.closesAt._nanoseconds': validateOrganizerFormDraftCallablePayloadDefinitionAvailabilityClosesAtNanoseconds,
+    'validateOrganizerFormDraftCallablePayload.definition.availability.closesAt._seconds': validateOrganizerFormDraftCallablePayloadDefinitionAvailabilityClosesAtSeconds,
+    'validateOrganizerFormDraftCallablePayload.definition.availability.opensAt._nanoseconds': validateOrganizerFormDraftCallablePayloadDefinitionAvailabilityOpensAtNanoseconds,
+    'validateOrganizerFormDraftCallablePayload.definition.availability.opensAt._seconds': validateOrganizerFormDraftCallablePayloadDefinitionAvailabilityOpensAtSeconds,
+    'validateOrganizerFormDraftCallablePayload.definition.availability.responseLimit': validateOrganizerFormDraftCallablePayloadDefinitionAvailabilityResponseLimit,
+    'validateOrganizerFormDraftCallablePayload.definition.completion.actionKind': validateOrganizerFormDraftCallablePayloadDefinitionCompletionActionKind,
+    'validateOrganizerFormDraftCallablePayload.definition.completion.actionLabel': validateOrganizerFormDraftCallablePayloadDefinitionCompletionActionLabel,
+    'validateOrganizerFormDraftCallablePayload.definition.completion.actionUrl': validateOrganizerFormDraftCallablePayloadDefinitionCompletionActionUrl,
+    'validateOrganizerFormDraftCallablePayload.definition.completion.message': validateOrganizerFormDraftCallablePayloadDefinitionCompletionMessage,
+    'validateOrganizerFormDraftCallablePayload.definition.completion.title': validateOrganizerFormDraftCallablePayloadDefinitionCompletionTitle,
+    'validateOrganizerFormDraftCallablePayload.definition.consent.consentCopy': validateOrganizerFormDraftCallablePayloadDefinitionConsentConsentCopy,
+    'validateOrganizerFormDraftCallablePayload.definition.consent.consentVersion': validateOrganizerFormDraftCallablePayloadDefinitionConsentConsentVersion,
+    'validateOrganizerFormDraftCallablePayload.definition.consent.retentionCopy': validateOrganizerFormDraftCallablePayloadDefinitionConsentRetentionCopy,
+    'validateOrganizerFormDraftCallablePayload.definition.defaultTargetId': validateOrganizerFormDraftCallablePayloadDefinitionDefaultTargetId,
+    'validateOrganizerFormDraftCallablePayload.definition.defaultTargetKind': validateOrganizerFormDraftCallablePayloadDefinitionDefaultTargetKind,
+    'validateOrganizerFormDraftCallablePayload.definition.description': validateOrganizerFormDraftCallablePayloadDefinitionDescription,
+    'validateOrganizerFormDraftCallablePayload.definition.identityPolicy': validateOrganizerFormDraftCallablePayloadDefinitionIdentityPolicy,
+    'validateOrganizerFormDraftCallablePayload.definition.logicRules': validateOrganizerFormDraftCallablePayloadDefinitionLogicRules,
+    'validateOrganizerFormDraftCallablePayload.definition.logicRules.items.action': validateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsAction,
+    'validateOrganizerFormDraftCallablePayload.definition.logicRules.items.conditionMode': validateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsConditionMode,
+    'validateOrganizerFormDraftCallablePayload.definition.logicRules.items.conditions': validateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsConditions,
+    'validateOrganizerFormDraftCallablePayload.definition.logicRules.items.conditions.items.expectedValues': validateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsConditionsItemsExpectedValues,
+    'validateOrganizerFormDraftCallablePayload.definition.logicRules.items.conditions.items.expectedValues.items': validateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsConditionsItemsExpectedValuesItems,
+    'validateOrganizerFormDraftCallablePayload.definition.logicRules.items.conditions.items.operator': validateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsConditionsItemsOperator,
+    'validateOrganizerFormDraftCallablePayload.definition.logicRules.items.conditions.items.questionId': validateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsConditionsItemsQuestionId,
+    'validateOrganizerFormDraftCallablePayload.definition.logicRules.items.ruleId': validateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsRuleId,
+    'validateOrganizerFormDraftCallablePayload.definition.logicRules.items.targetQuestionId': validateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsTargetQuestionId,
+    'validateOrganizerFormDraftCallablePayload.definition.logicRules.items.targetSectionId': validateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsTargetSectionId,
+    'validateOrganizerFormDraftCallablePayload.definition.purpose': validateOrganizerFormDraftCallablePayloadDefinitionPurpose,
+    'validateOrganizerFormDraftCallablePayload.definition.sections': validateOrganizerFormDraftCallablePayloadDefinitionSections,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.description': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsDescription,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.pageBreak': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsPageBreak,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestions,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.canonicalFieldId': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsCanonicalFieldId,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.helpText': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsHelpText,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.hostPresentation': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsHostPresentation,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.key': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsKey,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.kind': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsKind,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.label': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsLabel,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.options': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsOptions,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.options.items.label': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsOptionsItemsLabel,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.options.items.optionId': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsOptionsItemsOptionId,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.options.items.value': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsOptionsItemsValue,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.prefillPolicy': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsPrefillPolicy,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.privacyClass': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsPrivacyClass,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.questionId': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsQuestionId,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.required': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsRequired,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.allowedMimeTypes': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationAllowedMimeTypes,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.allowedMimeTypes.items': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationAllowedMimeTypesItems,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.customError': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationCustomError,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.earliestDate': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationEarliestDate,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.latestDate': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationLatestDate,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.maxFileCount': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationMaxFileCount,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.maxFileSizeBytes': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationMaxFileSizeBytes,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.maxLength': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationMaxLength,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.maxNumber': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationMaxNumber,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.maxSelections': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationMaxSelections,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.minLength': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationMinLength,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.minNumber': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationMinNumber,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.minSelections': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationMinSelections,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.validation.patternPreset': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsValidationPatternPreset,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.sectionId': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsSectionId,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.title': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsTitle,
+    'validateOrganizerFormDraftCallablePayload.definition.title': validateOrganizerFormDraftCallablePayloadDefinitionTitle,
+    'validateOrganizerFormDraftCallablePayload.formId': validateOrganizerFormDraftCallablePayloadFormId,
+    'validateOrganizerFormDraftCallablePayload.organizerId': validateOrganizerFormDraftCallablePayloadOrganizerId,
+    'validateOrganizerFormDraftCallableResponse.issues': validateOrganizerFormDraftCallableResponseIssues,
+    'validateOrganizerFormDraftCallableResponse.issues.items.code': validateOrganizerFormDraftCallableResponseIssuesItemsCode,
+    'validateOrganizerFormDraftCallableResponse.issues.items.message': validateOrganizerFormDraftCallableResponseIssuesItemsMessage,
+    'validateOrganizerFormDraftCallableResponse.issues.items.path': validateOrganizerFormDraftCallableResponseIssuesItemsPath,
+    'validateOrganizerFormDraftCallableResponse.issues.items.severity': validateOrganizerFormDraftCallableResponseIssuesItemsSeverity,
+    'validateOrganizerFormDraftCallableResponse.valid': validateOrganizerFormDraftCallableResponseValid,
     'verifyRazorpayPaymentCallablePayload.orderId': verifyRazorpayPaymentCallablePayloadOrderId,
     'verifyRazorpayPaymentCallablePayload.paymentId': verifyRazorpayPaymentCallablePayloadPaymentId,
     'verifyRazorpayPaymentCallablePayload.signature': verifyRazorpayPaymentCallablePayloadSignature,
@@ -53390,5 +60816,11 @@ abstract final class CatchContractConstraints {
     'websiteHostListingProjection.sources.items.type': websiteHostListingProjectionSourcesItemsType,
     'websiteHostListingProjection.sourceSummary': websiteHostListingProjectionSourceSummary,
     'websiteHostListingProjection.status': websiteHostListingProjectionStatus,
+    'withdrawOrganizerFormResponseCallablePayload.requestId': withdrawOrganizerFormResponseCallablePayloadRequestId,
+    'withdrawOrganizerFormResponseCallablePayload.responseId': withdrawOrganizerFormResponseCallablePayloadResponseId,
+    'withdrawOrganizerFormResponseCallablePayload.withdrawalToken': withdrawOrganizerFormResponseCallablePayloadWithdrawalToken,
+    'withdrawOrganizerFormResponseCallableResponse.responseId': withdrawOrganizerFormResponseCallableResponseResponseId,
+    'withdrawOrganizerFormResponseCallableResponse.status': withdrawOrganizerFormResponseCallableResponseStatus,
+    'withdrawOrganizerFormResponseCallableResponse.withdrawnAtMillis': withdrawOrganizerFormResponseCallableResponseWithdrawnAtMillis,
   };
 }

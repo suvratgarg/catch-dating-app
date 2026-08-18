@@ -45,6 +45,9 @@ const EventRuntimePage = lazy(async () => ({
 const EventInvitePage = lazy(async () => ({
   default: (await import("../features/events/EventInvitePage")).EventInvitePage,
 }));
+const PublicFormPage = lazy(async () => ({
+  default: (await import("../features/forms/PublicFormPage")).PublicFormPage,
+}));
 const HostListingPage = lazy(async () => ({
   default: (await import("../features/organizers/HostListingPage")).HostListingPage,
 }));
@@ -145,6 +148,10 @@ function MarketingRouteShell() {
             element={<EventInvitePage />}
           />
           <Route
+            path={marketingRoutePaths.public_form}
+            element={<PublicFormPage />}
+          />
+          <Route
             path={marketingRoutePaths.claim}
             element={<ClaimRoute />}
           />
@@ -185,7 +192,8 @@ function MarketingRouteShell() {
           />
         </Routes>
       </Suspense>
-      {page === "event_runtime" || page === "event_invite" ?
+      {page === "event_runtime" || page === "event_invite" ||
+       page === "public_form" ?
         null : <MarketingConsentBanner />}
     </PageShell>
   );

@@ -15446,6 +15446,3979 @@ export const organizerApplicationFormVersionDocumentSchema = {
   }
 };
 
+export const organizerFormDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_forms.schema.json",
+  "title": "OrganizerFormDocument",
+  "description": "Organizer-owned generic form metadata and lifecycle. Editable content lives in a draft and published content in immutable versions.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerForms",
+  "x-firestore-path": "organizerForms/{formId}",
+  "x-document-id-field": "formId",
+  "x-owner": "organizer form management callables",
+  "required": [
+    "organizerId",
+    "createdByUid",
+    "title",
+    "description",
+    "purpose",
+    "status",
+    "templateId",
+    "publicFormId",
+    "defaultTargetKind",
+    "defaultTargetId",
+    "activeVersionId",
+    "draftRevision",
+    "publishedVersion",
+    "submittedResponseCount",
+    "createdAt",
+    "updatedAt",
+    "publishedAt",
+    "pausedAt",
+    "archivedAt",
+    "lastResponseAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "createdByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "description": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    },
+    "purpose": {
+      "type": "string",
+      "enum": [
+        "application",
+        "registration",
+        "intake",
+        "waiver",
+        "feedback",
+        "survey"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published",
+        "paused",
+        "archived"
+      ]
+    },
+    "templateId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "publicFormId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{20,80}$"
+    },
+    "defaultTargetKind": {
+      "type": "string",
+      "enum": [
+        "organizer",
+        "event",
+        "campaign"
+      ]
+    },
+    "defaultTargetId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "activeVersionId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "draftRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "publishedVersion": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "submittedResponseCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "publishedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "pausedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "archivedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "lastResponseAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const organizerFormDraftDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_form_drafts.schema.json",
+  "title": "OrganizerFormDraftDocument",
+  "description": "Mutable optimistic-revision builder state for one organizer form.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "revision",
+    "definition",
+    "updatedByUid",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "definition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "description",
+        "purpose",
+        "defaultTargetKind",
+        "defaultTargetId",
+        "identityPolicy",
+        "sections",
+        "logicRules",
+        "appearance",
+        "availability",
+        "consent",
+        "completion"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        },
+        "purpose": {
+          "type": "string",
+          "enum": [
+            "application",
+            "registration",
+            "intake",
+            "waiver",
+            "feedback",
+            "survey"
+          ]
+        },
+        "defaultTargetKind": {
+          "type": "string",
+          "enum": [
+            "organizer",
+            "event",
+            "campaign"
+          ]
+        },
+        "defaultTargetId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "identityPolicy": {
+          "type": "string",
+          "enum": [
+            "anonymous",
+            "emailVerified",
+            "phoneVerified",
+            "emailOrPhoneVerified",
+            "catchAccount"
+          ]
+        },
+        "sections": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 40,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "sectionId",
+              "title",
+              "description",
+              "pageBreak",
+              "questions"
+            ],
+            "properties": {
+              "sectionId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "description": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 1000
+              },
+              "pageBreak": {
+                "type": "boolean"
+              },
+              "questions": {
+                "type": "array",
+                "maxItems": 100,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "questionId",
+                    "key",
+                    "label",
+                    "helpText",
+                    "kind",
+                    "required",
+                    "options",
+                    "canonicalFieldId",
+                    "privacyClass",
+                    "prefillPolicy",
+                    "hostPresentation",
+                    "validation"
+                  ],
+                  "properties": {
+                    "questionId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "key": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z][A-Za-z0-9_]{0,79}$"
+                    },
+                    "label": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 240
+                    },
+                    "helpText": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 500
+                    },
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "shortText",
+                        "longText",
+                        "singleChoice",
+                        "multiChoice",
+                        "date",
+                        "phone",
+                        "email",
+                        "url",
+                        "number",
+                        "boolean",
+                        "file",
+                        "acknowledgement",
+                        "signature"
+                      ]
+                    },
+                    "required": {
+                      "type": "boolean"
+                    },
+                    "options": {
+                      "type": "array",
+                      "maxItems": 100,
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "optionId",
+                          "label",
+                          "value"
+                        ],
+                        "properties": {
+                          "optionId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 180
+                          },
+                          "label": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 160
+                          },
+                          "value": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 160
+                          }
+                        }
+                      }
+                    },
+                    "canonicalFieldId": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "x-catch-catalog": "../catalogs/person_fields.json",
+                          "enum": [
+                            "givenName",
+                            "familyName",
+                            "displayName",
+                            "dateOfBirth",
+                            "age",
+                            "gender",
+                            "phoneNumber",
+                            "email",
+                            "instagramHandle",
+                            "linkedinUrl",
+                            "profilePhoto",
+                            "city",
+                            "heightCm",
+                            "occupation",
+                            "company",
+                            "education",
+                            "languages",
+                            "relationshipGoal",
+                            "interestedInGenders",
+                            "drinking",
+                            "smoking",
+                            "religion",
+                            "workout",
+                            "diet",
+                            "children"
+                          ]
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "privacyClass": {
+                      "type": "string",
+                      "enum": [
+                        "contact",
+                        "profile",
+                        "sensitive",
+                        "organizerCustom"
+                      ]
+                    },
+                    "prefillPolicy": {
+                      "type": "string",
+                      "enum": [
+                        "never",
+                        "participantReviewRequired"
+                      ]
+                    },
+                    "hostPresentation": {
+                      "type": "string",
+                      "enum": [
+                        "detailOnly",
+                        "filterable",
+                        "sortable"
+                      ]
+                    },
+                    "validation": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "minLength",
+                        "maxLength",
+                        "minNumber",
+                        "maxNumber",
+                        "earliestDate",
+                        "latestDate",
+                        "minSelections",
+                        "maxSelections",
+                        "maxFileCount",
+                        "maxFileSizeBytes",
+                        "allowedMimeTypes",
+                        "patternPreset",
+                        "customError"
+                      ],
+                      "properties": {
+                        "minLength": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 0,
+                          "maximum": 4000
+                        },
+                        "maxLength": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 4000
+                        },
+                        "minNumber": {
+                          "type": [
+                            "number",
+                            "null"
+                          ],
+                          "minimum": -1000000000,
+                          "maximum": 1000000000
+                        },
+                        "maxNumber": {
+                          "type": [
+                            "number",
+                            "null"
+                          ],
+                          "minimum": -1000000000,
+                          "maximum": 1000000000
+                        },
+                        "earliestDate": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "date"
+                        },
+                        "latestDate": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "date"
+                        },
+                        "minSelections": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 0,
+                          "maximum": 100
+                        },
+                        "maxSelections": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 100
+                        },
+                        "maxFileCount": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 10
+                        },
+                        "maxFileSizeBytes": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 26214400
+                        },
+                        "allowedMimeTypes": {
+                          "type": "array",
+                          "maxItems": 20,
+                          "uniqueItems": true,
+                          "items": {
+                            "type": "string",
+                            "pattern": "^[a-z0-9.+-]+/[a-z0-9.+*-]+$",
+                            "maxLength": 100
+                          }
+                        },
+                        "patternPreset": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            null,
+                            "lettersAndSpaces",
+                            "alphanumeric",
+                            "postalCode",
+                            "handle"
+                          ]
+                        },
+                        "customError": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "maxLength": 240
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "logicRules": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "ruleId",
+              "conditionMode",
+              "conditions",
+              "action",
+              "targetQuestionId",
+              "targetSectionId"
+            ],
+            "properties": {
+              "ruleId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "conditionMode": {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "any"
+                ]
+              },
+              "conditions": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 20,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "questionId",
+                    "operator",
+                    "expectedValues"
+                  ],
+                  "properties": {
+                    "questionId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "operator": {
+                      "type": "string",
+                      "enum": [
+                        "equals",
+                        "notEquals",
+                        "contains",
+                        "notContains",
+                        "greaterThan",
+                        "lessThan",
+                        "answered",
+                        "notAnswered"
+                      ]
+                    },
+                    "expectedValues": {
+                      "type": "array",
+                      "maxItems": 20,
+                      "items": {
+                        "type": [
+                          "string",
+                          "number",
+                          "boolean"
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              "action": {
+                "type": "string",
+                "enum": [
+                  "showQuestion",
+                  "hideQuestion",
+                  "showSection",
+                  "hideSection",
+                  "routeToSection",
+                  "finish"
+                ]
+              },
+              "targetQuestionId": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "targetSectionId": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "appearance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "preset",
+            "logoAssetId",
+            "coverAssetId",
+            "activityKind"
+          ],
+          "properties": {
+            "preset": {
+              "type": "string",
+              "enum": [
+                "editorial",
+                "minimal",
+                "activity"
+              ]
+            },
+            "logoAssetId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "coverAssetId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "activityKind": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80
+            }
+          }
+        },
+        "availability": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "opensAt",
+            "closesAt",
+            "responseLimit",
+            "closedMessage"
+          ],
+          "properties": {
+            "opensAt": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "description": "Serialized Firestore Timestamp fixture shape.",
+                  "x-firestore-type": "timestamp",
+                  "additionalProperties": false,
+                  "required": [
+                    "_seconds",
+                    "_nanoseconds"
+                  ],
+                  "properties": {
+                    "_seconds": {
+                      "type": "integer"
+                    },
+                    "_nanoseconds": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 999999999
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "closesAt": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "description": "Serialized Firestore Timestamp fixture shape.",
+                  "x-firestore-type": "timestamp",
+                  "additionalProperties": false,
+                  "required": [
+                    "_seconds",
+                    "_nanoseconds"
+                  ],
+                  "properties": {
+                    "_seconds": {
+                      "type": "integer"
+                    },
+                    "_nanoseconds": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 999999999
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "responseLimit": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "closedMessage": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 500
+            }
+          }
+        },
+        "consent": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "consentCopy",
+            "consentVersion",
+            "retentionCopy"
+          ],
+          "properties": {
+            "consentCopy": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "consentVersion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "retentionCopy": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            }
+          }
+        },
+        "completion": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "title",
+            "message",
+            "actionKind",
+            "actionLabel",
+            "actionUrl"
+          ],
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "message": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            },
+            "actionKind": {
+              "type": "string",
+              "enum": [
+                "none",
+                "externalUrl",
+                "event",
+                "eventRuntime"
+              ]
+            },
+            "actionLabel": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80
+            },
+            "actionUrl": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uri",
+              "maxLength": 500
+            }
+          }
+        }
+      }
+    },
+    "updatedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "x-firestore-collection": "organizerFormDrafts",
+  "x-firestore-path": "organizerFormDrafts/{formId}",
+  "x-document-id-field": "formId",
+  "x-owner": "organizer form draft callables"
+};
+
+export const organizerFormVersionDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_form_versions.schema.json",
+  "title": "OrganizerFormVersionDocument",
+  "description": "Immutable published definition of one generic organizer form version.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "version",
+    "sourceDraftRevision",
+    "definition",
+    "createdByUid",
+    "createdAt",
+    "publishedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000
+    },
+    "sourceDraftRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "definition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "description",
+        "purpose",
+        "defaultTargetKind",
+        "defaultTargetId",
+        "identityPolicy",
+        "sections",
+        "logicRules",
+        "appearance",
+        "availability",
+        "consent",
+        "completion"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        },
+        "purpose": {
+          "type": "string",
+          "enum": [
+            "application",
+            "registration",
+            "intake",
+            "waiver",
+            "feedback",
+            "survey"
+          ]
+        },
+        "defaultTargetKind": {
+          "type": "string",
+          "enum": [
+            "organizer",
+            "event",
+            "campaign"
+          ]
+        },
+        "defaultTargetId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "identityPolicy": {
+          "type": "string",
+          "enum": [
+            "anonymous",
+            "emailVerified",
+            "phoneVerified",
+            "emailOrPhoneVerified",
+            "catchAccount"
+          ]
+        },
+        "sections": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 40,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "sectionId",
+              "title",
+              "description",
+              "pageBreak",
+              "questions"
+            ],
+            "properties": {
+              "sectionId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "description": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 1000
+              },
+              "pageBreak": {
+                "type": "boolean"
+              },
+              "questions": {
+                "type": "array",
+                "maxItems": 100,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "questionId",
+                    "key",
+                    "label",
+                    "helpText",
+                    "kind",
+                    "required",
+                    "options",
+                    "canonicalFieldId",
+                    "privacyClass",
+                    "prefillPolicy",
+                    "hostPresentation",
+                    "validation"
+                  ],
+                  "properties": {
+                    "questionId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "key": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z][A-Za-z0-9_]{0,79}$"
+                    },
+                    "label": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 240
+                    },
+                    "helpText": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 500
+                    },
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "shortText",
+                        "longText",
+                        "singleChoice",
+                        "multiChoice",
+                        "date",
+                        "phone",
+                        "email",
+                        "url",
+                        "number",
+                        "boolean",
+                        "file",
+                        "acknowledgement",
+                        "signature"
+                      ]
+                    },
+                    "required": {
+                      "type": "boolean"
+                    },
+                    "options": {
+                      "type": "array",
+                      "maxItems": 100,
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "optionId",
+                          "label",
+                          "value"
+                        ],
+                        "properties": {
+                          "optionId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 180
+                          },
+                          "label": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 160
+                          },
+                          "value": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 160
+                          }
+                        }
+                      }
+                    },
+                    "canonicalFieldId": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "x-catch-catalog": "../catalogs/person_fields.json",
+                          "enum": [
+                            "givenName",
+                            "familyName",
+                            "displayName",
+                            "dateOfBirth",
+                            "age",
+                            "gender",
+                            "phoneNumber",
+                            "email",
+                            "instagramHandle",
+                            "linkedinUrl",
+                            "profilePhoto",
+                            "city",
+                            "heightCm",
+                            "occupation",
+                            "company",
+                            "education",
+                            "languages",
+                            "relationshipGoal",
+                            "interestedInGenders",
+                            "drinking",
+                            "smoking",
+                            "religion",
+                            "workout",
+                            "diet",
+                            "children"
+                          ]
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "privacyClass": {
+                      "type": "string",
+                      "enum": [
+                        "contact",
+                        "profile",
+                        "sensitive",
+                        "organizerCustom"
+                      ]
+                    },
+                    "prefillPolicy": {
+                      "type": "string",
+                      "enum": [
+                        "never",
+                        "participantReviewRequired"
+                      ]
+                    },
+                    "hostPresentation": {
+                      "type": "string",
+                      "enum": [
+                        "detailOnly",
+                        "filterable",
+                        "sortable"
+                      ]
+                    },
+                    "validation": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "minLength",
+                        "maxLength",
+                        "minNumber",
+                        "maxNumber",
+                        "earliestDate",
+                        "latestDate",
+                        "minSelections",
+                        "maxSelections",
+                        "maxFileCount",
+                        "maxFileSizeBytes",
+                        "allowedMimeTypes",
+                        "patternPreset",
+                        "customError"
+                      ],
+                      "properties": {
+                        "minLength": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 0,
+                          "maximum": 4000
+                        },
+                        "maxLength": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 4000
+                        },
+                        "minNumber": {
+                          "type": [
+                            "number",
+                            "null"
+                          ],
+                          "minimum": -1000000000,
+                          "maximum": 1000000000
+                        },
+                        "maxNumber": {
+                          "type": [
+                            "number",
+                            "null"
+                          ],
+                          "minimum": -1000000000,
+                          "maximum": 1000000000
+                        },
+                        "earliestDate": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "date"
+                        },
+                        "latestDate": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "date"
+                        },
+                        "minSelections": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 0,
+                          "maximum": 100
+                        },
+                        "maxSelections": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 100
+                        },
+                        "maxFileCount": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 10
+                        },
+                        "maxFileSizeBytes": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 26214400
+                        },
+                        "allowedMimeTypes": {
+                          "type": "array",
+                          "maxItems": 20,
+                          "uniqueItems": true,
+                          "items": {
+                            "type": "string",
+                            "pattern": "^[a-z0-9.+-]+/[a-z0-9.+*-]+$",
+                            "maxLength": 100
+                          }
+                        },
+                        "patternPreset": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            null,
+                            "lettersAndSpaces",
+                            "alphanumeric",
+                            "postalCode",
+                            "handle"
+                          ]
+                        },
+                        "customError": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "maxLength": 240
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "logicRules": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "ruleId",
+              "conditionMode",
+              "conditions",
+              "action",
+              "targetQuestionId",
+              "targetSectionId"
+            ],
+            "properties": {
+              "ruleId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "conditionMode": {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "any"
+                ]
+              },
+              "conditions": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 20,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "questionId",
+                    "operator",
+                    "expectedValues"
+                  ],
+                  "properties": {
+                    "questionId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "operator": {
+                      "type": "string",
+                      "enum": [
+                        "equals",
+                        "notEquals",
+                        "contains",
+                        "notContains",
+                        "greaterThan",
+                        "lessThan",
+                        "answered",
+                        "notAnswered"
+                      ]
+                    },
+                    "expectedValues": {
+                      "type": "array",
+                      "maxItems": 20,
+                      "items": {
+                        "type": [
+                          "string",
+                          "number",
+                          "boolean"
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              "action": {
+                "type": "string",
+                "enum": [
+                  "showQuestion",
+                  "hideQuestion",
+                  "showSection",
+                  "hideSection",
+                  "routeToSection",
+                  "finish"
+                ]
+              },
+              "targetQuestionId": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "targetSectionId": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "appearance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "preset",
+            "logoAssetId",
+            "coverAssetId",
+            "activityKind"
+          ],
+          "properties": {
+            "preset": {
+              "type": "string",
+              "enum": [
+                "editorial",
+                "minimal",
+                "activity"
+              ]
+            },
+            "logoAssetId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "coverAssetId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "activityKind": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80
+            }
+          }
+        },
+        "availability": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "opensAt",
+            "closesAt",
+            "responseLimit",
+            "closedMessage"
+          ],
+          "properties": {
+            "opensAt": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "description": "Serialized Firestore Timestamp fixture shape.",
+                  "x-firestore-type": "timestamp",
+                  "additionalProperties": false,
+                  "required": [
+                    "_seconds",
+                    "_nanoseconds"
+                  ],
+                  "properties": {
+                    "_seconds": {
+                      "type": "integer"
+                    },
+                    "_nanoseconds": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 999999999
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "closesAt": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "description": "Serialized Firestore Timestamp fixture shape.",
+                  "x-firestore-type": "timestamp",
+                  "additionalProperties": false,
+                  "required": [
+                    "_seconds",
+                    "_nanoseconds"
+                  ],
+                  "properties": {
+                    "_seconds": {
+                      "type": "integer"
+                    },
+                    "_nanoseconds": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 999999999
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "responseLimit": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "closedMessage": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 500
+            }
+          }
+        },
+        "consent": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "consentCopy",
+            "consentVersion",
+            "retentionCopy"
+          ],
+          "properties": {
+            "consentCopy": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "consentVersion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "retentionCopy": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            }
+          }
+        },
+        "completion": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "title",
+            "message",
+            "actionKind",
+            "actionLabel",
+            "actionUrl"
+          ],
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "message": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            },
+            "actionKind": {
+              "type": "string",
+              "enum": [
+                "none",
+                "externalUrl",
+                "event",
+                "eventRuntime"
+              ]
+            },
+            "actionLabel": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80
+            },
+            "actionUrl": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uri",
+              "maxLength": 500
+            }
+          }
+        }
+      }
+    },
+    "createdByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "publishedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "x-firestore-collection": "organizerFormVersions",
+  "x-firestore-path": "organizerFormVersions/{versionId}",
+  "x-document-id-field": "versionId",
+  "x-owner": "organizer form publish callable"
+};
+
+export const organizerFormResponseDraftDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_form_response_drafts.schema.json",
+  "title": "OrganizerFormResponseDraftDocument",
+  "description": "Expiring version-bound respondent autosave state.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "versionId",
+    "publicFormId",
+    "status",
+    "revision",
+    "identityKind",
+    "respondentUid",
+    "draftTokenHash",
+    "answers",
+    "consentAccepted",
+    "consentVersion",
+    "sourceLinkId",
+    "createdAt",
+    "updatedAt",
+    "expiresAt",
+    "submittedResponseId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "versionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "publicFormId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{20,80}$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "submitted",
+        "expired",
+        "withdrawn"
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "identityKind": {
+      "type": "string",
+      "enum": [
+        "anonymous",
+        "emailVerified",
+        "phoneVerified",
+        "catchAccount"
+      ]
+    },
+    "respondentUid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "draftTokenHash": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "answers": {
+      "type": "object",
+      "maxProperties": 4000,
+      "propertyNames": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      },
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "string",
+            "maxLength": 10000
+          },
+          {
+            "type": "number",
+            "minimum": -1000000000,
+            "maximum": 1000000000
+          },
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "null"
+          },
+          {
+            "type": "array",
+            "maxItems": 100,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "maxLength": 500
+            }
+          }
+        ]
+      }
+    },
+    "consentAccepted": {
+      "type": "boolean"
+    },
+    "consentVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "sourceLinkId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "submittedResponseId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "x-firestore-collection": "organizerFormResponseDrafts",
+  "x-firestore-path": "organizerFormResponseDrafts/{draftId}",
+  "x-document-id-field": "draftId",
+  "x-owner": "organizer form respondent callables"
+};
+
+export const organizerFormResponseDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_form_responses.schema.json",
+  "title": "OrganizerFormResponseDocument",
+  "description": "Immutable submitted response envelope with withdrawal state.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "versionId",
+    "publicFormId",
+    "draftId",
+    "status",
+    "identityKind",
+    "respondentUid",
+    "identity",
+    "withdrawalTokenHash",
+    "answers",
+    "answerSnapshots",
+    "consentVersion",
+    "sourceLinkId",
+    "completionMillis",
+    "submittedAt",
+    "withdrawnAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "versionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "publicFormId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{20,80}$"
+    },
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "submitted",
+        "withdrawn"
+      ]
+    },
+    "identityKind": {
+      "type": "string",
+      "enum": [
+        "anonymous",
+        "emailVerified",
+        "phoneVerified",
+        "catchAccount"
+      ]
+    },
+    "respondentUid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "displayName",
+        "email",
+        "phoneE164",
+        "searchName",
+        "origin"
+      ],
+      "properties": {
+        "displayName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 160
+        },
+        "email": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "email",
+          "maxLength": 320
+        },
+        "phoneE164": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^\\+[1-9][0-9]{7,14}$"
+        },
+        "searchName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 160
+        },
+        "origin": {
+          "type": "string",
+          "enum": [
+            "anonymous",
+            "respondentGranted",
+            "organizerAcquired"
+          ]
+        }
+      }
+    },
+    "withdrawalTokenHash": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "answers": {
+      "type": "object",
+      "maxProperties": 4000,
+      "propertyNames": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      },
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "string",
+            "maxLength": 10000
+          },
+          {
+            "type": "number",
+            "minimum": -1000000000,
+            "maximum": 1000000000
+          },
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "null"
+          },
+          {
+            "type": "array",
+            "maxItems": 100,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "maxLength": 500
+            }
+          }
+        ]
+      }
+    },
+    "answerSnapshots": {
+      "type": "array",
+      "maxItems": 4000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "questionId",
+          "key",
+          "label",
+          "kind",
+          "answer"
+        ],
+        "properties": {
+          "questionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "shortText",
+              "longText",
+              "singleChoice",
+              "multiChoice",
+              "date",
+              "phone",
+              "email",
+              "url",
+              "number",
+              "boolean",
+              "file",
+              "acknowledgement",
+              "signature"
+            ]
+          },
+          "answer": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 10000
+              },
+              {
+                "type": "number",
+                "minimum": -1000000000,
+                "maximum": 1000000000
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "type": "array",
+                "maxItems": 100,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "maxLength": 500
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "consentVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "sourceLinkId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "completionMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 604800000
+    },
+    "submittedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "withdrawnAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "x-firestore-collection": "organizerFormResponses",
+  "x-firestore-path": "organizerFormResponses/{responseId}",
+  "x-document-id-field": "responseId",
+  "x-owner": "organizer form submission callable"
+};
+
+export const organizerFormAssetDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_form_assets.schema.json",
+  "title": "OrganizerFormAssetDocument",
+  "description": "Version- and draft-scoped metadata for private respondent uploads; bytes remain in protected Storage.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerFormAssets",
+  "x-firestore-path": "organizerFormAssets/{assetId}",
+  "x-document-id-field": "assetId",
+  "x-owner": "organizer form respondent asset callables",
+  "x-ttl-field": "expiresAt",
+  "required": [
+    "organizerId",
+    "formId",
+    "versionId",
+    "draftId",
+    "questionId",
+    "respondentUid",
+    "uploadTokenHash",
+    "storagePath",
+    "originalFileName",
+    "contentType",
+    "declaredSizeBytes",
+    "declaredSha256",
+    "sizeBytes",
+    "status",
+    "createdAt",
+    "expiresAt",
+    "finalizedAt",
+    "deletedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "versionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "questionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "respondentUid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "uploadTokenHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "storagePath": {
+      "type": "string",
+      "pattern": "^organizerForms/[^/]+/[^/]+/[^/]+$",
+      "maxLength": 600
+    },
+    "originalFileName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "contentType": {
+      "type": "string",
+      "enum": [
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "application/pdf"
+      ]
+    },
+    "declaredSizeBytes": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 26214400
+    },
+    "declaredSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "sizeBytes": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 26214400
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "uploading",
+        "ready",
+        "rejected",
+        "deleted"
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "finalizedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "deletedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const organizerFormAggregateDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_form_aggregates.schema.json",
+  "title": "OrganizerFormAggregateDocument",
+  "description": "Precomputed form/version funnel or privacy-aware question aggregate.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "versionId",
+    "scope",
+    "questionId",
+    "questionLabel",
+    "questionKind",
+    "privacyClass",
+    "opens",
+    "starts",
+    "submissions",
+    "withdrawals",
+    "completionMillisTotal",
+    "completionBuckets",
+    "choiceCounts",
+    "numericCount",
+    "numericSum",
+    "numericMin",
+    "numericMax",
+    "updatedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "versionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "scope": {
+      "type": "string",
+      "enum": [
+        "version",
+        "question"
+      ]
+    },
+    "questionId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "questionLabel": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 240
+    },
+    "questionKind": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "shortText",
+            "longText",
+            "singleChoice",
+            "multiChoice",
+            "date",
+            "phone",
+            "email",
+            "url",
+            "number",
+            "boolean",
+            "file",
+            "acknowledgement",
+            "signature"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "privacyClass": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        null,
+        "contact",
+        "profile",
+        "sensitive",
+        "organizerCustom"
+      ]
+    },
+    "opens": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "starts": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "submissions": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "withdrawals": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "completionMillisTotal": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "completionBuckets": {
+      "type": "array",
+      "maxItems": 12,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "upperBoundMillis",
+          "count"
+        ],
+        "properties": {
+          "upperBoundMillis": {
+            "type": "integer",
+            "minimum": 1000,
+            "maximum": 604800000
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000000
+          }
+        }
+      }
+    },
+    "choiceCounts": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "value",
+          "label",
+          "count"
+        ],
+        "properties": {
+          "value": {
+            "type": [
+              "string",
+              "boolean"
+            ],
+            "maxLength": 160
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000000
+          }
+        }
+      }
+    },
+    "numericCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "numericSum": {
+      "type": "number",
+      "minimum": -1000000000000000000,
+      "maximum": 1000000000000000000
+    },
+    "numericMin": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "numericMax": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "x-firestore-collection": "organizerFormAggregates",
+  "x-firestore-path": "organizerFormAggregates/{aggregateId}",
+  "x-document-id-field": "aggregateId",
+  "x-owner": "organizer form aggregate projection"
+};
+
+export const organizerFormAggregateEventDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_form_aggregate_events.schema.json",
+  "title": "OrganizerFormAggregateEventDocument",
+  "description": "Idempotency marker for one aggregate projection event.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "versionId",
+    "responseId",
+    "eventKind",
+    "projectedAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "versionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventKind": {
+      "type": "string",
+      "enum": [
+        "submitted",
+        "withdrawn"
+      ]
+    },
+    "projectedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "x-firestore-collection": "organizerFormAggregateEvents",
+  "x-firestore-path": "organizerFormAggregateEvents/{eventId}",
+  "x-document-id-field": "eventId",
+  "x-owner": "organizer form aggregate projection"
+};
+
+export const organizerFormExportDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_form_exports.schema.json",
+  "title": "OrganizerFormExportDocument",
+  "description": "Asynchronous, expiring, manager-requested form response export receipt.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "requestedByUid",
+    "requestId",
+    "format",
+    "statuses",
+    "versionId",
+    "fromMillis",
+    "toMillis",
+    "status",
+    "rowCount",
+    "storagePath",
+    "errorCode",
+    "errorMessage",
+    "createdAt",
+    "updatedAt",
+    "completedAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 128
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "csv",
+        "xlsx"
+      ]
+    },
+    "statuses": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "submitted",
+          "withdrawn"
+        ]
+      }
+    },
+    "versionId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "fromMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "toMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "running",
+        "completed",
+        "failed",
+        "expired"
+      ]
+    },
+    "rowCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000
+    },
+    "storagePath": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    },
+    "errorCode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 80
+    },
+    "errorMessage": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "completedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "x-firestore-collection": "organizerFormExports",
+  "x-firestore-path": "organizerFormExports/{exportId}",
+  "x-document-id-field": "exportId",
+  "x-owner": "organizer form export pipeline"
+};
+
+export const organizerFormAutomationRuleDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_form_automation_rules.schema.json",
+  "title": "OrganizerFormAutomationRuleDocument",
+  "description": "Manager-authored, revisioned, explicit form automation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "name",
+    "enabled",
+    "revision",
+    "trigger",
+    "condition",
+    "actions",
+    "createdByUid",
+    "updatedByUid",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "trigger": {
+      "type": "string",
+      "enum": [
+        "responseSubmitted",
+        "responseWithdrawn",
+        "answerMatches"
+      ]
+    },
+    "condition": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "questionId",
+            "operator",
+            "expectedValues"
+          ],
+          "properties": {
+            "questionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "operator": {
+              "type": "string",
+              "enum": [
+                "equals",
+                "notEquals",
+                "contains",
+                "notContains",
+                "greaterThan",
+                "lessThan",
+                "answered",
+                "notAnswered"
+              ]
+            },
+            "expectedValues": {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "type": [
+                  "string",
+                  "number",
+                  "boolean"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "actions": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "actionId",
+          "kind",
+          "tagId",
+          "eventId",
+          "webhookUrl",
+          "webhookSecret",
+          "channel"
+        ],
+        "properties": {
+          "actionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "notifyTeam",
+              "addOrganizerTag",
+              "createCrmContact",
+              "addApplicationQueue",
+              "proposeEventAttendee",
+              "signedWebhook",
+              "campaignHandoff"
+            ]
+          },
+          "tagId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 80
+          },
+          "eventId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "webhookUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri",
+            "maxLength": 2000
+          },
+          "webhookSecret": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 32,
+            "maxLength": 128
+          },
+          "channel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              null,
+              "whatsapp",
+              "email"
+            ]
+          }
+        }
+      }
+    },
+    "createdByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "updatedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "x-firestore-collection": "organizerFormAutomationRules",
+  "x-firestore-path": "organizerFormAutomationRules/{ruleId}",
+  "x-document-id-field": "ruleId",
+  "x-owner": "organizer form automation management"
+};
+
+export const organizerFormAutomationRunDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_form_automation_runs.schema.json",
+  "title": "OrganizerFormAutomationRunDocument",
+  "description": "Idempotent, observable execution of one rule revision for one response event.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "ruleId",
+    "ruleRevision",
+    "responseId",
+    "eventKind",
+    "status",
+    "attemptCount",
+    "actionResults",
+    "errorCode",
+    "errorMessage",
+    "createdAt",
+    "updatedAt",
+    "completedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "ruleId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "ruleRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventKind": {
+      "type": "string",
+      "enum": [
+        "submitted",
+        "withdrawn"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "running",
+        "succeeded",
+        "partiallyFailed",
+        "failed",
+        "skipped"
+      ]
+    },
+    "attemptCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "actionResults": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "actionId",
+          "kind",
+          "status",
+          "resultId",
+          "errorCode"
+        ],
+        "properties": {
+          "actionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "notifyTeam",
+              "addOrganizerTag",
+              "createCrmContact",
+              "addApplicationQueue",
+              "proposeEventAttendee",
+              "signedWebhook",
+              "campaignHandoff"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "succeeded",
+              "failed",
+              "skipped"
+            ]
+          },
+          "resultId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 200
+          },
+          "errorCode": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 80
+          }
+        }
+      }
+    },
+    "errorCode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 80
+    },
+    "errorMessage": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "completedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "x-firestore-collection": "organizerFormAutomationRuns",
+  "x-firestore-path": "organizerFormAutomationRuns/{runId}",
+  "x-document-id-field": "runId",
+  "x-owner": "organizer form automation executor"
+};
+
+export const organizerFormConversionReceiptDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_form_conversion_receipts.schema.json",
+  "title": "OrganizerFormConversionReceiptDocument",
+  "description": "Idempotent reviewed downstream conversion and safe-undo boundary.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "responseId",
+    "kind",
+    "requestId",
+    "actorUid",
+    "status",
+    "fields",
+    "resultId",
+    "undoStatus",
+    "createdAt",
+    "updatedAt",
+    "completedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "crmContact",
+        "application",
+        "eventAttendeeProposal",
+        "followUp"
+      ]
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 128
+    },
+    "actorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "completed",
+        "failed"
+      ]
+    },
+    "fields": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "destinationField",
+          "label",
+          "value",
+          "origin",
+          "conflict"
+        ],
+        "properties": {
+          "destinationField": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "value": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "null"
+            ],
+            "maxLength": 1000
+          },
+          "origin": {
+            "type": "string",
+            "enum": [
+              "verifiedIdentity",
+              "formAnswer",
+              "hostOverride"
+            ]
+          },
+          "conflict": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          }
+        }
+      }
+    },
+    "resultId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200
+    },
+    "undoStatus": {
+      "type": "string",
+      "enum": [
+        "notAvailable",
+        "available",
+        "used",
+        "expired"
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "completedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "x-firestore-collection": "organizerFormConversionReceipts",
+  "x-firestore-path": "organizerFormConversionReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "organizer form reviewed conversion"
+};
+
+export const organizerFormShareLinkDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_form_share_links.schema.json",
+  "title": "OrganizerFormShareLinkDocument",
+  "description": "Organizer-owned source-attributed stable public form link.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "publicFormId",
+    "label",
+    "source",
+    "tokenHash",
+    "createdByUid",
+    "createdAt",
+    "openCount",
+    "startCount",
+    "submissionCount"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "publicFormId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{20,80}$"
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "source": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120
+    },
+    "tokenHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "createdByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "openCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "startCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "submissionCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    }
+  },
+  "x-firestore-collection": "organizerFormShareLinks",
+  "x-firestore-path": "organizerFormShareLinks/{linkId}",
+  "x-document-id-field": "linkId",
+  "x-owner": "organizer form distribution callables"
+};
+
 export const organizerApplicationDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_applications.schema.json",
@@ -34077,6 +38050,7 @@ export const activityNotificationDocumentSchema = {
         "eventUpdated",
         "clubUpdate",
         "organizerUpdate",
+        "formResponse",
         "crossPathsInvitation",
         "crossPathsInvitationAccepted",
         "crossPathsInvitationDeclined",
@@ -56034,6 +60008,11157 @@ export const listOrganizerContactsCallablePayloadSchema = {
   }
 };
 
+export const createOrganizerFormCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/create_organizer_form_payload.schema.json",
+  "title": "CreateOrganizerFormCallablePayload",
+  "description": "Creates one organizer-owned generic form draft from a versioned template.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "templateId",
+    "requestId",
+    "title",
+    "defaultTargetKind",
+    "defaultTargetId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "templateId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "title": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "defaultTargetKind": {
+      "type": "string",
+      "enum": [
+        "organizer",
+        "event",
+        "campaign"
+      ]
+    },
+    "defaultTargetId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const createOrganizerFormCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/create_organizer_form_response.schema.json",
+  "title": "CreateOrganizerFormCallableResponse",
+  "description": "New or idempotently reused organizer form editor state.",
+  "allOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "form",
+        "definition",
+        "validationIssues"
+      ],
+      "properties": {
+        "form": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organizerId",
+            "formId",
+            "title",
+            "description",
+            "purpose",
+            "status",
+            "templateId",
+            "publicFormId",
+            "defaultTargetKind",
+            "defaultTargetId",
+            "activeVersionId",
+            "draftRevision",
+            "publishedVersion",
+            "submittedResponseCount",
+            "updatedAtMillis",
+            "publishedAtMillis",
+            "lastResponseAtMillis"
+          ],
+          "properties": {
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "formId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "description": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            },
+            "purpose": {
+              "type": "string",
+              "enum": [
+                "application",
+                "registration",
+                "intake",
+                "waiver",
+                "feedback",
+                "survey"
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "draft",
+                "published",
+                "paused",
+                "archived"
+              ]
+            },
+            "templateId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "publicFormId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{20,80}$"
+            },
+            "defaultTargetKind": {
+              "type": "string",
+              "enum": [
+                "organizer",
+                "event",
+                "campaign"
+              ]
+            },
+            "defaultTargetId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "activeVersionId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "draftRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "publishedVersion": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "submittedResponseCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000
+            },
+            "updatedAtMillis": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "publishedAtMillis": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "lastResponseAtMillis": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "definition": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "title",
+            "description",
+            "purpose",
+            "defaultTargetKind",
+            "defaultTargetId",
+            "identityPolicy",
+            "sections",
+            "logicRules",
+            "appearance",
+            "availability",
+            "consent",
+            "completion"
+          ],
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "description": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            },
+            "purpose": {
+              "type": "string",
+              "enum": [
+                "application",
+                "registration",
+                "intake",
+                "waiver",
+                "feedback",
+                "survey"
+              ]
+            },
+            "defaultTargetKind": {
+              "type": "string",
+              "enum": [
+                "organizer",
+                "event",
+                "campaign"
+              ]
+            },
+            "defaultTargetId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "identityPolicy": {
+              "type": "string",
+              "enum": [
+                "anonymous",
+                "emailVerified",
+                "phoneVerified",
+                "emailOrPhoneVerified",
+                "catchAccount"
+              ]
+            },
+            "sections": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 40,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "sectionId",
+                  "title",
+                  "description",
+                  "pageBreak",
+                  "questions"
+                ],
+                "properties": {
+                  "sectionId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  "description": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 1000
+                  },
+                  "pageBreak": {
+                    "type": "boolean"
+                  },
+                  "questions": {
+                    "type": "array",
+                    "maxItems": 100,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "questionId",
+                        "key",
+                        "label",
+                        "helpText",
+                        "kind",
+                        "required",
+                        "options",
+                        "canonicalFieldId",
+                        "privacyClass",
+                        "prefillPolicy",
+                        "hostPresentation",
+                        "validation"
+                      ],
+                      "properties": {
+                        "questionId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        "key": {
+                          "type": "string",
+                          "pattern": "^[A-Za-z][A-Za-z0-9_]{0,79}$"
+                        },
+                        "label": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 240
+                        },
+                        "helpText": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "maxLength": 500
+                        },
+                        "kind": {
+                          "type": "string",
+                          "enum": [
+                            "shortText",
+                            "longText",
+                            "singleChoice",
+                            "multiChoice",
+                            "date",
+                            "phone",
+                            "email",
+                            "url",
+                            "number",
+                            "boolean",
+                            "file",
+                            "acknowledgement",
+                            "signature"
+                          ]
+                        },
+                        "required": {
+                          "type": "boolean"
+                        },
+                        "options": {
+                          "type": "array",
+                          "maxItems": 100,
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "optionId",
+                              "label",
+                              "value"
+                            ],
+                            "properties": {
+                              "optionId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 180
+                              },
+                              "label": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 160
+                              },
+                              "value": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 160
+                              }
+                            }
+                          }
+                        },
+                        "canonicalFieldId": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "x-catch-catalog": "../catalogs/person_fields.json",
+                              "enum": [
+                                "givenName",
+                                "familyName",
+                                "displayName",
+                                "dateOfBirth",
+                                "age",
+                                "gender",
+                                "phoneNumber",
+                                "email",
+                                "instagramHandle",
+                                "linkedinUrl",
+                                "profilePhoto",
+                                "city",
+                                "heightCm",
+                                "occupation",
+                                "company",
+                                "education",
+                                "languages",
+                                "relationshipGoal",
+                                "interestedInGenders",
+                                "drinking",
+                                "smoking",
+                                "religion",
+                                "workout",
+                                "diet",
+                                "children"
+                              ]
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "privacyClass": {
+                          "type": "string",
+                          "enum": [
+                            "contact",
+                            "profile",
+                            "sensitive",
+                            "organizerCustom"
+                          ]
+                        },
+                        "prefillPolicy": {
+                          "type": "string",
+                          "enum": [
+                            "never",
+                            "participantReviewRequired"
+                          ]
+                        },
+                        "hostPresentation": {
+                          "type": "string",
+                          "enum": [
+                            "detailOnly",
+                            "filterable",
+                            "sortable"
+                          ]
+                        },
+                        "validation": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "minLength",
+                            "maxLength",
+                            "minNumber",
+                            "maxNumber",
+                            "earliestDate",
+                            "latestDate",
+                            "minSelections",
+                            "maxSelections",
+                            "maxFileCount",
+                            "maxFileSizeBytes",
+                            "allowedMimeTypes",
+                            "patternPreset",
+                            "customError"
+                          ],
+                          "properties": {
+                            "minLength": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 0,
+                              "maximum": 4000
+                            },
+                            "maxLength": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 1,
+                              "maximum": 4000
+                            },
+                            "minNumber": {
+                              "type": [
+                                "number",
+                                "null"
+                              ],
+                              "minimum": -1000000000,
+                              "maximum": 1000000000
+                            },
+                            "maxNumber": {
+                              "type": [
+                                "number",
+                                "null"
+                              ],
+                              "minimum": -1000000000,
+                              "maximum": 1000000000
+                            },
+                            "earliestDate": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "format": "date"
+                            },
+                            "latestDate": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "format": "date"
+                            },
+                            "minSelections": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 0,
+                              "maximum": 100
+                            },
+                            "maxSelections": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 1,
+                              "maximum": 100
+                            },
+                            "maxFileCount": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 1,
+                              "maximum": 10
+                            },
+                            "maxFileSizeBytes": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 1,
+                              "maximum": 26214400
+                            },
+                            "allowedMimeTypes": {
+                              "type": "array",
+                              "maxItems": 20,
+                              "uniqueItems": true,
+                              "items": {
+                                "type": "string",
+                                "pattern": "^[a-z0-9.+-]+/[a-z0-9.+*-]+$",
+                                "maxLength": 100
+                              }
+                            },
+                            "patternPreset": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "enum": [
+                                null,
+                                "lettersAndSpaces",
+                                "alphanumeric",
+                                "postalCode",
+                                "handle"
+                              ]
+                            },
+                            "customError": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "maxLength": 240
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "logicRules": {
+              "type": "array",
+              "maxItems": 100,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "ruleId",
+                  "conditionMode",
+                  "conditions",
+                  "action",
+                  "targetQuestionId",
+                  "targetSectionId"
+                ],
+                "properties": {
+                  "ruleId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "conditionMode": {
+                    "type": "string",
+                    "enum": [
+                      "all",
+                      "any"
+                    ]
+                  },
+                  "conditions": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 20,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "questionId",
+                        "operator",
+                        "expectedValues"
+                      ],
+                      "properties": {
+                        "questionId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        "operator": {
+                          "type": "string",
+                          "enum": [
+                            "equals",
+                            "notEquals",
+                            "contains",
+                            "notContains",
+                            "greaterThan",
+                            "lessThan",
+                            "answered",
+                            "notAnswered"
+                          ]
+                        },
+                        "expectedValues": {
+                          "type": "array",
+                          "maxItems": 20,
+                          "items": {
+                            "type": [
+                              "string",
+                              "number",
+                              "boolean"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "action": {
+                    "type": "string",
+                    "enum": [
+                      "showQuestion",
+                      "hideQuestion",
+                      "showSection",
+                      "hideSection",
+                      "routeToSection",
+                      "finish"
+                    ]
+                  },
+                  "targetQuestionId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "targetSectionId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "appearance": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "preset",
+                "logoAssetId",
+                "coverAssetId",
+                "activityKind"
+              ],
+              "properties": {
+                "preset": {
+                  "type": "string",
+                  "enum": [
+                    "editorial",
+                    "minimal",
+                    "activity"
+                  ]
+                },
+                "logoAssetId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "coverAssetId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "activityKind": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 80
+                }
+              }
+            },
+            "availability": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "opensAt",
+                "closesAt",
+                "responseLimit",
+                "closedMessage"
+              ],
+              "properties": {
+                "opensAt": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "description": "Serialized Firestore Timestamp fixture shape.",
+                      "x-firestore-type": "timestamp",
+                      "additionalProperties": false,
+                      "required": [
+                        "_seconds",
+                        "_nanoseconds"
+                      ],
+                      "properties": {
+                        "_seconds": {
+                          "type": "integer"
+                        },
+                        "_nanoseconds": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 999999999
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "closesAt": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "description": "Serialized Firestore Timestamp fixture shape.",
+                      "x-firestore-type": "timestamp",
+                      "additionalProperties": false,
+                      "required": [
+                        "_seconds",
+                        "_nanoseconds"
+                      ],
+                      "properties": {
+                        "_seconds": {
+                          "type": "integer"
+                        },
+                        "_nanoseconds": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 999999999
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "responseLimit": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 1,
+                  "maximum": 1000000
+                },
+                "closedMessage": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 500
+                }
+              }
+            },
+            "consent": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "consentCopy",
+                "consentVersion",
+                "retentionCopy"
+              ],
+              "properties": {
+                "consentCopy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "consentVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "retentionCopy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                }
+              }
+            },
+            "completion": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "title",
+                "message",
+                "actionKind",
+                "actionLabel",
+                "actionUrl"
+              ],
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "message": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 1000
+                },
+                "actionKind": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "externalUrl",
+                    "event",
+                    "eventRuntime"
+                  ]
+                },
+                "actionLabel": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 80
+                },
+                "actionUrl": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "uri",
+                  "maxLength": 500
+                }
+              }
+            }
+          }
+        },
+        "validationIssues": {
+          "type": "array",
+          "maxItems": 250,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "code",
+              "path",
+              "message",
+              "severity"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "path": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 300
+              },
+              "message": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              },
+              "severity": {
+                "type": "string",
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+};
+
+export const updateOrganizerFormDraftCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/update_organizer_form_draft_payload.schema.json",
+  "title": "UpdateOrganizerFormDraftCallablePayload",
+  "description": "Optimistically replaces one organizer form draft definition.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "expectedRevision",
+    "definition"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "definition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "description",
+        "purpose",
+        "defaultTargetKind",
+        "defaultTargetId",
+        "identityPolicy",
+        "sections",
+        "logicRules",
+        "appearance",
+        "availability",
+        "consent",
+        "completion"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        },
+        "purpose": {
+          "type": "string",
+          "enum": [
+            "application",
+            "registration",
+            "intake",
+            "waiver",
+            "feedback",
+            "survey"
+          ]
+        },
+        "defaultTargetKind": {
+          "type": "string",
+          "enum": [
+            "organizer",
+            "event",
+            "campaign"
+          ]
+        },
+        "defaultTargetId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "identityPolicy": {
+          "type": "string",
+          "enum": [
+            "anonymous",
+            "emailVerified",
+            "phoneVerified",
+            "emailOrPhoneVerified",
+            "catchAccount"
+          ]
+        },
+        "sections": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 40,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "sectionId",
+              "title",
+              "description",
+              "pageBreak",
+              "questions"
+            ],
+            "properties": {
+              "sectionId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "description": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 1000
+              },
+              "pageBreak": {
+                "type": "boolean"
+              },
+              "questions": {
+                "type": "array",
+                "maxItems": 100,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "questionId",
+                    "key",
+                    "label",
+                    "helpText",
+                    "kind",
+                    "required",
+                    "options",
+                    "canonicalFieldId",
+                    "privacyClass",
+                    "prefillPolicy",
+                    "hostPresentation",
+                    "validation"
+                  ],
+                  "properties": {
+                    "questionId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "key": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z][A-Za-z0-9_]{0,79}$"
+                    },
+                    "label": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 240
+                    },
+                    "helpText": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 500
+                    },
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "shortText",
+                        "longText",
+                        "singleChoice",
+                        "multiChoice",
+                        "date",
+                        "phone",
+                        "email",
+                        "url",
+                        "number",
+                        "boolean",
+                        "file",
+                        "acknowledgement",
+                        "signature"
+                      ]
+                    },
+                    "required": {
+                      "type": "boolean"
+                    },
+                    "options": {
+                      "type": "array",
+                      "maxItems": 100,
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "optionId",
+                          "label",
+                          "value"
+                        ],
+                        "properties": {
+                          "optionId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 180
+                          },
+                          "label": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 160
+                          },
+                          "value": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 160
+                          }
+                        }
+                      }
+                    },
+                    "canonicalFieldId": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "x-catch-catalog": "../catalogs/person_fields.json",
+                          "enum": [
+                            "givenName",
+                            "familyName",
+                            "displayName",
+                            "dateOfBirth",
+                            "age",
+                            "gender",
+                            "phoneNumber",
+                            "email",
+                            "instagramHandle",
+                            "linkedinUrl",
+                            "profilePhoto",
+                            "city",
+                            "heightCm",
+                            "occupation",
+                            "company",
+                            "education",
+                            "languages",
+                            "relationshipGoal",
+                            "interestedInGenders",
+                            "drinking",
+                            "smoking",
+                            "religion",
+                            "workout",
+                            "diet",
+                            "children"
+                          ]
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "privacyClass": {
+                      "type": "string",
+                      "enum": [
+                        "contact",
+                        "profile",
+                        "sensitive",
+                        "organizerCustom"
+                      ]
+                    },
+                    "prefillPolicy": {
+                      "type": "string",
+                      "enum": [
+                        "never",
+                        "participantReviewRequired"
+                      ]
+                    },
+                    "hostPresentation": {
+                      "type": "string",
+                      "enum": [
+                        "detailOnly",
+                        "filterable",
+                        "sortable"
+                      ]
+                    },
+                    "validation": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "minLength",
+                        "maxLength",
+                        "minNumber",
+                        "maxNumber",
+                        "earliestDate",
+                        "latestDate",
+                        "minSelections",
+                        "maxSelections",
+                        "maxFileCount",
+                        "maxFileSizeBytes",
+                        "allowedMimeTypes",
+                        "patternPreset",
+                        "customError"
+                      ],
+                      "properties": {
+                        "minLength": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 0,
+                          "maximum": 4000
+                        },
+                        "maxLength": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 4000
+                        },
+                        "minNumber": {
+                          "type": [
+                            "number",
+                            "null"
+                          ],
+                          "minimum": -1000000000,
+                          "maximum": 1000000000
+                        },
+                        "maxNumber": {
+                          "type": [
+                            "number",
+                            "null"
+                          ],
+                          "minimum": -1000000000,
+                          "maximum": 1000000000
+                        },
+                        "earliestDate": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "date"
+                        },
+                        "latestDate": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "date"
+                        },
+                        "minSelections": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 0,
+                          "maximum": 100
+                        },
+                        "maxSelections": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 100
+                        },
+                        "maxFileCount": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 10
+                        },
+                        "maxFileSizeBytes": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 26214400
+                        },
+                        "allowedMimeTypes": {
+                          "type": "array",
+                          "maxItems": 20,
+                          "uniqueItems": true,
+                          "items": {
+                            "type": "string",
+                            "pattern": "^[a-z0-9.+-]+/[a-z0-9.+*-]+$",
+                            "maxLength": 100
+                          }
+                        },
+                        "patternPreset": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            null,
+                            "lettersAndSpaces",
+                            "alphanumeric",
+                            "postalCode",
+                            "handle"
+                          ]
+                        },
+                        "customError": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "maxLength": 240
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "logicRules": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "ruleId",
+              "conditionMode",
+              "conditions",
+              "action",
+              "targetQuestionId",
+              "targetSectionId"
+            ],
+            "properties": {
+              "ruleId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "conditionMode": {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "any"
+                ]
+              },
+              "conditions": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 20,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "questionId",
+                    "operator",
+                    "expectedValues"
+                  ],
+                  "properties": {
+                    "questionId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "operator": {
+                      "type": "string",
+                      "enum": [
+                        "equals",
+                        "notEquals",
+                        "contains",
+                        "notContains",
+                        "greaterThan",
+                        "lessThan",
+                        "answered",
+                        "notAnswered"
+                      ]
+                    },
+                    "expectedValues": {
+                      "type": "array",
+                      "maxItems": 20,
+                      "items": {
+                        "type": [
+                          "string",
+                          "number",
+                          "boolean"
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              "action": {
+                "type": "string",
+                "enum": [
+                  "showQuestion",
+                  "hideQuestion",
+                  "showSection",
+                  "hideSection",
+                  "routeToSection",
+                  "finish"
+                ]
+              },
+              "targetQuestionId": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "targetSectionId": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "appearance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "preset",
+            "logoAssetId",
+            "coverAssetId",
+            "activityKind"
+          ],
+          "properties": {
+            "preset": {
+              "type": "string",
+              "enum": [
+                "editorial",
+                "minimal",
+                "activity"
+              ]
+            },
+            "logoAssetId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "coverAssetId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "activityKind": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80
+            }
+          }
+        },
+        "availability": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "opensAt",
+            "closesAt",
+            "responseLimit",
+            "closedMessage"
+          ],
+          "properties": {
+            "opensAt": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "description": "Serialized Firestore Timestamp fixture shape.",
+                  "x-firestore-type": "timestamp",
+                  "additionalProperties": false,
+                  "required": [
+                    "_seconds",
+                    "_nanoseconds"
+                  ],
+                  "properties": {
+                    "_seconds": {
+                      "type": "integer"
+                    },
+                    "_nanoseconds": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 999999999
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "closesAt": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "description": "Serialized Firestore Timestamp fixture shape.",
+                  "x-firestore-type": "timestamp",
+                  "additionalProperties": false,
+                  "required": [
+                    "_seconds",
+                    "_nanoseconds"
+                  ],
+                  "properties": {
+                    "_seconds": {
+                      "type": "integer"
+                    },
+                    "_nanoseconds": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 999999999
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "responseLimit": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "closedMessage": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 500
+            }
+          }
+        },
+        "consent": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "consentCopy",
+            "consentVersion",
+            "retentionCopy"
+          ],
+          "properties": {
+            "consentCopy": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "consentVersion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "retentionCopy": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            }
+          }
+        },
+        "completion": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "title",
+            "message",
+            "actionKind",
+            "actionLabel",
+            "actionUrl"
+          ],
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "message": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            },
+            "actionKind": {
+              "type": "string",
+              "enum": [
+                "none",
+                "externalUrl",
+                "event",
+                "eventRuntime"
+              ]
+            },
+            "actionLabel": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80
+            },
+            "actionUrl": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uri",
+              "maxLength": 500
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
+export const updateOrganizerFormDraftCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/update_organizer_form_draft_response.schema.json",
+  "title": "UpdateOrganizerFormDraftCallableResponse",
+  "description": "Saved organizer form editor state at the new optimistic revision.",
+  "allOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "form",
+        "definition",
+        "validationIssues"
+      ],
+      "properties": {
+        "form": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organizerId",
+            "formId",
+            "title",
+            "description",
+            "purpose",
+            "status",
+            "templateId",
+            "publicFormId",
+            "defaultTargetKind",
+            "defaultTargetId",
+            "activeVersionId",
+            "draftRevision",
+            "publishedVersion",
+            "submittedResponseCount",
+            "updatedAtMillis",
+            "publishedAtMillis",
+            "lastResponseAtMillis"
+          ],
+          "properties": {
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "formId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "description": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            },
+            "purpose": {
+              "type": "string",
+              "enum": [
+                "application",
+                "registration",
+                "intake",
+                "waiver",
+                "feedback",
+                "survey"
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "draft",
+                "published",
+                "paused",
+                "archived"
+              ]
+            },
+            "templateId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "publicFormId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{20,80}$"
+            },
+            "defaultTargetKind": {
+              "type": "string",
+              "enum": [
+                "organizer",
+                "event",
+                "campaign"
+              ]
+            },
+            "defaultTargetId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "activeVersionId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "draftRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "publishedVersion": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "submittedResponseCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000
+            },
+            "updatedAtMillis": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "publishedAtMillis": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "lastResponseAtMillis": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "definition": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "title",
+            "description",
+            "purpose",
+            "defaultTargetKind",
+            "defaultTargetId",
+            "identityPolicy",
+            "sections",
+            "logicRules",
+            "appearance",
+            "availability",
+            "consent",
+            "completion"
+          ],
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "description": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            },
+            "purpose": {
+              "type": "string",
+              "enum": [
+                "application",
+                "registration",
+                "intake",
+                "waiver",
+                "feedback",
+                "survey"
+              ]
+            },
+            "defaultTargetKind": {
+              "type": "string",
+              "enum": [
+                "organizer",
+                "event",
+                "campaign"
+              ]
+            },
+            "defaultTargetId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "identityPolicy": {
+              "type": "string",
+              "enum": [
+                "anonymous",
+                "emailVerified",
+                "phoneVerified",
+                "emailOrPhoneVerified",
+                "catchAccount"
+              ]
+            },
+            "sections": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 40,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "sectionId",
+                  "title",
+                  "description",
+                  "pageBreak",
+                  "questions"
+                ],
+                "properties": {
+                  "sectionId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  "description": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 1000
+                  },
+                  "pageBreak": {
+                    "type": "boolean"
+                  },
+                  "questions": {
+                    "type": "array",
+                    "maxItems": 100,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "questionId",
+                        "key",
+                        "label",
+                        "helpText",
+                        "kind",
+                        "required",
+                        "options",
+                        "canonicalFieldId",
+                        "privacyClass",
+                        "prefillPolicy",
+                        "hostPresentation",
+                        "validation"
+                      ],
+                      "properties": {
+                        "questionId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        "key": {
+                          "type": "string",
+                          "pattern": "^[A-Za-z][A-Za-z0-9_]{0,79}$"
+                        },
+                        "label": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 240
+                        },
+                        "helpText": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "maxLength": 500
+                        },
+                        "kind": {
+                          "type": "string",
+                          "enum": [
+                            "shortText",
+                            "longText",
+                            "singleChoice",
+                            "multiChoice",
+                            "date",
+                            "phone",
+                            "email",
+                            "url",
+                            "number",
+                            "boolean",
+                            "file",
+                            "acknowledgement",
+                            "signature"
+                          ]
+                        },
+                        "required": {
+                          "type": "boolean"
+                        },
+                        "options": {
+                          "type": "array",
+                          "maxItems": 100,
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "optionId",
+                              "label",
+                              "value"
+                            ],
+                            "properties": {
+                              "optionId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 180
+                              },
+                              "label": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 160
+                              },
+                              "value": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 160
+                              }
+                            }
+                          }
+                        },
+                        "canonicalFieldId": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "x-catch-catalog": "../catalogs/person_fields.json",
+                              "enum": [
+                                "givenName",
+                                "familyName",
+                                "displayName",
+                                "dateOfBirth",
+                                "age",
+                                "gender",
+                                "phoneNumber",
+                                "email",
+                                "instagramHandle",
+                                "linkedinUrl",
+                                "profilePhoto",
+                                "city",
+                                "heightCm",
+                                "occupation",
+                                "company",
+                                "education",
+                                "languages",
+                                "relationshipGoal",
+                                "interestedInGenders",
+                                "drinking",
+                                "smoking",
+                                "religion",
+                                "workout",
+                                "diet",
+                                "children"
+                              ]
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "privacyClass": {
+                          "type": "string",
+                          "enum": [
+                            "contact",
+                            "profile",
+                            "sensitive",
+                            "organizerCustom"
+                          ]
+                        },
+                        "prefillPolicy": {
+                          "type": "string",
+                          "enum": [
+                            "never",
+                            "participantReviewRequired"
+                          ]
+                        },
+                        "hostPresentation": {
+                          "type": "string",
+                          "enum": [
+                            "detailOnly",
+                            "filterable",
+                            "sortable"
+                          ]
+                        },
+                        "validation": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "minLength",
+                            "maxLength",
+                            "minNumber",
+                            "maxNumber",
+                            "earliestDate",
+                            "latestDate",
+                            "minSelections",
+                            "maxSelections",
+                            "maxFileCount",
+                            "maxFileSizeBytes",
+                            "allowedMimeTypes",
+                            "patternPreset",
+                            "customError"
+                          ],
+                          "properties": {
+                            "minLength": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 0,
+                              "maximum": 4000
+                            },
+                            "maxLength": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 1,
+                              "maximum": 4000
+                            },
+                            "minNumber": {
+                              "type": [
+                                "number",
+                                "null"
+                              ],
+                              "minimum": -1000000000,
+                              "maximum": 1000000000
+                            },
+                            "maxNumber": {
+                              "type": [
+                                "number",
+                                "null"
+                              ],
+                              "minimum": -1000000000,
+                              "maximum": 1000000000
+                            },
+                            "earliestDate": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "format": "date"
+                            },
+                            "latestDate": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "format": "date"
+                            },
+                            "minSelections": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 0,
+                              "maximum": 100
+                            },
+                            "maxSelections": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 1,
+                              "maximum": 100
+                            },
+                            "maxFileCount": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 1,
+                              "maximum": 10
+                            },
+                            "maxFileSizeBytes": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 1,
+                              "maximum": 26214400
+                            },
+                            "allowedMimeTypes": {
+                              "type": "array",
+                              "maxItems": 20,
+                              "uniqueItems": true,
+                              "items": {
+                                "type": "string",
+                                "pattern": "^[a-z0-9.+-]+/[a-z0-9.+*-]+$",
+                                "maxLength": 100
+                              }
+                            },
+                            "patternPreset": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "enum": [
+                                null,
+                                "lettersAndSpaces",
+                                "alphanumeric",
+                                "postalCode",
+                                "handle"
+                              ]
+                            },
+                            "customError": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "maxLength": 240
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "logicRules": {
+              "type": "array",
+              "maxItems": 100,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "ruleId",
+                  "conditionMode",
+                  "conditions",
+                  "action",
+                  "targetQuestionId",
+                  "targetSectionId"
+                ],
+                "properties": {
+                  "ruleId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "conditionMode": {
+                    "type": "string",
+                    "enum": [
+                      "all",
+                      "any"
+                    ]
+                  },
+                  "conditions": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 20,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "questionId",
+                        "operator",
+                        "expectedValues"
+                      ],
+                      "properties": {
+                        "questionId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        "operator": {
+                          "type": "string",
+                          "enum": [
+                            "equals",
+                            "notEquals",
+                            "contains",
+                            "notContains",
+                            "greaterThan",
+                            "lessThan",
+                            "answered",
+                            "notAnswered"
+                          ]
+                        },
+                        "expectedValues": {
+                          "type": "array",
+                          "maxItems": 20,
+                          "items": {
+                            "type": [
+                              "string",
+                              "number",
+                              "boolean"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "action": {
+                    "type": "string",
+                    "enum": [
+                      "showQuestion",
+                      "hideQuestion",
+                      "showSection",
+                      "hideSection",
+                      "routeToSection",
+                      "finish"
+                    ]
+                  },
+                  "targetQuestionId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "targetSectionId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "appearance": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "preset",
+                "logoAssetId",
+                "coverAssetId",
+                "activityKind"
+              ],
+              "properties": {
+                "preset": {
+                  "type": "string",
+                  "enum": [
+                    "editorial",
+                    "minimal",
+                    "activity"
+                  ]
+                },
+                "logoAssetId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "coverAssetId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "activityKind": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 80
+                }
+              }
+            },
+            "availability": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "opensAt",
+                "closesAt",
+                "responseLimit",
+                "closedMessage"
+              ],
+              "properties": {
+                "opensAt": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "description": "Serialized Firestore Timestamp fixture shape.",
+                      "x-firestore-type": "timestamp",
+                      "additionalProperties": false,
+                      "required": [
+                        "_seconds",
+                        "_nanoseconds"
+                      ],
+                      "properties": {
+                        "_seconds": {
+                          "type": "integer"
+                        },
+                        "_nanoseconds": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 999999999
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "closesAt": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "description": "Serialized Firestore Timestamp fixture shape.",
+                      "x-firestore-type": "timestamp",
+                      "additionalProperties": false,
+                      "required": [
+                        "_seconds",
+                        "_nanoseconds"
+                      ],
+                      "properties": {
+                        "_seconds": {
+                          "type": "integer"
+                        },
+                        "_nanoseconds": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 999999999
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "responseLimit": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 1,
+                  "maximum": 1000000
+                },
+                "closedMessage": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 500
+                }
+              }
+            },
+            "consent": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "consentCopy",
+                "consentVersion",
+                "retentionCopy"
+              ],
+              "properties": {
+                "consentCopy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "consentVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "retentionCopy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                }
+              }
+            },
+            "completion": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "title",
+                "message",
+                "actionKind",
+                "actionLabel",
+                "actionUrl"
+              ],
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "message": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 1000
+                },
+                "actionKind": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "externalUrl",
+                    "event",
+                    "eventRuntime"
+                  ]
+                },
+                "actionLabel": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 80
+                },
+                "actionUrl": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "uri",
+                  "maxLength": 500
+                }
+              }
+            }
+          }
+        },
+        "validationIssues": {
+          "type": "array",
+          "maxItems": 250,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "code",
+              "path",
+              "message",
+              "severity"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "path": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 300
+              },
+              "message": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              },
+              "severity": {
+                "type": "string",
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+};
+
+export const getOrganizerFormEditorCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_organizer_form_editor_payload.schema.json",
+  "title": "GetOrganizerFormEditorCallablePayload",
+  "description": "Gets one manager-authorized form and its editable draft.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const getOrganizerFormEditorCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_organizer_form_editor_response.schema.json",
+  "title": "GetOrganizerFormEditorCallableResponse",
+  "description": "Manager-authorized form editor state.",
+  "allOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "form",
+        "definition",
+        "validationIssues"
+      ],
+      "properties": {
+        "form": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organizerId",
+            "formId",
+            "title",
+            "description",
+            "purpose",
+            "status",
+            "templateId",
+            "publicFormId",
+            "defaultTargetKind",
+            "defaultTargetId",
+            "activeVersionId",
+            "draftRevision",
+            "publishedVersion",
+            "submittedResponseCount",
+            "updatedAtMillis",
+            "publishedAtMillis",
+            "lastResponseAtMillis"
+          ],
+          "properties": {
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "formId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "description": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            },
+            "purpose": {
+              "type": "string",
+              "enum": [
+                "application",
+                "registration",
+                "intake",
+                "waiver",
+                "feedback",
+                "survey"
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "draft",
+                "published",
+                "paused",
+                "archived"
+              ]
+            },
+            "templateId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "publicFormId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{20,80}$"
+            },
+            "defaultTargetKind": {
+              "type": "string",
+              "enum": [
+                "organizer",
+                "event",
+                "campaign"
+              ]
+            },
+            "defaultTargetId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "activeVersionId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "draftRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "publishedVersion": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "submittedResponseCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000
+            },
+            "updatedAtMillis": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "publishedAtMillis": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "lastResponseAtMillis": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "definition": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "title",
+            "description",
+            "purpose",
+            "defaultTargetKind",
+            "defaultTargetId",
+            "identityPolicy",
+            "sections",
+            "logicRules",
+            "appearance",
+            "availability",
+            "consent",
+            "completion"
+          ],
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "description": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            },
+            "purpose": {
+              "type": "string",
+              "enum": [
+                "application",
+                "registration",
+                "intake",
+                "waiver",
+                "feedback",
+                "survey"
+              ]
+            },
+            "defaultTargetKind": {
+              "type": "string",
+              "enum": [
+                "organizer",
+                "event",
+                "campaign"
+              ]
+            },
+            "defaultTargetId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "identityPolicy": {
+              "type": "string",
+              "enum": [
+                "anonymous",
+                "emailVerified",
+                "phoneVerified",
+                "emailOrPhoneVerified",
+                "catchAccount"
+              ]
+            },
+            "sections": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 40,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "sectionId",
+                  "title",
+                  "description",
+                  "pageBreak",
+                  "questions"
+                ],
+                "properties": {
+                  "sectionId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  "description": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 1000
+                  },
+                  "pageBreak": {
+                    "type": "boolean"
+                  },
+                  "questions": {
+                    "type": "array",
+                    "maxItems": 100,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "questionId",
+                        "key",
+                        "label",
+                        "helpText",
+                        "kind",
+                        "required",
+                        "options",
+                        "canonicalFieldId",
+                        "privacyClass",
+                        "prefillPolicy",
+                        "hostPresentation",
+                        "validation"
+                      ],
+                      "properties": {
+                        "questionId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        "key": {
+                          "type": "string",
+                          "pattern": "^[A-Za-z][A-Za-z0-9_]{0,79}$"
+                        },
+                        "label": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 240
+                        },
+                        "helpText": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "maxLength": 500
+                        },
+                        "kind": {
+                          "type": "string",
+                          "enum": [
+                            "shortText",
+                            "longText",
+                            "singleChoice",
+                            "multiChoice",
+                            "date",
+                            "phone",
+                            "email",
+                            "url",
+                            "number",
+                            "boolean",
+                            "file",
+                            "acknowledgement",
+                            "signature"
+                          ]
+                        },
+                        "required": {
+                          "type": "boolean"
+                        },
+                        "options": {
+                          "type": "array",
+                          "maxItems": 100,
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "optionId",
+                              "label",
+                              "value"
+                            ],
+                            "properties": {
+                              "optionId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 180
+                              },
+                              "label": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 160
+                              },
+                              "value": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 160
+                              }
+                            }
+                          }
+                        },
+                        "canonicalFieldId": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "x-catch-catalog": "../catalogs/person_fields.json",
+                              "enum": [
+                                "givenName",
+                                "familyName",
+                                "displayName",
+                                "dateOfBirth",
+                                "age",
+                                "gender",
+                                "phoneNumber",
+                                "email",
+                                "instagramHandle",
+                                "linkedinUrl",
+                                "profilePhoto",
+                                "city",
+                                "heightCm",
+                                "occupation",
+                                "company",
+                                "education",
+                                "languages",
+                                "relationshipGoal",
+                                "interestedInGenders",
+                                "drinking",
+                                "smoking",
+                                "religion",
+                                "workout",
+                                "diet",
+                                "children"
+                              ]
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "privacyClass": {
+                          "type": "string",
+                          "enum": [
+                            "contact",
+                            "profile",
+                            "sensitive",
+                            "organizerCustom"
+                          ]
+                        },
+                        "prefillPolicy": {
+                          "type": "string",
+                          "enum": [
+                            "never",
+                            "participantReviewRequired"
+                          ]
+                        },
+                        "hostPresentation": {
+                          "type": "string",
+                          "enum": [
+                            "detailOnly",
+                            "filterable",
+                            "sortable"
+                          ]
+                        },
+                        "validation": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "minLength",
+                            "maxLength",
+                            "minNumber",
+                            "maxNumber",
+                            "earliestDate",
+                            "latestDate",
+                            "minSelections",
+                            "maxSelections",
+                            "maxFileCount",
+                            "maxFileSizeBytes",
+                            "allowedMimeTypes",
+                            "patternPreset",
+                            "customError"
+                          ],
+                          "properties": {
+                            "minLength": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 0,
+                              "maximum": 4000
+                            },
+                            "maxLength": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 1,
+                              "maximum": 4000
+                            },
+                            "minNumber": {
+                              "type": [
+                                "number",
+                                "null"
+                              ],
+                              "minimum": -1000000000,
+                              "maximum": 1000000000
+                            },
+                            "maxNumber": {
+                              "type": [
+                                "number",
+                                "null"
+                              ],
+                              "minimum": -1000000000,
+                              "maximum": 1000000000
+                            },
+                            "earliestDate": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "format": "date"
+                            },
+                            "latestDate": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "format": "date"
+                            },
+                            "minSelections": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 0,
+                              "maximum": 100
+                            },
+                            "maxSelections": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 1,
+                              "maximum": 100
+                            },
+                            "maxFileCount": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 1,
+                              "maximum": 10
+                            },
+                            "maxFileSizeBytes": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 1,
+                              "maximum": 26214400
+                            },
+                            "allowedMimeTypes": {
+                              "type": "array",
+                              "maxItems": 20,
+                              "uniqueItems": true,
+                              "items": {
+                                "type": "string",
+                                "pattern": "^[a-z0-9.+-]+/[a-z0-9.+*-]+$",
+                                "maxLength": 100
+                              }
+                            },
+                            "patternPreset": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "enum": [
+                                null,
+                                "lettersAndSpaces",
+                                "alphanumeric",
+                                "postalCode",
+                                "handle"
+                              ]
+                            },
+                            "customError": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "maxLength": 240
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "logicRules": {
+              "type": "array",
+              "maxItems": 100,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "ruleId",
+                  "conditionMode",
+                  "conditions",
+                  "action",
+                  "targetQuestionId",
+                  "targetSectionId"
+                ],
+                "properties": {
+                  "ruleId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "conditionMode": {
+                    "type": "string",
+                    "enum": [
+                      "all",
+                      "any"
+                    ]
+                  },
+                  "conditions": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 20,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "questionId",
+                        "operator",
+                        "expectedValues"
+                      ],
+                      "properties": {
+                        "questionId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        "operator": {
+                          "type": "string",
+                          "enum": [
+                            "equals",
+                            "notEquals",
+                            "contains",
+                            "notContains",
+                            "greaterThan",
+                            "lessThan",
+                            "answered",
+                            "notAnswered"
+                          ]
+                        },
+                        "expectedValues": {
+                          "type": "array",
+                          "maxItems": 20,
+                          "items": {
+                            "type": [
+                              "string",
+                              "number",
+                              "boolean"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "action": {
+                    "type": "string",
+                    "enum": [
+                      "showQuestion",
+                      "hideQuestion",
+                      "showSection",
+                      "hideSection",
+                      "routeToSection",
+                      "finish"
+                    ]
+                  },
+                  "targetQuestionId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "targetSectionId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "appearance": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "preset",
+                "logoAssetId",
+                "coverAssetId",
+                "activityKind"
+              ],
+              "properties": {
+                "preset": {
+                  "type": "string",
+                  "enum": [
+                    "editorial",
+                    "minimal",
+                    "activity"
+                  ]
+                },
+                "logoAssetId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "coverAssetId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "activityKind": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 80
+                }
+              }
+            },
+            "availability": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "opensAt",
+                "closesAt",
+                "responseLimit",
+                "closedMessage"
+              ],
+              "properties": {
+                "opensAt": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "description": "Serialized Firestore Timestamp fixture shape.",
+                      "x-firestore-type": "timestamp",
+                      "additionalProperties": false,
+                      "required": [
+                        "_seconds",
+                        "_nanoseconds"
+                      ],
+                      "properties": {
+                        "_seconds": {
+                          "type": "integer"
+                        },
+                        "_nanoseconds": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 999999999
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "closesAt": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "description": "Serialized Firestore Timestamp fixture shape.",
+                      "x-firestore-type": "timestamp",
+                      "additionalProperties": false,
+                      "required": [
+                        "_seconds",
+                        "_nanoseconds"
+                      ],
+                      "properties": {
+                        "_seconds": {
+                          "type": "integer"
+                        },
+                        "_nanoseconds": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 999999999
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "responseLimit": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 1,
+                  "maximum": 1000000
+                },
+                "closedMessage": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 500
+                }
+              }
+            },
+            "consent": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "consentCopy",
+                "consentVersion",
+                "retentionCopy"
+              ],
+              "properties": {
+                "consentCopy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "consentVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "retentionCopy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                }
+              }
+            },
+            "completion": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "title",
+                "message",
+                "actionKind",
+                "actionLabel",
+                "actionUrl"
+              ],
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "message": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 1000
+                },
+                "actionKind": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "externalUrl",
+                    "event",
+                    "eventRuntime"
+                  ]
+                },
+                "actionLabel": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 80
+                },
+                "actionUrl": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "uri",
+                  "maxLength": 500
+                }
+              }
+            }
+          }
+        },
+        "validationIssues": {
+          "type": "array",
+          "maxItems": 250,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "code",
+              "path",
+              "message",
+              "severity"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "path": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 300
+              },
+              "message": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              },
+              "severity": {
+                "type": "string",
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+};
+
+export const listOrganizerFormsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_organizer_forms_payload.schema.json",
+  "title": "ListOrganizerFormsCallablePayload",
+  "description": "Lists bounded organizer form summaries using an opaque cursor.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "statuses",
+    "purposes",
+    "query",
+    "cursor",
+    "limit"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "statuses": {
+      "type": "array",
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "draft",
+          "published",
+          "paused",
+          "archived"
+        ]
+      }
+    },
+    "purposes": {
+      "type": "array",
+      "maxItems": 6,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "application",
+          "registration",
+          "intake",
+          "waiver",
+          "feedback",
+          "survey"
+        ]
+      }
+    },
+    "query": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120
+    },
+    "cursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    }
+  }
+};
+
+export const listOrganizerFormsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_organizer_forms_response.schema.json",
+  "title": "ListOrganizerFormsCallableResponse",
+  "description": "One bounded page of manager-safe organizer form summaries.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "items",
+    "nextCursor"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "items": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "organizerId",
+          "formId",
+          "title",
+          "description",
+          "purpose",
+          "status",
+          "templateId",
+          "publicFormId",
+          "defaultTargetKind",
+          "defaultTargetId",
+          "activeVersionId",
+          "draftRevision",
+          "publishedVersion",
+          "submittedResponseCount",
+          "updatedAtMillis",
+          "publishedAtMillis",
+          "lastResponseAtMillis"
+        ],
+        "properties": {
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "formId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 1000
+          },
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "application",
+              "registration",
+              "intake",
+              "waiver",
+              "feedback",
+              "survey"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "published",
+              "paused",
+              "archived"
+            ]
+          },
+          "templateId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "publicFormId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{20,80}$"
+          },
+          "defaultTargetKind": {
+            "type": "string",
+            "enum": [
+              "organizer",
+              "event",
+              "campaign"
+            ]
+          },
+          "defaultTargetId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "activeVersionId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "draftRevision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "publishedVersion": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000
+          },
+          "submittedResponseCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000000
+          },
+          "updatedAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "publishedAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "lastResponseAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    }
+  }
+};
+
+export const validateOrganizerFormDraftCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/validate_organizer_form_draft_payload.schema.json",
+  "title": "ValidateOrganizerFormDraftCallablePayload",
+  "description": "Validates an unsaved organizer form definition using the publish validator.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "definition"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "definition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "description",
+        "purpose",
+        "defaultTargetKind",
+        "defaultTargetId",
+        "identityPolicy",
+        "sections",
+        "logicRules",
+        "appearance",
+        "availability",
+        "consent",
+        "completion"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        },
+        "purpose": {
+          "type": "string",
+          "enum": [
+            "application",
+            "registration",
+            "intake",
+            "waiver",
+            "feedback",
+            "survey"
+          ]
+        },
+        "defaultTargetKind": {
+          "type": "string",
+          "enum": [
+            "organizer",
+            "event",
+            "campaign"
+          ]
+        },
+        "defaultTargetId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "identityPolicy": {
+          "type": "string",
+          "enum": [
+            "anonymous",
+            "emailVerified",
+            "phoneVerified",
+            "emailOrPhoneVerified",
+            "catchAccount"
+          ]
+        },
+        "sections": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 40,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "sectionId",
+              "title",
+              "description",
+              "pageBreak",
+              "questions"
+            ],
+            "properties": {
+              "sectionId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "description": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 1000
+              },
+              "pageBreak": {
+                "type": "boolean"
+              },
+              "questions": {
+                "type": "array",
+                "maxItems": 100,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "questionId",
+                    "key",
+                    "label",
+                    "helpText",
+                    "kind",
+                    "required",
+                    "options",
+                    "canonicalFieldId",
+                    "privacyClass",
+                    "prefillPolicy",
+                    "hostPresentation",
+                    "validation"
+                  ],
+                  "properties": {
+                    "questionId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "key": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z][A-Za-z0-9_]{0,79}$"
+                    },
+                    "label": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 240
+                    },
+                    "helpText": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 500
+                    },
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "shortText",
+                        "longText",
+                        "singleChoice",
+                        "multiChoice",
+                        "date",
+                        "phone",
+                        "email",
+                        "url",
+                        "number",
+                        "boolean",
+                        "file",
+                        "acknowledgement",
+                        "signature"
+                      ]
+                    },
+                    "required": {
+                      "type": "boolean"
+                    },
+                    "options": {
+                      "type": "array",
+                      "maxItems": 100,
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "optionId",
+                          "label",
+                          "value"
+                        ],
+                        "properties": {
+                          "optionId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 180
+                          },
+                          "label": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 160
+                          },
+                          "value": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 160
+                          }
+                        }
+                      }
+                    },
+                    "canonicalFieldId": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "x-catch-catalog": "../catalogs/person_fields.json",
+                          "enum": [
+                            "givenName",
+                            "familyName",
+                            "displayName",
+                            "dateOfBirth",
+                            "age",
+                            "gender",
+                            "phoneNumber",
+                            "email",
+                            "instagramHandle",
+                            "linkedinUrl",
+                            "profilePhoto",
+                            "city",
+                            "heightCm",
+                            "occupation",
+                            "company",
+                            "education",
+                            "languages",
+                            "relationshipGoal",
+                            "interestedInGenders",
+                            "drinking",
+                            "smoking",
+                            "religion",
+                            "workout",
+                            "diet",
+                            "children"
+                          ]
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "privacyClass": {
+                      "type": "string",
+                      "enum": [
+                        "contact",
+                        "profile",
+                        "sensitive",
+                        "organizerCustom"
+                      ]
+                    },
+                    "prefillPolicy": {
+                      "type": "string",
+                      "enum": [
+                        "never",
+                        "participantReviewRequired"
+                      ]
+                    },
+                    "hostPresentation": {
+                      "type": "string",
+                      "enum": [
+                        "detailOnly",
+                        "filterable",
+                        "sortable"
+                      ]
+                    },
+                    "validation": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "minLength",
+                        "maxLength",
+                        "minNumber",
+                        "maxNumber",
+                        "earliestDate",
+                        "latestDate",
+                        "minSelections",
+                        "maxSelections",
+                        "maxFileCount",
+                        "maxFileSizeBytes",
+                        "allowedMimeTypes",
+                        "patternPreset",
+                        "customError"
+                      ],
+                      "properties": {
+                        "minLength": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 0,
+                          "maximum": 4000
+                        },
+                        "maxLength": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 4000
+                        },
+                        "minNumber": {
+                          "type": [
+                            "number",
+                            "null"
+                          ],
+                          "minimum": -1000000000,
+                          "maximum": 1000000000
+                        },
+                        "maxNumber": {
+                          "type": [
+                            "number",
+                            "null"
+                          ],
+                          "minimum": -1000000000,
+                          "maximum": 1000000000
+                        },
+                        "earliestDate": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "date"
+                        },
+                        "latestDate": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "date"
+                        },
+                        "minSelections": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 0,
+                          "maximum": 100
+                        },
+                        "maxSelections": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 100
+                        },
+                        "maxFileCount": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 10
+                        },
+                        "maxFileSizeBytes": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 26214400
+                        },
+                        "allowedMimeTypes": {
+                          "type": "array",
+                          "maxItems": 20,
+                          "uniqueItems": true,
+                          "items": {
+                            "type": "string",
+                            "pattern": "^[a-z0-9.+-]+/[a-z0-9.+*-]+$",
+                            "maxLength": 100
+                          }
+                        },
+                        "patternPreset": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            null,
+                            "lettersAndSpaces",
+                            "alphanumeric",
+                            "postalCode",
+                            "handle"
+                          ]
+                        },
+                        "customError": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "maxLength": 240
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "logicRules": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "ruleId",
+              "conditionMode",
+              "conditions",
+              "action",
+              "targetQuestionId",
+              "targetSectionId"
+            ],
+            "properties": {
+              "ruleId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "conditionMode": {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "any"
+                ]
+              },
+              "conditions": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 20,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "questionId",
+                    "operator",
+                    "expectedValues"
+                  ],
+                  "properties": {
+                    "questionId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "operator": {
+                      "type": "string",
+                      "enum": [
+                        "equals",
+                        "notEquals",
+                        "contains",
+                        "notContains",
+                        "greaterThan",
+                        "lessThan",
+                        "answered",
+                        "notAnswered"
+                      ]
+                    },
+                    "expectedValues": {
+                      "type": "array",
+                      "maxItems": 20,
+                      "items": {
+                        "type": [
+                          "string",
+                          "number",
+                          "boolean"
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              "action": {
+                "type": "string",
+                "enum": [
+                  "showQuestion",
+                  "hideQuestion",
+                  "showSection",
+                  "hideSection",
+                  "routeToSection",
+                  "finish"
+                ]
+              },
+              "targetQuestionId": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "targetSectionId": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "appearance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "preset",
+            "logoAssetId",
+            "coverAssetId",
+            "activityKind"
+          ],
+          "properties": {
+            "preset": {
+              "type": "string",
+              "enum": [
+                "editorial",
+                "minimal",
+                "activity"
+              ]
+            },
+            "logoAssetId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "coverAssetId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "activityKind": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80
+            }
+          }
+        },
+        "availability": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "opensAt",
+            "closesAt",
+            "responseLimit",
+            "closedMessage"
+          ],
+          "properties": {
+            "opensAt": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "description": "Serialized Firestore Timestamp fixture shape.",
+                  "x-firestore-type": "timestamp",
+                  "additionalProperties": false,
+                  "required": [
+                    "_seconds",
+                    "_nanoseconds"
+                  ],
+                  "properties": {
+                    "_seconds": {
+                      "type": "integer"
+                    },
+                    "_nanoseconds": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 999999999
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "closesAt": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "description": "Serialized Firestore Timestamp fixture shape.",
+                  "x-firestore-type": "timestamp",
+                  "additionalProperties": false,
+                  "required": [
+                    "_seconds",
+                    "_nanoseconds"
+                  ],
+                  "properties": {
+                    "_seconds": {
+                      "type": "integer"
+                    },
+                    "_nanoseconds": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 999999999
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "responseLimit": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "closedMessage": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 500
+            }
+          }
+        },
+        "consent": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "consentCopy",
+            "consentVersion",
+            "retentionCopy"
+          ],
+          "properties": {
+            "consentCopy": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "consentVersion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "retentionCopy": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            }
+          }
+        },
+        "completion": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "title",
+            "message",
+            "actionKind",
+            "actionLabel",
+            "actionUrl"
+          ],
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "message": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            },
+            "actionKind": {
+              "type": "string",
+              "enum": [
+                "none",
+                "externalUrl",
+                "event",
+                "eventRuntime"
+              ]
+            },
+            "actionLabel": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80
+            },
+            "actionUrl": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uri",
+              "maxLength": 500
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
+export const validateOrganizerFormDraftCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/validate_organizer_form_draft_response.schema.json",
+  "title": "ValidateOrganizerFormDraftCallableResponse",
+  "description": "Publish-readiness result from the canonical form validator.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "valid",
+    "issues"
+  ],
+  "properties": {
+    "valid": {
+      "type": "boolean"
+    },
+    "issues": {
+      "type": "array",
+      "maxItems": 250,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "path",
+          "message",
+          "severity"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "error",
+              "warning"
+            ]
+          }
+        }
+      }
+    }
+  }
+};
+
+export const publishOrganizerFormCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/publish_organizer_form_payload.schema.json",
+  "title": "PublishOrganizerFormCallablePayload",
+  "description": "Publishes an immutable version of one valid organizer form draft.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "expectedRevision"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const publishOrganizerFormCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/publish_organizer_form_response.schema.json",
+  "title": "PublishOrganizerFormCallableResponse",
+  "description": "Published organizer form summary.",
+  "allOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "formId",
+        "title",
+        "description",
+        "purpose",
+        "status",
+        "templateId",
+        "publicFormId",
+        "defaultTargetKind",
+        "defaultTargetId",
+        "activeVersionId",
+        "draftRevision",
+        "publishedVersion",
+        "submittedResponseCount",
+        "updatedAtMillis",
+        "publishedAtMillis",
+        "lastResponseAtMillis"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "formId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        },
+        "purpose": {
+          "type": "string",
+          "enum": [
+            "application",
+            "registration",
+            "intake",
+            "waiver",
+            "feedback",
+            "survey"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "published",
+            "paused",
+            "archived"
+          ]
+        },
+        "templateId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "publicFormId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{20,80}$"
+        },
+        "defaultTargetKind": {
+          "type": "string",
+          "enum": [
+            "organizer",
+            "event",
+            "campaign"
+          ]
+        },
+        "defaultTargetId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "activeVersionId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "draftRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "publishedVersion": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "submittedResponseCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "updatedAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "publishedAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "lastResponseAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    }
+  ]
+};
+
+export const setOrganizerFormLifecycleCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/set_organizer_form_lifecycle_payload.schema.json",
+  "title": "SetOrganizerFormLifecycleCallablePayload",
+  "description": "Pauses, resumes, or archives one organizer form with an expected-state guard.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "expectedStatus",
+    "action"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedStatus": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published",
+        "paused",
+        "archived"
+      ]
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "pause",
+        "resume",
+        "archive"
+      ]
+    }
+  }
+};
+
+export const setOrganizerFormLifecycleCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/set_organizer_form_lifecycle_response.schema.json",
+  "title": "SetOrganizerFormLifecycleCallableResponse",
+  "description": "Organizer form summary after a lifecycle transition.",
+  "allOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "formId",
+        "title",
+        "description",
+        "purpose",
+        "status",
+        "templateId",
+        "publicFormId",
+        "defaultTargetKind",
+        "defaultTargetId",
+        "activeVersionId",
+        "draftRevision",
+        "publishedVersion",
+        "submittedResponseCount",
+        "updatedAtMillis",
+        "publishedAtMillis",
+        "lastResponseAtMillis"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "formId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        },
+        "purpose": {
+          "type": "string",
+          "enum": [
+            "application",
+            "registration",
+            "intake",
+            "waiver",
+            "feedback",
+            "survey"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "published",
+            "paused",
+            "archived"
+          ]
+        },
+        "templateId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "publicFormId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{20,80}$"
+        },
+        "defaultTargetKind": {
+          "type": "string",
+          "enum": [
+            "organizer",
+            "event",
+            "campaign"
+          ]
+        },
+        "defaultTargetId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "activeVersionId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "draftRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "publishedVersion": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "submittedResponseCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "updatedAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "publishedAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "lastResponseAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    }
+  ]
+};
+
+export const duplicateOrganizerFormCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/duplicate_organizer_form_payload.schema.json",
+  "title": "DuplicateOrganizerFormCallablePayload",
+  "description": "Creates an idempotent new draft copy with entirely new nested identities.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "sourceFormId",
+    "requestId",
+    "title"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "sourceFormId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "title": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 160
+    }
+  }
+};
+
+export const duplicateOrganizerFormCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/duplicate_organizer_form_response.schema.json",
+  "title": "DuplicateOrganizerFormCallableResponse",
+  "description": "New or idempotently reused duplicated organizer form editor state.",
+  "allOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "form",
+        "definition",
+        "validationIssues"
+      ],
+      "properties": {
+        "form": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organizerId",
+            "formId",
+            "title",
+            "description",
+            "purpose",
+            "status",
+            "templateId",
+            "publicFormId",
+            "defaultTargetKind",
+            "defaultTargetId",
+            "activeVersionId",
+            "draftRevision",
+            "publishedVersion",
+            "submittedResponseCount",
+            "updatedAtMillis",
+            "publishedAtMillis",
+            "lastResponseAtMillis"
+          ],
+          "properties": {
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "formId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "description": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            },
+            "purpose": {
+              "type": "string",
+              "enum": [
+                "application",
+                "registration",
+                "intake",
+                "waiver",
+                "feedback",
+                "survey"
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "draft",
+                "published",
+                "paused",
+                "archived"
+              ]
+            },
+            "templateId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "publicFormId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{20,80}$"
+            },
+            "defaultTargetKind": {
+              "type": "string",
+              "enum": [
+                "organizer",
+                "event",
+                "campaign"
+              ]
+            },
+            "defaultTargetId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "activeVersionId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "draftRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "publishedVersion": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "submittedResponseCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000
+            },
+            "updatedAtMillis": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "publishedAtMillis": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "lastResponseAtMillis": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "definition": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "title",
+            "description",
+            "purpose",
+            "defaultTargetKind",
+            "defaultTargetId",
+            "identityPolicy",
+            "sections",
+            "logicRules",
+            "appearance",
+            "availability",
+            "consent",
+            "completion"
+          ],
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "description": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            },
+            "purpose": {
+              "type": "string",
+              "enum": [
+                "application",
+                "registration",
+                "intake",
+                "waiver",
+                "feedback",
+                "survey"
+              ]
+            },
+            "defaultTargetKind": {
+              "type": "string",
+              "enum": [
+                "organizer",
+                "event",
+                "campaign"
+              ]
+            },
+            "defaultTargetId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "identityPolicy": {
+              "type": "string",
+              "enum": [
+                "anonymous",
+                "emailVerified",
+                "phoneVerified",
+                "emailOrPhoneVerified",
+                "catchAccount"
+              ]
+            },
+            "sections": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 40,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "sectionId",
+                  "title",
+                  "description",
+                  "pageBreak",
+                  "questions"
+                ],
+                "properties": {
+                  "sectionId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  "description": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 1000
+                  },
+                  "pageBreak": {
+                    "type": "boolean"
+                  },
+                  "questions": {
+                    "type": "array",
+                    "maxItems": 100,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "questionId",
+                        "key",
+                        "label",
+                        "helpText",
+                        "kind",
+                        "required",
+                        "options",
+                        "canonicalFieldId",
+                        "privacyClass",
+                        "prefillPolicy",
+                        "hostPresentation",
+                        "validation"
+                      ],
+                      "properties": {
+                        "questionId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        "key": {
+                          "type": "string",
+                          "pattern": "^[A-Za-z][A-Za-z0-9_]{0,79}$"
+                        },
+                        "label": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 240
+                        },
+                        "helpText": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "maxLength": 500
+                        },
+                        "kind": {
+                          "type": "string",
+                          "enum": [
+                            "shortText",
+                            "longText",
+                            "singleChoice",
+                            "multiChoice",
+                            "date",
+                            "phone",
+                            "email",
+                            "url",
+                            "number",
+                            "boolean",
+                            "file",
+                            "acknowledgement",
+                            "signature"
+                          ]
+                        },
+                        "required": {
+                          "type": "boolean"
+                        },
+                        "options": {
+                          "type": "array",
+                          "maxItems": 100,
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "optionId",
+                              "label",
+                              "value"
+                            ],
+                            "properties": {
+                              "optionId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 180
+                              },
+                              "label": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 160
+                              },
+                              "value": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 160
+                              }
+                            }
+                          }
+                        },
+                        "canonicalFieldId": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "x-catch-catalog": "../catalogs/person_fields.json",
+                              "enum": [
+                                "givenName",
+                                "familyName",
+                                "displayName",
+                                "dateOfBirth",
+                                "age",
+                                "gender",
+                                "phoneNumber",
+                                "email",
+                                "instagramHandle",
+                                "linkedinUrl",
+                                "profilePhoto",
+                                "city",
+                                "heightCm",
+                                "occupation",
+                                "company",
+                                "education",
+                                "languages",
+                                "relationshipGoal",
+                                "interestedInGenders",
+                                "drinking",
+                                "smoking",
+                                "religion",
+                                "workout",
+                                "diet",
+                                "children"
+                              ]
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "privacyClass": {
+                          "type": "string",
+                          "enum": [
+                            "contact",
+                            "profile",
+                            "sensitive",
+                            "organizerCustom"
+                          ]
+                        },
+                        "prefillPolicy": {
+                          "type": "string",
+                          "enum": [
+                            "never",
+                            "participantReviewRequired"
+                          ]
+                        },
+                        "hostPresentation": {
+                          "type": "string",
+                          "enum": [
+                            "detailOnly",
+                            "filterable",
+                            "sortable"
+                          ]
+                        },
+                        "validation": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "minLength",
+                            "maxLength",
+                            "minNumber",
+                            "maxNumber",
+                            "earliestDate",
+                            "latestDate",
+                            "minSelections",
+                            "maxSelections",
+                            "maxFileCount",
+                            "maxFileSizeBytes",
+                            "allowedMimeTypes",
+                            "patternPreset",
+                            "customError"
+                          ],
+                          "properties": {
+                            "minLength": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 0,
+                              "maximum": 4000
+                            },
+                            "maxLength": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 1,
+                              "maximum": 4000
+                            },
+                            "minNumber": {
+                              "type": [
+                                "number",
+                                "null"
+                              ],
+                              "minimum": -1000000000,
+                              "maximum": 1000000000
+                            },
+                            "maxNumber": {
+                              "type": [
+                                "number",
+                                "null"
+                              ],
+                              "minimum": -1000000000,
+                              "maximum": 1000000000
+                            },
+                            "earliestDate": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "format": "date"
+                            },
+                            "latestDate": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "format": "date"
+                            },
+                            "minSelections": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 0,
+                              "maximum": 100
+                            },
+                            "maxSelections": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 1,
+                              "maximum": 100
+                            },
+                            "maxFileCount": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 1,
+                              "maximum": 10
+                            },
+                            "maxFileSizeBytes": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 1,
+                              "maximum": 26214400
+                            },
+                            "allowedMimeTypes": {
+                              "type": "array",
+                              "maxItems": 20,
+                              "uniqueItems": true,
+                              "items": {
+                                "type": "string",
+                                "pattern": "^[a-z0-9.+-]+/[a-z0-9.+*-]+$",
+                                "maxLength": 100
+                              }
+                            },
+                            "patternPreset": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "enum": [
+                                null,
+                                "lettersAndSpaces",
+                                "alphanumeric",
+                                "postalCode",
+                                "handle"
+                              ]
+                            },
+                            "customError": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "maxLength": 240
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "logicRules": {
+              "type": "array",
+              "maxItems": 100,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "ruleId",
+                  "conditionMode",
+                  "conditions",
+                  "action",
+                  "targetQuestionId",
+                  "targetSectionId"
+                ],
+                "properties": {
+                  "ruleId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "conditionMode": {
+                    "type": "string",
+                    "enum": [
+                      "all",
+                      "any"
+                    ]
+                  },
+                  "conditions": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 20,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "questionId",
+                        "operator",
+                        "expectedValues"
+                      ],
+                      "properties": {
+                        "questionId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        "operator": {
+                          "type": "string",
+                          "enum": [
+                            "equals",
+                            "notEquals",
+                            "contains",
+                            "notContains",
+                            "greaterThan",
+                            "lessThan",
+                            "answered",
+                            "notAnswered"
+                          ]
+                        },
+                        "expectedValues": {
+                          "type": "array",
+                          "maxItems": 20,
+                          "items": {
+                            "type": [
+                              "string",
+                              "number",
+                              "boolean"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "action": {
+                    "type": "string",
+                    "enum": [
+                      "showQuestion",
+                      "hideQuestion",
+                      "showSection",
+                      "hideSection",
+                      "routeToSection",
+                      "finish"
+                    ]
+                  },
+                  "targetQuestionId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "targetSectionId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "appearance": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "preset",
+                "logoAssetId",
+                "coverAssetId",
+                "activityKind"
+              ],
+              "properties": {
+                "preset": {
+                  "type": "string",
+                  "enum": [
+                    "editorial",
+                    "minimal",
+                    "activity"
+                  ]
+                },
+                "logoAssetId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "coverAssetId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "activityKind": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 80
+                }
+              }
+            },
+            "availability": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "opensAt",
+                "closesAt",
+                "responseLimit",
+                "closedMessage"
+              ],
+              "properties": {
+                "opensAt": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "description": "Serialized Firestore Timestamp fixture shape.",
+                      "x-firestore-type": "timestamp",
+                      "additionalProperties": false,
+                      "required": [
+                        "_seconds",
+                        "_nanoseconds"
+                      ],
+                      "properties": {
+                        "_seconds": {
+                          "type": "integer"
+                        },
+                        "_nanoseconds": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 999999999
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "closesAt": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "description": "Serialized Firestore Timestamp fixture shape.",
+                      "x-firestore-type": "timestamp",
+                      "additionalProperties": false,
+                      "required": [
+                        "_seconds",
+                        "_nanoseconds"
+                      ],
+                      "properties": {
+                        "_seconds": {
+                          "type": "integer"
+                        },
+                        "_nanoseconds": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 999999999
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "responseLimit": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 1,
+                  "maximum": 1000000
+                },
+                "closedMessage": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 500
+                }
+              }
+            },
+            "consent": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "consentCopy",
+                "consentVersion",
+                "retentionCopy"
+              ],
+              "properties": {
+                "consentCopy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "consentVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "retentionCopy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                }
+              }
+            },
+            "completion": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "title",
+                "message",
+                "actionKind",
+                "actionLabel",
+                "actionUrl"
+              ],
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "message": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 1000
+                },
+                "actionKind": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "externalUrl",
+                    "event",
+                    "eventRuntime"
+                  ]
+                },
+                "actionLabel": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 80
+                },
+                "actionUrl": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "uri",
+                  "maxLength": 500
+                }
+              }
+            }
+          }
+        },
+        "validationIssues": {
+          "type": "array",
+          "maxItems": 250,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "code",
+              "path",
+              "message",
+              "severity"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "path": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 300
+              },
+              "message": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              },
+              "severity": {
+                "type": "string",
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+};
+
+export const deleteOrganizerFormDraftCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/delete_organizer_form_draft_payload.schema.json",
+  "title": "DeleteOrganizerFormDraftCallablePayload",
+  "description": "Hard-deletes only a never-published organizer form draft.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "expectedRevision"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const deleteOrganizerFormDraftCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/delete_organizer_form_draft_response.schema.json",
+  "title": "DeleteOrganizerFormDraftCallableResponse",
+  "description": "Confirmation that an eligible never-published form draft was deleted.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "deleted"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "deleted": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const listOrganizerFormTemplatesCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_organizer_form_templates_payload.schema.json",
+  "title": "ListOrganizerFormTemplatesCallablePayload",
+  "description": "Lists the versioned organizer form templates available to one manager.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const listOrganizerFormTemplatesCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_organizer_form_templates_response.schema.json",
+  "title": "ListOrganizerFormTemplatesCallableResponse",
+  "description": "Versioned template summaries for the Host form gallery.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "templates"
+  ],
+  "properties": {
+    "templates": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "templateId",
+          "version",
+          "title",
+          "description",
+          "purpose",
+          "identityPolicy",
+          "sectionCount",
+          "questionCount"
+        ],
+        "properties": {
+          "templateId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 1000
+          },
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "application",
+              "registration",
+              "intake",
+              "waiver",
+              "feedback",
+              "survey"
+            ]
+          },
+          "identityPolicy": {
+            "type": "string",
+            "enum": [
+              "anonymous",
+              "emailVerified",
+              "phoneVerified",
+              "emailOrPhoneVerified",
+              "catchAccount"
+            ]
+          },
+          "sectionCount": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 40
+          },
+          "questionCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4000
+          }
+        }
+      }
+    }
+  }
+};
+
+export const getPublicOrganizerFormCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_public_organizer_form_payload.schema.json",
+  "title": "GetPublicOrganizerFormCallablePayload",
+  "description": "Resolves one bounded public form projection.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "publicFormId",
+    "sourceToken"
+  ],
+  "properties": {
+    "publicFormId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{20,80}$"
+    },
+    "sourceToken": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9_-]{20,160}$"
+    }
+  }
+};
+
+export const getPublicOrganizerFormCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_public_organizer_form_response.schema.json",
+  "title": "GetPublicOrganizerFormCallableResponse",
+  "description": "Bounded public form and active immutable version projection.",
+  "allOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "publicFormId",
+        "formId",
+        "versionId",
+        "version",
+        "availabilityStatus",
+        "availabilityMessage",
+        "organizer",
+        "definition"
+      ],
+      "properties": {
+        "publicFormId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{20,80}$"
+        },
+        "formId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "versionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "availabilityStatus": {
+          "type": "string",
+          "enum": [
+            "active",
+            "notOpen",
+            "closed",
+            "paused",
+            "archived",
+            "unavailable",
+            "full"
+          ]
+        },
+        "availabilityMessage": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "organizer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organizerId",
+            "name",
+            "logoUrl"
+          ],
+          "properties": {
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "logoUrl": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uri",
+              "maxLength": 2000
+            }
+          }
+        },
+        "definition": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "title",
+            "description",
+            "purpose",
+            "defaultTargetKind",
+            "defaultTargetId",
+            "identityPolicy",
+            "sections",
+            "logicRules",
+            "appearance",
+            "availability",
+            "consent",
+            "completion"
+          ],
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "description": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            },
+            "purpose": {
+              "type": "string",
+              "enum": [
+                "application",
+                "registration",
+                "intake",
+                "waiver",
+                "feedback",
+                "survey"
+              ]
+            },
+            "defaultTargetKind": {
+              "type": "string",
+              "enum": [
+                "organizer",
+                "event",
+                "campaign"
+              ]
+            },
+            "defaultTargetId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "identityPolicy": {
+              "type": "string",
+              "enum": [
+                "anonymous",
+                "emailVerified",
+                "phoneVerified",
+                "emailOrPhoneVerified",
+                "catchAccount"
+              ]
+            },
+            "sections": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 40,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "sectionId",
+                  "title",
+                  "description",
+                  "pageBreak",
+                  "questions"
+                ],
+                "properties": {
+                  "sectionId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  "description": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 1000
+                  },
+                  "pageBreak": {
+                    "type": "boolean"
+                  },
+                  "questions": {
+                    "type": "array",
+                    "maxItems": 100,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "questionId",
+                        "key",
+                        "label",
+                        "helpText",
+                        "kind",
+                        "required",
+                        "options",
+                        "canonicalFieldId",
+                        "privacyClass",
+                        "prefillPolicy",
+                        "hostPresentation",
+                        "validation"
+                      ],
+                      "properties": {
+                        "questionId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        "key": {
+                          "type": "string",
+                          "pattern": "^[A-Za-z][A-Za-z0-9_]{0,79}$"
+                        },
+                        "label": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 240
+                        },
+                        "helpText": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "maxLength": 500
+                        },
+                        "kind": {
+                          "type": "string",
+                          "enum": [
+                            "shortText",
+                            "longText",
+                            "singleChoice",
+                            "multiChoice",
+                            "date",
+                            "phone",
+                            "email",
+                            "url",
+                            "number",
+                            "boolean",
+                            "file",
+                            "acknowledgement",
+                            "signature"
+                          ]
+                        },
+                        "required": {
+                          "type": "boolean"
+                        },
+                        "options": {
+                          "type": "array",
+                          "maxItems": 100,
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "optionId",
+                              "label",
+                              "value"
+                            ],
+                            "properties": {
+                              "optionId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 180
+                              },
+                              "label": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 160
+                              },
+                              "value": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 160
+                              }
+                            }
+                          }
+                        },
+                        "canonicalFieldId": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "x-catch-catalog": "../catalogs/person_fields.json",
+                              "enum": [
+                                "givenName",
+                                "familyName",
+                                "displayName",
+                                "dateOfBirth",
+                                "age",
+                                "gender",
+                                "phoneNumber",
+                                "email",
+                                "instagramHandle",
+                                "linkedinUrl",
+                                "profilePhoto",
+                                "city",
+                                "heightCm",
+                                "occupation",
+                                "company",
+                                "education",
+                                "languages",
+                                "relationshipGoal",
+                                "interestedInGenders",
+                                "drinking",
+                                "smoking",
+                                "religion",
+                                "workout",
+                                "diet",
+                                "children"
+                              ]
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "privacyClass": {
+                          "type": "string",
+                          "enum": [
+                            "contact",
+                            "profile",
+                            "sensitive",
+                            "organizerCustom"
+                          ]
+                        },
+                        "prefillPolicy": {
+                          "type": "string",
+                          "enum": [
+                            "never",
+                            "participantReviewRequired"
+                          ]
+                        },
+                        "hostPresentation": {
+                          "type": "string",
+                          "enum": [
+                            "detailOnly",
+                            "filterable",
+                            "sortable"
+                          ]
+                        },
+                        "validation": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "minLength",
+                            "maxLength",
+                            "minNumber",
+                            "maxNumber",
+                            "earliestDate",
+                            "latestDate",
+                            "minSelections",
+                            "maxSelections",
+                            "maxFileCount",
+                            "maxFileSizeBytes",
+                            "allowedMimeTypes",
+                            "patternPreset",
+                            "customError"
+                          ],
+                          "properties": {
+                            "minLength": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 0,
+                              "maximum": 4000
+                            },
+                            "maxLength": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 1,
+                              "maximum": 4000
+                            },
+                            "minNumber": {
+                              "type": [
+                                "number",
+                                "null"
+                              ],
+                              "minimum": -1000000000,
+                              "maximum": 1000000000
+                            },
+                            "maxNumber": {
+                              "type": [
+                                "number",
+                                "null"
+                              ],
+                              "minimum": -1000000000,
+                              "maximum": 1000000000
+                            },
+                            "earliestDate": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "format": "date"
+                            },
+                            "latestDate": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "format": "date"
+                            },
+                            "minSelections": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 0,
+                              "maximum": 100
+                            },
+                            "maxSelections": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 1,
+                              "maximum": 100
+                            },
+                            "maxFileCount": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 1,
+                              "maximum": 10
+                            },
+                            "maxFileSizeBytes": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 1,
+                              "maximum": 26214400
+                            },
+                            "allowedMimeTypes": {
+                              "type": "array",
+                              "maxItems": 20,
+                              "uniqueItems": true,
+                              "items": {
+                                "type": "string",
+                                "pattern": "^[a-z0-9.+-]+/[a-z0-9.+*-]+$",
+                                "maxLength": 100
+                              }
+                            },
+                            "patternPreset": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "enum": [
+                                null,
+                                "lettersAndSpaces",
+                                "alphanumeric",
+                                "postalCode",
+                                "handle"
+                              ]
+                            },
+                            "customError": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "maxLength": 240
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "logicRules": {
+              "type": "array",
+              "maxItems": 100,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "ruleId",
+                  "conditionMode",
+                  "conditions",
+                  "action",
+                  "targetQuestionId",
+                  "targetSectionId"
+                ],
+                "properties": {
+                  "ruleId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "conditionMode": {
+                    "type": "string",
+                    "enum": [
+                      "all",
+                      "any"
+                    ]
+                  },
+                  "conditions": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 20,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "questionId",
+                        "operator",
+                        "expectedValues"
+                      ],
+                      "properties": {
+                        "questionId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        "operator": {
+                          "type": "string",
+                          "enum": [
+                            "equals",
+                            "notEquals",
+                            "contains",
+                            "notContains",
+                            "greaterThan",
+                            "lessThan",
+                            "answered",
+                            "notAnswered"
+                          ]
+                        },
+                        "expectedValues": {
+                          "type": "array",
+                          "maxItems": 20,
+                          "items": {
+                            "type": [
+                              "string",
+                              "number",
+                              "boolean"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "action": {
+                    "type": "string",
+                    "enum": [
+                      "showQuestion",
+                      "hideQuestion",
+                      "showSection",
+                      "hideSection",
+                      "routeToSection",
+                      "finish"
+                    ]
+                  },
+                  "targetQuestionId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "targetSectionId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "appearance": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "preset",
+                "logoAssetId",
+                "coverAssetId",
+                "activityKind"
+              ],
+              "properties": {
+                "preset": {
+                  "type": "string",
+                  "enum": [
+                    "editorial",
+                    "minimal",
+                    "activity"
+                  ]
+                },
+                "logoAssetId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "coverAssetId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "activityKind": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 80
+                }
+              }
+            },
+            "availability": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "opensAt",
+                "closesAt",
+                "responseLimit",
+                "closedMessage"
+              ],
+              "properties": {
+                "opensAt": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "description": "Serialized Firestore Timestamp fixture shape.",
+                      "x-firestore-type": "timestamp",
+                      "additionalProperties": false,
+                      "required": [
+                        "_seconds",
+                        "_nanoseconds"
+                      ],
+                      "properties": {
+                        "_seconds": {
+                          "type": "integer"
+                        },
+                        "_nanoseconds": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 999999999
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "closesAt": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "description": "Serialized Firestore Timestamp fixture shape.",
+                      "x-firestore-type": "timestamp",
+                      "additionalProperties": false,
+                      "required": [
+                        "_seconds",
+                        "_nanoseconds"
+                      ],
+                      "properties": {
+                        "_seconds": {
+                          "type": "integer"
+                        },
+                        "_nanoseconds": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 999999999
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "responseLimit": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 1,
+                  "maximum": 1000000
+                },
+                "closedMessage": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 500
+                }
+              }
+            },
+            "consent": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "consentCopy",
+                "consentVersion",
+                "retentionCopy"
+              ],
+              "properties": {
+                "consentCopy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "consentVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "retentionCopy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                }
+              }
+            },
+            "completion": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "title",
+                "message",
+                "actionKind",
+                "actionLabel",
+                "actionUrl"
+              ],
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "message": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 1000
+                },
+                "actionKind": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "externalUrl",
+                    "event",
+                    "eventRuntime"
+                  ]
+                },
+                "actionLabel": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 80
+                },
+                "actionUrl": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "uri",
+                  "maxLength": 500
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+};
+
+export const beginOrganizerFormResponseCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/begin_organizer_form_response_payload.schema.json",
+  "title": "BeginOrganizerFormResponseCallablePayload",
+  "description": "Starts or idempotently resumes a version-bound response draft.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "publicFormId",
+    "sourceToken",
+    "requestId"
+  ],
+  "properties": {
+    "publicFormId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{20,80}$"
+    },
+    "sourceToken": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9_-]{20,160}$"
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{16,120}$"
+    }
+  }
+};
+
+export const beginOrganizerFormResponseCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/begin_organizer_form_response_response.schema.json",
+  "title": "BeginOrganizerFormResponseCallableResponse",
+  "description": "New or resumed respondent draft projection.",
+  "allOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "draftId",
+        "draftToken",
+        "form",
+        "revision",
+        "answers",
+        "consentAccepted",
+        "identityKind",
+        "expiresAtMillis"
+      ],
+      "properties": {
+        "draftId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "draftToken": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[A-Za-z0-9_-]{32,160}$"
+        },
+        "form": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "publicFormId",
+            "formId",
+            "versionId",
+            "version",
+            "availabilityStatus",
+            "availabilityMessage",
+            "organizer",
+            "definition"
+          ],
+          "properties": {
+            "publicFormId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{20,80}$"
+            },
+            "formId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "versionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "availabilityStatus": {
+              "type": "string",
+              "enum": [
+                "active",
+                "notOpen",
+                "closed",
+                "paused",
+                "archived",
+                "unavailable",
+                "full"
+              ]
+            },
+            "availabilityMessage": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 500
+            },
+            "organizer": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "organizerId",
+                "name",
+                "logoUrl"
+              ],
+              "properties": {
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "logoUrl": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "uri",
+                  "maxLength": 2000
+                }
+              }
+            },
+            "definition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "title",
+                "description",
+                "purpose",
+                "defaultTargetKind",
+                "defaultTargetId",
+                "identityPolicy",
+                "sections",
+                "logicRules",
+                "appearance",
+                "availability",
+                "consent",
+                "completion"
+              ],
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "description": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 1000
+                },
+                "purpose": {
+                  "type": "string",
+                  "enum": [
+                    "application",
+                    "registration",
+                    "intake",
+                    "waiver",
+                    "feedback",
+                    "survey"
+                  ]
+                },
+                "defaultTargetKind": {
+                  "type": "string",
+                  "enum": [
+                    "organizer",
+                    "event",
+                    "campaign"
+                  ]
+                },
+                "defaultTargetId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "identityPolicy": {
+                  "type": "string",
+                  "enum": [
+                    "anonymous",
+                    "emailVerified",
+                    "phoneVerified",
+                    "emailOrPhoneVerified",
+                    "catchAccount"
+                  ]
+                },
+                "sections": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 40,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "sectionId",
+                      "title",
+                      "description",
+                      "pageBreak",
+                      "questions"
+                    ],
+                    "properties": {
+                      "sectionId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      "title": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160
+                      },
+                      "description": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "maxLength": 1000
+                      },
+                      "pageBreak": {
+                        "type": "boolean"
+                      },
+                      "questions": {
+                        "type": "array",
+                        "maxItems": 100,
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "questionId",
+                            "key",
+                            "label",
+                            "helpText",
+                            "kind",
+                            "required",
+                            "options",
+                            "canonicalFieldId",
+                            "privacyClass",
+                            "prefillPolicy",
+                            "hostPresentation",
+                            "validation"
+                          ],
+                          "properties": {
+                            "questionId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 180
+                            },
+                            "key": {
+                              "type": "string",
+                              "pattern": "^[A-Za-z][A-Za-z0-9_]{0,79}$"
+                            },
+                            "label": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 240
+                            },
+                            "helpText": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "maxLength": 500
+                            },
+                            "kind": {
+                              "type": "string",
+                              "enum": [
+                                "shortText",
+                                "longText",
+                                "singleChoice",
+                                "multiChoice",
+                                "date",
+                                "phone",
+                                "email",
+                                "url",
+                                "number",
+                                "boolean",
+                                "file",
+                                "acknowledgement",
+                                "signature"
+                              ]
+                            },
+                            "required": {
+                              "type": "boolean"
+                            },
+                            "options": {
+                              "type": "array",
+                              "maxItems": 100,
+                              "items": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "required": [
+                                  "optionId",
+                                  "label",
+                                  "value"
+                                ],
+                                "properties": {
+                                  "optionId": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 180
+                                  },
+                                  "label": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 160
+                                  },
+                                  "value": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 160
+                                  }
+                                }
+                              }
+                            },
+                            "canonicalFieldId": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "x-catch-catalog": "../catalogs/person_fields.json",
+                                  "enum": [
+                                    "givenName",
+                                    "familyName",
+                                    "displayName",
+                                    "dateOfBirth",
+                                    "age",
+                                    "gender",
+                                    "phoneNumber",
+                                    "email",
+                                    "instagramHandle",
+                                    "linkedinUrl",
+                                    "profilePhoto",
+                                    "city",
+                                    "heightCm",
+                                    "occupation",
+                                    "company",
+                                    "education",
+                                    "languages",
+                                    "relationshipGoal",
+                                    "interestedInGenders",
+                                    "drinking",
+                                    "smoking",
+                                    "religion",
+                                    "workout",
+                                    "diet",
+                                    "children"
+                                  ]
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "privacyClass": {
+                              "type": "string",
+                              "enum": [
+                                "contact",
+                                "profile",
+                                "sensitive",
+                                "organizerCustom"
+                              ]
+                            },
+                            "prefillPolicy": {
+                              "type": "string",
+                              "enum": [
+                                "never",
+                                "participantReviewRequired"
+                              ]
+                            },
+                            "hostPresentation": {
+                              "type": "string",
+                              "enum": [
+                                "detailOnly",
+                                "filterable",
+                                "sortable"
+                              ]
+                            },
+                            "validation": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "minLength",
+                                "maxLength",
+                                "minNumber",
+                                "maxNumber",
+                                "earliestDate",
+                                "latestDate",
+                                "minSelections",
+                                "maxSelections",
+                                "maxFileCount",
+                                "maxFileSizeBytes",
+                                "allowedMimeTypes",
+                                "patternPreset",
+                                "customError"
+                              ],
+                              "properties": {
+                                "minLength": {
+                                  "type": [
+                                    "integer",
+                                    "null"
+                                  ],
+                                  "minimum": 0,
+                                  "maximum": 4000
+                                },
+                                "maxLength": {
+                                  "type": [
+                                    "integer",
+                                    "null"
+                                  ],
+                                  "minimum": 1,
+                                  "maximum": 4000
+                                },
+                                "minNumber": {
+                                  "type": [
+                                    "number",
+                                    "null"
+                                  ],
+                                  "minimum": -1000000000,
+                                  "maximum": 1000000000
+                                },
+                                "maxNumber": {
+                                  "type": [
+                                    "number",
+                                    "null"
+                                  ],
+                                  "minimum": -1000000000,
+                                  "maximum": 1000000000
+                                },
+                                "earliestDate": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ],
+                                  "format": "date"
+                                },
+                                "latestDate": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ],
+                                  "format": "date"
+                                },
+                                "minSelections": {
+                                  "type": [
+                                    "integer",
+                                    "null"
+                                  ],
+                                  "minimum": 0,
+                                  "maximum": 100
+                                },
+                                "maxSelections": {
+                                  "type": [
+                                    "integer",
+                                    "null"
+                                  ],
+                                  "minimum": 1,
+                                  "maximum": 100
+                                },
+                                "maxFileCount": {
+                                  "type": [
+                                    "integer",
+                                    "null"
+                                  ],
+                                  "minimum": 1,
+                                  "maximum": 10
+                                },
+                                "maxFileSizeBytes": {
+                                  "type": [
+                                    "integer",
+                                    "null"
+                                  ],
+                                  "minimum": 1,
+                                  "maximum": 26214400
+                                },
+                                "allowedMimeTypes": {
+                                  "type": "array",
+                                  "maxItems": 20,
+                                  "uniqueItems": true,
+                                  "items": {
+                                    "type": "string",
+                                    "pattern": "^[a-z0-9.+-]+/[a-z0-9.+*-]+$",
+                                    "maxLength": 100
+                                  }
+                                },
+                                "patternPreset": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ],
+                                  "enum": [
+                                    null,
+                                    "lettersAndSpaces",
+                                    "alphanumeric",
+                                    "postalCode",
+                                    "handle"
+                                  ]
+                                },
+                                "customError": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ],
+                                  "maxLength": 240
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "logicRules": {
+                  "type": "array",
+                  "maxItems": 100,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "ruleId",
+                      "conditionMode",
+                      "conditions",
+                      "action",
+                      "targetQuestionId",
+                      "targetSectionId"
+                    ],
+                    "properties": {
+                      "ruleId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      "conditionMode": {
+                        "type": "string",
+                        "enum": [
+                          "all",
+                          "any"
+                        ]
+                      },
+                      "conditions": {
+                        "type": "array",
+                        "minItems": 1,
+                        "maxItems": 20,
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "questionId",
+                            "operator",
+                            "expectedValues"
+                          ],
+                          "properties": {
+                            "questionId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 180
+                            },
+                            "operator": {
+                              "type": "string",
+                              "enum": [
+                                "equals",
+                                "notEquals",
+                                "contains",
+                                "notContains",
+                                "greaterThan",
+                                "lessThan",
+                                "answered",
+                                "notAnswered"
+                              ]
+                            },
+                            "expectedValues": {
+                              "type": "array",
+                              "maxItems": 20,
+                              "items": {
+                                "type": [
+                                  "string",
+                                  "number",
+                                  "boolean"
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "action": {
+                        "type": "string",
+                        "enum": [
+                          "showQuestion",
+                          "hideQuestion",
+                          "showSection",
+                          "hideSection",
+                          "routeToSection",
+                          "finish"
+                        ]
+                      },
+                      "targetQuestionId": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 180
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "targetSectionId": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 180
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "appearance": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "preset",
+                    "logoAssetId",
+                    "coverAssetId",
+                    "activityKind"
+                  ],
+                  "properties": {
+                    "preset": {
+                      "type": "string",
+                      "enum": [
+                        "editorial",
+                        "minimal",
+                        "activity"
+                      ]
+                    },
+                    "logoAssetId": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "coverAssetId": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "activityKind": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 80
+                    }
+                  }
+                },
+                "availability": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "opensAt",
+                    "closesAt",
+                    "responseLimit",
+                    "closedMessage"
+                  ],
+                  "properties": {
+                    "opensAt": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "description": "Serialized Firestore Timestamp fixture shape.",
+                          "x-firestore-type": "timestamp",
+                          "additionalProperties": false,
+                          "required": [
+                            "_seconds",
+                            "_nanoseconds"
+                          ],
+                          "properties": {
+                            "_seconds": {
+                              "type": "integer"
+                            },
+                            "_nanoseconds": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 999999999
+                            }
+                          }
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "closesAt": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "description": "Serialized Firestore Timestamp fixture shape.",
+                          "x-firestore-type": "timestamp",
+                          "additionalProperties": false,
+                          "required": [
+                            "_seconds",
+                            "_nanoseconds"
+                          ],
+                          "properties": {
+                            "_seconds": {
+                              "type": "integer"
+                            },
+                            "_nanoseconds": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 999999999
+                            }
+                          }
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "responseLimit": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ],
+                      "minimum": 1,
+                      "maximum": 1000000
+                    },
+                    "closedMessage": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 500
+                    }
+                  }
+                },
+                "consent": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "consentCopy",
+                    "consentVersion",
+                    "retentionCopy"
+                  ],
+                  "properties": {
+                    "consentCopy": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    "consentVersion": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "retentionCopy": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1000
+                    }
+                  }
+                },
+                "completion": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "title",
+                    "message",
+                    "actionKind",
+                    "actionLabel",
+                    "actionUrl"
+                  ],
+                  "properties": {
+                    "title": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160
+                    },
+                    "message": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 1000
+                    },
+                    "actionKind": {
+                      "type": "string",
+                      "enum": [
+                        "none",
+                        "externalUrl",
+                        "event",
+                        "eventRuntime"
+                      ]
+                    },
+                    "actionLabel": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 80
+                    },
+                    "actionUrl": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "uri",
+                      "maxLength": 500
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "answers": {
+          "type": "object",
+          "maxProperties": 4000,
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 10000
+              },
+              {
+                "type": "number",
+                "minimum": -1000000000,
+                "maximum": 1000000000
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "type": "array",
+                "maxItems": 100,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "maxLength": 500
+                }
+              }
+            ]
+          }
+        },
+        "consentAccepted": {
+          "type": "boolean"
+        },
+        "identityKind": {
+          "type": "string",
+          "enum": [
+            "anonymous",
+            "emailVerified",
+            "phoneVerified",
+            "catchAccount"
+          ]
+        },
+        "expiresAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    }
+  ]
+};
+
+export const saveOrganizerFormResponseDraftCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/save_organizer_form_response_draft_payload.schema.json",
+  "title": "SaveOrganizerFormResponseDraftCallablePayload",
+  "description": "Optimistically saves respondent answers without file bytes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "draftId",
+    "draftToken",
+    "expectedRevision",
+    "answers",
+    "consentAccepted"
+  ],
+  "properties": {
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "draftToken": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9_-]{32,160}$"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "answers": {
+      "type": "object",
+      "maxProperties": 4000,
+      "propertyNames": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      },
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "string",
+            "maxLength": 10000
+          },
+          {
+            "type": "number",
+            "minimum": -1000000000,
+            "maximum": 1000000000
+          },
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "null"
+          },
+          {
+            "type": "array",
+            "maxItems": 100,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "maxLength": 500
+            }
+          }
+        ]
+      }
+    },
+    "consentAccepted": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const saveOrganizerFormResponseDraftCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/save_organizer_form_response_draft_response.schema.json",
+  "title": "SaveOrganizerFormResponseDraftCallableResponse",
+  "description": "Saved draft revision and expiry.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "draftId",
+    "revision",
+    "expiresAtMillis"
+  ],
+  "properties": {
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "expiresAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const createOrganizerFormAssetIntentCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/create_organizer_form_asset_intent_payload.schema.json",
+  "title": "CreateOrganizerFormAssetIntentCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "draftId",
+    "draftToken",
+    "questionId",
+    "requestId",
+    "originalFileName",
+    "contentType",
+    "sizeBytes",
+    "sha256"
+  ],
+  "properties": {
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "draftToken": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9_-]{32,160}$"
+    },
+    "questionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{8,160}$"
+    },
+    "originalFileName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "contentType": {
+      "type": "string",
+      "enum": [
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "application/pdf"
+      ]
+    },
+    "sizeBytes": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 26214400
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+};
+
+export const createOrganizerFormAssetIntentCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/create_organizer_form_asset_intent_response.schema.json",
+  "title": "CreateOrganizerFormAssetIntentCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "assetId",
+    "uploadToken",
+    "uploadUrl",
+    "uploadFields",
+    "expiresAtMillis"
+  ],
+  "properties": {
+    "assetId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uploadToken": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{32,160}$"
+    },
+    "uploadUrl": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2000
+    },
+    "uploadFields": {
+      "type": "object",
+      "maxProperties": 30,
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 4000
+      }
+    },
+    "expiresAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const finalizeOrganizerFormAssetCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/finalize_organizer_form_asset_payload.schema.json",
+  "title": "FinalizeOrganizerFormAssetCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "draftId",
+    "draftToken",
+    "assetId",
+    "uploadToken"
+  ],
+  "properties": {
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "draftToken": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9_-]{32,160}$"
+    },
+    "assetId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uploadToken": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{32,160}$"
+    }
+  }
+};
+
+export const finalizeOrganizerFormAssetCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/finalize_organizer_form_asset_response.schema.json",
+  "title": "FinalizeOrganizerFormAssetCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "assetId",
+    "status",
+    "sizeBytes"
+  ],
+  "properties": {
+    "assetId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "ready"
+      ]
+    },
+    "sizeBytes": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 26214400
+    }
+  }
+};
+
+export const submitOrganizerFormResponseCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/submit_organizer_form_response_payload.schema.json",
+  "title": "SubmitOrganizerFormResponseCallablePayload",
+  "description": "Idempotently submits one completed version-bound draft.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "draftId",
+    "draftToken",
+    "expectedRevision",
+    "requestId"
+  ],
+  "properties": {
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "draftToken": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9_-]{32,160}$"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{16,120}$"
+    }
+  }
+};
+
+export const submitOrganizerFormResponseCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/submit_organizer_form_response_response.schema.json",
+  "title": "SubmitOrganizerFormResponseCallableResponse",
+  "description": "Stable form response receipt.",
+  "allOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "responseId",
+        "formId",
+        "versionId",
+        "status",
+        "submittedAtMillis",
+        "withdrawalToken",
+        "completion"
+      ],
+      "properties": {
+        "responseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "formId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "versionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "submitted",
+            "withdrawn"
+          ]
+        },
+        "submittedAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "withdrawalToken": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[A-Za-z0-9_-]{32,160}$"
+        },
+        "completion": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "title",
+            "message",
+            "actionKind",
+            "actionLabel",
+            "actionUrl"
+          ],
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "message": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            },
+            "actionKind": {
+              "type": "string",
+              "enum": [
+                "none",
+                "externalUrl",
+                "event",
+                "eventRuntime"
+              ]
+            },
+            "actionLabel": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80
+            },
+            "actionUrl": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uri",
+              "maxLength": 500
+            }
+          }
+        }
+      }
+    }
+  ]
+};
+
+export const withdrawOrganizerFormResponseCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/withdraw_organizer_form_response_payload.schema.json",
+  "title": "WithdrawOrganizerFormResponseCallablePayload",
+  "description": "Idempotently withdraws one submitted response under respondent authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "responseId",
+    "withdrawalToken",
+    "requestId"
+  ],
+  "properties": {
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "withdrawalToken": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9_-]{32,160}$"
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{16,120}$"
+    }
+  }
+};
+
+export const withdrawOrganizerFormResponseCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/withdraw_organizer_form_response_response.schema.json",
+  "title": "WithdrawOrganizerFormResponseCallableResponse",
+  "description": "Withdrawn response state.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "responseId",
+    "status",
+    "withdrawnAtMillis"
+  ],
+  "properties": {
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "status": {
+      "type": "string",
+      "const": "withdrawn"
+    },
+    "withdrawnAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const createOrganizerFormShareLinkCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/create_organizer_form_share_link_payload.schema.json",
+  "title": "CreateOrganizerFormShareLinkCallablePayload",
+  "description": "Creates an idempotent source-attributed link for a published form.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "label",
+    "source",
+    "requestId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "source": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{16,120}$"
+    }
+  }
+};
+
+export const createOrganizerFormShareLinkCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/create_organizer_form_share_link_response.schema.json",
+  "title": "CreateOrganizerFormShareLinkCallableResponse",
+  "description": "Source-attributed public form URL.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "linkId",
+    "label",
+    "source",
+    "url",
+    "sourceToken"
+  ],
+  "properties": {
+    "linkId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "source": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2000
+    },
+    "sourceToken": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{20,160}$"
+    }
+  }
+};
+
+export const getOrganizerFormShareAssetsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_organizer_form_share_assets_payload.schema.json",
+  "title": "GetOrganizerFormShareAssetsCallablePayload",
+  "description": "Returns canonical distribution configuration for one published form.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const getOrganizerFormShareAssetsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_organizer_form_share_assets_response.schema.json",
+  "title": "GetOrganizerFormShareAssetsCallableResponse",
+  "description": "Canonical URL and safe responsive embed snippet.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "canonicalUrl",
+    "embedUrl",
+    "embedSnippet"
+  ],
+  "properties": {
+    "canonicalUrl": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2000
+    },
+    "embedUrl": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2000
+    },
+    "embedSnippet": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000
+    }
+  }
+};
+
+export const listOrganizerFormResponsesCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_organizer_form_responses_payload.schema.json",
+  "title": "ListOrganizerFormResponsesCallablePayload",
+  "description": "Manager-authorized bounded response inbox query.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "versionId",
+    "statuses",
+    "identityKinds",
+    "sourceLinkId",
+    "query",
+    "fromMillis",
+    "toMillis",
+    "cursor",
+    "limit"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "versionId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "statuses": {
+      "type": "array",
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "submitted",
+          "withdrawn"
+        ]
+      }
+    },
+    "identityKinds": {
+      "type": "array",
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "anonymous",
+          "emailVerified",
+          "phoneVerified",
+          "catchAccount"
+        ]
+      }
+    },
+    "sourceLinkId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "query": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 160
+    },
+    "fromMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "toMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "cursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    }
+  }
+};
+
+export const listOrganizerFormResponsesCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_organizer_form_responses_response.schema.json",
+  "title": "ListOrganizerFormResponsesCallableResponse",
+  "description": "Safe response inbox rows and opaque pagination cursor.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "items",
+    "nextCursor"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "items": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "responseId",
+          "formId",
+          "formTitle",
+          "versionId",
+          "version",
+          "status",
+          "identityKind",
+          "identity",
+          "sourceLinkId",
+          "sourceLabel",
+          "submittedAtMillis",
+          "withdrawnAtMillis",
+          "highlights",
+          "conversionKinds"
+        ],
+        "properties": {
+          "responseId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "formId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "formTitle": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "versionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "submitted",
+              "withdrawn"
+            ]
+          },
+          "identityKind": {
+            "type": "string",
+            "enum": [
+              "anonymous",
+              "emailVerified",
+              "phoneVerified",
+              "catchAccount"
+            ]
+          },
+          "identity": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "displayName",
+              "email",
+              "phoneE164",
+              "searchName",
+              "origin"
+            ],
+            "properties": {
+              "displayName": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 160
+              },
+              "email": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "email",
+                "maxLength": 320
+              },
+              "phoneE164": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^\\+[1-9][0-9]{7,14}$"
+              },
+              "searchName": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 160
+              },
+              "origin": {
+                "type": "string",
+                "enum": [
+                  "anonymous",
+                  "respondentGranted",
+                  "organizerAcquired"
+                ]
+              }
+            }
+          },
+          "sourceLinkId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sourceLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 120
+          },
+          "submittedAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "withdrawnAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "highlights": {
+            "type": "array",
+            "maxItems": 12,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "questionId",
+                "label",
+                "answer"
+              ],
+              "properties": {
+                "questionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240
+                },
+                "answer": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "maxLength": 10000
+                    },
+                    {
+                      "type": "number",
+                      "minimum": -1000000000,
+                      "maximum": 1000000000
+                    },
+                    {
+                      "type": "boolean"
+                    },
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "type": "array",
+                      "maxItems": 100,
+                      "uniqueItems": true,
+                      "items": {
+                        "type": "string",
+                        "maxLength": 500
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "conversionKinds": {
+            "type": "array",
+            "maxItems": 4,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "enum": [
+                "crmContact",
+                "application",
+                "eventAttendeeProposal",
+                "followUp"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    }
+  }
+};
+
+export const getOrganizerFormResponseDetailCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_organizer_form_response_detail_payload.schema.json",
+  "title": "GetOrganizerFormResponseDetailCallablePayload",
+  "description": "Manager-authorized response detail request.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "responseId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const getOrganizerFormResponseDetailCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_organizer_form_response_detail_response.schema.json",
+  "title": "GetOrganizerFormResponseDetailCallableResponse",
+  "description": "One immutable response with classified answers and expiring asset downloads.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "response",
+    "answers",
+    "consentVersion",
+    "completionMillis"
+  ],
+  "properties": {
+    "response": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "responseId",
+        "formId",
+        "formTitle",
+        "versionId",
+        "version",
+        "status",
+        "identityKind",
+        "identity",
+        "sourceLinkId",
+        "sourceLabel",
+        "submittedAtMillis",
+        "withdrawnAtMillis",
+        "highlights",
+        "conversionKinds"
+      ],
+      "properties": {
+        "responseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "formId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "formTitle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "versionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "submitted",
+            "withdrawn"
+          ]
+        },
+        "identityKind": {
+          "type": "string",
+          "enum": [
+            "anonymous",
+            "emailVerified",
+            "phoneVerified",
+            "catchAccount"
+          ]
+        },
+        "identity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "displayName",
+            "email",
+            "phoneE164",
+            "searchName",
+            "origin"
+          ],
+          "properties": {
+            "displayName": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 160
+            },
+            "email": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "email",
+              "maxLength": 320
+            },
+            "phoneE164": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^\\+[1-9][0-9]{7,14}$"
+            },
+            "searchName": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 160
+            },
+            "origin": {
+              "type": "string",
+              "enum": [
+                "anonymous",
+                "respondentGranted",
+                "organizerAcquired"
+              ]
+            }
+          }
+        },
+        "sourceLinkId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sourceLabel": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "submittedAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "withdrawnAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "highlights": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "questionId",
+              "label",
+              "answer"
+            ],
+            "properties": {
+              "questionId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "answer": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 10000
+                  },
+                  {
+                    "type": "number",
+                    "minimum": -1000000000,
+                    "maximum": 1000000000
+                  },
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "array",
+                    "maxItems": 100,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "maxLength": 500
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "conversionKinds": {
+          "type": "array",
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "crmContact",
+              "application",
+              "eventAttendeeProposal",
+              "followUp"
+            ]
+          }
+        }
+      }
+    },
+    "answers": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "questionId",
+          "key",
+          "label",
+          "kind",
+          "privacyClass",
+          "hostPresentation",
+          "answer",
+          "origin",
+          "assetDownloads"
+        ],
+        "properties": {
+          "questionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "shortText",
+              "longText",
+              "singleChoice",
+              "multiChoice",
+              "date",
+              "phone",
+              "email",
+              "url",
+              "number",
+              "boolean",
+              "file",
+              "acknowledgement",
+              "signature"
+            ]
+          },
+          "privacyClass": {
+            "type": "string",
+            "enum": [
+              "contact",
+              "profile",
+              "sensitive",
+              "organizerCustom"
+            ]
+          },
+          "hostPresentation": {
+            "type": "string",
+            "enum": [
+              "detailOnly",
+              "filterable",
+              "sortable"
+            ]
+          },
+          "answer": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 10000
+              },
+              {
+                "type": "number",
+                "minimum": -1000000000,
+                "maximum": 1000000000
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "type": "array",
+                "maxItems": 100,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "maxLength": 500
+                }
+              }
+            ]
+          },
+          "origin": {
+            "type": "string",
+            "enum": [
+              "anonymous",
+              "respondentGranted",
+              "organizerAcquired",
+              "revoked"
+            ]
+          },
+          "assetDownloads": {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "assetId",
+                "fileName",
+                "contentType",
+                "sizeBytes",
+                "downloadUrl",
+                "expiresAtMillis"
+              ],
+              "properties": {
+                "assetId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "fileName": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240
+                },
+                "contentType": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                },
+                "sizeBytes": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 26214400
+                },
+                "downloadUrl": {
+                  "type": "string",
+                  "format": "uri",
+                  "maxLength": 4000
+                },
+                "expiresAtMillis": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "consentVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "completionMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 604800000
+    }
+  }
+};
+
+export const getOrganizerFormAnalyticsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_organizer_form_analytics_payload.schema.json",
+  "title": "GetOrganizerFormAnalyticsCallablePayload",
+  "description": "Manager-authorized precomputed form analytics request.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "versionId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "versionId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const getOrganizerFormAnalyticsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_organizer_form_analytics_response.schema.json",
+  "title": "GetOrganizerFormAnalyticsCallableResponse",
+  "description": "Privacy-aware precomputed form funnel and compatible question aggregates.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "versionId",
+    "version",
+    "opens",
+    "starts",
+    "submissions",
+    "withdrawals",
+    "completionRate",
+    "medianCompletionMillis",
+    "questions",
+    "sources",
+    "privacyThreshold"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "versionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000
+    },
+    "opens": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "starts": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "submissions": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "withdrawals": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "completionRate": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "medianCompletionMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 604800000
+    },
+    "questions": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "questionId",
+          "label",
+          "kind",
+          "privacyClass",
+          "responseCount",
+          "choiceCounts",
+          "numericCount",
+          "numericSum",
+          "numericMin",
+          "numericMax"
+        ],
+        "properties": {
+          "questionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "shortText",
+              "longText",
+              "singleChoice",
+              "multiChoice",
+              "date",
+              "phone",
+              "email",
+              "url",
+              "number",
+              "boolean",
+              "file",
+              "acknowledgement",
+              "signature"
+            ]
+          },
+          "privacyClass": {
+            "type": "string",
+            "enum": [
+              "contact",
+              "profile",
+              "sensitive",
+              "organizerCustom"
+            ]
+          },
+          "responseCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000000
+          },
+          "choiceCounts": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "value",
+                "label",
+                "count"
+              ],
+              "properties": {
+                "value": {
+                  "type": [
+                    "string",
+                    "boolean"
+                  ],
+                  "maxLength": 160
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "count": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000000000
+                }
+              }
+            }
+          },
+          "numericCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000000
+          },
+          "numericSum": {
+            "type": "number",
+            "minimum": -1000000000000000000,
+            "maximum": 1000000000000000000
+          },
+          "numericMin": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "numericMax": {
+            "type": [
+              "number",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sourceLinkId",
+          "label",
+          "opens",
+          "starts",
+          "submissions"
+        ],
+        "properties": {
+          "sourceLinkId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 128
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "opens": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000000
+          },
+          "starts": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000000
+          },
+          "submissions": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000000
+          }
+        }
+      }
+    },
+    "privacyThreshold": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    }
+  }
+};
+
+export const requestOrganizerFormExportCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/request_organizer_form_export_payload.schema.json",
+  "title": "RequestOrganizerFormExportCallablePayload",
+  "description": "Idempotent response export request or status refresh.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "requestId",
+    "format",
+    "statuses",
+    "versionId",
+    "fromMillis",
+    "toMillis"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 128
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "csv",
+        "xlsx"
+      ]
+    },
+    "statuses": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "submitted",
+          "withdrawn"
+        ]
+      }
+    },
+    "versionId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "fromMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "toMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const requestOrganizerFormExportCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/request_organizer_form_export_response.schema.json",
+  "title": "RequestOrganizerFormExportCallableResponse",
+  "description": "Asynchronous export status and expiring download when complete.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "exportId",
+    "status",
+    "format",
+    "rowCount",
+    "downloadUrl",
+    "expiresAtMillis",
+    "errorMessage"
+  ],
+  "properties": {
+    "exportId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "running",
+        "completed",
+        "failed",
+        "expired"
+      ]
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "csv",
+        "xlsx"
+      ]
+    },
+    "rowCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000
+    },
+    "downloadUrl": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uri",
+      "maxLength": 4000
+    },
+    "expiresAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "errorMessage": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    }
+  }
+};
+
+export const createOrganizerFormAutomationCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/create_organizer_form_automation_payload.schema.json",
+  "title": "CreateOrganizerFormAutomationCallablePayload",
+  "description": "Creates or replaces an explicit form automation under an optimistic revision guard.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "ruleId",
+    "requestId",
+    "expectedRevision",
+    "name",
+    "enabled",
+    "trigger",
+    "condition",
+    "actions"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "ruleId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 128
+    },
+    "expectedRevision": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "trigger": {
+      "type": "string",
+      "enum": [
+        "responseSubmitted",
+        "responseWithdrawn",
+        "answerMatches"
+      ]
+    },
+    "condition": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "questionId",
+            "operator",
+            "expectedValues"
+          ],
+          "properties": {
+            "questionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "operator": {
+              "type": "string",
+              "enum": [
+                "equals",
+                "notEquals",
+                "contains",
+                "notContains",
+                "greaterThan",
+                "lessThan",
+                "answered",
+                "notAnswered"
+              ]
+            },
+            "expectedValues": {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "type": [
+                  "string",
+                  "number",
+                  "boolean"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "actions": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "actionId",
+          "kind",
+          "tagId",
+          "eventId",
+          "webhookUrl",
+          "webhookSecret",
+          "channel"
+        ],
+        "properties": {
+          "actionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "notifyTeam",
+              "addOrganizerTag",
+              "createCrmContact",
+              "addApplicationQueue",
+              "proposeEventAttendee",
+              "signedWebhook",
+              "campaignHandoff"
+            ]
+          },
+          "tagId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 80
+          },
+          "eventId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "webhookUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri",
+            "maxLength": 2000
+          },
+          "webhookSecret": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 32,
+            "maxLength": 128
+          },
+          "channel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              null,
+              "whatsapp",
+              "email"
+            ]
+          }
+        }
+      }
+    }
+  }
+};
+
+export const createOrganizerFormAutomationCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/create_organizer_form_automation_response.schema.json",
+  "title": "CreateOrganizerFormAutomationCallableResponse",
+  "description": "Saved form automation projection.",
+  "allOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ruleId",
+        "organizerId",
+        "formId",
+        "name",
+        "enabled",
+        "revision",
+        "trigger",
+        "condition",
+        "actions",
+        "updatedAtMillis"
+      ],
+      "properties": {
+        "ruleId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "formId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "trigger": {
+          "type": "string",
+          "enum": [
+            "responseSubmitted",
+            "responseWithdrawn",
+            "answerMatches"
+          ]
+        },
+        "condition": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "questionId",
+                "operator",
+                "expectedValues"
+              ],
+              "properties": {
+                "questionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "operator": {
+                  "type": "string",
+                  "enum": [
+                    "equals",
+                    "notEquals",
+                    "contains",
+                    "notContains",
+                    "greaterThan",
+                    "lessThan",
+                    "answered",
+                    "notAnswered"
+                  ]
+                },
+                "expectedValues": {
+                  "type": "array",
+                  "maxItems": 20,
+                  "items": {
+                    "type": [
+                      "string",
+                      "number",
+                      "boolean"
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "actions": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "actionId",
+              "kind",
+              "tagId",
+              "eventId",
+              "webhookUrl",
+              "webhookSecretConfigured",
+              "channel"
+            ],
+            "properties": {
+              "actionId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "notifyTeam",
+                  "addOrganizerTag",
+                  "createCrmContact",
+                  "addApplicationQueue",
+                  "proposeEventAttendee",
+                  "signedWebhook",
+                  "campaignHandoff"
+                ]
+              },
+              "tagId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 80
+              },
+              "eventId": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "webhookUrl": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "uri",
+                "maxLength": 2000
+              },
+              "webhookSecretConfigured": {
+                "type": "boolean"
+              },
+              "channel": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  null,
+                  "whatsapp",
+                  "email"
+                ]
+              }
+            }
+          }
+        },
+        "updatedAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    }
+  ]
+};
+
+export const setOrganizerFormAutomationStateCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/set_organizer_form_automation_state_payload.schema.json",
+  "title": "SetOrganizerFormAutomationStateCallablePayload",
+  "description": "Enables or disables one form automation revision.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "ruleId",
+    "expectedRevision",
+    "enabled"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "ruleId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "enabled": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const setOrganizerFormAutomationStateCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/set_organizer_form_automation_state_response.schema.json",
+  "title": "SetOrganizerFormAutomationStateCallableResponse",
+  "description": "Updated form automation projection.",
+  "allOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ruleId",
+        "organizerId",
+        "formId",
+        "name",
+        "enabled",
+        "revision",
+        "trigger",
+        "condition",
+        "actions",
+        "updatedAtMillis"
+      ],
+      "properties": {
+        "ruleId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "formId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "trigger": {
+          "type": "string",
+          "enum": [
+            "responseSubmitted",
+            "responseWithdrawn",
+            "answerMatches"
+          ]
+        },
+        "condition": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "questionId",
+                "operator",
+                "expectedValues"
+              ],
+              "properties": {
+                "questionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "operator": {
+                  "type": "string",
+                  "enum": [
+                    "equals",
+                    "notEquals",
+                    "contains",
+                    "notContains",
+                    "greaterThan",
+                    "lessThan",
+                    "answered",
+                    "notAnswered"
+                  ]
+                },
+                "expectedValues": {
+                  "type": "array",
+                  "maxItems": 20,
+                  "items": {
+                    "type": [
+                      "string",
+                      "number",
+                      "boolean"
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "actions": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "actionId",
+              "kind",
+              "tagId",
+              "eventId",
+              "webhookUrl",
+              "webhookSecretConfigured",
+              "channel"
+            ],
+            "properties": {
+              "actionId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "notifyTeam",
+                  "addOrganizerTag",
+                  "createCrmContact",
+                  "addApplicationQueue",
+                  "proposeEventAttendee",
+                  "signedWebhook",
+                  "campaignHandoff"
+                ]
+              },
+              "tagId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 80
+              },
+              "eventId": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "webhookUrl": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "uri",
+                "maxLength": 2000
+              },
+              "webhookSecretConfigured": {
+                "type": "boolean"
+              },
+              "channel": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  null,
+                  "whatsapp",
+                  "email"
+                ]
+              }
+            }
+          }
+        },
+        "updatedAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    }
+  ]
+};
+
+export const listOrganizerFormAutomationRunsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_organizer_form_automation_runs_payload.schema.json",
+  "title": "ListOrganizerFormAutomationRunsCallablePayload",
+  "description": "Manager-authorized automation rule and bounded run history query.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "ruleId",
+    "cursor",
+    "limit"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "ruleId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "cursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    }
+  }
+};
+
+export const listOrganizerFormAutomationRunsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_organizer_form_automation_runs_response.schema.json",
+  "title": "ListOrganizerFormAutomationRunsCallableResponse",
+  "description": "Form automation definitions and bounded observable run history.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "rules",
+    "runs",
+    "nextCursor"
+  ],
+  "properties": {
+    "rules": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "ruleId",
+          "organizerId",
+          "formId",
+          "name",
+          "enabled",
+          "revision",
+          "trigger",
+          "condition",
+          "actions",
+          "updatedAtMillis"
+        ],
+        "properties": {
+          "ruleId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "formId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "trigger": {
+            "type": "string",
+            "enum": [
+              "responseSubmitted",
+              "responseWithdrawn",
+              "answerMatches"
+            ]
+          },
+          "condition": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "questionId",
+                  "operator",
+                  "expectedValues"
+                ],
+                "properties": {
+                  "questionId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "operator": {
+                    "type": "string",
+                    "enum": [
+                      "equals",
+                      "notEquals",
+                      "contains",
+                      "notContains",
+                      "greaterThan",
+                      "lessThan",
+                      "answered",
+                      "notAnswered"
+                    ]
+                  },
+                  "expectedValues": {
+                    "type": "array",
+                    "maxItems": 20,
+                    "items": {
+                      "type": [
+                        "string",
+                        "number",
+                        "boolean"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "actions": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 10,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "actionId",
+                "kind",
+                "tagId",
+                "eventId",
+                "webhookUrl",
+                "webhookSecretConfigured",
+                "channel"
+              ],
+              "properties": {
+                "actionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "notifyTeam",
+                    "addOrganizerTag",
+                    "createCrmContact",
+                    "addApplicationQueue",
+                    "proposeEventAttendee",
+                    "signedWebhook",
+                    "campaignHandoff"
+                  ]
+                },
+                "tagId": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 80
+                },
+                "eventId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "webhookUrl": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "uri",
+                  "maxLength": 2000
+                },
+                "webhookSecretConfigured": {
+                  "type": "boolean"
+                },
+                "channel": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "enum": [
+                    null,
+                    "whatsapp",
+                    "email"
+                  ]
+                }
+              }
+            }
+          },
+          "updatedAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        }
+      }
+    },
+    "runs": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "runId",
+          "ruleId",
+          "ruleRevision",
+          "responseId",
+          "eventKind",
+          "status",
+          "attemptCount",
+          "actionResults",
+          "errorMessage",
+          "createdAtMillis",
+          "completedAtMillis"
+        ],
+        "properties": {
+          "runId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "ruleId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "ruleRevision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "responseId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "eventKind": {
+            "type": "string",
+            "enum": [
+              "submitted",
+              "withdrawn"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "running",
+              "succeeded",
+              "partiallyFailed",
+              "failed",
+              "skipped"
+            ]
+          },
+          "attemptCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "actionResults": {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+              "type": "object"
+            }
+          },
+          "errorMessage": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          },
+          "createdAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "completedAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    }
+  }
+};
+
+export const previewOrganizerFormConversionCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/preview_organizer_form_conversion_payload.schema.json",
+  "title": "PreviewOrganizerFormConversionCallablePayload",
+  "description": "Reviews one proposed downstream conversion without writing.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "responseId",
+    "kind",
+    "eventId",
+    "overrides"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "crmContact",
+        "application",
+        "eventAttendeeProposal",
+        "followUp"
+      ]
+    },
+    "eventId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "overrides": {
+      "type": "object",
+      "maxProperties": 20,
+      "additionalProperties": {
+        "type": [
+          "string",
+          "number",
+          "boolean",
+          "null"
+        ]
+      }
+    }
+  }
+};
+
+export const previewOrganizerFormConversionCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/preview_organizer_form_conversion_response.schema.json",
+  "title": "PreviewOrganizerFormConversionCallableResponse",
+  "description": "Exact reviewed fields, conflicts, and permission boundary before conversion.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "responseId",
+    "kind",
+    "eventId",
+    "allowed",
+    "fields",
+    "warnings",
+    "existingResultId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "crmContact",
+        "application",
+        "eventAttendeeProposal",
+        "followUp"
+      ]
+    },
+    "eventId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "allowed": {
+      "type": "boolean"
+    },
+    "fields": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "destinationField",
+          "label",
+          "value",
+          "origin",
+          "conflict"
+        ],
+        "properties": {
+          "destinationField": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "value": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "null"
+            ],
+            "maxLength": 1000
+          },
+          "origin": {
+            "type": "string",
+            "enum": [
+              "verifiedIdentity",
+              "formAnswer",
+              "hostOverride"
+            ]
+          },
+          "conflict": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          }
+        }
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "string",
+        "maxLength": 500
+      }
+    },
+    "existingResultId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200
+    }
+  }
+};
+
+export const convertOrganizerFormResponseCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/convert_organizer_form_response_payload.schema.json",
+  "title": "ConvertOrganizerFormResponseCallablePayload",
+  "description": "Idempotently applies one reviewed response conversion.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "responseId",
+    "kind",
+    "eventId",
+    "overrides",
+    "requestId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "crmContact",
+        "application",
+        "eventAttendeeProposal",
+        "followUp"
+      ]
+    },
+    "eventId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "overrides": {
+      "type": "object",
+      "maxProperties": 20,
+      "additionalProperties": {
+        "type": [
+          "string",
+          "number",
+          "boolean",
+          "null"
+        ]
+      }
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 128
+    }
+  }
+};
+
+export const convertOrganizerFormResponseCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/convert_organizer_form_response_response.schema.json",
+  "title": "ConvertOrganizerFormResponseCallableResponse",
+  "description": "Completed reviewed conversion receipt.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "receiptId",
+    "organizerId",
+    "formId",
+    "responseId",
+    "kind",
+    "status",
+    "fields",
+    "resultId",
+    "undoStatus",
+    "completedAtMillis"
+  ],
+  "properties": {
+    "receiptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "crmContact",
+        "application",
+        "eventAttendeeProposal",
+        "followUp"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "completed",
+        "failed"
+      ]
+    },
+    "fields": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "destinationField",
+          "label",
+          "value",
+          "origin",
+          "conflict"
+        ],
+        "properties": {
+          "destinationField": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "value": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "null"
+            ],
+            "maxLength": 1000
+          },
+          "origin": {
+            "type": "string",
+            "enum": [
+              "verifiedIdentity",
+              "formAnswer",
+              "hostOverride"
+            ]
+          },
+          "conflict": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          }
+        }
+      }
+    },
+    "resultId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200
+    },
+    "undoStatus": {
+      "type": "string",
+      "enum": [
+        "notAvailable",
+        "available",
+        "used",
+        "expired"
+      ]
+    },
+    "completedAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
 export const publishOrganizerApplicationFormCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/publish_organizer_application_form_payload.schema.json",
@@ -72593,6 +87718,417 @@ export const personFieldCatalog = {
       "derivedFrom": null,
       "publicProfileProjection": "direct",
       "publicProfilePath": "children"
+    }
+  ]
+};
+
+export const organizerFormTemplateCatalog = {
+  "schemaVersion": 1,
+  "kind": "organizerFormTemplates",
+  "templates": [
+    {
+      "id": "event-application",
+      "version": 1,
+      "title": "Event application",
+      "description": "Review interest and fit before confirming a place.",
+      "purpose": "application",
+      "identityPolicy": "phoneVerified",
+      "sections": [
+        {
+          "id": "about-you",
+          "title": "About you",
+          "description": "Basic contact information for this application.",
+          "questions": [
+            {
+              "key": "displayName",
+              "label": "Full name",
+              "helpText": null,
+              "kind": "shortText",
+              "required": true,
+              "canonicalFieldId": "displayName",
+              "privacyClass": "contact"
+            },
+            {
+              "key": "phoneNumber",
+              "label": "Phone number",
+              "helpText": "Used only for this application and approved follow-up.",
+              "kind": "phone",
+              "required": true,
+              "canonicalFieldId": "phoneNumber",
+              "privacyClass": "contact"
+            },
+            {
+              "key": "motivation",
+              "label": "Why would you like to join?",
+              "helpText": null,
+              "kind": "longText",
+              "required": true,
+              "canonicalFieldId": null,
+              "privacyClass": "organizerCustom"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "event-registration",
+      "version": 1,
+      "title": "Event registration",
+      "description": "Collect the information needed to request a place.",
+      "purpose": "registration",
+      "identityPolicy": "emailOrPhoneVerified",
+      "sections": [
+        {
+          "id": "registration",
+          "title": "Registration",
+          "description": null,
+          "questions": [
+            {
+              "key": "displayName",
+              "label": "Full name",
+              "helpText": null,
+              "kind": "shortText",
+              "required": true,
+              "canonicalFieldId": "displayName",
+              "privacyClass": "contact"
+            },
+            {
+              "key": "email",
+              "label": "Email",
+              "helpText": null,
+              "kind": "email",
+              "required": true,
+              "canonicalFieldId": "email",
+              "privacyClass": "contact"
+            },
+            {
+              "key": "accessibility",
+              "label": "Is there anything we should know to make the event accessible?",
+              "helpText": null,
+              "kind": "longText",
+              "required": false,
+              "canonicalFieldId": null,
+              "privacyClass": "sensitive"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dinner-guest-intake",
+      "version": 1,
+      "title": "Dinner guest intake",
+      "description": "Dietary, seating, and accessibility details for a hosted meal.",
+      "purpose": "intake",
+      "identityPolicy": "emailOrPhoneVerified",
+      "sections": [
+        {
+          "id": "guest-details",
+          "title": "Guest details",
+          "description": "Help us prepare your place at the table.",
+          "questions": [
+            {
+              "key": "displayName",
+              "label": "Full name",
+              "helpText": null,
+              "kind": "shortText",
+              "required": true,
+              "canonicalFieldId": "displayName",
+              "privacyClass": "contact"
+            },
+            {
+              "key": "dietaryRequirements",
+              "label": "Dietary requirements",
+              "helpText": "Include allergies and ingredients you cannot eat.",
+              "kind": "longText",
+              "required": false,
+              "canonicalFieldId": null,
+              "privacyClass": "sensitive"
+            },
+            {
+              "key": "seatingNotes",
+              "label": "Seating or accessibility notes",
+              "helpText": null,
+              "kind": "longText",
+              "required": false,
+              "canonicalFieldId": null,
+              "privacyClass": "sensitive"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "run-walk-participation",
+      "version": 1,
+      "title": "Run or walk participation",
+      "description": "Pace, distance, route, and accessibility information for moving groups.",
+      "purpose": "intake",
+      "identityPolicy": "phoneVerified",
+      "sections": [
+        {
+          "id": "pace-and-route",
+          "title": "Pace and route",
+          "description": "Used to place people in a suitable pace pod.",
+          "questions": [
+            {
+              "key": "displayName",
+              "label": "Full name",
+              "helpText": null,
+              "kind": "shortText",
+              "required": true,
+              "canonicalFieldId": "displayName",
+              "privacyClass": "contact"
+            },
+            {
+              "key": "pace",
+              "label": "Comfortable pace",
+              "helpText": "Use min/km, min/mile, or describe your walking pace.",
+              "kind": "shortText",
+              "required": true,
+              "canonicalFieldId": null,
+              "privacyClass": "organizerCustom"
+            },
+            {
+              "key": "distance",
+              "label": "Preferred distance",
+              "helpText": null,
+              "kind": "shortText",
+              "required": false,
+              "canonicalFieldId": null,
+              "privacyClass": "organizerCustom"
+            },
+            {
+              "key": "routeAccess",
+              "label": "Route or accessibility needs",
+              "helpText": null,
+              "kind": "longText",
+              "required": false,
+              "canonicalFieldId": null,
+              "privacyClass": "sensitive"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "racket-session",
+      "version": 1,
+      "title": "Racket-sport session",
+      "description": "Collect level and pairing inputs for pickleball, padel, tennis, or badminton.",
+      "purpose": "intake",
+      "identityPolicy": "phoneVerified",
+      "sections": [
+        {
+          "id": "playing-profile",
+          "title": "Playing profile",
+          "description": "Used only to organize this session.",
+          "questions": [
+            {
+              "key": "displayName",
+              "label": "Full name",
+              "helpText": null,
+              "kind": "shortText",
+              "required": true,
+              "canonicalFieldId": "displayName",
+              "privacyClass": "contact"
+            },
+            {
+              "key": "level",
+              "label": "Playing level",
+              "helpText": "Beginner, improving, intermediate, advanced, or your rating.",
+              "kind": "shortText",
+              "required": true,
+              "canonicalFieldId": null,
+              "privacyClass": "organizerCustom"
+            },
+            {
+              "key": "preferredSide",
+              "label": "Preferred side or position",
+              "helpText": null,
+              "kind": "shortText",
+              "required": false,
+              "canonicalFieldId": null,
+              "privacyClass": "organizerCustom"
+            },
+            {
+              "key": "partnerRequest",
+              "label": "Partner or pairing request",
+              "helpText": null,
+              "kind": "shortText",
+              "required": false,
+              "canonicalFieldId": null,
+              "privacyClass": "organizerCustom"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "quiz-team-night",
+      "version": 1,
+      "title": "Quiz or team night",
+      "description": "Register teams, tables, and accessibility needs.",
+      "purpose": "registration",
+      "identityPolicy": "emailOrPhoneVerified",
+      "sections": [
+        {
+          "id": "team-details",
+          "title": "Team details",
+          "description": null,
+          "questions": [
+            {
+              "key": "displayName",
+              "label": "Your name",
+              "helpText": null,
+              "kind": "shortText",
+              "required": true,
+              "canonicalFieldId": "displayName",
+              "privacyClass": "contact"
+            },
+            {
+              "key": "teamName",
+              "label": "Team name",
+              "helpText": "Leave blank if you would like us to place you.",
+              "kind": "shortText",
+              "required": false,
+              "canonicalFieldId": null,
+              "privacyClass": "organizerCustom"
+            },
+            {
+              "key": "teamSize",
+              "label": "Number of people",
+              "helpText": null,
+              "kind": "number",
+              "required": true,
+              "canonicalFieldId": null,
+              "privacyClass": "organizerCustom"
+            },
+            {
+              "key": "accessibility",
+              "label": "Accessibility needs",
+              "helpText": null,
+              "kind": "longText",
+              "required": false,
+              "canonicalFieldId": null,
+              "privacyClass": "sensitive"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "event-waiver",
+      "version": 1,
+      "title": "Event waiver",
+      "description": "Capture versioned acknowledgements and a signature.",
+      "purpose": "waiver",
+      "identityPolicy": "phoneVerified",
+      "sections": [
+        {
+          "id": "waiver",
+          "title": "Waiver",
+          "description": "Replace the example text with reviewed terms before publishing.",
+          "questions": [
+            {
+              "key": "displayName",
+              "label": "Full legal name",
+              "helpText": null,
+              "kind": "shortText",
+              "required": true,
+              "canonicalFieldId": "displayName",
+              "privacyClass": "contact"
+            },
+            {
+              "key": "termsAcknowledgement",
+              "label": "I have read and accept the event terms",
+              "helpText": null,
+              "kind": "acknowledgement",
+              "required": true,
+              "canonicalFieldId": null,
+              "privacyClass": "organizerCustom"
+            },
+            {
+              "key": "signature",
+              "label": "Signature",
+              "helpText": null,
+              "kind": "signature",
+              "required": true,
+              "canonicalFieldId": null,
+              "privacyClass": "sensitive"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "post-event-feedback",
+      "version": 1,
+      "title": "Post-event feedback",
+      "description": "Measure the experience and provide a private safety channel.",
+      "purpose": "feedback",
+      "identityPolicy": "anonymous",
+      "sections": [
+        {
+          "id": "your-feedback",
+          "title": "Your feedback",
+          "description": "Anonymous unless you choose to identify yourself in an answer.",
+          "questions": [
+            {
+              "key": "rating",
+              "label": "How would you rate the event?",
+              "helpText": "Use a number from 1 to 5.",
+              "kind": "number",
+              "required": true,
+              "canonicalFieldId": null,
+              "privacyClass": "organizerCustom"
+            },
+            {
+              "key": "workedWell",
+              "label": "What worked well?",
+              "helpText": null,
+              "kind": "longText",
+              "required": false,
+              "canonicalFieldId": null,
+              "privacyClass": "organizerCustom"
+            },
+            {
+              "key": "privateNote",
+              "label": "Private note for the organizer",
+              "helpText": null,
+              "kind": "longText",
+              "required": false,
+              "canonicalFieldId": null,
+              "privacyClass": "sensitive"
+            },
+            {
+              "key": "safetyConcern",
+              "label": "Do you need a safety follow-up?",
+              "helpText": "This should not be used for emergencies.",
+              "kind": "boolean",
+              "required": false,
+              "canonicalFieldId": null,
+              "privacyClass": "sensitive"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "blank",
+      "version": 1,
+      "title": "Blank form",
+      "description": "Start with one empty section and add your own questions.",
+      "purpose": "survey",
+      "identityPolicy": "anonymous",
+      "sections": [
+        {
+          "id": "first-section",
+          "title": "First section",
+          "description": null,
+          "questions": []
+        }
+      ]
     }
   ]
 };

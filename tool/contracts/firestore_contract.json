@@ -599,6 +599,78 @@
       ]
     },
     {
+      "id": "organizerForms",
+      "path": "organizerForms/{formId}",
+      "rulesMatch": "/organizerForms/{formId}",
+      "typescriptInterface": "OrganizerFormDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps organizer form state server-only"
+      ],
+      "owner": "manager-only organizer form lifecycle callables",
+      "read": "server only; managers receive bounded callable projections",
+      "write": "server only",
+      "exportedFunctions": [
+        "createOrganizerForm",
+        "updateOrganizerFormDraft",
+        "getOrganizerFormEditor",
+        "listOrganizerForms",
+        "validateOrganizerFormDraft",
+        "publishOrganizerForm",
+        "setOrganizerFormLifecycle",
+        "duplicateOrganizerForm",
+        "deleteOrganizerFormDraft"
+      ],
+      "migrationNotes": [
+        "The publicFormId is opaque and resolves only through a separate public projection; it is not a Firestore read capability.",
+        "publishedVersion is monotonic while draftRevision changes only when editable content changes."
+      ]
+    },
+    {
+      "id": "organizerFormDrafts",
+      "path": "organizerFormDrafts/{formId}",
+      "rulesMatch": "/organizerFormDrafts/{formId}",
+      "typescriptInterface": "OrganizerFormDraftDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps organizer form state server-only"
+      ],
+      "owner": "manager-only organizer form draft callables",
+      "read": "server only; managers receive a safe editor projection",
+      "write": "server only with optimistic revision checks",
+      "exportedFunctions": [
+        "createOrganizerForm",
+        "updateOrganizerFormDraft",
+        "getOrganizerFormEditor",
+        "validateOrganizerFormDraft",
+        "publishOrganizerForm",
+        "duplicateOrganizerForm",
+        "deleteOrganizerFormDraft"
+      ]
+    },
+    {
+      "id": "organizerFormVersions",
+      "path": "organizerFormVersions/{versionId}",
+      "rulesMatch": "/organizerFormVersions/{versionId}",
+      "typescriptInterface": "OrganizerFormVersionDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps organizer form state server-only"
+      ],
+      "owner": "publishOrganizerForm callable",
+      "read": "server only; public and manager surfaces receive purpose-built projections",
+      "write": "immutable server-created version only",
+      "exportedFunctions": [
+        "publishOrganizerForm"
+      ],
+      "migrationNotes": [
+        "sourceDraftRevision makes publish retries idempotent and every historical definition immutable."
+      ]
+    },
+    {
       "id": "organizerContactNotes",
       "path": "organizerContactNotes/{noteId}",
       "rulesMatch": "/organizerContactNotes/{noteId}",

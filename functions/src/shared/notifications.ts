@@ -30,6 +30,7 @@ export type ActivityNotificationType =
   | "eventUpdated"
   | "clubUpdate"
   | "organizerUpdate"
+  | "formResponse"
   | "crossPathsInvitation"
   | "crossPathsInvitationAccepted"
   | "crossPathsInvitationDeclined"

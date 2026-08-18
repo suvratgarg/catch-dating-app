@@ -44,6 +44,19 @@ import {OrganizerSenderConnectionDocument} from "./organizerSenderConnectionDocu
 import {OrganizerProviderConnectionDocument} from "./organizerProviderConnectionDocument";
 import {OrganizerApplicationFormDocument} from "./organizerApplicationFormDocument";
 import {OrganizerApplicationFormVersionDocument} from "./organizerApplicationFormVersionDocument";
+import {OrganizerFormDocument} from "./organizerFormDocument";
+import {OrganizerFormDraftDocument} from "./organizerFormDraftDocument";
+import {OrganizerFormVersionDocument} from "./organizerFormVersionDocument";
+import {OrganizerFormResponseDraftDocument} from "./organizerFormResponseDraftDocument";
+import {OrganizerFormResponseDocument} from "./organizerFormResponseDocument";
+import {OrganizerFormAssetDocument} from "./organizerFormAssetDocument";
+import {OrganizerFormAggregateDocument} from "./organizerFormAggregateDocument";
+import {OrganizerFormAggregateEventDocument} from "./organizerFormAggregateEventDocument";
+import {OrganizerFormExportDocument} from "./organizerFormExportDocument";
+import {OrganizerFormAutomationRuleDocument} from "./organizerFormAutomationRuleDocument";
+import {OrganizerFormAutomationRunDocument} from "./organizerFormAutomationRunDocument";
+import {OrganizerFormConversionReceiptDocument} from "./organizerFormConversionReceiptDocument";
+import {OrganizerFormShareLinkDocument} from "./organizerFormShareLinkDocument";
 import {OrganizerApplicationDocument} from "./organizerApplicationDocument";
 import {OrganizerApplicationResponseDocument} from "./organizerApplicationResponseDocument";
 import {OrganizerApplicationAssetDocument} from "./organizerApplicationAssetDocument";
@@ -280,6 +293,62 @@ import {GetEventRosterInsightsCallablePayload} from "./getEventRosterInsightsCal
 import {GetEventRosterInsightsCallableResponse} from "./getEventRosterInsightsCallableResponse";
 import {GetOrganizerCrmSummaryCallableResponse} from "./getOrganizerCrmSummaryCallableResponse";
 import {ListOrganizerContactsCallablePayload} from "./listOrganizerContactsCallablePayload";
+import {CreateOrganizerFormCallablePayload} from "./createOrganizerFormCallablePayload";
+import {CreateOrganizerFormCallableResponse} from "./createOrganizerFormCallableResponse";
+import {UpdateOrganizerFormDraftCallablePayload} from "./updateOrganizerFormDraftCallablePayload";
+import {UpdateOrganizerFormDraftCallableResponse} from "./updateOrganizerFormDraftCallableResponse";
+import {GetOrganizerFormEditorCallablePayload} from "./getOrganizerFormEditorCallablePayload";
+import {GetOrganizerFormEditorCallableResponse} from "./getOrganizerFormEditorCallableResponse";
+import {ListOrganizerFormsCallablePayload} from "./listOrganizerFormsCallablePayload";
+import {ListOrganizerFormsCallableResponse} from "./listOrganizerFormsCallableResponse";
+import {ValidateOrganizerFormDraftCallablePayload} from "./validateOrganizerFormDraftCallablePayload";
+import {ValidateOrganizerFormDraftCallableResponse} from "./validateOrganizerFormDraftCallableResponse";
+import {PublishOrganizerFormCallablePayload} from "./publishOrganizerFormCallablePayload";
+import {PublishOrganizerFormCallableResponse} from "./publishOrganizerFormCallableResponse";
+import {SetOrganizerFormLifecycleCallablePayload} from "./setOrganizerFormLifecycleCallablePayload";
+import {SetOrganizerFormLifecycleCallableResponse} from "./setOrganizerFormLifecycleCallableResponse";
+import {DuplicateOrganizerFormCallablePayload} from "./duplicateOrganizerFormCallablePayload";
+import {DuplicateOrganizerFormCallableResponse} from "./duplicateOrganizerFormCallableResponse";
+import {DeleteOrganizerFormDraftCallablePayload} from "./deleteOrganizerFormDraftCallablePayload";
+import {DeleteOrganizerFormDraftCallableResponse} from "./deleteOrganizerFormDraftCallableResponse";
+import {ListOrganizerFormTemplatesCallablePayload} from "./listOrganizerFormTemplatesCallablePayload";
+import {ListOrganizerFormTemplatesCallableResponse} from "./listOrganizerFormTemplatesCallableResponse";
+import {GetPublicOrganizerFormCallablePayload} from "./getPublicOrganizerFormCallablePayload";
+import {GetPublicOrganizerFormCallableResponse} from "./getPublicOrganizerFormCallableResponse";
+import {BeginOrganizerFormResponseCallablePayload} from "./beginOrganizerFormResponseCallablePayload";
+import {BeginOrganizerFormResponseCallableResponse} from "./beginOrganizerFormResponseCallableResponse";
+import {SaveOrganizerFormResponseDraftCallablePayload} from "./saveOrganizerFormResponseDraftCallablePayload";
+import {SaveOrganizerFormResponseDraftCallableResponse} from "./saveOrganizerFormResponseDraftCallableResponse";
+import {CreateOrganizerFormAssetIntentCallablePayload} from "./createOrganizerFormAssetIntentCallablePayload";
+import {CreateOrganizerFormAssetIntentCallableResponse} from "./createOrganizerFormAssetIntentCallableResponse";
+import {FinalizeOrganizerFormAssetCallablePayload} from "./finalizeOrganizerFormAssetCallablePayload";
+import {FinalizeOrganizerFormAssetCallableResponse} from "./finalizeOrganizerFormAssetCallableResponse";
+import {SubmitOrganizerFormResponseCallablePayload} from "./submitOrganizerFormResponseCallablePayload";
+import {SubmitOrganizerFormResponseCallableResponse} from "./submitOrganizerFormResponseCallableResponse";
+import {WithdrawOrganizerFormResponseCallablePayload} from "./withdrawOrganizerFormResponseCallablePayload";
+import {WithdrawOrganizerFormResponseCallableResponse} from "./withdrawOrganizerFormResponseCallableResponse";
+import {CreateOrganizerFormShareLinkCallablePayload} from "./createOrganizerFormShareLinkCallablePayload";
+import {CreateOrganizerFormShareLinkCallableResponse} from "./createOrganizerFormShareLinkCallableResponse";
+import {GetOrganizerFormShareAssetsCallablePayload} from "./getOrganizerFormShareAssetsCallablePayload";
+import {GetOrganizerFormShareAssetsCallableResponse} from "./getOrganizerFormShareAssetsCallableResponse";
+import {ListOrganizerFormResponsesCallablePayload} from "./listOrganizerFormResponsesCallablePayload";
+import {ListOrganizerFormResponsesCallableResponse} from "./listOrganizerFormResponsesCallableResponse";
+import {GetOrganizerFormResponseDetailCallablePayload} from "./getOrganizerFormResponseDetailCallablePayload";
+import {GetOrganizerFormResponseDetailCallableResponse} from "./getOrganizerFormResponseDetailCallableResponse";
+import {GetOrganizerFormAnalyticsCallablePayload} from "./getOrganizerFormAnalyticsCallablePayload";
+import {GetOrganizerFormAnalyticsCallableResponse} from "./getOrganizerFormAnalyticsCallableResponse";
+import {RequestOrganizerFormExportCallablePayload} from "./requestOrganizerFormExportCallablePayload";
+import {RequestOrganizerFormExportCallableResponse} from "./requestOrganizerFormExportCallableResponse";
+import {CreateOrganizerFormAutomationCallablePayload} from "./createOrganizerFormAutomationCallablePayload";
+import {CreateOrganizerFormAutomationCallableResponse} from "./createOrganizerFormAutomationCallableResponse";
+import {SetOrganizerFormAutomationStateCallablePayload} from "./setOrganizerFormAutomationStateCallablePayload";
+import {SetOrganizerFormAutomationStateCallableResponse} from "./setOrganizerFormAutomationStateCallableResponse";
+import {ListOrganizerFormAutomationRunsCallablePayload} from "./listOrganizerFormAutomationRunsCallablePayload";
+import {ListOrganizerFormAutomationRunsCallableResponse} from "./listOrganizerFormAutomationRunsCallableResponse";
+import {PreviewOrganizerFormConversionCallablePayload} from "./previewOrganizerFormConversionCallablePayload";
+import {PreviewOrganizerFormConversionCallableResponse} from "./previewOrganizerFormConversionCallableResponse";
+import {ConvertOrganizerFormResponseCallablePayload} from "./convertOrganizerFormResponseCallablePayload";
+import {ConvertOrganizerFormResponseCallableResponse} from "./convertOrganizerFormResponseCallableResponse";
 import {PublishOrganizerApplicationFormCallablePayload} from "./publishOrganizerApplicationFormCallablePayload";
 import {GetParticipantOrganizerApplicationFormCallablePayload} from "./getParticipantOrganizerApplicationFormCallablePayload";
 import {GetParticipantOrganizerApplicationFormCallableResponse} from "./getParticipantOrganizerApplicationFormCallableResponse";
@@ -449,6 +518,19 @@ import {
   organizerProviderConnectionDocumentSchema,
   organizerApplicationFormDocumentSchema,
   organizerApplicationFormVersionDocumentSchema,
+  organizerFormDocumentSchema,
+  organizerFormDraftDocumentSchema,
+  organizerFormVersionDocumentSchema,
+  organizerFormResponseDraftDocumentSchema,
+  organizerFormResponseDocumentSchema,
+  organizerFormAssetDocumentSchema,
+  organizerFormAggregateDocumentSchema,
+  organizerFormAggregateEventDocumentSchema,
+  organizerFormExportDocumentSchema,
+  organizerFormAutomationRuleDocumentSchema,
+  organizerFormAutomationRunDocumentSchema,
+  organizerFormConversionReceiptDocumentSchema,
+  organizerFormShareLinkDocumentSchema,
   organizerApplicationDocumentSchema,
   organizerApplicationResponseDocumentSchema,
   organizerApplicationAssetDocumentSchema,
@@ -685,6 +767,62 @@ import {
   getEventRosterInsightsCallableResponseSchema,
   getOrganizerCrmSummaryCallableResponseSchema,
   listOrganizerContactsCallablePayloadSchema,
+  createOrganizerFormCallablePayloadSchema,
+  createOrganizerFormCallableResponseSchema,
+  updateOrganizerFormDraftCallablePayloadSchema,
+  updateOrganizerFormDraftCallableResponseSchema,
+  getOrganizerFormEditorCallablePayloadSchema,
+  getOrganizerFormEditorCallableResponseSchema,
+  listOrganizerFormsCallablePayloadSchema,
+  listOrganizerFormsCallableResponseSchema,
+  validateOrganizerFormDraftCallablePayloadSchema,
+  validateOrganizerFormDraftCallableResponseSchema,
+  publishOrganizerFormCallablePayloadSchema,
+  publishOrganizerFormCallableResponseSchema,
+  setOrganizerFormLifecycleCallablePayloadSchema,
+  setOrganizerFormLifecycleCallableResponseSchema,
+  duplicateOrganizerFormCallablePayloadSchema,
+  duplicateOrganizerFormCallableResponseSchema,
+  deleteOrganizerFormDraftCallablePayloadSchema,
+  deleteOrganizerFormDraftCallableResponseSchema,
+  listOrganizerFormTemplatesCallablePayloadSchema,
+  listOrganizerFormTemplatesCallableResponseSchema,
+  getPublicOrganizerFormCallablePayloadSchema,
+  getPublicOrganizerFormCallableResponseSchema,
+  beginOrganizerFormResponseCallablePayloadSchema,
+  beginOrganizerFormResponseCallableResponseSchema,
+  saveOrganizerFormResponseDraftCallablePayloadSchema,
+  saveOrganizerFormResponseDraftCallableResponseSchema,
+  createOrganizerFormAssetIntentCallablePayloadSchema,
+  createOrganizerFormAssetIntentCallableResponseSchema,
+  finalizeOrganizerFormAssetCallablePayloadSchema,
+  finalizeOrganizerFormAssetCallableResponseSchema,
+  submitOrganizerFormResponseCallablePayloadSchema,
+  submitOrganizerFormResponseCallableResponseSchema,
+  withdrawOrganizerFormResponseCallablePayloadSchema,
+  withdrawOrganizerFormResponseCallableResponseSchema,
+  createOrganizerFormShareLinkCallablePayloadSchema,
+  createOrganizerFormShareLinkCallableResponseSchema,
+  getOrganizerFormShareAssetsCallablePayloadSchema,
+  getOrganizerFormShareAssetsCallableResponseSchema,
+  listOrganizerFormResponsesCallablePayloadSchema,
+  listOrganizerFormResponsesCallableResponseSchema,
+  getOrganizerFormResponseDetailCallablePayloadSchema,
+  getOrganizerFormResponseDetailCallableResponseSchema,
+  getOrganizerFormAnalyticsCallablePayloadSchema,
+  getOrganizerFormAnalyticsCallableResponseSchema,
+  requestOrganizerFormExportCallablePayloadSchema,
+  requestOrganizerFormExportCallableResponseSchema,
+  createOrganizerFormAutomationCallablePayloadSchema,
+  createOrganizerFormAutomationCallableResponseSchema,
+  setOrganizerFormAutomationStateCallablePayloadSchema,
+  setOrganizerFormAutomationStateCallableResponseSchema,
+  listOrganizerFormAutomationRunsCallablePayloadSchema,
+  listOrganizerFormAutomationRunsCallableResponseSchema,
+  previewOrganizerFormConversionCallablePayloadSchema,
+  previewOrganizerFormConversionCallableResponseSchema,
+  convertOrganizerFormResponseCallablePayloadSchema,
+  convertOrganizerFormResponseCallableResponseSchema,
   publishOrganizerApplicationFormCallablePayloadSchema,
   getParticipantOrganizerApplicationFormCallablePayloadSchema,
   getParticipantOrganizerApplicationFormCallableResponseSchema,
@@ -978,6 +1116,58 @@ export const validateOrganizerApplicationFormVersionDocument:
   ValidateFunction<OrganizerApplicationFormVersionDocument> =
     ajv.compile(organizerApplicationFormVersionDocumentSchema) as
       ValidateFunction<OrganizerApplicationFormVersionDocument>;
+export const validateOrganizerFormDocument:
+  ValidateFunction<OrganizerFormDocument> =
+    ajv.compile(organizerFormDocumentSchema) as
+      ValidateFunction<OrganizerFormDocument>;
+export const validateOrganizerFormDraftDocument:
+  ValidateFunction<OrganizerFormDraftDocument> =
+    ajv.compile(organizerFormDraftDocumentSchema) as
+      ValidateFunction<OrganizerFormDraftDocument>;
+export const validateOrganizerFormVersionDocument:
+  ValidateFunction<OrganizerFormVersionDocument> =
+    ajv.compile(organizerFormVersionDocumentSchema) as
+      ValidateFunction<OrganizerFormVersionDocument>;
+export const validateOrganizerFormResponseDraftDocument:
+  ValidateFunction<OrganizerFormResponseDraftDocument> =
+    ajv.compile(organizerFormResponseDraftDocumentSchema) as
+      ValidateFunction<OrganizerFormResponseDraftDocument>;
+export const validateOrganizerFormResponseDocument:
+  ValidateFunction<OrganizerFormResponseDocument> =
+    ajv.compile(organizerFormResponseDocumentSchema) as
+      ValidateFunction<OrganizerFormResponseDocument>;
+export const validateOrganizerFormAssetDocument:
+  ValidateFunction<OrganizerFormAssetDocument> =
+    ajv.compile(organizerFormAssetDocumentSchema) as
+      ValidateFunction<OrganizerFormAssetDocument>;
+export const validateOrganizerFormAggregateDocument:
+  ValidateFunction<OrganizerFormAggregateDocument> =
+    ajv.compile(organizerFormAggregateDocumentSchema) as
+      ValidateFunction<OrganizerFormAggregateDocument>;
+export const validateOrganizerFormAggregateEventDocument:
+  ValidateFunction<OrganizerFormAggregateEventDocument> =
+    ajv.compile(organizerFormAggregateEventDocumentSchema) as
+      ValidateFunction<OrganizerFormAggregateEventDocument>;
+export const validateOrganizerFormExportDocument:
+  ValidateFunction<OrganizerFormExportDocument> =
+    ajv.compile(organizerFormExportDocumentSchema) as
+      ValidateFunction<OrganizerFormExportDocument>;
+export const validateOrganizerFormAutomationRuleDocument:
+  ValidateFunction<OrganizerFormAutomationRuleDocument> =
+    ajv.compile(organizerFormAutomationRuleDocumentSchema) as
+      ValidateFunction<OrganizerFormAutomationRuleDocument>;
+export const validateOrganizerFormAutomationRunDocument:
+  ValidateFunction<OrganizerFormAutomationRunDocument> =
+    ajv.compile(organizerFormAutomationRunDocumentSchema) as
+      ValidateFunction<OrganizerFormAutomationRunDocument>;
+export const validateOrganizerFormConversionReceiptDocument:
+  ValidateFunction<OrganizerFormConversionReceiptDocument> =
+    ajv.compile(organizerFormConversionReceiptDocumentSchema) as
+      ValidateFunction<OrganizerFormConversionReceiptDocument>;
+export const validateOrganizerFormShareLinkDocument:
+  ValidateFunction<OrganizerFormShareLinkDocument> =
+    ajv.compile(organizerFormShareLinkDocumentSchema) as
+      ValidateFunction<OrganizerFormShareLinkDocument>;
 export const validateOrganizerApplicationDocument:
   ValidateFunction<OrganizerApplicationDocument> =
     ajv.compile(organizerApplicationDocumentSchema) as
@@ -1922,6 +2112,230 @@ export const validateListOrganizerContactsCallablePayload:
   ValidateFunction<ListOrganizerContactsCallablePayload> =
     ajv.compile(listOrganizerContactsCallablePayloadSchema) as
       ValidateFunction<ListOrganizerContactsCallablePayload>;
+export const validateCreateOrganizerFormCallablePayload:
+  ValidateFunction<CreateOrganizerFormCallablePayload> =
+    ajv.compile(createOrganizerFormCallablePayloadSchema) as
+      ValidateFunction<CreateOrganizerFormCallablePayload>;
+export const validateCreateOrganizerFormCallableResponse:
+  ValidateFunction<CreateOrganizerFormCallableResponse> =
+    ajv.compile(createOrganizerFormCallableResponseSchema) as
+      ValidateFunction<CreateOrganizerFormCallableResponse>;
+export const validateUpdateOrganizerFormDraftCallablePayload:
+  ValidateFunction<UpdateOrganizerFormDraftCallablePayload> =
+    ajv.compile(updateOrganizerFormDraftCallablePayloadSchema) as
+      ValidateFunction<UpdateOrganizerFormDraftCallablePayload>;
+export const validateUpdateOrganizerFormDraftCallableResponse:
+  ValidateFunction<UpdateOrganizerFormDraftCallableResponse> =
+    ajv.compile(updateOrganizerFormDraftCallableResponseSchema) as
+      ValidateFunction<UpdateOrganizerFormDraftCallableResponse>;
+export const validateGetOrganizerFormEditorCallablePayload:
+  ValidateFunction<GetOrganizerFormEditorCallablePayload> =
+    ajv.compile(getOrganizerFormEditorCallablePayloadSchema) as
+      ValidateFunction<GetOrganizerFormEditorCallablePayload>;
+export const validateGetOrganizerFormEditorCallableResponse:
+  ValidateFunction<GetOrganizerFormEditorCallableResponse> =
+    ajv.compile(getOrganizerFormEditorCallableResponseSchema) as
+      ValidateFunction<GetOrganizerFormEditorCallableResponse>;
+export const validateListOrganizerFormsCallablePayload:
+  ValidateFunction<ListOrganizerFormsCallablePayload> =
+    ajv.compile(listOrganizerFormsCallablePayloadSchema) as
+      ValidateFunction<ListOrganizerFormsCallablePayload>;
+export const validateListOrganizerFormsCallableResponse:
+  ValidateFunction<ListOrganizerFormsCallableResponse> =
+    ajv.compile(listOrganizerFormsCallableResponseSchema) as
+      ValidateFunction<ListOrganizerFormsCallableResponse>;
+export const validateValidateOrganizerFormDraftCallablePayload:
+  ValidateFunction<ValidateOrganizerFormDraftCallablePayload> =
+    ajv.compile(validateOrganizerFormDraftCallablePayloadSchema) as
+      ValidateFunction<ValidateOrganizerFormDraftCallablePayload>;
+export const validateValidateOrganizerFormDraftCallableResponse:
+  ValidateFunction<ValidateOrganizerFormDraftCallableResponse> =
+    ajv.compile(validateOrganizerFormDraftCallableResponseSchema) as
+      ValidateFunction<ValidateOrganizerFormDraftCallableResponse>;
+export const validatePublishOrganizerFormCallablePayload:
+  ValidateFunction<PublishOrganizerFormCallablePayload> =
+    ajv.compile(publishOrganizerFormCallablePayloadSchema) as
+      ValidateFunction<PublishOrganizerFormCallablePayload>;
+export const validatePublishOrganizerFormCallableResponse:
+  ValidateFunction<PublishOrganizerFormCallableResponse> =
+    ajv.compile(publishOrganizerFormCallableResponseSchema) as
+      ValidateFunction<PublishOrganizerFormCallableResponse>;
+export const validateSetOrganizerFormLifecycleCallablePayload:
+  ValidateFunction<SetOrganizerFormLifecycleCallablePayload> =
+    ajv.compile(setOrganizerFormLifecycleCallablePayloadSchema) as
+      ValidateFunction<SetOrganizerFormLifecycleCallablePayload>;
+export const validateSetOrganizerFormLifecycleCallableResponse:
+  ValidateFunction<SetOrganizerFormLifecycleCallableResponse> =
+    ajv.compile(setOrganizerFormLifecycleCallableResponseSchema) as
+      ValidateFunction<SetOrganizerFormLifecycleCallableResponse>;
+export const validateDuplicateOrganizerFormCallablePayload:
+  ValidateFunction<DuplicateOrganizerFormCallablePayload> =
+    ajv.compile(duplicateOrganizerFormCallablePayloadSchema) as
+      ValidateFunction<DuplicateOrganizerFormCallablePayload>;
+export const validateDuplicateOrganizerFormCallableResponse:
+  ValidateFunction<DuplicateOrganizerFormCallableResponse> =
+    ajv.compile(duplicateOrganizerFormCallableResponseSchema) as
+      ValidateFunction<DuplicateOrganizerFormCallableResponse>;
+export const validateDeleteOrganizerFormDraftCallablePayload:
+  ValidateFunction<DeleteOrganizerFormDraftCallablePayload> =
+    ajv.compile(deleteOrganizerFormDraftCallablePayloadSchema) as
+      ValidateFunction<DeleteOrganizerFormDraftCallablePayload>;
+export const validateDeleteOrganizerFormDraftCallableResponse:
+  ValidateFunction<DeleteOrganizerFormDraftCallableResponse> =
+    ajv.compile(deleteOrganizerFormDraftCallableResponseSchema) as
+      ValidateFunction<DeleteOrganizerFormDraftCallableResponse>;
+export const validateListOrganizerFormTemplatesCallablePayload:
+  ValidateFunction<ListOrganizerFormTemplatesCallablePayload> =
+    ajv.compile(listOrganizerFormTemplatesCallablePayloadSchema) as
+      ValidateFunction<ListOrganizerFormTemplatesCallablePayload>;
+export const validateListOrganizerFormTemplatesCallableResponse:
+  ValidateFunction<ListOrganizerFormTemplatesCallableResponse> =
+    ajv.compile(listOrganizerFormTemplatesCallableResponseSchema) as
+      ValidateFunction<ListOrganizerFormTemplatesCallableResponse>;
+export const validateGetPublicOrganizerFormCallablePayload:
+  ValidateFunction<GetPublicOrganizerFormCallablePayload> =
+    ajv.compile(getPublicOrganizerFormCallablePayloadSchema) as
+      ValidateFunction<GetPublicOrganizerFormCallablePayload>;
+export const validateGetPublicOrganizerFormCallableResponse:
+  ValidateFunction<GetPublicOrganizerFormCallableResponse> =
+    ajv.compile(getPublicOrganizerFormCallableResponseSchema) as
+      ValidateFunction<GetPublicOrganizerFormCallableResponse>;
+export const validateBeginOrganizerFormResponseCallablePayload:
+  ValidateFunction<BeginOrganizerFormResponseCallablePayload> =
+    ajv.compile(beginOrganizerFormResponseCallablePayloadSchema) as
+      ValidateFunction<BeginOrganizerFormResponseCallablePayload>;
+export const validateBeginOrganizerFormResponseCallableResponse:
+  ValidateFunction<BeginOrganizerFormResponseCallableResponse> =
+    ajv.compile(beginOrganizerFormResponseCallableResponseSchema) as
+      ValidateFunction<BeginOrganizerFormResponseCallableResponse>;
+export const validateSaveOrganizerFormResponseDraftCallablePayload:
+  ValidateFunction<SaveOrganizerFormResponseDraftCallablePayload> =
+    ajv.compile(saveOrganizerFormResponseDraftCallablePayloadSchema) as
+      ValidateFunction<SaveOrganizerFormResponseDraftCallablePayload>;
+export const validateSaveOrganizerFormResponseDraftCallableResponse:
+  ValidateFunction<SaveOrganizerFormResponseDraftCallableResponse> =
+    ajv.compile(saveOrganizerFormResponseDraftCallableResponseSchema) as
+      ValidateFunction<SaveOrganizerFormResponseDraftCallableResponse>;
+export const validateCreateOrganizerFormAssetIntentCallablePayload:
+  ValidateFunction<CreateOrganizerFormAssetIntentCallablePayload> =
+    ajv.compile(createOrganizerFormAssetIntentCallablePayloadSchema) as
+      ValidateFunction<CreateOrganizerFormAssetIntentCallablePayload>;
+export const validateCreateOrganizerFormAssetIntentCallableResponse:
+  ValidateFunction<CreateOrganizerFormAssetIntentCallableResponse> =
+    ajv.compile(createOrganizerFormAssetIntentCallableResponseSchema) as
+      ValidateFunction<CreateOrganizerFormAssetIntentCallableResponse>;
+export const validateFinalizeOrganizerFormAssetCallablePayload:
+  ValidateFunction<FinalizeOrganizerFormAssetCallablePayload> =
+    ajv.compile(finalizeOrganizerFormAssetCallablePayloadSchema) as
+      ValidateFunction<FinalizeOrganizerFormAssetCallablePayload>;
+export const validateFinalizeOrganizerFormAssetCallableResponse:
+  ValidateFunction<FinalizeOrganizerFormAssetCallableResponse> =
+    ajv.compile(finalizeOrganizerFormAssetCallableResponseSchema) as
+      ValidateFunction<FinalizeOrganizerFormAssetCallableResponse>;
+export const validateSubmitOrganizerFormResponseCallablePayload:
+  ValidateFunction<SubmitOrganizerFormResponseCallablePayload> =
+    ajv.compile(submitOrganizerFormResponseCallablePayloadSchema) as
+      ValidateFunction<SubmitOrganizerFormResponseCallablePayload>;
+export const validateSubmitOrganizerFormResponseCallableResponse:
+  ValidateFunction<SubmitOrganizerFormResponseCallableResponse> =
+    ajv.compile(submitOrganizerFormResponseCallableResponseSchema) as
+      ValidateFunction<SubmitOrganizerFormResponseCallableResponse>;
+export const validateWithdrawOrganizerFormResponseCallablePayload:
+  ValidateFunction<WithdrawOrganizerFormResponseCallablePayload> =
+    ajv.compile(withdrawOrganizerFormResponseCallablePayloadSchema) as
+      ValidateFunction<WithdrawOrganizerFormResponseCallablePayload>;
+export const validateWithdrawOrganizerFormResponseCallableResponse:
+  ValidateFunction<WithdrawOrganizerFormResponseCallableResponse> =
+    ajv.compile(withdrawOrganizerFormResponseCallableResponseSchema) as
+      ValidateFunction<WithdrawOrganizerFormResponseCallableResponse>;
+export const validateCreateOrganizerFormShareLinkCallablePayload:
+  ValidateFunction<CreateOrganizerFormShareLinkCallablePayload> =
+    ajv.compile(createOrganizerFormShareLinkCallablePayloadSchema) as
+      ValidateFunction<CreateOrganizerFormShareLinkCallablePayload>;
+export const validateCreateOrganizerFormShareLinkCallableResponse:
+  ValidateFunction<CreateOrganizerFormShareLinkCallableResponse> =
+    ajv.compile(createOrganizerFormShareLinkCallableResponseSchema) as
+      ValidateFunction<CreateOrganizerFormShareLinkCallableResponse>;
+export const validateGetOrganizerFormShareAssetsCallablePayload:
+  ValidateFunction<GetOrganizerFormShareAssetsCallablePayload> =
+    ajv.compile(getOrganizerFormShareAssetsCallablePayloadSchema) as
+      ValidateFunction<GetOrganizerFormShareAssetsCallablePayload>;
+export const validateGetOrganizerFormShareAssetsCallableResponse:
+  ValidateFunction<GetOrganizerFormShareAssetsCallableResponse> =
+    ajv.compile(getOrganizerFormShareAssetsCallableResponseSchema) as
+      ValidateFunction<GetOrganizerFormShareAssetsCallableResponse>;
+export const validateListOrganizerFormResponsesCallablePayload:
+  ValidateFunction<ListOrganizerFormResponsesCallablePayload> =
+    ajv.compile(listOrganizerFormResponsesCallablePayloadSchema) as
+      ValidateFunction<ListOrganizerFormResponsesCallablePayload>;
+export const validateListOrganizerFormResponsesCallableResponse:
+  ValidateFunction<ListOrganizerFormResponsesCallableResponse> =
+    ajv.compile(listOrganizerFormResponsesCallableResponseSchema) as
+      ValidateFunction<ListOrganizerFormResponsesCallableResponse>;
+export const validateGetOrganizerFormResponseDetailCallablePayload:
+  ValidateFunction<GetOrganizerFormResponseDetailCallablePayload> =
+    ajv.compile(getOrganizerFormResponseDetailCallablePayloadSchema) as
+      ValidateFunction<GetOrganizerFormResponseDetailCallablePayload>;
+export const validateGetOrganizerFormResponseDetailCallableResponse:
+  ValidateFunction<GetOrganizerFormResponseDetailCallableResponse> =
+    ajv.compile(getOrganizerFormResponseDetailCallableResponseSchema) as
+      ValidateFunction<GetOrganizerFormResponseDetailCallableResponse>;
+export const validateGetOrganizerFormAnalyticsCallablePayload:
+  ValidateFunction<GetOrganizerFormAnalyticsCallablePayload> =
+    ajv.compile(getOrganizerFormAnalyticsCallablePayloadSchema) as
+      ValidateFunction<GetOrganizerFormAnalyticsCallablePayload>;
+export const validateGetOrganizerFormAnalyticsCallableResponse:
+  ValidateFunction<GetOrganizerFormAnalyticsCallableResponse> =
+    ajv.compile(getOrganizerFormAnalyticsCallableResponseSchema) as
+      ValidateFunction<GetOrganizerFormAnalyticsCallableResponse>;
+export const validateRequestOrganizerFormExportCallablePayload:
+  ValidateFunction<RequestOrganizerFormExportCallablePayload> =
+    ajv.compile(requestOrganizerFormExportCallablePayloadSchema) as
+      ValidateFunction<RequestOrganizerFormExportCallablePayload>;
+export const validateRequestOrganizerFormExportCallableResponse:
+  ValidateFunction<RequestOrganizerFormExportCallableResponse> =
+    ajv.compile(requestOrganizerFormExportCallableResponseSchema) as
+      ValidateFunction<RequestOrganizerFormExportCallableResponse>;
+export const validateCreateOrganizerFormAutomationCallablePayload:
+  ValidateFunction<CreateOrganizerFormAutomationCallablePayload> =
+    ajv.compile(createOrganizerFormAutomationCallablePayloadSchema) as
+      ValidateFunction<CreateOrganizerFormAutomationCallablePayload>;
+export const validateCreateOrganizerFormAutomationCallableResponse:
+  ValidateFunction<CreateOrganizerFormAutomationCallableResponse> =
+    ajv.compile(createOrganizerFormAutomationCallableResponseSchema) as
+      ValidateFunction<CreateOrganizerFormAutomationCallableResponse>;
+export const validateSetOrganizerFormAutomationStateCallablePayload:
+  ValidateFunction<SetOrganizerFormAutomationStateCallablePayload> =
+    ajv.compile(setOrganizerFormAutomationStateCallablePayloadSchema) as
+      ValidateFunction<SetOrganizerFormAutomationStateCallablePayload>;
+export const validateSetOrganizerFormAutomationStateCallableResponse:
+  ValidateFunction<SetOrganizerFormAutomationStateCallableResponse> =
+    ajv.compile(setOrganizerFormAutomationStateCallableResponseSchema) as
+      ValidateFunction<SetOrganizerFormAutomationStateCallableResponse>;
+export const validateListOrganizerFormAutomationRunsCallablePayload:
+  ValidateFunction<ListOrganizerFormAutomationRunsCallablePayload> =
+    ajv.compile(listOrganizerFormAutomationRunsCallablePayloadSchema) as
+      ValidateFunction<ListOrganizerFormAutomationRunsCallablePayload>;
+export const validateListOrganizerFormAutomationRunsCallableResponse:
+  ValidateFunction<ListOrganizerFormAutomationRunsCallableResponse> =
+    ajv.compile(listOrganizerFormAutomationRunsCallableResponseSchema) as
+      ValidateFunction<ListOrganizerFormAutomationRunsCallableResponse>;
+export const validatePreviewOrganizerFormConversionCallablePayload:
+  ValidateFunction<PreviewOrganizerFormConversionCallablePayload> =
+    ajv.compile(previewOrganizerFormConversionCallablePayloadSchema) as
+      ValidateFunction<PreviewOrganizerFormConversionCallablePayload>;
+export const validatePreviewOrganizerFormConversionCallableResponse:
+  ValidateFunction<PreviewOrganizerFormConversionCallableResponse> =
+    ajv.compile(previewOrganizerFormConversionCallableResponseSchema) as
+      ValidateFunction<PreviewOrganizerFormConversionCallableResponse>;
+export const validateConvertOrganizerFormResponseCallablePayload:
+  ValidateFunction<ConvertOrganizerFormResponseCallablePayload> =
+    ajv.compile(convertOrganizerFormResponseCallablePayloadSchema) as
+      ValidateFunction<ConvertOrganizerFormResponseCallablePayload>;
+export const validateConvertOrganizerFormResponseCallableResponse:
+  ValidateFunction<ConvertOrganizerFormResponseCallableResponse> =
+    ajv.compile(convertOrganizerFormResponseCallableResponseSchema) as
+      ValidateFunction<ConvertOrganizerFormResponseCallableResponse>;
 export const validatePublishOrganizerApplicationFormCallablePayload:
   ValidateFunction<PublishOrganizerApplicationFormCallablePayload> =
     ajv.compile(publishOrganizerApplicationFormCallablePayloadSchema) as

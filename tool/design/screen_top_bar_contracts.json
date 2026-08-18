@@ -52,6 +52,14 @@
       ]
     },
     {
+      "branchKey": "keys.hostForms",
+      "routeName": "Routes.hostFormsScreen.name",
+      "surfaces": [
+        {"path": "lib/hosts/presentation/forms/host_forms_screen.dart", "symbol": "_HostFormsScreenState", "owner": "CatchScreenHeaderTitle.block"},
+        {"path": "lib/hosts/presentation/forms/host_forms_screen.dart", "symbol": "HostFormsNoOrganizer", "owner": "CatchScreenHeaderTitle.block"}
+      ]
+    },
+    {
       "branchKey": "keys.hostInbox",
       "routeName": "Routes.hostInboxScreen.name",
       "surfaces": [
@@ -151,6 +159,62 @@
       "surface": "CatchRouteScaffold",
       "leading": "back",
       "occurrences": 2
+    },
+    {
+      "path": "lib/hosts/presentation/forms/host_form_analytics_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
+      "leading": "back"
+    },
+    {
+      "path": "lib/hosts/presentation/forms/host_form_automations_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
+      "leading": "back"
+    },
+    {
+      "path": "lib/hosts/presentation/forms/host_form_builder_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
+      "leading": "back"
+    },
+    {
+      "path": "lib/hosts/presentation/forms/host_form_preview_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
+      "leading": "back"
+    },
+    {
+      "path": "lib/hosts/presentation/forms/host_form_response_detail_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
+      "leading": "back"
+    },
+    {
+      "path": "lib/hosts/presentation/forms/host_form_share_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
+      "leading": "back"
+    },
+    {
+      "path": "lib/hosts/presentation/forms/host_form_templates_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
+      "leading": "back"
     },
     {
       "path": "lib/hosts/presentation/applications/host_application_detail_screen.dart",

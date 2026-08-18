@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_organizer_form_automation_runs_response.schema.json",
+  "title": "ListOrganizerFormAutomationRunsCallableResponse",
+  "description": "Form automation definitions and bounded observable run history.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["rules", "runs", "nextCursor"],
+  "properties": {
+    "rules": {"type": "array", "maxItems": 100, "items": {"$ref": "../shared/organizer_form_operations_common.schema.json#/definitions/automationRuleProjection"}},
+    "runs": {"type": "array", "maxItems": 100, "items": {"$ref": "../shared/organizer_form_operations_common.schema.json#/definitions/automationRunProjection"}},
+    "nextCursor": {"type": ["string", "null"], "maxLength": 1000}
+  }
+}

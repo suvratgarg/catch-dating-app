@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/create_organizer_form_share_link_response.schema.json",
+  "title": "CreateOrganizerFormShareLinkCallableResponse",
+  "description": "Source-attributed public form URL.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["linkId", "label", "source", "url", "sourceToken"],
+  "properties": {
+    "linkId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "label": {"type": "string", "minLength": 1, "maxLength": 120},
+    "source": {"type": ["string", "null"], "maxLength": 120},
+    "url": {"type": "string", "format": "uri", "maxLength": 2000},
+    "sourceToken": {"type": "string", "pattern": "^[A-Za-z0-9_-]{20,160}$"}
+  }
+}

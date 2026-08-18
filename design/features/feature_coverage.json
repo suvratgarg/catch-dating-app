@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_coverage.schema.json",
   "version": 1,
-  "updated": "2026-08-13",
+  "updated": "2026-08-18",
   "owner": "product_design_parity",
   "sourceOfTruth": "Exhaustive migration ledger for feature orchestration contracts across registered Flutter screens, marketing routes, and admin route components. A planned entry names its intended shared feature identity; grouped entries are secondary route projections, not independent features.",
   "authorities": [
@@ -352,6 +352,15 @@
       "priority": "P1",
       "reason": "The no-download attendee runtime is a public-web projection of Event Success with phone OTP, roster claim or approval, event-scoped intake, verified check-in, live modules, and private feedback.",
       "featureContract": "feature.event_success"
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "public_form",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "The app-free public Forms runtime is implemented across React, Functions, and Host Flutter; its cross-surface orchestration contract awaits deterministic response and Host-workspace capture evidence.",
+      "targetFeature": "feature.host_forms",
+      "debtId": "FEATURE-HOST-FORMS-001"
     },
     {
       "authority": "marketing_routes",

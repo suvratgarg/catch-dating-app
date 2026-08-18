@@ -4,13 +4,13 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "d784448493b9c7ac455402d678b1a3019af586d99bcb2abf4c97ea8d5bb69b39",
-    "routeContractSha256": "7f712d6935162580464473c24a90fed817568508e3fa20bc0db1341c382a5a68",
-    "goRouteCount": 57,
-    "shellBranchCount": 8,
-    "enumRouteCount": 56,
-    "referencedRouteCount": 56,
-    "runtimeRouteCount": 56,
+    "normalizedFileSha256": "497629eb97cfbdfadd5f6a8a55fa2042d94ebb02fb5d2c333785284c167fb0ab",
+    "routeContractSha256": "2c1fd4cf6ace42f7c566fc0f733b414291e2658612cacf34baaf6cd1188afe39",
+    "goRouteCount": 65,
+    "shellBranchCount": 9,
+    "enumRouteCount": 64,
+    "referencedRouteCount": 64,
+    "runtimeRouteCount": 64,
     "routeHelperCount": 2,
     "routeHelpers": [
       "_hostUtilityRoutes",
@@ -456,6 +456,114 @@
       "referencedByGoRouter": true
     },
     {
+      "id": "hostFormsScreen",
+      "path": "/host/forms",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "runtimePath": "/host/forms",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostFormsScreen.path",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostFormTemplatesScreen",
+      "path": "/host/forms/new",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "runtimePath": "/host/forms/new",
+      "runtimeParentId": "hostFormsScreen",
+      "runtimePathExpression": "'new'",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostFormResponseDetailScreen",
+      "path": "/host/forms/responses/:responseId",
+      "pathParameters": [
+        "responseId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/forms/responses/:responseId",
+      "runtimeParentId": "hostFormsScreen",
+      "runtimePathExpression": "'responses/:responseId'",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostFormBuilderScreen",
+      "path": "/host/forms/:formId",
+      "pathParameters": [
+        "formId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/forms/:formId",
+      "runtimeParentId": "hostFormsScreen",
+      "runtimePathExpression": "':formId'",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostFormPreviewScreen",
+      "path": "/host/forms/:formId/preview",
+      "pathParameters": [
+        "formId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/forms/:formId/preview",
+      "runtimeParentId": "hostFormsScreen",
+      "runtimePathExpression": "':formId/preview'",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostFormShareScreen",
+      "path": "/host/forms/:formId/share",
+      "pathParameters": [
+        "formId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/forms/:formId/share",
+      "runtimeParentId": "hostFormsScreen",
+      "runtimePathExpression": "':formId/share'",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostFormAnalyticsScreen",
+      "path": "/host/forms/:formId/analytics",
+      "pathParameters": [
+        "formId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/forms/:formId/analytics",
+      "runtimeParentId": "hostFormsScreen",
+      "runtimePathExpression": "':formId/analytics'",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostFormAutomationsScreen",
+      "path": "/host/forms/:formId/automations",
+      "pathParameters": [
+        "formId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/forms/:formId/automations",
+      "runtimeParentId": "hostFormsScreen",
+      "runtimePathExpression": "':formId/automations'",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
       "id": "hostApplicationsScreen",
       "path": "/host/customers/applications",
       "pathParameters": [],
@@ -787,6 +895,14 @@
     "hostCustomersScreen",
     "hostEditClubScreen",
     "hostEventsScreen",
+    "hostFormAnalyticsScreen",
+    "hostFormAutomationsScreen",
+    "hostFormBuilderScreen",
+    "hostFormPreviewScreen",
+    "hostFormResponseDetailScreen",
+    "hostFormShareScreen",
+    "hostFormsScreen",
+    "hostFormTemplatesScreen",
     "hostHomeScreen",
     "hostInboxScreen",
     "hostOperatorEventScreen",

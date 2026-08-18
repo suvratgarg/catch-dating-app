@@ -6,6 +6,7 @@ export type MarketingRouteId =
   | "event_detail"
   | "event_runtime"
   | "event_invite"
+  | "public_form"
   | "claim"
   | "claim_lookup"
   | "privacy"
@@ -26,6 +27,7 @@ export const marketingRouteDefinitions = [
   {id: "event_detail", path: "/events/:eventId"},
   {id: "event_runtime", path: "/join/:publicRuntimeId"},
   {id: "event_invite", path: "/invite/:inviteToken"},
+  {id: "public_form", path: "/f/:publicFormId"},
   {id: "claim", path: "/claim"},
   {id: "claim_lookup", path: "/claim/:listing"},
   {id: "privacy", path: "/privacy/*"},

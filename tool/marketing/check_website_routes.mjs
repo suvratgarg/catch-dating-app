@@ -149,6 +149,7 @@ function validateRoutes(routes, storyDeclarations) {
     "host",
     "event_runtime",
     "event_invite",
+    "public_form",
     "organizer_search",
     "claim",
     "privacy",
@@ -280,6 +281,7 @@ function validatePageKey(route) {
     "event_detail",
     "event_runtime",
     "event_invite",
+    "public_form",
     "claim",
     "privacy",
     "terms",
@@ -864,6 +866,7 @@ export const OrganizerSearch = {
       [
         "home",
         "host",
+        "public_form",
         "event_runtime",
         "event_invite",
         "organizers",

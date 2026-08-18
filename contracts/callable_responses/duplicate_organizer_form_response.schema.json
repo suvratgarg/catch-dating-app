@@ -1,0 +1,7 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/duplicate_organizer_form_response.schema.json",
+  "title": "DuplicateOrganizerFormCallableResponse",
+  "description": "New or idempotently reused duplicated organizer form editor state.",
+  "allOf": [{"$ref": "../shared/organizer_form_api_common.schema.json#/definitions/formEditor"}]
+}

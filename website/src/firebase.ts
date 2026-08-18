@@ -7,6 +7,10 @@ import type {CheckInEventRuntimeCallableResponse} from "../../functions/src/shar
 import type {ClaimEventRuntimeAccessCallablePayload} from "../../functions/src/shared/generated/claimEventRuntimeAccessCallablePayload";
 import type {ClaimEventRuntimeAccessCallableResponse} from "../../functions/src/shared/generated/claimEventRuntimeAccessCallableResponse";
 import type {CompleteEventSuccessFirstHelloMissionCallablePayload} from "../../functions/src/shared/generated/completeEventSuccessFirstHelloMissionCallablePayload";
+import type {BeginOrganizerFormResponseCallablePayload} from "../../functions/src/shared/generated/beginOrganizerFormResponseCallablePayload";
+import type {BeginOrganizerFormResponseCallableResponse} from "../../functions/src/shared/generated/beginOrganizerFormResponseCallableResponse";
+import type {CreateOrganizerFormAssetIntentCallablePayload} from "../../functions/src/shared/generated/createOrganizerFormAssetIntentCallablePayload";
+import type {CreateOrganizerFormAssetIntentCallableResponse} from "../../functions/src/shared/generated/createOrganizerFormAssetIntentCallableResponse";
 import type {CreateEventInviteLinkCallablePayload} from "../../functions/src/shared/generated/createEventInviteLinkCallablePayload";
 import type {CreatePublicOrganizerReviewCallablePayload} from "../../functions/src/shared/generated/createPublicOrganizerReviewCallablePayload";
 import type {CreatePublicOrganizerReviewCallableResponse} from "../../functions/src/shared/generated/createPublicOrganizerReviewCallableResponse";
@@ -31,6 +35,10 @@ import type {EventIdCallablePayload} from "../../functions/src/shared/generated/
 import type {FetchEventSuccessWingmanCandidatesCallableResponse} from "../../functions/src/shared/generated/fetchEventSuccessWingmanCandidatesCallableResponse";
 import type {GetEventRuntimeBootstrapCallablePayload} from "../../functions/src/shared/generated/getEventRuntimeBootstrapCallablePayload";
 import type {GetEventRuntimeBootstrapCallableResponse} from "../../functions/src/shared/generated/getEventRuntimeBootstrapCallableResponse";
+import type {GetPublicOrganizerFormCallablePayload} from "../../functions/src/shared/generated/getPublicOrganizerFormCallablePayload";
+import type {GetPublicOrganizerFormCallableResponse} from "../../functions/src/shared/generated/getPublicOrganizerFormCallableResponse";
+import type {FinalizeOrganizerFormAssetCallablePayload} from "../../functions/src/shared/generated/finalizeOrganizerFormAssetCallablePayload";
+import type {FinalizeOrganizerFormAssetCallableResponse} from "../../functions/src/shared/generated/finalizeOrganizerFormAssetCallableResponse";
 import type {GetEventSuccessConversationGraphCallableResponse} from "../../functions/src/shared/generated/getEventSuccessConversationGraphCallableResponse";
 import type {HeartbeatEventSuccessPresenceCallableResponse} from "../../functions/src/shared/generated/heartbeatEventSuccessPresenceCallableResponse";
 import type {ListPublicOrganizerReviewsCallablePayload} from "../../functions/src/shared/generated/listPublicOrganizerReviewsCallablePayload";
@@ -43,6 +51,8 @@ import type {RegisterPublicEventCallablePayload} from "../../functions/src/share
 import type {RegisterPublicEventCallableResponse} from "../../functions/src/shared/generated/registerPublicEventCallableResponse";
 import type {ResolveEventInviteLandingCallablePayload} from "../../functions/src/shared/generated/resolveEventInviteLandingCallablePayload";
 import type {ResolveEventInviteLandingCallableResponse} from "../../functions/src/shared/generated/resolveEventInviteLandingCallableResponse";
+import type {SaveOrganizerFormResponseDraftCallablePayload} from "../../functions/src/shared/generated/saveOrganizerFormResponseDraftCallablePayload";
+import type {SaveOrganizerFormResponseDraftCallableResponse} from "../../functions/src/shared/generated/saveOrganizerFormResponseDraftCallableResponse";
 import type {RequestOrganizerClaimCallablePayload} from "../../functions/src/shared/generated/requestOrganizerClaimCallablePayload";
 import type {RequestOrganizerClaimCallableResponse} from "../../functions/src/shared/generated/requestOrganizerClaimCallableResponse";
 import type {StartEventSuccessFirstHelloMissionCallablePayload} from "../../functions/src/shared/generated/startEventSuccessFirstHelloMissionCallablePayload";
@@ -51,6 +61,10 @@ import type {SubmitEventRuntimeProfileCallableResponse} from "../../functions/sr
 import type {SubmitEventSuccessConversationGraphCallablePayload} from "../../functions/src/shared/generated/submitEventSuccessConversationGraphCallablePayload";
 import type {SubmitEventSuccessConversationGraphCallableResponse} from "../../functions/src/shared/generated/submitEventSuccessConversationGraphCallableResponse";
 import type {SubmitEventSuccessWingmanRequestCallablePayload} from "../../functions/src/shared/generated/submitEventSuccessWingmanRequestCallablePayload";
+import type {SubmitOrganizerFormResponseCallablePayload} from "../../functions/src/shared/generated/submitOrganizerFormResponseCallablePayload";
+import type {SubmitOrganizerFormResponseCallableResponse} from "../../functions/src/shared/generated/submitOrganizerFormResponseCallableResponse";
+import type {WithdrawOrganizerFormResponseCallablePayload} from "../../functions/src/shared/generated/withdrawOrganizerFormResponseCallablePayload";
+import type {WithdrawOrganizerFormResponseCallableResponse} from "../../functions/src/shared/generated/withdrawOrganizerFormResponseCallableResponse";
 import {
   appCheckSiteKey,
   claimFirebaseConfigured,
@@ -58,6 +72,7 @@ import {
   firebaseConfig as config,
   publicAnalyticsFirebaseConfigured,
   publicEventRegistrationFirebaseConfigured,
+  publicFormsFirebaseConfigured,
   publicReviewsFirebaseConfigured,
 } from "./firebaseConfig";
 
@@ -87,6 +102,13 @@ export type EventRuntimeBootstrap = GetEventRuntimeBootstrapCallableResponse;
 export type EventSuccessConversationGraph =
   GetEventSuccessConversationGraphCallableResponse;
 export type EventInviteLanding = ResolveEventInviteLandingCallableResponse;
+export type PublicOrganizerForm = GetPublicOrganizerFormCallableResponse;
+export type PublicOrganizerFormDraft =
+  BeginOrganizerFormResponseCallableResponse;
+export type PublicOrganizerFormReceipt =
+  SubmitOrganizerFormResponseCallableResponse;
+export type PublicOrganizerFormAssetIntent =
+  CreateOrganizerFormAssetIntentCallableResponse;
 
 export interface PublicEventPhoneVerification {
   clear: () => void;
@@ -141,6 +163,131 @@ export function watchClaimAuthState(
 }
 
 export const watchEventRuntimeAuthState = watchClaimAuthState;
+export const watchPublicFormAuthState = watchClaimAuthState;
+
+export async function getPublicOrganizerForm(
+  payload: GetPublicOrganizerFormCallablePayload
+): Promise<GetPublicOrganizerFormCallableResponse> {
+  return invokeWebsiteCallable(
+    "getPublicOrganizerForm",
+    payload,
+    publicFormsFirebaseConfigured,
+    "Public forms"
+  );
+}
+
+export async function beginOrganizerFormResponse(
+  payload: BeginOrganizerFormResponseCallablePayload
+): Promise<BeginOrganizerFormResponseCallableResponse> {
+  return invokeWebsiteCallable(
+    "beginOrganizerFormResponse",
+    payload,
+    publicFormsFirebaseConfigured,
+    "Public forms"
+  );
+}
+
+export async function saveOrganizerFormResponseDraft(
+  payload: SaveOrganizerFormResponseDraftCallablePayload
+): Promise<SaveOrganizerFormResponseDraftCallableResponse> {
+  return invokeWebsiteCallable(
+    "saveOrganizerFormResponseDraft",
+    payload,
+    publicFormsFirebaseConfigured,
+    "Public forms"
+  );
+}
+
+export async function createOrganizerFormAssetIntent(
+  payload: CreateOrganizerFormAssetIntentCallablePayload
+): Promise<CreateOrganizerFormAssetIntentCallableResponse> {
+  return invokeWebsiteCallable(
+    "createOrganizerFormAssetIntent",
+    payload,
+    publicFormsFirebaseConfigured,
+    "Public forms"
+  );
+}
+
+export async function uploadOrganizerFormAsset(
+  intent: CreateOrganizerFormAssetIntentCallableResponse,
+  file: Blob
+): Promise<void> {
+  const body = new FormData();
+  for (const [key, value] of Object.entries(intent.uploadFields)) {
+    body.append(key, value);
+  }
+  body.append("file", file);
+  const response = await fetch(intent.uploadUrl, {method: "POST", body});
+  if (!response.ok) {
+    throw new Error("The secure file upload failed. Please try again.");
+  }
+}
+
+export async function finalizeOrganizerFormAsset(
+  payload: FinalizeOrganizerFormAssetCallablePayload
+): Promise<FinalizeOrganizerFormAssetCallableResponse> {
+  return invokeWebsiteCallable(
+    "finalizeOrganizerFormAsset",
+    payload,
+    publicFormsFirebaseConfigured,
+    "Public forms"
+  );
+}
+
+export async function submitOrganizerFormResponse(
+  payload: SubmitOrganizerFormResponseCallablePayload
+): Promise<SubmitOrganizerFormResponseCallableResponse> {
+  return invokeWebsiteCallable(
+    "submitOrganizerFormResponse",
+    payload,
+    publicFormsFirebaseConfigured,
+    "Public forms"
+  );
+}
+
+export async function withdrawOrganizerFormResponse(
+  payload: WithdrawOrganizerFormResponseCallablePayload
+): Promise<WithdrawOrganizerFormResponseCallableResponse> {
+  return invokeWebsiteCallable(
+    "withdrawOrganizerFormResponse",
+    payload,
+    publicFormsFirebaseConfigured,
+    "Public forms"
+  );
+}
+
+export async function sendPublicFormEmailSignInLink(
+  email: string,
+  returnUrl: string
+): Promise<void> {
+  const runtime = await getFirebaseRuntime();
+  if (!runtime || !publicFormsFirebaseConfigured) {
+    throw new Error("Public forms are not configured for this build.");
+  }
+  const {sendSignInLinkToEmail} = await import("firebase/auth");
+  await sendSignInLinkToEmail(runtime.auth, email, {
+    url: returnUrl,
+    handleCodeInApp: true,
+  });
+}
+
+export async function completePublicFormEmailSignIn(
+  email: string,
+  emailLink: string
+): Promise<User> {
+  const runtime = await getFirebaseRuntime();
+  if (!runtime || !publicFormsFirebaseConfigured) {
+    throw new Error("Public forms are not configured for this build.");
+  }
+  const {isSignInWithEmailLink, signInWithEmailLink} = await import(
+    "firebase/auth"
+  );
+  if (!isSignInWithEmailLink(runtime.auth, emailLink)) {
+    throw new Error("This email verification link is invalid or expired.");
+  }
+  return (await signInWithEmailLink(runtime.auth, email, emailLink)).user;
+}
 
 export interface EventRuntimeMission {
   observerUid: string;
@@ -668,8 +815,10 @@ export async function beginPublicEventPhoneVerification(
   recaptchaContainerId: string
 ): Promise<PublicEventPhoneVerification> {
   const runtime = await getFirebaseRuntime();
-  if (!runtime || !publicEventRegistrationFirebaseConfigured) {
-    throw new Error("Website event registration is not configured for this build.");
+  if (!runtime || !(
+    publicEventRegistrationFirebaseConfigured || publicFormsFirebaseConfigured
+  )) {
+    throw new Error("Website phone verification is not configured for this build.");
   }
   const {RecaptchaVerifier, signInWithPhoneNumber} = await import("firebase/auth");
   const verifier = new RecaptchaVerifier(
@@ -765,11 +914,12 @@ async function loadFirebaseRuntime(): Promise<FirebaseRuntime | null> {
 async function invokeWebsiteCallable<Request, Response>(
   name: string,
   payload: Request,
-  configured: boolean
+  configured: boolean,
+  capabilityLabel = "Event runtime"
 ): Promise<Response> {
   const runtime = await getFirebaseRuntime();
   if (!runtime || !configured) {
-    throw new Error("Event runtime is not configured for this build.");
+    throw new Error(`${capabilityLabel} are not configured for this build.`);
   }
   const {httpsCallable} = await import("firebase/functions");
   const callable = httpsCallable<Request, Response>(runtime.functions, name);

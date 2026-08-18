@@ -1,0 +1,93 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/organizer_form_response_common.schema.json",
+  "title": "Organizer form respondent contract definitions",
+  "description": "Version-bound response draft, submitted answer, public projection, and receipt definitions.",
+  "definitions": {
+    "answerValue": {
+      "anyOf": [
+        {"type": "string", "maxLength": 10000},
+        {"type": "number", "minimum": -1000000000, "maximum": 1000000000},
+        {"type": "boolean"},
+        {"type": "null"},
+        {"type": "array", "maxItems": 100, "uniqueItems": true, "items": {"type": "string", "maxLength": 500}}
+      ]
+    },
+    "answerMap": {
+      "type": "object",
+      "maxProperties": 4000,
+      "propertyNames": {"$ref": "event_common.schema.json#/definitions/documentId"},
+      "additionalProperties": {"$ref": "#/definitions/answerValue"}
+    },
+    "responseIdentityKind": {
+      "type": "string",
+      "enum": ["anonymous", "emailVerified", "phoneVerified", "catchAccount"]
+    },
+    "draftStatus": {
+      "type": "string",
+      "enum": ["active", "submitted", "expired", "withdrawn"]
+    },
+    "responseStatus": {
+      "type": "string",
+      "enum": ["submitted", "withdrawn"]
+    },
+    "publicAvailabilityStatus": {
+      "type": "string",
+      "enum": ["active", "notOpen", "closed", "paused", "archived", "unavailable", "full"]
+    },
+    "organizerPresentation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["organizerId", "name", "logoUrl"],
+      "properties": {
+        "organizerId": {"$ref": "event_common.schema.json#/definitions/documentId"},
+        "name": {"type": "string", "minLength": 1, "maxLength": 160},
+        "logoUrl": {"type": ["string", "null"], "format": "uri", "maxLength": 2000}
+      }
+    },
+    "publicFormProjection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["publicFormId", "formId", "versionId", "version", "availabilityStatus", "availabilityMessage", "organizer", "definition"],
+      "properties": {
+        "publicFormId": {"type": "string", "pattern": "^[A-Za-z0-9_-]{20,80}$"},
+        "formId": {"$ref": "event_common.schema.json#/definitions/documentId"},
+        "versionId": {"$ref": "event_common.schema.json#/definitions/documentId"},
+        "version": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "availabilityStatus": {"$ref": "#/definitions/publicAvailabilityStatus"},
+        "availabilityMessage": {"type": ["string", "null"], "maxLength": 500},
+        "organizer": {"$ref": "#/definitions/organizerPresentation"},
+        "definition": {"$ref": "organizer_form_common.schema.json#/definitions/formDefinition"}
+      }
+    },
+    "draftProjection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["draftId", "draftToken", "form", "revision", "answers", "consentAccepted", "identityKind", "expiresAtMillis"],
+      "properties": {
+        "draftId": {"$ref": "event_common.schema.json#/definitions/documentId"},
+        "draftToken": {"type": ["string", "null"], "pattern": "^[A-Za-z0-9_-]{32,160}$"},
+        "form": {"$ref": "#/definitions/publicFormProjection"},
+        "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "answers": {"$ref": "#/definitions/answerMap"},
+        "consentAccepted": {"type": "boolean"},
+        "identityKind": {"$ref": "#/definitions/responseIdentityKind"},
+        "expiresAtMillis": {"type": "integer", "minimum": 0, "maximum": 9007199254740991}
+      }
+    },
+    "responseReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["responseId", "formId", "versionId", "status", "submittedAtMillis", "withdrawalToken", "completion"],
+      "properties": {
+        "responseId": {"$ref": "event_common.schema.json#/definitions/documentId"},
+        "formId": {"$ref": "event_common.schema.json#/definitions/documentId"},
+        "versionId": {"$ref": "event_common.schema.json#/definitions/documentId"},
+        "status": {"$ref": "#/definitions/responseStatus"},
+        "submittedAtMillis": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+        "withdrawalToken": {"type": ["string", "null"], "pattern": "^[A-Za-z0-9_-]{32,160}$"},
+        "completion": {"$ref": "organizer_form_common.schema.json#/definitions/formCompletion"}
+      }
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_organizer_form_editor_response.schema.json",
+  "title": "GetOrganizerFormEditorCallableResponse",
+  "description": "Manager-authorized form editor state.",
+  "allOf": [{"$ref": "../shared/organizer_form_api_common.schema.json#/definitions/formEditor"}]
+}

@@ -1,12 +1,22 @@
 ---
 doc_id: standalone_host_product_and_crm_delivery_plan
-version: 4.2.0
-updated: 2026-08-16
+version: 4.3.0
+updated: 2026-08-18
 owner: host_tooling
 status: active
 ---
 
 # Standalone Host Product And Implementation Specification
+
+## Forms Product Owner
+
+The generic Host Forms product is specified in
+`docs/plans/host_forms_product_spec.md`. That specification owns form lifecycle,
+builder and template behavior, the app-free respondent route, distribution,
+responses, analytics, exports, automations, and reviewed downstream conversion.
+This document continues to own the broader standalone Host capability and
+consent model. Applications remain one Forms purpose with a review projection;
+they are not the generic response model.
 
 ## Decision
 

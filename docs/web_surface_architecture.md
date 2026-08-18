@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.17.0
-updated: 2026-08-14
+version: 0.18.0
+updated: 2026-08-18
 owner: web_platform
 status: active
 ---
@@ -23,6 +23,13 @@ Keep the Flutter web app separate from the public website. The Flutter web app i
 the consumer app surface and should continue sharing mobile app code. The
 marketing and admin surfaces are web-native products and should use the same
 React + TypeScript stack where practical.
+
+The no-download `/f/:publicFormId/` respondent route is also owned by the
+public React website. It loads a callable-projected immutable form version,
+supports policy-specific identity verification, revisioned autosave, review,
+submission receipts, and withdrawal, and remains usable in a bounded iframe
+presentation. It never reads Forms collections directly and does not bootstrap
+the Consumer Flutter application.
 
 ## Cross-Surface Feature Identity
 

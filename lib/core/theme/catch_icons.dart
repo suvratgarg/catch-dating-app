@@ -37,6 +37,8 @@ abstract final class CatchIcons {
   static IconData get tabEventsFilled => PhosphorIconsFill.ticket;
   static IconData get tabCustomers => PhosphorIconsRegular.usersThree;
   static IconData get tabCustomersFilled => PhosphorIconsFill.usersThree;
+  static IconData get tabForms => Icons.note_alt_outlined;
+  static IconData get tabFormsFilled => Icons.note_alt_rounded;
   static IconData get tabOrganizer => PhosphorIconsRegular.storefront;
   static IconData get tabOrganizerFilled => PhosphorIconsFill.storefront;
 
@@ -198,6 +200,11 @@ abstract final class CatchIcons {
   static IconData get deleteOutline => Icons.delete_outline;
   static IconData get deleteOutlineRounded => Icons.delete_outline_rounded;
   static IconData get descriptionOutlined => Icons.description_outlined;
+  static IconData get pauseCircleOutlineRounded =>
+      Icons.pause_circle_outline_rounded;
+  static IconData get archiveOutlined => Icons.archive_outlined;
+  static IconData get arrowUpwardRounded => Icons.arrow_upward_rounded;
+  static IconData get arrowDownwardRounded => Icons.arrow_downward_rounded;
   static IconData get directionsBikeRounded => Icons.directions_bike_rounded;
   static IconData get directionsOutlined => Icons.directions_outlined;
   static IconData get directionsRun => Icons.directions_run;
@@ -345,6 +352,7 @@ abstract final class CatchIcons {
   static IconData get rateReviewOutlined => Icons.rate_review_outlined;
   static IconData get receiptLongOutlined => Icons.receipt_long_outlined;
   static IconData get refreshRounded => Icons.refresh_rounded;
+  static IconData get redoRounded => Icons.redo_rounded;
   static IconData get removeCircleOutlineRounded =>
       Icons.remove_circle_outline_rounded;
   static IconData get removeRounded => Icons.remove_rounded;
@@ -398,6 +406,7 @@ abstract final class CatchIcons {
   static IconData get tune => Icons.tune;
   static IconData get tuneRounded => Icons.tune_rounded;
   static IconData get updateRounded => Icons.update_rounded;
+  static IconData get undoRounded => Icons.undo_rounded;
   static IconData get verifiedRounded => Icons.verified_rounded;
   static IconData get verifiedUserOutlined => Icons.verified_user_outlined;
   static IconData get visibilityOffOutlined => Icons.visibility_off_outlined;

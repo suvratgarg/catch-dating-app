@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/finalize_organizer_form_asset_payload.schema.json",
+  "title": "FinalizeOrganizerFormAssetCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["draftId", "draftToken", "assetId", "uploadToken"],
+  "properties": {
+    "draftId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "draftToken": {"type": ["string", "null"], "pattern": "^[A-Za-z0-9_-]{32,160}$"},
+    "assetId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "uploadToken": {"type": "string", "pattern": "^[A-Za-z0-9_-]{32,160}$"}
+  }
+}

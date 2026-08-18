@@ -21693,6 +21693,1796 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Application review updated'**
   String get hostApplicationReviewUpdated;
+
+  /// Host bottom navigation label for the standalone forms workspace.
+  ///
+  /// In en, this message translates to:
+  /// **'Forms'**
+  String get hostNavigationForms;
+
+  /// Creates a standalone organizer form.
+  ///
+  /// In en, this message translates to:
+  /// **'Create form'**
+  String get hostFormsCreate;
+
+  /// Explains the organizer Forms workspace.
+  ///
+  /// In en, this message translates to:
+  /// **'Applications, registrations, waivers, feedback, and surveys in one reusable workspace.'**
+  String get hostFormsSubtitle;
+
+  /// Forms directory search label.
+  ///
+  /// In en, this message translates to:
+  /// **'Search forms'**
+  String get hostFormsSearch;
+
+  /// Shows every form lifecycle state.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get hostFormsFilterAll;
+
+  /// Empty Forms workspace title.
+  ///
+  /// In en, this message translates to:
+  /// **'No forms yet'**
+  String get hostFormsEmptyTitle;
+
+  /// Empty Forms workspace guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with a template, then tailor the questions and identity requirements.'**
+  String get hostFormsEmptyBody;
+
+  /// Filtered Forms empty state title.
+  ///
+  /// In en, this message translates to:
+  /// **'No forms match'**
+  String get hostFormsNoMatchesTitle;
+
+  /// Filtered Forms empty state guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Try another search or lifecycle filter.'**
+  String get hostFormsNoMatchesBody;
+
+  /// Opens lifecycle and duplication actions for a form.
+  ///
+  /// In en, this message translates to:
+  /// **'Form actions'**
+  String get hostFormsActions;
+
+  /// Forms directory row summary.
+  ///
+  /// In en, this message translates to:
+  /// **'{purpose} · {status} · {count, plural, =0{No responses} =1{1 response} other{{count} responses}}'**
+  String hostFormsRowSummary({
+    required String purpose,
+    required String status,
+    required int count,
+  });
+
+  /// Loads the next server-backed Forms page.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more forms'**
+  String get hostFormsLoadMore;
+
+  /// Opens a form in the builder.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit form'**
+  String get hostFormsOpen;
+
+  /// Creates a draft copy of a form.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate form'**
+  String get hostFormsDuplicate;
+
+  /// Pauses new responses to a published form.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause responses'**
+  String get hostFormsPause;
+
+  /// Resumes new responses to a paused form.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume responses'**
+  String get hostFormsResume;
+
+  /// Archives a form and preserves its responses.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive form'**
+  String get hostFormsArchive;
+
+  /// Permanently deletes a never-published draft form.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete draft'**
+  String get hostFormsDeleteDraft;
+
+  /// Archive form confirmation title.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive this form?'**
+  String get hostFormsArchiveConfirmTitle;
+
+  /// Archive form consequence copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Its public link will stop accepting responses. Existing responses stay available.'**
+  String get hostFormsArchiveConfirmBody;
+
+  /// Draft deletion confirmation title.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this draft?'**
+  String get hostFormsDeleteConfirmTitle;
+
+  /// Draft deletion consequence copy.
+  ///
+  /// In en, this message translates to:
+  /// **'This draft has never been published and will be permanently removed.'**
+  String get hostFormsDeleteConfirmBody;
+
+  /// Forms workspace requires an organizer title.
+  ///
+  /// In en, this message translates to:
+  /// **'Create an organizer first'**
+  String get hostFormsNoOrganizerTitle;
+
+  /// Forms workspace organizer requirement explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Forms belong to an organizer so your team, brand, and response data remain scoped correctly.'**
+  String get hostFormsNoOrganizerBody;
+
+  /// Creates the organizer required by Forms.
+  ///
+  /// In en, this message translates to:
+  /// **'Create organizer'**
+  String get hostFormsCreateOrganizer;
+
+  /// Draft form lifecycle label.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get hostFormsStatusDraft;
+
+  /// Published form lifecycle label.
+  ///
+  /// In en, this message translates to:
+  /// **'Published'**
+  String get hostFormsStatusPublished;
+
+  /// Paused form lifecycle label.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get hostFormsStatusPaused;
+
+  /// Archived form lifecycle label.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived'**
+  String get hostFormsStatusArchived;
+
+  /// Application form purpose label.
+  ///
+  /// In en, this message translates to:
+  /// **'Application'**
+  String get hostFormsPurposeApplication;
+
+  /// Registration form purpose label.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration'**
+  String get hostFormsPurposeRegistration;
+
+  /// Intake form purpose label.
+  ///
+  /// In en, this message translates to:
+  /// **'Intake'**
+  String get hostFormsPurposeIntake;
+
+  /// Waiver form purpose label.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiver'**
+  String get hostFormsPurposeWaiver;
+
+  /// Feedback form purpose label.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback'**
+  String get hostFormsPurposeFeedback;
+
+  /// Survey form purpose label.
+  ///
+  /// In en, this message translates to:
+  /// **'Survey'**
+  String get hostFormsPurposeSurvey;
+
+  /// Forms template gallery title.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a template'**
+  String get hostFormTemplatesTitle;
+
+  /// Forms template gallery guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Every template is editable. Start blank when you want full control.'**
+  String get hostFormTemplatesSubtitle;
+
+  /// Form template purpose and question count.
+  ///
+  /// In en, this message translates to:
+  /// **'{purpose} · {count, plural, =1{1 question} other{{count} questions}}'**
+  String hostFormTemplateSummary({required String purpose, required int count});
+
+  /// Fallback form builder route title.
+  ///
+  /// In en, this message translates to:
+  /// **'Form builder'**
+  String get hostFormBuilderTitle;
+
+  /// Opens or titles a form preview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get hostFormPreview;
+
+  /// Explains preview fidelity.
+  ///
+  /// In en, this message translates to:
+  /// **'This uses the same renderer respondents will see.'**
+  String get hostFormPreviewSubtitle;
+
+  /// Disabled submit label in a non-submitting preview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview only'**
+  String get hostFormPreviewSubmitDisabled;
+
+  /// Public form response submission action.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit response'**
+  String get hostFormSubmit;
+
+  /// Clarifies preview data is discarded.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview mode · nothing entered here is saved'**
+  String get hostFormPreviewNoResponses;
+
+  /// Preview-only file input placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'File upload appears here'**
+  String get hostFormPreviewUploadPlaceholder;
+
+  /// Preview-only signature input placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Signature appears here'**
+  String get hostFormPreviewSignaturePlaceholder;
+
+  /// Publishes a draft form.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish form'**
+  String get hostFormPublish;
+
+  /// Publishes a new immutable version of a live form.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish changes'**
+  String get hostFormPublishChanges;
+
+  /// Explains versioned form publishing.
+  ///
+  /// In en, this message translates to:
+  /// **'Publishing validates the draft and creates an immutable respondent version.'**
+  String get hostFormPublishHelp;
+
+  /// Successful form publication message.
+  ///
+  /// In en, this message translates to:
+  /// **'Form published'**
+  String get hostFormPublished;
+
+  /// Opens or titles form distribution tools.
+  ///
+  /// In en, this message translates to:
+  /// **'Share form'**
+  String get hostFormShare;
+
+  /// Form distribution route guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish one link everywhere, or create tracked links for each channel.'**
+  String get hostFormShareSubtitle;
+
+  /// Canonical form link section label.
+  ///
+  /// In en, this message translates to:
+  /// **'Public link'**
+  String get hostFormCanonicalLink;
+
+  /// Explains app-free form access.
+  ///
+  /// In en, this message translates to:
+  /// **'Respondents open this in any browser. They do not need the Catch app.'**
+  String get hostFormCanonicalLinkHelp;
+
+  /// Copies a public form link.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy link'**
+  String get hostFormCopyLink;
+
+  /// Confirms a form link was copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Form link copied'**
+  String get hostFormLinkCopied;
+
+  /// Opens the platform share sheet for a form link.
+  ///
+  /// In en, this message translates to:
+  /// **'Share link'**
+  String get hostFormShareLink;
+
+  /// Tracked form distribution links section label.
+  ///
+  /// In en, this message translates to:
+  /// **'Tracked links'**
+  String get hostFormTrackedLinks;
+
+  /// Explains tracked form distribution links.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a different link for Instagram, WhatsApp, email, or a partner so response attribution stays visible.'**
+  String get hostFormTrackedLinksHelp;
+
+  /// Creates a source-attributed form link.
+  ///
+  /// In en, this message translates to:
+  /// **'Create tracked link'**
+  String get hostFormCreateTrackedLink;
+
+  /// Tracked form link dialog title.
+  ///
+  /// In en, this message translates to:
+  /// **'New tracked link'**
+  String get hostFormTrackedLinkTitle;
+
+  /// Tracked link human-readable label field.
+  ///
+  /// In en, this message translates to:
+  /// **'Internal label'**
+  String get hostFormTrackedLinkLabel;
+
+  /// Example tracked form link label.
+  ///
+  /// In en, this message translates to:
+  /// **'August Instagram story'**
+  String get hostFormTrackedLinkLabelHint;
+
+  /// Optional machine-readable form link source field.
+  ///
+  /// In en, this message translates to:
+  /// **'Source tag (optional)'**
+  String get hostFormTrackedLinkSource;
+
+  /// Example tracked form link source.
+  ///
+  /// In en, this message translates to:
+  /// **'instagram_story'**
+  String get hostFormTrackedLinkSourceHint;
+
+  /// Confirms tracked form link creation.
+  ///
+  /// In en, this message translates to:
+  /// **'Tracked link ready'**
+  String get hostFormTrackedLinkReady;
+
+  /// Website form embed section label.
+  ///
+  /// In en, this message translates to:
+  /// **'Embed on your website'**
+  String get hostFormEmbed;
+
+  /// Explains the form iframe embed.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste this iframe into your website builder. The embedded route keeps the same validation and submission controls.'**
+  String get hostFormEmbedHelp;
+
+  /// Copies a form iframe snippet.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy embed code'**
+  String get hostFormCopyEmbed;
+
+  /// Confirms a form iframe snippet was copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Embed code copied'**
+  String get hostFormEmbedCopied;
+
+  /// Commits tracked form link creation.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get hostFormCreate;
+
+  /// Form metadata editor section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Form settings'**
+  String get hostFormSettings;
+
+  /// Editable form title label.
+  ///
+  /// In en, this message translates to:
+  /// **'Form title'**
+  String get hostFormTitleLabel;
+
+  /// Editable form description label.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get hostFormDescriptionLabel;
+
+  /// Editable form purpose label.
+  ///
+  /// In en, this message translates to:
+  /// **'Purpose'**
+  String get hostFormPurposeLabel;
+
+  /// Respondent identity policy field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Who can respond'**
+  String get hostFormIdentityLabel;
+
+  /// Anonymous respondent identity policy.
+  ///
+  /// In en, this message translates to:
+  /// **'Anyone · anonymous allowed'**
+  String get hostFormIdentityAnonymous;
+
+  /// Verified email respondent identity policy.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified email required'**
+  String get hostFormIdentityEmail;
+
+  /// Verified phone respondent identity policy.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified phone required'**
+  String get hostFormIdentityPhone;
+
+  /// Either verified endpoint respondent identity policy.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified email or phone'**
+  String get hostFormIdentityEmailOrPhone;
+
+  /// Catch account respondent identity policy.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch account required'**
+  String get hostFormIdentityCatchAccount;
+
+  /// Successful response completion title field.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmation title'**
+  String get hostFormCompletionTitleLabel;
+
+  /// Adds a section to a form.
+  ///
+  /// In en, this message translates to:
+  /// **'Add section'**
+  String get hostFormAddSection;
+
+  /// Numbered form section label.
+  ///
+  /// In en, this message translates to:
+  /// **'Section {number}'**
+  String hostFormSectionNumber({required int number});
+
+  /// Editable section title label.
+  ///
+  /// In en, this message translates to:
+  /// **'Section title'**
+  String get hostFormSectionTitleLabel;
+
+  /// Adds a question to a form section.
+  ///
+  /// In en, this message translates to:
+  /// **'Add question'**
+  String get hostFormAddQuestion;
+
+  /// Moves a form section earlier.
+  ///
+  /// In en, this message translates to:
+  /// **'Move section up'**
+  String get hostFormMoveSectionUp;
+
+  /// Moves a form section later.
+  ///
+  /// In en, this message translates to:
+  /// **'Move section down'**
+  String get hostFormMoveSectionDown;
+
+  /// Removes a non-final form section.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove section'**
+  String get hostFormRemoveSection;
+
+  /// Editable question label.
+  ///
+  /// In en, this message translates to:
+  /// **'Question'**
+  String get hostFormQuestionLabel;
+
+  /// Editable question type label.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer type'**
+  String get hostFormQuestionType;
+
+  /// Question requiredness toggle label.
+  ///
+  /// In en, this message translates to:
+  /// **'Response required'**
+  String get hostFormQuestionRequired;
+
+  /// Numbered answer option label.
+  ///
+  /// In en, this message translates to:
+  /// **'Option {number}'**
+  String hostFormOptionNumber({required int number});
+
+  /// Adds a choice option.
+  ///
+  /// In en, this message translates to:
+  /// **'Add option'**
+  String get hostFormAddOption;
+
+  /// Moves a question earlier.
+  ///
+  /// In en, this message translates to:
+  /// **'Move up'**
+  String get hostFormMoveUp;
+
+  /// Moves a question later.
+  ///
+  /// In en, this message translates to:
+  /// **'Move down'**
+  String get hostFormMoveDown;
+
+  /// Removes a question from a form.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove question'**
+  String get hostFormRemoveQuestion;
+
+  /// Question type picker title.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an answer type'**
+  String get hostFormChooseQuestionType;
+
+  /// Desktop form builder outline pane title.
+  ///
+  /// In en, this message translates to:
+  /// **'Outline'**
+  String get hostFormOutline;
+
+  /// Question count within a form section.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No questions} =1{1 question} other{{count} questions}}'**
+  String hostFormQuestionCount({required int count});
+
+  /// Form autosave complete state.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get hostFormSaved;
+
+  /// Form autosave dirty state.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsaved changes'**
+  String get hostFormUnsaved;
+
+  /// Form autosave active state.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving…'**
+  String get hostFormSaving;
+
+  /// Form revision conflict compact state.
+  ///
+  /// In en, this message translates to:
+  /// **'Newer version available'**
+  String get hostFormSaveConflict;
+
+  /// Form autosave failure state.
+  ///
+  /// In en, this message translates to:
+  /// **'Form could not be saved'**
+  String get hostFormSaveFailed;
+
+  /// Form revision conflict notice title.
+  ///
+  /// In en, this message translates to:
+  /// **'This form changed elsewhere'**
+  String get hostFormConflictTitle;
+
+  /// Form revision conflict recovery guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload the newest revision before making more changes.'**
+  String get hostFormConflictBody;
+
+  /// Reloads a form after revision conflict.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload form'**
+  String get hostFormReload;
+
+  /// Retries a failed form autosave.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry save'**
+  String get hostFormRetrySave;
+
+  /// Form publish validation issue summary.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Fix 1 form issue} other{Fix {count} form issues}}'**
+  String hostFormValidationTitle({required int count});
+
+  /// Short text question type.
+  ///
+  /// In en, this message translates to:
+  /// **'Short text'**
+  String get hostFormTypeShortText;
+
+  /// Long text question type.
+  ///
+  /// In en, this message translates to:
+  /// **'Long text'**
+  String get hostFormTypeLongText;
+
+  /// Single choice question type.
+  ///
+  /// In en, this message translates to:
+  /// **'Single choice'**
+  String get hostFormTypeSingleChoice;
+
+  /// Multiple choice question type.
+  ///
+  /// In en, this message translates to:
+  /// **'Multiple choice'**
+  String get hostFormTypeMultiChoice;
+
+  /// Date question type.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get hostFormTypeDate;
+
+  /// Phone question type.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number'**
+  String get hostFormTypePhone;
+
+  /// Email question type.
+  ///
+  /// In en, this message translates to:
+  /// **'Email address'**
+  String get hostFormTypeEmail;
+
+  /// URL question type.
+  ///
+  /// In en, this message translates to:
+  /// **'Website link'**
+  String get hostFormTypeUrl;
+
+  /// Number question type.
+  ///
+  /// In en, this message translates to:
+  /// **'Number'**
+  String get hostFormTypeNumber;
+
+  /// Boolean question type.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes or no'**
+  String get hostFormTypeBoolean;
+
+  /// File upload question type.
+  ///
+  /// In en, this message translates to:
+  /// **'File upload'**
+  String get hostFormTypeFile;
+
+  /// Acknowledgement question type.
+  ///
+  /// In en, this message translates to:
+  /// **'Acknowledgement'**
+  String get hostFormTypeAcknowledgement;
+
+  /// Signature question type.
+  ///
+  /// In en, this message translates to:
+  /// **'Signature'**
+  String get hostFormTypeSignature;
+
+  /// Optional guidance shown below a form question.
+  ///
+  /// In en, this message translates to:
+  /// **'Help text'**
+  String get hostFormQuestionHelpLabel;
+
+  /// Form answer privacy classification field.
+  ///
+  /// In en, this message translates to:
+  /// **'Data classification'**
+  String get hostFormPrivacyLabel;
+
+  /// Contact data classification.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact information'**
+  String get hostFormPrivacyContact;
+
+  /// Profile data classification.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile information'**
+  String get hostFormPrivacyProfile;
+
+  /// Sensitive data classification.
+  ///
+  /// In en, this message translates to:
+  /// **'Sensitive information'**
+  String get hostFormPrivacySensitive;
+
+  /// Organizer custom data classification.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer-specific answer'**
+  String get hostFormPrivacyCustom;
+
+  /// Form question prefill policy field.
+  ///
+  /// In en, this message translates to:
+  /// **'Prefill behavior'**
+  String get hostFormPrefillLabel;
+
+  /// No automatic respondent answer prefill.
+  ///
+  /// In en, this message translates to:
+  /// **'Never prefill'**
+  String get hostFormPrefillNever;
+
+  /// Prefill known data with explicit respondent review.
+  ///
+  /// In en, this message translates to:
+  /// **'Prefill, then require review'**
+  String get hostFormPrefillReview;
+
+  /// Controls how answers are exposed in response management.
+  ///
+  /// In en, this message translates to:
+  /// **'Host response view'**
+  String get hostFormPresentationLabel;
+
+  /// Answer appears only on response detail.
+  ///
+  /// In en, this message translates to:
+  /// **'Response detail only'**
+  String get hostFormPresentationDetail;
+
+  /// Answer can filter response lists.
+  ///
+  /// In en, this message translates to:
+  /// **'Filterable column'**
+  String get hostFormPresentationFilter;
+
+  /// Answer can sort response lists.
+  ///
+  /// In en, this message translates to:
+  /// **'Sortable column'**
+  String get hostFormPresentationSort;
+
+  /// Minimum text answer length.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum characters'**
+  String get hostFormMinimumLength;
+
+  /// Maximum text answer length.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum characters'**
+  String get hostFormMaximumLength;
+
+  /// Minimum numeric answer value.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum value'**
+  String get hostFormMinimumNumber;
+
+  /// Maximum numeric answer value.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum value'**
+  String get hostFormMaximumNumber;
+
+  /// Earliest accepted form date.
+  ///
+  /// In en, this message translates to:
+  /// **'Earliest date (YYYY-MM-DD)'**
+  String get hostFormEarliestDate;
+
+  /// Latest accepted form date.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest date (YYYY-MM-DD)'**
+  String get hostFormLatestDate;
+
+  /// Minimum multiple-choice selections.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum choices'**
+  String get hostFormMinimumSelections;
+
+  /// Maximum multiple-choice selections.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum choices'**
+  String get hostFormMaximumSelections;
+
+  /// Maximum files accepted by one upload question.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum files'**
+  String get hostFormMaximumFiles;
+
+  /// Maximum uploaded file size in megabytes.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum size per file (MB)'**
+  String get hostFormMaximumFileMegabytes;
+
+  /// Accepted upload MIME types.
+  ///
+  /// In en, this message translates to:
+  /// **'Allowed types (comma separated)'**
+  String get hostFormAllowedFileTypes;
+
+  /// Preset text validation pattern field.
+  ///
+  /// In en, this message translates to:
+  /// **'Text format'**
+  String get hostFormPatternLabel;
+
+  /// No preset text pattern.
+  ///
+  /// In en, this message translates to:
+  /// **'Any text'**
+  String get hostFormPatternNone;
+
+  /// Letters and spaces text pattern.
+  ///
+  /// In en, this message translates to:
+  /// **'Letters and spaces'**
+  String get hostFormPatternLetters;
+
+  /// Alphanumeric text pattern.
+  ///
+  /// In en, this message translates to:
+  /// **'Letters and numbers'**
+  String get hostFormPatternAlphanumeric;
+
+  /// Postal code text pattern.
+  ///
+  /// In en, this message translates to:
+  /// **'Postal code'**
+  String get hostFormPatternPostal;
+
+  /// Social handle text pattern.
+  ///
+  /// In en, this message translates to:
+  /// **'Social handle'**
+  String get hostFormPatternHandle;
+
+  /// Optional respondent-facing answer error copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom validation message'**
+  String get hostFormCustomError;
+
+  /// Form appearance settings group.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get hostFormAppearance;
+
+  /// Public form appearance preset.
+  ///
+  /// In en, this message translates to:
+  /// **'Layout style'**
+  String get hostFormAppearancePreset;
+
+  /// Editorial form appearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Editorial'**
+  String get hostFormAppearanceEditorial;
+
+  /// Minimal form appearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimal'**
+  String get hostFormAppearanceMinimal;
+
+  /// Activity-specific form appearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity-led'**
+  String get hostFormAppearanceActivity;
+
+  /// Optional event or activity label for an activity-led form.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity label'**
+  String get hostFormActivityKind;
+
+  /// Form response availability settings group.
+  ///
+  /// In en, this message translates to:
+  /// **'Availability'**
+  String get hostFormAvailability;
+
+  /// Optional form opening date.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens on'**
+  String get hostFormOpensAt;
+
+  /// Optional form closing date.
+  ///
+  /// In en, this message translates to:
+  /// **'Closes on'**
+  String get hostFormClosesAt;
+
+  /// Empty optional form availability date.
+  ///
+  /// In en, this message translates to:
+  /// **'No date set'**
+  String get hostFormDateNotSet;
+
+  /// Clears an optional form availability date.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear date'**
+  String get hostFormClearDate;
+
+  /// Optional form response capacity.
+  ///
+  /// In en, this message translates to:
+  /// **'Response limit'**
+  String get hostFormResponseLimit;
+
+  /// Message shown when a form is unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed-form message'**
+  String get hostFormClosedMessage;
+
+  /// Form consent settings group.
+  ///
+  /// In en, this message translates to:
+  /// **'Consent and retention'**
+  String get hostFormConsent;
+
+  /// Respondent consent statement.
+  ///
+  /// In en, this message translates to:
+  /// **'Consent statement'**
+  String get hostFormConsentCopy;
+
+  /// Stable consent policy version identifier.
+  ///
+  /// In en, this message translates to:
+  /// **'Consent version'**
+  String get hostFormConsentVersion;
+
+  /// Respondent data retention statement.
+  ///
+  /// In en, this message translates to:
+  /// **'Retention statement'**
+  String get hostFormRetentionCopy;
+
+  /// Form completion settings group.
+  ///
+  /// In en, this message translates to:
+  /// **'After submission'**
+  String get hostFormCompletion;
+
+  /// Successful response completion message.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmation message'**
+  String get hostFormCompletionMessageLabel;
+
+  /// Action shown after response submission.
+  ///
+  /// In en, this message translates to:
+  /// **'Next action'**
+  String get hostFormCompletionActionLabel;
+
+  /// No post-submission action.
+  ///
+  /// In en, this message translates to:
+  /// **'No action'**
+  String get hostFormCompletionActionNone;
+
+  /// Post-submission external URL action.
+  ///
+  /// In en, this message translates to:
+  /// **'Open a link'**
+  String get hostFormCompletionActionExternal;
+
+  /// Post-submission linked event action.
+  ///
+  /// In en, this message translates to:
+  /// **'Open linked event'**
+  String get hostFormCompletionActionEvent;
+
+  /// Post-submission event runtime action.
+  ///
+  /// In en, this message translates to:
+  /// **'Open event runtime'**
+  String get hostFormCompletionActionRuntime;
+
+  /// Post-submission action button label.
+  ///
+  /// In en, this message translates to:
+  /// **'Button label'**
+  String get hostFormCompletionButtonLabel;
+
+  /// Post-submission external URL.
+  ///
+  /// In en, this message translates to:
+  /// **'Destination URL'**
+  String get hostFormCompletionUrl;
+
+  /// Form branching rules group.
+  ///
+  /// In en, this message translates to:
+  /// **'Conditional logic'**
+  String get hostFormLogic;
+
+  /// Explains form branching constraints.
+  ///
+  /// In en, this message translates to:
+  /// **'Show, hide, skip, or finish based on an earlier answer. Routes must move forward.'**
+  String get hostFormLogicHelp;
+
+  /// Adds a conditional form rule.
+  ///
+  /// In en, this message translates to:
+  /// **'Add rule'**
+  String get hostFormAddRule;
+
+  /// Removes a conditional form rule.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove rule'**
+  String get hostFormRemoveRule;
+
+  /// Conditional rule source question field.
+  ///
+  /// In en, this message translates to:
+  /// **'When this answer'**
+  String get hostFormRuleQuestion;
+
+  /// Conditional rule comparison operator field.
+  ///
+  /// In en, this message translates to:
+  /// **'Condition'**
+  String get hostFormRuleOperator;
+
+  /// Conditional rule comparison value field.
+  ///
+  /// In en, this message translates to:
+  /// **'Comparison value'**
+  String get hostFormRuleValue;
+
+  /// True boolean answer label in form logic.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get hostFormRuleTrue;
+
+  /// False boolean answer label in form logic.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get hostFormRuleFalse;
+
+  /// Conditional rule action field.
+  ///
+  /// In en, this message translates to:
+  /// **'Then'**
+  String get hostFormRuleAction;
+
+  /// Conditional rule question target field.
+  ///
+  /// In en, this message translates to:
+  /// **'Target question'**
+  String get hostFormRuleTargetQuestion;
+
+  /// Conditional rule section target field.
+  ///
+  /// In en, this message translates to:
+  /// **'Target section'**
+  String get hostFormRuleTargetSection;
+
+  /// Commits a conditional form rule.
+  ///
+  /// In en, this message translates to:
+  /// **'Save rule'**
+  String get hostFormRuleSave;
+
+  /// Equals form rule operator.
+  ///
+  /// In en, this message translates to:
+  /// **'equals'**
+  String get hostFormOperatorEquals;
+
+  /// Not-equals form rule operator.
+  ///
+  /// In en, this message translates to:
+  /// **'does not equal'**
+  String get hostFormOperatorNotEquals;
+
+  /// Contains form rule operator.
+  ///
+  /// In en, this message translates to:
+  /// **'contains'**
+  String get hostFormOperatorContains;
+
+  /// Not-contains form rule operator.
+  ///
+  /// In en, this message translates to:
+  /// **'does not contain'**
+  String get hostFormOperatorNotContains;
+
+  /// Greater-than form rule operator.
+  ///
+  /// In en, this message translates to:
+  /// **'is greater than'**
+  String get hostFormOperatorGreater;
+
+  /// Less-than form rule operator.
+  ///
+  /// In en, this message translates to:
+  /// **'is less than'**
+  String get hostFormOperatorLess;
+
+  /// Answered form rule operator.
+  ///
+  /// In en, this message translates to:
+  /// **'is answered'**
+  String get hostFormOperatorAnswered;
+
+  /// Not-answered form rule operator.
+  ///
+  /// In en, this message translates to:
+  /// **'is not answered'**
+  String get hostFormOperatorNotAnswered;
+
+  /// Show-question form rule action.
+  ///
+  /// In en, this message translates to:
+  /// **'Show a question'**
+  String get hostFormActionShowQuestion;
+
+  /// Hide-question form rule action.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide a question'**
+  String get hostFormActionHideQuestion;
+
+  /// Show-section form rule action.
+  ///
+  /// In en, this message translates to:
+  /// **'Show a section'**
+  String get hostFormActionShowSection;
+
+  /// Hide-section form rule action.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide a section'**
+  String get hostFormActionHideSection;
+
+  /// Forward section route form rule action.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip to a section'**
+  String get hostFormActionRouteSection;
+
+  /// Early finish form rule action.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish the form'**
+  String get hostFormActionFinish;
+
+  /// Forms library view tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Forms'**
+  String get hostFormsViewForms;
+
+  /// Form responses inbox view tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Responses'**
+  String get hostFormsViewResponses;
+
+  /// Explains the response inbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Review every submission, preserve its source, and choose what happens next.'**
+  String get hostFormResponsesSubtitle;
+
+  /// Searches the response inbox by permitted identity fields.
+  ///
+  /// In en, this message translates to:
+  /// **'Search responses'**
+  String get hostFormResponsesSearch;
+
+  /// Shows submitted and withdrawn form responses.
+  ///
+  /// In en, this message translates to:
+  /// **'All responses'**
+  String get hostFormResponsesAll;
+
+  /// Submitted response status label.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted'**
+  String get hostFormResponsesSubmitted;
+
+  /// Withdrawn response status label.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawn'**
+  String get hostFormResponsesWithdrawn;
+
+  /// Fallback identity label for anonymous form responses.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous respondent'**
+  String get hostFormResponsesAnonymous;
+
+  /// Empty form response inbox title.
+  ///
+  /// In en, this message translates to:
+  /// **'No responses yet'**
+  String get hostFormResponsesEmptyTitle;
+
+  /// Empty form response inbox guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Share a published form. New submissions will appear here without loading the full response history.'**
+  String get hostFormResponsesEmptyBody;
+
+  /// Filtered response inbox empty title.
+  ///
+  /// In en, this message translates to:
+  /// **'No responses match'**
+  String get hostFormResponsesNoMatchesTitle;
+
+  /// Filtered response inbox empty guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Try another search or status filter.'**
+  String get hostFormResponsesNoMatchesBody;
+
+  /// Loads the next bounded response page.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more responses'**
+  String get hostFormResponsesLoadMore;
+
+  /// Response inbox row form and source summary.
+  ///
+  /// In en, this message translates to:
+  /// **'{formTitle} · {source}'**
+  String hostFormResponseRowSummary({
+    required String formTitle,
+    required String source,
+  });
+
+  /// Fallback source label for a direct form visit.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct link'**
+  String get hostFormResponseDirectSource;
+
+  /// Opens responses filtered to one form.
+  ///
+  /// In en, this message translates to:
+  /// **'View responses'**
+  String get hostFormsViewResponsesAction;
+
+  /// Opens aggregate form analytics.
+  ///
+  /// In en, this message translates to:
+  /// **'View analytics'**
+  String get hostFormsAnalyticsAction;
+
+  /// Opens form automation rules and runs.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage automations'**
+  String get hostFormsAutomationsAction;
+
+  /// Form response detail title.
+  ///
+  /// In en, this message translates to:
+  /// **'Response'**
+  String get hostFormResponseTitle;
+
+  /// Response identity section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Respondent'**
+  String get hostFormResponseIdentitySection;
+
+  /// Response answers section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Answers'**
+  String get hostFormResponseAnswersSection;
+
+  /// Response conversion actions section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Next actions'**
+  String get hostFormResponseOperationsSection;
+
+  /// Response identity name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get hostFormResponseName;
+
+  /// Response identity email field.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get hostFormResponseEmail;
+
+  /// Response identity phone field.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get hostFormResponsePhone;
+
+  /// Response attribution source field.
+  ///
+  /// In en, this message translates to:
+  /// **'Source'**
+  String get hostFormResponseSource;
+
+  /// Response submission time field.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted'**
+  String get hostFormResponseSubmittedAt;
+
+  /// Response consent version field.
+  ///
+  /// In en, this message translates to:
+  /// **'Consent version'**
+  String get hostFormResponseConsent;
+
+  /// Response completion duration field.
+  ///
+  /// In en, this message translates to:
+  /// **'Completion time'**
+  String get hostFormResponseCompletionTime;
+
+  /// Fallback for a missing response field.
+  ///
+  /// In en, this message translates to:
+  /// **'Not provided'**
+  String get hostFormResponseNotProvided;
+
+  /// Fallback for an unanswered form question.
+  ///
+  /// In en, this message translates to:
+  /// **'No answer'**
+  String get hostFormResponseNoAnswer;
+
+  /// Opens a time-limited response attachment.
+  ///
+  /// In en, this message translates to:
+  /// **'Open {fileName}'**
+  String hostFormResponseDownloadFile({required String fileName});
+
+  /// Reviews a response to CRM conversion.
+  ///
+  /// In en, this message translates to:
+  /// **'Create CRM contact'**
+  String get hostFormConvertCrm;
+
+  /// Reviews a response to application conversion.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to applications'**
+  String get hostFormConvertApplication;
+
+  /// Reviews a response to event attendee proposal conversion.
+  ///
+  /// In en, this message translates to:
+  /// **'Propose attendee'**
+  String get hostFormConvertAttendee;
+
+  /// Conversion preview confirmation title.
+  ///
+  /// In en, this message translates to:
+  /// **'Review this action'**
+  String get hostFormConversionReviewTitle;
+
+  /// Conversion preview confirmation guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch will create only the fields shown in this preview. Existing records and conflicts remain protected.'**
+  String get hostFormConversionReviewBody;
+
+  /// Confirms a reviewed response conversion.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm action'**
+  String get hostFormConversionConfirm;
+
+  /// Unavailable response conversion explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'This action needs verified identity or additional setup.'**
+  String get hostFormConversionUnavailable;
+
+  /// Successful response conversion feedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Action completed'**
+  String get hostFormConversionComplete;
+
+  /// Form analytics screen title.
+  ///
+  /// In en, this message translates to:
+  /// **'Form analytics'**
+  String get hostFormAnalyticsTitle;
+
+  /// Form analytics funnel section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Response funnel'**
+  String get hostFormAnalyticsFunnel;
+
+  /// Public form open count.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens'**
+  String get hostFormAnalyticsOpens;
+
+  /// Public form start count.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts'**
+  String get hostFormAnalyticsStarts;
+
+  /// Form submission count.
+  ///
+  /// In en, this message translates to:
+  /// **'Submissions'**
+  String get hostFormAnalyticsSubmissions;
+
+  /// Form start-to-submit conversion rate.
+  ///
+  /// In en, this message translates to:
+  /// **'Completion rate'**
+  String get hostFormAnalyticsCompletionRate;
+
+  /// Median form completion time.
+  ///
+  /// In en, this message translates to:
+  /// **'Median completion'**
+  String get hostFormAnalyticsMedianTime;
+
+  /// Source link funnel section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Sources'**
+  String get hostFormAnalyticsSources;
+
+  /// Question aggregate analytics section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Question results'**
+  String get hostFormAnalyticsQuestions;
+
+  /// Explains form analytics privacy thresholds.
+  ///
+  /// In en, this message translates to:
+  /// **'Question results appear only when the privacy threshold is met. Sensitive and free-text answers are never charted.'**
+  String get hostFormAnalyticsPrivacyNotice;
+
+  /// Starts a CSV form response export.
+  ///
+  /// In en, this message translates to:
+  /// **'Export CSV'**
+  String get hostFormExportCsv;
+
+  /// Starts an XLSX form response export.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Excel'**
+  String get hostFormExportXlsx;
+
+  /// Completed form response export feedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Export ready'**
+  String get hostFormExportReady;
+
+  /// Form automations screen title.
+  ///
+  /// In en, this message translates to:
+  /// **'Automations'**
+  String get hostFormAutomationsTitle;
+
+  /// Explains form automations.
+  ///
+  /// In en, this message translates to:
+  /// **'Run explicit, observable actions after a response changes. You can disable any rule instantly.'**
+  String get hostFormAutomationsSubtitle;
+
+  /// Form automation rules section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Rules'**
+  String get hostFormAutomationsRules;
+
+  /// Form automation execution history section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent runs'**
+  String get hostFormAutomationsRuns;
+
+  /// Empty automation rules title.
+  ///
+  /// In en, this message translates to:
+  /// **'No automations yet'**
+  String get hostFormAutomationsEmptyTitle;
+
+  /// Empty automation rules guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with a safe preset. Every run is recorded and can be disabled.'**
+  String get hostFormAutomationsEmptyBody;
+
+  /// Creates a team notification response automation.
+  ///
+  /// In en, this message translates to:
+  /// **'Notify my team'**
+  String get hostFormAutomationNotifyPreset;
+
+  /// Creates an identity-gated CRM response automation.
+  ///
+  /// In en, this message translates to:
+  /// **'Create CRM contacts'**
+  String get hostFormAutomationCrmPreset;
+
+  /// Response-submitted automation trigger label.
+  ///
+  /// In en, this message translates to:
+  /// **'When a response is submitted'**
+  String get hostFormAutomationSubmittedTrigger;
+
+  /// Response-withdrawn automation trigger label.
+  ///
+  /// In en, this message translates to:
+  /// **'When a response is withdrawn'**
+  String get hostFormAutomationWithdrawnTrigger;
+
+  /// Answer-matching automation trigger label.
+  ///
+  /// In en, this message translates to:
+  /// **'When an answer matches'**
+  String get hostFormAutomationAnswerTrigger;
+
+  /// Automation rule action count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 action} other{{count} actions}}'**
+  String hostFormAutomationActionCount({required int count});
+
+  /// Automation run event and retry summary.
+  ///
+  /// In en, this message translates to:
+  /// **'{trigger} · Attempt {attempt}'**
+  String hostFormAutomationRunSummary({
+    required String trigger,
+    required int attempt,
+  });
+
+  /// Loads the next bounded automation-run page.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more runs'**
+  String get hostFormAutomationsLoadMore;
+
+  /// Anonymous response data provenance label.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous'**
+  String get hostFormResponseOriginAnonymous;
+
+  /// Respondent-granted data provenance label.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared by respondent'**
+  String get hostFormResponseOriginGranted;
+
+  /// Organizer-acquired data provenance label.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer record'**
+  String get hostFormResponseOriginAcquired;
+
+  /// Revoked response data provenance label.
+  ///
+  /// In en, this message translates to:
+  /// **'Access revoked'**
+  String get hostFormResponseOriginRevoked;
+
+  /// Event attendee proposal picker title.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an event'**
+  String get hostFormSelectEventTitle;
+
+  /// Empty attendee proposal event picker guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'No upcoming events are available for an attendee proposal.'**
+  String get hostFormSelectEventEmpty;
+
+  /// Conversion preview existing-record notice.
+  ///
+  /// In en, this message translates to:
+  /// **'An existing record already matches this response.'**
+  String get hostFormConversionExisting;
+
+  /// Explains a form-scoped response inbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing responses for {formTitle}'**
+  String hostFormResponseFilteredTo({required String formTitle});
+
+  /// Clears the response inbox form filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Show all'**
+  String get hostFormResponseClearFormFilter;
+
+  /// One source-link form funnel summary.
+  ///
+  /// In en, this message translates to:
+  /// **'{opens} opens · {starts} starts · {submissions} submissions'**
+  String hostFormAnalyticsSourceSummary({
+    required int opens,
+    required int starts,
+    required int submissions,
+  });
+
+  /// Question aggregate response count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 answer} other{{count} answers}}'**
+  String hostFormAnalyticsQuestionSummary({required int count});
+
+  /// Choice aggregate response count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 response} other{{count} responses}}'**
+  String hostFormAnalyticsChoiceCount({required int count});
+
+  /// Failed or expired form export feedback.
+  ///
+  /// In en, this message translates to:
+  /// **'The export could not be prepared. Try again.'**
+  String get hostFormExportFailed;
+
+  /// Long-running form export feedback.
+  ///
+  /// In en, this message translates to:
+  /// **'The export is still preparing. You can retry without creating a duplicate.'**
+  String get hostFormExportStillPreparing;
+
+  /// Pending automation run status.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get hostFormAutomationPending;
+
+  /// Running automation run status.
+  ///
+  /// In en, this message translates to:
+  /// **'Running'**
+  String get hostFormAutomationRunning;
+
+  /// Successful automation run status.
+  ///
+  /// In en, this message translates to:
+  /// **'Succeeded'**
+  String get hostFormAutomationSucceeded;
+
+  /// Partially failed automation run status.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs attention'**
+  String get hostFormAutomationPartiallyFailed;
+
+  /// Failed automation run status.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get hostFormAutomationFailed;
+
+  /// Skipped automation run status.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped'**
+  String get hostFormAutomationSkipped;
+
+  /// Undoes the most recent local form-builder edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo last edit'**
+  String get hostFormUndo;
+
+  /// Reapplies the most recently undone form-builder edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Redo edit'**
+  String get hostFormRedo;
 }
 
 class _AppLocalizationsDelegate

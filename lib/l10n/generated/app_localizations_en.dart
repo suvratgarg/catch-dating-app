@@ -13888,4 +13888,1011 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostApplicationReviewUpdated => 'Application review updated';
+
+  @override
+  String get hostNavigationForms => 'Forms';
+
+  @override
+  String get hostFormsCreate => 'Create form';
+
+  @override
+  String get hostFormsSubtitle =>
+      'Applications, registrations, waivers, feedback, and surveys in one reusable workspace.';
+
+  @override
+  String get hostFormsSearch => 'Search forms';
+
+  @override
+  String get hostFormsFilterAll => 'All';
+
+  @override
+  String get hostFormsEmptyTitle => 'No forms yet';
+
+  @override
+  String get hostFormsEmptyBody =>
+      'Start with a template, then tailor the questions and identity requirements.';
+
+  @override
+  String get hostFormsNoMatchesTitle => 'No forms match';
+
+  @override
+  String get hostFormsNoMatchesBody =>
+      'Try another search or lifecycle filter.';
+
+  @override
+  String get hostFormsActions => 'Form actions';
+
+  @override
+  String hostFormsRowSummary({
+    required String purpose,
+    required String status,
+    required int count,
+  }) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count responses',
+      one: '1 response',
+      zero: 'No responses',
+    );
+    return '$purpose · $status · $_temp0';
+  }
+
+  @override
+  String get hostFormsLoadMore => 'Load more forms';
+
+  @override
+  String get hostFormsOpen => 'Edit form';
+
+  @override
+  String get hostFormsDuplicate => 'Duplicate form';
+
+  @override
+  String get hostFormsPause => 'Pause responses';
+
+  @override
+  String get hostFormsResume => 'Resume responses';
+
+  @override
+  String get hostFormsArchive => 'Archive form';
+
+  @override
+  String get hostFormsDeleteDraft => 'Delete draft';
+
+  @override
+  String get hostFormsArchiveConfirmTitle => 'Archive this form?';
+
+  @override
+  String get hostFormsArchiveConfirmBody =>
+      'Its public link will stop accepting responses. Existing responses stay available.';
+
+  @override
+  String get hostFormsDeleteConfirmTitle => 'Delete this draft?';
+
+  @override
+  String get hostFormsDeleteConfirmBody =>
+      'This draft has never been published and will be permanently removed.';
+
+  @override
+  String get hostFormsNoOrganizerTitle => 'Create an organizer first';
+
+  @override
+  String get hostFormsNoOrganizerBody =>
+      'Forms belong to an organizer so your team, brand, and response data remain scoped correctly.';
+
+  @override
+  String get hostFormsCreateOrganizer => 'Create organizer';
+
+  @override
+  String get hostFormsStatusDraft => 'Draft';
+
+  @override
+  String get hostFormsStatusPublished => 'Published';
+
+  @override
+  String get hostFormsStatusPaused => 'Paused';
+
+  @override
+  String get hostFormsStatusArchived => 'Archived';
+
+  @override
+  String get hostFormsPurposeApplication => 'Application';
+
+  @override
+  String get hostFormsPurposeRegistration => 'Registration';
+
+  @override
+  String get hostFormsPurposeIntake => 'Intake';
+
+  @override
+  String get hostFormsPurposeWaiver => 'Waiver';
+
+  @override
+  String get hostFormsPurposeFeedback => 'Feedback';
+
+  @override
+  String get hostFormsPurposeSurvey => 'Survey';
+
+  @override
+  String get hostFormTemplatesTitle => 'Choose a template';
+
+  @override
+  String get hostFormTemplatesSubtitle =>
+      'Every template is editable. Start blank when you want full control.';
+
+  @override
+  String hostFormTemplateSummary({
+    required String purpose,
+    required int count,
+  }) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count questions',
+      one: '1 question',
+    );
+    return '$purpose · $_temp0';
+  }
+
+  @override
+  String get hostFormBuilderTitle => 'Form builder';
+
+  @override
+  String get hostFormPreview => 'Preview';
+
+  @override
+  String get hostFormPreviewSubtitle =>
+      'This uses the same renderer respondents will see.';
+
+  @override
+  String get hostFormPreviewSubmitDisabled => 'Preview only';
+
+  @override
+  String get hostFormSubmit => 'Submit response';
+
+  @override
+  String get hostFormPreviewNoResponses =>
+      'Preview mode · nothing entered here is saved';
+
+  @override
+  String get hostFormPreviewUploadPlaceholder => 'File upload appears here';
+
+  @override
+  String get hostFormPreviewSignaturePlaceholder => 'Signature appears here';
+
+  @override
+  String get hostFormPublish => 'Publish form';
+
+  @override
+  String get hostFormPublishChanges => 'Publish changes';
+
+  @override
+  String get hostFormPublishHelp =>
+      'Publishing validates the draft and creates an immutable respondent version.';
+
+  @override
+  String get hostFormPublished => 'Form published';
+
+  @override
+  String get hostFormShare => 'Share form';
+
+  @override
+  String get hostFormShareSubtitle =>
+      'Publish one link everywhere, or create tracked links for each channel.';
+
+  @override
+  String get hostFormCanonicalLink => 'Public link';
+
+  @override
+  String get hostFormCanonicalLinkHelp =>
+      'Respondents open this in any browser. They do not need the Catch app.';
+
+  @override
+  String get hostFormCopyLink => 'Copy link';
+
+  @override
+  String get hostFormLinkCopied => 'Form link copied';
+
+  @override
+  String get hostFormShareLink => 'Share link';
+
+  @override
+  String get hostFormTrackedLinks => 'Tracked links';
+
+  @override
+  String get hostFormTrackedLinksHelp =>
+      'Use a different link for Instagram, WhatsApp, email, or a partner so response attribution stays visible.';
+
+  @override
+  String get hostFormCreateTrackedLink => 'Create tracked link';
+
+  @override
+  String get hostFormTrackedLinkTitle => 'New tracked link';
+
+  @override
+  String get hostFormTrackedLinkLabel => 'Internal label';
+
+  @override
+  String get hostFormTrackedLinkLabelHint => 'August Instagram story';
+
+  @override
+  String get hostFormTrackedLinkSource => 'Source tag (optional)';
+
+  @override
+  String get hostFormTrackedLinkSourceHint => 'instagram_story';
+
+  @override
+  String get hostFormTrackedLinkReady => 'Tracked link ready';
+
+  @override
+  String get hostFormEmbed => 'Embed on your website';
+
+  @override
+  String get hostFormEmbedHelp =>
+      'Paste this iframe into your website builder. The embedded route keeps the same validation and submission controls.';
+
+  @override
+  String get hostFormCopyEmbed => 'Copy embed code';
+
+  @override
+  String get hostFormEmbedCopied => 'Embed code copied';
+
+  @override
+  String get hostFormCreate => 'Create';
+
+  @override
+  String get hostFormSettings => 'Form settings';
+
+  @override
+  String get hostFormTitleLabel => 'Form title';
+
+  @override
+  String get hostFormDescriptionLabel => 'Description';
+
+  @override
+  String get hostFormPurposeLabel => 'Purpose';
+
+  @override
+  String get hostFormIdentityLabel => 'Who can respond';
+
+  @override
+  String get hostFormIdentityAnonymous => 'Anyone · anonymous allowed';
+
+  @override
+  String get hostFormIdentityEmail => 'Verified email required';
+
+  @override
+  String get hostFormIdentityPhone => 'Verified phone required';
+
+  @override
+  String get hostFormIdentityEmailOrPhone => 'Verified email or phone';
+
+  @override
+  String get hostFormIdentityCatchAccount => 'Catch account required';
+
+  @override
+  String get hostFormCompletionTitleLabel => 'Confirmation title';
+
+  @override
+  String get hostFormAddSection => 'Add section';
+
+  @override
+  String hostFormSectionNumber({required int number}) {
+    return 'Section $number';
+  }
+
+  @override
+  String get hostFormSectionTitleLabel => 'Section title';
+
+  @override
+  String get hostFormAddQuestion => 'Add question';
+
+  @override
+  String get hostFormMoveSectionUp => 'Move section up';
+
+  @override
+  String get hostFormMoveSectionDown => 'Move section down';
+
+  @override
+  String get hostFormRemoveSection => 'Remove section';
+
+  @override
+  String get hostFormQuestionLabel => 'Question';
+
+  @override
+  String get hostFormQuestionType => 'Answer type';
+
+  @override
+  String get hostFormQuestionRequired => 'Response required';
+
+  @override
+  String hostFormOptionNumber({required int number}) {
+    return 'Option $number';
+  }
+
+  @override
+  String get hostFormAddOption => 'Add option';
+
+  @override
+  String get hostFormMoveUp => 'Move up';
+
+  @override
+  String get hostFormMoveDown => 'Move down';
+
+  @override
+  String get hostFormRemoveQuestion => 'Remove question';
+
+  @override
+  String get hostFormChooseQuestionType => 'Choose an answer type';
+
+  @override
+  String get hostFormOutline => 'Outline';
+
+  @override
+  String hostFormQuestionCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count questions',
+      one: '1 question',
+      zero: 'No questions',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostFormSaved => 'Saved';
+
+  @override
+  String get hostFormUnsaved => 'Unsaved changes';
+
+  @override
+  String get hostFormSaving => 'Saving…';
+
+  @override
+  String get hostFormSaveConflict => 'Newer version available';
+
+  @override
+  String get hostFormSaveFailed => 'Form could not be saved';
+
+  @override
+  String get hostFormConflictTitle => 'This form changed elsewhere';
+
+  @override
+  String get hostFormConflictBody =>
+      'Reload the newest revision before making more changes.';
+
+  @override
+  String get hostFormReload => 'Reload form';
+
+  @override
+  String get hostFormRetrySave => 'Retry save';
+
+  @override
+  String hostFormValidationTitle({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Fix $count form issues',
+      one: 'Fix 1 form issue',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostFormTypeShortText => 'Short text';
+
+  @override
+  String get hostFormTypeLongText => 'Long text';
+
+  @override
+  String get hostFormTypeSingleChoice => 'Single choice';
+
+  @override
+  String get hostFormTypeMultiChoice => 'Multiple choice';
+
+  @override
+  String get hostFormTypeDate => 'Date';
+
+  @override
+  String get hostFormTypePhone => 'Phone number';
+
+  @override
+  String get hostFormTypeEmail => 'Email address';
+
+  @override
+  String get hostFormTypeUrl => 'Website link';
+
+  @override
+  String get hostFormTypeNumber => 'Number';
+
+  @override
+  String get hostFormTypeBoolean => 'Yes or no';
+
+  @override
+  String get hostFormTypeFile => 'File upload';
+
+  @override
+  String get hostFormTypeAcknowledgement => 'Acknowledgement';
+
+  @override
+  String get hostFormTypeSignature => 'Signature';
+
+  @override
+  String get hostFormQuestionHelpLabel => 'Help text';
+
+  @override
+  String get hostFormPrivacyLabel => 'Data classification';
+
+  @override
+  String get hostFormPrivacyContact => 'Contact information';
+
+  @override
+  String get hostFormPrivacyProfile => 'Profile information';
+
+  @override
+  String get hostFormPrivacySensitive => 'Sensitive information';
+
+  @override
+  String get hostFormPrivacyCustom => 'Organizer-specific answer';
+
+  @override
+  String get hostFormPrefillLabel => 'Prefill behavior';
+
+  @override
+  String get hostFormPrefillNever => 'Never prefill';
+
+  @override
+  String get hostFormPrefillReview => 'Prefill, then require review';
+
+  @override
+  String get hostFormPresentationLabel => 'Host response view';
+
+  @override
+  String get hostFormPresentationDetail => 'Response detail only';
+
+  @override
+  String get hostFormPresentationFilter => 'Filterable column';
+
+  @override
+  String get hostFormPresentationSort => 'Sortable column';
+
+  @override
+  String get hostFormMinimumLength => 'Minimum characters';
+
+  @override
+  String get hostFormMaximumLength => 'Maximum characters';
+
+  @override
+  String get hostFormMinimumNumber => 'Minimum value';
+
+  @override
+  String get hostFormMaximumNumber => 'Maximum value';
+
+  @override
+  String get hostFormEarliestDate => 'Earliest date (YYYY-MM-DD)';
+
+  @override
+  String get hostFormLatestDate => 'Latest date (YYYY-MM-DD)';
+
+  @override
+  String get hostFormMinimumSelections => 'Minimum choices';
+
+  @override
+  String get hostFormMaximumSelections => 'Maximum choices';
+
+  @override
+  String get hostFormMaximumFiles => 'Maximum files';
+
+  @override
+  String get hostFormMaximumFileMegabytes => 'Maximum size per file (MB)';
+
+  @override
+  String get hostFormAllowedFileTypes => 'Allowed types (comma separated)';
+
+  @override
+  String get hostFormPatternLabel => 'Text format';
+
+  @override
+  String get hostFormPatternNone => 'Any text';
+
+  @override
+  String get hostFormPatternLetters => 'Letters and spaces';
+
+  @override
+  String get hostFormPatternAlphanumeric => 'Letters and numbers';
+
+  @override
+  String get hostFormPatternPostal => 'Postal code';
+
+  @override
+  String get hostFormPatternHandle => 'Social handle';
+
+  @override
+  String get hostFormCustomError => 'Custom validation message';
+
+  @override
+  String get hostFormAppearance => 'Appearance';
+
+  @override
+  String get hostFormAppearancePreset => 'Layout style';
+
+  @override
+  String get hostFormAppearanceEditorial => 'Editorial';
+
+  @override
+  String get hostFormAppearanceMinimal => 'Minimal';
+
+  @override
+  String get hostFormAppearanceActivity => 'Activity-led';
+
+  @override
+  String get hostFormActivityKind => 'Activity label';
+
+  @override
+  String get hostFormAvailability => 'Availability';
+
+  @override
+  String get hostFormOpensAt => 'Opens on';
+
+  @override
+  String get hostFormClosesAt => 'Closes on';
+
+  @override
+  String get hostFormDateNotSet => 'No date set';
+
+  @override
+  String get hostFormClearDate => 'Clear date';
+
+  @override
+  String get hostFormResponseLimit => 'Response limit';
+
+  @override
+  String get hostFormClosedMessage => 'Closed-form message';
+
+  @override
+  String get hostFormConsent => 'Consent and retention';
+
+  @override
+  String get hostFormConsentCopy => 'Consent statement';
+
+  @override
+  String get hostFormConsentVersion => 'Consent version';
+
+  @override
+  String get hostFormRetentionCopy => 'Retention statement';
+
+  @override
+  String get hostFormCompletion => 'After submission';
+
+  @override
+  String get hostFormCompletionMessageLabel => 'Confirmation message';
+
+  @override
+  String get hostFormCompletionActionLabel => 'Next action';
+
+  @override
+  String get hostFormCompletionActionNone => 'No action';
+
+  @override
+  String get hostFormCompletionActionExternal => 'Open a link';
+
+  @override
+  String get hostFormCompletionActionEvent => 'Open linked event';
+
+  @override
+  String get hostFormCompletionActionRuntime => 'Open event runtime';
+
+  @override
+  String get hostFormCompletionButtonLabel => 'Button label';
+
+  @override
+  String get hostFormCompletionUrl => 'Destination URL';
+
+  @override
+  String get hostFormLogic => 'Conditional logic';
+
+  @override
+  String get hostFormLogicHelp =>
+      'Show, hide, skip, or finish based on an earlier answer. Routes must move forward.';
+
+  @override
+  String get hostFormAddRule => 'Add rule';
+
+  @override
+  String get hostFormRemoveRule => 'Remove rule';
+
+  @override
+  String get hostFormRuleQuestion => 'When this answer';
+
+  @override
+  String get hostFormRuleOperator => 'Condition';
+
+  @override
+  String get hostFormRuleValue => 'Comparison value';
+
+  @override
+  String get hostFormRuleTrue => 'Yes';
+
+  @override
+  String get hostFormRuleFalse => 'No';
+
+  @override
+  String get hostFormRuleAction => 'Then';
+
+  @override
+  String get hostFormRuleTargetQuestion => 'Target question';
+
+  @override
+  String get hostFormRuleTargetSection => 'Target section';
+
+  @override
+  String get hostFormRuleSave => 'Save rule';
+
+  @override
+  String get hostFormOperatorEquals => 'equals';
+
+  @override
+  String get hostFormOperatorNotEquals => 'does not equal';
+
+  @override
+  String get hostFormOperatorContains => 'contains';
+
+  @override
+  String get hostFormOperatorNotContains => 'does not contain';
+
+  @override
+  String get hostFormOperatorGreater => 'is greater than';
+
+  @override
+  String get hostFormOperatorLess => 'is less than';
+
+  @override
+  String get hostFormOperatorAnswered => 'is answered';
+
+  @override
+  String get hostFormOperatorNotAnswered => 'is not answered';
+
+  @override
+  String get hostFormActionShowQuestion => 'Show a question';
+
+  @override
+  String get hostFormActionHideQuestion => 'Hide a question';
+
+  @override
+  String get hostFormActionShowSection => 'Show a section';
+
+  @override
+  String get hostFormActionHideSection => 'Hide a section';
+
+  @override
+  String get hostFormActionRouteSection => 'Skip to a section';
+
+  @override
+  String get hostFormActionFinish => 'Finish the form';
+
+  @override
+  String get hostFormsViewForms => 'Forms';
+
+  @override
+  String get hostFormsViewResponses => 'Responses';
+
+  @override
+  String get hostFormResponsesSubtitle =>
+      'Review every submission, preserve its source, and choose what happens next.';
+
+  @override
+  String get hostFormResponsesSearch => 'Search responses';
+
+  @override
+  String get hostFormResponsesAll => 'All responses';
+
+  @override
+  String get hostFormResponsesSubmitted => 'Submitted';
+
+  @override
+  String get hostFormResponsesWithdrawn => 'Withdrawn';
+
+  @override
+  String get hostFormResponsesAnonymous => 'Anonymous respondent';
+
+  @override
+  String get hostFormResponsesEmptyTitle => 'No responses yet';
+
+  @override
+  String get hostFormResponsesEmptyBody =>
+      'Share a published form. New submissions will appear here without loading the full response history.';
+
+  @override
+  String get hostFormResponsesNoMatchesTitle => 'No responses match';
+
+  @override
+  String get hostFormResponsesNoMatchesBody =>
+      'Try another search or status filter.';
+
+  @override
+  String get hostFormResponsesLoadMore => 'Load more responses';
+
+  @override
+  String hostFormResponseRowSummary({
+    required String formTitle,
+    required String source,
+  }) {
+    return '$formTitle · $source';
+  }
+
+  @override
+  String get hostFormResponseDirectSource => 'Direct link';
+
+  @override
+  String get hostFormsViewResponsesAction => 'View responses';
+
+  @override
+  String get hostFormsAnalyticsAction => 'View analytics';
+
+  @override
+  String get hostFormsAutomationsAction => 'Manage automations';
+
+  @override
+  String get hostFormResponseTitle => 'Response';
+
+  @override
+  String get hostFormResponseIdentitySection => 'Respondent';
+
+  @override
+  String get hostFormResponseAnswersSection => 'Answers';
+
+  @override
+  String get hostFormResponseOperationsSection => 'Next actions';
+
+  @override
+  String get hostFormResponseName => 'Name';
+
+  @override
+  String get hostFormResponseEmail => 'Email';
+
+  @override
+  String get hostFormResponsePhone => 'Phone';
+
+  @override
+  String get hostFormResponseSource => 'Source';
+
+  @override
+  String get hostFormResponseSubmittedAt => 'Submitted';
+
+  @override
+  String get hostFormResponseConsent => 'Consent version';
+
+  @override
+  String get hostFormResponseCompletionTime => 'Completion time';
+
+  @override
+  String get hostFormResponseNotProvided => 'Not provided';
+
+  @override
+  String get hostFormResponseNoAnswer => 'No answer';
+
+  @override
+  String hostFormResponseDownloadFile({required String fileName}) {
+    return 'Open $fileName';
+  }
+
+  @override
+  String get hostFormConvertCrm => 'Create CRM contact';
+
+  @override
+  String get hostFormConvertApplication => 'Add to applications';
+
+  @override
+  String get hostFormConvertAttendee => 'Propose attendee';
+
+  @override
+  String get hostFormConversionReviewTitle => 'Review this action';
+
+  @override
+  String get hostFormConversionReviewBody =>
+      'Catch will create only the fields shown in this preview. Existing records and conflicts remain protected.';
+
+  @override
+  String get hostFormConversionConfirm => 'Confirm action';
+
+  @override
+  String get hostFormConversionUnavailable =>
+      'This action needs verified identity or additional setup.';
+
+  @override
+  String get hostFormConversionComplete => 'Action completed';
+
+  @override
+  String get hostFormAnalyticsTitle => 'Form analytics';
+
+  @override
+  String get hostFormAnalyticsFunnel => 'Response funnel';
+
+  @override
+  String get hostFormAnalyticsOpens => 'Opens';
+
+  @override
+  String get hostFormAnalyticsStarts => 'Starts';
+
+  @override
+  String get hostFormAnalyticsSubmissions => 'Submissions';
+
+  @override
+  String get hostFormAnalyticsCompletionRate => 'Completion rate';
+
+  @override
+  String get hostFormAnalyticsMedianTime => 'Median completion';
+
+  @override
+  String get hostFormAnalyticsSources => 'Sources';
+
+  @override
+  String get hostFormAnalyticsQuestions => 'Question results';
+
+  @override
+  String get hostFormAnalyticsPrivacyNotice =>
+      'Question results appear only when the privacy threshold is met. Sensitive and free-text answers are never charted.';
+
+  @override
+  String get hostFormExportCsv => 'Export CSV';
+
+  @override
+  String get hostFormExportXlsx => 'Export Excel';
+
+  @override
+  String get hostFormExportReady => 'Export ready';
+
+  @override
+  String get hostFormAutomationsTitle => 'Automations';
+
+  @override
+  String get hostFormAutomationsSubtitle =>
+      'Run explicit, observable actions after a response changes. You can disable any rule instantly.';
+
+  @override
+  String get hostFormAutomationsRules => 'Rules';
+
+  @override
+  String get hostFormAutomationsRuns => 'Recent runs';
+
+  @override
+  String get hostFormAutomationsEmptyTitle => 'No automations yet';
+
+  @override
+  String get hostFormAutomationsEmptyBody =>
+      'Start with a safe preset. Every run is recorded and can be disabled.';
+
+  @override
+  String get hostFormAutomationNotifyPreset => 'Notify my team';
+
+  @override
+  String get hostFormAutomationCrmPreset => 'Create CRM contacts';
+
+  @override
+  String get hostFormAutomationSubmittedTrigger =>
+      'When a response is submitted';
+
+  @override
+  String get hostFormAutomationWithdrawnTrigger =>
+      'When a response is withdrawn';
+
+  @override
+  String get hostFormAutomationAnswerTrigger => 'When an answer matches';
+
+  @override
+  String hostFormAutomationActionCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count actions',
+      one: '1 action',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostFormAutomationRunSummary({
+    required String trigger,
+    required int attempt,
+  }) {
+    return '$trigger · Attempt $attempt';
+  }
+
+  @override
+  String get hostFormAutomationsLoadMore => 'Load more runs';
+
+  @override
+  String get hostFormResponseOriginAnonymous => 'Anonymous';
+
+  @override
+  String get hostFormResponseOriginGranted => 'Shared by respondent';
+
+  @override
+  String get hostFormResponseOriginAcquired => 'Organizer record';
+
+  @override
+  String get hostFormResponseOriginRevoked => 'Access revoked';
+
+  @override
+  String get hostFormSelectEventTitle => 'Choose an event';
+
+  @override
+  String get hostFormSelectEventEmpty =>
+      'No upcoming events are available for an attendee proposal.';
+
+  @override
+  String get hostFormConversionExisting =>
+      'An existing record already matches this response.';
+
+  @override
+  String hostFormResponseFilteredTo({required String formTitle}) {
+    return 'Showing responses for $formTitle';
+  }
+
+  @override
+  String get hostFormResponseClearFormFilter => 'Show all';
+
+  @override
+  String hostFormAnalyticsSourceSummary({
+    required int opens,
+    required int starts,
+    required int submissions,
+  }) {
+    return '$opens opens · $starts starts · $submissions submissions';
+  }
+
+  @override
+  String hostFormAnalyticsQuestionSummary({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count answers',
+      one: '1 answer',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostFormAnalyticsChoiceCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count responses',
+      one: '1 response',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostFormExportFailed =>
+      'The export could not be prepared. Try again.';
+
+  @override
+  String get hostFormExportStillPreparing =>
+      'The export is still preparing. You can retry without creating a duplicate.';
+
+  @override
+  String get hostFormAutomationPending => 'Pending';
+
+  @override
+  String get hostFormAutomationRunning => 'Running';
+
+  @override
+  String get hostFormAutomationSucceeded => 'Succeeded';
+
+  @override
+  String get hostFormAutomationPartiallyFailed => 'Needs attention';
+
+  @override
+  String get hostFormAutomationFailed => 'Failed';
+
+  @override
+  String get hostFormAutomationSkipped => 'Skipped';
+
+  @override
+  String get hostFormUndo => 'Undo last edit';
+
+  @override
+  String get hostFormRedo => 'Redo edit';
 }
