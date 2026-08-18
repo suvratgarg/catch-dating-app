@@ -1330,6 +1330,17 @@ class HostCustomerConversationCard extends StatelessWidget {
       HostCustomerConversationAvailability.ambiguous =>
         context.l10n.hostCustomersConversationAmbiguous,
     };
+    final whatsappAvailability = customer.personalWhatsappHandoffAvailability;
+    final whatsappMessage = switch (whatsappAvailability) {
+      HostPersonalWhatsappHandoffAvailability.ready =>
+        context.l10n.hostCustomersWhatsappHandoffDisclosure,
+      HostPersonalWhatsappHandoffAvailability.missingPhone =>
+        context.l10n.hostCustomersWhatsappMissingPhone,
+      HostPersonalWhatsappHandoffAvailability.organizerSuppressed =>
+        context.l10n.hostCustomersWhatsappOrganizerSuppressed,
+      HostPersonalWhatsappHandoffAvailability.contactOptedOut =>
+        context.l10n.hostCustomersWhatsappContactOptedOut,
+    };
     return CatchSurface(
       padding: CatchInsets.cardContent,
       child: Column(
@@ -1359,17 +1370,16 @@ class HostCustomerConversationCard extends StatelessWidget {
             isLoading: loading,
             onPressed: loading ? null : onOpen,
           ),
-          if (onOpenWhatsapp != null) ...[
-            gapH20,
-            Text(
-              context.l10n.hostCustomersWhatsappAppChannel,
-              style: CatchTextStyles.fieldRowTitle(context),
-            ),
-            gapH4,
-            Text(
-              context.l10n.hostCustomersWhatsappHandoffDisclosure,
-              style: CatchTextStyles.supporting(context),
-            ),
+          gapH20,
+          Text(
+            context.l10n.hostCustomersWhatsappAppChannel,
+            style: CatchTextStyles.fieldRowTitle(context),
+          ),
+          gapH4,
+          Text(whatsappMessage, style: CatchTextStyles.supporting(context)),
+          if (whatsappAvailability ==
+                  HostPersonalWhatsappHandoffAvailability.ready &&
+              onOpenWhatsapp != null) ...[
             gapH12,
             CatchButton(
               key: const ValueKey('host-customer-open-whatsapp'),

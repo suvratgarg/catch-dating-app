@@ -2126,7 +2126,8 @@ only pending/error presentation and closes after callable acceptance.
 for communication choices. Transport alone is never sufficient routing or
 authorization input. Every route keeps a stable id and adapter key plus its
 sender identity, delivery mode, consent scope, observability, final-send
-ownership, reply support and scheduling support. Organizer WhatsApp and
+ownership, audience/eligibility scope, reply support and scheduling support.
+Organizer WhatsApp and
 Catch-owned WhatsApp therefore remain different routes even though both use
 the WhatsApp transport. Their tokens, sender connections, permission evidence,
 suppression state, threads and receipts must never share authority.
@@ -2142,10 +2143,12 @@ retain mutation ownership.
 
 External handoff is intentionally a weak-observability route:
 `ExternalLinks.openWhatsappHandoff` may report only whether the device accepted
-the `wa.me` launch. The Host edits the prefilled copy and presses Send in
-WhatsApp, so Catch must not create a delivery receipt, campaign record or reply
-thread from that launch. An explicit organizer WhatsApp opt-out or admin
-suppression also removes the handoff even though it is not a campaign route.
+the native WhatsApp scheme or its `wa.me` fallback. The Host edits the
+prefilled copy and presses Send in WhatsApp, so Catch must not create a delivery
+receipt, campaign record or reply thread from that launch. An explicit
+organizer WhatsApp opt-out or admin suppression keeps the route visible with
+the exact blocker but removes its action even though it is not a campaign
+route.
 Conversely, provider-backed routes are unavailable until their sender,
 template, permission and provider health gates pass.
 

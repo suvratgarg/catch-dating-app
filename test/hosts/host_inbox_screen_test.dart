@@ -245,7 +245,7 @@ void main() {
     expect(find.text('WhatsApp Business · Organizer number'), findsOneWidget);
     expect(find.text('WhatsApp app · You'), findsOneWidget);
     expect(find.text('Follower update · Organizer'), findsOneWidget);
-    expect(find.text('WhatsApp · Catch'), findsOneWidget);
+    expect(find.text('Catch WhatsApp · Catch number'), findsOneWidget);
     expect(find.byType(HostCampaignComposer), findsNothing);
 
     await tester.tap(find.text('WhatsApp Business · Organizer number'));

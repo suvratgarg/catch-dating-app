@@ -81,6 +81,7 @@
           "customer_sorted_name": ["test/hosts/host_customers_screen_state_test.dart", "test/hosts/host_crm_repository_test.dart"],
           "customer_merge_review": ["test/hosts/host_crm_repository_test.dart"],
           "customer_active_merges": ["test/hosts/host_crm_repository_test.dart"],
+          "personal_whatsapp_unavailable": ["test/hosts/host_operations_screen_test.dart", "test/hosts/host_crm_repository_test.dart"],
           "personal_whatsapp_handoff": ["test/hosts/host_operations_screen_test.dart", "test/core/external_links_test.dart", "test/communications/communication_route_test.dart"]
         }
       },
@@ -327,10 +328,10 @@
             {"kind": "surface_state", "stateIds": ["personal_whatsapp_handoff"]},
             {"kind": "side_effect", "id": "host_customers.whatsapp_app_launched"}
           ],
-          "description": "Opens an editable prefilled wa.me handoff for one valid contact phone only while no explicit WhatsApp opt-out or admin suppression applies. The Host remains responsible for pressing Send in WhatsApp, and Catch records no delivery or reply receipt."
+          "description": "Opens an editable prefilled native WhatsApp app handoff, with wa.me fallback, for one valid contact phone only while no explicit WhatsApp opt-out or admin suppression applies. The Host remains responsible for pressing Send in WhatsApp, and Catch records no delivery or reply receipt."
         }
       ],
-      "stateIds": ["customers_loading", "customers_error", "customers_empty", "customers_populated", "customers_filtered_empty", "customers_paginating", "customer_sorted_most_attended", "customer_sorted_name", "customer_filter_sheet", "customer_filter_manual_tag", "customer_campaign_bridge_ready", "customer_campaign_bridge_blocked", "manual_add_pending", "customer_export_pending", "customer_manage", "customer_manage_pending", "customer_detail_loading", "customer_detail_error", "customer_detail_linked", "customer_detail_unlinked", "customer_detail_ambiguous", "customer_memory_populated", "customer_note_editing", "customer_tags_editing", "customer_send_history", "customer_merge_review", "customer_merge_dismissed", "customer_merge_conflict_confirmation", "customer_active_merges", "customer_unmerge_pending", "customer_revenue_exact", "customer_revenue_partial", "customer_revenue_unavailable", "conversation_available", "conversation_unavailable", "personal_whatsapp_handoff", "offline", "text_scale_2", "reduced_motion", "light_dark"],
+      "stateIds": ["customers_loading", "customers_error", "customers_empty", "customers_populated", "customers_filtered_empty", "customers_paginating", "customer_sorted_most_attended", "customer_sorted_name", "customer_filter_sheet", "customer_filter_manual_tag", "customer_campaign_bridge_ready", "customer_campaign_bridge_blocked", "manual_add_pending", "customer_export_pending", "customer_manage", "customer_manage_pending", "customer_detail_loading", "customer_detail_error", "customer_detail_linked", "customer_detail_unlinked", "customer_detail_ambiguous", "customer_memory_populated", "customer_note_editing", "customer_tags_editing", "customer_send_history", "customer_merge_review", "customer_merge_dismissed", "customer_merge_conflict_confirmation", "customer_active_merges", "customer_unmerge_pending", "customer_revenue_exact", "customer_revenue_partial", "customer_revenue_unavailable", "conversation_available", "conversation_unavailable", "personal_whatsapp_unavailable", "personal_whatsapp_handoff", "offline", "text_scale_2", "reduced_motion", "light_dark"],
       "scenarioDefaults": {"dimensions": {}, "actionCases": [{"id": "default"}]},
       "scenarioOverrides": {
         "customers_loading": {"dimensions": {"load": "loading"}},
@@ -368,6 +369,7 @@
         "customer_revenue_unavailable": {"dimensions": {"revenue": "unavailable"}},
         "conversation_available": {"dimensions": {"identity": "linked"}, "actionCases": [{"id": "start", "enabledActions": ["start_conversation"]}]},
         "conversation_unavailable": {"dimensions": {"identity": "unlinked"}, "actionCases": [{"id": "blocked", "disabledActions": ["start_conversation"]}]},
+        "personal_whatsapp_unavailable": {"dimensions": {"personal_whatsapp": "unavailable"}, "actionCases": [{"id": "explain", "disabledActions": ["open_personal_whatsapp_handoff"]}]},
         "personal_whatsapp_handoff": {"dimensions": {"personal_whatsapp": "editing"}, "actionCases": [{"id": "edit_and_open", "enabledActions": ["open_personal_whatsapp_handoff"]}]},
         "offline": {"dimensions": {"load": "offline"}, "actionCases": [{"id": "retry", "enabledActions": ["retry_directory", "retry_customer_detail"]}]},
         "text_scale_2": {"dimensions": {"accessibility": "text_scale_2"}},
@@ -395,7 +397,7 @@
           "reason": "Controller policy, repository mapping, and route tests cover the initial seam; deterministic rendered state tests remain follow-up evidence for the customer directory."
         },
         {
-          "stateIds": ["personal_whatsapp_handoff"],
+          "stateIds": ["personal_whatsapp_unavailable", "personal_whatsapp_handoff"],
           "evidence": ["previews"],
           "debtId": "HOST-CUSTOMERS-EVIDENCE-001",
           "reason": "The editable handoff and URL launcher contract have focused rendered tests; a deterministic Widgetbook variant remains follow-up evidence."

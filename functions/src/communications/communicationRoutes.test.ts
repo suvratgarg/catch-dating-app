@@ -28,6 +28,35 @@ test("personal handoff remains host-sent and unobservable by Catch", () => {
   const handoff = communicationRoutes.personalWhatsappHandoff;
 
   assert.equal(handoff.deliveryMode, "externalHandoff");
+  assert.equal(handoff.audienceScope, "singleContact");
   assert.equal(handoff.observability, "none");
   assert.equal(handoff.requiresHostFinalSend, true);
+  assert.equal(handoff.supportsScheduling, false);
+});
+
+test("every route declares audience, reply, and scheduling semantics", () => {
+  assert.deepEqual(
+    Object.values(communicationRoutes).map((route) => route.audienceScope),
+    [
+      "singleContact",
+      "organizerCrmSegment",
+      "catchPermissionedAudience",
+      "linkedCatchAccount",
+      "eventRoster",
+      "organizerFollowers",
+    ],
+  );
+  assert.equal(communicationRoutes.catchChat.supportsReplies, true);
+  assert.equal(
+    communicationRoutes.catchEventAnnouncement.supportsReplies,
+    false,
+  );
+  assert.equal(
+    communicationRoutes.organizerFollowerUpdate.supportsScheduling,
+    false,
+  );
+  assert.equal(
+    communicationRoutes.organizerWhatsappCampaign.supportsScheduling,
+    true,
+  );
 });

@@ -500,7 +500,41 @@ void _registerHostOperationsCustomersTests() {
     expect(activityY, lessThan(controlsY));
   });
 
-  testWidgets('customer WhatsApp handoff pre-fills copy and opens wa.me', (
+  testWidgets('customer detail explains an unavailable WhatsApp handoff', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 3600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await _pumpHostScreen(
+      tester,
+      const HostCustomerDetailScreen(
+        organizerId: 'organizer-1',
+        contactId: 'contact-1',
+      ),
+      overrides: [
+        uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
+        hostAudienceContactDetailProvider(
+          'organizer-1',
+          'contact-1',
+        ).overrideWithValue(AsyncData(_customerDetail())),
+      ],
+    );
+
+    expect(find.text('WhatsApp app · You'), findsOneWidget);
+    expect(
+      find.text('Add a valid phone number to use a personal WhatsApp handoff.'),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('host-customer-open-whatsapp')),
+      findsNothing,
+    );
+  });
+
+  testWidgets('customer WhatsApp handoff pre-fills copy and opens the app', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(390, 3600);
@@ -550,8 +584,9 @@ void _registerHostOperationsCustomersTests() {
     );
     await pumpFeatureUi(tester);
 
-    expect(launchedUri?.host, 'wa.me');
-    expect(launchedUri?.path, '/919876543210');
+    expect(launchedUri?.scheme, 'whatsapp');
+    expect(launchedUri?.host, 'send');
+    expect(launchedUri?.queryParameters['phone'], '919876543210');
     expect(launchedUri?.queryParameters['text'], 'Hi Ananya Rao,');
   });
 }

@@ -13091,7 +13091,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostSendsLinkedEventUpdate => 'Linked event';
 
   @override
-  String get hostSendsCatchWhatsappChannel => 'WhatsApp · Catch';
+  String get hostSendsCatchWhatsappChannel => 'Catch WhatsApp · Catch number';
 
   @override
   String get hostSendsCatchWhatsappDescription =>
@@ -13135,7 +13135,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostSendsEmptyHelp =>
-      'Campaigns and event announcements will appear here after you send them.';
+      'Campaigns, event announcements, and follower updates will appear here after you send them.';
 
   @override
   String get hostSendsCampaignType => 'Campaign';
@@ -13523,6 +13523,18 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostCustomersWhatsappHandoffDisclosure =>
       'Opens WhatsApp on this device with editable text. You review it and press Send; Catch cannot track delivery or replies.';
+
+  @override
+  String get hostCustomersWhatsappMissingPhone =>
+      'Add a valid phone number to use a personal WhatsApp handoff.';
+
+  @override
+  String get hostCustomersWhatsappOrganizerSuppressed =>
+      'WhatsApp handoff is paused for this customer by your team.';
+
+  @override
+  String get hostCustomersWhatsappContactOptedOut =>
+      'This customer has opted out of WhatsApp messages.';
 
   @override
   String get hostCustomersWriteInWhatsapp => 'Write in WhatsApp';

@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 /// Product routes are intentionally more specific than transports.
 ///
 /// Two routes may both use WhatsApp while retaining different sender,
@@ -39,9 +37,17 @@ enum CommunicationConsentScope {
   catchMessaging,
 }
 
+enum CommunicationAudienceScope {
+  singleContact,
+  organizerCrmSegment,
+  catchPermissionedAudience,
+  linkedCatchAccount,
+  eventRoster,
+  organizerFollowers,
+}
+
 enum CommunicationObservability { none, catchActivity, providerReceipts }
 
-@immutable
 class CommunicationRouteCapability {
   const CommunicationRouteCapability({
     required this.id,
@@ -49,6 +55,7 @@ class CommunicationRouteCapability {
     required this.adapterKey,
     required this.senderIdentity,
     required this.deliveryMode,
+    required this.audienceScope,
     required this.consentScope,
     required this.observability,
     required this.requiresHostFinalSend,
@@ -64,6 +71,7 @@ class CommunicationRouteCapability {
   final String adapterKey;
   final CommunicationSenderIdentity senderIdentity;
   final CommunicationDeliveryMode deliveryMode;
+  final CommunicationAudienceScope audienceScope;
   final CommunicationConsentScope consentScope;
   final CommunicationObservability observability;
   final bool requiresHostFinalSend;
@@ -80,6 +88,7 @@ const communicationRouteCatalog =
             adapterKey: 'whatsapp_handoff',
             senderIdentity: CommunicationSenderIdentity.hostPersonalDevice,
             deliveryMode: CommunicationDeliveryMode.externalHandoff,
+            audienceScope: CommunicationAudienceScope.singleContact,
             consentScope: CommunicationConsentScope.directUserAction,
             observability: CommunicationObservability.none,
             requiresHostFinalSend: true,
@@ -93,6 +102,7 @@ const communicationRouteCatalog =
             adapterKey: 'meta_whatsapp_business',
             senderIdentity: CommunicationSenderIdentity.organizerManaged,
             deliveryMode: CommunicationDeliveryMode.campaign,
+            audienceScope: CommunicationAudienceScope.organizerCrmSegment,
             consentScope: CommunicationConsentScope.organizerMarketing,
             observability: CommunicationObservability.providerReceipts,
             requiresHostFinalSend: false,
@@ -105,6 +115,7 @@ const communicationRouteCatalog =
         adapterKey: 'catch_whatsapp_business',
         senderIdentity: CommunicationSenderIdentity.catchPlatform,
         deliveryMode: CommunicationDeliveryMode.platformMessage,
+        audienceScope: CommunicationAudienceScope.catchPermissionedAudience,
         consentScope: CommunicationConsentScope.catchMessaging,
         observability: CommunicationObservability.providerReceipts,
         requiresHostFinalSend: false,
@@ -117,6 +128,7 @@ const communicationRouteCatalog =
         adapterKey: 'catch_chat',
         senderIdentity: CommunicationSenderIdentity.organizerManaged,
         deliveryMode: CommunicationDeliveryMode.directConversation,
+        audienceScope: CommunicationAudienceScope.linkedCatchAccount,
         consentScope: CommunicationConsentScope.linkedCatchAccount,
         observability: CommunicationObservability.catchActivity,
         requiresHostFinalSend: false,
@@ -129,6 +141,7 @@ const communicationRouteCatalog =
         adapterKey: 'catch_activity_push',
         senderIdentity: CommunicationSenderIdentity.organizerManaged,
         deliveryMode: CommunicationDeliveryMode.eventAnnouncement,
+        audienceScope: CommunicationAudienceScope.eventRoster,
         consentScope: CommunicationConsentScope.eventService,
         observability: CommunicationObservability.catchActivity,
         requiresHostFinalSend: false,
@@ -142,6 +155,7 @@ const communicationRouteCatalog =
             adapterKey: 'catch_activity_push',
             senderIdentity: CommunicationSenderIdentity.organizerManaged,
             deliveryMode: CommunicationDeliveryMode.followerUpdate,
+            audienceScope: CommunicationAudienceScope.organizerFollowers,
             consentScope: CommunicationConsentScope.followPreference,
             observability: CommunicationObservability.catchActivity,
             requiresHostFinalSend: false,

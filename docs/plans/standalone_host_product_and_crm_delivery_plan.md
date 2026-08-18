@@ -1295,11 +1295,13 @@ The source registries are
 provider implementation. A future LINE, WeChat, KakaoTalk, SMS, or regional
 adapter adds a new route or replaces an adapter behind the same exact contract;
 it does not inherit WhatsApp permission merely because the delivery mode is
-similar.
+similar. Both registries encode the audience scope, reply support and scheduling
+support explicitly so backend authorization and UI affordances cannot infer
+them from the transport.
 
 | Route | Transport and sender | Delivery and audience | Permission | Evidence and replies | Host entry and current status |
 | --- | --- | --- | --- | --- | --- |
-| Personal WhatsApp handoff | WhatsApp app; Host's personal/device account | One Customer with a valid phone; editable prefilled text; Host presses Send | Direct Host action and independent lawful/service basis; explicit opt-out or admin suppression blocks the action; not campaign consent | Catch observes only whether the external app launched, not Send/delivery/read/reply; replies remain in WhatsApp | Customer detail → **WhatsApp app · You**; **Implemented** |
+| Personal WhatsApp handoff | WhatsApp app; Host's personal/device account | One Customer with a valid phone; editable prefilled text; Host presses Send | Direct Host action and independent lawful/service basis; explicit opt-out or admin suppression blocks the action; not campaign consent | Catch observes only whether the native app scheme or universal fallback launched, not Send/delivery/read/reply; replies remain in WhatsApp | Customer detail → **WhatsApp app · You**; unavailable state remains visible with its exact phone, suppression, or opt-out blocker; **Implemented** |
 | Organizer WhatsApp Business | Meta Cloud API; organizer-managed WABA/number | Permissioned CRM segment; template/campaign or eligible service-window reply | Exact organizer-scoped WhatsApp permission plus suppression/frequency checks | Provider acceptance/status/reply/STOP receipts in organizer-scoped campaign and Inbox records | Messaging → **WhatsApp Business · Organizer number**; source-complete, **provider-gated** |
 | Catch-owned WhatsApp | Meta/BSP adapter; clearly named Catch number | Narrow Catch service or platform purpose only; never impersonates an organizer | Separate Catch-scoped permission, notices, suppression, retention and policy basis | Separate Catch sender/webhook/thread/support records; never organizer campaign receipts | Visible as **Catch WhatsApp · Catch number**, **not active** until the product and external gates below close |
 | Catch chat | Catch app; organizer-managed professional identity | One linked, verified, unambiguous Catch account | Linked Catch account and conversation authority | Catch message/activity state; two-way reply | Customer detail or Messaging Inbox → **Catch chat · Organizer**; **Implemented** |

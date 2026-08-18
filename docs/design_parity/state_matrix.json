@@ -5250,15 +5250,25 @@
               "notes": "Only an unambiguous verified linked Catch identity enables the direct-conversation action."
             },
             {
+              "id": "personal_whatsapp_unavailable",
+              "kind": "permission",
+              "status": "tested",
+              "tests": [
+                "test/hosts/host_operations_screen_test.dart",
+                "test/hosts/host_crm_repository_test.dart"
+              ],
+              "notes": "The personal WhatsApp route remains visible but non-executable with the exact missing-phone, organizer-suppression, or contact-opt-out reason."
+            },
+            {
               "id": "personal_whatsapp_handoff",
               "kind": "mutation",
               "status": "tested",
               "tests": [
                 "test/core/external_links_test.dart",
-                "test/hosts/host_operations_customers_tests.dart",
+                "test/hosts/host_operations_screen_test.dart",
                 "test/hosts/host_crm_repository_test.dart"
               ],
-              "notes": "The customer conversation card labels WhatsApp app as a host-personal external handoff, lets the host edit prefilled copy, and fails closed when the contact is opted out or administratively suppressed. Catch cannot observe the final send after WhatsApp opens."
+              "notes": "The customer conversation card labels WhatsApp app as a host-personal external handoff, lets the host edit prefilled copy, opens the native app scheme with a wa.me fallback, and fails closed when the contact is opted out or administratively suppressed. Catch cannot observe the final send after WhatsApp opens."
             },
             {
               "id": "conversation_unavailable",

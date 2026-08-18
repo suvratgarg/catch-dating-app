@@ -24,6 +24,13 @@ export type CommunicationRouteDefinition = Readonly<{
     | "eventAnnouncement"
     | "followerUpdate"
     | "platformMessage";
+  audienceScope:
+    | "singleContact"
+    | "organizerCrmSegment"
+    | "catchPermissionedAudience"
+    | "linkedCatchAccount"
+    | "eventRoster"
+    | "organizerFollowers";
   consentScope:
     | "directUserAction"
     | "linkedCatchAccount"
@@ -33,6 +40,8 @@ export type CommunicationRouteDefinition = Readonly<{
     | "catchMessaging";
   observability: "none" | "catchActivity" | "providerReceipts";
   requiresHostFinalSend: boolean;
+  supportsReplies: boolean;
+  supportsScheduling: boolean;
 }>;
 
 export const communicationRoutes = {
@@ -42,9 +51,12 @@ export const communicationRoutes = {
     adapterKey: "whatsapp_handoff",
     senderIdentity: "hostPersonalDevice",
     deliveryMode: "externalHandoff",
+    audienceScope: "singleContact",
     consentScope: "directUserAction",
     observability: "none",
     requiresHostFinalSend: true,
+    supportsReplies: true,
+    supportsScheduling: false,
   },
   organizerWhatsappCampaign: {
     id: "organizerWhatsappCampaign",
@@ -52,9 +64,12 @@ export const communicationRoutes = {
     adapterKey: "meta_whatsapp_business",
     senderIdentity: "organizerManaged",
     deliveryMode: "campaign",
+    audienceScope: "organizerCrmSegment",
     consentScope: "organizerMarketing",
     observability: "providerReceipts",
     requiresHostFinalSend: false,
+    supportsReplies: true,
+    supportsScheduling: true,
   },
   catchWhatsapp: {
     id: "catchWhatsapp",
@@ -62,9 +77,12 @@ export const communicationRoutes = {
     adapterKey: "catch_whatsapp_business",
     senderIdentity: "catchPlatform",
     deliveryMode: "platformMessage",
+    audienceScope: "catchPermissionedAudience",
     consentScope: "catchMessaging",
     observability: "providerReceipts",
     requiresHostFinalSend: false,
+    supportsReplies: true,
+    supportsScheduling: true,
   },
   catchChat: {
     id: "catchChat",
@@ -72,9 +90,12 @@ export const communicationRoutes = {
     adapterKey: "catch_chat",
     senderIdentity: "organizerManaged",
     deliveryMode: "directConversation",
+    audienceScope: "linkedCatchAccount",
     consentScope: "linkedCatchAccount",
     observability: "catchActivity",
     requiresHostFinalSend: false,
+    supportsReplies: true,
+    supportsScheduling: false,
   },
   catchEventAnnouncement: {
     id: "catchEventAnnouncement",
@@ -82,9 +103,12 @@ export const communicationRoutes = {
     adapterKey: "catch_activity_push",
     senderIdentity: "organizerManaged",
     deliveryMode: "eventAnnouncement",
+    audienceScope: "eventRoster",
     consentScope: "eventService",
     observability: "catchActivity",
     requiresHostFinalSend: false,
+    supportsReplies: false,
+    supportsScheduling: false,
   },
   organizerFollowerUpdate: {
     id: "organizerFollowerUpdate",
@@ -92,9 +116,12 @@ export const communicationRoutes = {
     adapterKey: "catch_activity_push",
     senderIdentity: "organizerManaged",
     deliveryMode: "followerUpdate",
+    audienceScope: "organizerFollowers",
     consentScope: "followPreference",
     observability: "catchActivity",
     requiresHostFinalSend: false,
+    supportsReplies: false,
+    supportsScheduling: false,
   },
 } as const satisfies Record<
   CommunicationRouteDefinition["id"],

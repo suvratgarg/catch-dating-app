@@ -22,6 +22,7 @@ void main() {
       CommunicationSenderIdentity.hostPersonalDevice,
     );
     expect(route.requiresHostFinalSend, isTrue);
+    expect(route.audienceScope, CommunicationAudienceScope.singleContact);
     expect(route.observability, CommunicationObservability.none);
     expect(route.supportsScheduling, isFalse);
   });
@@ -43,10 +44,18 @@ void main() {
       CommunicationConsentScope.organizerMarketing,
     );
     expect(
+      organizer.audienceScope,
+      CommunicationAudienceScope.organizerCrmSegment,
+    );
+    expect(
       catchRoute.senderIdentity,
       CommunicationSenderIdentity.catchPlatform,
     );
     expect(catchRoute.consentScope, CommunicationConsentScope.catchMessaging);
+    expect(
+      catchRoute.audienceScope,
+      CommunicationAudienceScope.catchPermissionedAudience,
+    );
     expect(catchRoute.adapterKey, isNot(organizer.adapterKey));
   });
 
@@ -57,15 +66,33 @@ void main() {
     );
     expect(
       communicationRouteCapability(
+        CommunicationRouteId.catchChat,
+      ).audienceScope,
+      CommunicationAudienceScope.linkedCatchAccount,
+    );
+    expect(
+      communicationRouteCapability(
         CommunicationRouteId.catchEventAnnouncement,
       ).consentScope,
       CommunicationConsentScope.eventService,
     );
     expect(
       communicationRouteCapability(
+        CommunicationRouteId.catchEventAnnouncement,
+      ).audienceScope,
+      CommunicationAudienceScope.eventRoster,
+    );
+    expect(
+      communicationRouteCapability(
         CommunicationRouteId.organizerFollowerUpdate,
       ).consentScope,
       CommunicationConsentScope.followPreference,
+    );
+    expect(
+      communicationRouteCapability(
+        CommunicationRouteId.organizerFollowerUpdate,
+      ).audienceScope,
+      CommunicationAudienceScope.organizerFollowers,
     );
   });
 }
