@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/hosts/data/host_forms_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
 import 'package:flutter/foundation.dart';
@@ -157,7 +156,6 @@ class HostFormAutomationsController extends _$HostFormAutomationsController {
         .listAutomations(
           organizerId: organizerId,
           formId: formId,
-          limit: ReadLimitPolicy.historyPage,
         );
     return _fromPage(page);
   }
@@ -173,7 +171,6 @@ class HostFormAutomationsController extends _$HostFormAutomationsController {
             organizerId: organizerId,
             formId: formId,
             cursor: current.nextCursor,
-            limit: ReadLimitPolicy.historyPage,
           );
       final byId = <String, HostFormAutomationRun>{
         for (final run in current.runs) run.runId: run,
