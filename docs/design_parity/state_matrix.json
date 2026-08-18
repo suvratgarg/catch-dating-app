@@ -1,7 +1,7 @@
 {
   "$schema": "./state_matrix.schema.json",
   "version": 1,
-  "updated": "2026-08-17",
+  "updated": "2026-08-18",
   "requiredStateKinds": [
     "loading",
     "populated",
@@ -5250,6 +5250,17 @@
               "notes": "Only an unambiguous verified linked Catch identity enables the direct-conversation action."
             },
             {
+              "id": "personal_whatsapp_handoff",
+              "kind": "mutation",
+              "status": "tested",
+              "tests": [
+                "test/core/external_links_test.dart",
+                "test/hosts/host_operations_customers_tests.dart",
+                "test/hosts/host_crm_repository_test.dart"
+              ],
+              "notes": "The customer conversation card labels WhatsApp app as a host-personal external handoff, lets the host edit prefilled copy, and fails closed when the contact is opted out or administratively suppressed. Catch cannot observe the final send after WhatsApp opens."
+            },
+            {
               "id": "conversation_unavailable",
               "kind": "permission",
               "status": "tested",
@@ -8812,6 +8823,17 @@
               "kind": "populated",
               "status": "tested",
               "notes": "Composer opened from Customers against a specific segment via deep link; covered by router_widgets_test.dart."
+            },
+            {
+              "id": "communication_route_picker",
+              "kind": "populated",
+              "status": "tested",
+              "tests": [
+                "test/communications/communication_route_test.dart",
+                "test/hosts/host_inbox_screen_test.dart",
+                "test/hosts/host_whatsapp_setup_pane_test.dart"
+              ],
+              "notes": "The Host Sends workspace names sender identity and delivery mode for Catch chat, Catch announcements, organizer WhatsApp Business, personal WhatsApp handoff, follower updates, and the inactive Catch-owned WhatsApp route. WhatsApp Business composition stays disabled until provider, connection, sender, and approved-template readiness all pass."
             },
             {
               "id": "offline",

@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.1.3
-updated: 2026-08-19
+version: 2.2.0
+updated: 2026-08-20
 owner: recursive_audit_loop
 status: active
 ---
@@ -801,6 +801,36 @@ credentials: both identifier values contain only whitespace, which the
 source-owned configuration check trims to empty, the graph version remains
 `v23.0`, and the newer explicit gate remains `false`. Secret values still come
 only from Secret Manager, and the recovery path never enables the provider.
+
+### WhatsApp provider activation
+
+The disabled discovery profile is not a staging or production readiness
+receipt. Organizer WhatsApp may be enabled in an environment only after an
+operator verifies the following against the live target rather than a checked-in
+description:
+
+- `META_WHATSAPP_ENABLED=true` is an intentional environment approval, and the
+  Meta app id, Embedded Signup configuration id and supported Graph version are
+  non-placeholder values for that same app;
+- the app secret and organizer access-token vault secrets exist in Secret
+  Manager, the Functions runtime has only the required access, and no token or
+  secret is stored in Firestore, logs, CI artifacts or client configuration;
+- the public webhook challenge and raw-body signature path are reachable, the
+  correct WABA is subscribed, and duplicate/out-of-order status and inbound
+  webhook tests pass;
+- one organizer-owned number completes onboarding, identity/quality inspection,
+  template sync, test delivery and status receipt in the target environment;
+- exact organizer-scoped WhatsApp permission, STOP/admin suppression, frequency
+  caps, service-window rules, retention, cost/quality monitoring and support
+  escalation have named owners; and
+- the released Host clients expose provider unavailability and setup blockers
+  rather than enabling a campaign composer optimistically.
+
+Catch-owned WhatsApp is a separate activation. It requires a separate Catch
+WABA/number, credentials, templates, consent/suppression ledger, webhook/thread
+authority, retention policy and support owner. Enabling organizer WhatsApp must
+not make the Catch route active. Personal `wa.me` handoff requires no backend
+provider activation and generates no Catch delivery receipt.
 
 Mobile artifacts remain separate from backend deployment. A successful
 same-repository `main` CI attempt wakes `.github/workflows/mobile-internal-release.yml`,

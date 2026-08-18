@@ -410,6 +410,7 @@ class HostCustomerTraits {
     required this.importedEventCount,
     required this.attendanceRate,
     required this.segments,
+    required this.whatsappStatus,
     required this.sourceCoverage,
   });
 
@@ -425,6 +426,11 @@ class HostCustomerTraits {
             .map(HostAudienceSegment.fromWireValue)
             .whereType<HostAudienceSegment>()
             .toSet(),
+        whatsappStatus: _enumByName(
+          HostAudiencePermissionStatus.values,
+          _requiredString(map, 'whatsappStatus'),
+          'whatsappStatus',
+        ),
         sourceCoverage: _enumByName(
           HostAudienceSourceCoverage.values,
           _requiredString(map, 'sourceCoverage'),
@@ -439,6 +445,7 @@ class HostCustomerTraits {
   final int importedEventCount;
   final double? attendanceRate;
   final Set<HostAudienceSegment> segments;
+  final HostAudiencePermissionStatus whatsappStatus;
   final HostAudienceSourceCoverage sourceCoverage;
 }
 
@@ -1042,6 +1049,11 @@ class HostAudienceContactDetail {
   final HostCustomerHistoryCoverage sendsCoverage;
   final List<HostActiveContactMerge> activeMerges;
   final int revision;
+
+  bool get canUsePersonalWhatsappHandoff =>
+      phoneE164 != null &&
+      !whatsappAdminSuppressed &&
+      traits.whatsappStatus != HostAudiencePermissionStatus.optedOut;
 }
 
 class HostCreatedCustomer {
@@ -1206,6 +1218,14 @@ class HostWhatsappEmbeddedSignupConfig {
       appId != null && configId != null && graphVersion != null;
 }
 
+enum HostWhatsappCampaignReadiness {
+  providerUnavailable,
+  senderNotConnected,
+  senderNeedsAttention,
+  approvedTemplateRequired,
+  ready,
+}
+
 class HostWhatsappConnection {
   const HostWhatsappConnection({
     required this.connectionId,
@@ -1326,6 +1346,26 @@ class HostMessagingSetup {
   List<HostWhatsappTemplate> get approvedTemplates => templates
       .where((template) => template.isApproved)
       .toList(growable: false);
+
+  HostWhatsappCampaignReadiness get campaignReadiness {
+    if (!providerConfigured) {
+      return HostWhatsappCampaignReadiness.providerUnavailable;
+    }
+    final sender = connection;
+    if (sender == null) {
+      return HostWhatsappCampaignReadiness.senderNotConnected;
+    }
+    if (!sender.isActive) {
+      return HostWhatsappCampaignReadiness.senderNeedsAttention;
+    }
+    if (approvedTemplates.isEmpty) {
+      return HostWhatsappCampaignReadiness.approvedTemplateRequired;
+    }
+    return HostWhatsappCampaignReadiness.ready;
+  }
+
+  bool get canComposeCampaign =>
+      campaignReadiness == HostWhatsappCampaignReadiness.ready;
 }
 
 class HostWhatsappSignupResult {

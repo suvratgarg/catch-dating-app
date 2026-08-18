@@ -82,7 +82,10 @@ void main() {
     );
     expect(find.text('Message 1 booked attendee'), findsOneWidget);
     expect(find.text('Asha Guest'), findsOneWidget);
-    expect(find.text('Booked · Can you help?'), findsOneWidget);
+    expect(
+      find.text('Catch chat · Organizer · Booked · Can you help?'),
+      findsOneWidget,
+    );
     expect(find.text('Mira Guest'), findsNothing);
 
     await tester.tap(find.text('PROSPECTIVE · 1'));
@@ -90,7 +93,10 @@ void main() {
 
     expect(find.text('Message 1 prospective attendee'), findsOneWidget);
     expect(find.text('Mira Guest'), findsOneWidget);
-    expect(find.text('Requested · Can you help?'), findsOneWidget);
+    expect(
+      find.text('Catch chat · Organizer · Requested · Can you help?'),
+      findsOneWidget,
+    );
     expect(find.text('Asha Guest'), findsNothing);
   });
 
@@ -160,7 +166,7 @@ void main() {
 
     expect(find.text('Event Guest'), findsOneWidget);
     expect(find.text('Where is the entrance?'), findsOneWidget);
-    expect(find.text('WhatsApp'), findsOneWidget);
+    expect(find.text('WhatsApp Business · Organizer number'), findsOneWidget);
     expect(find.text('General Guest'), findsNothing);
 
     await tester.tap(find.bySemanticsLabel(RegExp('Inbox scope')));
@@ -197,7 +203,10 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.text('Asha Guest'), findsOneWidget);
-    expect(find.text('General inquiry · Can you help?'), findsOneWidget);
+    expect(
+      find.text('Catch chat · Organizer · General inquiry · Can you help?'),
+      findsOneWidget,
+    );
     expect(find.text('Chat not found'), findsNothing);
   });
 
@@ -223,11 +232,22 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.text('Messaging'), findsOneWidget);
-    expect(find.text('New message'), findsOneWidget);
-    expect(find.text('WhatsApp settings'), findsOneWidget);
+    expect(find.text('Choose channel'), findsOneWidget);
+    expect(find.text('WhatsApp Business settings'), findsOneWidget);
     expect(find.byType(HostCampaignComposer), findsNothing);
 
-    await tester.tap(find.text('New message'));
+    await tester.tap(find.text('Choose channel'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Catch chat · Organizer'), findsOneWidget);
+    expect(find.text('Catch announcement · Organizer'), findsOneWidget);
+    expect(find.text('WhatsApp Business · Organizer number'), findsOneWidget);
+    expect(find.text('WhatsApp app · You'), findsOneWidget);
+    expect(find.text('Follower update · Organizer'), findsOneWidget);
+    expect(find.text('WhatsApp · Catch'), findsOneWidget);
+    expect(find.byType(HostCampaignComposer), findsNothing);
+
+    await tester.tap(find.text('WhatsApp Business · Organizer number'));
     await pumpFeatureUi(tester);
 
     expect(find.byType(HostCampaignComposer), findsOneWidget);
@@ -285,8 +305,14 @@ void main() {
 
     expect(find.text('Doors open update'), findsOneWidget);
     expect(find.text('Bring regulars back'), findsOneWidget);
-    expect(find.textContaining('Announcement'), findsOneWidget);
-    expect(find.textContaining('Campaign'), findsOneWidget);
+    expect(
+      find.textContaining('Catch announcement · Organizer'),
+      findsOneWidget,
+    );
+    expect(
+      find.textContaining('WhatsApp Business · Organizer number'),
+      findsOneWidget,
+    );
     expect(
       tester.getTopLeft(find.text('Doors open update')).dy,
       lessThan(tester.getTopLeft(find.text('Bring regulars back')).dy),
@@ -355,7 +381,10 @@ void main() {
 
     expect(find.text('GENERAL INQUIRIES'), findsOneWidget);
     expect(find.text('General Guest'), findsOneWidget);
-    expect(find.text('General inquiry · Can you help?'), findsOneWidget);
+    expect(
+      find.text('Catch chat · Organizer · General inquiry · Can you help?'),
+      findsOneWidget,
+    );
     expect(find.text('Event Guest'), findsNothing);
     expect(find.textContaining('Message '), findsNothing);
     expect(find.textContaining('Booked ·'), findsNothing);

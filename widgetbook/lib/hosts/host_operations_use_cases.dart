@@ -701,6 +701,7 @@ Widget hostCustomersStates(BuildContext context) {
         HostAudienceSegment.regular,
         HostAudienceSegment.reliableAttendee,
       },
+      whatsappStatus: HostAudiencePermissionStatus.optedIn,
       sourceCoverage: HostAudienceSourceCoverage.exact,
     ),
     revenue: const HostCustomerRevenue(

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -12,10 +13,12 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeletonized.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_contact_merge_review.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_memory.dart';
@@ -96,6 +99,7 @@ class _HostCustomerDetailScreenState
               onEditNote: (_) {},
               onReviewDuplicates: _noop,
               onStartConversation: _noop,
+              onOpenWhatsapp: null,
               onMessagingEnabledChanged: (_) {},
               onRemove: _noop,
               onUndoMerge: (_) {},
@@ -124,6 +128,9 @@ class _HostCustomerDetailScreenState
             onEditNote: (note) => _editNote(customer, note: note),
             onReviewDuplicates: _reviewDuplicates,
             onStartConversation: () => _startConversation(customer),
+            onOpenWhatsapp: customer.canUsePersonalWhatsappHandoff
+                ? () => _openWhatsapp(customer)
+                : null,
             onMessagingEnabledChanged: (enabled) =>
                 _setMessagingEnabled(customer, enabled),
             onRemove: () => _removeCustomer(customer),
@@ -313,6 +320,125 @@ class _HostCustomerDetailScreenState
       if (mounted) setState(() => _openingConversation = false);
     }
   }
+
+  Future<void> _openWhatsapp(HostAudienceContactDetail customer) =>
+      showCatchBottomSheet<void>(
+        context: context,
+        builder: (_) => _HostWhatsappHandoffSheet(customer: customer),
+      );
+}
+
+class _HostWhatsappHandoffSheet extends ConsumerStatefulWidget {
+  const _HostWhatsappHandoffSheet({required this.customer});
+
+  final HostAudienceContactDetail customer;
+
+  @override
+  ConsumerState<_HostWhatsappHandoffSheet> createState() =>
+      _HostWhatsappHandoffSheetState();
+}
+
+class _HostWhatsappHandoffSheetState
+    extends ConsumerState<_HostWhatsappHandoffSheet> {
+  TextEditingController? _messageController;
+  bool _opening = false;
+
+  TextEditingController get _message => _messageController!;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _messageController ??= TextEditingController(
+      text: context.l10n.hostCustomersWhatsappDefaultMessage(
+        name: widget.customer.displayName,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _messageController?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final message = _message.text.trim();
+    return CatchBottomSheetScaffold(
+      title: context.l10n.hostCustomersWhatsappHandoffTitle,
+      subtitle: context.l10n.hostCustomersWhatsappHandoffSubtitle(
+        name: widget.customer.displayName,
+        phone: widget.customer.phoneE164!,
+      ),
+      keyboardSafe: true,
+      action: CatchButton(
+        key: const ValueKey('host-customer-confirm-whatsapp'),
+        label: context.l10n.hostCustomersOpenWhatsapp,
+        isLoading: _opening,
+        onPressed: _opening || message.isEmpty ? null : _open,
+        fullWidth: true,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CatchNotice(
+            notice: CatchNoticeData(
+              id: 'host.customer.whatsapp-handoff',
+              title: context.l10n.hostCustomersWhatsappAppChannel,
+              message: context.l10n.hostCustomersWhatsappHandoffDisclosure,
+            ),
+          ),
+          gapH16,
+          CatchFieldLanes.single(
+            child: CatchField.input(
+              key: const ValueKey('host-customer-whatsapp-message'),
+              title: context.l10n.hostCustomersWhatsappMessage,
+              controller: _message,
+              minLines: 3,
+              maxLines: 7,
+              maxLength: 1000,
+              textCapitalization: TextCapitalization.sentences,
+              contractExemption:
+                  'Editable handoff copy is sent only to the external '
+                  'WhatsApp app and is never persisted by Catch.',
+              enabled: !_opening,
+              onChanged: (_) => setState(() {}),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _open() async {
+    if (_opening) return;
+    setState(() => _opening = true);
+    try {
+      final opened = await ref
+          .read(externalLinkControllerProvider)
+          .openWhatsappHandoff(
+            phoneE164: widget.customer.phoneE164!,
+            message: _message.text,
+          );
+      if (!opened) {
+        if (!mounted) return;
+        throw ExternalActionException(
+          context.l10n.hostCustomersWhatsappOpenFailed,
+        );
+      }
+      if (mounted) Navigator.of(context).pop();
+    } on Object catch (error) {
+      if (mounted) {
+        showCatchErrorSnackBar(
+          context,
+          error,
+          errorContext: AppErrorContext.customer,
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _opening = false);
+    }
+  }
 }
 
 void _noop() {}
@@ -330,6 +456,7 @@ class HostCustomerDetailBody extends StatelessWidget {
     required this.onEditNote,
     required this.onReviewDuplicates,
     required this.onStartConversation,
+    required this.onOpenWhatsapp,
     required this.onMessagingEnabledChanged,
     required this.onRemove,
     required this.onUndoMerge,
@@ -345,6 +472,7 @@ class HostCustomerDetailBody extends StatelessWidget {
   final ValueChanged<HostCustomerNote> onEditNote;
   final VoidCallback onReviewDuplicates;
   final VoidCallback onStartConversation;
+  final VoidCallback? onOpenWhatsapp;
   final ValueChanged<bool> onMessagingEnabledChanged;
   final VoidCallback onRemove;
   final ValueChanged<HostActiveContactMerge> onUndoMerge;
@@ -395,6 +523,7 @@ class HostCustomerDetailBody extends StatelessWidget {
                   ? onReviewDuplicates
                   : null,
               onOpen: conversationReady ? onStartConversation : null,
+              onOpenWhatsapp: onOpenWhatsapp,
               onMessagingEnabledChanged: updatingCustomer
                   ? null
                   : onMessagingEnabledChanged,

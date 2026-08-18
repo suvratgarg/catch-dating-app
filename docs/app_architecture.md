@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
 version: 1.13.0
-updated: 2026-08-17
+updated: 2026-08-20
 owner: app_architecture
 status: active
 ---
@@ -2104,9 +2104,10 @@ The Host Messaging contract is:
 - every workspace follows `hostOrganizerSelectionProvider`; Inbox events,
   inquiry previews, WhatsApp sender setup, and campaigns must all resolve from
   the same selected organizer;
-- Inbox and Campaigns are first-class local workspaces. Inbox owns personal
-  inquiries and event broadcasts; Campaigns owns cross-event WhatsApp sender
-  setup and campaign lifecycle;
+- Inbox and Sends are first-class local workspaces. Inbox owns personal
+  inquiries and event broadcasts; Sends owns the route picker, mixed outbound
+  history and cross-event organizer WhatsApp campaign lifecycle; sender setup
+  stays on the dedicated organizer messaging route;
 - an explicit selected Event or explicit General scope; General is never an
   event-id sentinel;
 - personal two-party contacted-host inquiry threads, separated by event;
@@ -2125,6 +2126,32 @@ and row-status policy. `HostInboxScreen` owns selected-organizer provider reads,
 workspace composition, typed route effects, and sheets;
 `HostInboxBroadcastController` owns the event-broadcast mutation and
 `HostAudienceController` owns campaign mutations.
+
+`communicationRouteCatalog` is the canonical provider-free capability model
+for communication choices. Transport alone is never sufficient routing or
+authorization input. Every route keeps a stable id and adapter key plus its
+sender identity, delivery mode, consent scope, observability, final-send
+ownership, reply support and scheduling support. Organizer WhatsApp and
+Catch-owned WhatsApp therefore remain different routes even though both use
+the WhatsApp transport. Their tokens, sender connections, permission evidence,
+suppression state, threads and receipts must never share authority.
+
+The current route set is personal WhatsApp handoff, organizer WhatsApp
+campaign, Catch-owned WhatsApp, Catch chat, Catch event announcement and
+organizer follower update. A future market transport extends this registry and
+implements its adapter; it must not add provider conditionals to route-neutral
+widgets or weaken an existing consent boundary. `HostSendsWorkspaceSliver`
+renders the route choice and readiness state. Route-specific controllers retain
+mutation ownership.
+
+External handoff is intentionally a weak-observability route:
+`ExternalLinks.openWhatsappHandoff` may report only whether the device accepted
+the `wa.me` launch. The Host edits the prefilled copy and presses Send in
+WhatsApp, so Catch must not create a delivery receipt, campaign record or reply
+thread from that launch. An explicit organizer WhatsApp opt-out or admin
+suppression also removes the handoff even though it is not a campaign route.
+Conversely, provider-backed routes are unavailable until their sender,
+template, permission and provider health gates pass.
 
 ### Installable App Target Contract
 

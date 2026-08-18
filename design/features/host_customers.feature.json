@@ -1,19 +1,19 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-08-16",
+  "updated": "2026-08-18",
   "id": "feature.host_customers",
   "name": "Host Customers",
   "owner": "hosts",
   "status": "active",
-  "description": "Makes Customers the sole Host CRM directory for server-backed sorting, computed segments, organizer-authored notes and tags, per-person campaign and Announcement history, reviewed identity merges and reversals, contact administration, customer detail, identity-gated conversations, and a deep-linked segment bridge into Messaging campaigns.",
+  "description": "Makes Customers the sole Host CRM directory for server-backed sorting, computed segments, organizer-authored notes and tags, per-person campaign and Announcement history, reviewed identity merges and reversals, contact administration, customer detail, identity-gated Catch chat, personal WhatsApp handoff, and a deep-linked segment bridge into Messaging campaigns.",
   "surfaces": [
     {
       "id": "host_flutter",
       "runtime": "flutter",
       "authority": {"registry": "flutter_screens", "id": "screen.host.customers"},
       "actionScope": {
-        "included": "Customer directory recovery, shared organizer selection, debounced name search, server-backed Last seen, Most attended, and Name sorting with ordering-bound cursors, exact-or-qualified result counts, grouped computed-segment and organizer-tag filters, pagination, header-menu export excluding notes, organizer-only manual contact creation, private author-stamped note append/edit, bounded manual-tag vocabulary assignment, per-person Campaign and Announcement delivery history, evidence-bearing manager merge review with durable Different people decisions, receipt-specific unmerge from survivor detail, rename/suppression/removal controls, complete event evidence, customer and event detail routing, verified-account direct conversation creation, and routing only an eligible computed segment into the Messaging campaign composer.",
+        "included": "Customer directory recovery, shared organizer selection, debounced name search, server-backed Last seen, Most attended, and Name sorting with ordering-bound cursors, exact-or-qualified result counts, grouped computed-segment and organizer-tag filters, pagination, header-menu export excluding notes, organizer-only manual contact creation, private author-stamped note append/edit, bounded manual-tag vocabulary assignment, per-person Campaign and Announcement delivery history, evidence-bearing manager merge review with durable Different people decisions, receipt-specific unmerge from survivor detail, rename/suppression/removal controls, complete event evidence, customer and event detail routing, verified-account Catch chat creation, editable personal WhatsApp app handoff for contacts with a valid phone, and routing only an eligible computed segment into the Messaging campaign composer.",
         "excluded": [
           "High-spender segmentation remains excluded until completed non-refunded payment totals are projected into indexed organizer-contact traits."
         ]
@@ -80,7 +80,8 @@
           "customer_sorted_most_attended": ["test/hosts/host_customers_screen_state_test.dart", "test/hosts/host_crm_repository_test.dart"],
           "customer_sorted_name": ["test/hosts/host_customers_screen_state_test.dart", "test/hosts/host_crm_repository_test.dart"],
           "customer_merge_review": ["test/hosts/host_crm_repository_test.dart"],
-          "customer_active_merges": ["test/hosts/host_crm_repository_test.dart"]
+          "customer_active_merges": ["test/hosts/host_crm_repository_test.dart"],
+          "personal_whatsapp_handoff": ["test/hosts/host_operations_screen_test.dart", "test/core/external_links_test.dart", "test/communications/communication_route_test.dart"]
         }
       },
       "dimensions": {
@@ -94,6 +95,7 @@
         "campaign_bridge": {"default": "blocked", "values": ["blocked", "ready"]},
         "identity": {"default": "linked", "values": ["linked", "unlinked", "ambiguous"]},
         "revenue": {"default": "exact", "values": ["exact", "partial", "unavailable"]},
+        "personal_whatsapp": {"default": "ready", "values": ["unavailable", "ready", "editing", "opening"]},
         "mutation": {"default": "idle", "values": ["idle", "adding", "exporting", "managing_contact", "editing_note", "editing_tags", "starting_conversation"]},
         "accessibility": {"default": "standard", "values": ["standard", "text_scale_2", "reduced_motion"]},
         "theme": {"default": "standard", "values": ["standard", "light_dark"]}
@@ -314,9 +316,21 @@
             {"kind": "side_effect", "id": "host_customers.direct_conversation_started"}
           ],
           "description": "Starts or reuses a manager-authorized direct thread only for an unambiguous verified linked Catch account."
+        },
+        {
+          "id": "open_personal_whatsapp_handoff",
+          "owner": "customer_detail",
+          "codeValue": "_openWhatsapp",
+          "cardinality": "unbounded",
+          "scopeKeys": ["viewerUid", "organizerId", "contactId", "phoneE164", "tapAttemptId"],
+          "outcomes": [
+            {"kind": "surface_state", "stateIds": ["personal_whatsapp_handoff"]},
+            {"kind": "side_effect", "id": "host_customers.whatsapp_app_launched"}
+          ],
+          "description": "Opens an editable prefilled wa.me handoff for one valid contact phone only while no explicit WhatsApp opt-out or admin suppression applies. The Host remains responsible for pressing Send in WhatsApp, and Catch records no delivery or reply receipt."
         }
       ],
-      "stateIds": ["customers_loading", "customers_error", "customers_empty", "customers_populated", "customers_filtered_empty", "customers_paginating", "customer_sorted_most_attended", "customer_sorted_name", "customer_filter_sheet", "customer_filter_manual_tag", "customer_campaign_bridge_ready", "customer_campaign_bridge_blocked", "manual_add_pending", "customer_export_pending", "customer_manage", "customer_manage_pending", "customer_detail_loading", "customer_detail_error", "customer_detail_linked", "customer_detail_unlinked", "customer_detail_ambiguous", "customer_memory_populated", "customer_note_editing", "customer_tags_editing", "customer_send_history", "customer_merge_review", "customer_merge_dismissed", "customer_merge_conflict_confirmation", "customer_active_merges", "customer_unmerge_pending", "customer_revenue_exact", "customer_revenue_partial", "customer_revenue_unavailable", "conversation_available", "conversation_unavailable", "offline", "text_scale_2", "reduced_motion", "light_dark"],
+      "stateIds": ["customers_loading", "customers_error", "customers_empty", "customers_populated", "customers_filtered_empty", "customers_paginating", "customer_sorted_most_attended", "customer_sorted_name", "customer_filter_sheet", "customer_filter_manual_tag", "customer_campaign_bridge_ready", "customer_campaign_bridge_blocked", "manual_add_pending", "customer_export_pending", "customer_manage", "customer_manage_pending", "customer_detail_loading", "customer_detail_error", "customer_detail_linked", "customer_detail_unlinked", "customer_detail_ambiguous", "customer_memory_populated", "customer_note_editing", "customer_tags_editing", "customer_send_history", "customer_merge_review", "customer_merge_dismissed", "customer_merge_conflict_confirmation", "customer_active_merges", "customer_unmerge_pending", "customer_revenue_exact", "customer_revenue_partial", "customer_revenue_unavailable", "conversation_available", "conversation_unavailable", "personal_whatsapp_handoff", "offline", "text_scale_2", "reduced_motion", "light_dark"],
       "scenarioDefaults": {"dimensions": {}, "actionCases": [{"id": "default"}]},
       "scenarioOverrides": {
         "customers_loading": {"dimensions": {"load": "loading"}},
@@ -354,6 +368,7 @@
         "customer_revenue_unavailable": {"dimensions": {"revenue": "unavailable"}},
         "conversation_available": {"dimensions": {"identity": "linked"}, "actionCases": [{"id": "start", "enabledActions": ["start_conversation"]}]},
         "conversation_unavailable": {"dimensions": {"identity": "unlinked"}, "actionCases": [{"id": "blocked", "disabledActions": ["start_conversation"]}]},
+        "personal_whatsapp_handoff": {"dimensions": {"personal_whatsapp": "editing"}, "actionCases": [{"id": "edit_and_open", "enabledActions": ["open_personal_whatsapp_handoff"]}]},
         "offline": {"dimensions": {"load": "offline"}, "actionCases": [{"id": "retry", "enabledActions": ["retry_directory", "retry_customer_detail"]}]},
         "text_scale_2": {"dimensions": {"accessibility": "text_scale_2"}},
         "reduced_motion": {"dimensions": {"accessibility": "reduced_motion"}},
@@ -378,6 +393,12 @@
           "evidence": ["tests"],
           "debtId": "HOST-CUSTOMERS-EVIDENCE-001",
           "reason": "Controller policy, repository mapping, and route tests cover the initial seam; deterministic rendered state tests remain follow-up evidence for the customer directory."
+        },
+        {
+          "stateIds": ["personal_whatsapp_handoff"],
+          "evidence": ["previews"],
+          "debtId": "HOST-CUSTOMERS-EVIDENCE-001",
+          "reason": "The editable handoff and URL launcher contract have focused rendered tests; a deterministic Widgetbook variant remains follow-up evidence."
         },
         {
           "stateIds": ["customers_loading", "customers_error", "customers_empty", "customers_filtered_empty", "customers_paginating", "customer_filter_sheet", "customer_filter_manual_tag", "customer_campaign_bridge_ready", "customer_campaign_bridge_blocked", "manual_add_pending", "customer_export_pending", "customer_manage", "customer_manage_pending", "customer_detail_loading", "customer_detail_error", "customer_detail_unlinked", "customer_detail_ambiguous", "customer_note_editing", "customer_tags_editing", "customer_revenue_partial", "customer_revenue_unavailable", "conversation_unavailable", "offline", "text_scale_2", "reduced_motion", "light_dark"],

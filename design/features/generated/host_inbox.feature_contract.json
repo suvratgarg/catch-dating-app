@@ -2,26 +2,26 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/host_inbox.feature.json",
-  "generatedFor": "2026-08-16",
-  "sourceDigest": "sha256:cf44929a9a9b3131e7fbca186ff47f612db0bacc2969b8b7b4f0534c26710427",
-  "resolvedDigest": "sha256:325184b343f0f81efd02937ccaf1d3437d102cf133a3f4562af824c757e8e9a2",
+  "generatedFor": "2026-08-18",
+  "sourceDigest": "sha256:8b0110cad6822d4a70925be65f920b1a9f8e3085cd402980041b769051e3007d",
+  "resolvedDigest": "sha256:0a80e5e7dfcffbedec6cfb2cf1b57c82e1dd93ec102d7249feb29a852334f838",
   "feature": {
     "id": "feature.host_inbox",
     "name": "Host Messaging",
     "owner": "hosts",
     "status": "pilot",
-    "description": "Orchestrates organizer-scoped Host messaging through one Inbox for Catch inquiries, inbound WhatsApp channel facets and event broadcasts plus Sends for mixed outbound history and cross-event audience messaging, including deep-linked customer segments."
+    "description": "Orchestrates organizer-scoped Host messaging through one Inbox for explicit Catch chat, organizer WhatsApp and event-announcement facets plus Sends for route selection, mixed outbound history and cross-event audience messaging, including deep-linked customer segments."
   },
   "coverage": {
     "surfaces": 1,
-    "states": 37,
-    "scenarios": 37,
-    "actionCases": 40,
-    "actions": 15,
+    "states": 38,
+    "scenarios": 38,
+    "actionCases": 41,
+    "actions": 16,
     "captures": 19,
     "previews": 3,
-    "testFiles": 9,
-    "evidenceExceptions": 35
+    "testFiles": 11,
+    "evidenceExceptions": 36
   },
   "surfaces": [
     {
@@ -32,7 +32,7 @@
         "id": "screen.host.inbox"
       },
       "actionScope": {
-        "included": "Messaging workspace switching; Inbox retry, search, event/general scope, booked/prospective audience selection, Catch conversation routing, organizer-scoped inbound WhatsApp thread facets with 12-month retention and service-window-aware replies, and event-broadcast lifecycle; reverse-chronological Campaign and Announcement history; dedicated WhatsApp sender setup; and deep-linked campaign create, schedule, preview, approve, dispatch, cancel, and report controls.",
+        "included": "Messaging workspace switching; Inbox retry, search, event/general scope, booked/prospective audience selection, explicit Catch chat routing, organizer-scoped inbound WhatsApp thread facets with 12-month retention and service-window-aware replies, and Catch event-announcement lifecycle; communication-route selection with sender, delivery, consent and readiness explanations; reverse-chronological WhatsApp Business and Catch Announcement history; dedicated WhatsApp sender setup; and deep-linked campaign create, schedule, preview, approve, dispatch, cancel, and report controls.",
         "excluded": [
           "Raw broadcast body edits are form data; the contract cardinalizes template/audience decisions and the send mutation instead of individual keystrokes.",
           "Conversation thread behavior and safety actions retain the shared chat-thread contract."
@@ -167,12 +167,19 @@
             "test/hosts/host_inbox_screen_test.dart",
             "test/hosts/host_crm_repository_test.dart"
           ],
+          "customer_messaging_disconnected": [
+            "test/hosts/host_whatsapp_setup_pane_test.dart"
+          ],
           "customer_campaign_draft": [
             "test/hosts/host_campaign_composer_test.dart",
             "test/hosts/host_inbox_screen_test.dart"
           ],
           "customer_campaign_active": [
             "test/hosts/host_crm_repository_test.dart"
+          ],
+          "communication_route_picker": [
+            "test/hosts/host_inbox_screen_test.dart",
+            "test/communications/communication_route_test.dart"
           ],
           "whatsapp_inbound_thread": [
             "test/hosts/host_crm_repository_test.dart"
@@ -186,14 +193,14 @@
         }
       },
       "coverage": {
-        "states": 37,
-        "scenarios": 37,
-        "actionCases": 40,
-        "actions": 15,
+        "states": 38,
+        "scenarios": 38,
+        "actionCases": 41,
+        "actions": 16,
         "captures": 19,
         "previews": 3,
-        "testFiles": 9,
-        "evidenceExceptions": 35
+        "testFiles": 11,
+        "evidenceExceptions": 36
       },
       "dimensions": {
         "workspace": {
@@ -294,6 +301,14 @@
             "dispatching",
             "sent",
             "cancelled"
+          ]
+        },
+        "send_route": {
+          "default": "history",
+          "values": [
+            "history",
+            "picker",
+            "organizer_whatsapp_campaign"
           ]
         },
         "accessibility": {
@@ -621,6 +636,36 @@
           "implementationStatus": "implemented"
         },
         {
+          "id": "select_communication_route",
+          "owner": "sends_workspace",
+          "codeValue": "_HostSendsRoutePicker",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "organizerId",
+            "routeId",
+            "readiness"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "communication_route_picker",
+                "customer_campaign_draft"
+              ]
+            },
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.host.inbox"
+              }
+            }
+          ],
+          "description": "Shows every communication route with its sender and delivery semantics, opens Catch Inbox or an eligible organizer WhatsApp composer, and gives read-only ownership or activation guidance for routes that start elsewhere or are not active.",
+          "implementationStatus": "implemented"
+        },
+        {
           "id": "manage_whatsapp_sender",
           "owner": "whatsapp_setup",
           "codeValue": "HostWhatsappSetupPane",
@@ -734,6 +779,17 @@
         },
         {
           "stateIds": [
+            "communication_route_picker"
+          ],
+          "evidence": [
+            "captures",
+            "previews"
+          ],
+          "debtId": "HOST-MESSAGING-EVIDENCE-001",
+          "reason": "The route capability registry and rendered picker have focused tests; a dedicated deterministic preview and capture remain follow-up evidence."
+        },
+        {
+          "stateIds": [
             "campaign_compose_deep_link",
             "customer_messaging_provider_unavailable",
             "customer_messaging_disconnected",
@@ -751,7 +807,6 @@
         {
           "stateIds": [
             "customer_messaging_provider_unavailable",
-            "customer_messaging_disconnected",
             "customer_messaging_connecting",
             "customer_campaign_previewed"
           ],
@@ -759,7 +814,7 @@
             "tests"
           ],
           "debtId": "HOST-MESSAGING-EVIDENCE-001",
-          "reason": "The ready sender and initial campaign route are tested; remaining sender and campaign lifecycle variants need focused rendered tests."
+          "reason": "The disconnected native-to-web handoff, ready sender and initial campaign route are tested; remaining sender and campaign lifecycle variants need focused rendered tests."
         },
         {
           "stateIds": [
@@ -793,6 +848,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -823,6 +879,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -843,6 +900,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "select_communication_route",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -868,6 +926,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -898,6 +957,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -918,6 +978,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "select_communication_route",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -943,6 +1004,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -973,6 +1035,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -994,6 +1057,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "select_communication_route",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -1019,6 +1083,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -1047,6 +1112,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -1068,6 +1134,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "select_communication_route",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -1093,6 +1160,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -1121,6 +1189,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -1142,6 +1211,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "select_communication_route",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -1167,6 +1237,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -1199,6 +1270,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -1220,6 +1292,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "select_communication_route",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -1245,6 +1318,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -1277,6 +1351,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -1298,6 +1373,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "select_communication_route",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -1323,6 +1399,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -1354,6 +1431,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -1375,6 +1453,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "select_communication_route",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -1400,6 +1479,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -1431,6 +1511,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -1452,6 +1533,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "select_communication_route",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -1477,6 +1559,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -1508,6 +1591,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -1529,6 +1613,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "select_communication_route",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -1554,6 +1639,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -1580,6 +1666,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -1601,6 +1688,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "select_communication_route",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -1626,6 +1714,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -1652,6 +1741,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -1673,6 +1763,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "select_communication_route",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -1698,6 +1789,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -1724,6 +1816,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -1745,6 +1838,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "select_communication_route",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -1770,6 +1864,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -1794,6 +1889,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -1815,6 +1911,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "select_communication_route",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -1840,6 +1937,7 @@
             "broadcast": "composer",
             "messaging": "ready",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -1873,6 +1971,7 @@
                 "broadcast": "composer",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -1894,6 +1993,7 @@
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
                   "open_broadcast_composer",
+                  "select_communication_route",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -1914,6 +2014,7 @@
                 "broadcast": "composer",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -1936,6 +2037,7 @@
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
                   "open_broadcast_composer",
+                  "select_communication_route",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -1956,6 +2058,7 @@
                 "broadcast": "composer",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -1977,6 +2080,7 @@
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
                   "open_broadcast_composer",
+                  "select_communication_route",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -1997,6 +2101,7 @@
                 "broadcast": "composer",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -2018,7 +2123,84 @@
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
                   "open_broadcast_composer",
+                  "select_communication_route",
                   "manage_whatsapp_sender",
+                  "manage_campaign"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "communication_route_picker",
+          "stateId": "communication_route_picker",
+          "kind": "populated",
+          "status": "tested",
+          "dimensions": {
+            "workspace": "campaigns",
+            "load": "ready",
+            "scope": "event",
+            "segment": "booked",
+            "content": "populated",
+            "channel": "catch",
+            "whatsapp_window": "open",
+            "search": "collapsed",
+            "profile": "ready",
+            "broadcast": "idle",
+            "messaging": "ready",
+            "campaign": "draft",
+            "send_route": "picker",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "test/hosts/host_inbox_screen_test.dart",
+              "test/communications/communication_route_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "choose",
+              "dimensions": {
+                "workspace": "campaigns",
+                "load": "ready",
+                "scope": "event",
+                "segment": "booked",
+                "content": "populated",
+                "channel": "catch",
+                "whatsapp_window": "open",
+                "search": "collapsed",
+                "profile": "ready",
+                "broadcast": "idle",
+                "messaging": "ready",
+                "campaign": "draft",
+                "send_route": "picker",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "select_communication_route",
+                  "manage_whatsapp_sender"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "select_workspace",
+                  "retry_inbox",
+                  "toggle_search",
+                  "search_inquiries",
+                  "select_scope",
+                  "select_audience_segment",
+                  "open_conversation",
+                  "open_whatsapp_thread",
+                  "send_whatsapp_reply",
+                  "open_broadcast_composer",
+                  "select_broadcast_audience",
+                  "select_broadcast_template",
+                  "send_broadcast",
                   "manage_campaign"
                 ]
               }
@@ -2043,6 +2225,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -2070,6 +2253,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -2092,6 +2276,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "select_communication_route",
                   "manage_whatsapp_sender"
                 ]
               }
@@ -2116,6 +2301,7 @@
             "broadcast": "idle",
             "messaging": "provider_unavailable",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -2142,6 +2328,7 @@
                 "broadcast": "idle",
                 "messaging": "provider_unavailable",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -2165,7 +2352,8 @@
                   "open_broadcast_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
-                  "send_broadcast"
+                  "send_broadcast",
+                  "select_communication_route"
                 ]
               }
             }
@@ -2175,7 +2363,7 @@
           "id": "customer_messaging_disconnected",
           "stateId": "customer_messaging_disconnected",
           "kind": "empty",
-          "status": "implemented",
+          "status": "tested",
           "dimensions": {
             "workspace": "campaigns",
             "load": "ready",
@@ -2189,6 +2377,7 @@
             "broadcast": "idle",
             "messaging": "disconnected",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -2197,7 +2386,9 @@
             "previewIds": [
               "HostCampaignComposer/Campaign and sender states"
             ],
-            "tests": []
+            "tests": [
+              "test/hosts/host_whatsapp_setup_pane_test.dart"
+            ]
           },
           "actionCases": [
             {
@@ -2215,6 +2406,7 @@
                 "broadcast": "idle",
                 "messaging": "disconnected",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -2237,6 +2429,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "select_communication_route",
                   "manage_campaign"
                 ]
               }
@@ -2261,6 +2454,7 @@
             "broadcast": "idle",
             "messaging": "connecting",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -2285,6 +2479,7 @@
                 "broadcast": "idle",
                 "messaging": "connecting",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -2307,7 +2502,8 @@
                   "open_broadcast_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
-                  "send_broadcast"
+                  "send_broadcast",
+                  "select_communication_route"
                 ]
               }
             }
@@ -2331,6 +2527,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -2362,6 +2559,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -2384,7 +2582,8 @@
                   "open_broadcast_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
-                  "send_broadcast"
+                  "send_broadcast",
+                  "select_communication_route"
                 ]
               }
             }
@@ -2408,6 +2607,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -2437,6 +2637,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -2459,6 +2660,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "select_communication_route",
                   "manage_whatsapp_sender"
                 ]
               }
@@ -2483,6 +2685,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "previewed",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -2507,6 +2710,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "previewed",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -2529,6 +2733,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "select_communication_route",
                   "manage_whatsapp_sender"
                 ]
               }
@@ -2553,6 +2758,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "dispatching",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -2581,6 +2787,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "dispatching",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -2603,6 +2810,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "select_communication_route",
                   "manage_whatsapp_sender"
                 ]
               }
@@ -2627,6 +2835,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -2658,6 +2867,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -2679,6 +2889,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "select_communication_route",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -2704,6 +2915,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -2734,6 +2946,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -2755,6 +2968,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "select_communication_route",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -2780,6 +2994,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -2810,6 +3025,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -2831,6 +3047,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "select_communication_route",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -2856,6 +3073,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -2884,6 +3102,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -2905,6 +3124,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "select_communication_route",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -2930,6 +3150,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -2961,6 +3182,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -2982,6 +3204,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "select_communication_route",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -3007,6 +3230,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -3038,6 +3262,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -3059,6 +3284,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "select_communication_route",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -3084,6 +3310,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -3113,6 +3340,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -3134,6 +3362,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "select_communication_route",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -3159,6 +3388,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -3185,6 +3415,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -3206,6 +3437,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "select_communication_route",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -3231,6 +3463,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -3259,6 +3492,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -3280,6 +3514,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "select_communication_route",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -3305,6 +3540,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -3333,6 +3569,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -3354,6 +3591,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "select_communication_route",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -3379,6 +3617,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -3407,6 +3646,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -3428,6 +3668,7 @@
                   "open_broadcast_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
+                  "select_communication_route",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -3453,6 +3694,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "text_scale_2",
             "theme": "standard"
           },
@@ -3481,6 +3723,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "text_scale_2",
                 "theme": "standard"
               },
@@ -3501,6 +3744,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "select_communication_route",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -3526,6 +3770,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "reduced_motion",
             "theme": "standard"
           },
@@ -3554,6 +3799,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "reduced_motion",
                 "theme": "standard"
               },
@@ -3574,6 +3820,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "select_communication_route",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -3599,6 +3846,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
+            "send_route": "history",
             "accessibility": "standard",
             "theme": "light_dark"
           },
@@ -3627,6 +3875,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
+                "send_route": "history",
                 "accessibility": "standard",
                 "theme": "light_dark"
               },
@@ -3647,6 +3896,7 @@
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "select_communication_route",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]

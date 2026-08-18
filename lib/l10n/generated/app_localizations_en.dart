@@ -12540,8 +12540,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostAudienceWhatsappOptedIn => 'WhatsApp opted in';
 
   @override
-  String get hostsHostAudienceWebSignupOnly =>
-      'Connect WhatsApp from the Host web app. Once connected, the sender can be managed on any device.';
+  String get hostsHostAudienceWebSignupOpened =>
+      'Continue WhatsApp setup in the Host web app.';
+
+  @override
+  String get hostsHostAudienceWebSignupOpenFailed =>
+      'Could not open WhatsApp setup in the Host web app.';
 
   @override
   String get hostsHostAudienceBlockerProvider =>
@@ -13020,10 +13024,84 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostMessagingWorkspaceSends => 'Sends';
 
   @override
-  String get hostSendsNewMessage => 'New message';
+  String get hostSendsChooseChannel => 'Choose channel';
 
   @override
-  String get hostSendsSettings => 'WhatsApp settings';
+  String get hostSendsSettings => 'WhatsApp Business settings';
+
+  @override
+  String get hostSendsCatchChatChannel => 'Catch chat · Organizer';
+
+  @override
+  String get hostSendsCatchChatDescription =>
+      'One linked Catch user · two-way in the Catch app';
+
+  @override
+  String get hostSendsCatchAnnouncementChannel =>
+      'Catch announcement · Organizer';
+
+  @override
+  String get hostSendsCatchAnnouncementDescription =>
+      'Event roster · Activity plus preference-gated push · no reply thread';
+
+  @override
+  String get hostSendsWhatsappBusinessChannel =>
+      'WhatsApp Business · Organizer number';
+
+  @override
+  String get hostSendsWhatsappBusinessDescription =>
+      'Permissioned CRM audience · approved template · delivery receipts';
+
+  @override
+  String get hostSendsWhatsappAppChannel => 'WhatsApp app · You';
+
+  @override
+  String get hostSendsWhatsappAppDescription =>
+      'Choose a person in Customers · editable text · you press Send · untracked by Catch';
+
+  @override
+  String get hostSendsFollowerUpdateChannel => 'Follower update · Organizer';
+
+  @override
+  String get hostSendsFollowerUpdateDescription =>
+      'Open Organizer to post · Home and Activity · preference-gated push';
+
+  @override
+  String get hostSendsCatchWhatsappChannel => 'WhatsApp · Catch';
+
+  @override
+  String get hostSendsCatchWhatsappDescription =>
+      'Catch-owned sender and Catch-specific permission · not an organizer campaign';
+
+  @override
+  String get hostSendsChannelChecking =>
+      'Checking sender and template readiness…';
+
+  @override
+  String get hostSendsChannelUnavailable =>
+      'Readiness could not be loaded. Open settings to retry.';
+
+  @override
+  String get hostSendsSetupRequired => 'Setup required';
+
+  @override
+  String get hostSendsPlanned => 'Not active';
+
+  @override
+  String get hostSendsWhatsappProviderUnavailable =>
+      'Catch has not enabled the Meta provider in this environment.';
+
+  @override
+  String get hostSendsWhatsappSenderRequired =>
+      'Connect and verify an organizer-owned WhatsApp Business number.';
+
+  @override
+  String get hostSendsWhatsappSenderNeedsAttention =>
+      'Finish sender testing or resolve its connection health.';
+
+  @override
+  String get hostSendsWhatsappTemplateRequired =>
+      'Sync at least one approved WhatsApp message template.';
 
   @override
   String get hostSendsLoadMore => 'Load more';
@@ -13050,7 +13128,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostSendsPartial => 'Some deliveries need attention';
 
   @override
-  String get hostInboxWhatsappChannel => 'WhatsApp';
+  String get hostInboxWhatsappChannel => 'WhatsApp Business · Organizer number';
+
+  @override
+  String hostInboxCatchChatPreview({required String details}) {
+    return 'Catch chat · Organizer · $details';
+  }
+
+  @override
+  String get hostInboxAnnouncementDisclosure =>
+      'Recipients see a durable Activity update and may receive a push notification. This does not create a chat thread.';
+
+  @override
+  String get hostInboxAnnouncementClosed =>
+      'Catch announcement · event delivery has closed';
+
+  @override
+  String get hostInboxAnnouncementBackendRequired =>
+      'Catch announcement · backend preflight required';
+
+  @override
+  String get hostInboxAnnouncementNoRecipients =>
+      'Catch announcement · no eligible recipients yet';
+
+  @override
+  String get hostInboxAnnouncementAvailable =>
+      'Catch announcement · Activity plus optional push';
 
   @override
   String get hostInboxWhatsappReply => 'Reply';
@@ -13373,7 +13476,46 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostCustomersNewConversation => 'New conversation';
+  String get hostCustomersCatchChatChannel => 'Catch chat · Organizer';
+
+  @override
+  String get hostCustomersStartCatchChat => 'Start Catch chat';
+
+  @override
+  String get hostCustomersWhatsappAppChannel => 'WhatsApp app · You';
+
+  @override
+  String get hostCustomersWhatsappHandoffDisclosure =>
+      'Opens WhatsApp on this device with editable text. You review it and press Send; Catch cannot track delivery or replies.';
+
+  @override
+  String get hostCustomersWriteInWhatsapp => 'Write in WhatsApp';
+
+  @override
+  String get hostCustomersWhatsappHandoffTitle => 'WhatsApp app';
+
+  @override
+  String hostCustomersWhatsappHandoffSubtitle({
+    required String name,
+    required String phone,
+  }) {
+    return '$name · $phone';
+  }
+
+  @override
+  String hostCustomersWhatsappDefaultMessage({required String name}) {
+    return 'Hi $name,';
+  }
+
+  @override
+  String get hostCustomersWhatsappMessage => 'Message';
+
+  @override
+  String get hostCustomersOpenWhatsapp => 'Open WhatsApp';
+
+  @override
+  String get hostCustomersWhatsappOpenFailed =>
+      'Could not open WhatsApp on this device.';
 
   @override
   String get hostCustomersConversationUnlinked =>

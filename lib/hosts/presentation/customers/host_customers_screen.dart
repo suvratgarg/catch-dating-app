@@ -1302,12 +1302,14 @@ class HostCustomerConversationCard extends StatelessWidget {
     required this.loading,
     required this.onOpen,
     required this.onMessagingEnabledChanged,
+    this.onOpenWhatsapp,
     this.onReview,
   });
 
   final HostAudienceContactDetail customer;
   final bool loading;
   final VoidCallback? onOpen;
+  final VoidCallback? onOpenWhatsapp;
   final VoidCallback? onReview;
   final ValueChanged<bool>? onMessagingEnabledChanged;
 
@@ -1344,6 +1346,14 @@ class HostCustomerConversationCard extends StatelessWidget {
             title: context.l10n.hostCustomersReviewDuplicates,
             icon: CatchIcons.peopleOutlineRounded,
             onTap: onReview,
+          ),
+        if (onOpenWhatsapp != null)
+          CatchField.action(
+            key: const ValueKey('host-customer-open-whatsapp'),
+            title: context.l10n.hostCustomersWriteInWhatsapp,
+            body: context.l10n.hostCustomersWhatsappHandoffDisclosure,
+            icon: CatchIcons.sendRounded,
+            onTap: onOpenWhatsapp,
           ),
         CatchField.toggle(
           key: const ValueKey('host-customer-organizer-messages'),

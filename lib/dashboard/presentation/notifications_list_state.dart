@@ -183,14 +183,14 @@ String? notificationRoute(ActivityNotification notification) {
       invitationId,
     );
   }
-  if (notification.eventId case final eventId?
-      when notification.clubId != null) {
+  final organizerId = notification.organizerId ?? notification.clubId;
+  if (notification.eventId case final eventId? when organizerId != null) {
     return Routes.eventDetailScreen.path
-        .replaceFirst(':clubId', notification.clubId!)
+        .replaceFirst(':clubId', organizerId)
         .replaceFirst(':eventId', eventId);
   }
-  if (notification.clubId case final clubId?) {
-    return Routes.clubDetailScreen.path.replaceFirst(':clubId', clubId);
+  if (organizerId != null) {
+    return Routes.clubDetailScreen.path.replaceFirst(':clubId', organizerId);
   }
   return null;
 }

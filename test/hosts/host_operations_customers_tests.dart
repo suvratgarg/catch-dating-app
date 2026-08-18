@@ -748,6 +748,61 @@ void _registerHostOperationsCustomersTests() {
     expect(memoryY, lessThan(activityY));
     expect(activityY, lessThan(controlsY));
   });
+
+  testWidgets('customer WhatsApp handoff pre-fills copy and opens wa.me', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 3600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    Uri? launchedUri;
+    final detail = _customerDetail(phoneE164: '+91 98765 43210');
+
+    await _pumpHostScreen(
+      tester,
+      const HostCustomerDetailScreen(
+        organizerId: 'organizer-1',
+        contactId: 'contact-1',
+      ),
+      overrides: [
+        uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
+        hostAudienceContactDetailProvider(
+          'organizer-1',
+          'contact-1',
+        ).overrideWithValue(AsyncData(detail)),
+        externalUrlLauncherProvider.overrideWithValue((
+          uri, {
+          mode = LaunchMode.platformDefault,
+        }) async {
+          launchedUri = uri;
+          return true;
+        }),
+      ],
+    );
+
+    await tester.tap(find.byKey(const ValueKey('host-customer-open-whatsapp')));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('WhatsApp app'), findsOneWidget);
+    expect(find.textContaining('You review it and press Send'), findsWidgets);
+    final messageInput = tester.widget<TextField>(
+      find.descendant(
+        of: find.byKey(const ValueKey('host-customer-whatsapp-message')),
+        matching: find.byType(TextField),
+      ),
+    );
+    expect(messageInput.controller?.text, 'Hi Ananya Rao,');
+
+    await tester.tap(
+      find.byKey(const ValueKey('host-customer-confirm-whatsapp')),
+    );
+    await pumpFeatureUi(tester);
+
+    expect(launchedUri?.host, 'wa.me');
+    expect(launchedUri?.path, '/919876543210');
+    expect(launchedUri?.queryParameters['text'], 'Hi Ananya Rao,');
+  });
 }
 
 HostCustomerDirectoryContact _customerDirectoryContact({
@@ -788,13 +843,14 @@ HostAudienceContactDetail _customerDetail({
   bool linkedAccount = true,
   HostAudienceIdentityState identityState = HostAudienceIdentityState.verified,
   String identityConfidence = 'verified_account',
+  String? phoneE164,
 }) => HostAudienceContactDetail(
   organizerId: 'organizer-1',
   contactId: 'contact-1',
   displayName: 'Ananya Rao',
   sourceDisplayName: 'Ananya Rao',
   displayNameOverride: null,
-  phoneE164: null,
+  phoneE164: phoneE164,
   email: null,
   linkedAccount: linkedAccount,
   identityState: identityState,
@@ -810,6 +866,7 @@ HostAudienceContactDetail _customerDetail({
     importedEventCount: 0,
     attendanceRate: 1,
     segments: {HostAudienceSegment.regular},
+    whatsappStatus: HostAudiencePermissionStatus.optedIn,
     sourceCoverage: HostAudienceSourceCoverage.exact,
   ),
   revenue: const HostCustomerRevenue(

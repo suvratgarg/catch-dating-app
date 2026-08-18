@@ -150,7 +150,7 @@ class _DashboardFullSliverBodyState
       context.l10n.dashboardDashboardFullVisiblecopyOpenPost,
     );
     final parameters = <String, Object>{};
-    final clubId = notification.clubId;
+    final clubId = notification.organizerId ?? notification.clubId;
     final eventId = notification.eventId;
     if (clubId != null) {
       parameters[AnalyticsParameters.clubId] = clubId;

@@ -427,7 +427,7 @@ void main() {
         ),
         _activityNotification(
           id: 'new-post',
-          type: ActivityNotificationType.clubUpdate,
+          type: ActivityNotificationType.organizerUpdate,
           postId: 'post-new',
           createdAt: now.subtract(const Duration(minutes: 20)),
         ),
@@ -655,6 +655,9 @@ ActivityNotification _activityNotification({
     title: 'Club update',
     body: 'Meet ten minutes early.',
     clubId: type == ActivityNotificationType.clubUpdate ? 'club-1' : null,
+    organizerId: type == ActivityNotificationType.organizerUpdate
+        ? 'organizer-1'
+        : null,
     postId: postId,
     createdAt: createdAt ?? DateTime(2026, 5, 18, 9),
     readAt: readAt,
