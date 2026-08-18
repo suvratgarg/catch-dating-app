@@ -197,6 +197,35 @@ void main() {
   });
 
   testWidgets(
+    'CatchSection can omit only the leading rule for the first form group',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          const SizedBox(
+            width: 360,
+            child: CatchSection.fieldRows(
+              first: true,
+              showTopDivider: false,
+              children: [
+                CatchField.read(title: 'First'),
+                CatchField.read(title: 'Second'),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final dividerPositions = tester
+          .widgetList<Positioned>(find.byType(Positioned))
+          .where((positioned) => positioned.child is CatchDivider)
+          .toList(growable: false);
+
+      expect(dividerPositions, hasLength(1));
+      expect(dividerPositions.single.bottom, -CatchStroke.hairline);
+    },
+  );
+
+  testWidgets(
     'CatchSection field rows preserve text-lane dividers for adapter children',
     (tester) async {
       await tester.pumpWidget(

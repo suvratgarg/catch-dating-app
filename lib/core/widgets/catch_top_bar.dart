@@ -398,6 +398,7 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
     this.applySafeArea = true,
     this.contentPadding,
     this.height = CatchLayout.topBarHeight,
+    this.largeHeight = CatchLayout.topBarLargeHeight,
     this.contentCrossAxisAlignment = CrossAxisAlignment.center,
     this.bottom,
     this.trailing,
@@ -424,6 +425,7 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
     this.applySafeArea = true,
     this.contentPadding,
     this.height = CatchLayout.topBarHeight,
+    this.largeHeight = CatchLayout.topBarLargeHeight,
     this.contentCrossAxisAlignment = CrossAxisAlignment.center,
     this.bottom,
     this.trailing,
@@ -455,6 +457,7 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
   final bool applySafeArea;
   final EdgeInsetsGeometry? contentPadding;
   final double height;
+  final double largeHeight;
   final CrossAxisAlignment contentCrossAxisAlignment;
   final PreferredSizeWidget? bottom;
   final Widget? trailing;
@@ -462,8 +465,7 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize => Size.fromHeight(
-    (isLarge ? CatchLayout.topBarLargeHeight : height) +
-        (bottom?.preferredSize.height ?? 0),
+    (isLarge ? largeHeight : height) + (bottom?.preferredSize.height ?? 0),
   );
 
   bool get isLarge => large ?? (kicker != null && kicker!.isNotEmpty);
@@ -501,7 +503,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
         if (widget.isLarge)
           _buildLargeTopBarFrame(
             context,
-            height: CatchLayout.topBarLargeHeight,
+            height: widget.largeHeight,
             gutter: widget.gutter,
             contentPadding: widget.contentPadding,
             showDivider: showDivider && widget.bottom == null,

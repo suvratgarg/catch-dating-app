@@ -45,6 +45,7 @@ class WhenStep extends StatelessWidget {
         children: [
           CatchSection.fieldRows(
             first: true,
+            showTopDivider: false,
             children: [
               FormField<String>(
                 validator: (_) => dateController.text.isEmpty

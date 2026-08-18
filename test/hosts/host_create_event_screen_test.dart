@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_card.dart';
@@ -75,6 +76,39 @@ void main() {
       expect(find.text('Required'), findsOneWidget);
       expect(find.text('Select a pace'), findsOneWidget);
     });
+
+    testWidgets(
+      'uses dockless actions and separates media content from its rule',
+      (tester) async {
+        await _pumpCreateEventFlow(tester);
+        await _openCreateEventFlow(tester);
+
+        expect(find.byType(CatchBottomActionOverlay), findsOneWidget);
+        expect(
+          find.byKey(const ValueKey('catch_bottom_action_overlay.actions')),
+          findsOneWidget,
+        );
+
+        final organizerFinder = find.byKey(
+          const ValueKey('create_event.inherited_organizer_logo'),
+        );
+        final mediaSection = find.ancestor(
+          of: organizerFinder,
+          matching: find.byType(CatchSection),
+        );
+        final ruleRect = tester.getRect(
+          find.descendant(
+            of: mediaSection,
+            matching: find.byType(CatchDivider),
+          ),
+        );
+        final organizerRect = tester.getRect(organizerFinder);
+        expect(
+          organizerRect.top - ruleRect.bottom,
+          closeTo(CatchSpacing.s3, 0.001),
+        );
+      },
+    );
 
     testWidgets(
       'basics disclosures start collapsed, share one accordion, and color activity chips',

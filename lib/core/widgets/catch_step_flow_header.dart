@@ -41,12 +41,20 @@ class CatchStepHeader extends StatelessWidget {
     final topRight =
         trailing ??
         (hasProgress
-            ? Text(
-                context.l10n.coreCatchStepFlowHeaderTextStepClampedstepOfTotal(
-                  clampedStep: clampedStep!,
-                  total: total!,
+            ? Padding(
+                padding: EdgeInsets.only(
+                  top: kicker == null
+                      ? CatchLayout.stepHeaderCounterTopPadding
+                      : CatchSpacing.s0,
                 ),
-                style: CatchTextStyles.monoLabel(context, color: t.ink3),
+                child: Text(
+                  context.l10n
+                      .coreCatchStepFlowHeaderTextStepClampedstepOfTotal(
+                        clampedStep: clampedStep!,
+                        total: total!,
+                      ),
+                  style: CatchTextStyles.monoLabel(context, color: t.ink3),
+                ),
               )
             : null);
 
@@ -64,6 +72,7 @@ class CatchStepHeader extends StatelessWidget {
           onBack: onBack,
           trailing: topRight,
           gutter: gutter,
+          largeHeight: CatchLayout.stepHeaderTopBarHeight,
         ),
         if (hasProgress)
           Padding(

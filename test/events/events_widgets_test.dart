@@ -782,7 +782,6 @@ void main() {
           actionsRect.right,
           lessThanOrEqualTo(320 - CatchSpacing.screenPx),
         );
-
         await tester.drag(find.byType(ListView), const Offset(0, -160));
         await tester.pump();
         expect(find.text('Last form field').hitTestable(), findsOneWidget);

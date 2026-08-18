@@ -2449,6 +2449,8 @@ abstract final class CatchLayout {
   static const double startupLogoExtent = 96.0;
   static const double startupIndicatorExtent = CatchSpacing.s7;
   static const double startupIndicatorOffsetY = 76.0;
+  static const double stepHeaderTopBarHeight = 80.0;
+  static const double stepHeaderCounterTopPadding = CatchSpacing.s2;
   static const double stepHeaderProgressHeight = 2.0;
   static const double statusBarTopPadding = CatchSpacing.micro14;
   static const double statusBarHorizontalPadding = CatchSpacing.s7;

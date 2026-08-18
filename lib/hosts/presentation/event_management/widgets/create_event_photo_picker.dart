@@ -34,34 +34,37 @@ class CreateEventPhotoPicker extends StatelessWidget {
       count: context.l10n.coreCatchFormFieldLabelTextOptional,
       first: true,
       showInternalDividers: false,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _InheritedOrganizerLogo(
-            organizerName: organizerName,
-            organizerLogoUrl: organizerLogoUrl,
-          ),
-          gapH12,
-          Text(
-            context.l10n.hostsCreateEventPhotoPickerBodyUnlimitedGallery,
-            style: CatchTextStyles.supporting(
-              context,
-              color: CatchTokens.of(context).ink3,
+      child: Padding(
+        padding: CatchInsets.fieldSectionChildTop,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _InheritedOrganizerLogo(
+              organizerName: organizerName,
+              organizerLogoUrl: organizerLogoUrl,
             ),
-          ),
-          gapH16,
-          OrderedPhotoPicker(
-            photos: photos,
-            onAddPhotos: onAddPhotos,
-            onRemovePhoto: onRemovePhoto,
-            onReorderPhoto: onReorderPhoto,
-            emptyActionLabel: context
-                .l10n
-                .hostsCreateEventPhotoPickerVisiblecopyAddEventPhotos,
-            addActionLabel:
-                context.l10n.hostsCreateEventPhotoPickerVisiblecopyAddPhotos,
-          ),
-        ],
+            gapH12,
+            Text(
+              context.l10n.hostsCreateEventPhotoPickerBodyUnlimitedGallery,
+              style: CatchTextStyles.supporting(
+                context,
+                color: CatchTokens.of(context).ink3,
+              ),
+            ),
+            gapH16,
+            OrderedPhotoPicker(
+              photos: photos,
+              onAddPhotos: onAddPhotos,
+              onRemovePhoto: onRemovePhoto,
+              onReorderPhoto: onReorderPhoto,
+              emptyActionLabel: context
+                  .l10n
+                  .hostsCreateEventPhotoPickerVisiblecopyAddEventPhotos,
+              addActionLabel:
+                  context.l10n.hostsCreateEventPhotoPickerVisiblecopyAddPhotos,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -80,6 +83,7 @@ class _InheritedOrganizerLogo extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return Row(
+      key: const ValueKey('create_event.inherited_organizer_logo'),
       children: [
         SizedBox.square(
           dimension: CatchLayout.hostMediaInheritedLogoExtent,

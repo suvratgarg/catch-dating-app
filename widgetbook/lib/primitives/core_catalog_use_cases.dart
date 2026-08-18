@@ -2957,6 +2957,29 @@ Widget catchBottomActionCatalogStates(BuildContext context) {
           ],
         ),
       ),
+      _StateCard(
+        label: 'dockless form actions over scrolling content',
+        child: SizedBox(
+          height: 360,
+          child: CatchBottomActionOverlay(
+            body: ListView(
+              padding: CatchInsets.formStepBodyWithBottomActions,
+              children: [
+                for (var index = 0; index < 5; index++) ...[
+                  Text('Scrolling form row ${index + 1}'),
+                  const Divider(),
+                  gapH24,
+                ],
+              ],
+            ),
+            actions: CatchButton(
+              label: 'Continue',
+              onPressed: _noop,
+              fullWidth: true,
+            ),
+          ),
+        ),
+      ),
     ],
   );
 }

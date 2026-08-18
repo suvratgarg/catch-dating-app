@@ -16,14 +16,12 @@ Future<void> _openCatchField(WidgetTester tester, String title) async {
 }
 
 Future<void> _tapCreateEventChip(WidgetTester tester, String label) async {
-  final finder = find
-      .byWidgetPredicate(
-        (widget) => widget is CatchFieldChoiceChip && widget.label == label,
-        description: 'selectable chip labeled $label',
-      )
-      .hitTestable();
+  final finder = find.byWidgetPredicate(
+    (widget) => widget is CatchFieldChoiceChip && widget.label == label,
+    description: 'selectable chip labeled $label',
+  );
   await Scrollable.ensureVisible(tester.element(finder), alignment: 0.25);
   await tester.pump();
-  await tester.tap(finder);
+  await tester.tap(finder.hitTestable());
   await _pumpTestAnimation(tester);
 }

@@ -34,6 +34,7 @@ class ClubDetailsStep extends StatelessWidget {
           children: [
             CatchSection.fieldRows(
               first: true,
+              showTopDivider: false,
               child: CatchField.input(
                 title: context.l10n.hostsClubDetailsStepTitleDescription,
                 contract: CatchContractConstraints

@@ -37,6 +37,7 @@ class WhereStep extends StatelessWidget {
         children: [
           CatchSection.fieldRows(
             first: true,
+            showTopDivider: false,
             children: [
               FormField<LocationCoordinate>(
                 key: ValueKey(startingPoint),

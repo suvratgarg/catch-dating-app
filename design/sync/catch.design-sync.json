@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-08-17",
+  "updated": "2026-08-18",
   "sourceOfTruth": {
     "behavior": "Flutter sources named by design/components/catch.components.json",
     "componentContracts": "design/components/catch.components.json",
@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "70a68d0bde9ac783ccd127b56c361f2c995c70bc43ae624845771824201bd82b",
+  "sourceDigest": "eddece93d08752dd88ae784dff1b6589877482ff71d9e198e0131803edc5d687",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "70a68d0bde9ac783ccd127b56c361f2c995c70bc43ae624845771824201bd82b",
-    "contractDigest": "70a68d0bde9ac783ccd127b56c361f2c995c70bc43ae624845771824201bd82b"
+    "digest": "eddece93d08752dd88ae784dff1b6589877482ff71d9e198e0131803edc5d687",
+    "contractDigest": "eddece93d08752dd88ae784dff1b6589877482ff71d9e198e0131803edc5d687"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "d0a7d8974f955cdff8c178c2c01c4c37365b66297b676c8ed87c13404e703e21",
+    "handoffRequestDigest": "936f5de6a50517dbd741083725806611bdfaabfb76595161dd496459efa93384",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 71,
-    "publicClassCount": 203,
+    "publicClassCount": 204,
     "conceptCount": 65,
-    "memberCount": 120,
-    "membersPerConcept": 1.85,
+    "memberCount": 121,
+    "membersPerConcept": 1.86,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 65,
-      "member": 120,
+      "member": 121,
       "screen": 15
     },
     "collisionCount": 33,
@@ -117,7 +117,8 @@
         "key": "catch.bottom_action",
         "symbols": [
           "CatchBottomAction",
-          "CatchBottomActionContent"
+          "CatchBottomActionContent",
+          "CatchBottomActionOverlay"
         ]
       },
       {
@@ -2564,7 +2565,7 @@
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
       "figmaExpectedPropertyCount": 5,
-      "figmaExpectedPropertyDigest": "578e652cfac60a21b92e424246c2a07cc1a075eab72725ec7942bfaa68b9224d",
+      "figmaExpectedPropertyDigest": "6bee3a412ec392ba063850ef1e51342e1822c6be80a542aa703b75844028bb43",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -2572,7 +2573,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "BookingDock",
       "claudeAllowed": true,
-      "contractDigest": "6afae0739730249d961922b350a87f0dc7e61a54e37ace4131e52fb8e4553531"
+      "contractDigest": "2a7818d00f733a00dacc721749e86d58bb0b46662e15ee506138b1c0dd21d1b9"
     },
     {
       "contractId": "catch.host_row",

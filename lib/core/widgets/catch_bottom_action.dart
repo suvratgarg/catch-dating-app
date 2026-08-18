@@ -61,11 +61,16 @@ class CatchBottomActionOverlay extends StatelessWidget {
               children: [
                 ShaderMask(
                   blendMode: BlendMode.dstIn,
-                  shaderCallback: (bounds) => const LinearGradient(
+                  shaderCallback: (bounds) => LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [Colors.transparent, Colors.black],
-                    stops: [0, 0.72],
+                    colors: [
+                      CatchTokens.editorialBlack.withValues(
+                        alpha: CatchOpacity.none,
+                      ),
+                      CatchTokens.editorialBlack,
+                    ],
+                    stops: const [0, 0.72],
                   ).createShader(bounds),
                   child: BackdropFilter(
                     filter: ImageFilter.blur(
