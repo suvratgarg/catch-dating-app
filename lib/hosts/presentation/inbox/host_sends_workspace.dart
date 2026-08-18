@@ -669,7 +669,7 @@ class _HostSendRow extends StatelessWidget {
         title: context.l10n.hostSendsFollowerUpdateChannel,
         body: [
           context.l10n.hostSendsFollowersAudience,
-          if (update.deliveryStatus != 'unknown')
+          if (update.hasTrackedDelivery)
             context.l10n.hostSendsRecipients(
               count: update.activityAvailableCount,
             ),
@@ -822,12 +822,12 @@ class _HostSendsFollowerUpdateReport extends StatelessWidget {
               context.l10n.hostSendsFollowerDeliveryStatus(
                 status: update.deliveryStatus,
               ),
-              if (update.deliveryStatus != 'unknown')
+              if (update.hasTrackedDelivery)
                 context.l10n.hostSendsRecipients(
                   count: update.activityAvailableCount,
                 ),
             ].join(' · '),
-            tone: update.deliveryStatus == 'completed'
+            tone: update.deliveryCompleted
                 ? CatchNoticeTone.status
                 : CatchNoticeTone.warning,
           ),

@@ -1655,6 +1655,10 @@ final class HostFollowerUpdateSendSummary extends HostSendSummary {
   final int pushUnknownCount;
   final DateTime createdAt;
 
+  bool get hasTrackedDelivery => deliveryStatus != 'unknown';
+
+  bool get deliveryCompleted => deliveryStatus == 'completed';
+
   @override
   String get id => postId;
 }
