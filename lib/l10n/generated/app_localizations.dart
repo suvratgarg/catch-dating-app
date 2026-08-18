@@ -21998,6 +21998,132 @@ abstract class AppLocalizations {
   /// **'Form published'**
   String get hostFormPublished;
 
+  /// Opens or titles form distribution tools.
+  ///
+  /// In en, this message translates to:
+  /// **'Share form'**
+  String get hostFormShare;
+
+  /// Form distribution route guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish one link everywhere, or create tracked links for each channel.'**
+  String get hostFormShareSubtitle;
+
+  /// Canonical form link section label.
+  ///
+  /// In en, this message translates to:
+  /// **'Public link'**
+  String get hostFormCanonicalLink;
+
+  /// Explains app-free form access.
+  ///
+  /// In en, this message translates to:
+  /// **'Respondents open this in any browser. They do not need the Catch app.'**
+  String get hostFormCanonicalLinkHelp;
+
+  /// Copies a public form link.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy link'**
+  String get hostFormCopyLink;
+
+  /// Confirms a form link was copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Form link copied'**
+  String get hostFormLinkCopied;
+
+  /// Opens the platform share sheet for a form link.
+  ///
+  /// In en, this message translates to:
+  /// **'Share link'**
+  String get hostFormShareLink;
+
+  /// Tracked form distribution links section label.
+  ///
+  /// In en, this message translates to:
+  /// **'Tracked links'**
+  String get hostFormTrackedLinks;
+
+  /// Explains tracked form distribution links.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a different link for Instagram, WhatsApp, email, or a partner so response attribution stays visible.'**
+  String get hostFormTrackedLinksHelp;
+
+  /// Creates a source-attributed form link.
+  ///
+  /// In en, this message translates to:
+  /// **'Create tracked link'**
+  String get hostFormCreateTrackedLink;
+
+  /// Tracked form link dialog title.
+  ///
+  /// In en, this message translates to:
+  /// **'New tracked link'**
+  String get hostFormTrackedLinkTitle;
+
+  /// Tracked link human-readable label field.
+  ///
+  /// In en, this message translates to:
+  /// **'Internal label'**
+  String get hostFormTrackedLinkLabel;
+
+  /// Example tracked form link label.
+  ///
+  /// In en, this message translates to:
+  /// **'August Instagram story'**
+  String get hostFormTrackedLinkLabelHint;
+
+  /// Optional machine-readable form link source field.
+  ///
+  /// In en, this message translates to:
+  /// **'Source tag (optional)'**
+  String get hostFormTrackedLinkSource;
+
+  /// Example tracked form link source.
+  ///
+  /// In en, this message translates to:
+  /// **'instagram_story'**
+  String get hostFormTrackedLinkSourceHint;
+
+  /// Confirms tracked form link creation.
+  ///
+  /// In en, this message translates to:
+  /// **'Tracked link ready'**
+  String get hostFormTrackedLinkReady;
+
+  /// Website form embed section label.
+  ///
+  /// In en, this message translates to:
+  /// **'Embed on your website'**
+  String get hostFormEmbed;
+
+  /// Explains the form iframe embed.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste this iframe into your website builder. The embedded route keeps the same validation and submission controls.'**
+  String get hostFormEmbedHelp;
+
+  /// Copies a form iframe snippet.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy embed code'**
+  String get hostFormCopyEmbed;
+
+  /// Confirms a form iframe snippet was copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Embed code copied'**
+  String get hostFormEmbedCopied;
+
+  /// Commits tracked form link creation.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get hostFormCreate;
+
   /// Form metadata editor section title.
   ///
   /// In en, this message translates to:

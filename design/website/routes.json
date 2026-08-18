@@ -1,7 +1,7 @@
 {
   "$schema": "./website.routes.schema.json",
-  "version": 13,
-  "updated": "2026-08-12",
+  "version": 14,
+  "updated": "2026-08-18",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/web_surface_architecture.md",
@@ -102,6 +102,28 @@
         "stateCoverage": {
           "storybook": ["resolved-external"],
           "manual": ["loading", "resolved-runtime", "unavailable"]
+        }
+      }
+    },
+    {
+      "id": "public_form",
+      "kind": "clientDynamic",
+      "pathPattern": "/f/:publicFormId/",
+      "pageKey": "public_form",
+      "source": "website/src/features/forms/PublicFormPage.tsx",
+      "metaKey": "public_form",
+      "staticOutput": "spa-rewrite",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "No-download, opaque-link organizer form route with version-bound autosaved drafts, configurable identity verification, review, idempotent submission, withdrawal, and source attribution.",
+      "review": {
+        "priority": "p0",
+        "status": "manual",
+        "viewports": ["desktop", "mobile"],
+        "states": ["loading", "identity", "questions", "review", "complete", "unavailable"],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": ["loading", "identity", "questions", "review", "complete", "unavailable"]
         }
       }
     },

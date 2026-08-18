@@ -35,6 +35,7 @@ import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dar
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_preview_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_share_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_templates_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
@@ -959,6 +960,15 @@ StatefulShellRoute _hostShellRoute(
                 name: Routes.hostFormPreviewScreen.name,
                 parentNavigatorKey: keys.root,
                 builder: (context, state) => HostFormPreviewScreen(
+                  organizerId: state.uri.queryParameters['organizerId'] ?? '',
+                  formId: state.pathParameters['formId']!,
+                ),
+              ),
+              GoRoute(
+                path: ':formId/share',
+                name: Routes.hostFormShareScreen.name,
+                parentNavigatorKey: keys.root,
+                builder: (context, state) => HostFormShareScreen(
                   organizerId: state.uri.queryParameters['organizerId'] ?? '',
                   formId: state.pathParameters['formId']!,
                 ),

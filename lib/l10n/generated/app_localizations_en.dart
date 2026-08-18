@@ -14074,6 +14074,73 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormPublished => 'Form published';
 
   @override
+  String get hostFormShare => 'Share form';
+
+  @override
+  String get hostFormShareSubtitle =>
+      'Publish one link everywhere, or create tracked links for each channel.';
+
+  @override
+  String get hostFormCanonicalLink => 'Public link';
+
+  @override
+  String get hostFormCanonicalLinkHelp =>
+      'Respondents open this in any browser. They do not need the Catch app.';
+
+  @override
+  String get hostFormCopyLink => 'Copy link';
+
+  @override
+  String get hostFormLinkCopied => 'Form link copied';
+
+  @override
+  String get hostFormShareLink => 'Share link';
+
+  @override
+  String get hostFormTrackedLinks => 'Tracked links';
+
+  @override
+  String get hostFormTrackedLinksHelp =>
+      'Use a different link for Instagram, WhatsApp, email, or a partner so response attribution stays visible.';
+
+  @override
+  String get hostFormCreateTrackedLink => 'Create tracked link';
+
+  @override
+  String get hostFormTrackedLinkTitle => 'New tracked link';
+
+  @override
+  String get hostFormTrackedLinkLabel => 'Internal label';
+
+  @override
+  String get hostFormTrackedLinkLabelHint => 'August Instagram story';
+
+  @override
+  String get hostFormTrackedLinkSource => 'Source tag (optional)';
+
+  @override
+  String get hostFormTrackedLinkSourceHint => 'instagram_story';
+
+  @override
+  String get hostFormTrackedLinkReady => 'Tracked link ready';
+
+  @override
+  String get hostFormEmbed => 'Embed on your website';
+
+  @override
+  String get hostFormEmbedHelp =>
+      'Paste this iframe into your website builder. The embedded route keeps the same validation and submission controls.';
+
+  @override
+  String get hostFormCopyEmbed => 'Copy embed code';
+
+  @override
+  String get hostFormEmbedCopied => 'Embed code copied';
+
+  @override
+  String get hostFormCreate => 'Create';
+
+  @override
   String get hostFormSettings => 'Form settings';
 
   @override

@@ -116,6 +116,9 @@ class _HostFormRendererState extends State<HostFormRenderer> {
         return CatchField.choices<String>(
           key: ValueKey('host-form-renderer-question-${question.questionId}'),
           title: question.label,
+          contract: CatchContractConstraints
+              .organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsOptions,
+          contractValue: (value) => value,
           body: question.helpText,
           values: values,
           itemLabel: (value) => question.options

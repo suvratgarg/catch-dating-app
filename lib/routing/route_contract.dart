@@ -60,6 +60,7 @@ enum Routes {
   hostFormTemplatesScreen('/host/forms/new', AppRouteAudience.host),
   hostFormBuilderScreen('/host/forms/:formId', AppRouteAudience.host),
   hostFormPreviewScreen('/host/forms/:formId/preview', AppRouteAudience.host),
+  hostFormShareScreen('/host/forms/:formId/share', AppRouteAudience.host),
   hostApplicationsScreen('/host/customers/applications', AppRouteAudience.host),
   hostApplicationDetailScreen(
     '/host/customers/applications/:applicationId',

@@ -46,6 +46,9 @@ import {
   organizerFormDocumentSchema,
   organizerFormDraftDocumentSchema,
   organizerFormVersionDocumentSchema,
+  organizerFormResponseDraftDocumentSchema,
+  organizerFormResponseDocumentSchema,
+  organizerFormShareLinkDocumentSchema,
   organizerApplicationDocumentSchema,
   organizerApplicationResponseDocumentSchema,
   organizerApplicationAssetDocumentSchema,
@@ -302,6 +305,20 @@ import {
   deleteOrganizerFormDraftCallableResponseSchema,
   listOrganizerFormTemplatesCallablePayloadSchema,
   listOrganizerFormTemplatesCallableResponseSchema,
+  getPublicOrganizerFormCallablePayloadSchema,
+  getPublicOrganizerFormCallableResponseSchema,
+  beginOrganizerFormResponseCallablePayloadSchema,
+  beginOrganizerFormResponseCallableResponseSchema,
+  saveOrganizerFormResponseDraftCallablePayloadSchema,
+  saveOrganizerFormResponseDraftCallableResponseSchema,
+  submitOrganizerFormResponseCallablePayloadSchema,
+  submitOrganizerFormResponseCallableResponseSchema,
+  withdrawOrganizerFormResponseCallablePayloadSchema,
+  withdrawOrganizerFormResponseCallableResponseSchema,
+  createOrganizerFormShareLinkCallablePayloadSchema,
+  createOrganizerFormShareLinkCallableResponseSchema,
+  getOrganizerFormShareAssetsCallablePayloadSchema,
+  getOrganizerFormShareAssetsCallableResponseSchema,
   publishOrganizerApplicationFormCallablePayloadSchema,
   getParticipantOrganizerApplicationFormCallablePayloadSchema,
   getParticipantOrganizerApplicationFormCallableResponseSchema,
@@ -497,6 +514,9 @@ export const validateOrganizerApplicationFormVersionDocument = ajv.compile(organ
 export const validateOrganizerFormDocument = ajv.compile(organizerFormDocumentSchema);
 export const validateOrganizerFormDraftDocument = ajv.compile(organizerFormDraftDocumentSchema);
 export const validateOrganizerFormVersionDocument = ajv.compile(organizerFormVersionDocumentSchema);
+export const validateOrganizerFormResponseDraftDocument = ajv.compile(organizerFormResponseDraftDocumentSchema);
+export const validateOrganizerFormResponseDocument = ajv.compile(organizerFormResponseDocumentSchema);
+export const validateOrganizerFormShareLinkDocument = ajv.compile(organizerFormShareLinkDocumentSchema);
 export const validateOrganizerApplicationDocument = ajv.compile(organizerApplicationDocumentSchema);
 export const validateOrganizerApplicationResponseDocument = ajv.compile(organizerApplicationResponseDocumentSchema);
 export const validateOrganizerApplicationAssetDocument = ajv.compile(organizerApplicationAssetDocumentSchema);
@@ -753,6 +773,20 @@ export const validateDeleteOrganizerFormDraftCallablePayload = ajv.compile(delet
 export const validateDeleteOrganizerFormDraftCallableResponse = ajv.compile(deleteOrganizerFormDraftCallableResponseSchema);
 export const validateListOrganizerFormTemplatesCallablePayload = ajv.compile(listOrganizerFormTemplatesCallablePayloadSchema);
 export const validateListOrganizerFormTemplatesCallableResponse = ajv.compile(listOrganizerFormTemplatesCallableResponseSchema);
+export const validateGetPublicOrganizerFormCallablePayload = ajv.compile(getPublicOrganizerFormCallablePayloadSchema);
+export const validateGetPublicOrganizerFormCallableResponse = ajv.compile(getPublicOrganizerFormCallableResponseSchema);
+export const validateBeginOrganizerFormResponseCallablePayload = ajv.compile(beginOrganizerFormResponseCallablePayloadSchema);
+export const validateBeginOrganizerFormResponseCallableResponse = ajv.compile(beginOrganizerFormResponseCallableResponseSchema);
+export const validateSaveOrganizerFormResponseDraftCallablePayload = ajv.compile(saveOrganizerFormResponseDraftCallablePayloadSchema);
+export const validateSaveOrganizerFormResponseDraftCallableResponse = ajv.compile(saveOrganizerFormResponseDraftCallableResponseSchema);
+export const validateSubmitOrganizerFormResponseCallablePayload = ajv.compile(submitOrganizerFormResponseCallablePayloadSchema);
+export const validateSubmitOrganizerFormResponseCallableResponse = ajv.compile(submitOrganizerFormResponseCallableResponseSchema);
+export const validateWithdrawOrganizerFormResponseCallablePayload = ajv.compile(withdrawOrganizerFormResponseCallablePayloadSchema);
+export const validateWithdrawOrganizerFormResponseCallableResponse = ajv.compile(withdrawOrganizerFormResponseCallableResponseSchema);
+export const validateCreateOrganizerFormShareLinkCallablePayload = ajv.compile(createOrganizerFormShareLinkCallablePayloadSchema);
+export const validateCreateOrganizerFormShareLinkCallableResponse = ajv.compile(createOrganizerFormShareLinkCallableResponseSchema);
+export const validateGetOrganizerFormShareAssetsCallablePayload = ajv.compile(getOrganizerFormShareAssetsCallablePayloadSchema);
+export const validateGetOrganizerFormShareAssetsCallableResponse = ajv.compile(getOrganizerFormShareAssetsCallableResponseSchema);
 export const validatePublishOrganizerApplicationFormCallablePayload = ajv.compile(publishOrganizerApplicationFormCallablePayloadSchema);
 export const validateGetParticipantOrganizerApplicationFormCallablePayload = ajv.compile(getParticipantOrganizerApplicationFormCallablePayloadSchema);
 export const validateGetParticipantOrganizerApplicationFormCallableResponse = ajv.compile(getParticipantOrganizerApplicationFormCallableResponseSchema);

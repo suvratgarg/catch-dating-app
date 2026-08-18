@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/save_organizer_form_response_draft_response.schema.json",
+  "title": "SaveOrganizerFormResponseDraftCallableResponse",
+  "description": "Saved draft revision and expiry.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["draftId", "revision", "expiresAtMillis"],
+  "properties": {
+    "draftId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "expiresAtMillis": {"type": "integer", "minimum": 0, "maximum": 9007199254740991}
+  }
+}

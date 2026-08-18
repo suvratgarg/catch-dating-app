@@ -1060,6 +1060,18 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /organizerFormResponseDrafts/{draftId} {
+      allow read, write: if false;
+    }
+
+    match /organizerFormResponses/{responseId} {
+      allow read, write: if false;
+    }
+
+    match /organizerFormShareLinks/{linkId} {
+      allow read, write: if false;
+    }
+
     match /participantIntakeProfiles/{uid} {
       allow read, write: if false;
     }

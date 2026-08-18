@@ -84,6 +84,25 @@ void main() {
       expect(first.hashCode, second.hashCode);
     },
   );
+
+  test('form share projections retain canonical and attributed URLs', () {
+    final assets = HostFormShareAssets.fromCallableData({
+      'canonicalUrl': 'https://catchdates.com/f/public_form_1234567890/',
+      'embedUrl': 'https://catchdates.com/f/public_form_1234567890/?embed=1',
+      'embedSnippet': '<iframe></iframe>',
+    });
+    final link = HostFormShareLink.fromCallableData({
+      'linkId': 'formlink_123',
+      'label': 'Instagram story',
+      'source': 'instagram_story',
+      'sourceToken': 'formlink_12345678901234567890',
+      'url': 'https://catchdates.com/f/public_form_1234567890/?source=x',
+    });
+
+    expect(assets.embedUrl, contains('embed=1'));
+    expect(link.source, 'instagram_story');
+    expect(link.url, contains('source='));
+  });
 }
 
 Map<String, Object?> _definitionMap() => {

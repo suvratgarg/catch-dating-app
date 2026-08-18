@@ -1442,57 +1442,57 @@ function normalizeFormMutationPayload(value: unknown): unknown {
   });
 }
 
-const callableLimits = appCheckCallableOptionsWithLimits({
+const callableLimits = {
   timeoutSeconds: 60,
   maxInstances: 20,
-});
+};
 
 export const createOrganizerForm = onCall(
-  callableLimits,
+  appCheckCallableOptionsWithLimits(callableLimits),
   (request) => createOrganizerFormHandler(request)
 );
 
 export const updateOrganizerFormDraft = onCall(
-  callableLimits,
+  appCheckCallableOptionsWithLimits(callableLimits),
   (request) => updateOrganizerFormDraftHandler(request)
 );
 
 export const getOrganizerFormEditor = onCall(
-  callableLimits,
+  appCheckCallableOptionsWithLimits(callableLimits),
   (request) => getOrganizerFormEditorHandler(request)
 );
 
 export const listOrganizerForms = onCall(
-  callableLimits,
+  appCheckCallableOptionsWithLimits(callableLimits),
   (request) => listOrganizerFormsHandler(request)
 );
 
 export const validateOrganizerFormDraft = onCall(
-  callableLimits,
+  appCheckCallableOptionsWithLimits(callableLimits),
   (request) => validateOrganizerFormDraftHandler(request)
 );
 
 export const publishOrganizerForm = onCall(
-  callableLimits,
+  appCheckCallableOptionsWithLimits(callableLimits),
   (request) => publishOrganizerFormHandler(request)
 );
 
 export const setOrganizerFormLifecycle = onCall(
-  callableLimits,
+  appCheckCallableOptionsWithLimits(callableLimits),
   (request) => setOrganizerFormLifecycleHandler(request)
 );
 
 export const duplicateOrganizerForm = onCall(
-  callableLimits,
+  appCheckCallableOptionsWithLimits(callableLimits),
   (request) => duplicateOrganizerFormHandler(request)
 );
 
 export const deleteOrganizerFormDraft = onCall(
-  callableLimits,
+  appCheckCallableOptionsWithLimits(callableLimits),
   (request) => deleteOrganizerFormDraftHandler(request)
 );
 
 export const listOrganizerFormTemplates = onCall(
-  callableLimits,
+  appCheckCallableOptionsWithLimits(callableLimits),
   (request) => listOrganizerFormTemplatesHandler(request)
 );

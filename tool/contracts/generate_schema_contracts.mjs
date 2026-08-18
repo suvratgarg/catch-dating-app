@@ -258,6 +258,24 @@ const schemaSpecs = [
       "functions/src/shared/generated/organizerFormVersionDocument.ts",
   },
   {
+    name: "OrganizerFormResponseDraftDocument",
+    source: "firestore/organizer_form_response_drafts.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerFormResponseDraftDocument.ts",
+  },
+  {
+    name: "OrganizerFormResponseDocument",
+    source: "firestore/organizer_form_responses.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerFormResponseDocument.ts",
+  },
+  {
+    name: "OrganizerFormShareLinkDocument",
+    source: "firestore/organizer_form_share_links.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerFormShareLinkDocument.ts",
+  },
+  {
     name: "OrganizerApplicationDocument",
     source: "firestore/organizer_applications.schema.json",
     typeOutput:
@@ -1883,6 +1901,120 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "listOrganizerFormTemplatesCallableResponse.ts",
+  },
+  {
+    name: "GetPublicOrganizerFormCallablePayload",
+    source: "callables/get_public_organizer_form_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/getPublicOrganizerFormCallablePayload.ts",
+  },
+  {
+    name: "GetPublicOrganizerFormCallableResponse",
+    source:
+      "callable_responses/get_public_organizer_form_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/getPublicOrganizerFormCallableResponse.ts",
+  },
+  {
+    name: "BeginOrganizerFormResponseCallablePayload",
+    source:
+      "callables/begin_organizer_form_response_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "beginOrganizerFormResponseCallablePayload.ts",
+  },
+  {
+    name: "BeginOrganizerFormResponseCallableResponse",
+    source:
+      "callable_responses/" +
+      "begin_organizer_form_response_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "beginOrganizerFormResponseCallableResponse.ts",
+  },
+  {
+    name: "SaveOrganizerFormResponseDraftCallablePayload",
+    source:
+      "callables/save_organizer_form_response_draft_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "saveOrganizerFormResponseDraftCallablePayload.ts",
+  },
+  {
+    name: "SaveOrganizerFormResponseDraftCallableResponse",
+    source:
+      "callable_responses/" +
+      "save_organizer_form_response_draft_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "saveOrganizerFormResponseDraftCallableResponse.ts",
+  },
+  {
+    name: "SubmitOrganizerFormResponseCallablePayload",
+    source: "callables/submit_organizer_form_response_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "submitOrganizerFormResponseCallablePayload.ts",
+  },
+  {
+    name: "SubmitOrganizerFormResponseCallableResponse",
+    source:
+      "callable_responses/" +
+      "submit_organizer_form_response_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "submitOrganizerFormResponseCallableResponse.ts",
+  },
+  {
+    name: "WithdrawOrganizerFormResponseCallablePayload",
+    source:
+      "callables/withdraw_organizer_form_response_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "withdrawOrganizerFormResponseCallablePayload.ts",
+  },
+  {
+    name: "WithdrawOrganizerFormResponseCallableResponse",
+    source:
+      "callable_responses/" +
+      "withdraw_organizer_form_response_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "withdrawOrganizerFormResponseCallableResponse.ts",
+  },
+  {
+    name: "CreateOrganizerFormShareLinkCallablePayload",
+    source:
+      "callables/create_organizer_form_share_link_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "createOrganizerFormShareLinkCallablePayload.ts",
+  },
+  {
+    name: "CreateOrganizerFormShareLinkCallableResponse",
+    source:
+      "callable_responses/" +
+      "create_organizer_form_share_link_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "createOrganizerFormShareLinkCallableResponse.ts",
+  },
+  {
+    name: "GetOrganizerFormShareAssetsCallablePayload",
+    source:
+      "callables/get_organizer_form_share_assets_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "getOrganizerFormShareAssetsCallablePayload.ts",
+  },
+  {
+    name: "GetOrganizerFormShareAssetsCallableResponse",
+    source:
+      "callable_responses/" +
+      "get_organizer_form_share_assets_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "getOrganizerFormShareAssetsCallableResponse.ts",
   },
   {
     name: "PublishOrganizerApplicationFormCallablePayload",

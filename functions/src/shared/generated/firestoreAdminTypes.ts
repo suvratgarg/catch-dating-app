@@ -2496,6 +2496,101 @@ export interface OrganizerFormVersionDocument {
 }
 
 /**
+ * Expiring version-bound respondent autosave state.
+ */
+export interface OrganizerFormResponseDraftDocument {
+  organizerId: string;
+  formId: string;
+  versionId: string;
+  publicFormId: string;
+  status: "active" | "submitted" | "expired" | "withdrawn";
+  revision: number;
+  identityKind:
+    | "anonymous"
+    | "emailVerified"
+    | "phoneVerified"
+    | "catchAccount";
+  respondentUid: string | null;
+  draftTokenHash: string | null;
+  answers: {
+    [k: string]: string | number | boolean | null | string[];
+  };
+  consentAccepted: boolean;
+  consentVersion: string;
+  sourceLinkId: string | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+  submittedResponseId: string | null;
+}
+
+/**
+ * Immutable submitted response envelope with withdrawal state.
+ */
+export interface OrganizerFormResponseDocument {
+  organizerId: string;
+  formId: string;
+  versionId: string;
+  publicFormId: string;
+  draftId: string;
+  status: "submitted" | "withdrawn";
+  identityKind:
+    | "anonymous"
+    | "emailVerified"
+    | "phoneVerified"
+    | "catchAccount";
+  respondentUid: string | null;
+  withdrawalTokenHash: string | null;
+  answers: {
+    [k: string]: string | number | boolean | null | string[];
+  };
+  /**
+   * @maxItems 4000
+   */
+  answerSnapshots: {
+    questionId: string;
+    key: string;
+    label: string;
+    kind:
+      | "shortText"
+      | "longText"
+      | "singleChoice"
+      | "multiChoice"
+      | "date"
+      | "phone"
+      | "email"
+      | "url"
+      | "number"
+      | "boolean"
+      | "file"
+      | "acknowledgement"
+      | "signature";
+    answer: string | number | boolean | null | string[];
+  }[];
+  consentVersion: string;
+  sourceLinkId: string | null;
+  submittedAt: FirebaseFirestore.Timestamp;
+  withdrawnAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Organizer-owned source-attributed stable public form link.
+ */
+export interface OrganizerFormShareLinkDocument {
+  organizerId: string;
+  formId: string;
+  publicFormId: string;
+  label: string;
+  source: string | null;
+  tokenHash: string;
+  createdByUid: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  openCount: number;
+  startCount: number;
+  submissionCount: number;
+}
+
+/**
  * Organizer-scoped application review summary with no provider-specific answer shape.
  */
 export interface OrganizerApplicationDocument {

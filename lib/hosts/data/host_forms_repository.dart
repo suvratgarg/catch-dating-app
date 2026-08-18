@@ -203,6 +203,38 @@ class HostFormsRepository {
     },
   );
 
+  Future<HostFormShareAssets> getShareAssets({
+    required String organizerId,
+    required String formId,
+  }) => _call(
+    name: 'getOrganizerFormShareAssets',
+    payload: GetOrganizerFormShareAssetsCallableRequest(
+      organizerId: organizerId,
+      formId: formId,
+    ).toJson(),
+    action: 'load organizer form share assets',
+    parse: HostFormShareAssets.fromCallableData,
+  );
+
+  Future<HostFormShareLink> createShareLink({
+    required String organizerId,
+    required String formId,
+    required String label,
+    required String? source,
+    required String requestId,
+  }) => _call(
+    name: 'createOrganizerFormShareLink',
+    payload: CreateOrganizerFormShareLinkCallableRequest(
+      organizerId: organizerId,
+      formId: formId,
+      label: label.trim(),
+      source: source?.trim().isEmpty ?? true ? null : source?.trim(),
+      requestId: requestId,
+    ).toJson(),
+    action: 'create organizer form share link',
+    parse: HostFormShareLink.fromCallableData,
+  );
+
   Future<T> _call<T>({
     required String name,
     required Map<String, Object?> payload,
@@ -233,6 +265,15 @@ Future<List<HostFormTemplateSummary>> hostFormTemplates(
   Ref ref,
   String organizerId,
 ) => ref.read(hostFormsRepositoryProvider).listTemplates(organizerId);
+
+@riverpod
+Future<HostFormShareAssets> hostFormShareAssets(
+  Ref ref, {
+  required String organizerId,
+  required String formId,
+}) => ref
+    .read(hostFormsRepositoryProvider)
+    .getShareAssets(organizerId: organizerId, formId: formId);
 
 Map<Object?, Object?> _requiredMap(Object? value, String label) {
   if (value is Map<Object?, Object?>) return value;

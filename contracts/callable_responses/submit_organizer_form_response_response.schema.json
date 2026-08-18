@@ -1,0 +1,7 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/submit_organizer_form_response_response.schema.json",
+  "title": "SubmitOrganizerFormResponseCallableResponse",
+  "description": "Stable form response receipt.",
+  "allOf": [{"$ref": "../shared/organizer_form_response_common.schema.json#/definitions/responseReceipt"}]
+}

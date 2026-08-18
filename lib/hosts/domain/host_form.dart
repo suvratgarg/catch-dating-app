@@ -42,6 +42,56 @@ enum HostFormValidationSeverity { error, warning }
 enum HostFormLifecycleAction { pause, resume, archive }
 
 @immutable
+class HostFormShareAssets {
+  const HostFormShareAssets({
+    required this.canonicalUrl,
+    required this.embedUrl,
+    required this.embedSnippet,
+  });
+
+  factory HostFormShareAssets.fromCallableData(Object? data) {
+    final map = _requiredMap(data, 'form share assets');
+    return HostFormShareAssets(
+      canonicalUrl: _requiredString(map, 'canonicalUrl'),
+      embedUrl: _requiredString(map, 'embedUrl'),
+      embedSnippet: _requiredString(map, 'embedSnippet'),
+    );
+  }
+
+  final String canonicalUrl;
+  final String embedUrl;
+  final String embedSnippet;
+}
+
+@immutable
+class HostFormShareLink {
+  const HostFormShareLink({
+    required this.linkId,
+    required this.label,
+    required this.source,
+    required this.sourceToken,
+    required this.url,
+  });
+
+  factory HostFormShareLink.fromCallableData(Object? data) {
+    final map = _requiredMap(data, 'form share link');
+    return HostFormShareLink(
+      linkId: _requiredString(map, 'linkId'),
+      label: _requiredString(map, 'label'),
+      source: _nullableString(map['source']),
+      sourceToken: _requiredString(map, 'sourceToken'),
+      url: _requiredString(map, 'url'),
+    );
+  }
+
+  final String linkId;
+  final String label;
+  final String? source;
+  final String sourceToken;
+  final String url;
+}
+
+@immutable
 class HostFormListRequest {
   const HostFormListRequest({
     required this.organizerId,

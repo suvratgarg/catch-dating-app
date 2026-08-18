@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_form_responses.schema.json",
+  "title": "OrganizerFormResponseDocument",
+  "description": "Immutable submitted response envelope with withdrawal state.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["organizerId", "formId", "versionId", "publicFormId", "draftId", "status", "identityKind", "respondentUid", "withdrawalTokenHash", "answers", "answerSnapshots", "consentVersion", "sourceLinkId", "submittedAt", "withdrawnAt"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "formId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "versionId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "publicFormId": {"type": "string", "pattern": "^[A-Za-z0-9_-]{20,80}$"},
+    "draftId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "status": {"$ref": "../shared/organizer_form_response_common.schema.json#/definitions/responseStatus"},
+    "identityKind": {"$ref": "../shared/organizer_form_response_common.schema.json#/definitions/responseIdentityKind"},
+    "respondentUid": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
+    "withdrawalTokenHash": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"},
+    "answers": {"$ref": "../shared/organizer_form_response_common.schema.json#/definitions/answerMap"},
+    "answerSnapshots": {
+      "type": "array",
+      "maxItems": 4000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["questionId", "key", "label", "kind", "answer"],
+        "properties": {
+          "questionId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+          "key": {"type": "string", "minLength": 1, "maxLength": 80},
+          "label": {"type": "string", "minLength": 1, "maxLength": 240},
+          "kind": {"$ref": "../shared/organizer_form_common.schema.json#/definitions/questionKind"},
+          "answer": {"$ref": "../shared/organizer_form_response_common.schema.json#/definitions/answerValue"}
+        }
+      }
+    },
+    "consentVersion": {"type": "string", "minLength": 1, "maxLength": 80},
+    "sourceLinkId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
+    "submittedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "withdrawnAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"}
+  },
+  "x-firestore-collection": "organizerFormResponses",
+  "x-firestore-path": "organizerFormResponses/{responseId}",
+  "x-document-id-field": "responseId",
+  "x-owner": "organizer form submission callable"
+}

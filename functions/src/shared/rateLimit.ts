@@ -93,6 +93,13 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   duplicateOrganizerForm: {maxRequests: 20, windowMs: 60 * 60 * 1000},
   deleteOrganizerFormDraft: {maxRequests: 20, windowMs: 60 * 1000},
   listOrganizerFormTemplates: {maxRequests: 60, windowMs: 60 * 1000},
+  getPublicOrganizerForm: {maxRequests: 120, windowMs: 60 * 1000},
+  beginOrganizerFormResponse: {maxRequests: 20, windowMs: 60 * 1000},
+  saveOrganizerFormResponseDraft: {maxRequests: 120, windowMs: 60 * 1000},
+  submitOrganizerFormResponse: {maxRequests: 20, windowMs: 60 * 1000},
+  withdrawOrganizerFormResponse: {maxRequests: 10, windowMs: 60 * 1000},
+  createOrganizerFormShareLink: {maxRequests: 30, windowMs: 60 * 1000},
+  getOrganizerFormShareAssets: {maxRequests: 60, windowMs: 60 * 1000},
   previewOrganizerApplicationImport: {
     maxRequests: 30,
     windowMs: 60 * 60 * 1000,

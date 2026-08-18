@@ -1,0 +1,7 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_public_organizer_form_response.schema.json",
+  "title": "GetPublicOrganizerFormCallableResponse",
+  "description": "Bounded public form and active immutable version projection.",
+  "allOf": [{"$ref": "../shared/organizer_form_response_common.schema.json#/definitions/publicFormProjection"}]
+}

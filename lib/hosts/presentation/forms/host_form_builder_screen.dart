@@ -68,6 +68,16 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
         leadingType: CatchTopBarLeading.back,
         divider: scrolledUnder,
         actions: [
+          if (editorValue?.editor.form.activeVersionId != null)
+            CatchIconAction(
+              icon: CatchIcons.share,
+              tooltip: context.l10n.hostFormShare,
+              onPressed: () => context.pushNamed(
+                Routes.hostFormShareScreen.name,
+                pathParameters: {'formId': widget.formId},
+                queryParameters: {'organizerId': widget.organizerId},
+              ),
+            ),
           CatchIconAction(
             icon: CatchIcons.visibilityOutlined,
             tooltip: context.l10n.hostFormPreview,
@@ -400,6 +410,9 @@ class _FormSettings extends StatelessWidget {
       ),
       CatchField.select<HostFormPurpose>(
         title: context.l10n.hostFormPurposeLabel,
+        contract: CatchContractConstraints
+            .organizerFormDraftDocumentDefinitionPurpose,
+        contractValue: (value) => value.name,
         values: HostFormPurpose.values,
         value: definition.purpose,
         itemLabel: (value) => hostFormPurposeLabel(context, value),
@@ -407,6 +420,9 @@ class _FormSettings extends StatelessWidget {
       ),
       CatchField.select<HostFormIdentityPolicy>(
         title: context.l10n.hostFormIdentityLabel,
+        contract: CatchContractConstraints
+            .organizerFormDraftDocumentDefinitionIdentityPolicy,
+        contractValue: (value) => value.name,
         values: HostFormIdentityPolicy.values,
         value: definition.identityPolicy,
         itemLabel: (value) => hostFormIdentityLabel(context, value),
@@ -556,6 +572,8 @@ class _QuestionEditor extends StatelessWidget {
   Widget build(BuildContext context) => CatchField.control(
     title: question.label,
     body: hostFormQuestionKindLabel(context, question.kind),
+    contractExemption:
+        'Disclosure container; nested question fields bind the form contract.',
     onOpenChanged: (open) {
       if (open) onSelected();
     },
@@ -577,6 +595,9 @@ class _QuestionEditor extends StatelessWidget {
         ),
         CatchField.select<HostFormQuestionKind>(
           title: context.l10n.hostFormQuestionType,
+          contract: CatchContractConstraints
+              .organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsKind,
+          contractValue: (value) => value.name,
           values: HostFormQuestionKind.values,
           value: question.kind,
           itemLabel: (value) => hostFormQuestionKindLabel(context, value),
