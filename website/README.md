@@ -16,12 +16,15 @@ The validation job checks generated design-token CSS, app-derived marketing
 media, screenshot design-context drift, route-contract drift, unit/a11y tests,
 registry-backed Storybook visual baselines, and the Vite production build.
 
-The marketing target serves generated static routes and keeps only the
-explicit `/host/**`, `/claim/**`, and API rewrites. It deliberately has no
-catch-all rewrite, allowing the generated `dist/404.html` to retain Firebase's
-HTTP 404 status. The route checker enforces that configuration and the deploy
-workflow probes a unique unknown production URL after deployment. The local
-Hosting emulator uses port 5050 because macOS commonly reserves port 5000.
+The marketing target serves generated static routes and keeps only explicit
+dynamic-family rewrites (`/host/**`, `/join/**`, `/invite/**`, `/f/**`, and
+`/claim/**`) plus API rewrites. It deliberately has no catch-all rewrite,
+allowing the generated `dist/404.html` to retain Firebase's HTTP 404 status.
+The route checker requires every `spa-rewrite` contract to have both a
+generated entrypoint and its exact Hosting rewrite. The deploy workflow probes
+the public Forms family and a unique unknown production URL after deployment.
+The local Hosting emulator uses port 5050 because macOS commonly reserves port
+5000.
 The retired `/host/preview{,/**}` family is a contract-backed permanent Hosting
 redirect to `/host/`; there is no client route or duplicate page owner.
 

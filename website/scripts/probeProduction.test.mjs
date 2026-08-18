@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {probePage} from "./probeProduction.mjs";
+import {probePage, productionProbeContracts} from "./probeProduction.mjs";
 
 const contract = {
   path: "/privacy/",
@@ -8,6 +8,18 @@ const contract = {
   canonicalPath: "/privacy/",
   markers: ["Privacy policy"],
 };
+
+test("production probes include the dynamic public Forms runtime", () => {
+  assert.deepEqual(
+    productionProbeContracts.find((entry) => entry.path.startsWith("/f/")),
+    {
+      path: "/f/__catch_public_form_route_probe__/",
+      title: "Organizer form | Catch",
+      canonicalPath: "/f/",
+      markers: [],
+    }
+  );
+});
 
 test("production probe accepts the expected route contract", async () => {
   const result = await probePage({

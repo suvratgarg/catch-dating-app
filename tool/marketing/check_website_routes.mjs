@@ -470,9 +470,47 @@ function validateStaticOutput(route) {
       }
     }
   }
-  if (route.staticOutput === "spa-rewrite" && route.sitemap !== "excluded") {
-    errors.push(`${route.id}: SPA rewrite routes must be excluded from sitemap until static output exists.`);
+  if (route.staticOutput === "spa-rewrite") {
+    if (route.sitemap !== "excluded") {
+      errors.push(`${route.id}: SPA rewrite routes must be excluded from sitemap until static output exists.`);
+    }
+    for (const finding of spaRewriteHostingErrors(route, hostingConfig, postbuildSource)) {
+      errors.push(`${route.id}: ${finding}`);
+    }
   }
+}
+
+function spaRewriteHostingErrors(route, config, generatedRouteSource) {
+  const findings = [];
+  const pathPattern = String(route?.pathPattern ?? "");
+  const routeRoot = pathPattern.replace(/:[^/]+\/$/u, "");
+  if (!routeRoot || routeRoot === pathPattern || !routeRoot.endsWith("/")) {
+    return ["SPA rewrite pathPattern must end with one dynamic segment and a trailing slash."];
+  }
+
+  if (!generatedRouteSource.includes(`writeRoute("${routeRoot}"`)) {
+    findings.push(`postbuild.mjs must emit the ${routeRoot} entrypoint.`);
+  }
+
+  const targets = Array.isArray(config?.hosting) ? config.hosting : [];
+  const marketing = targets.find((target) => target?.target === "marketing");
+  if (!marketing) {
+    findings.push("firebase.json must declare the marketing Hosting target.");
+    return findings;
+  }
+
+  const expectedSource = `${routeRoot}**`;
+  const expectedDestination = `${routeRoot}index.html`;
+  const rewrites = Array.isArray(marketing.rewrites) ? marketing.rewrites : [];
+  const matchingRewrite = rewrites.find((rewrite) => rewrite?.source === expectedSource);
+  if (!matchingRewrite) {
+    findings.push(`firebase.json must rewrite ${expectedSource} to ${expectedDestination}.`);
+  } else if (matchingRewrite.destination !== expectedDestination) {
+    findings.push(
+      `firebase.json rewrite ${expectedSource} must target ${expectedDestination}.`
+    );
+  }
+  return findings;
 }
 
 function validateReview(route, storyDeclarations) {
@@ -951,6 +989,46 @@ export const OrganizerSearch = {
       }],
     }).join("\n"),
     /must not use a \*\* rewrite/u
+  );
+  const publicFormRoute = {
+    id: "public_form",
+    pathPattern: "/f/:publicFormId/",
+    staticOutput: "spa-rewrite",
+    sitemap: "excluded",
+  };
+  assert.deepEqual(
+    spaRewriteHostingErrors(
+      publicFormRoute,
+      {
+        hosting: [{
+          target: "marketing",
+          rewrites: [{source: "/f/**", destination: "/f/index.html"}],
+        }],
+      },
+      'writeRoute("/f/", metadata);'
+    ),
+    []
+  );
+  assert.match(
+    spaRewriteHostingErrors(
+      publicFormRoute,
+      {hosting: [{target: "marketing", rewrites: []}]},
+      'writeRoute("/f/", metadata);'
+    ).join("\n"),
+    /must rewrite \/f\/\*\* to \/f\/index\.html/u
+  );
+  assert.match(
+    spaRewriteHostingErrors(
+      publicFormRoute,
+      {
+        hosting: [{
+          target: "marketing",
+          rewrites: [{source: "/f/**", destination: "/f/index.html"}],
+        }],
+      },
+      ""
+    ).join("\n"),
+    /must emit the \/f\/ entrypoint/u
   );
   const redirects = [
     {source: "/host/preview", destination: "/host/", status: 301, preserveQuery: true},
