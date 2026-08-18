@@ -910,6 +910,13 @@ class HostWhatsappThreadDetail {
   final bool messagesTruncated;
 }
 
+enum HostPersonalWhatsappHandoffAvailability {
+  ready,
+  missingPhone,
+  organizerSuppressed,
+  contactOptedOut,
+}
+
 class HostAudienceContactDetail {
   const HostAudienceContactDetail({
     required this.organizerId,
@@ -1050,10 +1057,23 @@ class HostAudienceContactDetail {
   final List<HostActiveContactMerge> activeMerges;
   final int revision;
 
+  HostPersonalWhatsappHandoffAvailability
+  get personalWhatsappHandoffAvailability {
+    if (phoneE164 == null) {
+      return HostPersonalWhatsappHandoffAvailability.missingPhone;
+    }
+    if (whatsappAdminSuppressed) {
+      return HostPersonalWhatsappHandoffAvailability.organizerSuppressed;
+    }
+    if (traits.whatsappStatus == HostAudiencePermissionStatus.optedOut) {
+      return HostPersonalWhatsappHandoffAvailability.contactOptedOut;
+    }
+    return HostPersonalWhatsappHandoffAvailability.ready;
+  }
+
   bool get canUsePersonalWhatsappHandoff =>
-      phoneE164 != null &&
-      !whatsappAdminSuppressed &&
-      traits.whatsappStatus != HostAudiencePermissionStatus.optedOut;
+      personalWhatsappHandoffAvailability ==
+      HostPersonalWhatsappHandoffAvailability.ready;
 }
 
 class HostCreatedCustomer {

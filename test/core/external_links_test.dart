@@ -84,7 +84,7 @@ void main() {
   );
 
   test(
-    'openWhatsappHandoff strips phone formatting and pre-fills text',
+    'openWhatsappHandoff opens the native app scheme with prefilled text',
     () async {
       Uri? launchedUri;
       LaunchMode? launchMode;
@@ -103,13 +103,40 @@ void main() {
       );
 
       expect(opened, isTrue);
-      expect(launchedUri?.host, 'wa.me');
-      expect(launchedUri?.path, '/919876543210');
+      expect(launchedUri?.scheme, 'whatsapp');
+      expect(launchedUri?.host, 'send');
+      expect(launchedUri?.queryParameters['phone'], '919876543210');
       expect(
         launchedUri?.queryParameters['text'],
         'Hi Ananya, see you Sunday!',
       );
       expect(launchMode, LaunchMode.externalApplication);
+    },
+  );
+
+  test(
+    'openWhatsappHandoff falls back to wa.me when the app is absent',
+    () async {
+      final launchedUris = <Uri>[];
+      final controller = ExternalLinkController((
+        uri, {
+        mode = LaunchMode.platformDefault,
+      }) async {
+        launchedUris.add(uri);
+        return launchedUris.length > 1;
+      });
+
+      final opened = await controller.openWhatsappHandoff(
+        phoneE164: '+91 98765 43210',
+        message: 'Hello',
+      );
+
+      expect(opened, isTrue);
+      expect(launchedUris, hasLength(2));
+      expect(launchedUris.first.scheme, 'whatsapp');
+      expect(launchedUris.last.host, 'wa.me');
+      expect(launchedUris.last.path, '/919876543210');
+      expect(launchedUris.last.queryParameters['text'], 'Hello');
     },
   );
 

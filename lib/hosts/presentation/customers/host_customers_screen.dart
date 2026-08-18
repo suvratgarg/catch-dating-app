@@ -1328,6 +1328,17 @@ class HostCustomerConversationCard extends StatelessWidget {
       HostCustomerConversationAvailability.ambiguous =>
         context.l10n.hostCustomersConversationAmbiguous,
     };
+    final whatsappAvailability = customer.personalWhatsappHandoffAvailability;
+    final whatsappMessage = switch (whatsappAvailability) {
+      HostPersonalWhatsappHandoffAvailability.ready =>
+        context.l10n.hostCustomersWhatsappHandoffDisclosure,
+      HostPersonalWhatsappHandoffAvailability.missingPhone =>
+        context.l10n.hostCustomersWhatsappMissingPhone,
+      HostPersonalWhatsappHandoffAvailability.organizerSuppressed =>
+        context.l10n.hostCustomersWhatsappOrganizerSuppressed,
+      HostPersonalWhatsappHandoffAvailability.contactOptedOut =>
+        context.l10n.hostCustomersWhatsappContactOptedOut,
+    };
     return CatchSection.containedFieldRows(
       key: const ValueKey('host-customer-messaging'),
       title: context.l10n.hostInboxTitle,
@@ -1347,14 +1358,17 @@ class HostCustomerConversationCard extends StatelessWidget {
             icon: CatchIcons.peopleOutlineRounded,
             onTap: onReview,
           ),
-        if (onOpenWhatsapp != null)
-          CatchField.action(
-            key: const ValueKey('host-customer-open-whatsapp'),
-            title: context.l10n.hostCustomersWriteInWhatsapp,
-            body: context.l10n.hostCustomersWhatsappHandoffDisclosure,
-            icon: CatchIcons.sendRounded,
-            onTap: onOpenWhatsapp,
-          ),
+        CatchField.action(
+          key: const ValueKey('host-customer-open-whatsapp'),
+          title: context.l10n.hostCustomersWhatsappAppChannel,
+          body: whatsappMessage,
+          icon: CatchIcons.sendRounded,
+          onTap:
+              whatsappAvailability ==
+                  HostPersonalWhatsappHandoffAvailability.ready
+              ? onOpenWhatsapp
+              : null,
+        ),
         CatchField.toggle(
           key: const ValueKey('host-customer-organizer-messages'),
           title: context.l10n.hostCustomersOrganizerMessages,

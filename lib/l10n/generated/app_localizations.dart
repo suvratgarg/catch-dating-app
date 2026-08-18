@@ -20428,7 +20428,7 @@ abstract class AppLocalizations {
   /// Channel and sender label for the separate Catch-owned WhatsApp route.
   ///
   /// In en, this message translates to:
-  /// **'WhatsApp · Catch'**
+  /// **'Catch WhatsApp · Catch number'**
   String get hostSendsCatchWhatsappChannel;
 
   /// Boundary for future Catch-owned WhatsApp messages.
@@ -20500,7 +20500,7 @@ abstract class AppLocalizations {
   /// Empty Sends history guidance.
   ///
   /// In en, this message translates to:
-  /// **'Campaigns and event announcements will appear here after you send them.'**
+  /// **'Campaigns, event announcements, and follower updates will appear here after you send them.'**
   String get hostSendsEmptyHelp;
 
   /// Typed label for a WhatsApp campaign row.
@@ -21099,6 +21099,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Opens WhatsApp on this device with editable text. You review it and press Send; Catch cannot track delivery or replies.'**
   String get hostCustomersWhatsappHandoffDisclosure;
+
+  /// Personal WhatsApp handoff blocker when the customer has no valid phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a valid phone number to use a personal WhatsApp handoff.'**
+  String get hostCustomersWhatsappMissingPhone;
+
+  /// Personal WhatsApp handoff blocker for an organizer-admin suppression.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp handoff is paused for this customer by your team.'**
+  String get hostCustomersWhatsappOrganizerSuppressed;
+
+  /// Personal WhatsApp handoff blocker for an explicit customer opt-out.
+  ///
+  /// In en, this message translates to:
+  /// **'This customer has opted out of WhatsApp messages.'**
+  String get hostCustomersWhatsappContactOptedOut;
 
   /// Opens the editable personal WhatsApp handoff composer.
   ///

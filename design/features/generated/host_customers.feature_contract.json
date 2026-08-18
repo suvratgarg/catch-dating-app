@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/host_customers.feature.json",
   "generatedFor": "2026-08-18",
-  "sourceDigest": "sha256:63fb2808eae9ad1d211c2648471d313c4f2a689739e75c1f320194f0f4b2688f",
-  "resolvedDigest": "sha256:d2ba8c8a58476a990ac6988975c15a343c48317b7f1da49e05c93cf801a1f78f",
+  "sourceDigest": "sha256:75ee39619562a802dd1640a31632c81c53718082d5332b698996748bccc2f3d7",
+  "resolvedDigest": "sha256:09e3abaed179891770bd6f1347474d46927684419055e04d5e4bbc245160c07b",
   "feature": {
     "id": "feature.host_customers",
     "name": "Host Customers",
@@ -14,14 +14,14 @@
   },
   "coverage": {
     "surfaces": 1,
-    "states": 40,
-    "scenarios": 40,
-    "actionCases": 40,
+    "states": 41,
+    "scenarios": 41,
+    "actionCases": 41,
     "actions": 22,
     "captures": 2,
     "previews": 1,
     "testFiles": 8,
-    "evidenceExceptions": 51
+    "evidenceExceptions": 52
   },
   "surfaces": [
     {
@@ -198,6 +198,10 @@
           "customer_active_merges": [
             "test/hosts/host_crm_repository_test.dart"
           ],
+          "personal_whatsapp_unavailable": [
+            "test/hosts/host_operations_screen_test.dart",
+            "test/hosts/host_crm_repository_test.dart"
+          ],
           "personal_whatsapp_handoff": [
             "test/hosts/host_operations_screen_test.dart",
             "test/core/external_links_test.dart",
@@ -206,14 +210,14 @@
         }
       },
       "coverage": {
-        "states": 40,
-        "scenarios": 40,
-        "actionCases": 40,
+        "states": 41,
+        "scenarios": 41,
+        "actionCases": 41,
         "actions": 22,
         "captures": 2,
         "previews": 1,
         "testFiles": 8,
-        "evidenceExceptions": 51
+        "evidenceExceptions": 52
       },
       "dimensions": {
         "load": {
@@ -885,7 +889,7 @@
               "id": "host_customers.whatsapp_app_launched"
             }
           ],
-          "description": "Opens an editable prefilled wa.me handoff for one valid contact phone only while no explicit WhatsApp opt-out or admin suppression applies. The Host remains responsible for pressing Send in WhatsApp, and Catch records no delivery or reply receipt.",
+          "description": "Opens an editable prefilled native WhatsApp app handoff, with wa.me fallback, for one valid contact phone only while no explicit WhatsApp opt-out or admin suppression applies. The Host remains responsible for pressing Send in WhatsApp, and Catch records no delivery or reply receipt.",
           "implementationStatus": "implemented"
         }
       ],
@@ -943,6 +947,7 @@
         },
         {
           "stateIds": [
+            "personal_whatsapp_unavailable",
             "personal_whatsapp_handoff"
           ],
           "evidence": [
@@ -3746,6 +3751,86 @@
                   "edit_contact_note",
                   "retry_customer_detail",
                   "open_personal_whatsapp_handoff"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "personal_whatsapp_unavailable",
+          "stateId": "personal_whatsapp_unavailable",
+          "kind": "permission",
+          "status": "tested",
+          "dimensions": {
+            "load": "ready",
+            "directory": "populated",
+            "sort": "last_seen",
+            "filter_sheet": "closed",
+            "merge_review": "closed",
+            "notes": "populated",
+            "tags": "assigned",
+            "campaign_bridge": "blocked",
+            "identity": "linked",
+            "revenue": "exact",
+            "personal_whatsapp": "unavailable",
+            "mutation": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "test/hosts/host_operations_screen_test.dart",
+              "test/hosts/host_crm_repository_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "explain",
+              "dimensions": {
+                "load": "ready",
+                "directory": "populated",
+                "sort": "last_seen",
+                "filter_sheet": "closed",
+                "merge_review": "closed",
+                "notes": "populated",
+                "tags": "assigned",
+                "campaign_bridge": "blocked",
+                "identity": "linked",
+                "revenue": "exact",
+                "personal_whatsapp": "unavailable",
+                "mutation": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "open_personal_whatsapp_handoff"
+                ],
+                "notAllowed": [
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "open_customer_filters",
+                  "filter_customers",
+                  "sort_customers",
+                  "message_filtered_customers",
+                  "load_more",
+                  "export_customers",
+                  "create_customer",
+                  "open_customer",
+                  "open_customer_event",
+                  "manage_customer",
+                  "review_duplicate_customers",
+                  "decide_duplicate_customer",
+                  "undo_customer_merge",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
+                  "retry_customer_detail",
+                  "start_conversation"
                 ]
               }
             }

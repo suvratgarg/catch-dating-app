@@ -59,11 +59,23 @@ class ExternalLinkController {
   Future<bool> openWhatsappHandoff({
     required String phoneE164,
     required String message,
-  }) {
+  }) async {
     final digits = phoneE164.replaceAll(RegExp(r'[^0-9]'), '');
     final body = message.trim();
     if (digits.length < 8 || digits.length > 15 || body.isEmpty) {
       return Future.value(false);
+    }
+    final parameters = <String, String>{'phone': digits, 'text': body};
+    final appUri = Uri(
+      scheme: 'whatsapp',
+      host: 'send',
+      queryParameters: parameters,
+    );
+    try {
+      if (await openExternal(appUri)) return true;
+    } on AppException {
+      // Some platforms throw instead of returning false for an unavailable
+      // custom scheme. The universal handoff remains a safe fallback.
     }
     return openExternal(
       Uri.https('wa.me', '/$digits', <String, String>{'text': body}),

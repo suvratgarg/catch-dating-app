@@ -469,6 +469,10 @@ void main() {
     expect(detail.contactDetailsEditable, isFalse);
     expect(detail.whatsappAdminSuppressed, isTrue);
     expect(detail.traits.whatsappStatus, HostAudiencePermissionStatus.optedIn);
+    expect(
+      detail.personalWhatsappHandoffAvailability,
+      HostPersonalWhatsappHandoffAvailability.organizerSuppressed,
+    );
     expect(detail.canUsePersonalWhatsappHandoff, isFalse);
     expect(detail.traits.attendanceRate, 0.75);
     expect(detail.revenue.amounts.single.amountMinor, 450000);
@@ -481,6 +485,10 @@ void main() {
     optedOutTraits['whatsappStatus'] = 'optedOut';
     data['traits'] = optedOutTraits;
     final optedOut = HostAudienceContactDetail.fromCallableData(data);
+    expect(
+      optedOut.personalWhatsappHandoffAvailability,
+      HostPersonalWhatsappHandoffAvailability.contactOptedOut,
+    );
     expect(optedOut.canUsePersonalWhatsappHandoff, isFalse);
   });
 
@@ -587,6 +595,14 @@ void main() {
           'eventId': null,
           'audience': 'followers',
           'status': 'active',
+          'deliveryStatus': 'completed',
+          'recipientCount': 10,
+          'excludedCount': 1,
+          'activityAvailableCount': 9,
+          'pushAttemptedCount': 8,
+          'pushAcceptedCount': 8,
+          'pushFailedCount': 0,
+          'pushUnknownCount': 0,
           'createdAtMillis': 1000,
           'activityAtMillis': 1000,
         },
