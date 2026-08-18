@@ -126,6 +126,10 @@
         {
           "source": "/invite/**",
           "destination": "/invite/index.html"
+        },
+        {
+          "source": "/f/**",
+          "destination": "/f/index.html"
         }
       ]
     },

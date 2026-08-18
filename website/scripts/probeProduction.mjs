@@ -16,6 +16,12 @@ export const productionProbeContracts = [
     markers: [],
   },
   {
+    path: "/f/__catch_public_form_route_probe__/",
+    title: "Organizer form | Catch",
+    canonicalPath: "/f/",
+    markers: [],
+  },
+  {
     path: "/privacy/",
     title: "Privacy policy | Catch",
     canonicalPath: "/privacy/",
