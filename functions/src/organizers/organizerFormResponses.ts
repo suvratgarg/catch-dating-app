@@ -6,6 +6,10 @@ import {BeginOrganizerFormResponseCallablePayload} from
   "../shared/generated/beginOrganizerFormResponseCallablePayload";
 import {BeginOrganizerFormResponseCallableResponse} from
   "../shared/generated/beginOrganizerFormResponseCallableResponse";
+import {CreateOrganizerFormAssetIntentCallablePayload} from
+  "../shared/generated/createOrganizerFormAssetIntentCallablePayload";
+import {CreateOrganizerFormAssetIntentCallableResponse} from
+  "../shared/generated/createOrganizerFormAssetIntentCallableResponse";
 import {CreateOrganizerFormShareLinkCallablePayload} from
   "../shared/generated/createOrganizerFormShareLinkCallablePayload";
 import {CreateOrganizerFormShareLinkCallableResponse} from
@@ -18,6 +22,10 @@ import {GetPublicOrganizerFormCallablePayload} from
   "../shared/generated/getPublicOrganizerFormCallablePayload";
 import {GetPublicOrganizerFormCallableResponse} from
   "../shared/generated/getPublicOrganizerFormCallableResponse";
+import {FinalizeOrganizerFormAssetCallablePayload} from
+  "../shared/generated/finalizeOrganizerFormAssetCallablePayload";
+import {FinalizeOrganizerFormAssetCallableResponse} from
+  "../shared/generated/finalizeOrganizerFormAssetCallableResponse";
 import {SaveOrganizerFormResponseDraftCallablePayload} from
   "../shared/generated/saveOrganizerFormResponseDraftCallablePayload";
 import {SaveOrganizerFormResponseDraftCallableResponse} from
@@ -33,6 +41,7 @@ import {WithdrawOrganizerFormResponseCallableResponse} from
 import {
   ClubDocument,
   OrganizerDocument,
+  OrganizerFormAssetDocument,
   OrganizerFormDocument,
   OrganizerFormResponseDocument,
   OrganizerFormResponseDraftDocument,
@@ -41,9 +50,11 @@ import {
 } from "../shared/generated/firestoreAdminTypes";
 import {
   validateBeginOrganizerFormResponseCallablePayload,
+  validateCreateOrganizerFormAssetIntentCallablePayload,
   validateCreateOrganizerFormShareLinkCallablePayload,
   validateGetOrganizerFormShareAssetsCallablePayload,
   validateGetPublicOrganizerFormCallablePayload,
+  validateFinalizeOrganizerFormAssetCallablePayload,
   validateSaveOrganizerFormResponseDraftCallablePayload,
   validateSubmitOrganizerFormResponseCallablePayload,
   validateWithdrawOrganizerFormResponseCallablePayload,
@@ -57,6 +68,7 @@ import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
+import {answersForSubmission} from "./organizerFormLogic";
 
 type FormDefinition = OrganizerFormVersionDocument["definition"];
 type PublicFormProjection = GetPublicOrganizerFormCallableResponse;
@@ -65,17 +77,29 @@ type Question = FormDefinition["sections"][number]["questions"][number];
 
 interface OrganizerFormResponseDeps {
   firestore: () => FirebaseFirestore.Firestore;
+  storageBucket: () => ReturnType<ReturnType<typeof admin.storage>["bucket"]>;
   checkRateLimit: typeof checkRateLimit;
   timestamp: () => FirebaseFirestore.Timestamp;
 }
 
 const defaultDeps: OrganizerFormResponseDeps = {
   firestore: () => admin.firestore(),
+  storageBucket: () => admin.storage().bucket(),
   checkRateLimit,
   timestamp: () => admin.firestore.Timestamp.now(),
 };
 
 const responseDraftLifetimeMs = 7 * 24 * 60 * 60 * 1000;
+const submittedAssetLifetimeMs = 365 * 24 * 60 * 60 * 1000;
+const assetIntentLifetimeMs = 15 * 60 * 1000;
+const defaultFileSizeBytes = 10 * 1024 * 1024;
+const signatureFileSizeBytes = 2 * 1024 * 1024;
+const supportedFileTypes = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "application/pdf",
+]);
 const publicFormsOrigin = "https://catchdates.com";
 
 /** Resolves only the active immutable definition and bounded organizer copy. */
@@ -273,6 +297,224 @@ export async function saveOrganizerFormResponseDraftHandler(
   };
 }
 
+/** Creates a short-lived, size-bounded signed POST policy for one answer. */
+export async function createOrganizerFormAssetIntentHandler(
+  request: CallableRequest<unknown>,
+  deps: OrganizerFormResponseDeps = defaultDeps
+): Promise<CreateOrganizerFormAssetIntentCallableResponse> {
+  const data = validateCallableWithAjv<
+    CreateOrganizerFormAssetIntentCallablePayload
+  >(
+    request,
+    validateCreateOrganizerFormAssetIntentCallablePayload,
+    (value) => normalizePayloadStrings(value, {
+      stringFields: [
+        "draftId",
+        "questionId",
+        "requestId",
+        "originalFileName",
+        "contentType",
+        "sha256",
+      ],
+      nullableStringFields: ["draftToken"],
+    })
+  );
+  const db = deps.firestore();
+  await deps.checkRateLimit(
+    db,
+    request.auth?.uid ?? `form-draft:${data.draftId}`,
+    "createOrganizerFormAssetIntent"
+  );
+  const draftSnap = await db.collection("organizerFormResponseDrafts")
+    .doc(data.draftId).get();
+  const draft = requireActiveDraft(draftSnap, request, data.draftToken, deps);
+  const versionSnap = await db.collection("organizerFormVersions")
+    .doc(draft.versionId).get();
+  const version = requireDoc<OrganizerFormVersionDocument>(
+    versionSnap,
+    "OrganizerFormVersionDocument"
+  );
+  const question = version.definition.sections.flatMap((section) =>
+    section.questions).find((candidate) =>
+    candidate.questionId === data.questionId);
+  if (!question || (question.kind !== "file" &&
+      question.kind !== "signature")) {
+    throw new HttpsError("invalid-argument", "Upload question not found.");
+  }
+  const policy = uploadPolicy(question);
+  if (!policy.contentTypes.has(data.contentType) ||
+      data.sizeBytes > policy.maxSizeBytes) {
+    throw new HttpsError(
+      "invalid-argument",
+      "This file type or size is not allowed for this question."
+    );
+  }
+  const assetId = deterministicId(
+    "formasset",
+    data.draftId,
+    data.questionId,
+    data.requestId
+  );
+  const uploadToken = bearerToken(
+    "form-asset-token",
+    assetId,
+    data.requestId
+  );
+  const storagePath = [
+    "organizerForms",
+    draft.formId,
+    data.draftId,
+    assetId,
+  ].join("/");
+  const assetRef = db.collection("organizerFormAssets").doc(assetId);
+  const now = deps.timestamp();
+  const expiresAt = admin.firestore.Timestamp.fromMillis(
+    now.toMillis() + assetIntentLifetimeMs
+  );
+  const asset = await db.runTransaction(async (tx) => {
+    const snapshot = await tx.get(assetRef);
+    if (snapshot.exists) {
+      const existing = requireDoc<OrganizerFormAssetDocument>(
+        snapshot,
+        "OrganizerFormAssetDocument"
+      );
+      if (existing.draftId !== data.draftId ||
+          existing.questionId !== data.questionId ||
+          existing.respondentUid !== draft.respondentUid ||
+          existing.uploadTokenHash !== hashToken(uploadToken) ||
+          existing.originalFileName !== data.originalFileName ||
+          existing.contentType !== data.contentType ||
+          existing.declaredSizeBytes !== data.sizeBytes ||
+          existing.declaredSha256 !== data.sha256) {
+        throw new HttpsError("already-exists", "Upload intent already exists.");
+      }
+      if (existing.status === "rejected" || existing.status === "deleted" ||
+          existing.expiresAt.toMillis() <= now.toMillis()) {
+        throw new HttpsError(
+          "deadline-exceeded",
+          "This upload intent expired. Select the file again."
+        );
+      }
+      return existing;
+    }
+    const created: OrganizerFormAssetDocument = {
+      organizerId: draft.organizerId,
+      formId: draft.formId,
+      versionId: draft.versionId,
+      draftId: data.draftId,
+      questionId: data.questionId,
+      respondentUid: draft.respondentUid,
+      uploadTokenHash: hashToken(uploadToken),
+      storagePath,
+      originalFileName: data.originalFileName,
+      contentType: data.contentType,
+      declaredSizeBytes: data.sizeBytes,
+      declaredSha256: data.sha256,
+      sizeBytes: null,
+      status: "uploading",
+      createdAt: now,
+      expiresAt,
+      finalizedAt: null,
+      deletedAt: null,
+    };
+    tx.create(assetRef, created);
+    return created;
+  });
+  const [signedPost] = await deps.storageBucket().file(asset.storagePath)
+    .generateSignedPostPolicyV4({
+      expires: asset.expiresAt.toMillis(),
+      fields: {
+        "Content-Type": asset.contentType,
+        "x-goog-meta-asset-id": assetId,
+        "x-goog-meta-sha256": asset.declaredSha256,
+      },
+      conditions: [
+        ["content-length-range", 1, policy.maxSizeBytes],
+        ["eq", "$Content-Type", asset.contentType],
+        ["eq", "$x-goog-meta-asset-id", assetId],
+        ["eq", "$x-goog-meta-sha256", asset.declaredSha256],
+      ],
+    });
+  return {
+    assetId,
+    uploadToken,
+    uploadUrl: signedPost.url,
+    uploadFields: signedPost.fields,
+    expiresAtMillis: asset.expiresAt.toMillis(),
+  };
+}
+
+/** Verifies uploaded object metadata before it can be attached to an answer. */
+export async function finalizeOrganizerFormAssetHandler(
+  request: CallableRequest<unknown>,
+  deps: OrganizerFormResponseDeps = defaultDeps
+): Promise<FinalizeOrganizerFormAssetCallableResponse> {
+  const data = validateCallableWithAjv<
+    FinalizeOrganizerFormAssetCallablePayload
+  >(
+    request,
+    validateFinalizeOrganizerFormAssetCallablePayload,
+    (value) => normalizePayloadStrings(value, {
+      stringFields: ["draftId", "assetId", "uploadToken"],
+      nullableStringFields: ["draftToken"],
+    })
+  );
+  const db = deps.firestore();
+  await deps.checkRateLimit(
+    db,
+    request.auth?.uid ?? `form-draft:${data.draftId}`,
+    "finalizeOrganizerFormAsset"
+  );
+  const [draftSnap, assetSnap] = await Promise.all([
+    db.collection("organizerFormResponseDrafts").doc(data.draftId).get(),
+    db.collection("organizerFormAssets").doc(data.assetId).get(),
+  ]);
+  const draft = requireActiveDraft(draftSnap, request, data.draftToken, deps);
+  const asset = requireDoc<OrganizerFormAssetDocument>(
+    assetSnap,
+    "OrganizerFormAssetDocument"
+  );
+  requireAssetAuthority(asset, data.draftId, draft, data.uploadToken);
+  if (asset.status === "ready" && asset.sizeBytes !== null) {
+    return {assetId: data.assetId, status: "ready", sizeBytes: asset.sizeBytes};
+  }
+  if (asset.status !== "uploading" ||
+      asset.expiresAt.toMillis() <= deps.timestamp().toMillis()) {
+    throw new HttpsError("deadline-exceeded", "This upload intent expired.");
+  }
+  const file = deps.storageBucket().file(asset.storagePath);
+  let metadata: import("@google-cloud/storage").FileMetadata;
+  try {
+    [metadata] = await file.getMetadata();
+  } catch {
+    throw new HttpsError("failed-precondition", "Upload has not completed.");
+  }
+  const sizeBytes = Number(metadata.size);
+  const sha256 = metadata.metadata?.sha256;
+  const assetId = metadata.metadata?.assetId;
+  if (!Number.isSafeInteger(sizeBytes) || sizeBytes < 1 ||
+      sizeBytes !== asset.declaredSizeBytes ||
+      metadata.contentType !== asset.contentType ||
+      sha256 !== asset.declaredSha256 || assetId !== data.assetId) {
+    await Promise.all([
+      file.delete({ignoreNotFound: true}),
+      assetSnap.ref.update({status: "rejected", deletedAt: deps.timestamp()}),
+    ]);
+    throw new HttpsError(
+      "failed-precondition",
+      "The uploaded file did not match its authorized intent."
+    );
+  }
+  const finalizedAt = deps.timestamp();
+  await assetSnap.ref.update({
+    status: "ready",
+    sizeBytes,
+    finalizedAt,
+    expiresAt: draft.expiresAt,
+  });
+  return {assetId: data.assetId, status: "ready", sizeBytes};
+}
+
 /** Submits one draft exactly once while retaining its immutable version. */
 export async function submitOrganizerFormResponseHandler(
   request: CallableRequest<unknown>,
@@ -345,8 +587,20 @@ export async function submitOrganizerFormResponseHandler(
         "Review and accept the form consent before submitting."
       );
     }
-    validateAnswerShape(version.definition, draft.answers, true);
+    const submittedAnswers = answersForSubmission(
+      version.definition,
+      draft.answers
+    );
+    validateAnswerShape(version.definition, submittedAnswers, true);
     const now = deps.timestamp();
+    const submittedAssetRefs = await requireReadyAssets({
+      tx,
+      db,
+      draftId: data.draftId,
+      draft,
+      definition: version.definition,
+      answers: submittedAnswers,
+    });
     const response: OrganizerFormResponseDocument = {
       organizerId: draft.organizerId,
       formId: draft.formId,
@@ -358,14 +612,21 @@ export async function submitOrganizerFormResponseHandler(
       respondentUid: draft.respondentUid,
       withdrawalTokenHash: draft.respondentUid === null ?
         hashToken(withdrawalToken) : null,
-      answers: draft.answers,
-      answerSnapshots: answerSnapshots(version.definition, draft.answers),
+      answers: submittedAnswers,
+      answerSnapshots: answerSnapshots(version.definition, submittedAnswers),
       consentVersion: draft.consentVersion,
       sourceLinkId: draft.sourceLinkId,
       submittedAt: now,
       withdrawnAt: null,
     };
     tx.create(responseRef, response);
+    for (const assetRef of submittedAssetRefs) {
+      tx.update(assetRef, {
+        expiresAt: admin.firestore.Timestamp.fromMillis(
+          now.toMillis() + submittedAssetLifetimeMs
+        ),
+      });
+    }
     tx.set(draftRef, {
       ...draft,
       status: "submitted",
@@ -750,6 +1011,46 @@ function requireActiveDraft(
   return draft;
 }
 
+function requireAssetAuthority(
+  asset: OrganizerFormAssetDocument,
+  draftId: string,
+  draft: OrganizerFormResponseDraftDocument,
+  uploadToken: string
+): void {
+  if (asset.organizerId !== draft.organizerId ||
+      asset.formId !== draft.formId ||
+      asset.versionId !== draft.versionId ||
+      asset.draftId !== draftId ||
+      asset.respondentUid !== draft.respondentUid ||
+      asset.uploadTokenHash !== hashToken(uploadToken)) {
+    throw new HttpsError("permission-denied", "Form upload unavailable.");
+  }
+}
+
+export function uploadPolicy(question: Question): {
+  contentTypes: Set<string>;
+  maxSizeBytes: number;
+} {
+  if (question.kind === "signature") {
+    return {
+      contentTypes: new Set(["image/png"]),
+      maxSizeBytes: signatureFileSizeBytes,
+    };
+  }
+  if (question.kind !== "file") {
+    throw new HttpsError("invalid-argument", "Question does not accept files.");
+  }
+  const configured = question.validation.allowedMimeTypes;
+  return {
+    contentTypes: configured.length > 0 ?
+      new Set(configured) : new Set(supportedFileTypes),
+    maxSizeBytes: Math.min(
+      question.validation.maxFileSizeBytes ?? defaultFileSizeBytes,
+      25 * 1024 * 1024
+    ),
+  };
+}
+
 function requireResponseAuthority(
   response: OrganizerFormResponseDocument,
   request: CallableRequest<unknown>,
@@ -823,10 +1124,18 @@ function validateQuestionAnswer(
   case "phone":
   case "email":
   case "url":
-  case "file":
-  case "signature":
     if (typeof answer !== "string") throw invalidType();
     validateTextAnswer(question, answer);
+    return;
+  case "file": {
+    if (!Array.isArray(answer)) throw invalidType();
+    const maximum = question.validation.maxFileCount ?? 1;
+    if (answer.length > maximum ||
+        new Set(answer).size !== answer.length) throw invalidType();
+    return;
+  }
+  case "signature":
+    if (typeof answer !== "string") throw invalidType();
     return;
   case "number":
     if (typeof answer !== "number" || !Number.isFinite(answer)) {
@@ -852,7 +1161,8 @@ function validateQuestionAnswer(
   case "multiChoice": {
     if (!Array.isArray(answer)) throw invalidType();
     const allowed = new Set(question.options.map((option) => option.value));
-    if (answer.some((value) => !allowed.has(value))) throw invalidType();
+    if (answer.some((value) => !allowed.has(value)) ||
+        new Set(answer).size !== answer.length) throw invalidType();
     const min = question.validation.minSelections;
     const max = question.validation.maxSelections;
     if (min !== null && answer.length < min) throw invalidType();
@@ -860,6 +1170,64 @@ function validateQuestionAnswer(
     return;
   }
   }
+}
+
+async function requireReadyAssets(params: {
+  tx: FirebaseFirestore.Transaction;
+  db: FirebaseFirestore.Firestore;
+  draftId: string;
+  draft: OrganizerFormResponseDraftDocument;
+  definition: FormDefinition;
+  answers: AnswerMap;
+}): Promise<Array<FirebaseFirestore.DocumentReference>> {
+  const references = params.definition.sections.flatMap((section) =>
+    section.questions.flatMap((question) => {
+      const answer = params.answers[question.questionId];
+      if (question.kind === "file" && Array.isArray(answer)) {
+        return answer.map((assetId) => ({
+          assetId,
+          questionId: question.questionId,
+        }));
+      }
+      if (question.kind === "signature" &&
+          typeof answer === "string" && answer) {
+        return [{assetId: answer, questionId: question.questionId}];
+      }
+      return [];
+    }));
+  if (references.length === 0) return [];
+  if (new Set(references.map(({assetId}) => assetId)).size !==
+      references.length) {
+    throw new HttpsError(
+      "invalid-argument",
+      "The same upload cannot answer more than one question."
+    );
+  }
+  const documentRefs = references.map(({assetId}) =>
+    params.db.collection("organizerFormAssets").doc(assetId));
+  const snapshots = await Promise.all(
+    documentRefs.map((reference) => params.tx.get(reference))
+  );
+  snapshots.forEach((snapshot, index) => {
+    const asset = requireDoc<OrganizerFormAssetDocument>(
+      snapshot,
+      "OrganizerFormAssetDocument"
+    );
+    const reference = references[index];
+    if (asset.organizerId !== params.draft.organizerId ||
+        asset.formId !== params.draft.formId ||
+        asset.versionId !== params.draft.versionId ||
+        asset.draftId !== params.draftId ||
+        asset.questionId !== reference.questionId ||
+        asset.respondentUid !== params.draft.respondentUid ||
+        asset.status !== "ready" || asset.deletedAt !== null) {
+      throw new HttpsError(
+        "failed-precondition",
+        "One form upload is not ready for submission."
+      );
+    }
+  });
+  return documentRefs;
 }
 
 function validateTextAnswer(question: Question, answer: string): void {
@@ -885,6 +1253,27 @@ function validateTextAnswer(question: Question, answer: string): void {
     }
   }
   if (question.kind === "date" && !/^\d{4}-\d{2}-\d{2}$/u.test(value)) {
+    throw invalidText(question);
+  }
+  if (question.kind === "date") {
+    const date = new Date(`${value}T00:00:00.000Z`);
+    if (Number.isNaN(date.getTime()) ||
+        date.toISOString().slice(0, 10) !== value ||
+        (question.validation.earliestDate !== null &&
+         value < question.validation.earliestDate) ||
+        (question.validation.latestDate !== null &&
+         value > question.validation.latestDate)) {
+      throw invalidText(question);
+    }
+  }
+  const pattern = question.validation.patternPreset;
+  const patterns = {
+    lettersAndSpaces: /^[\p{L}\p{M} '\u2019-]+$/u,
+    alphanumeric: /^[\p{L}\p{M}\p{N} _.'\u2019-]+$/u,
+    postalCode: /^[\p{L}\p{N} -]{3,12}$/u,
+    handle: /^@?[A-Za-z0-9_.-]{2,39}$/u,
+  } as const;
+  if (pattern !== null && !patterns[pattern].test(value)) {
     throw invalidText(question);
   }
 }
@@ -1071,6 +1460,16 @@ export const beginOrganizerFormResponse = onCall(
 export const saveOrganizerFormResponseDraft = onCall(
   appCheckCallableOptionsWithLimits(publicCallableLimits),
   (request) => saveOrganizerFormResponseDraftHandler(request)
+);
+
+export const createOrganizerFormAssetIntent = onCall(
+  appCheckCallableOptionsWithLimits(publicCallableLimits),
+  (request) => createOrganizerFormAssetIntentHandler(request)
+);
+
+export const finalizeOrganizerFormAsset = onCall(
+  appCheckCallableOptionsWithLimits(publicCallableLimits),
+  (request) => finalizeOrganizerFormAssetHandler(request)
 );
 
 export const submitOrganizerFormResponse = onCall(

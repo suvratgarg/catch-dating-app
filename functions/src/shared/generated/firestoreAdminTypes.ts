@@ -2574,6 +2574,30 @@ export interface OrganizerFormResponseDocument {
 }
 
 /**
+ * Version- and draft-scoped metadata for private respondent uploads; bytes remain in protected Storage.
+ */
+export interface OrganizerFormAssetDocument {
+  organizerId: string;
+  formId: string;
+  versionId: string;
+  draftId: string;
+  questionId: string;
+  respondentUid: string | null;
+  uploadTokenHash: string;
+  storagePath: string;
+  originalFileName: string;
+  contentType: "image/jpeg" | "image/png" | "image/webp" | "application/pdf";
+  declaredSizeBytes: number;
+  declaredSha256: string;
+  sizeBytes: number | null;
+  status: "uploading" | "ready" | "rejected" | "deleted";
+  createdAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+  finalizedAt: FirebaseFirestore.Timestamp | null;
+  deletedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
  * Organizer-owned source-attributed stable public form link.
  */
 export interface OrganizerFormShareLinkDocument {

@@ -270,6 +270,12 @@ const schemaSpecs = [
       "functions/src/shared/generated/organizerFormResponseDocument.ts",
   },
   {
+    name: "OrganizerFormAssetDocument",
+    source: "firestore/organizer_form_assets.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerFormAssetDocument.ts",
+  },
+  {
     name: "OrganizerFormShareLinkDocument",
     source: "firestore/organizer_form_share_links.schema.json",
     typeOutput:
@@ -1948,6 +1954,38 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "saveOrganizerFormResponseDraftCallableResponse.ts",
+  },
+  {
+    name: "CreateOrganizerFormAssetIntentCallablePayload",
+    source:
+      "callables/create_organizer_form_asset_intent_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "createOrganizerFormAssetIntentCallablePayload.ts",
+  },
+  {
+    name: "CreateOrganizerFormAssetIntentCallableResponse",
+    source:
+      "callable_responses/" +
+      "create_organizer_form_asset_intent_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "createOrganizerFormAssetIntentCallableResponse.ts",
+  },
+  {
+    name: "FinalizeOrganizerFormAssetCallablePayload",
+    source: "callables/finalize_organizer_form_asset_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "finalizeOrganizerFormAssetCallablePayload.ts",
+  },
+  {
+    name: "FinalizeOrganizerFormAssetCallableResponse",
+    source:
+      "callable_responses/finalize_organizer_form_asset_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "finalizeOrganizerFormAssetCallableResponse.ts",
   },
   {
     name: "SubmitOrganizerFormResponseCallablePayload",

@@ -262,6 +262,12 @@ service firebase.storage {
       allow write: if false;
     }
 
+    // Respondent form uploads use one short-lived backend-signed POST policy.
+    // Direct Firebase Storage SDK access and public byte reads stay denied.
+    match /organizerForms/{formId}/{draftId}/{assetId} {
+      allow read, write: if false;
+    }
+
     match /events/{eventId}/photos/{fileName} {
       allow read: if true;
       allow write: if canWriteEventMedia(eventId)

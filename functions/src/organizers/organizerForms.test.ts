@@ -85,6 +85,64 @@ test("form validator prevents backward section routing", () => {
   );
 });
 
+test("form validator rejects stale and type-incompatible logic", () => {
+  const value = definition();
+  value.sections[0].questions[0] = {
+    ...question(),
+    kind: "singleChoice",
+    options: [
+      {optionId: "yes", label: "Yes", value: "yes"},
+      {optionId: "no", label: "No", value: "no"},
+    ],
+  };
+  value.logicRules = [{
+    ruleId: "rule-1",
+    conditionMode: "all",
+    conditions: [{
+      questionId: "question-1",
+      operator: "equals",
+      expectedValues: ["removed-option"],
+    }],
+    action: "finish",
+    targetQuestionId: null,
+    targetSectionId: null,
+  }, {
+    ruleId: "rule-1",
+    conditionMode: "all",
+    conditions: [{
+      questionId: "question-1",
+      operator: "greaterThan",
+      expectedValues: [3],
+    }],
+    action: "finish",
+    targetQuestionId: null,
+    targetSectionId: null,
+  }];
+  const codes = new Set(
+    validateOrganizerFormDefinition(value).map((issue) => issue.code)
+  );
+  assert.equal(codes.has("unknownConditionOption"), true);
+  assert.equal(codes.has("duplicateLogicRuleId"), true);
+  assert.equal(codes.has("invalidNumericCondition"), true);
+  assert.equal(codes.has("ambiguousNavigation"), true);
+});
+
+test("form validator requires identity when collecting a signature", () => {
+  const value = definition();
+  value.sections[0].questions.push({
+    ...question(),
+    questionId: "signature",
+    key: "signature",
+    kind: "signature",
+    privacyClass: "sensitive",
+  });
+  assert.equal(
+    validateOrganizerFormDefinition(value)
+      .some((issue) => issue.code === "anonymousSignature"),
+    true
+  );
+});
+
 function definition(): Definition {
   return {
     title: "Feedback",

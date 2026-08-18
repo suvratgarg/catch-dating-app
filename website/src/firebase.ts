@@ -9,6 +9,8 @@ import type {ClaimEventRuntimeAccessCallableResponse} from "../../functions/src/
 import type {CompleteEventSuccessFirstHelloMissionCallablePayload} from "../../functions/src/shared/generated/completeEventSuccessFirstHelloMissionCallablePayload";
 import type {BeginOrganizerFormResponseCallablePayload} from "../../functions/src/shared/generated/beginOrganizerFormResponseCallablePayload";
 import type {BeginOrganizerFormResponseCallableResponse} from "../../functions/src/shared/generated/beginOrganizerFormResponseCallableResponse";
+import type {CreateOrganizerFormAssetIntentCallablePayload} from "../../functions/src/shared/generated/createOrganizerFormAssetIntentCallablePayload";
+import type {CreateOrganizerFormAssetIntentCallableResponse} from "../../functions/src/shared/generated/createOrganizerFormAssetIntentCallableResponse";
 import type {CreateEventInviteLinkCallablePayload} from "../../functions/src/shared/generated/createEventInviteLinkCallablePayload";
 import type {CreatePublicOrganizerReviewCallablePayload} from "../../functions/src/shared/generated/createPublicOrganizerReviewCallablePayload";
 import type {CreatePublicOrganizerReviewCallableResponse} from "../../functions/src/shared/generated/createPublicOrganizerReviewCallableResponse";
@@ -35,6 +37,8 @@ import type {GetEventRuntimeBootstrapCallablePayload} from "../../functions/src/
 import type {GetEventRuntimeBootstrapCallableResponse} from "../../functions/src/shared/generated/getEventRuntimeBootstrapCallableResponse";
 import type {GetPublicOrganizerFormCallablePayload} from "../../functions/src/shared/generated/getPublicOrganizerFormCallablePayload";
 import type {GetPublicOrganizerFormCallableResponse} from "../../functions/src/shared/generated/getPublicOrganizerFormCallableResponse";
+import type {FinalizeOrganizerFormAssetCallablePayload} from "../../functions/src/shared/generated/finalizeOrganizerFormAssetCallablePayload";
+import type {FinalizeOrganizerFormAssetCallableResponse} from "../../functions/src/shared/generated/finalizeOrganizerFormAssetCallableResponse";
 import type {GetEventSuccessConversationGraphCallableResponse} from "../../functions/src/shared/generated/getEventSuccessConversationGraphCallableResponse";
 import type {HeartbeatEventSuccessPresenceCallableResponse} from "../../functions/src/shared/generated/heartbeatEventSuccessPresenceCallableResponse";
 import type {ListPublicOrganizerReviewsCallablePayload} from "../../functions/src/shared/generated/listPublicOrganizerReviewsCallablePayload";
@@ -103,6 +107,8 @@ export type PublicOrganizerFormDraft =
   BeginOrganizerFormResponseCallableResponse;
 export type PublicOrganizerFormReceipt =
   SubmitOrganizerFormResponseCallableResponse;
+export type PublicOrganizerFormAssetIntent =
+  CreateOrganizerFormAssetIntentCallableResponse;
 
 export interface PublicEventPhoneVerification {
   clear: () => void;
@@ -186,6 +192,43 @@ export async function saveOrganizerFormResponseDraft(
 ): Promise<SaveOrganizerFormResponseDraftCallableResponse> {
   return invokeWebsiteCallable(
     "saveOrganizerFormResponseDraft",
+    payload,
+    publicFormsFirebaseConfigured,
+    "Public forms"
+  );
+}
+
+export async function createOrganizerFormAssetIntent(
+  payload: CreateOrganizerFormAssetIntentCallablePayload
+): Promise<CreateOrganizerFormAssetIntentCallableResponse> {
+  return invokeWebsiteCallable(
+    "createOrganizerFormAssetIntent",
+    payload,
+    publicFormsFirebaseConfigured,
+    "Public forms"
+  );
+}
+
+export async function uploadOrganizerFormAsset(
+  intent: CreateOrganizerFormAssetIntentCallableResponse,
+  file: Blob
+): Promise<void> {
+  const body = new FormData();
+  for (const [key, value] of Object.entries(intent.uploadFields)) {
+    body.append(key, value);
+  }
+  body.append("file", file);
+  const response = await fetch(intent.uploadUrl, {method: "POST", body});
+  if (!response.ok) {
+    throw new Error("The secure file upload failed. Please try again.");
+  }
+}
+
+export async function finalizeOrganizerFormAsset(
+  payload: FinalizeOrganizerFormAssetCallablePayload
+): Promise<FinalizeOrganizerFormAssetCallableResponse> {
+  return invokeWebsiteCallable(
+    "finalizeOrganizerFormAsset",
     payload,
     publicFormsFirebaseConfigured,
     "Public forms"

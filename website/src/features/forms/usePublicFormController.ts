@@ -4,10 +4,13 @@ import {
   beginOrganizerFormResponse,
   beginPublicEventPhoneVerification,
   completePublicFormEmailSignIn,
+  createOrganizerFormAssetIntent,
+  finalizeOrganizerFormAsset,
   getPublicOrganizerForm,
   saveOrganizerFormResponseDraft,
   sendPublicFormEmailSignInLink,
   submitOrganizerFormResponse,
+  uploadOrganizerFormAsset,
   watchPublicFormAuthState,
   withdrawOrganizerFormResponse,
   type PublicEventPhoneVerification,
@@ -23,11 +26,17 @@ import {
   visiblePublicFormSections,
   type PublicFormAnswer,
   type PublicFormAnswers,
+  type PublicFormQuestion,
 } from "./publicFormModel";
 
 export type PublicFormStage =
   "loading" | "unavailable" | "identity" | "phoneCode" |
   "emailSent" | "form" | "review" | "complete" | "withdrawn";
+
+export interface PublicFormUploadState {
+  status: "uploading" | "ready" | "error";
+  label: string;
+}
 
 export function usePublicFormController(publicFormId: string) {
   const [stage, setStage] = useState<PublicFormStage>("loading");
@@ -47,6 +56,9 @@ export function usePublicFormController(publicFormId: string) {
     window.localStorage.getItem(emailStorageKey(publicFormId)) ?? "");
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
   const [dirtyRevision, setDirtyRevision] = useState(0);
+  const [uploads, setUploads] = useState<
+    Record<string, PublicFormUploadState>
+  >({});
   const formRef = useRef<PublicOrganizerForm | null>(null);
   const userRef = useRef<User | null>(null);
   const draftRef = useRef<PublicOrganizerFormDraft | null>(null);
@@ -76,6 +88,9 @@ export function usePublicFormController(publicFormId: string) {
     },
   });
   const pending = actionMutation.isPending;
+  const uploadInProgress = Object.values(uploads).some(
+    (upload) => upload.status === "uploading"
+  );
 
   const startDraft = useCallback(async (nextForm: PublicOrganizerForm) => {
     if (startPromiseRef.current) return startPromiseRef.current;
@@ -257,6 +272,10 @@ export function usePublicFormController(publicFormId: string) {
 
   async function nextSection() {
     if (!activeSection) return;
+    if (uploadInProgress) {
+      setStatus({message: publicFormsCopy.uploadPending, tone: "is-error"});
+      return;
+    }
     const nextErrors = validatePublicFormAnswers(activeSection.questions, answers);
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
@@ -266,6 +285,77 @@ export function usePublicFormController(publicFormId: string) {
     } else {
       setSectionIndex((current) => current + 1);
       window.scrollTo({top: 0, behavior: "smooth"});
+    }
+  }
+
+  async function uploadAnswer(
+    question: PublicFormQuestion,
+    files: Array<{blob: Blob; name: string}>
+  ) {
+    const current = draftRef.current;
+    if (!current || files.length === 0) return;
+    const maximum = question.kind === "signature" ? 1 :
+      question.validation.maxFileCount ?? 1;
+    if (files.length > maximum) {
+      setStatus({
+        message: question.validation.customError ??
+          `${question.label} accepts at most ${maximum} file${maximum === 1 ? "" : "s"}.`,
+        tone: "is-error",
+      });
+      return;
+    }
+    setUploads((value) => ({
+      ...value,
+      [question.questionId]: {
+        status: "uploading",
+        label: publicFormsCopy.uploadingFile,
+      },
+    }));
+    try {
+      const assetIds: string[] = [];
+      for (const file of files) {
+        const sha256 = await sha256Hex(file.blob);
+        const intent = await createOrganizerFormAssetIntent({
+          draftId: current.draftId,
+          draftToken: current.draftToken,
+          questionId: question.questionId,
+          requestId: requestId(),
+          originalFileName: file.name,
+          contentType: requireSupportedContentType(file.blob.type),
+          sizeBytes: file.blob.size,
+          sha256,
+        });
+        await uploadOrganizerFormAsset(intent, file.blob);
+        await finalizeOrganizerFormAsset({
+          draftId: current.draftId,
+          draftToken: current.draftToken,
+          assetId: intent.assetId,
+          uploadToken: intent.uploadToken,
+        });
+        assetIds.push(intent.assetId);
+      }
+      updateAnswer(
+        question.questionId,
+        question.kind === "signature" ? assetIds[0] : assetIds
+      );
+      setUploads((value) => ({
+        ...value,
+        [question.questionId]: {
+          status: "ready",
+          label: question.kind === "signature" ?
+            publicFormsCopy.signatureReady : publicFormsCopy.uploadedFile,
+        },
+      }));
+      setStatus({message: "", tone: ""});
+    } catch (error) {
+      setUploads((value) => ({
+        ...value,
+        [question.questionId]: {
+          status: "error",
+          label: publicFormsCopy.uploadFailed,
+        },
+      }));
+      setStatus({message: publicFormError(error), tone: "is-error"});
     }
   }
 
@@ -349,9 +439,28 @@ export function usePublicFormController(publicFormId: string) {
     submit,
     updateAnswer,
     updateConsent,
+    uploadAnswer,
+    uploadInProgress,
+    uploads,
     visibleSections,
     withdraw,
   };
+}
+
+async function sha256Hex(blob: Blob) {
+  const digest = await globalThis.crypto.subtle.digest(
+    "SHA-256",
+    await blob.arrayBuffer()
+  );
+  return [...new Uint8Array(digest)]
+    .map((value) => value.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+function requireSupportedContentType(value: string) {
+  if (value === "image/jpeg" || value === "image/png" ||
+      value === "image/webp" || value === "application/pdf") return value;
+  throw new Error("Choose a JPEG, PNG, WebP, or PDF file.");
 }
 
 function requestId() {

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {HttpsError} from "firebase-functions/v2/https";
-import {validateAnswerShape} from "./organizerFormResponses";
+import {uploadPolicy, validateAnswerShape} from "./organizerFormResponses";
 import type {OrganizerFormVersionDocument} from
   "../shared/generated/firestoreAdminTypes";
 
@@ -83,6 +83,47 @@ test("respondent validation checks contact and consent shapes", () => {
       "invalid-argument"
     );
   }
+});
+
+test("respondent validation accepts only scoped asset identifiers", () => {
+  const file = question("proof", "Proof", "file", true);
+  file.validation.maxFileCount = 2;
+  const signature = question("signature", "Signature", "signature", true);
+  const value = definition([file, signature]);
+
+  assert.doesNotThrow(() => validateAnswerShape(value, {
+    proof: ["formasset_one", "formasset_two"],
+    signature: "formasset_signature",
+  }, true));
+  assertHttpsCode(
+    () => validateAnswerShape(value, {
+      proof: ["one", "two", "three"],
+      signature: "formasset_signature",
+    }, true),
+    "invalid-argument"
+  );
+  assertHttpsCode(
+    () => validateAnswerShape(value, {
+      proof: "https://untrusted.example/file.pdf",
+      signature: "formasset_signature",
+    }, true),
+    "invalid-argument"
+  );
+});
+
+test("upload policy applies question-specific type and size ceilings", () => {
+  const file = question("proof", "Proof", "file", false);
+  file.validation.allowedMimeTypes = ["application/pdf"];
+  file.validation.maxFileSizeBytes = 1024;
+  const configured = uploadPolicy(file);
+  assert.deepEqual([...configured.contentTypes], ["application/pdf"]);
+  assert.equal(configured.maxSizeBytes, 1024);
+
+  const signature = uploadPolicy(
+    question("signature", "Signature", "signature", true)
+  );
+  assert.deepEqual([...signature.contentTypes], ["image/png"]);
+  assert.equal(signature.maxSizeBytes, 2 * 1024 * 1024);
 });
 
 function definition(questions: Question[]): Definition {

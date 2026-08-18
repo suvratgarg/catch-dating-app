@@ -10,36 +10,87 @@ export function visiblePublicFormSections(
   definition: PublicFormDefinition,
   answers: PublicFormAnswers
 ) {
-  const hiddenSections = new Set<string>();
-  const shownSections = new Set<string>();
-  const hiddenQuestions = new Set<string>();
-  const shownQuestions = new Set<string>();
-
-  for (const rule of definition.logicRules) {
-    if (!ruleMatches(rule, answers)) continue;
-    if (rule.action === "hideSection" && rule.targetSectionId) {
-      hiddenSections.add(rule.targetSectionId);
+  const matchingRules = definition.logicRules.filter((rule) =>
+    ruleMatches(rule, answers));
+  const allShowSections = ruleTargets(
+    definition.logicRules, "showSection", "section"
+  );
+  const shownSections = ruleTargets(
+    matchingRules, "showSection", "section"
+  );
+  const hiddenSections = ruleTargets(
+    matchingRules, "hideSection", "section"
+  );
+  const allShowQuestions = ruleTargets(
+    definition.logicRules, "showQuestion", "question"
+  );
+  const shownQuestions = ruleTargets(
+    matchingRules, "showQuestion", "question"
+  );
+  const hiddenQuestions = ruleTargets(
+    matchingRules, "hideQuestion", "question"
+  );
+  const visible = definition.sections.flatMap((section, originalIndex) => {
+    const gated = allShowSections.has(section.sectionId) &&
+      !shownSections.has(section.sectionId);
+    if (gated || hiddenSections.has(section.sectionId)) return [];
+    return [{
+      originalIndex,
+      section: {
+        ...section,
+        questions: section.questions.filter((question) => {
+          const questionGated = allShowQuestions.has(question.questionId) &&
+            !shownQuestions.has(question.questionId);
+          return !questionGated && !hiddenQuestions.has(question.questionId);
+        }),
+      },
+    }];
+  });
+  const questionSection = new Map<string, number>();
+  definition.sections.forEach((section, sectionIndex) => {
+    section.questions.forEach((question) =>
+      questionSection.set(question.questionId, sectionIndex));
+  });
+  const result: typeof definition.sections = [];
+  let cursor = 0;
+  while (cursor < visible.length) {
+    const current = visible[cursor];
+    result.push(current.section);
+    const navigation = matchingRules.find((rule) => {
+      if (rule.action !== "routeToSection" && rule.action !== "finish") {
+        return false;
+      }
+      const sourceIndex = Math.max(...rule.conditions.map((condition) =>
+        questionSection.get(condition.questionId) ?? -1));
+      return sourceIndex === current.originalIndex;
+    });
+    if (navigation?.action === "finish") break;
+    if (navigation?.action === "routeToSection" &&
+        navigation.targetSectionId) {
+      const targetIndex = definition.sections.findIndex((section) =>
+        section.sectionId === navigation.targetSectionId);
+      const next = visible.findIndex((section) =>
+        section.originalIndex >= targetIndex);
+      if (next < 0 || next <= cursor) break;
+      cursor = next;
+      continue;
     }
-    if (rule.action === "showSection" && rule.targetSectionId) {
-      shownSections.add(rule.targetSectionId);
-    }
-    if (rule.action === "hideQuestion" && rule.targetQuestionId) {
-      hiddenQuestions.add(rule.targetQuestionId);
-    }
-    if (rule.action === "showQuestion" && rule.targetQuestionId) {
-      shownQuestions.add(rule.targetQuestionId);
-    }
+    cursor += 1;
   }
+  return result;
+}
 
-  return definition.sections
-    .filter((section) => !hiddenSections.has(section.sectionId) ||
-      shownSections.has(section.sectionId))
-    .map((section) => ({
-      ...section,
-      questions: section.questions.filter((question) =>
-        !hiddenQuestions.has(question.questionId) ||
-        shownQuestions.has(question.questionId)),
-    }));
+function ruleTargets(
+  rules: PublicFormDefinition["logicRules"],
+  action: "showSection" | "hideSection" | "showQuestion" | "hideQuestion",
+  kind: "section" | "question"
+) {
+  return new Set(rules.flatMap((rule) => {
+    if (rule.action !== action) return [];
+    const target = kind === "section" ?
+      rule.targetSectionId : rule.targetQuestionId;
+    return target ? [target] : [];
+  }));
 }
 
 export function validatePublicFormAnswers(
@@ -98,6 +149,21 @@ function validateQuestion(
 ): string | null {
   const invalid = question.validation.customError ??
     `${question.label} is invalid.`;
+  const stringKind = question.kind === "shortText" ||
+    question.kind === "longText" || question.kind === "date" ||
+    question.kind === "phone" || question.kind === "email" ||
+    question.kind === "url" || question.kind === "signature";
+  if (stringKind && typeof answer !== "string") return invalid;
+  if (question.kind === "number" &&
+      (typeof answer !== "number" || !Number.isFinite(answer))) return invalid;
+  if ((question.kind === "boolean" ||
+       question.kind === "acknowledgement") &&
+      typeof answer !== "boolean") return invalid;
+  if (question.kind === "singleChoice" && typeof answer !== "string") {
+    return invalid;
+  }
+  if ((question.kind === "multiChoice" || question.kind === "file") &&
+      !Array.isArray(answer)) return invalid;
   if (question.kind === "email" &&
       (typeof answer !== "string" ||
        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/u.test(answer))) return invalid;
@@ -114,12 +180,32 @@ function validateQuestion(
       return invalid;
     }
   }
+  if (question.kind === "date" && typeof answer === "string") {
+    const date = new Date(`${answer}T00:00:00.000Z`);
+    if (!/^\d{4}-\d{2}-\d{2}$/u.test(answer) ||
+        Number.isNaN(date.getTime()) ||
+        date.toISOString().slice(0, 10) !== answer ||
+        (question.validation.earliestDate !== null &&
+         answer < question.validation.earliestDate) ||
+        (question.validation.latestDate !== null &&
+         answer > question.validation.latestDate)) return invalid;
+  }
   if (typeof answer === "string") {
     const length = answer.trim().length;
     if (question.validation.minLength !== null &&
         length < question.validation.minLength) return invalid;
     if (question.validation.maxLength !== null &&
         length > question.validation.maxLength) return invalid;
+    const pattern = question.validation.patternPreset;
+    const patterns = {
+      lettersAndSpaces: /^[\p{L}\p{M} '\u2019-]+$/u,
+      alphanumeric: /^[\p{L}\p{M}\p{N} _.'\u2019-]+$/u,
+      postalCode: /^[\p{L}\p{N} -]{3,12}$/u,
+      handle: /^@?[A-Za-z0-9_.-]{2,39}$/u,
+    } as const;
+    if (pattern !== null && !patterns[pattern].test(answer.trim())) {
+      return invalid;
+    }
   }
   if (typeof answer === "number") {
     if (question.validation.minNumber !== null &&
@@ -129,6 +215,22 @@ function validateQuestion(
   }
   if (question.kind === "acknowledgement" && question.required &&
       answer !== true) return invalid;
+  if (question.kind === "singleChoice" && typeof answer === "string" &&
+      !question.options.some((option) => option.value === answer)) {
+    return invalid;
+  }
+  if (question.kind === "multiChoice" && Array.isArray(answer)) {
+    const allowed = new Set(question.options.map((option) => option.value));
+    if (answer.some((value) => !allowed.has(value)) ||
+        new Set(answer).size !== answer.length ||
+        (question.validation.minSelections !== null &&
+         answer.length < question.validation.minSelections) ||
+        (question.validation.maxSelections !== null &&
+         answer.length > question.validation.maxSelections)) return invalid;
+  }
+  if (question.kind === "file" && Array.isArray(answer) &&
+      (answer.length > (question.validation.maxFileCount ?? 1) ||
+       new Set(answer).size !== answer.length)) return invalid;
   return null;
 }
 

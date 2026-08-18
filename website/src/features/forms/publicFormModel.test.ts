@@ -65,6 +65,59 @@ describe("public form model", () => {
     expect(answerSummary(true)).toBe("Yes");
     expect(answerSummary(null)).toBe("");
   });
+
+  it("routes and finishes with the same forward-only semantics as submission", () => {
+    const value = definition();
+    value.sections.push({
+      sectionId: "finish",
+      title: publicFormsCopy.completionKicker,
+      description: null,
+      pageBreak: true,
+      questions: [question("final", "Final", "shortText", false)],
+    });
+    value.logicRules = [{
+      ruleId: "route",
+      conditionMode: "all",
+      conditions: [{
+        questionId: "attending",
+        operator: "equals",
+        expectedValues: [true],
+      }],
+      action: "routeToSection",
+      targetQuestionId: null,
+      targetSectionId: "finish",
+    }];
+    expect(visiblePublicFormSections(value, {attending: true})
+      .map((section) => section.sectionId)).toEqual(["intro", "finish"]);
+    value.logicRules[0].action = "finish";
+    value.logicRules[0].targetSectionId = null;
+    expect(visiblePublicFormSections(value, {attending: true})
+      .map((section) => section.sectionId)).toEqual(["intro"]);
+  });
+
+  it("validates dates, option limits, patterns, and answer types", () => {
+    const date = question("date", "Date", "date", false);
+    date.validation.earliestDate = "2026-01-01";
+    date.validation.latestDate = "2026-12-31";
+    const choices = question("choices", "Choices", "multiChoice", false);
+    choices.options = [
+      {optionId: "a", label: publicFormsCopy.yes, value: "a"},
+      {optionId: "b", label: publicFormsCopy.no, value: "b"},
+    ];
+    choices.validation.minSelections = 1;
+    choices.validation.maxSelections = 1;
+    const handle = question("handle", "Handle", "shortText", false);
+    handle.validation.patternPreset = "handle";
+    const errors = validatePublicFormAnswers([date, choices, handle], {
+      date: "2027-01-01",
+      choices: ["a", "b"],
+      handle: "bad handle",
+    });
+    expect(Object.keys(errors)).toEqual(["date", "choices", "handle"]);
+    expect(validatePublicFormAnswers([date], {date: 20260101})).toHaveProperty(
+      "date"
+    );
+  });
 });
 
 function definition(): PublicFormDefinition {

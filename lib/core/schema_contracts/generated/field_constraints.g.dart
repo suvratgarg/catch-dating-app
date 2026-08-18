@@ -9245,6 +9245,102 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const createOrganizerFormAssetIntentCallablePayloadContentType = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAssetIntentCallablePayload.contentType',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['image/jpeg', 'image/png', 'image/webp', 'application/pdf'],
+  );
+
+  static const createOrganizerFormAssetIntentCallablePayloadDraftId = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAssetIntentCallablePayload.draftId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerFormAssetIntentCallablePayloadDraftToken = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAssetIntentCallablePayload.draftToken',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{32,160}\$',
+  );
+
+  static const createOrganizerFormAssetIntentCallablePayloadOriginalFileName = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAssetIntentCallablePayload.originalFileName',
+    maxLength: 255,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerFormAssetIntentCallablePayloadQuestionId = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAssetIntentCallablePayload.questionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerFormAssetIntentCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAssetIntentCallablePayload.requestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{8,160}\$',
+  );
+
+  static const createOrganizerFormAssetIntentCallablePayloadSha256 = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAssetIntentCallablePayload.sha256',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const createOrganizerFormAssetIntentCallablePayloadSizeBytes = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAssetIntentCallablePayload.sizeBytes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 26214400,
+  );
+
+  static const createOrganizerFormAssetIntentCallableResponseAssetId = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAssetIntentCallableResponse.assetId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerFormAssetIntentCallableResponseExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAssetIntentCallableResponse.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const createOrganizerFormAssetIntentCallableResponseUploadFields = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAssetIntentCallableResponse.uploadFields',
+    required: true,
+    valueTypes: <String>['object'],
+  );
+
+  static const createOrganizerFormAssetIntentCallableResponseUploadToken = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAssetIntentCallableResponse.uploadToken',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{32,160}\$',
+  );
+
+  static const createOrganizerFormAssetIntentCallableResponseUploadUrl = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAssetIntentCallableResponse.uploadUrl',
+    maxLength: 2000,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
   static const createOrganizerFormCallablePayloadDefaultTargetId = CatchContractFieldConstraints(
     path: 'createOrganizerFormCallablePayload.defaultTargetId',
     maxLength: 180,
@@ -19950,6 +20046,58 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const finalizeOrganizerFormAssetCallablePayloadAssetId = CatchContractFieldConstraints(
+    path: 'finalizeOrganizerFormAssetCallablePayload.assetId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const finalizeOrganizerFormAssetCallablePayloadDraftId = CatchContractFieldConstraints(
+    path: 'finalizeOrganizerFormAssetCallablePayload.draftId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const finalizeOrganizerFormAssetCallablePayloadDraftToken = CatchContractFieldConstraints(
+    path: 'finalizeOrganizerFormAssetCallablePayload.draftToken',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{32,160}\$',
+  );
+
+  static const finalizeOrganizerFormAssetCallablePayloadUploadToken = CatchContractFieldConstraints(
+    path: 'finalizeOrganizerFormAssetCallablePayload.uploadToken',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{32,160}\$',
+  );
+
+  static const finalizeOrganizerFormAssetCallableResponseAssetId = CatchContractFieldConstraints(
+    path: 'finalizeOrganizerFormAssetCallableResponse.assetId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const finalizeOrganizerFormAssetCallableResponseSizeBytes = CatchContractFieldConstraints(
+    path: 'finalizeOrganizerFormAssetCallableResponse.sizeBytes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 26214400,
+  );
+
+  static const finalizeOrganizerFormAssetCallableResponseStatus = CatchContractFieldConstraints(
+    path: 'finalizeOrganizerFormAssetCallableResponse.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['ready'],
   );
 
   static const functionEventReceiptDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
@@ -34991,6 +35139,168 @@ abstract final class CatchContractConstraints {
     path: 'organizerFollowDocument.unfollowedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormAssetDocumentContentType = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.contentType',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['image/jpeg', 'image/png', 'image/webp', 'application/pdf'],
+  );
+
+  static const organizerFormAssetDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormAssetDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormAssetDocumentDeclaredSha256 = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.declaredSha256',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerFormAssetDocumentDeclaredSizeBytes = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.declaredSizeBytes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 26214400,
+  );
+
+  static const organizerFormAssetDocumentDeletedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.deletedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormAssetDocumentDeletedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.deletedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormAssetDocumentDraftId = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.draftId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAssetDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormAssetDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormAssetDocumentFinalizedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.finalizedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormAssetDocumentFinalizedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.finalizedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormAssetDocumentFormId = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAssetDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAssetDocumentOriginalFileName = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.originalFileName',
+    maxLength: 255,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAssetDocumentQuestionId = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.questionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAssetDocumentRespondentUid = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.respondentUid',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAssetDocumentSizeBytes = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.sizeBytes',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 26214400,
+  );
+
+  static const organizerFormAssetDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['uploading', 'ready', 'rejected', 'deleted'],
+  );
+
+  static const organizerFormAssetDocumentStoragePath = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.storagePath',
+    maxLength: 600,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^organizerForms/[^/]+/[^/]+/[^/]+\$',
+  );
+
+  static const organizerFormAssetDocumentUploadTokenHash = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.uploadTokenHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerFormAssetDocumentVersionId = CatchContractFieldConstraints(
+    path: 'organizerFormAssetDocument.versionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const organizerFormDocumentActiveVersionId = CatchContractFieldConstraints(
@@ -51701,6 +52011,19 @@ abstract final class CatchContractConstraints {
     'createOrganizerContactNoteCallablePayload.body': createOrganizerContactNoteCallablePayloadBody,
     'createOrganizerContactNoteCallablePayload.contactId': createOrganizerContactNoteCallablePayloadContactId,
     'createOrganizerContactNoteCallablePayload.organizerId': createOrganizerContactNoteCallablePayloadOrganizerId,
+    'createOrganizerFormAssetIntentCallablePayload.contentType': createOrganizerFormAssetIntentCallablePayloadContentType,
+    'createOrganizerFormAssetIntentCallablePayload.draftId': createOrganizerFormAssetIntentCallablePayloadDraftId,
+    'createOrganizerFormAssetIntentCallablePayload.draftToken': createOrganizerFormAssetIntentCallablePayloadDraftToken,
+    'createOrganizerFormAssetIntentCallablePayload.originalFileName': createOrganizerFormAssetIntentCallablePayloadOriginalFileName,
+    'createOrganizerFormAssetIntentCallablePayload.questionId': createOrganizerFormAssetIntentCallablePayloadQuestionId,
+    'createOrganizerFormAssetIntentCallablePayload.requestId': createOrganizerFormAssetIntentCallablePayloadRequestId,
+    'createOrganizerFormAssetIntentCallablePayload.sha256': createOrganizerFormAssetIntentCallablePayloadSha256,
+    'createOrganizerFormAssetIntentCallablePayload.sizeBytes': createOrganizerFormAssetIntentCallablePayloadSizeBytes,
+    'createOrganizerFormAssetIntentCallableResponse.assetId': createOrganizerFormAssetIntentCallableResponseAssetId,
+    'createOrganizerFormAssetIntentCallableResponse.expiresAtMillis': createOrganizerFormAssetIntentCallableResponseExpiresAtMillis,
+    'createOrganizerFormAssetIntentCallableResponse.uploadFields': createOrganizerFormAssetIntentCallableResponseUploadFields,
+    'createOrganizerFormAssetIntentCallableResponse.uploadToken': createOrganizerFormAssetIntentCallableResponseUploadToken,
+    'createOrganizerFormAssetIntentCallableResponse.uploadUrl': createOrganizerFormAssetIntentCallableResponseUploadUrl,
     'createOrganizerFormCallablePayload.defaultTargetId': createOrganizerFormCallablePayloadDefaultTargetId,
     'createOrganizerFormCallablePayload.defaultTargetKind': createOrganizerFormCallablePayloadDefaultTargetKind,
     'createOrganizerFormCallablePayload.organizerId': createOrganizerFormCallablePayloadOrganizerId,
@@ -53178,6 +53501,13 @@ abstract final class CatchContractConstraints {
     'fetchEventSuccessWingmanCandidatesCallableResponse.profiles.items.uid': fetchEventSuccessWingmanCandidatesCallableResponseProfilesItemsUid,
     'fetchSwipeCandidatesCallableResponse.profiles': fetchSwipeCandidatesCallableResponseProfiles,
     'fetchSwipeCandidatesCallableResponse.profiles.items.uid': fetchSwipeCandidatesCallableResponseProfilesItemsUid,
+    'finalizeOrganizerFormAssetCallablePayload.assetId': finalizeOrganizerFormAssetCallablePayloadAssetId,
+    'finalizeOrganizerFormAssetCallablePayload.draftId': finalizeOrganizerFormAssetCallablePayloadDraftId,
+    'finalizeOrganizerFormAssetCallablePayload.draftToken': finalizeOrganizerFormAssetCallablePayloadDraftToken,
+    'finalizeOrganizerFormAssetCallablePayload.uploadToken': finalizeOrganizerFormAssetCallablePayloadUploadToken,
+    'finalizeOrganizerFormAssetCallableResponse.assetId': finalizeOrganizerFormAssetCallableResponseAssetId,
+    'finalizeOrganizerFormAssetCallableResponse.sizeBytes': finalizeOrganizerFormAssetCallableResponseSizeBytes,
+    'finalizeOrganizerFormAssetCallableResponse.status': finalizeOrganizerFormAssetCallableResponseStatus,
     'functionEventReceiptDocument.createdAt._nanoseconds': functionEventReceiptDocumentCreatedAtNanoseconds,
     'functionEventReceiptDocument.createdAt._seconds': functionEventReceiptDocumentCreatedAtSeconds,
     'functionEventReceiptDocument.eventId': functionEventReceiptDocumentEventId,
@@ -55245,6 +55575,28 @@ abstract final class CatchContractConstraints {
     'organizerFollowDocument.uid': organizerFollowDocumentUid,
     'organizerFollowDocument.unfollowedAt._nanoseconds': organizerFollowDocumentUnfollowedAtNanoseconds,
     'organizerFollowDocument.unfollowedAt._seconds': organizerFollowDocumentUnfollowedAtSeconds,
+    'organizerFormAssetDocument.contentType': organizerFormAssetDocumentContentType,
+    'organizerFormAssetDocument.createdAt._nanoseconds': organizerFormAssetDocumentCreatedAtNanoseconds,
+    'organizerFormAssetDocument.createdAt._seconds': organizerFormAssetDocumentCreatedAtSeconds,
+    'organizerFormAssetDocument.declaredSha256': organizerFormAssetDocumentDeclaredSha256,
+    'organizerFormAssetDocument.declaredSizeBytes': organizerFormAssetDocumentDeclaredSizeBytes,
+    'organizerFormAssetDocument.deletedAt._nanoseconds': organizerFormAssetDocumentDeletedAtNanoseconds,
+    'organizerFormAssetDocument.deletedAt._seconds': organizerFormAssetDocumentDeletedAtSeconds,
+    'organizerFormAssetDocument.draftId': organizerFormAssetDocumentDraftId,
+    'organizerFormAssetDocument.expiresAt._nanoseconds': organizerFormAssetDocumentExpiresAtNanoseconds,
+    'organizerFormAssetDocument.expiresAt._seconds': organizerFormAssetDocumentExpiresAtSeconds,
+    'organizerFormAssetDocument.finalizedAt._nanoseconds': organizerFormAssetDocumentFinalizedAtNanoseconds,
+    'organizerFormAssetDocument.finalizedAt._seconds': organizerFormAssetDocumentFinalizedAtSeconds,
+    'organizerFormAssetDocument.formId': organizerFormAssetDocumentFormId,
+    'organizerFormAssetDocument.organizerId': organizerFormAssetDocumentOrganizerId,
+    'organizerFormAssetDocument.originalFileName': organizerFormAssetDocumentOriginalFileName,
+    'organizerFormAssetDocument.questionId': organizerFormAssetDocumentQuestionId,
+    'organizerFormAssetDocument.respondentUid': organizerFormAssetDocumentRespondentUid,
+    'organizerFormAssetDocument.sizeBytes': organizerFormAssetDocumentSizeBytes,
+    'organizerFormAssetDocument.status': organizerFormAssetDocumentStatus,
+    'organizerFormAssetDocument.storagePath': organizerFormAssetDocumentStoragePath,
+    'organizerFormAssetDocument.uploadTokenHash': organizerFormAssetDocumentUploadTokenHash,
+    'organizerFormAssetDocument.versionId': organizerFormAssetDocumentVersionId,
     'organizerFormDocument.activeVersionId': organizerFormDocumentActiveVersionId,
     'organizerFormDocument.archivedAt._nanoseconds': organizerFormDocumentArchivedAtNanoseconds,
     'organizerFormDocument.archivedAt._seconds': organizerFormDocumentArchivedAtSeconds,

@@ -48,6 +48,7 @@ import {
   organizerFormVersionDocumentSchema,
   organizerFormResponseDraftDocumentSchema,
   organizerFormResponseDocumentSchema,
+  organizerFormAssetDocumentSchema,
   organizerFormShareLinkDocumentSchema,
   organizerApplicationDocumentSchema,
   organizerApplicationResponseDocumentSchema,
@@ -311,6 +312,10 @@ import {
   beginOrganizerFormResponseCallableResponseSchema,
   saveOrganizerFormResponseDraftCallablePayloadSchema,
   saveOrganizerFormResponseDraftCallableResponseSchema,
+  createOrganizerFormAssetIntentCallablePayloadSchema,
+  createOrganizerFormAssetIntentCallableResponseSchema,
+  finalizeOrganizerFormAssetCallablePayloadSchema,
+  finalizeOrganizerFormAssetCallableResponseSchema,
   submitOrganizerFormResponseCallablePayloadSchema,
   submitOrganizerFormResponseCallableResponseSchema,
   withdrawOrganizerFormResponseCallablePayloadSchema,
@@ -516,6 +521,7 @@ export const validateOrganizerFormDraftDocument = ajv.compile(organizerFormDraft
 export const validateOrganizerFormVersionDocument = ajv.compile(organizerFormVersionDocumentSchema);
 export const validateOrganizerFormResponseDraftDocument = ajv.compile(organizerFormResponseDraftDocumentSchema);
 export const validateOrganizerFormResponseDocument = ajv.compile(organizerFormResponseDocumentSchema);
+export const validateOrganizerFormAssetDocument = ajv.compile(organizerFormAssetDocumentSchema);
 export const validateOrganizerFormShareLinkDocument = ajv.compile(organizerFormShareLinkDocumentSchema);
 export const validateOrganizerApplicationDocument = ajv.compile(organizerApplicationDocumentSchema);
 export const validateOrganizerApplicationResponseDocument = ajv.compile(organizerApplicationResponseDocumentSchema);
@@ -779,6 +785,10 @@ export const validateBeginOrganizerFormResponseCallablePayload = ajv.compile(beg
 export const validateBeginOrganizerFormResponseCallableResponse = ajv.compile(beginOrganizerFormResponseCallableResponseSchema);
 export const validateSaveOrganizerFormResponseDraftCallablePayload = ajv.compile(saveOrganizerFormResponseDraftCallablePayloadSchema);
 export const validateSaveOrganizerFormResponseDraftCallableResponse = ajv.compile(saveOrganizerFormResponseDraftCallableResponseSchema);
+export const validateCreateOrganizerFormAssetIntentCallablePayload = ajv.compile(createOrganizerFormAssetIntentCallablePayloadSchema);
+export const validateCreateOrganizerFormAssetIntentCallableResponse = ajv.compile(createOrganizerFormAssetIntentCallableResponseSchema);
+export const validateFinalizeOrganizerFormAssetCallablePayload = ajv.compile(finalizeOrganizerFormAssetCallablePayloadSchema);
+export const validateFinalizeOrganizerFormAssetCallableResponse = ajv.compile(finalizeOrganizerFormAssetCallableResponseSchema);
 export const validateSubmitOrganizerFormResponseCallablePayload = ajv.compile(submitOrganizerFormResponseCallablePayloadSchema);
 export const validateSubmitOrganizerFormResponseCallableResponse = ajv.compile(submitOrganizerFormResponseCallableResponseSchema);
 export const validateWithdrawOrganizerFormResponseCallablePayload = ajv.compile(withdrawOrganizerFormResponseCallablePayloadSchema);

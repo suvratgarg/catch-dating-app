@@ -8,6 +8,7 @@ import {
   PublicFormActions,
   PublicFormChoiceList,
   PublicFormConsent,
+  PublicFormFileInput,
   PublicFormForm,
   PublicFormFrame,
   PublicFormLoading,
@@ -18,6 +19,7 @@ import {
   PublicFormReview,
   PublicFormReviewAnswer,
   PublicFormSection,
+  PublicFormSignatureInput,
   TextAreaField,
   TextField,
 } from "../../shared/ui/primitives";
@@ -259,7 +261,9 @@ function QuestionStage({
               question.questionId,
               answer
             )}
+            onUpload={(files) => controller.uploadAnswer(question, files)}
             question={question}
+            upload={controller.uploads[question.questionId]}
           />
         ))}
       </PublicFormSection>
@@ -269,7 +273,11 @@ function QuestionStage({
             {publicFormsCopy.previous}
           </Button>
         ) : null}
-        <Button onClick={() => void controller.nextSection()} type="button">
+        <Button
+          disabled={controller.uploadInProgress}
+          onClick={() => void controller.nextSection()}
+          type="button"
+        >
           {finalSection ? publicFormsCopy.review : publicFormsCopy.next}
         </Button>
       </PublicFormActions>
@@ -287,12 +295,16 @@ function QuestionField({
   answer,
   error,
   onChange,
+  onUpload,
   question,
+  upload,
 }: {
   answer: PublicFormAnswer | undefined;
   error?: string;
   onChange: (answer: PublicFormAnswer) => void;
+  onUpload: (files: Array<{blob: Blob; name: string}>) => Promise<void>;
   question: Question;
+  upload?: {status: "uploading" | "ready" | "error"; label: string};
 }) {
   const requiredLabel = question.required ? publicFormsCopy.requiredSuffix : undefined;
   const common = {
@@ -394,10 +406,47 @@ function QuestionField({
       </PublicFormQuestion>
     );
   }
+  if (question.kind === "file") {
+    const current = Array.isArray(answer) ? answer : [];
+    const accepted = question.validation.allowedMimeTypes.length > 0 ?
+      question.validation.allowedMimeTypes.join(",") :
+      "image/jpeg,image/png,image/webp,application/pdf";
+    return (
+      <PublicFormQuestion {...common}>
+        <PublicFormFileInput
+          accept={accepted}
+          disabled={upload?.status === "uploading"}
+          label={current.length > 0 ?
+            publicFormsCopy.replaceFiles : publicFormsCopy.selectFiles}
+          multiple={(question.validation.maxFileCount ?? 1) > 1}
+          onFiles={(files) => void onUpload(files.map((file) => ({
+            blob: file,
+            name: file.name,
+          })))}
+          status={upload?.label ?? (current.length > 0 ?
+            publicFormsCopy.uploadedFile : undefined)}
+        />
+        {current.length > 0 ? (
+          <Button onClick={() => onChange([])} type="button" variant="ghost">
+            {publicFormsCopy.removeUpload}
+          </Button>
+        ) : null}
+      </PublicFormQuestion>
+    );
+  }
   return (
     <PublicFormQuestion {...common}>
-      <p>{question.kind === "file" ? publicFormsCopy.fileComingSoon :
-        publicFormsCopy.signatureComingSoon}</p>
+      <PublicFormSignatureInput
+        clearLabel={publicFormsCopy.clearSignature}
+        disabled={upload?.status === "uploading"}
+        instruction={publicFormsCopy.signatureInstruction}
+        onSave={(blob) => onUpload([{blob, name: "signature.png"}])}
+        saveLabel={answer ?
+          publicFormsCopy.replaceFiles : publicFormsCopy.saveSignature}
+        status={upload?.label ?? (answer ?
+          publicFormsCopy.signatureReady : undefined)}
+        typedNameLabel={publicFormsCopy.typedSignatureLabel}
+      />
     </PublicFormQuestion>
   );
 }
@@ -423,8 +472,11 @@ function ReviewStage({
       <PublicFormReview>
         {questions.map((question) => (
           <PublicFormReviewAnswer
-            answer={answerSummary(controller.answers[question.questionId]) ||
-              publicFormsCopy.unanswered}
+            answer={question.kind === "file" || question.kind === "signature" ?
+              (controller.answers[question.questionId] ?
+                publicFormsCopy.uploadedAnswer : publicFormsCopy.unanswered) :
+              answerSummary(controller.answers[question.questionId]) ||
+                publicFormsCopy.unanswered}
             key={question.questionId}
             label={question.label}
           />

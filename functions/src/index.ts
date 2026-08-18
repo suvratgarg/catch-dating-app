@@ -164,7 +164,9 @@ export {
 } from "./organizers/organizerForms";
 export {
   beginOrganizerFormResponse,
+  createOrganizerFormAssetIntent,
   createOrganizerFormShareLink,
+  finalizeOrganizerFormAsset,
   getOrganizerFormShareAssets,
   getPublicOrganizerForm,
   saveOrganizerFormResponseDraft,

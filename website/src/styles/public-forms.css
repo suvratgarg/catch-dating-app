@@ -199,6 +199,82 @@
   font-weight: 700;
 }
 
+.public-form__upload,
+.public-form__signature {
+  display: grid;
+  gap: 12px;
+}
+
+.public-form__upload > label {
+  align-items: center;
+  border: 1px dashed color-mix(in srgb, #171513 34%, transparent);
+  border-radius: 14px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  min-height: 68px;
+  padding: 16px;
+}
+
+.public-form__upload > label[aria-disabled="true"] {
+  cursor: wait;
+  opacity: .58;
+}
+
+.public-form__upload input[type="file"] {
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  width: 1px;
+}
+
+.public-form__upload > p,
+.public-form__signature > p {
+  color: rgba(23, 21, 19, .62);
+  font-size: .86rem;
+  margin: 0;
+}
+
+.public-form__signature canvas {
+  background: color-mix(in srgb, white 94%, #f3efe7);
+  border: 1px solid color-mix(in srgb, #171513 24%, transparent);
+  border-radius: 14px;
+  height: 150px;
+  touch-action: none;
+  width: 100%;
+}
+
+.public-form__signature > label {
+  display: grid;
+  gap: 7px;
+}
+
+.public-form__signature > label span {
+  color: rgba(23, 21, 19, .62);
+  font-size: .82rem;
+}
+
+.public-form__signature > label input {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, #171513 30%, transparent);
+  color: #171513;
+  font: inherit;
+  min-height: 44px;
+  outline: 0;
+}
+
+.public-form__signature > label input:focus {
+  border-bottom-color: #171513;
+}
+
+.public-form__signature > div {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
 .public-form__actions {
   align-items: center;
   display: flex;

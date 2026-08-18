@@ -17831,6 +17831,222 @@ export const organizerFormResponseDocumentSchema: Record<string, unknown> = {
   "x-owner": "organizer form submission callable"
 } as const;
 
+export const organizerFormAssetDocumentSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_form_assets.schema.json",
+  "title": "OrganizerFormAssetDocument",
+  "description": "Version- and draft-scoped metadata for private respondent uploads; bytes remain in protected Storage.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerFormAssets",
+  "x-firestore-path": "organizerFormAssets/{assetId}",
+  "x-document-id-field": "assetId",
+  "x-owner": "organizer form respondent asset callables",
+  "x-ttl-field": "expiresAt",
+  "required": [
+    "organizerId",
+    "formId",
+    "versionId",
+    "draftId",
+    "questionId",
+    "respondentUid",
+    "uploadTokenHash",
+    "storagePath",
+    "originalFileName",
+    "contentType",
+    "declaredSizeBytes",
+    "declaredSha256",
+    "sizeBytes",
+    "status",
+    "createdAt",
+    "expiresAt",
+    "finalizedAt",
+    "deletedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "versionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "questionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "respondentUid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "uploadTokenHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "storagePath": {
+      "type": "string",
+      "pattern": "^organizerForms/[^/]+/[^/]+/[^/]+$",
+      "maxLength": 600
+    },
+    "originalFileName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "contentType": {
+      "type": "string",
+      "enum": [
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "application/pdf"
+      ]
+    },
+    "declaredSizeBytes": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 26214400
+    },
+    "declaredSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "sizeBytes": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 26214400
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "uploading",
+        "ready",
+        "rejected",
+        "deleted"
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "finalizedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "deletedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+} as const;
+
 export const organizerFormShareLinkDocumentSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_form_share_links.schema.json",
@@ -66541,6 +66757,182 @@ export const saveOrganizerFormResponseDraftCallableResponseSchema: Record<string
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
+    }
+  }
+} as const;
+
+export const createOrganizerFormAssetIntentCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/create_organizer_form_asset_intent_payload.schema.json",
+  "title": "CreateOrganizerFormAssetIntentCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "draftId",
+    "draftToken",
+    "questionId",
+    "requestId",
+    "originalFileName",
+    "contentType",
+    "sizeBytes",
+    "sha256"
+  ],
+  "properties": {
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "draftToken": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9_-]{32,160}$"
+    },
+    "questionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{8,160}$"
+    },
+    "originalFileName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "contentType": {
+      "type": "string",
+      "enum": [
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "application/pdf"
+      ]
+    },
+    "sizeBytes": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 26214400
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+} as const;
+
+export const createOrganizerFormAssetIntentCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/create_organizer_form_asset_intent_response.schema.json",
+  "title": "CreateOrganizerFormAssetIntentCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "assetId",
+    "uploadToken",
+    "uploadUrl",
+    "uploadFields",
+    "expiresAtMillis"
+  ],
+  "properties": {
+    "assetId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uploadToken": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{32,160}$"
+    },
+    "uploadUrl": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2000
+    },
+    "uploadFields": {
+      "type": "object",
+      "maxProperties": 30,
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 4000
+      }
+    },
+    "expiresAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+} as const;
+
+export const finalizeOrganizerFormAssetCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/finalize_organizer_form_asset_payload.schema.json",
+  "title": "FinalizeOrganizerFormAssetCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "draftId",
+    "draftToken",
+    "assetId",
+    "uploadToken"
+  ],
+  "properties": {
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "draftToken": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9_-]{32,160}$"
+    },
+    "assetId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uploadToken": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{32,160}$"
+    }
+  }
+} as const;
+
+export const finalizeOrganizerFormAssetCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/finalize_organizer_form_asset_response.schema.json",
+  "title": "FinalizeOrganizerFormAssetCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "assetId",
+    "status",
+    "sizeBytes"
+  ],
+  "properties": {
+    "assetId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "ready"
+      ]
+    },
+    "sizeBytes": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 26214400
     }
   }
 } as const;

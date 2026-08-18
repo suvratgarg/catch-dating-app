@@ -793,6 +793,7 @@ export function validateOrganizerFormDefinition(
   }
   const sectionIds = new Set<string>();
   const questionIds = new Set<string>();
+  const questionsById = new Map<string, Question>();
   const questionKeys = new Set<string>();
   const canonicalIds = new Set<string>();
   const sectionOrder = new Map<string, number>();
@@ -819,6 +820,7 @@ export function validateOrganizerFormDefinition(
           "Every question needs a unique identity.");
       }
       questionIds.add(question.questionId);
+      questionsById.set(question.questionId, question);
       const normalizedKey = question.key.toLowerCase();
       if (questionKeys.has(normalizedKey)) {
         add("duplicateQuestionKey", `${path}.key`,
@@ -847,10 +849,18 @@ export function validateOrganizerFormDefinition(
       "Add at least one question before publishing."
     );
   }
+  const ruleIds = new Set<string>();
+  const navigationSources = new Map<number, string>();
   definition.logicRules.forEach((rule, ruleIndex) => {
     const path = `logicRules.${ruleIndex}`;
+    if (ruleIds.has(rule.ruleId)) {
+      add("duplicateLogicRuleId", `${path}.ruleId`,
+        "Every logic rule needs a unique identity.");
+    }
+    ruleIds.add(rule.ruleId);
     for (const condition of rule.conditions) {
-      if (!questionIds.has(condition.questionId)) {
+      const sourceQuestion = questionsById.get(condition.questionId);
+      if (!sourceQuestion) {
         add("unknownConditionQuestion", `${path}.conditions`,
           "A logic condition references a question that no longer exists.");
       }
@@ -864,6 +874,10 @@ export function validateOrganizerFormDefinition(
         add("unexpectedConditionValue", `${path}.conditions`,
           "Answered conditions cannot include comparison values.");
       }
+      if (sourceQuestion && needsValue) {
+        validateConditionValues({condition, question: sourceQuestion, path,
+          add});
+      }
     }
     validateLogicTarget({
       rule,
@@ -874,6 +888,18 @@ export function validateOrganizerFormDefinition(
       sectionOrder,
       add,
     });
+    if (rule.action === "routeToSection" || rule.action === "finish") {
+      const sourceOrder = Math.max(...rule.conditions.map((condition) =>
+        questionSectionOrder.get(condition.questionId) ?? -1));
+      const existingRuleId = navigationSources.get(sourceOrder);
+      if (existingRuleId) {
+        add("ambiguousNavigation", `${path}.action`,
+          `Only one navigation rule can leave a section. ${existingRuleId} ` +
+          "already controls this section.");
+      } else {
+        navigationSources.set(sourceOrder, rule.ruleId);
+      }
+    }
   });
   validateCompletion(definition, add);
   if (definition.purpose === "waiver") {
@@ -890,7 +916,51 @@ export function validateOrganizerFormDefinition(
         "A waiver needs a required signature.");
     }
   }
+  if (definition.identityPolicy === "anonymous" &&
+      definition.sections.some((section) => section.questions.some(
+        (question) => question.kind === "signature"
+      ))) {
+    add("anonymousSignature", "identityPolicy",
+      "Signature forms need a verified email, phone number, or Catch account.");
+  }
   return issues;
+}
+
+function validateConditionValues(params: {
+  condition: FormDefinition["logicRules"][number]["conditions"][number];
+  question: Question;
+  path: string;
+  add: (
+    code: string,
+    path: string,
+    message: string,
+    severity?: ValidationIssue["severity"]
+  ) => void;
+}): void {
+  const {condition, question, path, add} = params;
+  if ((condition.operator === "greaterThan" ||
+       condition.operator === "lessThan") && question.kind !== "number") {
+    add("invalidNumericCondition", `${path}.conditions`,
+      "Greater-than and less-than logic require a number question.");
+  }
+  if ((condition.operator === "greaterThan" ||
+       condition.operator === "lessThan") &&
+      condition.expectedValues.some((value) => typeof value !== "number")) {
+    add("invalidNumericConditionValue", `${path}.conditions`,
+      "Numeric logic needs a numeric comparison value.");
+  }
+  if ((question.kind === "singleChoice" ||
+       question.kind === "multiChoice") &&
+      condition.expectedValues.some((value) =>
+        !question.options.some((option) => option.value === value))) {
+    add("unknownConditionOption", `${path}.conditions`,
+      "Choice logic must use an option that still exists.");
+  }
+  if (question.kind === "boolean" &&
+      condition.expectedValues.some((value) => typeof value !== "boolean")) {
+    add("invalidBooleanConditionValue", `${path}.conditions`,
+      "Boolean logic needs a true or false comparison value.");
+  }
 }
 
 function validateQuestion(
