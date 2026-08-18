@@ -866,6 +866,7 @@ export const OrganizerSearch = {
       [
         "home",
         "host",
+        "public_form",
         "event_runtime",
         "event_invite",
         "organizers",

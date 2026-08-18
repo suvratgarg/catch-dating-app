@@ -405,7 +405,7 @@ class HostFormsRepository {
     required String formId,
     String? ruleId,
     String? cursor,
-    int limit = 25,
+    int limit = ReadLimitPolicy.historyPage,
   }) => _call(
     name: 'listOrganizerFormAutomationRuns',
     payload: ListOrganizerFormAutomationRunsCallableRequest(
