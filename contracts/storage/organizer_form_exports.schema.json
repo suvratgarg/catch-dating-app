@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/storage/organizer_form_exports.schema.json",
+  "title": "OrganizerFormExportsStoragePath",
+  "description": "Private manager-requested form response exports stored at organizer-form-exports/{organizerId}/{fileName}. Objects are written by the backend and downloaded only through short-lived manager-authorized signed URLs.",
+  "type": "object",
+  "x-storage-rules-match": "match /organizer-form-exports/{organizerId}/{fileName}",
+  "x-storage-read": "server-signed URL only (direct client reads denied)",
+  "x-storage-write": "server only (direct client writes denied)",
+  "x-storage-content-type-pattern": "^(text/csv(; charset=utf-8)?|application/vnd.openxmlformats-officedocument.spreadsheetml.sheet)$",
+  "x-storage-file-name-pattern": "[A-Za-z0-9_-]{1,180}\\.(csv|xlsx)",
+  "x-storage-rules-test-file": "functions/test/storage.rules.test.cjs",
+  "x-storage-related-collection": "organizerFormExports",
+  "x-storage-known-consumers": [
+    "functions/src/organizers/organizerFormExports.ts"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "description": "Organizer document id; path segment."
+    },
+    "fileName": {
+      "type": "string",
+      "description": "Deterministic export id followed by csv or xlsx."
+    }
+  }
+}

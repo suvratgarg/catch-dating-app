@@ -1,0 +1,302 @@
+import 'package:catch_dating_app/hosts/data/host_forms_repository.dart';
+import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
+import 'package:flutter/foundation.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'host_form_operations_controller.g.dart';
+
+@immutable
+class HostFormResponsesState {
+  const HostFormResponsesState({
+    required this.responses,
+    required this.nextCursor,
+    this.loadingMore = false,
+    this.loadMoreError,
+  });
+
+  final List<HostFormResponseSummary> responses;
+  final String? nextCursor;
+  final bool loadingMore;
+  final Object? loadMoreError;
+
+  bool get canLoadMore => nextCursor != null && !loadingMore;
+
+  HostFormResponsesState copyWith({
+    List<HostFormResponseSummary>? responses,
+    String? nextCursor,
+    bool clearNextCursor = false,
+    bool? loadingMore,
+    Object? loadMoreError,
+    bool clearLoadMoreError = false,
+  }) => HostFormResponsesState(
+    responses: responses ?? this.responses,
+    nextCursor: clearNextCursor ? null : nextCursor ?? this.nextCursor,
+    loadingMore: loadingMore ?? this.loadingMore,
+    loadMoreError: clearLoadMoreError
+        ? null
+        : loadMoreError ?? this.loadMoreError,
+  );
+}
+
+@riverpod
+class HostFormResponsesController extends _$HostFormResponsesController {
+  @override
+  Future<HostFormResponsesState> build(HostFormResponseListRequest request) =>
+      _loadInitial();
+
+  Future<HostFormResponsesState> _loadInitial() async {
+    final page = await ref
+        .read(hostFormsRepositoryProvider)
+        .listResponses(request);
+    return HostFormResponsesState(
+      responses: page.items,
+      nextCursor: page.nextCursor,
+    );
+  }
+
+  Future<void> loadMore() async {
+    final current = state.asData?.value;
+    if (current == null || !current.canLoadMore) return;
+    state = AsyncData(
+      current.copyWith(loadingMore: true, clearLoadMoreError: true),
+    );
+    try {
+      final page = await ref
+          .read(hostFormsRepositoryProvider)
+          .listResponses(request.copyWith(cursor: current.nextCursor));
+      final byId = <String, HostFormResponseSummary>{
+        for (final response in current.responses) response.responseId: response,
+        for (final response in page.items) response.responseId: response,
+      };
+      state = AsyncData(
+        HostFormResponsesState(
+          responses: List.unmodifiable(byId.values),
+          nextCursor: page.nextCursor,
+        ),
+      );
+    } on Object catch (error) {
+      state = AsyncData(
+        current.copyWith(loadingMore: false, loadMoreError: error),
+      );
+    }
+  }
+}
+
+@riverpod
+Future<HostFormResponseDetail> hostFormResponseDetail(
+  Ref ref, {
+  required String organizerId,
+  required String responseId,
+}) => ref
+    .read(hostFormsRepositoryProvider)
+    .getResponseDetail(organizerId: organizerId, responseId: responseId);
+
+@riverpod
+Future<HostFormAnalytics> hostFormAnalytics(
+  Ref ref, {
+  required String organizerId,
+  required String formId,
+  String? versionId,
+}) => ref
+    .read(hostFormsRepositoryProvider)
+    .getAnalytics(
+      organizerId: organizerId,
+      formId: formId,
+      versionId: versionId,
+    );
+
+@immutable
+class HostFormAutomationsState {
+  const HostFormAutomationsState({
+    required this.rules,
+    required this.runs,
+    required this.nextCursor,
+    this.loadingMore = false,
+    this.mutatingRuleIds = const {},
+    this.error,
+  });
+
+  final List<HostFormAutomationRule> rules;
+  final List<HostFormAutomationRun> runs;
+  final String? nextCursor;
+  final bool loadingMore;
+  final Set<String> mutatingRuleIds;
+  final Object? error;
+
+  bool get canLoadMore => nextCursor != null && !loadingMore;
+
+  HostFormAutomationsState copyWith({
+    List<HostFormAutomationRule>? rules,
+    List<HostFormAutomationRun>? runs,
+    String? nextCursor,
+    bool clearNextCursor = false,
+    bool? loadingMore,
+    Set<String>? mutatingRuleIds,
+    Object? error,
+    bool clearError = false,
+  }) => HostFormAutomationsState(
+    rules: rules ?? this.rules,
+    runs: runs ?? this.runs,
+    nextCursor: clearNextCursor ? null : nextCursor ?? this.nextCursor,
+    loadingMore: loadingMore ?? this.loadingMore,
+    mutatingRuleIds: mutatingRuleIds ?? this.mutatingRuleIds,
+    error: clearError ? null : error ?? this.error,
+  );
+}
+
+@riverpod
+class HostFormAutomationsController extends _$HostFormAutomationsController {
+  @override
+  Future<HostFormAutomationsState> build(
+    String organizerId,
+    String formId,
+  ) async {
+    final page = await ref
+        .read(hostFormsRepositoryProvider)
+        .listAutomations(
+          organizerId: organizerId,
+          formId: formId,
+        );
+    return _fromPage(page);
+  }
+
+  Future<void> loadMore() async {
+    final current = state.asData?.value;
+    if (current == null || !current.canLoadMore) return;
+    state = AsyncData(current.copyWith(loadingMore: true, clearError: true));
+    try {
+      final page = await ref
+          .read(hostFormsRepositoryProvider)
+          .listAutomations(
+            organizerId: organizerId,
+            formId: formId,
+            cursor: current.nextCursor,
+          );
+      final byId = <String, HostFormAutomationRun>{
+        for (final run in current.runs) run.runId: run,
+        for (final run in page.runs) run.runId: run,
+      };
+      state = AsyncData(
+        current.copyWith(
+          rules: page.rules,
+          runs: List.unmodifiable(byId.values),
+          nextCursor: page.nextCursor,
+          clearNextCursor: page.nextCursor == null,
+          loadingMore: false,
+        ),
+      );
+    } on Object catch (error) {
+      state = AsyncData(current.copyWith(loadingMore: false, error: error));
+    }
+  }
+
+  Future<bool> setEnabled(HostFormAutomationRule rule, bool enabled) async {
+    final current = state.asData?.value;
+    if (current == null || current.mutatingRuleIds.contains(rule.ruleId)) {
+      return false;
+    }
+    state = AsyncData(
+      current.copyWith(
+        mutatingRuleIds: {...current.mutatingRuleIds, rule.ruleId},
+        clearError: true,
+      ),
+    );
+    try {
+      final updated = await ref
+          .read(hostFormsRepositoryProvider)
+          .setAutomationEnabled(
+            organizerId: organizerId,
+            ruleId: rule.ruleId,
+            expectedRevision: rule.revision,
+            enabled: enabled,
+          );
+      final latest = state.asData?.value ?? current;
+      state = AsyncData(
+        latest.copyWith(
+          rules: [
+            for (final candidate in latest.rules)
+              if (candidate.ruleId == updated.ruleId) updated else candidate,
+          ],
+          mutatingRuleIds: {...latest.mutatingRuleIds}..remove(rule.ruleId),
+          clearError: true,
+        ),
+      );
+      return true;
+    } on Object catch (error) {
+      final latest = state.asData?.value ?? current;
+      state = AsyncData(
+        latest.copyWith(
+          mutatingRuleIds: {...latest.mutatingRuleIds}..remove(rule.ruleId),
+          error: error,
+        ),
+      );
+      return false;
+    }
+  }
+
+  Future<bool> createPreset({
+    required String name,
+    required HostFormAutomationTrigger trigger,
+    required List<HostFormAutomationActionKind> actions,
+  }) async {
+    final current = state.asData?.value;
+    if (current == null) return false;
+    const mutationId = 'new';
+    state = AsyncData(
+      current.copyWith(
+        mutatingRuleIds: {...current.mutatingRuleIds, mutationId},
+        clearError: true,
+      ),
+    );
+    try {
+      final requestId = 'automation_${DateTime.now().microsecondsSinceEpoch}';
+      final saved = await ref
+          .read(hostFormsRepositoryProvider)
+          .saveAutomation(
+            organizerId: organizerId,
+            formId: formId,
+            requestId: requestId,
+            name: name,
+            enabled: true,
+            trigger: trigger,
+            actions: [
+              for (var index = 0; index < actions.length; index++)
+                {
+                  'actionId': 'action_${requestId}_$index',
+                  'kind': actions[index].name,
+                  'tagId': null,
+                  'eventId': null,
+                  'webhookUrl': null,
+                  'webhookSecret': null,
+                  'channel': null,
+                },
+            ],
+          );
+      final latest = state.asData?.value ?? current;
+      state = AsyncData(
+        latest.copyWith(
+          rules: [saved, ...latest.rules],
+          mutatingRuleIds: {...latest.mutatingRuleIds}..remove(mutationId),
+          clearError: true,
+        ),
+      );
+      return true;
+    } on Object catch (error) {
+      final latest = state.asData?.value ?? current;
+      state = AsyncData(
+        latest.copyWith(
+          mutatingRuleIds: {...latest.mutatingRuleIds}..remove(mutationId),
+          error: error,
+        ),
+      );
+      return false;
+    }
+  }
+
+  HostFormAutomationsState _fromPage(HostFormAutomationPage page) =>
+      HostFormAutomationsState(
+        rules: page.rules,
+        runs: page.runs,
+        nextCursor: page.nextCursor,
+      );
+}

@@ -218,6 +218,113 @@
       ]
     },
     {
+      "collectionGroup": "organizerForms",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "updatedAt", "mode": "DESCENDING"},
+        {"fieldPath": "__name__", "mode": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerFormResponses",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "submittedAt", "mode": "DESCENDING"},
+        {"fieldPath": "__name__", "mode": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerFormResponses",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "formId", "mode": "ASCENDING"},
+        {"fieldPath": "submittedAt", "mode": "ASCENDING"},
+        {"fieldPath": "__name__", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerFormAggregates",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "formId", "mode": "ASCENDING"},
+        {"fieldPath": "versionId", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerFormShareLinks",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "formId", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerFormConversionReceipts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "responseId", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerFormAutomationRules",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "formId", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerFormAutomationRules",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "formId", "mode": "ASCENDING"},
+        {"fieldPath": "enabled", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerFormAutomationRuns",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "formId", "mode": "ASCENDING"},
+        {"fieldPath": "createdAt", "mode": "DESCENDING"},
+        {"fieldPath": "__name__", "mode": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerFormAutomationRuns",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "formId", "mode": "ASCENDING"},
+        {"fieldPath": "ruleId", "mode": "ASCENDING"},
+        {"fieldPath": "createdAt", "mode": "DESCENDING"},
+        {"fieldPath": "__name__", "mode": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerContacts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "phoneE164", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerContacts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "email", "mode": "ASCENDING"}
+      ]
+    },
+    {
       "collectionGroup": "organizerContacts",
       "queryScope": "COLLECTION",
       "fields": [
@@ -1098,6 +1205,26 @@
     }
   ],
   "fieldOverrides": [
+    {
+      "collectionGroup": "organizerFormAggregateEvents",
+      "fieldPath": "expiresAt",
+      "ttl": true,
+      "indexes": [
+        {"order": "ASCENDING", "queryScope": "COLLECTION"},
+        {"order": "DESCENDING", "queryScope": "COLLECTION"},
+        {"arrayConfig": "CONTAINS", "queryScope": "COLLECTION"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerFormExports",
+      "fieldPath": "expiresAt",
+      "ttl": true,
+      "indexes": [
+        {"order": "ASCENDING", "queryScope": "COLLECTION"},
+        {"order": "DESCENDING", "queryScope": "COLLECTION"},
+        {"arrayConfig": "CONTAINS", "queryScope": "COLLECTION"}
+      ]
+    },
     {
       "collectionGroup": "rateLimits",
       "fieldPath": "expiresAt",

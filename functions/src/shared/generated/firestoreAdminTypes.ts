@@ -2134,6 +2134,760 @@ export interface OrganizerApplicationFormVersionDocument {
 }
 
 /**
+ * Organizer-owned generic form metadata and lifecycle. Editable content lives in a draft and published content in immutable versions.
+ */
+export interface OrganizerFormDocument {
+  organizerId: string;
+  createdByUid: string;
+  title: string;
+  description: string | null;
+  purpose:
+    | "application"
+    | "registration"
+    | "intake"
+    | "waiver"
+    | "feedback"
+    | "survey";
+  status: "draft" | "published" | "paused" | "archived";
+  templateId: string | null;
+  publicFormId: string;
+  defaultTargetKind: "organizer" | "event" | "campaign";
+  defaultTargetId: string | null;
+  activeVersionId: string | null;
+  draftRevision: number;
+  publishedVersion: number;
+  submittedResponseCount: number;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  publishedAt: FirebaseFirestore.Timestamp | null;
+  pausedAt: FirebaseFirestore.Timestamp | null;
+  archivedAt: FirebaseFirestore.Timestamp | null;
+  lastResponseAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Mutable optimistic-revision builder state for one organizer form.
+ */
+export interface OrganizerFormDraftDocument {
+  organizerId: string;
+  formId: string;
+  revision: number;
+  definition: {
+    title: string;
+    description: string | null;
+    purpose:
+      | "application"
+      | "registration"
+      | "intake"
+      | "waiver"
+      | "feedback"
+      | "survey";
+    defaultTargetKind: "organizer" | "event" | "campaign";
+    defaultTargetId: string | null;
+    identityPolicy:
+      | "anonymous"
+      | "emailVerified"
+      | "phoneVerified"
+      | "emailOrPhoneVerified"
+      | "catchAccount";
+    /**
+     * @minItems 1
+     * @maxItems 40
+     */
+    sections: {
+      sectionId: string;
+      title: string;
+      description: string | null;
+      pageBreak: boolean;
+      /**
+       * @maxItems 100
+       */
+      questions: {
+        questionId: string;
+        key: string;
+        label: string;
+        helpText: string | null;
+        kind:
+          | "shortText"
+          | "longText"
+          | "singleChoice"
+          | "multiChoice"
+          | "date"
+          | "phone"
+          | "email"
+          | "url"
+          | "number"
+          | "boolean"
+          | "file"
+          | "acknowledgement"
+          | "signature";
+        required: boolean;
+        /**
+         * @maxItems 100
+         */
+        options: {
+          optionId: string;
+          label: string;
+          value: string;
+        }[];
+        canonicalFieldId:
+          | (
+              | "givenName"
+              | "familyName"
+              | "displayName"
+              | "dateOfBirth"
+              | "age"
+              | "gender"
+              | "phoneNumber"
+              | "email"
+              | "instagramHandle"
+              | "linkedinUrl"
+              | "profilePhoto"
+              | "city"
+              | "heightCm"
+              | "occupation"
+              | "company"
+              | "education"
+              | "languages"
+              | "relationshipGoal"
+              | "interestedInGenders"
+              | "drinking"
+              | "smoking"
+              | "religion"
+              | "workout"
+              | "diet"
+              | "children"
+            )
+          | null;
+        privacyClass: "contact" | "profile" | "sensitive" | "organizerCustom";
+        prefillPolicy: "never" | "participantReviewRequired";
+        hostPresentation: "detailOnly" | "filterable" | "sortable";
+        validation: {
+          minLength: number | null;
+          maxLength: number | null;
+          minNumber: number | null;
+          maxNumber: number | null;
+          earliestDate: string | null;
+          latestDate: string | null;
+          minSelections: number | null;
+          maxSelections: number | null;
+          maxFileCount: number | null;
+          maxFileSizeBytes: number | null;
+          /**
+           * @maxItems 20
+           */
+          allowedMimeTypes: string[];
+          patternPreset:
+            | null
+            | "lettersAndSpaces"
+            | "alphanumeric"
+            | "postalCode"
+            | "handle";
+          customError: string | null;
+        };
+      }[];
+    }[];
+    /**
+     * @maxItems 100
+     */
+    logicRules: {
+      ruleId: string;
+      conditionMode: "all" | "any";
+      /**
+       * @minItems 1
+       * @maxItems 20
+       */
+      conditions: {
+        questionId: string;
+        operator:
+          | "equals"
+          | "notEquals"
+          | "contains"
+          | "notContains"
+          | "greaterThan"
+          | "lessThan"
+          | "answered"
+          | "notAnswered";
+        /**
+         * @maxItems 20
+         */
+        expectedValues: (string | number | boolean)[];
+      }[];
+      action:
+        | "showQuestion"
+        | "hideQuestion"
+        | "showSection"
+        | "hideSection"
+        | "routeToSection"
+        | "finish";
+      targetQuestionId: string | null;
+      targetSectionId: string | null;
+    }[];
+    appearance: {
+      preset: "editorial" | "minimal" | "activity";
+      logoAssetId: string | null;
+      coverAssetId: string | null;
+      activityKind: string | null;
+    };
+    availability: {
+      opensAt: FirebaseFirestore.Timestamp | null;
+      closesAt: FirebaseFirestore.Timestamp | null;
+      responseLimit: number | null;
+      closedMessage: string | null;
+    };
+    consent: {
+      consentCopy: string;
+      consentVersion: string;
+      retentionCopy: string;
+    };
+    completion: {
+      title: string;
+      message: string | null;
+      actionKind: "none" | "externalUrl" | "event" | "eventRuntime";
+      actionLabel: string | null;
+      actionUrl: string | null;
+    };
+  };
+  updatedByUid: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Immutable published definition of one generic organizer form version.
+ */
+export interface OrganizerFormVersionDocument {
+  organizerId: string;
+  formId: string;
+  version: number;
+  sourceDraftRevision: number;
+  definition: {
+    title: string;
+    description: string | null;
+    purpose:
+      | "application"
+      | "registration"
+      | "intake"
+      | "waiver"
+      | "feedback"
+      | "survey";
+    defaultTargetKind: "organizer" | "event" | "campaign";
+    defaultTargetId: string | null;
+    identityPolicy:
+      | "anonymous"
+      | "emailVerified"
+      | "phoneVerified"
+      | "emailOrPhoneVerified"
+      | "catchAccount";
+    /**
+     * @minItems 1
+     * @maxItems 40
+     */
+    sections: {
+      sectionId: string;
+      title: string;
+      description: string | null;
+      pageBreak: boolean;
+      /**
+       * @maxItems 100
+       */
+      questions: {
+        questionId: string;
+        key: string;
+        label: string;
+        helpText: string | null;
+        kind:
+          | "shortText"
+          | "longText"
+          | "singleChoice"
+          | "multiChoice"
+          | "date"
+          | "phone"
+          | "email"
+          | "url"
+          | "number"
+          | "boolean"
+          | "file"
+          | "acknowledgement"
+          | "signature";
+        required: boolean;
+        /**
+         * @maxItems 100
+         */
+        options: {
+          optionId: string;
+          label: string;
+          value: string;
+        }[];
+        canonicalFieldId:
+          | (
+              | "givenName"
+              | "familyName"
+              | "displayName"
+              | "dateOfBirth"
+              | "age"
+              | "gender"
+              | "phoneNumber"
+              | "email"
+              | "instagramHandle"
+              | "linkedinUrl"
+              | "profilePhoto"
+              | "city"
+              | "heightCm"
+              | "occupation"
+              | "company"
+              | "education"
+              | "languages"
+              | "relationshipGoal"
+              | "interestedInGenders"
+              | "drinking"
+              | "smoking"
+              | "religion"
+              | "workout"
+              | "diet"
+              | "children"
+            )
+          | null;
+        privacyClass: "contact" | "profile" | "sensitive" | "organizerCustom";
+        prefillPolicy: "never" | "participantReviewRequired";
+        hostPresentation: "detailOnly" | "filterable" | "sortable";
+        validation: {
+          minLength: number | null;
+          maxLength: number | null;
+          minNumber: number | null;
+          maxNumber: number | null;
+          earliestDate: string | null;
+          latestDate: string | null;
+          minSelections: number | null;
+          maxSelections: number | null;
+          maxFileCount: number | null;
+          maxFileSizeBytes: number | null;
+          /**
+           * @maxItems 20
+           */
+          allowedMimeTypes: string[];
+          patternPreset:
+            | null
+            | "lettersAndSpaces"
+            | "alphanumeric"
+            | "postalCode"
+            | "handle";
+          customError: string | null;
+        };
+      }[];
+    }[];
+    /**
+     * @maxItems 100
+     */
+    logicRules: {
+      ruleId: string;
+      conditionMode: "all" | "any";
+      /**
+       * @minItems 1
+       * @maxItems 20
+       */
+      conditions: {
+        questionId: string;
+        operator:
+          | "equals"
+          | "notEquals"
+          | "contains"
+          | "notContains"
+          | "greaterThan"
+          | "lessThan"
+          | "answered"
+          | "notAnswered";
+        /**
+         * @maxItems 20
+         */
+        expectedValues: (string | number | boolean)[];
+      }[];
+      action:
+        | "showQuestion"
+        | "hideQuestion"
+        | "showSection"
+        | "hideSection"
+        | "routeToSection"
+        | "finish";
+      targetQuestionId: string | null;
+      targetSectionId: string | null;
+    }[];
+    appearance: {
+      preset: "editorial" | "minimal" | "activity";
+      logoAssetId: string | null;
+      coverAssetId: string | null;
+      activityKind: string | null;
+    };
+    availability: {
+      opensAt: FirebaseFirestore.Timestamp | null;
+      closesAt: FirebaseFirestore.Timestamp | null;
+      responseLimit: number | null;
+      closedMessage: string | null;
+    };
+    consent: {
+      consentCopy: string;
+      consentVersion: string;
+      retentionCopy: string;
+    };
+    completion: {
+      title: string;
+      message: string | null;
+      actionKind: "none" | "externalUrl" | "event" | "eventRuntime";
+      actionLabel: string | null;
+      actionUrl: string | null;
+    };
+  };
+  createdByUid: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  publishedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Expiring version-bound respondent autosave state.
+ */
+export interface OrganizerFormResponseDraftDocument {
+  organizerId: string;
+  formId: string;
+  versionId: string;
+  publicFormId: string;
+  status: "active" | "submitted" | "expired" | "withdrawn";
+  revision: number;
+  identityKind:
+    | "anonymous"
+    | "emailVerified"
+    | "phoneVerified"
+    | "catchAccount";
+  respondentUid: string | null;
+  draftTokenHash: string | null;
+  answers: {
+    [k: string]: string | number | boolean | null | string[];
+  };
+  consentAccepted: boolean;
+  consentVersion: string;
+  sourceLinkId: string | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+  submittedResponseId: string | null;
+}
+
+/**
+ * Immutable submitted response envelope with withdrawal state.
+ */
+export interface OrganizerFormResponseDocument {
+  organizerId: string;
+  formId: string;
+  versionId: string;
+  publicFormId: string;
+  draftId: string;
+  status: "submitted" | "withdrawn";
+  identityKind:
+    | "anonymous"
+    | "emailVerified"
+    | "phoneVerified"
+    | "catchAccount";
+  respondentUid: string | null;
+  identity: {
+    displayName: string | null;
+    email: string | null;
+    phoneE164: string | null;
+    searchName: string | null;
+    origin: "anonymous" | "respondentGranted" | "organizerAcquired";
+  };
+  withdrawalTokenHash: string | null;
+  answers: {
+    [k: string]: string | number | boolean | null | string[];
+  };
+  /**
+   * @maxItems 4000
+   */
+  answerSnapshots: {
+    questionId: string;
+    key: string;
+    label: string;
+    kind:
+      | "shortText"
+      | "longText"
+      | "singleChoice"
+      | "multiChoice"
+      | "date"
+      | "phone"
+      | "email"
+      | "url"
+      | "number"
+      | "boolean"
+      | "file"
+      | "acknowledgement"
+      | "signature";
+    answer: string | number | boolean | null | string[];
+  }[];
+  consentVersion: string;
+  sourceLinkId: string | null;
+  completionMillis: number;
+  submittedAt: FirebaseFirestore.Timestamp;
+  withdrawnAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Version- and draft-scoped metadata for private respondent uploads; bytes remain in protected Storage.
+ */
+export interface OrganizerFormAssetDocument {
+  organizerId: string;
+  formId: string;
+  versionId: string;
+  draftId: string;
+  questionId: string;
+  respondentUid: string | null;
+  uploadTokenHash: string;
+  storagePath: string;
+  originalFileName: string;
+  contentType: "image/jpeg" | "image/png" | "image/webp" | "application/pdf";
+  declaredSizeBytes: number;
+  declaredSha256: string;
+  sizeBytes: number | null;
+  status: "uploading" | "ready" | "rejected" | "deleted";
+  createdAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+  finalizedAt: FirebaseFirestore.Timestamp | null;
+  deletedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Precomputed form/version funnel or privacy-aware question aggregate.
+ */
+export interface OrganizerFormAggregateDocument {
+  organizerId: string;
+  formId: string;
+  versionId: string;
+  scope: "version" | "question";
+  questionId: string | null;
+  questionLabel: string | null;
+  questionKind:
+    | (
+        | "shortText"
+        | "longText"
+        | "singleChoice"
+        | "multiChoice"
+        | "date"
+        | "phone"
+        | "email"
+        | "url"
+        | "number"
+        | "boolean"
+        | "file"
+        | "acknowledgement"
+        | "signature"
+      )
+    | null;
+  privacyClass: null | "contact" | "profile" | "sensitive" | "organizerCustom";
+  opens: number;
+  starts: number;
+  submissions: number;
+  withdrawals: number;
+  completionMillisTotal: number;
+  /**
+   * @maxItems 12
+   */
+  completionBuckets: {
+    upperBoundMillis: number;
+    count: number;
+  }[];
+  /**
+   * @maxItems 100
+   */
+  choiceCounts: {
+    value: string | boolean;
+    label: string;
+    count: number;
+  }[];
+  numericCount: number;
+  numericSum: number;
+  numericMin: number | null;
+  numericMax: number | null;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Idempotency marker for one aggregate projection event.
+ */
+export interface OrganizerFormAggregateEventDocument {
+  organizerId: string;
+  formId: string;
+  versionId: string;
+  responseId: string;
+  eventKind: "submitted" | "withdrawn";
+  projectedAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Asynchronous, expiring, manager-requested form response export receipt.
+ */
+export interface OrganizerFormExportDocument {
+  organizerId: string;
+  formId: string;
+  requestedByUid: string;
+  requestId: string;
+  format: "csv" | "xlsx";
+  /**
+   * @minItems 1
+   * @maxItems 2
+   */
+  statuses: ("submitted" | "withdrawn")[];
+  versionId: string | null;
+  fromMillis: number | null;
+  toMillis: number | null;
+  status: "pending" | "running" | "completed" | "failed" | "expired";
+  rowCount: number;
+  storagePath: string | null;
+  errorCode: string | null;
+  errorMessage: string | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  completedAt: FirebaseFirestore.Timestamp | null;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Manager-authored, revisioned, explicit form automation.
+ */
+export interface OrganizerFormAutomationRuleDocument {
+  organizerId: string;
+  formId: string;
+  name: string;
+  enabled: boolean;
+  revision: number;
+  trigger: "responseSubmitted" | "responseWithdrawn" | "answerMatches";
+  condition: {
+    questionId: string;
+    operator:
+      | "equals"
+      | "notEquals"
+      | "contains"
+      | "notContains"
+      | "greaterThan"
+      | "lessThan"
+      | "answered"
+      | "notAnswered";
+    /**
+     * @maxItems 20
+     */
+    expectedValues: (string | number | boolean)[];
+  } | null;
+  /**
+   * @minItems 1
+   * @maxItems 10
+   */
+  actions: {
+    actionId: string;
+    kind:
+      | "notifyTeam"
+      | "addOrganizerTag"
+      | "createCrmContact"
+      | "addApplicationQueue"
+      | "proposeEventAttendee"
+      | "signedWebhook"
+      | "campaignHandoff";
+    tagId: string | null;
+    eventId: string | null;
+    webhookUrl: string | null;
+    webhookSecret: string | null;
+    channel: null | "whatsapp" | "email";
+  }[];
+  createdByUid: string;
+  updatedByUid: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Idempotent, observable execution of one rule revision for one response event.
+ */
+export interface OrganizerFormAutomationRunDocument {
+  organizerId: string;
+  formId: string;
+  ruleId: string;
+  ruleRevision: number;
+  responseId: string;
+  eventKind: "submitted" | "withdrawn";
+  status:
+    | "pending"
+    | "running"
+    | "succeeded"
+    | "partiallyFailed"
+    | "failed"
+    | "skipped";
+  attemptCount: number;
+  /**
+   * @maxItems 10
+   */
+  actionResults: {
+    actionId: string;
+    kind:
+      | "notifyTeam"
+      | "addOrganizerTag"
+      | "createCrmContact"
+      | "addApplicationQueue"
+      | "proposeEventAttendee"
+      | "signedWebhook"
+      | "campaignHandoff";
+    status: "succeeded" | "failed" | "skipped";
+    resultId: string | null;
+    errorCode: string | null;
+  }[];
+  errorCode: string | null;
+  errorMessage: string | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  completedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Idempotent reviewed downstream conversion and safe-undo boundary.
+ */
+export interface OrganizerFormConversionReceiptDocument {
+  organizerId: string;
+  formId: string;
+  responseId: string;
+  kind: "crmContact" | "application" | "eventAttendeeProposal" | "followUp";
+  requestId: string;
+  actorUid: string;
+  status: "pending" | "completed" | "failed";
+  /**
+   * @maxItems 100
+   */
+  fields: {
+    destinationField: string;
+    label: string;
+    value: string | number | boolean | null;
+    origin: "verifiedIdentity" | "formAnswer" | "hostOverride";
+    conflict: string | null;
+  }[];
+  resultId: string | null;
+  undoStatus: "notAvailable" | "available" | "used" | "expired";
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  completedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Organizer-owned source-attributed stable public form link.
+ */
+export interface OrganizerFormShareLinkDocument {
+  organizerId: string;
+  formId: string;
+  publicFormId: string;
+  label: string;
+  source: string | null;
+  tokenHash: string;
+  createdByUid: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  openCount: number;
+  startCount: number;
+  submissionCount: number;
+}
+
+/**
  * Organizer-scoped application review summary with no provider-specific answer shape.
  */
 export interface OrganizerApplicationDocument {
@@ -4713,6 +5467,7 @@ export interface ActivityNotificationDocument {
     | "eventUpdated"
     | "clubUpdate"
     | "organizerUpdate"
+    | "formResponse"
     | "crossPathsInvitation"
     | "crossPathsInvitationAccepted"
     | "crossPathsInvitationDeclined"

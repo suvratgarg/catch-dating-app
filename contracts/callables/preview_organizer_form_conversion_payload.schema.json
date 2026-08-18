@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/preview_organizer_form_conversion_payload.schema.json",
+  "title": "PreviewOrganizerFormConversionCallablePayload",
+  "description": "Reviews one proposed downstream conversion without writing.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["organizerId", "responseId", "kind", "eventId", "overrides"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "responseId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "kind": {"$ref": "../shared/organizer_form_operations_common.schema.json#/definitions/conversionKind"},
+    "eventId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
+    "overrides": {"type": "object", "maxProperties": 20, "additionalProperties": {"type": ["string", "number", "boolean", "null"]}}
+  }
+}

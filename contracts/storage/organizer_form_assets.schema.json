@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/storage/organizer_form_assets.schema.json",
+  "title": "OrganizerFormAssetsStoragePath",
+  "description": "Private respondent-uploaded form assets stored at organizerForms/{formId}/{draftId}/{assetId}. Upload and download access is granted only through short-lived backend-signed policies and URLs.",
+  "type": "object",
+  "x-storage-rules-match": "match /organizerForms/{formId}/{draftId}/{assetId}",
+  "x-storage-read": "server-signed URL only (direct client reads denied)",
+  "x-storage-write": "server-signed POST policy only (direct client writes denied)",
+  "x-storage-content-type-pattern": "^(image/jpeg|image/png|image/webp|application/pdf)$",
+  "x-storage-max-bytes": 26214400,
+  "x-storage-rules-test-file": "functions/test/storage.rules.test.cjs",
+  "x-storage-related-collection": "organizerFormAssets",
+  "x-storage-known-consumers": [
+    "functions/src/organizers/organizerFormResponses.ts",
+    "functions/src/organizers/organizerFormOperations.ts"
+  ],
+  "properties": {
+    "formId": {
+      "type": "string",
+      "description": "Organizer form document id; path segment."
+    },
+    "draftId": {
+      "type": "string",
+      "description": "Respondent draft document id; path segment."
+    },
+    "assetId": {
+      "type": "string",
+      "description": "Deterministic upload-intent asset id; path segment."
+    }
+  }
+}

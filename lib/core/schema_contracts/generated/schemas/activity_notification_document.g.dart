@@ -52,6 +52,7 @@ const schemaActivityNotificationDocumentSchema = <String, Object?>{
         'eventUpdated',
         'clubUpdate',
         'organizerUpdate',
+        'formResponse',
         'crossPathsInvitation',
         'crossPathsInvitationAccepted',
         'crossPathsInvitationDeclined',

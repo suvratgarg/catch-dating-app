@@ -509,6 +509,7 @@ enum AppShellNavigationDestination {
   consumerProfile,
   hostEvents,
   hostCustomers,
+  hostForms,
   hostInbox,
   hostOrganizer;
 
@@ -521,6 +522,7 @@ enum AppShellNavigationDestination {
       l10n.consumerNavigationProfile,
     AppShellNavigationDestination.hostEvents => l10n.hostNavigationEvents,
     AppShellNavigationDestination.hostCustomers => l10n.hostNavigationCustomers,
+    AppShellNavigationDestination.hostForms => l10n.hostNavigationForms,
     AppShellNavigationDestination.hostInbox => l10n.hostNavigationInbox,
     AppShellNavigationDestination.hostOrganizer => l10n.hostNavigationOrganizer,
   };

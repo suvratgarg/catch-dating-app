@@ -10,7 +10,7 @@ Global concurrency ceiling is 50 (`maxInstances` in `src/index.ts`).
 Per-function overrides can be added to individual `onCall` / `onDocumentCreated`
 options when specific functions need higher or lower limits.
 
-## Function inventory (July 2026)
+## Function inventory (August 2026)
 
 ### Callable (client-invoked)
 
@@ -49,6 +49,14 @@ options when specific functions need higher or lower limits.
 | `getOrganizerCrmSummary` | `src/organizers/organizerCrm.ts` | Privacy-bounded, deduplicated past-attendee and channel-readiness counts for organizer managers |
 | `publishOrganizerApplicationForm` / `previewOrganizerApplicationImport` / `importOrganizerApplications` / `listOrganizerApplications` / `getOrganizerApplicationDetail` / `reviewOrganizerApplication` | `src/organizers/organizerApplications.ts` | Provider-neutral Host application publishing, mapping, import, exact-grant-aware review queue and optimistic review actions |
 | `getParticipantOrganizerApplicationForm` / `submitParticipantOrganizerApplication` / `revokeParticipantOrganizerDataGrant` | `src/organizers/participantOrganizerApplications.ts` | Phone-authenticated private prefill review, native submission with an exact organizer grant, and participant-owned revocation |
+| `createOrganizerForm` / `updateOrganizerFormDraft` / `getOrganizerFormEditor` / `listOrganizerForms` / `validateOrganizerFormDraft` / `publishOrganizerForm` / `setOrganizerFormLifecycle` / `duplicateOrganizerForm` / `deleteOrganizerFormDraft` / `listOrganizerFormTemplates` | `src/organizers/organizerForms.ts` | Create, edit, validate, publish, paginate, duplicate, pause, archive, and safely delete eligible standalone Host forms and drafts |
+| `getPublicOrganizerForm` / `beginOrganizerFormResponse` / `saveOrganizerFormResponseDraft` / `submitOrganizerFormResponse` / `withdrawOrganizerFormResponse` | `src/organizers/organizerForms.ts` | Resolve bounded public form versions and run app-free, revisioned, idempotent respondent draft, submit, and withdrawal workflows |
+| `createOrganizerFormAssetIntent` / `finalizeOrganizerFormAsset` | `src/organizers/organizerFormAssets.ts` | Authorize and finalize form/version/question-scoped respondent uploads without exposing raw Storage authority |
+| `createOrganizerFormShareLink` / `getOrganizerFormShareAssets` | `src/organizers/organizerFormDistribution.ts` | Create opaque attributed links and return canonical link, QR, print, and embed assets for a published form |
+| `listOrganizerFormResponses` / `getOrganizerFormResponseDetail` / `getOrganizerFormAnalytics` | `src/organizers/organizerFormOperations.ts` | Page, inspect, and aggregate immutable form responses through organizer-authorized projections without screen-time response scans |
+| `requestOrganizerFormExport` | `src/organizers/organizerFormExports.ts` | Create an auditable asynchronous CSV or XLSX export request with a bounded, expiring result |
+| `createOrganizerFormAutomation` / `setOrganizerFormAutomationState` / `listOrganizerFormAutomationRuns` | `src/organizers/organizerFormAutomations.ts` | Configure explicit revisioned automation rules, enable or disable them, and page through idempotent run receipts |
+| `previewOrganizerFormConversion` / `convertOrganizerFormResponse` | `src/organizers/organizerFormConversions.ts` | Preview and apply reviewed, idempotent response conversions into authorized application, CRM, or event-roster records |
 | `getEventRosterInsights` | `src/organizers/eventRosterInsights.ts` | Manager-only, event-relative customer labels for the live operational roster; incomplete identity/history fails closed and spend is limited to completed Catch payments |
 | `listOrganizerContacts` / `getOrganizerContactDetail` / `createOrganizerContact` / `mutateOrganizerContact` / `createOrganizerContactNote` / `mutateOrganizerContactNote` / `exportOrganizerContacts` | `src/organizers/organizerContacts.ts` | Search, inspect, manually add, safely update, append/edit author-stamped notes, and export the organizer-owned audience directory; notes never enter exports |
 | `startOrganizerContactConversation` | `src/clubs/clubHostConversations.ts` | Start or resume a conversation with a verified, unambiguous linked organizer contact |
@@ -136,6 +144,9 @@ options when specific functions need higher or lower limits.
 | `onEventAttendeeAudienceProjected` | `src/organizers/organizerAudienceProjection.ts` | Event attendee writes project organizer-scoped contact and attendance history |
 | `onOrganizerCommunicationPreferenceAudienceProjected` | `src/organizers/organizerAudienceProjection.ts` | Organizer communication preferences update consent-safe audience reachability |
 | `onOrganizerContactEventEdgeInviteAttributed` | `src/events/eventInviteAttributionProjection.ts` | Verified invite outcomes update contact advocacy evidence |
+| `onOrganizerFormResponseAggregated` | `src/organizers/organizerFormOperations.ts` | Projects submitted and withdrawn response transitions into precomputed form, source, and question aggregates |
+| `onOrganizerFormResponseAutomated` | `src/organizers/organizerFormAutomations.ts` | Evaluates enabled versioned form rules once for each submitted or withdrawn response transition and records sanitized action results |
+| `onOrganizerFormExportRequested` | `src/organizers/organizerFormExports.ts` | Materializes an authorized asynchronous form export and stores a time-bounded download receipt |
 | `onOrganizerMessagingWebhookEventCreated` | `src/organizers/organizerWhatsappWebhook.ts` | Authenticated provider receipts update campaign delivery projections without retaining message bodies |
 | `moderateChatMessage` | `src/moderation/` | `matches/{id}/messages/{id}` onCreate — banned-word filter |
 

@@ -1,7 +1,7 @@
 {
   "$schema": "./website.components.schema.json",
-  "version": 93,
-  "updated": "2026-08-11",
+  "version": 94,
+  "updated": "2026-08-18",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/marketing_website_architecture.md",
@@ -15,6 +15,7 @@
       "home",
       "host",
       "event_runtime",
+      "public_form",
       "claim",
       "claim_lookup",
       "privacy",
@@ -40,6 +41,7 @@
         "home",
         "host",
         "event_runtime",
+        "public_form",
         "claim",
         "claim_lookup",
         "privacy",
@@ -3086,6 +3088,52 @@
         ]
       },
       "notes": "Noindex opaque invitation landing for private and public operational events; records one deduplicated open before an external, Catch registration, or event-runtime handoff."
+    },
+    {
+      "id": "route_public_form",
+      "kind": "route",
+      "routeIds": [
+        "public_form"
+      ],
+      "owner": "features/forms",
+      "source": "website/src/features/forms/PublicFormPage.tsx",
+      "exportName": "PublicFormPage",
+      "css": [
+        "website/src/styles/public-forms.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "identity",
+          "questions",
+          "review",
+          "complete",
+          "unavailable"
+        ]
+      },
+      "notes": "Opaque public organizer form respondent route with app-free verification, autosave, review, submission, and withdrawal."
+    },
+    {
+      "id": "shared_public_form_shells",
+      "kind": "supporting-component",
+      "routeIds": [
+        "public_form"
+      ],
+      "owner": "shared/ui/primitives",
+      "source": "website/src/shared/ui/primitives/publicForms.tsx",
+      "exportName": "PublicFormFrame",
+      "css": [
+        "website/src/styles/public-forms.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "frame",
+          "question-section",
+          "review"
+        ]
+      },
+      "notes": "Governed visual primitives for the public form frame, question sections, choices, progress, consent, and response review."
     }
   ]
 }

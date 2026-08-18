@@ -106,6 +106,33 @@ describe("storage.rules", () => {
     await testEnv.cleanup();
   });
 
+  describe("organizer form private objects", () => {
+    it("denies direct reads and writes for respondent assets and exports", async () => {
+      const assetPath = "organizerForms/form-1/draft-1/asset-1";
+      const exportPath = "organizer-form-exports/organizer-1/export-1.csv";
+
+      await assertFails(uploadImage(authedStorage("runner-1"), assetPath));
+      await assertFails(uploadImage(unauthenticatedStorage(), assetPath));
+      await assertFails(uploadImage(authedStorage("host-1"), exportPath));
+      await assertFails(uploadImage(unauthenticatedStorage(), exportPath));
+
+      await seedStorageFile(assetPath);
+      await seedStorageFile(exportPath);
+      await assertFails(
+        authedStorage("runner-1").ref(assetPath).getMetadata(),
+      );
+      await assertFails(
+        unauthenticatedStorage().ref(assetPath).getMetadata(),
+      );
+      await assertFails(
+        authedStorage("host-1").ref(exportPath).getMetadata(),
+      );
+      await assertFails(
+        unauthenticatedStorage().ref(exportPath).getMetadata(),
+      );
+    });
+  });
+
   describe("chat images", () => {
     it("allows active match participants to upload using user1Id/user2Id", async () => {
       await seedFirestore(["matches", "match-1"], match());

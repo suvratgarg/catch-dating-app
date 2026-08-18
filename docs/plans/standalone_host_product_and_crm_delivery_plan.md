@@ -8,6 +8,16 @@ status: active
 
 # Standalone Host Product And Implementation Specification
 
+## Forms Product Owner
+
+The generic Host Forms product is specified in
+`docs/plans/host_forms_product_spec.md`. That specification owns form lifecycle,
+builder and template behavior, the app-free respondent route, distribution,
+responses, analytics, exports, automations, and reviewed downstream conversion.
+This document continues to own the broader standalone Host capability and
+consent model. Applications remain one Forms purpose with a review projection;
+they are not the generic response model.
+
 ## Decision
 
 Catch for Hosts is a first-class operations, reputation, audience, publishing,

@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_organizer_form_responses_payload.schema.json",
+  "title": "ListOrganizerFormResponsesCallablePayload",
+  "description": "Manager-authorized bounded response inbox query.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["organizerId", "formId", "versionId", "statuses", "identityKinds", "sourceLinkId", "query", "fromMillis", "toMillis", "cursor", "limit"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "formId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
+    "versionId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
+    "statuses": {"type": "array", "maxItems": 2, "uniqueItems": true, "items": {"$ref": "../shared/organizer_form_response_common.schema.json#/definitions/responseStatus"}},
+    "identityKinds": {"type": "array", "maxItems": 4, "uniqueItems": true, "items": {"$ref": "../shared/organizer_form_response_common.schema.json#/definitions/responseIdentityKind"}},
+    "sourceLinkId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
+    "query": {"type": ["string", "null"], "maxLength": 160},
+    "fromMillis": {"type": ["integer", "null"], "minimum": 0, "maximum": 9007199254740991},
+    "toMillis": {"type": ["integer", "null"], "minimum": 0, "maximum": 9007199254740991},
+    "cursor": {"type": ["string", "null"], "maxLength": 1000},
+    "limit": {"type": "integer", "minimum": 1, "maximum": 100}
+  }
+}

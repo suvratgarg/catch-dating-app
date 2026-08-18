@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_forms.schema.json",
+  "title": "OrganizerFormDocument",
+  "description": "Organizer-owned generic form metadata and lifecycle. Editable content lives in a draft and published content in immutable versions.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerForms",
+  "x-firestore-path": "organizerForms/{formId}",
+  "x-document-id-field": "formId",
+  "x-owner": "organizer form management callables",
+  "required": ["organizerId", "createdByUid", "title", "description", "purpose", "status", "templateId", "publicFormId", "defaultTargetKind", "defaultTargetId", "activeVersionId", "draftRevision", "publishedVersion", "submittedResponseCount", "createdAt", "updatedAt", "publishedAt", "pausedAt", "archivedAt", "lastResponseAt"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "createdByUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "title": {"type": "string", "minLength": 1, "maxLength": 160},
+    "description": {"type": ["string", "null"], "maxLength": 1000},
+    "purpose": {"$ref": "../shared/organizer_form_common.schema.json#/definitions/formPurpose"},
+    "status": {"$ref": "../shared/organizer_form_common.schema.json#/definitions/formLifecycleStatus"},
+    "templateId": {"type": ["string", "null"], "minLength": 1, "maxLength": 120},
+    "publicFormId": {"type": "string", "pattern": "^[A-Za-z0-9_-]{20,80}$"},
+    "defaultTargetKind": {"$ref": "../shared/organizer_form_common.schema.json#/definitions/targetKind"},
+    "defaultTargetId": {
+      "anyOf": [
+        {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        {"type": "null"}
+      ]
+    },
+    "activeVersionId": {
+      "anyOf": [
+        {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        {"type": "null"}
+      ]
+    },
+    "draftRevision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "publishedVersion": {"type": "integer", "minimum": 0, "maximum": 1000000},
+    "submittedResponseCount": {"type": "integer", "minimum": 0, "maximum": 1000000000},
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "publishedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+    "pausedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+    "archivedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+    "lastResponseAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"}
+  }
+}

@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.31.0
-updated: 2026-08-17
+version: 1.32.0
+updated: 2026-08-18
 owner: recursive_audit_loop
 status: active
 ---
@@ -882,6 +882,49 @@ rebuild the event edge, contact, traits, identity evidence and audience summary;
 the repair verifies that postcondition and removes only orphaned phone claims.
 It never deletes an attendee, event, organizer contact, or organizer-supplied
 contact fact, and never prints raw contact values.
+
+### Generic Organizer Forms
+
+`organizerForms/{formId}` owns generic Host form identity, target, lifecycle,
+response counters, stable opaque `publicFormId`, and pointers to editable and
+published content. `organizerFormDrafts/{formId}` owns the mutable definition
+under an optimistic revision. Publishing copies that definition into immutable
+`organizerFormVersions/{formId_vN}` and records `sourceDraftRevision`; an exact
+retry reuses the active version instead of incrementing publication history.
+
+`organizerFormResponseDrafts/{draftId}` stores a version-bound, expiring
+respondent session with optimistic answer revisions. A submitted session
+becomes one immutable `organizerFormResponses/{responseId}` snapshot containing
+the published question identities, validated answers, submission consent, and
+source-link attribution. An exact submit retry replays the same response;
+withdrawal stamps that response instead of deleting the audit record.
+`organizerFormShareLinks/{linkId}` owns organizer-created source tokens and
+bounded attribution counters. A source token changes measurement only; it
+never grants form-management, response, or Firestore authority.
+
+All six collections are server-only. Organizer managers create, update,
+validate, publish, pause, resume, archive, duplicate, delete eligible drafts,
+and list bounded projections through App-Check-protected callables. Form lists
+use the `organizerId + updatedAt desc + __name__ desc` index and opaque cursors;
+archived forms are excluded by default. A `publicFormId` is a routing token,
+not permission to read Firestore. The public `/f/:publicFormId/` route uses
+callables for a safe active-version projection, anonymous or verified identity
+bootstrap, autosave, submit, and withdrawal. Public reads never return draft
+content, organizer-only metadata, other respondents, or response counters.
+
+`contracts/catalogs/organizer_form_templates.json` is versioned source data.
+Creating from a template copies it into organizer-owned draft state with new
+section, question, and option identities, so catalog changes never mutate an
+existing form. Duplicating a form remaps all nested identities and logic
+references. The shared semantic validator permits invalid work-in-progress
+drafts but blocks publication on identity collisions, invalid field/validation
+combinations, stale logic references, backward section routes, target errors,
+and purpose-specific requirements.
+
+Generic Forms is the source for application, registration, intake, waiver,
+feedback, and survey definitions. The existing application collections below
+remain the application-review projection and import compatibility boundary;
+they are not the generic response store.
 
 ### Organizer Application Intake
 

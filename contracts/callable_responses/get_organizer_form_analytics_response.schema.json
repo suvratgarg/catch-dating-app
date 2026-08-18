@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_organizer_form_analytics_response.schema.json",
+  "title": "GetOrganizerFormAnalyticsCallableResponse",
+  "description": "Privacy-aware precomputed form funnel and compatible question aggregates.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["organizerId", "formId", "versionId", "version", "opens", "starts", "submissions", "withdrawals", "completionRate", "medianCompletionMillis", "questions", "sources", "privacyThreshold"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "formId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "versionId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "version": {"type": "integer", "minimum": 1, "maximum": 1000000},
+    "opens": {"type": "integer", "minimum": 0, "maximum": 1000000000},
+    "starts": {"type": "integer", "minimum": 0, "maximum": 1000000000},
+    "submissions": {"type": "integer", "minimum": 0, "maximum": 1000000000},
+    "withdrawals": {"type": "integer", "minimum": 0, "maximum": 1000000000},
+    "completionRate": {"type": "number", "minimum": 0, "maximum": 1},
+    "medianCompletionMillis": {"type": ["integer", "null"], "minimum": 0, "maximum": 604800000},
+    "questions": {"type": "array", "maxItems": 200, "items": {"$ref": "../shared/organizer_form_operations_common.schema.json#/definitions/questionAggregate"}},
+    "sources": {"type": "array", "maxItems": 200, "items": {"$ref": "../shared/organizer_form_operations_common.schema.json#/definitions/sourceFunnel"}},
+    "privacyThreshold": {"type": "integer", "minimum": 1, "maximum": 100}
+  }
+}

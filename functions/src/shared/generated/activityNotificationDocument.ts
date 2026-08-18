@@ -20,6 +20,7 @@ export interface ActivityNotificationDocument {
     | "eventUpdated"
     | "clubUpdate"
     | "organizerUpdate"
+    | "formResponse"
     | "crossPathsInvitation"
     | "crossPathsInvitationAccepted"
     | "crossPathsInvitationDeclined"

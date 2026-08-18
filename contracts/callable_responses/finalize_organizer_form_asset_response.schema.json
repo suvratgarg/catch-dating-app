@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/finalize_organizer_form_asset_response.schema.json",
+  "title": "FinalizeOrganizerFormAssetCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["assetId", "status", "sizeBytes"],
+  "properties": {
+    "assetId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "status": {"type": "string", "enum": ["ready"]},
+    "sizeBytes": {"type": "integer", "minimum": 1, "maximum": 26214400}
+  }
+}

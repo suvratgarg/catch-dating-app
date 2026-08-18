@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/save_organizer_form_response_draft_payload.schema.json",
+  "title": "SaveOrganizerFormResponseDraftCallablePayload",
+  "description": "Optimistically saves respondent answers without file bytes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["draftId", "draftToken", "expectedRevision", "answers", "consentAccepted"],
+  "properties": {
+    "draftId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "draftToken": {"type": ["string", "null"], "pattern": "^[A-Za-z0-9_-]{32,160}$"},
+    "expectedRevision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "answers": {"$ref": "../shared/organizer_form_response_common.schema.json#/definitions/answerMap"},
+    "consentAccepted": {"type": "boolean"}
+  }
+}

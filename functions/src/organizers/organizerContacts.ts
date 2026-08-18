@@ -288,18 +288,45 @@ export async function createOrganizerContactHandler(
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "mutateOrganizerContact");
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
+  return createOrganizerContactRecord({
+    db,
+    organizerId: data.organizerId,
+    actorUid,
+    displayName: data.displayName,
+    phoneE164: data.phoneE164 ?? null,
+    email: data.email ?? null,
+    initialNote: data.initialNote ?? null,
+    identitySecret: data.phoneE164 || data.email ? deps.identitySecret() : null,
+  });
+}
 
-  const now = admin.firestore.Timestamp.now();
-  const contactRef = db.collection("organizerContacts").doc();
-  const traitRef = db.collection("organizerContactTraits").doc(contactRef.id);
-  const summaryRef = db.collection("organizerAudienceSummaries")
-    .doc(data.organizerId);
+/** Creates one optionally deterministic organizer-only CRM record. */
+export async function createOrganizerContactRecord(params: {
+  db: FirebaseFirestore.Firestore;
+  organizerId: string;
+  actorUid: string;
+  displayName: string;
+  phoneE164: string | null;
+  email: string | null;
+  initialNote: string | null;
+  identitySecret: string | null;
+  contactId?: string;
+  now?: FirebaseFirestore.Timestamp;
+}): Promise<CreateOrganizerContactCallableResponse> {
+  const now = params.now ?? admin.firestore.Timestamp.now();
+  const contactRef = params.contactId ?
+    params.db.collection("organizerContacts").doc(params.contactId) :
+    params.db.collection("organizerContacts").doc();
+  const traitRef = params.db.collection("organizerContactTraits")
+    .doc(contactRef.id);
+  const summaryRef = params.db.collection("organizerAudienceSummaries")
+    .doc(params.organizerId);
   const manualEvidenceAttendeeId = manualContactEvidenceAttendeeId(
     contactRef.id
   );
   const revision = Math.max(1, now.toMillis());
   const trait: OrganizerContactTraitDocument = {
-    organizerId: data.organizerId,
+    organizerId: params.organizerId,
     contactId: contactRef.id,
     expectedEventCount: 0,
     attendedEventCount: 0,
@@ -324,15 +351,15 @@ export async function createOrganizerContactHandler(
     computedAt: now,
   };
   const contact: OrganizerContactDocument = {
-    organizerId: data.organizerId,
-    displayName: data.displayName,
+    organizerId: params.organizerId,
+    displayName: params.displayName,
     displayNameOverride: null,
-    searchName: data.displayName.toLocaleLowerCase("en"),
+    searchName: params.displayName.toLocaleLowerCase("en"),
     linkedUid: null,
-    phoneE164: data.phoneE164 ?? null,
-    email: data.email ?? null,
+    phoneE164: params.phoneE164,
+    email: params.email,
     identityState: "unlinked",
-    identityConfidence: data.phoneE164 || data.email ? "proposed" :
+    identityConfidence: params.phoneE164 || params.email ? "proposed" :
       "eventOnly",
     primarySource: "hostManual",
     ambiguousCandidateContactIds: [],
@@ -352,45 +379,56 @@ export async function createOrganizerContactHandler(
     hiddenTraitSnapshot: null,
   };
   const identityLinks = manualContactIdentityLinks({
-    db,
-    organizerId: data.organizerId,
+    db: params.db,
+    organizerId: params.organizerId,
     contactId: contactRef.id,
     attendeeId: manualEvidenceAttendeeId,
-    phoneE164: data.phoneE164 ?? null,
-    email: data.email ?? null,
-    secret: data.phoneE164 || data.email ? deps.identitySecret() : null,
+    phoneE164: params.phoneE164,
+    email: params.email,
+    secret: params.identitySecret,
     now,
   });
-  const initialNoteRef = data.initialNote ?
-    db.collection("organizerContactNotes").doc() : null;
-  const initialNote: OrganizerContactNoteDocument | null = data.initialNote ? {
-    organizerId: data.organizerId,
-    contactId: contactRef.id,
-    authorUid: actorUid,
-    body: data.initialNote,
-    revision,
-    createdAt: now,
-    updatedAt: now,
-    updatedByUid: actorUid,
-  } : null;
+  const initialNoteRef = params.initialNote ?
+    params.db.collection("organizerContactNotes").doc() : null;
+  const initialNote: OrganizerContactNoteDocument | null =
+    params.initialNote ? {
+      organizerId: params.organizerId,
+      contactId: contactRef.id,
+      authorUid: params.actorUid,
+      body: params.initialNote,
+      revision,
+      createdAt: now,
+      updatedAt: now,
+      updatedByUid: params.actorUid,
+    } : null;
 
-  await db.runTransaction(async (tx) => {
-    const summarySnap = await tx.get(summaryRef);
+  await params.db.runTransaction(async (tx) => {
+    const [summarySnap, contactSnap] = await Promise.all([
+      tx.get(summaryRef),
+      tx.get(contactRef),
+    ]);
+    if (contactSnap.exists) {
+      const existing = contactSnap.data() as OrganizerContactDocument;
+      if (existing.organizerId !== params.organizerId) {
+        throw new HttpsError("already-exists", "Contact identity is in use.");
+      }
+      return;
+    }
     tx.create(contactRef, contact);
     tx.create(traitRef, trait);
     for (const link of identityLinks) tx.create(link.ref, link.data);
     if (initialNoteRef && initialNote) tx.create(initialNoteRef, initialNote);
     tx.set(summaryRef, summaryWithTrait(
-      data.organizerId,
+      params.organizerId,
       summarySnap.data() as OrganizerAudienceSummaryDocument | undefined,
       trait,
       now
     ));
   });
   return {
-    organizerId: data.organizerId,
+    organizerId: params.organizerId,
     contactId: contactRef.id,
-    displayName: data.displayName,
+    displayName: params.displayName,
     revision,
   };
 }

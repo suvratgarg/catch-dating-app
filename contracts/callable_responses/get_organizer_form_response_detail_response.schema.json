@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_organizer_form_response_detail_response.schema.json",
+  "title": "GetOrganizerFormResponseDetailCallableResponse",
+  "description": "One immutable response with classified answers and expiring asset downloads.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["response", "answers", "consentVersion", "completionMillis"],
+  "properties": {
+    "response": {"$ref": "../shared/organizer_form_operations_common.schema.json#/definitions/responseRow"},
+    "answers": {"type": "array", "maxItems": 200, "items": {"$ref": "../shared/organizer_form_operations_common.schema.json#/definitions/answerDetail"}},
+    "consentVersion": {"type": "string", "minLength": 1, "maxLength": 80},
+    "completionMillis": {"type": "integer", "minimum": 0, "maximum": 604800000}
+  }
+}

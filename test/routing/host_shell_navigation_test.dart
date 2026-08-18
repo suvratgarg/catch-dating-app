@@ -46,6 +46,7 @@ void main() {
           branches: [
             _branch('/host/events', 'EVENTS BODY'),
             _branch('/host/customers', 'CUSTOMERS BODY'),
+            _branch('/host/forms', 'FORMS BODY'),
             _branch('/host/inbox', 'INBOX BODY'),
             _branch('/host/organizer', 'ORGANIZER BODY'),
           ],
@@ -85,6 +86,7 @@ void main() {
       orderedEquals(const [
         AppShellNavigationDestination.hostEvents,
         AppShellNavigationDestination.hostCustomers,
+        AppShellNavigationDestination.hostForms,
         AppShellNavigationDestination.hostInbox,
         AppShellNavigationDestination.hostOrganizer,
       ]),
@@ -97,7 +99,7 @@ void main() {
     expect(navigationBar.items!.last.semanticValue, _organizer.name);
 
     await tester.longPress(
-      find.byKey(const ValueKey('app_shell.navigation.destination.3')),
+      find.byKey(const ValueKey('app_shell.navigation.destination.4')),
     );
     await pumpFeatureUi(tester);
     expect(
@@ -136,10 +138,16 @@ void main() {
       find.byKey(const ValueKey('app_shell.navigation.destination.2')),
     );
     await pumpFeatureUi(tester);
-    expect(find.text('INBOX BODY'), findsOneWidget);
+    expect(find.text('FORMS BODY'), findsOneWidget);
 
     await tester.tap(
       find.byKey(const ValueKey('app_shell.navigation.destination.3')),
+    );
+    await pumpFeatureUi(tester);
+    expect(find.text('INBOX BODY'), findsOneWidget);
+
+    await tester.tap(
+      find.byKey(const ValueKey('app_shell.navigation.destination.4')),
     );
     await pumpFeatureUi(tester);
     expect(find.text('ORGANIZER BODY'), findsOneWidget);
@@ -181,6 +189,7 @@ void main() {
                 ],
               ),
               _branch('/host/customers', 'CUSTOMERS BODY'),
+              _branch('/host/forms', 'FORMS BODY'),
               _branch('/host/inbox', 'INBOX BODY'),
               _branch('/host/organizer', 'ORGANIZER BODY'),
             ],
@@ -354,6 +363,7 @@ void main() {
             branches: [
               _branch('/host/events', 'EVENTS BODY'),
               _branch('/host/customers', 'CUSTOMERS BODY'),
+              _branch('/host/forms', 'FORMS BODY'),
               _branch('/host/inbox', 'INBOX BODY'),
               _branch('/host/organizer', 'ORGANIZER BODY'),
             ],
@@ -415,6 +425,7 @@ void main() {
         final expectedLabels = [
           'Events',
           'Customers',
+          'Forms',
           'Messaging',
           'Organizer',
         ];
@@ -431,6 +442,7 @@ void main() {
       } else {
         expect(find.bySemanticsLabel(RegExp('Events')), findsOneWidget);
         expect(find.bySemanticsLabel(RegExp('Customers')), findsOneWidget);
+        expect(find.bySemanticsLabel(RegExp('Forms')), findsOneWidget);
         expect(find.bySemanticsLabel(RegExp('Messaging')), findsOneWidget);
         expect(find.bySemanticsLabel(RegExp('Organizer')), findsOneWidget);
       }

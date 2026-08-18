@@ -988,6 +988,42 @@ describe("firestore.rules", () => {
       )));
     });
 
+    it("keeps organizer form state server-only", async () => {
+      await seed(["organizerForms", "form-1"], {
+        organizerId: "organizer-1",
+        title: "Private form metadata",
+      });
+      await seed(["organizerFormDrafts", "form-1"], {
+        organizerId: "organizer-1",
+        formId: "form-1",
+        revision: 1,
+      });
+      await seed(["organizerFormVersions", "form-1_v1"], {
+        organizerId: "organizer-1",
+        formId: "form-1",
+        version: 1,
+      });
+
+      for (const uid of ["owner-1", "owner-2"]) {
+        const db = authedDb(uid);
+        for (const [collectionName, documentId] of [
+          ["organizerForms", "form-1"],
+          ["organizerFormDrafts", "form-1"],
+          ["organizerFormVersions", "form-1_v1"],
+        ]) {
+          await assertFails(getDoc(doc(db, collectionName, documentId)));
+          await assertFails(updateDoc(
+            doc(db, collectionName, documentId),
+            {title: "Client mutation"},
+          ));
+        }
+      }
+      await assertFails(getDocs(query(
+        collection(authedDb("owner-1"), "organizerForms"),
+        where("organizerId", "==", "organizer-1"),
+      )));
+    });
+
     it("keeps contact merge review decisions callable-only", async () => {
       const reviewedAt = Timestamp.fromDate(
         new Date("2026-08-16T10:00:00.000Z"),

@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/validate_organizer_form_draft_response.schema.json",
+  "title": "ValidateOrganizerFormDraftCallableResponse",
+  "description": "Publish-readiness result from the canonical form validator.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["valid", "issues"],
+  "properties": {
+    "valid": {"type": "boolean"},
+    "issues": {"type": "array", "maxItems": 250, "items": {"$ref": "../shared/organizer_form_api_common.schema.json#/definitions/validationIssue"}}
+  }
+}

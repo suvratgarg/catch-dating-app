@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_form_automation_rules.schema.json",
+  "title": "OrganizerFormAutomationRuleDocument",
+  "description": "Manager-authored, revisioned, explicit form automation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["organizerId", "formId", "name", "enabled", "revision", "trigger", "condition", "actions", "createdByUid", "updatedByUid", "createdAt", "updatedAt"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "formId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "name": {"type": "string", "minLength": 1, "maxLength": 120},
+    "enabled": {"type": "boolean"},
+    "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "trigger": {"$ref": "../shared/organizer_form_operations_common.schema.json#/definitions/automationTrigger"},
+    "condition": {"anyOf": [{"$ref": "../shared/organizer_form_common.schema.json#/definitions/logicCondition"}, {"type": "null"}]},
+    "actions": {"type": "array", "minItems": 1, "maxItems": 10, "items": {"$ref": "../shared/organizer_form_operations_common.schema.json#/definitions/automationAction"}},
+    "createdByUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "updatedByUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+  },
+  "x-firestore-collection": "organizerFormAutomationRules",
+  "x-firestore-path": "organizerFormAutomationRules/{ruleId}",
+  "x-document-id-field": "ruleId",
+  "x-owner": "organizer form automation management"
+}

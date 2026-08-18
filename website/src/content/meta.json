@@ -27,6 +27,13 @@
       "twitterDescription": "A private event invitation powered by Catch.",
       "robots": "noindex, follow"
     },
+    "public_form": {
+      "title": "Organizer form | Catch",
+      "description": "Complete a secure organizer form in your browser without downloading an app.",
+      "canonicalPath": "/f/",
+      "twitterDescription": "A secure organizer form powered by Catch.",
+      "robots": "noindex, follow"
+    },
     "organizers": {
       "title": "Organizer directory | Catch",
       "description": "Find singles-event organizers across India — clubs, venues, and independent hosts — with verified guest reviews and upcoming events.",

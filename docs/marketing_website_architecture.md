@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.6.1
-updated: 2026-08-10
+version: 0.7.0
+updated: 2026-08-18
 owner: marketing_website
 status: active
 ---
@@ -111,6 +111,15 @@ The website is already split out of the old monolithic shell:
   production materializer publishes only explicitly OTP-enabled events and
   obtains capacity totals through Firestore `count()` aggregation; it never
   downloads attendee rows or contact fields into the website build.
+- Public Forms at `/f/:publicFormId/` are a standalone respondent product
+  surface rather than a marketing conversion form. The route lazy-loads its
+  controller and governed primitives, resolves only a server-sanitized active
+  version, and supports version-bound autosave, explicit review, submission
+  receipts, withdrawal, source-link attribution, and iframe presentation.
+  Identity policy can require verified phone, email magic link, or a Catch
+  account without requiring Consumer app installation. File and signature
+  controls stay unavailable until their secure upload and consent tranche is
+  complete; the UI does not pretend that placeholder inputs are functional.
 - Organizer website URLs come from the canonical document's
   `publicPage.canonicalPath`; the Firestore `organizers/{organizerId}` auto-id
   is an internal identity and is not a URL convention. Route reservations make
