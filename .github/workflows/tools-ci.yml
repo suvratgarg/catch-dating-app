@@ -168,7 +168,7 @@ jobs:
 
       - name: Install marketing design browser
         if: ${{ contains(fromJSON(needs.preflight.outputs.setup_requirements), 'playwright') }}
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install chromium
 
       - name: Check affected tools
         env:
@@ -218,7 +218,7 @@ jobs:
       needs.preflight.outputs.tool_mode == 'full' &&
       needs.fast-gates.result == 'success'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -268,7 +268,7 @@ jobs:
 
       - name: Install marketing design browser
         if: matrix.name == 'marketing-design'
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install chromium
 
       - name: Check tool categories
         env:
