@@ -37,6 +37,8 @@ abstract final class CatchIcons {
   static IconData get tabEventsFilled => PhosphorIconsFill.ticket;
   static IconData get tabCustomers => PhosphorIconsRegular.usersThree;
   static IconData get tabCustomersFilled => PhosphorIconsFill.usersThree;
+  static IconData get tabForms => Icons.note_alt_outlined;
+  static IconData get tabFormsFilled => Icons.note_alt_rounded;
   static IconData get tabOrganizer => PhosphorIconsRegular.storefront;
   static IconData get tabOrganizerFilled => PhosphorIconsFill.storefront;
 
@@ -198,6 +200,11 @@ abstract final class CatchIcons {
   static IconData get deleteOutline => Icons.delete_outline;
   static IconData get deleteOutlineRounded => Icons.delete_outline_rounded;
   static IconData get descriptionOutlined => Icons.description_outlined;
+  static IconData get pauseCircleOutlineRounded =>
+      Icons.pause_circle_outline_rounded;
+  static IconData get archiveOutlined => Icons.archive_outlined;
+  static IconData get arrowUpwardRounded => Icons.arrow_upward_rounded;
+  static IconData get arrowDownwardRounded => Icons.arrow_downward_rounded;
   static IconData get directionsBikeRounded => Icons.directions_bike_rounded;
   static IconData get directionsOutlined => Icons.directions_outlined;
   static IconData get directionsRun => Icons.directions_run;

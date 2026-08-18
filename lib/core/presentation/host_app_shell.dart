@@ -248,6 +248,13 @@ List<AppShellNavigationItem> _hostNavigationItems({
     cupertinoSelectedIcon: CatchIcons.tabCustomersFilled,
   ),
   AppShellNavigationItem(
+    destination: AppShellNavigationDestination.hostForms,
+    materialIcon: CatchIcons.tabForms,
+    materialSelectedIcon: CatchIcons.tabFormsFilled,
+    cupertinoIcon: CatchIcons.tabForms,
+    cupertinoSelectedIcon: CatchIcons.tabFormsFilled,
+  ),
+  AppShellNavigationItem(
     destination: AppShellNavigationDestination.hostInbox,
     materialIcon: CatchIcons.tabChats,
     materialSelectedIcon: CatchIcons.tabChatsFilled,

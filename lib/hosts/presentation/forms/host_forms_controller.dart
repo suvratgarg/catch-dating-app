@@ -1,0 +1,517 @@
+import 'dart:async';
+
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/hosts/data/host_forms_repository.dart';
+import 'package:catch_dating_app/hosts/domain/host_form.dart';
+import 'package:flutter/foundation.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'host_forms_controller.g.dart';
+
+@immutable
+class HostFormsDirectoryState {
+  const HostFormsDirectoryState({
+    required this.forms,
+    required this.nextCursor,
+    this.loadingMore = false,
+    this.loadMoreError,
+  });
+
+  final List<HostFormSummary> forms;
+  final String? nextCursor;
+  final bool loadingMore;
+  final Object? loadMoreError;
+
+  bool get canLoadMore => nextCursor != null && !loadingMore;
+
+  HostFormsDirectoryState copyWith({
+    List<HostFormSummary>? forms,
+    String? nextCursor,
+    bool? loadingMore,
+    Object? loadMoreError,
+    bool clearLoadMoreError = false,
+  }) => HostFormsDirectoryState(
+    forms: forms ?? this.forms,
+    nextCursor: nextCursor ?? this.nextCursor,
+    loadingMore: loadingMore ?? this.loadingMore,
+    loadMoreError: clearLoadMoreError
+        ? null
+        : loadMoreError ?? this.loadMoreError,
+  );
+}
+
+@riverpod
+class HostFormsDirectoryController extends _$HostFormsDirectoryController {
+  @override
+  Future<HostFormsDirectoryState> build(HostFormListRequest request) async {
+    final page = await ref.read(hostFormsRepositoryProvider).listForms(request);
+    return HostFormsDirectoryState(
+      forms: page.items,
+      nextCursor: page.nextCursor,
+    );
+  }
+
+  Future<void> loadMore() async {
+    final current = state.asData?.value;
+    if (current == null || !current.canLoadMore) return;
+    state = AsyncData(
+      current.copyWith(loadingMore: true, clearLoadMoreError: true),
+    );
+    try {
+      final page = await ref
+          .read(hostFormsRepositoryProvider)
+          .listForms(request.copyWith(cursor: current.nextCursor));
+      final byId = <String, HostFormSummary>{
+        for (final form in current.forms) form.formId: form,
+        for (final form in page.items) form.formId: form,
+      };
+      state = AsyncData(
+        HostFormsDirectoryState(
+          forms: List.unmodifiable(byId.values),
+          nextCursor: page.nextCursor,
+        ),
+      );
+    } on Object catch (error) {
+      state = AsyncData(
+        current.copyWith(loadingMore: false, loadMoreError: error),
+      );
+    }
+  }
+}
+
+enum HostFormSaveState { saved, dirty, saving, conflict, failed }
+
+@immutable
+class HostFormEditorState {
+  const HostFormEditorState({
+    required this.editor,
+    this.saveState = HostFormSaveState.saved,
+    this.operationInProgress = false,
+    this.error,
+  });
+
+  final HostFormEditor editor;
+  final HostFormSaveState saveState;
+  final bool operationInProgress;
+  final Object? error;
+
+  bool get hasBlockingValidationErrors => editor.validationIssues.any(
+    (issue) => issue.severity == HostFormValidationSeverity.error,
+  );
+
+  HostFormEditorState copyWith({
+    HostFormEditor? editor,
+    HostFormSaveState? saveState,
+    bool? operationInProgress,
+    Object? error,
+    bool clearError = false,
+  }) => HostFormEditorState(
+    editor: editor ?? this.editor,
+    saveState: saveState ?? this.saveState,
+    operationInProgress: operationInProgress ?? this.operationInProgress,
+    error: clearError ? null : error ?? this.error,
+  );
+}
+
+@riverpod
+class HostFormEditorController extends _$HostFormEditorController {
+  Timer? _saveTimer;
+  int _generation = 0;
+  int _idCounter = 0;
+  bool _saveRunning = false;
+
+  @override
+  Future<HostFormEditorState> build(String organizerId, String formId) async {
+    ref.onDispose(() => _saveTimer?.cancel());
+    final editor = await ref
+        .read(hostFormsRepositoryProvider)
+        .getEditor(organizerId: organizerId, formId: formId);
+    return HostFormEditorState(editor: editor);
+  }
+
+  void updateMetadata({
+    String? title,
+    String? description,
+    bool clearDescription = false,
+    HostFormPurpose? purpose,
+    HostFormIdentityPolicy? identityPolicy,
+    String? completionTitle,
+    String? completionMessage,
+  }) => _mutate(
+    (definition) => definition.copyWith(
+      title: title,
+      description: description,
+      clearDescription: clearDescription,
+      purpose: purpose,
+      identityPolicy: identityPolicy,
+      completionTitle: completionTitle,
+      completionMessage: completionMessage,
+    ),
+  );
+
+  void updateSection(
+    int sectionIndex, {
+    String? title,
+    String? description,
+    bool clearDescription = false,
+    bool? pageBreak,
+  }) => _mutate((definition) {
+    final section = definition.sections[sectionIndex].copyWith(
+      title: title,
+      description: description,
+      clearDescription: clearDescription,
+      pageBreak: pageBreak,
+    );
+    return definition.replaceSection(sectionIndex, section);
+  });
+
+  void addSection() => _mutate(
+    (definition) => definition.addSection(
+      HostFormSection.create(sectionId: _newId('section')),
+    ),
+  );
+
+  void removeSection(int sectionIndex) =>
+      _mutate((definition) => definition.removeSection(sectionIndex));
+
+  void moveSection(int sectionIndex, int delta) => _mutate((definition) {
+    final target = (sectionIndex + delta)
+        .clamp(0, definition.sections.length - 1)
+        .toInt();
+    if (target == sectionIndex) return definition;
+    return definition.moveSection(sectionIndex, target);
+  });
+
+  void addQuestion(int sectionIndex, HostFormQuestionKind kind) =>
+      _mutate((definition) {
+        final section = definition.sections[sectionIndex].addQuestion(
+          HostFormQuestion.create(questionId: _newId('question'), kind: kind),
+        );
+        return definition.replaceSection(sectionIndex, section);
+      });
+
+  void updateQuestion(
+    int sectionIndex,
+    int questionIndex, {
+    String? label,
+    String? helpText,
+    bool clearHelpText = false,
+    HostFormQuestionKind? kind,
+    bool? required,
+  }) => _mutate((definition) {
+    final currentSection = definition.sections[sectionIndex];
+    final question = currentSection.questions[questionIndex].copyWith(
+      label: label,
+      helpText: helpText,
+      clearHelpText: clearHelpText,
+      kind: kind,
+      required: required,
+    );
+    final section = currentSection.replaceQuestion(questionIndex, question);
+    return definition.replaceSection(sectionIndex, section);
+  });
+
+  void removeQuestion(int sectionIndex, int questionIndex) =>
+      _mutate((definition) {
+        final section = definition.sections[sectionIndex].removeQuestion(
+          questionIndex,
+        );
+        return definition.replaceSection(sectionIndex, section);
+      });
+
+  void moveQuestion(int sectionIndex, int questionIndex, int delta) =>
+      _mutate((definition) {
+        final currentSection = definition.sections[sectionIndex];
+        final target = (questionIndex + delta)
+            .clamp(0, currentSection.questions.length - 1)
+            .toInt();
+        if (target == questionIndex) return definition;
+        return definition.replaceSection(
+          sectionIndex,
+          currentSection.moveQuestion(questionIndex, target),
+        );
+      });
+
+  void updateOption(
+    int sectionIndex,
+    int questionIndex,
+    int optionIndex, {
+    String? label,
+  }) => _mutate((definition) {
+    final currentSection = definition.sections[sectionIndex];
+    final currentQuestion = currentSection.questions[questionIndex];
+    final option = currentQuestion.options[optionIndex].copyWith(label: label);
+    final question = currentQuestion.replaceOption(optionIndex, option);
+    return definition.replaceSection(
+      sectionIndex,
+      currentSection.replaceQuestion(questionIndex, question),
+    );
+  });
+
+  void addOption(int sectionIndex, int questionIndex) => _mutate((definition) {
+    final currentSection = definition.sections[sectionIndex];
+    final currentQuestion = currentSection.questions[questionIndex];
+    final ordinal = currentQuestion.options.length + 1;
+    final question = currentQuestion.addOption(
+      HostFormQuestionOption.create(
+        optionId: _newId('option'),
+        ordinal: ordinal,
+      ),
+    );
+    return definition.replaceSection(
+      sectionIndex,
+      currentSection.replaceQuestion(questionIndex, question),
+    );
+  });
+
+  void removeOption(int sectionIndex, int questionIndex, int optionIndex) =>
+      _mutate((definition) {
+        final currentSection = definition.sections[sectionIndex];
+        final currentQuestion = currentSection.questions[questionIndex];
+        if (currentQuestion.options.length <= 2) return definition;
+        final question = currentQuestion.removeOption(optionIndex);
+        return definition.replaceSection(
+          sectionIndex,
+          currentSection.replaceQuestion(questionIndex, question),
+        );
+      });
+
+  Future<bool> saveNow() async {
+    _saveTimer?.cancel();
+    if (_saveRunning) {
+      while (_saveRunning) {
+        await Future<void>.delayed(CatchMotion.fast);
+      }
+      return state.asData?.value.saveState == HostFormSaveState.saved;
+    }
+    final current = state.asData?.value;
+    if (current == null) return false;
+    if (current.saveState == HostFormSaveState.saved) return true;
+    _saveRunning = true;
+    final generation = _generation;
+    final definition = current.editor.definition;
+    final expectedRevision = current.editor.form.draftRevision;
+    state = AsyncData(
+      current.copyWith(saveState: HostFormSaveState.saving, clearError: true),
+    );
+    try {
+      final saved = await ref
+          .read(hostFormsRepositoryProvider)
+          .updateDraft(
+            organizerId: organizerId,
+            formId: formId,
+            expectedRevision: expectedRevision,
+            definition: definition,
+          );
+      final latest = state.asData?.value;
+      if (latest == null) return false;
+      if (generation == _generation) {
+        state = AsyncData(
+          latest.copyWith(
+            editor: saved,
+            saveState: HostFormSaveState.saved,
+            clearError: true,
+          ),
+        );
+      } else {
+        state = AsyncData(
+          latest.copyWith(
+            editor: latest.editor.copyWith(form: saved.form),
+            saveState: HostFormSaveState.dirty,
+            clearError: true,
+          ),
+        );
+        _scheduleSave();
+      }
+      return generation == _generation;
+    } on Object catch (error) {
+      final latest = state.asData?.value ?? current;
+      final conflict = error is AppException && error.code == 'aborted';
+      state = AsyncData(
+        latest.copyWith(
+          saveState: conflict
+              ? HostFormSaveState.conflict
+              : HostFormSaveState.failed,
+          error: error,
+        ),
+      );
+      return false;
+    } finally {
+      _saveRunning = false;
+    }
+  }
+
+  Future<void> reload() async {
+    _saveTimer?.cancel();
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      final editor = await ref
+          .read(hostFormsRepositoryProvider)
+          .getEditor(organizerId: organizerId, formId: formId);
+      _generation = 0;
+      return HostFormEditorState(editor: editor);
+    });
+  }
+
+  Future<bool> validate() async {
+    final current = state.asData?.value;
+    if (current == null) return false;
+    state = AsyncData(
+      current.copyWith(operationInProgress: true, clearError: true),
+    );
+    try {
+      final result = await ref
+          .read(hostFormsRepositoryProvider)
+          .validateDraft(
+            organizerId: organizerId,
+            formId: formId,
+            definition: current.editor.definition,
+          );
+      final latest = state.asData?.value ?? current;
+      state = AsyncData(
+        latest.copyWith(
+          editor: latest.editor.copyWith(validationIssues: result.issues),
+          operationInProgress: false,
+          clearError: true,
+        ),
+      );
+      return result.valid;
+    } on Object catch (error) {
+      state = AsyncData(
+        current.copyWith(operationInProgress: false, error: error),
+      );
+      return false;
+    }
+  }
+
+  Future<bool> publish() async {
+    if (!await saveNow()) return false;
+    if (!await validate()) return false;
+    final current = state.asData?.value;
+    if (current == null) return false;
+    state = AsyncData(
+      current.copyWith(operationInProgress: true, clearError: true),
+    );
+    try {
+      final summary = await ref
+          .read(hostFormsRepositoryProvider)
+          .publish(
+            organizerId: organizerId,
+            formId: formId,
+            expectedRevision: current.editor.form.draftRevision,
+          );
+      final latest = state.asData?.value ?? current;
+      state = AsyncData(
+        latest.copyWith(
+          editor: latest.editor.copyWith(form: summary),
+          operationInProgress: false,
+          clearError: true,
+        ),
+      );
+      return true;
+    } on Object catch (error) {
+      state = AsyncData(
+        current.copyWith(operationInProgress: false, error: error),
+      );
+      return false;
+    }
+  }
+
+  Future<bool> setLifecycle(HostFormLifecycleAction action) async {
+    final current = state.asData?.value;
+    if (current == null) return false;
+    state = AsyncData(
+      current.copyWith(operationInProgress: true, clearError: true),
+    );
+    try {
+      final summary = await ref
+          .read(hostFormsRepositoryProvider)
+          .setLifecycle(
+            organizerId: organizerId,
+            formId: formId,
+            expectedStatus: current.editor.form.status,
+            action: action,
+          );
+      final latest = state.asData?.value ?? current;
+      state = AsyncData(
+        latest.copyWith(
+          editor: latest.editor.copyWith(form: summary),
+          operationInProgress: false,
+          clearError: true,
+        ),
+      );
+      return true;
+    } on Object catch (error) {
+      state = AsyncData(
+        current.copyWith(operationInProgress: false, error: error),
+      );
+      return false;
+    }
+  }
+
+  void _mutate(
+    HostFormDefinition Function(HostFormDefinition definition) transform,
+  ) {
+    final current = state.asData?.value;
+    if (current == null || current.operationInProgress) return;
+    final definition = transform(current.editor.definition);
+    if (identical(definition, current.editor.definition)) return;
+    _generation += 1;
+    state = AsyncData(
+      current.copyWith(
+        editor: current.editor.copyWith(definition: definition),
+        saveState: HostFormSaveState.dirty,
+        clearError: true,
+      ),
+    );
+    _scheduleSave();
+  }
+
+  void _scheduleSave() {
+    _saveTimer?.cancel();
+    _saveTimer = Timer(CatchMotion.searchDebounce, () => unawaited(saveNow()));
+  }
+
+  String _newId(String prefix) {
+    _idCounter += 1;
+    return '${prefix}_${DateTime.now().microsecondsSinceEpoch}_$_idCounter';
+  }
+}
+
+@riverpod
+HostFormsController hostFormsController(Ref ref) =>
+    HostFormsController(ref.watch(hostFormsRepositoryProvider));
+
+class HostFormsController {
+  const HostFormsController(this._repository);
+
+  final HostFormsRepository _repository;
+
+  Future<HostFormEditor> create({
+    required String organizerId,
+    required String templateId,
+    required String requestId,
+    String? title,
+  }) => _repository.createForm(
+    organizerId: organizerId,
+    templateId: templateId,
+    requestId: requestId,
+    title: title,
+  );
+
+  Future<HostFormEditor> duplicate({
+    required HostFormSummary source,
+    required String requestId,
+  }) => _repository.duplicate(
+    organizerId: source.organizerId,
+    sourceFormId: source.formId,
+    requestId: requestId,
+  );
+
+  Future<void> deleteDraft(HostFormSummary form) => _repository.deleteDraft(
+    organizerId: form.organizerId,
+    formId: form.formId,
+    expectedRevision: form.draftRevision,
+  );
+}

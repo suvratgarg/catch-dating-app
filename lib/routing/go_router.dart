@@ -33,6 +33,10 @@ import 'package:catch_dating_app/hosts/presentation/customers/host_customer_deta
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_preview_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_templates_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_operator_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
@@ -251,6 +255,7 @@ class _RouterNavigatorKeys {
   final profile = GlobalKey<NavigatorState>();
   final hostEvents = GlobalKey<NavigatorState>();
   final hostCustomers = GlobalKey<NavigatorState>();
+  final hostForms = GlobalKey<NavigatorState>();
   final hostInbox = GlobalKey<NavigatorState>();
   final hostOrganizer = GlobalKey<NavigatorState>();
 }
@@ -924,6 +929,47 @@ StatefulShellRoute _hostShellRoute(
                       displayName,
                     _ => null,
                   },
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+      StatefulShellBranch(
+        navigatorKey: keys.hostForms,
+        observers: [AnalyticsRouteObserver(analytics)],
+        routes: [
+          GoRoute(
+            path: Routes.hostFormsScreen.path,
+            name: Routes.hostFormsScreen.name,
+            builder: (context, state) => HostFormsScreen(
+              initialOrganizerId: state.uri.queryParameters['organizerId'],
+            ),
+            routes: [
+              GoRoute(
+                path: 'new',
+                name: Routes.hostFormTemplatesScreen.name,
+                parentNavigatorKey: keys.root,
+                builder: (context, state) => HostFormTemplatesScreen(
+                  organizerId: state.uri.queryParameters['organizerId'] ?? '',
+                ),
+              ),
+              GoRoute(
+                path: ':formId/preview',
+                name: Routes.hostFormPreviewScreen.name,
+                parentNavigatorKey: keys.root,
+                builder: (context, state) => HostFormPreviewScreen(
+                  organizerId: state.uri.queryParameters['organizerId'] ?? '',
+                  formId: state.pathParameters['formId']!,
+                ),
+              ),
+              GoRoute(
+                path: ':formId',
+                name: Routes.hostFormBuilderScreen.name,
+                parentNavigatorKey: keys.root,
+                builder: (context, state) => HostFormBuilderScreen(
+                  organizerId: state.uri.queryParameters['organizerId'] ?? '',
+                  formId: state.pathParameters['formId']!,
                 ),
               ),
             ],
