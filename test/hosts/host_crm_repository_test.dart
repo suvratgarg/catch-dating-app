@@ -329,10 +329,85 @@ void main() {
       'first_name',
       'invite_url',
     ]);
+    expect(setup.campaignReadiness, HostWhatsappCampaignReadiness.ready);
+    expect(setup.canComposeCampaign, isTrue);
+  });
+
+  test('WhatsApp campaign readiness fails closed at each setup gate', () {
+    const signup = HostWhatsappEmbeddedSignupConfig(
+      appId: 'app-1',
+      configId: 'config-1',
+      graphVersion: 'v24.0',
+    );
+    const activeConnection = HostWhatsappConnection(
+      connectionId: 'connection-1',
+      status: 'active',
+      displayPhoneNumber: '+91 98765 43210',
+      verifiedName: 'Courtyard Socials',
+      qualityRating: 'GREEN',
+      messagingLimitTier: 'TIER_1K',
+      templateSyncStatus: 'ready',
+      webhookStatus: 'healthy',
+      testStatus: 'verified',
+      revision: 1,
+    );
+
+    HostMessagingSetup setup({
+      bool configured = true,
+      HostWhatsappConnection? connection = activeConnection,
+      List<HostWhatsappTemplate> templates = const [
+        HostWhatsappTemplate(
+          templateId: 'template-1',
+          name: 'event_invitation',
+          language: 'en_US',
+          category: 'MARKETING',
+          status: 'APPROVED',
+          variableNames: [],
+          hasMediaHeader: false,
+          buttonKinds: [],
+        ),
+      ],
+    }) => HostMessagingSetup(
+      organizerId: 'organizer-1',
+      providerConfigured: configured,
+      embeddedSignup: signup,
+      connection: connection,
+      templates: templates,
+    );
+
+    expect(
+      setup(configured: false).campaignReadiness,
+      HostWhatsappCampaignReadiness.providerUnavailable,
+    );
+    expect(
+      setup(connection: null).campaignReadiness,
+      HostWhatsappCampaignReadiness.senderNotConnected,
+    );
+    expect(
+      setup(
+        connection: const HostWhatsappConnection(
+          connectionId: 'connection-1',
+          status: 'testing',
+          displayPhoneNumber: '+91 98765 43210',
+          verifiedName: 'Courtyard Socials',
+          qualityRating: 'GREEN',
+          messagingLimitTier: 'TIER_1K',
+          templateSyncStatus: 'ready',
+          webhookStatus: 'healthy',
+          testStatus: 'pending',
+          revision: 1,
+        ),
+      ).campaignReadiness,
+      HostWhatsappCampaignReadiness.senderNeedsAttention,
+    );
+    expect(
+      setup(templates: const []).campaignReadiness,
+      HostWhatsappCampaignReadiness.approvedTemplateRequired,
+    );
   });
 
   test('parses contact detail without exposing private runtime answers', () {
-    final detail = HostAudienceContactDetail.fromCallableData({
+    final data = <String, Object?>{
       'organizerId': 'organizer-1',
       'contactId': 'contact-1',
       'displayName': 'Asha',
@@ -387,16 +462,26 @@ void main() {
         },
       ],
       'revision': 7,
-    });
+    };
+    final detail = HostAudienceContactDetail.fromCallableData(data);
 
     expect(detail.displayName, 'Asha');
     expect(detail.contactDetailsEditable, isFalse);
     expect(detail.whatsappAdminSuppressed, isTrue);
+    expect(detail.traits.whatsappStatus, HostAudiencePermissionStatus.optedIn);
+    expect(detail.canUsePersonalWhatsappHandoff, isFalse);
     expect(detail.traits.attendanceRate, 0.75);
     expect(detail.revenue.amounts.single.amountMinor, 450000);
     expect(detail.events.single.checkedIn, isTrue);
     expect(detail.activeMerges.single.sourceContactId, 'contact-2');
     expect(detail.activeMerges.single.movedFactCount, 4);
+
+    data['whatsappAdminSuppressed'] = false;
+    final optedOutTraits = Map<String, Object?>.from(data['traits']! as Map);
+    optedOutTraits['whatsappStatus'] = 'optedOut';
+    data['traits'] = optedOutTraits;
+    final optedOut = HostAudienceContactDetail.fromCallableData(data);
+    expect(optedOut.canUsePersonalWhatsappHandoff, isFalse);
   });
 
   test('parses evidence-bearing and dismissed merge candidates', () {

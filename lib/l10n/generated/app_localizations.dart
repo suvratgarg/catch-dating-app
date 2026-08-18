@@ -19606,11 +19606,17 @@ abstract class AppLocalizations {
   /// **'WhatsApp opted in'**
   String get hostsHostAudienceWhatsappOptedIn;
 
-  /// Embedded signup platform limitation.
+  /// Confirms the native-to-web WhatsApp Embedded Signup handoff.
   ///
   /// In en, this message translates to:
-  /// **'Connect WhatsApp from the Host web app. Once connected, the sender can be managed on any device.'**
-  String get hostsHostAudienceWebSignupOnly;
+  /// **'Continue WhatsApp setup in the Host web app.'**
+  String get hostsHostAudienceWebSignupOpened;
+
+  /// Failure shown when native cannot open the Host web WhatsApp setup route.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open WhatsApp setup in the Host web app.'**
+  String get hostsHostAudienceWebSignupOpenFailed;
 
   /// Campaign provider blocker.
   ///
@@ -20341,17 +20347,137 @@ abstract class AppLocalizations {
   /// **'Sends'**
   String get hostMessagingWorkspaceSends;
 
-  /// Primary action in the Host Sends workspace.
+  /// Opens the explicit Host communication-route picker.
   ///
   /// In en, this message translates to:
-  /// **'New message'**
-  String get hostSendsNewMessage;
+  /// **'Choose channel'**
+  String get hostSendsChooseChannel;
 
   /// Opens organizer WhatsApp sender setup.
   ///
   /// In en, this message translates to:
-  /// **'WhatsApp settings'**
+  /// **'WhatsApp Business settings'**
   String get hostSendsSettings;
+
+  /// Channel and sender label for one-to-one Catch conversations.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch chat · Organizer'**
+  String get hostSendsCatchChatChannel;
+
+  /// Delivery semantics for Catch chat.
+  ///
+  /// In en, this message translates to:
+  /// **'One linked Catch user · two-way in the Catch app'**
+  String get hostSendsCatchChatDescription;
+
+  /// Channel and sender label for an event announcement.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch announcement · Organizer'**
+  String get hostSendsCatchAnnouncementChannel;
+
+  /// Delivery semantics for a Catch event announcement.
+  ///
+  /// In en, this message translates to:
+  /// **'Event roster · Activity plus preference-gated push · no reply thread'**
+  String get hostSendsCatchAnnouncementDescription;
+
+  /// Channel and sender label for organizer-owned WhatsApp Business.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp Business · Organizer number'**
+  String get hostSendsWhatsappBusinessChannel;
+
+  /// Delivery semantics for an organizer WhatsApp campaign.
+  ///
+  /// In en, this message translates to:
+  /// **'Permissioned CRM audience · approved template · delivery receipts'**
+  String get hostSendsWhatsappBusinessDescription;
+
+  /// Channel and sender label for a personal-device WhatsApp handoff.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp app · You'**
+  String get hostSendsWhatsappAppChannel;
+
+  /// Delivery semantics for a personal WhatsApp handoff.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a person in Customers · editable text · you press Send · untracked by Catch'**
+  String get hostSendsWhatsappAppDescription;
+
+  /// Channel and sender label for organizer follower posts.
+  ///
+  /// In en, this message translates to:
+  /// **'Follower update · Organizer'**
+  String get hostSendsFollowerUpdateChannel;
+
+  /// Delivery semantics for organizer follower posts.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Organizer to post · Home and Activity · preference-gated push'**
+  String get hostSendsFollowerUpdateDescription;
+
+  /// Channel and sender label for the separate Catch-owned WhatsApp route.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp · Catch'**
+  String get hostSendsCatchWhatsappChannel;
+
+  /// Boundary for future Catch-owned WhatsApp messages.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch-owned sender and Catch-specific permission · not an organizer campaign'**
+  String get hostSendsCatchWhatsappDescription;
+
+  /// Loading state for managed-channel readiness.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking sender and template readiness…'**
+  String get hostSendsChannelChecking;
+
+  /// Error state for managed-channel readiness.
+  ///
+  /// In en, this message translates to:
+  /// **'Readiness could not be loaded. Open settings to retry.'**
+  String get hostSendsChannelUnavailable;
+
+  /// Managed-channel availability label.
+  ///
+  /// In en, this message translates to:
+  /// **'Setup required'**
+  String get hostSendsSetupRequired;
+
+  /// Honest availability label for a specified but inactive channel.
+  ///
+  /// In en, this message translates to:
+  /// **'Not active'**
+  String get hostSendsPlanned;
+
+  /// Organizer WhatsApp environment configuration blocker.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch has not enabled the Meta provider in this environment.'**
+  String get hostSendsWhatsappProviderUnavailable;
+
+  /// Organizer WhatsApp sender connection blocker.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect and verify an organizer-owned WhatsApp Business number.'**
+  String get hostSendsWhatsappSenderRequired;
+
+  /// Organizer WhatsApp sender health blocker.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish sender testing or resolve its connection health.'**
+  String get hostSendsWhatsappSenderNeedsAttention;
+
+  /// Organizer WhatsApp approved-template blocker.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync at least one approved WhatsApp message template.'**
+  String get hostSendsWhatsappTemplateRequired;
 
   /// Loads the next page of organizer Sends history.
   ///
@@ -20398,8 +20524,44 @@ abstract class AppLocalizations {
   /// Channel facet label for retained WhatsApp threads.
   ///
   /// In en, this message translates to:
-  /// **'WhatsApp'**
+  /// **'WhatsApp Business · Organizer number'**
   String get hostInboxWhatsappChannel;
+
+  /// Explicit channel/sender prefix for a Catch inquiry row.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch chat · Organizer · {details}'**
+  String hostInboxCatchChatPreview({required String details});
+
+  /// Delivery disclosure in the event announcement composer.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipients see a durable Activity update and may receive a push notification. This does not create a chat thread.'**
+  String get hostInboxAnnouncementDisclosure;
+
+  /// Closed event-announcement state.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch announcement · event delivery has closed'**
+  String get hostInboxAnnouncementClosed;
+
+  /// Backend-gated event-announcement state.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch announcement · backend preflight required'**
+  String get hostInboxAnnouncementBackendRequired;
+
+  /// Empty event-announcement audience state.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch announcement · no eligible recipients yet'**
+  String get hostInboxAnnouncementNoRecipients;
+
+  /// Available event-announcement delivery summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch announcement · Activity plus optional push'**
+  String get hostInboxAnnouncementAvailable;
 
   /// Sends a free-form WhatsApp service reply.
   ///
@@ -20902,11 +21064,74 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{1 paid order} other{{count} paid orders}}'**
   String hostCustomersDetailPaidOrders({required int count});
 
-  /// Starts or reuses a direct organizer-customer thread.
+  /// Explicit channel and sender label for a direct in-app customer conversation.
   ///
   /// In en, this message translates to:
-  /// **'New conversation'**
-  String get hostCustomersNewConversation;
+  /// **'Catch chat · Organizer'**
+  String get hostCustomersCatchChatChannel;
+
+  /// Starts a direct Catch chat with a linked customer.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Catch chat'**
+  String get hostCustomersStartCatchChat;
+
+  /// Explicit channel and sender label for a personal-device WhatsApp handoff.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp app · You'**
+  String get hostCustomersWhatsappAppChannel;
+
+  /// Disclosure for the untracked personal WhatsApp handoff.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens WhatsApp on this device with editable text. You review it and press Send; Catch cannot track delivery or replies.'**
+  String get hostCustomersWhatsappHandoffDisclosure;
+
+  /// Opens the editable personal WhatsApp handoff composer.
+  ///
+  /// In en, this message translates to:
+  /// **'Write in WhatsApp'**
+  String get hostCustomersWriteInWhatsapp;
+
+  /// Title for the personal WhatsApp handoff composer.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp app'**
+  String get hostCustomersWhatsappHandoffTitle;
+
+  /// Recipient shown in the personal WhatsApp handoff composer.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} · {phone}'**
+  String hostCustomersWhatsappHandoffSubtitle({
+    required String name,
+    required String phone,
+  });
+
+  /// Editable starter text for a personal WhatsApp handoff.
+  ///
+  /// In en, this message translates to:
+  /// **'Hi {name},'**
+  String hostCustomersWhatsappDefaultMessage({required String name});
+
+  /// Editable message field label in the personal WhatsApp handoff composer.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get hostCustomersWhatsappMessage;
+
+  /// Launches WhatsApp with the selected customer and editable text prefilled.
+  ///
+  /// In en, this message translates to:
+  /// **'Open WhatsApp'**
+  String get hostCustomersOpenWhatsapp;
+
+  /// Failure shown when the personal WhatsApp handoff cannot launch.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open WhatsApp on this device.'**
+  String get hostCustomersWhatsappOpenFailed;
 
   /// Unlinked customer messaging boundary.
   ///

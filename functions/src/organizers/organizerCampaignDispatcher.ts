@@ -41,6 +41,8 @@ import {
   organizerCampaignFrequencyCapMillis,
   organizerContactChannelStateId,
 } from "./organizerCampaignModel";
+import {organizerWhatsappCampaignRoute} from
+  "../communications/communicationRoutes";
 import {
   metaWhatsappAppId,
   metaWhatsappAppSecret,
@@ -456,7 +458,7 @@ async function deliverRecipient(
       {
         organizerId: recipient.organizerId,
         contactId: recipient.contactId,
-        channel: "whatsapp",
+        channel: organizerWhatsappCampaignRoute.transport,
         endpointHash: recipient.endpointHash,
         suppressionStatus: existingState?.suppressionStatus ?? "none",
         suppressionSource: existingState?.suppressionSource ?? null,

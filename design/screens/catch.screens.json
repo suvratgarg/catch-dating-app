@@ -14948,7 +14948,7 @@
         "mutationOwners": [
           {"file": "lib/hosts/presentation/customers/host_customers_controller.dart", "symbol": "HostCustomersController"}
         ],
-        "notes": "Customers is the sole organizer CRM destination and follows the shell-selected organizer. The direct screen owns normalized search, every supported computed segment, a visually distinct organizer tag vocabulary, server cursor, id de-duplication, export and contact administration without an extra People workspace. Its counted filter summary deep-links only eligible computed segments into Messaging Campaigns. Customer detail orders identity, organizer-authored memory, system activity and controls; notes remain out of export, and campaign delivery history leaves a typed broadcast seam for Phase 4."
+        "notes": "Customers is the sole organizer CRM destination and follows the shell-selected organizer. The direct screen owns normalized search, every supported computed segment, a visually distinct organizer tag vocabulary, server cursor, id de-duplication, export and contact administration without an extra People workspace. Its counted filter summary deep-links only eligible computed segments into Messaging Campaigns. Customer detail orders identity, organizer-authored memory, system activity and controls; Catch chat and personal WhatsApp handoff are separate sender/delivery routes, notes remain out of export, and campaign delivery history leaves a typed broadcast seam for Phase 4."
       },
       "designRefs": [
         {
@@ -15011,6 +15011,7 @@
         {"id": "customer_revenue_unavailable", "kind": "permission", "status": "implemented", "source": "HostCustomerRevenueCard unavailable coverage", "nextAction": "Capture unlinked revenue boundary."},
         {"id": "conversation_available", "kind": "populated", "status": "tested", "source": "HostCustomerConversationAvailability.available", "previewIds": ["hostCustomersStates"], "tests": ["test/hosts/host_customers_screen_state_test.dart"], "nextAction": "Add callable authorization integration test."},
         {"id": "conversation_unavailable", "kind": "permission", "status": "tested", "source": "HostCustomerConversationAvailability", "tests": ["test/hosts/host_customers_screen_state_test.dart"], "nextAction": "Add rendered disabled-state coverage."},
+        {"id": "personal_whatsapp_handoff", "kind": "mutation", "status": "tested", "source": "HostCustomerDetailScreen _openWhatsapp + _HostWhatsappHandoffSheet + ExternalLinks.openWhatsappHandoff", "tests": ["test/hosts/host_operations_screen_test.dart", "test/core/external_links_test.dart", "test/communications/communication_route_test.dart"], "nextAction": "Add a deterministic Widgetbook variant for the editable handoff sheet; never present external app launch as message delivery."},
         {"id": "customer_export_pending", "kind": "mutation", "status": "implemented", "source": "HostCustomersScreen export lifecycle", "nextAction": "Add native-share controller widget coverage."},
         {"id": "customer_manage", "kind": "mutation", "status": "implemented", "source": "HostCustomerManageSheet", "tests": ["test/hosts/host_customers_screen_state_test.dart"], "nextAction": "Add rendered rename, suppression, and remove coverage."},
         {"id": "customer_manage_pending", "kind": "mutation", "status": "implemented", "source": "HostCustomerManageSheet submit lifecycle", "nextAction": "Add revision-conflict widget coverage."},
@@ -15059,8 +15060,8 @@
             "currentOwner": "hosts.presentation.customers",
             "targetOwner": "hosts.presentation.customers",
             "dependencies": ["catch.button", "catch.person_row", "catch.surface"],
-            "states": ["customer_detail_linked", "customer_detail_unlinked", "customer_detail_ambiguous", "conversation_available", "conversation_unavailable"],
-            "migration": "Identity confidence remains visible and the callable independently re-authorizes every conversation attempt."
+            "states": ["customer_detail_linked", "customer_detail_unlinked", "customer_detail_ambiguous", "conversation_available", "conversation_unavailable", "personal_whatsapp_handoff"],
+            "migration": "Identity confidence remains visible and the callable independently re-authorizes every Catch chat attempt. Personal WhatsApp is a separate editable external handoff whose final Send and delivery state remain outside Catch."
           },
           {
             "id": "section.host.customers.detail_memory",
@@ -15577,6 +15578,17 @@
           ]
         },
         {
+          "id": "communication_route_picker",
+          "kind": "populated",
+          "status": "tested",
+          "source": "HostSendsWorkspaceSliver + communicationRouteCatalog",
+          "tests": [
+            "test/hosts/host_inbox_screen_test.dart",
+            "test/communications/communication_route_test.dart"
+          ],
+          "nextAction": "Add a deterministic Sends route-picker preview and capture after its baseline is approved."
+        },
+        {
           "id": "campaign_compose_deep_link",
           "kind": "mutation",
           "status": "tested",
@@ -15598,10 +15610,11 @@
         {
           "id": "customer_messaging_disconnected",
           "kind": "empty",
-          "status": "implemented",
+          "status": "tested",
           "source": "HostWhatsappSetupPane sender connection setup on the dedicated organizer messaging route.",
-          "nextAction": "Add connect handoff widget coverage.",
-          "previewIds": ["HostCampaignComposer/Campaign and sender states"]
+          "nextAction": "Add a deterministic native-to-web handoff capture.",
+          "previewIds": ["HostCampaignComposer/Campaign and sender states"],
+          "tests": ["test/hosts/host_whatsapp_setup_pane_test.dart"]
         },
         {
           "id": "customer_messaging_connecting",

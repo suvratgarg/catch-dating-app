@@ -34,6 +34,8 @@ import {requireOrganizerManager} from "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {eventInviteToken, inviteLinkTokenHash} from "../events/inviteLinks";
+import {organizerWhatsappCampaignRoute} from
+  "../communications/communicationRoutes";
 import {
   emptyCampaignAudienceCounts,
   emptyCampaignDeliveryCounts,
@@ -147,7 +149,7 @@ export async function upsertOrganizerCampaignHandler(
       organizerId: data.organizerId,
       createdByUid: existing?.createdByUid ?? actorUid,
       messageClass: data.messageClass,
-      channel: "whatsapp",
+      channel: organizerWhatsappCampaignRoute.transport,
       status: "draft",
       name: data.name,
       segmentIds: data.segmentIds,

@@ -570,6 +570,15 @@ void main() {
           postId: 'post-1',
           eventId: 'event-1',
         ),
+        _activityNotification(
+          id: 'organizer-post-1',
+          uid: user.uid,
+          type: ActivityNotificationType.organizerUpdate,
+          title: 'New organizer update',
+          body: 'The organizer-only update is visible at home.',
+          organizerId: joinedClub.id,
+          postId: 'post-2',
+        ),
       ];
       var opened = false;
 
@@ -597,9 +606,13 @@ void main() {
         find.text('ORGANIZER UPDATES', findRichText: true),
         findsOneWidget,
       );
-      expect(find.text('RACE COURSE ROAD RUNNERS'), findsOneWidget);
+      expect(find.text('RACE COURSE ROAD RUNNERS'), findsNWidgets(2));
       expect(
         find.text('Meet ten minutes early at the main gate.'),
+        findsOneWidget,
+      );
+      expect(
+        find.text('The organizer-only update is visible at home.'),
         findsOneWidget,
       );
       expect(find.text('Linked event'), findsOneWidget);
@@ -1038,6 +1051,7 @@ ActivityNotification _activityNotification({
   String title = "It's a catch",
   String body = 'You and Runner Two matched. Say hi!',
   String? clubId,
+  String? organizerId,
   String? postId,
   String? eventId,
   DateTime? createdAt,
@@ -1054,6 +1068,7 @@ ActivityNotification _activityNotification({
     matchId: type == ActivityNotificationType.match ? 'match-1' : null,
     eventId: eventId,
     clubId: clubId,
+    organizerId: organizerId,
     postId: postId,
   );
 }

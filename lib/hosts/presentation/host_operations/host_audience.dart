@@ -146,7 +146,21 @@ class _HostWhatsappSetupPaneState extends ConsumerState<HostWhatsappSetupPane> {
   Future<void> _connectWhatsapp(HostMessagingSetup setup) async {
     await _run(() async {
       if (!hostWhatsappEmbeddedSignupSupported) {
-        throw UnsupportedError(context.l10n.hostsHostAudienceWebSignupOnly);
+        final openFailedMessage =
+            context.l10n.hostsHostAudienceWebSignupOpenFailed;
+        final opened = await ref
+            .read(externalLinkControllerProvider)
+            .openHostMessagingSetup(widget.club.id);
+        if (!opened) {
+          throw ExternalActionException(openFailedMessage);
+        }
+        if (mounted) {
+          showCatchSnackBar(
+            context,
+            context.l10n.hostsHostAudienceWebSignupOpened,
+          );
+        }
+        return;
       }
       final result = await startHostWhatsappEmbeddedSignup(
         setup.embeddedSignup,

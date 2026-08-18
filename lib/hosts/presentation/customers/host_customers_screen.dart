@@ -1305,12 +1305,14 @@ class HostCustomerConversationCard extends StatelessWidget {
     required this.customer,
     required this.loading,
     required this.onOpen,
+    this.onOpenWhatsapp,
     this.onReview,
   });
 
   final HostAudienceContactDetail customer;
   final bool loading;
   final VoidCallback? onOpen;
+  final VoidCallback? onOpenWhatsapp;
   final VoidCallback? onReview;
 
   @override
@@ -1333,6 +1335,11 @@ class HostCustomerConversationCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          Text(
+            context.l10n.hostCustomersCatchChatChannel,
+            style: CatchTextStyles.fieldRowTitle(context),
+          ),
+          gapH4,
           if (message != null) ...[
             Text(message, style: CatchTextStyles.supporting(context)),
             gapH12,
@@ -1347,11 +1354,31 @@ class HostCustomerConversationCard extends StatelessWidget {
             gapH12,
           ],
           CatchButton(
-            label: context.l10n.hostCustomersNewConversation,
+            label: context.l10n.hostCustomersStartCatchChat,
             icon: Icon(CatchIcons.tabChats),
             isLoading: loading,
             onPressed: loading ? null : onOpen,
           ),
+          if (onOpenWhatsapp != null) ...[
+            gapH20,
+            Text(
+              context.l10n.hostCustomersWhatsappAppChannel,
+              style: CatchTextStyles.fieldRowTitle(context),
+            ),
+            gapH4,
+            Text(
+              context.l10n.hostCustomersWhatsappHandoffDisclosure,
+              style: CatchTextStyles.supporting(context),
+            ),
+            gapH12,
+            CatchButton(
+              key: const ValueKey('host-customer-open-whatsapp'),
+              label: context.l10n.hostCustomersWriteInWhatsapp,
+              icon: Icon(CatchIcons.sendRounded),
+              variant: CatchButtonVariant.secondary,
+              onPressed: onOpenWhatsapp,
+            ),
+          ],
         ],
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/communications/domain/communication_route.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
@@ -26,12 +27,14 @@ class HostSendsWorkspaceSliver extends ConsumerStatefulWidget {
     required this.initialSegments,
     required this.initialSearch,
     required this.onBusyChanged,
+    required this.onOpenInbox,
   });
 
   final Club club;
   final Set<HostAudienceSegment> initialSegments;
   final String? initialSearch;
   final ValueChanged<bool> onBusyChanged;
+  final VoidCallback onOpenInbox;
 
   @override
   ConsumerState<HostSendsWorkspaceSliver> createState() =>
@@ -41,6 +44,7 @@ class HostSendsWorkspaceSliver extends ConsumerStatefulWidget {
 class _HostSendsWorkspaceSliverState
     extends ConsumerState<HostSendsWorkspaceSliver> {
   late bool _composing;
+  bool _choosingRoute = false;
   HostCampaign? _campaignReport;
   HostAnnouncementSendSummary? _announcementReport;
   String? _paginationBaseKey;
@@ -62,6 +66,7 @@ class _HostSendsWorkspaceSliverState
     super.didUpdateWidget(oldWidget);
     if (oldWidget.club.id != widget.club.id) {
       _composing = false;
+      _choosingRoute = false;
       _campaignReport = null;
       _announcementReport = null;
       _paginationBaseKey = null;
@@ -74,7 +79,17 @@ class _HostSendsWorkspaceSliverState
 
   @override
   Widget build(BuildContext context) {
-    final content = _composing
+    final content = _choosingRoute
+        ? _HostSendsRoutePicker(
+            organizerId: widget.club.id,
+            onBack: _showHistory,
+            onOpenInbox: widget.onOpenInbox,
+            onStartCampaign: () => setState(() {
+              _choosingRoute = false;
+              _composing = true;
+            }),
+          )
+        : _composing
         ? _HostSendsComposer(
             club: widget.club,
             initialSegments: widget.initialSegments,
@@ -106,7 +121,7 @@ class _HostSendsWorkspaceSliverState
             onRefresh: () => _openCampaign(_campaignReport!.campaignId),
             onNew: () => setState(() {
               _campaignReport = null;
-              _composing = true;
+              _choosingRoute = true;
             }),
           )
         : _announcementReport != null
@@ -121,7 +136,7 @@ class _HostSendsWorkspaceSliverState
             paginationBaseKey: _paginationBaseKey,
             additionalSends: _additionalSends,
             nextCursor: _nextCursor,
-            onNew: () => setState(() => _composing = true),
+            onNew: () => setState(() => _choosingRoute = true),
             onOpen: _open,
             onLoadMore: _loadMore,
           );
@@ -135,6 +150,7 @@ class _HostSendsWorkspaceSliverState
     if (_busy) return;
     setState(() {
       _composing = false;
+      _choosingRoute = false;
       _campaignReport = null;
       _announcementReport = null;
       ref.invalidate(hostSendsProvider(widget.club.id));
@@ -281,7 +297,7 @@ class _HostSendsHistory extends ConsumerWidget {
           children: [
             CatchButton(
               key: const ValueKey('host-sends-new-message'),
-              label: context.l10n.hostSendsNewMessage,
+              label: context.l10n.hostSendsChooseChannel,
               onPressed: busy ? null : onNew,
             ),
             CatchButton(
@@ -321,6 +337,156 @@ class _HostSendsHistory extends ConsumerWidget {
     );
   }
 }
+
+class _HostSendsRoutePicker extends ConsumerWidget {
+  const _HostSendsRoutePicker({
+    required this.organizerId,
+    required this.onBack,
+    required this.onOpenInbox,
+    required this.onStartCampaign,
+  });
+
+  final String organizerId;
+  final VoidCallback onBack;
+  final VoidCallback onOpenInbox;
+  final VoidCallback onStartCampaign;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final setup = ref.watch(hostMessagingSetupProvider(organizerId));
+    final chat = communicationRouteCapability(CommunicationRouteId.catchChat);
+    final announcement = communicationRouteCapability(
+      CommunicationRouteId.catchEventAnnouncement,
+    );
+    final whatsappApp = communicationRouteCapability(
+      CommunicationRouteId.personalWhatsappHandoff,
+    );
+    final whatsappBusiness = communicationRouteCapability(
+      CommunicationRouteId.organizerWhatsappCampaign,
+    );
+    final catchWhatsapp = communicationRouteCapability(
+      CommunicationRouteId.catchWhatsapp,
+    );
+    final followerUpdate = communicationRouteCapability(
+      CommunicationRouteId.organizerFollowerUpdate,
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _HostSendsBackButton(onPressed: onBack),
+        gapH12,
+        CatchSection.divided(
+          title: context.l10n.hostSendsChooseChannel,
+          child: CatchFieldLanes.single(
+            child: Column(
+              children: [
+                CatchField.nav(
+                  key: ValueKey('host-route-${chat.id.name}'),
+                  title: context.l10n.hostSendsCatchChatChannel,
+                  body: context.l10n.hostSendsCatchChatDescription,
+                  onTap: onOpenInbox,
+                ),
+                CatchField.nav(
+                  key: ValueKey('host-route-${announcement.id.name}'),
+                  title: context.l10n.hostSendsCatchAnnouncementChannel,
+                  body: context.l10n.hostSendsCatchAnnouncementDescription,
+                  onTap: onOpenInbox,
+                ),
+                setup.when(
+                  loading: () => CatchFieldLanes.single(
+                    child: CatchField.read(
+                      key: ValueKey('host-route-${whatsappBusiness.id.name}'),
+                      title: context.l10n.hostSendsWhatsappBusinessChannel,
+                      body: context.l10n.hostSendsChannelChecking,
+                    ),
+                  ),
+                  error: (_, _) => CatchFieldLanes.single(
+                    child: CatchField.read(
+                      key: ValueKey('host-route-${whatsappBusiness.id.name}'),
+                      title: context.l10n.hostSendsWhatsappBusinessChannel,
+                      body: context.l10n.hostSendsChannelUnavailable,
+                      valueText: context.l10n.hostSendsSetupRequired,
+                    ),
+                  ),
+                  data: (value) => CatchFieldLanes.single(
+                    child: value.canComposeCampaign
+                        ? CatchField.nav(
+                            key: ValueKey(
+                              'host-route-${whatsappBusiness.id.name}',
+                            ),
+                            title:
+                                context.l10n.hostSendsWhatsappBusinessChannel,
+                            body: context
+                                .l10n
+                                .hostSendsWhatsappBusinessDescription,
+                            onTap: onStartCampaign,
+                          )
+                        : CatchField.read(
+                            key: ValueKey(
+                              'host-route-${whatsappBusiness.id.name}',
+                            ),
+                            title:
+                                context.l10n.hostSendsWhatsappBusinessChannel,
+                            body: _whatsappReadinessMessage(
+                              context,
+                              value.campaignReadiness,
+                            ),
+                            valueText: context.l10n.hostSendsSetupRequired,
+                          ),
+                  ),
+                ),
+                CatchField.nav(
+                  key: ValueKey('host-route-${whatsappApp.id.name}'),
+                  title: context.l10n.hostSendsWhatsappAppChannel,
+                  body: context.l10n.hostSendsWhatsappAppDescription,
+                  onTap: () => context.goNamed(Routes.hostCustomersScreen.name),
+                ),
+                CatchField.nav(
+                  key: ValueKey('host-route-${followerUpdate.id.name}'),
+                  title: context.l10n.hostSendsFollowerUpdateChannel,
+                  body: context.l10n.hostSendsFollowerUpdateDescription,
+                  onTap: () => context.goNamed(Routes.hostOrganizerScreen.name),
+                ),
+                CatchField.read(
+                  key: ValueKey('host-route-${catchWhatsapp.id.name}'),
+                  title: context.l10n.hostSendsCatchWhatsappChannel,
+                  body: context.l10n.hostSendsCatchWhatsappDescription,
+                  valueText: context.l10n.hostSendsPlanned,
+                ),
+              ],
+            ),
+          ),
+        ),
+        gapH12,
+        CatchButton(
+          label: context.l10n.hostSendsSettings,
+          variant: CatchButtonVariant.secondary,
+          onPressed: () => context.pushNamed(
+            Routes.hostOrganizerMessagingScreen.name,
+            pathParameters: {'clubId': organizerId},
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+String _whatsappReadinessMessage(
+  BuildContext context,
+  HostWhatsappCampaignReadiness readiness,
+) => switch (readiness) {
+  HostWhatsappCampaignReadiness.providerUnavailable =>
+    context.l10n.hostSendsWhatsappProviderUnavailable,
+  HostWhatsappCampaignReadiness.senderNotConnected =>
+    context.l10n.hostSendsWhatsappSenderRequired,
+  HostWhatsappCampaignReadiness.senderNeedsAttention =>
+    context.l10n.hostSendsWhatsappSenderNeedsAttention,
+  HostWhatsappCampaignReadiness.approvedTemplateRequired =>
+    context.l10n.hostSendsWhatsappTemplateRequired,
+  HostWhatsappCampaignReadiness.ready =>
+    context.l10n.hostSendsWhatsappBusinessDescription,
+};
 
 class _HostSendsHistoryPage extends StatelessWidget {
   const _HostSendsHistoryPage({
@@ -400,7 +566,7 @@ class _HostSendRow extends StatelessWidget {
         key: ValueKey('host-send-campaign-${campaign.campaignId}'),
         title: campaign.name,
         body: [
-          context.l10n.hostSendsCampaignType,
+          context.l10n.hostSendsWhatsappBusinessChannel,
           campaign.templateName ?? campaign.templateId,
           AppTimeFormatters.shortDate(campaign.activityAt),
         ].join(' · '),
@@ -411,7 +577,7 @@ class _HostSendRow extends StatelessWidget {
         key: ValueKey('host-send-announcement-${announcement.broadcastId}'),
         title: announcement.eventName,
         body: [
-          context.l10n.hostSendsAnnouncementType,
+          context.l10n.hostSendsCatchAnnouncementChannel,
           context.l10n.hostSendsRecipients(count: announcement.recipientCount),
           AppTimeFormatters.shortDate(announcement.sentAt),
         ].join(' · '),

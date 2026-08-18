@@ -37,6 +37,39 @@ class ExternalLinkController {
 
   Future<bool> openHostApp() => openExternal(AppConfig.hostAppUrl);
 
+  Future<bool> openHostMessagingSetup(String organizerId) {
+    final normalizedOrganizerId = organizerId.trim();
+    if (normalizedOrganizerId.isEmpty) return Future.value(false);
+    final base = AppConfig.hostAppUrl;
+    final uri = base.replace(
+      pathSegments: [
+        ...base.pathSegments.where((segment) => segment.isNotEmpty),
+        'organizer',
+        normalizedOrganizerId,
+        'messaging',
+      ],
+    );
+    return openExternal(uri);
+  }
+
+  /// Opens a one-person WhatsApp handoff with editable text prefilled.
+  ///
+  /// This route intentionally returns only whether the external application
+  /// opened. Catch cannot observe whether the host ultimately pressed Send.
+  Future<bool> openWhatsappHandoff({
+    required String phoneE164,
+    required String message,
+  }) {
+    final digits = phoneE164.replaceAll(RegExp(r'[^0-9]'), '');
+    final body = message.trim();
+    if (digits.length < 8 || digits.length > 15 || body.isEmpty) {
+      return Future.value(false);
+    }
+    return openExternal(
+      Uri.https('wa.me', '/$digits', <String, String>{'text': body}),
+    );
+  }
+
   Future<bool> open(Uri uri) {
     if (!uri.hasScheme) return Future.value(false);
     return withBackendErrorContext(

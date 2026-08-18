@@ -58,4 +58,88 @@ void main() {
     expect(launchedUri, Uri.parse('https://catchdates.com/host'));
     expect(launchMode, LaunchMode.externalApplication);
   });
+
+  test(
+    'openHostMessagingSetup preserves the configured Host base path',
+    () async {
+      Uri? launchedUri;
+      final controller = ExternalLinkController((
+        uri, {
+        mode = LaunchMode.platformDefault,
+      }) async {
+        launchedUri = uri;
+        return true;
+      });
+
+      final opened = await controller.openHostMessagingSetup('organizer 1');
+
+      expect(opened, isTrue);
+      expect(
+        launchedUri,
+        Uri.parse(
+          'https://catchdates.com/host/organizer/organizer%201/messaging',
+        ),
+      );
+    },
+  );
+
+  test(
+    'openWhatsappHandoff strips phone formatting and pre-fills text',
+    () async {
+      Uri? launchedUri;
+      LaunchMode? launchMode;
+      final controller = ExternalLinkController((
+        uri, {
+        mode = LaunchMode.platformDefault,
+      }) async {
+        launchedUri = uri;
+        launchMode = mode;
+        return true;
+      });
+
+      final opened = await controller.openWhatsappHandoff(
+        phoneE164: '+91 98765 43210',
+        message: ' Hi Ananya, see you Sunday! ',
+      );
+
+      expect(opened, isTrue);
+      expect(launchedUri?.host, 'wa.me');
+      expect(launchedUri?.path, '/919876543210');
+      expect(
+        launchedUri?.queryParameters['text'],
+        'Hi Ananya, see you Sunday!',
+      );
+      expect(launchMode, LaunchMode.externalApplication);
+    },
+  );
+
+  test(
+    'openWhatsappHandoff rejects invalid destinations and empty copy',
+    () async {
+      var calls = 0;
+      final controller = ExternalLinkController((
+        uri, {
+        mode = LaunchMode.platformDefault,
+      }) async {
+        calls += 1;
+        return true;
+      });
+
+      expect(
+        await controller.openWhatsappHandoff(
+          phoneE164: '123',
+          message: 'Hello',
+        ),
+        isFalse,
+      );
+      expect(
+        await controller.openWhatsappHandoff(
+          phoneE164: '+919876543210',
+          message: ' ',
+        ),
+        isFalse,
+      );
+      expect(calls, 0);
+    },
+  );
 }

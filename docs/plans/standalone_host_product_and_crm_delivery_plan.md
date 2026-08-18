@@ -1,7 +1,7 @@
 ---
 doc_id: standalone_host_product_and_crm_delivery_plan
-version: 4.2.0
-updated: 2026-08-16
+version: 4.3.0
+updated: 2026-08-18
 owner: host_tooling
 status: active
 ---
@@ -70,7 +70,10 @@ independent layers:
 | External event + roster | **Implemented** | CSV/XLSX/manual import and provider-specific normalization work without Catch checkout; provider export samples still determine adapter confidence |
 | No-download Event Success | **Implemented** | Guests use phone OTP at `/join/:publicRuntimeId`; First Hello, wingman, questionnaires, groups, pairs, rotations, assignment delivery, self check-in and feedback do not require the Consumer app |
 | Host CRM/Audience | **Implemented** | Person directory, timeline, fixed categories, server-backed sorting, search, detail, evidence-bearing merge review and receipt-specific unmerge, export, privacy requests and suppression work from any roster source; migration coverage is shown rather than hidden |
+| Personal WhatsApp handoff | **Implemented** | From an individual Customer, Catch opens the device WhatsApp app with editable prefilled copy. The Host remains the sender and must press Send; Catch has no delivery, reply, or forward evidence for this route |
 | WhatsApp Business campaigns and Inbox | **Implemented; provider-gated** | Catch supports Meta account authorization, WABA/number selection, sender verification, template sync/test, preview/approval/schedule/dispatch/report, status webhooks, STOP, 12-month inbound thread retention and service-window replies; production use requires Meta assets, credentials, webhook configuration, approved templates where required and exact recipient consent |
+| Catch chat, event announcements and follower updates | **Implemented** | Linked Catch accounts support direct Host chat; event announcements create Activity plus preference-gated push; organizer follower posts appear on Home and Activity. Each route remains visibly distinct and keeps its own eligibility and reply semantics |
+| Catch-owned WhatsApp | **Specified; provider- and policy-gated** | The route is reserved separately from organizer WhatsApp, but it cannot activate until Catch chooses a narrow purpose, owns and verifies a sender, defines Catch-scoped consent/suppression/support, configures Meta assets and proves webhook/test-message health |
 | Rich Host invitations | **Implemented** | Host/channel/direct-recipient/promoter/partner links, rich creative, bearer-token landing, likely-human opens and downstream conversions work without Catch booking; external booking conversion stays unknown without reconciliation/provider evidence |
 | Attendee share attribution | **Implemented in web runtime and Consumer app** | Eligible attendees receive one stable personal link in no-download event mode, event detail or payment confirmation; Catch records use of its share/copy controls, opens, verified registrations and attendance, never private WhatsApp sends or forwards |
 | Provider sync | **Implemented for Luma polling; cataloged for all providers** | Luma account connection, event selection, manual refresh and roster/check-in reconciliation are implemented; Eventbrite needs app/OAuth configuration, Partiful/Posh use exports, and other named providers remain sample/partner-gated |
@@ -1277,6 +1280,58 @@ template/message window, and suppression/frequency checks.
 
 ### Channel adapters
 
+#### Communication route contract
+
+A transport name is not a product channel. Every Host communication choice is
+a route with six independent dimensions: **transport**, **sender identity**,
+**delivery mode**, **audience/eligibility**, **consent scope**, and
+**observability**. UI must state who sends, where the recipient receives it,
+whether the Host must complete the final Send action, and whether Catch can see
+delivery or replies. It must never use one undifferentiated “Message” action.
+
+The source registries are
+`lib/communications/domain/communication_route.dart` and
+`functions/src/communications/communicationRoutes.ts`. `adapterKey` selects the
+provider implementation. A future LINE, WeChat, KakaoTalk, SMS, or regional
+adapter adds a new route or replaces an adapter behind the same exact contract;
+it does not inherit WhatsApp permission merely because the delivery mode is
+similar.
+
+| Route | Transport and sender | Delivery and audience | Permission | Evidence and replies | Host entry and current status |
+| --- | --- | --- | --- | --- | --- |
+| Personal WhatsApp handoff | WhatsApp app; Host's personal/device account | One Customer with a valid phone; editable prefilled text; Host presses Send | Direct Host action and independent lawful/service basis; explicit opt-out or admin suppression blocks the action; not campaign consent | Catch observes only whether the external app launched, not Send/delivery/read/reply; replies remain in WhatsApp | Customer detail → **WhatsApp app · You**; **Implemented** |
+| Organizer WhatsApp Business | Meta Cloud API; organizer-managed WABA/number | Permissioned CRM segment; template/campaign or eligible service-window reply | Exact organizer-scoped WhatsApp permission plus suppression/frequency checks | Provider acceptance/status/reply/STOP receipts in organizer-scoped campaign and Inbox records | Messaging → **WhatsApp Business · Organizer number**; source-complete, **provider-gated** |
+| Catch-owned WhatsApp | Meta/BSP adapter; clearly named Catch number | Narrow Catch service or platform purpose only; never impersonates an organizer | Separate Catch-scoped permission, notices, suppression, retention and policy basis | Separate Catch sender/webhook/thread/support records; never organizer campaign receipts | Visible as **Catch WhatsApp · Catch number**, **not active** until the product and external gates below close |
+| Catch chat | Catch app; organizer-managed professional identity | One linked, verified, unambiguous Catch account | Linked Catch account and conversation authority | Catch message/activity state; two-way reply | Customer detail or Messaging Inbox → **Catch chat · Organizer**; **Implemented** |
+| Catch event announcement | Catch Activity plus preference-gated push; organizer identity | Booked, Prospective, or Everyone for one event; roster-derived recipients | Event-service authority and notification preference | Durable Activity receipt plus aggregate push outcome; no reply thread | Messaging Inbox → **Catch announcement · Event audience**; **Implemented** |
+| Organizer follower update | Catch Home/Activity plus preference-gated push; organizer identity | Users following the organizer, optionally linked to an event | Follow relationship and organizer-update preference | Durable Home/Activity item; no reply thread | Organizer post composer → **Organizer update · Followers**; **Implemented** |
+
+Host Messaging first presents the route picker, then the route-specific
+composer or its exact readiness explanation. History rows repeat the route
+label. Unavailable routes remain explanatory page content with the owning entry
+point, not disabled commands in an overflow menu.
+
+Organizer WhatsApp activation is complete only when all of these are true:
+
+1. the chosen direct Meta or reviewed BSP operating path and support owner are
+   approved;
+2. Meta app, Embedded Signup configuration, organizer WABA/phone assets and
+   required access scopes are valid for the target environment;
+3. app secret, system/user access-token storage and least-privilege runtime IAM
+   are configured outside Firestore;
+4. webhook verification, raw-body signature verification, WABA subscription,
+   public callback reachability and replay/idempotency tests pass;
+5. an organizer connection completes number/display verification, template
+   sync, test send and status receipt; and
+6. recipient permission evidence, STOP/suppression, frequency caps, retention,
+   cost/quality ownership and support runbooks are approved.
+
+Catch-owned WhatsApp must repeat those gates with a **different** Catch sender,
+token, consent scope, suppression ledger, thread/support owner, templates and
+retention policy. The unresolved product decision is its first narrow purpose:
+transactional event service, account/support messages, or a separately
+permissioned Catch campaign. No organizer permission may be reused.
+
 **In-app:** extend the existing event broadcast from current-event Consumer
 participations to organizer-scoped, permissioned linked attendees and followers.
 Preserve notification preferences and Activity as the durable user-visible
@@ -2427,6 +2482,9 @@ The owner must resolve these before their dependent implementation slice:
     onboarding availability, coexistence, countries, support and unit economics.
 19. Event-service sender identity: whether Catch will operate a narrow
     transactional sender before organizer-owned WABA onboarding is available.
+    This decision must also choose Catch-owned WhatsApp's first purpose,
+    consent copy, reply/support owner, retention policy and distinct sender;
+    until then that route stays visible but inactive.
 20. Per-thread or per-contact WhatsApp deletion semantics beyond the implemented
     12-month time-based expiry.
 21. Organizer-contact notes/tags retention, staff visibility and attendee

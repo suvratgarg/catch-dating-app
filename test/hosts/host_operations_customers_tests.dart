@@ -499,6 +499,61 @@ void _registerHostOperationsCustomersTests() {
     expect(memoryY, lessThan(activityY));
     expect(activityY, lessThan(controlsY));
   });
+
+  testWidgets('customer WhatsApp handoff pre-fills copy and opens wa.me', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 3600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    Uri? launchedUri;
+    final detail = _customerDetail(phoneE164: '+91 98765 43210');
+
+    await _pumpHostScreen(
+      tester,
+      const HostCustomerDetailScreen(
+        organizerId: 'organizer-1',
+        contactId: 'contact-1',
+      ),
+      overrides: [
+        uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
+        hostAudienceContactDetailProvider(
+          'organizer-1',
+          'contact-1',
+        ).overrideWithValue(AsyncData(detail)),
+        externalUrlLauncherProvider.overrideWithValue((
+          uri, {
+          mode = LaunchMode.platformDefault,
+        }) async {
+          launchedUri = uri;
+          return true;
+        }),
+      ],
+    );
+
+    await tester.tap(find.byKey(const ValueKey('host-customer-open-whatsapp')));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('WhatsApp app'), findsOneWidget);
+    expect(find.textContaining('You review it and press Send'), findsWidgets);
+    final messageInput = tester.widget<TextField>(
+      find.descendant(
+        of: find.byKey(const ValueKey('host-customer-whatsapp-message')),
+        matching: find.byType(TextField),
+      ),
+    );
+    expect(messageInput.controller?.text, 'Hi Ananya Rao,');
+
+    await tester.tap(
+      find.byKey(const ValueKey('host-customer-confirm-whatsapp')),
+    );
+    await pumpFeatureUi(tester);
+
+    expect(launchedUri?.host, 'wa.me');
+    expect(launchedUri?.path, '/919876543210');
+    expect(launchedUri?.queryParameters['text'], 'Hi Ananya Rao,');
+  });
 }
 
 HostCustomerDirectoryContact _customerDirectoryContact({
@@ -534,83 +589,85 @@ HostCustomersDirectoryState _emptyCustomerDirectoryState() =>
       projectionVersion: 1,
     );
 
-HostAudienceContactDetail _customerDetail() => HostAudienceContactDetail(
-  organizerId: 'organizer-1',
-  contactId: 'contact-1',
-  displayName: 'Ananya Rao',
-  sourceDisplayName: 'Ananya Rao',
-  displayNameOverride: null,
-  phoneE164: null,
-  email: null,
-  linkedAccount: true,
-  identityState: HostAudienceIdentityState.verified,
-  identityConfidence: 'verified_account',
-  ambiguousCandidateCount: 0,
-  whatsappAdminSuppressed: false,
-  traits: const HostCustomerTraits(
-    expectedEventCount: 1,
-    attendedEventCount: 1,
-    cancelledEventCount: 0,
-    noShowCount: 0,
-    importedEventCount: 0,
-    attendanceRate: 1,
-    segments: {HostAudienceSegment.regular},
-    sourceCoverage: HostAudienceSourceCoverage.exact,
-  ),
-  revenue: const HostCustomerRevenue(
-    coverage: HostCustomerRevenueCoverage.exact,
-    amounts: [],
-  ),
-  events: [
-    HostAudienceEventFact(
-      eventId: 'event-1',
-      displayName: 'Sunday Run Club',
-      source: 'attendance',
-      status: 'attended',
-      checkedIn: true,
-      eventStartAt: DateTime(2026, 8),
-    ),
-  ],
-  eventsTruncated: false,
-  manualTags: const [
-    HostManualTag(
-      tagId: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-      label: 'Brings friends',
-    ),
-  ],
-  manualTagVocabulary: const [
-    HostManualTag(
-      tagId: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-      label: 'Brings friends',
-    ),
-    HostManualTag(
-      tagId: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
-      label: 'Prefers weekends',
-    ),
-  ],
-  notes: [
-    HostCustomerNote(
-      noteId: 'note-1',
-      body: 'Introduced three friends.',
-      authorUid: _hostUid,
-      createdAt: DateTime(2026, 8, 15),
-      updatedAt: DateTime(2026, 8, 15),
+HostAudienceContactDetail _customerDetail({String? phoneE164}) =>
+    HostAudienceContactDetail(
+      organizerId: 'organizer-1',
+      contactId: 'contact-1',
+      displayName: 'Ananya Rao',
+      sourceDisplayName: 'Ananya Rao',
+      displayNameOverride: null,
+      phoneE164: phoneE164,
+      email: null,
+      linkedAccount: true,
+      identityState: HostAudienceIdentityState.verified,
+      identityConfidence: 'verified_account',
+      ambiguousCandidateCount: 0,
+      whatsappAdminSuppressed: false,
+      traits: const HostCustomerTraits(
+        expectedEventCount: 1,
+        attendedEventCount: 1,
+        cancelledEventCount: 0,
+        noShowCount: 0,
+        importedEventCount: 0,
+        attendanceRate: 1,
+        segments: {HostAudienceSegment.regular},
+        whatsappStatus: HostAudiencePermissionStatus.optedIn,
+        sourceCoverage: HostAudienceSourceCoverage.exact,
+      ),
+      revenue: const HostCustomerRevenue(
+        coverage: HostCustomerRevenueCoverage.exact,
+        amounts: [],
+      ),
+      events: [
+        HostAudienceEventFact(
+          eventId: 'event-1',
+          displayName: 'Sunday Run Club',
+          source: 'attendance',
+          status: 'attended',
+          checkedIn: true,
+          eventStartAt: DateTime(2026, 8),
+        ),
+      ],
+      eventsTruncated: false,
+      manualTags: const [
+        HostManualTag(
+          tagId: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          label: 'Brings friends',
+        ),
+      ],
+      manualTagVocabulary: const [
+        HostManualTag(
+          tagId: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          label: 'Brings friends',
+        ),
+        HostManualTag(
+          tagId: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+          label: 'Prefers weekends',
+        ),
+      ],
+      notes: [
+        HostCustomerNote(
+          noteId: 'note-1',
+          body: 'Introduced three friends.',
+          authorUid: _hostUid,
+          createdAt: DateTime(2026, 8, 15),
+          updatedAt: DateTime(2026, 8, 15),
+          revision: 1,
+        ),
+      ],
+      sends: [
+        HostCustomerSend(
+          campaignId: 'campaign-1',
+          name: 'August invite',
+          messageClass: 'organizerPromotion',
+          deliveryStatus: HostCustomerSendDeliveryStatus.delivered,
+          createdAt: DateTime(2026, 8, 14),
+          sentAt: DateTime(2026, 8, 14),
+          updatedAt: DateTime(2026, 8, 14),
+        ),
+      ],
       revision: 1,
-    ),
-  ],
-  sends: [
-    HostCustomerSend(
-      campaignId: 'campaign-1',
-      name: 'August invite',
-      messageClass: 'organizerPromotion',
-      deliveryStatus: HostCustomerSendDeliveryStatus.delivered,
-      createdAt: DateTime(2026, 8, 14),
-      sentAt: DateTime(2026, 8, 14),
-      updatedAt: DateTime(2026, 8, 14),
-    ),
-  ],
-  revision: 1,
-);
+    );
 
 class _FixedHostCustomersDirectoryController
     extends HostCustomersDirectoryController {

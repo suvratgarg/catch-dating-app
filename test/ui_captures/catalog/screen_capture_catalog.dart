@@ -4802,6 +4802,7 @@ HostAudienceContactDetail _hostCustomerMemoryDetail() {
       importedEventCount: 0,
       attendanceRate: 8 / 9,
       segments: {HostAudienceSegment.regular},
+      whatsappStatus: HostAudiencePermissionStatus.optedIn,
       sourceCoverage: HostAudienceSourceCoverage.exact,
     ),
     revenue: const HostCustomerRevenue(

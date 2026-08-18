@@ -272,7 +272,9 @@ List<ActivityNotification> clubPostNotificationsFromActivity(
           .where(
             (notification) =>
                 notification.isUnread &&
-                notification.type == ActivityNotificationType.clubUpdate &&
+                (notification.type == ActivityNotificationType.clubUpdate ||
+                    notification.type ==
+                        ActivityNotificationType.organizerUpdate) &&
                 notification.postId != null,
           )
           .toList()
