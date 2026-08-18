@@ -69,6 +69,7 @@ import {requireOrganizerManager} from
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {answersForSubmission} from "./organizerFormLogic";
+import {incrementOrganizerFormFunnel} from "./organizerFormAggregates";
 
 type FormDefinition = OrganizerFormVersionDocument["definition"];
 type PublicFormProjection = GetPublicOrganizerFormCallableResponse;
@@ -119,7 +120,24 @@ export async function getPublicOrganizerFormHandler(
     "getPublicOrganizerForm"
   );
   const resolved = await resolvePublicForm(db, data.publicFormId, deps);
-  await resolveSourceLink(db, resolved.formId, data.sourceToken);
+  const sourceLinkId = await resolveSourceLink(
+    db,
+    resolved.formId,
+    data.sourceToken
+  );
+  await Promise.all([
+    incrementOrganizerFormFunnel({
+      organizerId: resolved.form.organizerId,
+      formId: resolved.formId,
+      versionId: resolved.versionId,
+      counter: "opens",
+      deps: {firestore: deps.firestore, timestamp: deps.timestamp},
+    }),
+    sourceLinkId ? db.collection("organizerFormShareLinks")
+      .doc(sourceLinkId).update({
+        openCount: admin.firestore.FieldValue.increment(1),
+      }) : Promise.resolve(),
+  ]);
   return resolved.projection;
 }
 
@@ -167,7 +185,7 @@ export async function beginOrganizerFormResponseHandler(
     data.requestId
   ) : null;
   const draftRef = db.collection("organizerFormResponseDrafts").doc(draftId);
-  const draft = await db.runTransaction(async (tx) => {
+  const result = await db.runTransaction(async (tx) => {
     const snapshot = await tx.get(draftRef);
     if (snapshot.exists) {
       const existing = requireDoc<OrganizerFormResponseDraftDocument>(
@@ -196,7 +214,7 @@ export async function beginOrganizerFormResponseHandler(
           "This response draft has expired. Start a new response."
         );
       }
-      return existing;
+      return {draft: existing, created: false};
     }
     const now = deps.timestamp();
     const created: OrganizerFormResponseDraftDocument = {
@@ -226,8 +244,18 @@ export async function beginOrganizerFormResponseHandler(
         startCount: admin.firestore.FieldValue.increment(1),
       });
     }
-    return created;
+    return {draft: created, created: true};
   });
+  if (result.created) {
+    await incrementOrganizerFormFunnel({
+      organizerId: resolved.form.organizerId,
+      formId: resolved.formId,
+      versionId: resolved.versionId,
+      counter: "starts",
+      deps: {firestore: deps.firestore, timestamp: deps.timestamp},
+    });
+  }
+  const draft = result.draft;
   return {
     draftId,
     draftToken,
@@ -610,12 +638,24 @@ export async function submitOrganizerFormResponseHandler(
       status: "submitted",
       identityKind: draft.identityKind,
       respondentUid: draft.respondentUid,
+      identity: responseIdentitySnapshot(
+        version.definition,
+        submittedAnswers,
+        request
+      ),
       withdrawalTokenHash: draft.respondentUid === null ?
         hashToken(withdrawalToken) : null,
       answers: submittedAnswers,
       answerSnapshots: answerSnapshots(version.definition, submittedAnswers),
       consentVersion: draft.consentVersion,
       sourceLinkId: draft.sourceLinkId,
+      completionMillis: Math.max(
+        0,
+        Math.min(
+          responseDraftLifetimeMs,
+          now.toMillis() - draft.createdAt.toMillis()
+        )
+      ),
       submittedAt: now,
       withdrawnAt: null,
     };
@@ -652,6 +692,40 @@ export async function submitOrganizerFormResponseHandler(
     result.version,
     result.response.respondentUid === null ? withdrawalToken : null
   );
+}
+
+function responseIdentitySnapshot(
+  definition: FormDefinition,
+  answers: AnswerMap,
+  request: CallableRequest<unknown>
+): OrganizerFormResponseDocument["identity"] {
+  const canonicalAnswer = (canonicalFieldId: string): string | null => {
+    const question = definition.sections.flatMap((section) =>
+      section.questions).find((candidate) =>
+      candidate.canonicalFieldId === canonicalFieldId);
+    const answer = question ? answers[question.questionId] : null;
+    return typeof answer === "string" && answer.trim() ? answer.trim() : null;
+  };
+  const tokenEmail = typeof request.auth?.token.email === "string" ?
+    request.auth.token.email.trim().toLowerCase() : null;
+  const tokenPhone = typeof request.auth?.token.phone_number === "string" ?
+    request.auth.token.phone_number.trim() : null;
+  const tokenName = typeof request.auth?.token.name === "string" ?
+    request.auth.token.name.trim() : null;
+  const displayName = tokenName || canonicalAnswer("displayName") || [
+    canonicalAnswer("givenName"),
+    canonicalAnswer("familyName"),
+  ].filter(Boolean).join(" ") || null;
+  const email = tokenEmail || canonicalAnswer("email");
+  const phoneE164 = tokenPhone || canonicalAnswer("phoneNumber");
+  const hasVerifiedIdentity = Boolean(request.auth?.uid);
+  const hasOrganizerAcquiredIdentity = Boolean(
+    displayName || email || phoneE164
+  );
+  const origin = hasVerifiedIdentity ? "respondentGranted" :
+    hasOrganizerAcquiredIdentity ? "organizerAcquired" : "anonymous";
+  const searchName = (displayName || email || phoneE164)?.toLowerCase() ?? null;
+  return {displayName, email, phoneE164, searchName, origin};
 }
 
 /** Withdraws a submitted response without deleting its audit envelope. */

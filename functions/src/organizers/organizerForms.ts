@@ -849,6 +849,13 @@ export function validateOrganizerFormDefinition(
       "Add at least one question before publishing."
     );
   }
+  if (questionCount > 200) {
+    add(
+      "tooManyQuestions",
+      "sections",
+      "Forms can contain at most 200 questions. Split this into multiple forms."
+    );
+  }
   const ruleIds = new Set<string>();
   const navigationSources = new Map<number, string>();
   definition.logicRules.forEach((rule, ruleIndex) => {

@@ -20,11 +20,13 @@ const schemaOrganizerFormResponseDocumentSchema = <String, Object?>{
     'status',
     'identityKind',
     'respondentUid',
+    'identity',
     'withdrawalTokenHash',
     'answers',
     'answerSnapshots',
     'consentVersion',
     'sourceLinkId',
+    'completionMillis',
     'submittedAt',
     'withdrawnAt',
   ],
@@ -80,6 +82,56 @@ const schemaOrganizerFormResponseDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+    },
+    'identity': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'displayName',
+        'email',
+        'phoneE164',
+        'searchName',
+        'origin',
+      ],
+      'properties': <String, Object?>{
+        'displayName': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'maxLength': 160,
+        },
+        'email': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'format': 'email',
+          'maxLength': 320,
+        },
+        'phoneE164': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'pattern': '^\\+[1-9][0-9]{7,14}\$',
+        },
+        'searchName': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'maxLength': 160,
+        },
+        'origin': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'anonymous',
+            'respondentGranted',
+            'organizerAcquired',
+          ],
+        },
+      },
     },
     'withdrawalTokenHash': <String, Object?>{
       'type': <Object?>[
@@ -219,6 +271,11 @@ const schemaOrganizerFormResponseDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+    },
+    'completionMillis': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 604800000,
     },
     'submittedAt': <String, Object?>{
       'type': 'object',

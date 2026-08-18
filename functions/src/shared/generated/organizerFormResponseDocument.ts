@@ -18,6 +18,13 @@ export interface OrganizerFormResponseDocument {
     | "phoneVerified"
     | "catchAccount";
   respondentUid: string | null;
+  identity: {
+    displayName: string | null;
+    email: string | null;
+    phoneE164: string | null;
+    searchName: string | null;
+    origin: "anonymous" | "respondentGranted" | "organizerAcquired";
+  };
   withdrawalTokenHash: string | null;
   answers: {
     [k: string]: string | number | boolean | null | string[];
@@ -47,6 +54,7 @@ export interface OrganizerFormResponseDocument {
   }[];
   consentVersion: string;
   sourceLinkId: string | null;
+  completionMillis: number;
   /**
    * Serialized Firestore Timestamp fixture shape.
    */

@@ -1,0 +1,204 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/organizer_form_operations_common.schema.json",
+  "title": "Organizer form operations common definitions",
+  "description": "Response operations, aggregate, export, automation, and reviewed conversion projections.",
+  "definitions": {
+    "responseIdentitySnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["displayName", "email", "phoneE164", "searchName", "origin"],
+      "properties": {
+        "displayName": {"type": ["string", "null"], "maxLength": 160},
+        "email": {"type": ["string", "null"], "format": "email", "maxLength": 320},
+        "phoneE164": {"type": ["string", "null"], "pattern": "^\\+[1-9][0-9]{7,14}$"},
+        "searchName": {"type": ["string", "null"], "maxLength": 160},
+        "origin": {"type": "string", "enum": ["anonymous", "respondentGranted", "organizerAcquired"]}
+      }
+    },
+    "responseHighlight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["questionId", "label", "answer"],
+      "properties": {
+        "questionId": {"$ref": "event_common.schema.json#/definitions/documentId"},
+        "label": {"type": "string", "minLength": 1, "maxLength": 240},
+        "answer": {"$ref": "organizer_form_response_common.schema.json#/definitions/answerValue"}
+      }
+    },
+    "responseRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["responseId", "formId", "formTitle", "versionId", "version", "status", "identityKind", "identity", "sourceLinkId", "sourceLabel", "submittedAtMillis", "withdrawnAtMillis", "highlights", "conversionKinds"],
+      "properties": {
+        "responseId": {"$ref": "event_common.schema.json#/definitions/documentId"},
+        "formId": {"$ref": "event_common.schema.json#/definitions/documentId"},
+        "formTitle": {"type": "string", "minLength": 1, "maxLength": 160},
+        "versionId": {"$ref": "event_common.schema.json#/definitions/documentId"},
+        "version": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "status": {"$ref": "organizer_form_response_common.schema.json#/definitions/responseStatus"},
+        "identityKind": {"$ref": "organizer_form_response_common.schema.json#/definitions/responseIdentityKind"},
+        "identity": {"$ref": "#/definitions/responseIdentitySnapshot"},
+        "sourceLinkId": {"anyOf": [{"$ref": "event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
+        "sourceLabel": {"type": ["string", "null"], "maxLength": 120},
+        "submittedAtMillis": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+        "withdrawnAtMillis": {"type": ["integer", "null"], "minimum": 0, "maximum": 9007199254740991},
+        "highlights": {"type": "array", "maxItems": 12, "items": {"$ref": "#/definitions/responseHighlight"}},
+        "conversionKinds": {"type": "array", "maxItems": 4, "uniqueItems": true, "items": {"$ref": "#/definitions/conversionKind"}}
+      }
+    },
+    "answerDetail": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["questionId", "key", "label", "kind", "privacyClass", "hostPresentation", "answer", "origin", "assetDownloads"],
+      "properties": {
+        "questionId": {"$ref": "event_common.schema.json#/definitions/documentId"},
+        "key": {"type": "string", "minLength": 1, "maxLength": 80},
+        "label": {"type": "string", "minLength": 1, "maxLength": 240},
+        "kind": {"$ref": "organizer_form_common.schema.json#/definitions/questionKind"},
+        "privacyClass": {"type": "string", "enum": ["contact", "profile", "sensitive", "organizerCustom"]},
+        "hostPresentation": {"type": "string", "enum": ["detailOnly", "filterable", "sortable"]},
+        "answer": {"$ref": "organizer_form_response_common.schema.json#/definitions/answerValue"},
+        "origin": {"type": "string", "enum": ["anonymous", "respondentGranted", "organizerAcquired", "revoked"]},
+        "assetDownloads": {
+          "type": "array",
+          "maxItems": 10,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["assetId", "fileName", "contentType", "sizeBytes", "downloadUrl", "expiresAtMillis"],
+            "properties": {
+              "assetId": {"$ref": "event_common.schema.json#/definitions/documentId"},
+              "fileName": {"type": "string", "minLength": 1, "maxLength": 240},
+              "contentType": {"type": "string", "minLength": 1, "maxLength": 100},
+              "sizeBytes": {"type": "integer", "minimum": 1, "maximum": 26214400},
+              "downloadUrl": {"type": "string", "format": "uri", "maxLength": 4000},
+              "expiresAtMillis": {"type": "integer", "minimum": 0, "maximum": 9007199254740991}
+            }
+          }
+        }
+      }
+    },
+    "sourceFunnel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceLinkId", "label", "opens", "starts", "submissions"],
+      "properties": {
+        "sourceLinkId": {"type": ["string", "null"], "maxLength": 128},
+        "label": {"type": "string", "minLength": 1, "maxLength": 120},
+        "opens": {"type": "integer", "minimum": 0, "maximum": 1000000000},
+        "starts": {"type": "integer", "minimum": 0, "maximum": 1000000000},
+        "submissions": {"type": "integer", "minimum": 0, "maximum": 1000000000}
+      }
+    },
+    "questionAggregate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["questionId", "label", "kind", "privacyClass", "responseCount", "choiceCounts", "numericCount", "numericSum", "numericMin", "numericMax"],
+      "properties": {
+        "questionId": {"$ref": "event_common.schema.json#/definitions/documentId"},
+        "label": {"type": "string", "minLength": 1, "maxLength": 240},
+        "kind": {"$ref": "organizer_form_common.schema.json#/definitions/questionKind"},
+        "privacyClass": {"type": "string", "enum": ["contact", "profile", "sensitive", "organizerCustom"]},
+        "responseCount": {"type": "integer", "minimum": 0, "maximum": 1000000000},
+        "choiceCounts": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["value", "label", "count"],
+            "properties": {
+              "value": {"type": ["string", "boolean"], "maxLength": 160},
+              "label": {"type": "string", "minLength": 1, "maxLength": 160},
+              "count": {"type": "integer", "minimum": 0, "maximum": 1000000000}
+            }
+          }
+        },
+        "numericCount": {"type": "integer", "minimum": 0, "maximum": 1000000000},
+        "numericSum": {"type": "number", "minimum": -1000000000000000000, "maximum": 1000000000000000000},
+        "numericMin": {"type": ["number", "null"]},
+        "numericMax": {"type": ["number", "null"]}
+      }
+    },
+    "automationTrigger": {"type": "string", "enum": ["responseSubmitted", "responseWithdrawn", "answerMatches"]},
+    "automationActionKind": {"type": "string", "enum": ["notifyTeam", "addOrganizerTag", "createCrmContact", "addApplicationQueue", "proposeEventAttendee", "signedWebhook", "campaignHandoff"]},
+    "automationAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actionId", "kind", "tagId", "eventId", "webhookUrl", "webhookSecret", "channel"],
+      "properties": {
+        "actionId": {"$ref": "event_common.schema.json#/definitions/documentId"},
+        "kind": {"$ref": "#/definitions/automationActionKind"},
+        "tagId": {"type": ["string", "null"], "maxLength": 80},
+        "eventId": {"anyOf": [{"$ref": "event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
+        "webhookUrl": {"type": ["string", "null"], "format": "uri", "maxLength": 2000},
+        "webhookSecret": {"type": ["string", "null"], "minLength": 32, "maxLength": 128},
+        "channel": {"type": ["string", "null"], "enum": [null, "whatsapp", "email"]}
+      }
+    },
+    "automationActionProjection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actionId", "kind", "tagId", "eventId", "webhookUrl", "webhookSecretConfigured", "channel"],
+      "properties": {
+        "actionId": {"$ref": "event_common.schema.json#/definitions/documentId"},
+        "kind": {"$ref": "#/definitions/automationActionKind"},
+        "tagId": {"type": ["string", "null"], "maxLength": 80},
+        "eventId": {"anyOf": [{"$ref": "event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
+        "webhookUrl": {"type": ["string", "null"], "format": "uri", "maxLength": 2000},
+        "webhookSecretConfigured": {"type": "boolean"},
+        "channel": {"type": ["string", "null"], "enum": [null, "whatsapp", "email"]}
+      }
+    },
+    "automationRunStatus": {"type": "string", "enum": ["pending", "running", "succeeded", "partiallyFailed", "failed", "skipped"]},
+    "automationRuleProjection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ruleId", "organizerId", "formId", "name", "enabled", "revision", "trigger", "condition", "actions", "updatedAtMillis"],
+      "properties": {
+        "ruleId": {"$ref": "event_common.schema.json#/definitions/documentId"},
+        "organizerId": {"$ref": "event_common.schema.json#/definitions/documentId"},
+        "formId": {"$ref": "event_common.schema.json#/definitions/documentId"},
+        "name": {"type": "string", "minLength": 1, "maxLength": 120},
+        "enabled": {"type": "boolean"},
+        "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "trigger": {"$ref": "#/definitions/automationTrigger"},
+        "condition": {"anyOf": [{"$ref": "organizer_form_common.schema.json#/definitions/logicCondition"}, {"type": "null"}]},
+        "actions": {"type": "array", "minItems": 1, "maxItems": 10, "items": {"$ref": "#/definitions/automationActionProjection"}},
+        "updatedAtMillis": {"type": "integer", "minimum": 0, "maximum": 9007199254740991}
+      }
+    },
+    "automationRunProjection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["runId", "ruleId", "ruleRevision", "responseId", "eventKind", "status", "attemptCount", "actionResults", "errorMessage", "createdAtMillis", "completedAtMillis"],
+      "properties": {
+        "runId": {"$ref": "event_common.schema.json#/definitions/documentId"},
+        "ruleId": {"$ref": "event_common.schema.json#/definitions/documentId"},
+        "ruleRevision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "responseId": {"$ref": "event_common.schema.json#/definitions/documentId"},
+        "eventKind": {"type": "string", "enum": ["submitted", "withdrawn"]},
+        "status": {"$ref": "#/definitions/automationRunStatus"},
+        "attemptCount": {"type": "integer", "minimum": 0, "maximum": 100},
+        "actionResults": {"type": "array", "maxItems": 10, "items": {"type": "object"}},
+        "errorMessage": {"type": ["string", "null"], "maxLength": 500},
+        "createdAtMillis": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+        "completedAtMillis": {"type": ["integer", "null"], "minimum": 0, "maximum": 9007199254740991}
+      }
+    },
+    "conversionKind": {"type": "string", "enum": ["crmContact", "application", "eventAttendeeProposal", "followUp"]},
+    "conversionField": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["destinationField", "label", "value", "origin", "conflict"],
+      "properties": {
+        "destinationField": {"type": "string", "minLength": 1, "maxLength": 80},
+        "label": {"type": "string", "minLength": 1, "maxLength": 160},
+        "value": {"type": ["string", "number", "boolean", "null"], "maxLength": 1000},
+        "origin": {"type": "string", "enum": ["verifiedIdentity", "formAnswer", "hostOverride"]},
+        "conflict": {"type": ["string", "null"], "maxLength": 500}
+      }
+    }
+  }
+}

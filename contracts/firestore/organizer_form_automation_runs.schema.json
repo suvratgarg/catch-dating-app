@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_form_automation_runs.schema.json",
+  "title": "OrganizerFormAutomationRunDocument",
+  "description": "Idempotent, observable execution of one rule revision for one response event.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["organizerId", "formId", "ruleId", "ruleRevision", "responseId", "eventKind", "status", "attemptCount", "actionResults", "errorCode", "errorMessage", "createdAt", "updatedAt", "completedAt"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "formId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "ruleId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "ruleRevision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "responseId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "eventKind": {"type": "string", "enum": ["submitted", "withdrawn"]},
+    "status": {"$ref": "../shared/organizer_form_operations_common.schema.json#/definitions/automationRunStatus"},
+    "attemptCount": {"type": "integer", "minimum": 0, "maximum": 100},
+    "actionResults": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["actionId", "kind", "status", "resultId", "errorCode"],
+        "properties": {
+          "actionId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+          "kind": {"$ref": "../shared/organizer_form_operations_common.schema.json#/definitions/automationActionKind"},
+          "status": {"type": "string", "enum": ["succeeded", "failed", "skipped"]},
+          "resultId": {"type": ["string", "null"], "maxLength": 200},
+          "errorCode": {"type": ["string", "null"], "maxLength": 80}
+        }
+      }
+    },
+    "errorCode": {"type": ["string", "null"], "maxLength": 80},
+    "errorMessage": {"type": ["string", "null"], "maxLength": 500},
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "completedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"}
+  },
+  "x-firestore-collection": "organizerFormAutomationRuns",
+  "x-firestore-path": "organizerFormAutomationRuns/{runId}",
+  "x-document-id-field": "runId",
+  "x-owner": "organizer form automation executor"
+}

@@ -5,7 +5,7 @@
   "description": "Immutable submitted response envelope with withdrawal state.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["organizerId", "formId", "versionId", "publicFormId", "draftId", "status", "identityKind", "respondentUid", "withdrawalTokenHash", "answers", "answerSnapshots", "consentVersion", "sourceLinkId", "submittedAt", "withdrawnAt"],
+  "required": ["organizerId", "formId", "versionId", "publicFormId", "draftId", "status", "identityKind", "respondentUid", "identity", "withdrawalTokenHash", "answers", "answerSnapshots", "consentVersion", "sourceLinkId", "completionMillis", "submittedAt", "withdrawnAt"],
   "properties": {
     "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "formId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
@@ -15,6 +15,7 @@
     "status": {"$ref": "../shared/organizer_form_response_common.schema.json#/definitions/responseStatus"},
     "identityKind": {"$ref": "../shared/organizer_form_response_common.schema.json#/definitions/responseIdentityKind"},
     "respondentUid": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
+    "identity": {"$ref": "../shared/organizer_form_operations_common.schema.json#/definitions/responseIdentitySnapshot"},
     "withdrawalTokenHash": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"},
     "answers": {"$ref": "../shared/organizer_form_response_common.schema.json#/definitions/answerMap"},
     "answerSnapshots": {
@@ -35,6 +36,7 @@
     },
     "consentVersion": {"type": "string", "minLength": 1, "maxLength": 80},
     "sourceLinkId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
+    "completionMillis": {"type": "integer", "minimum": 0, "maximum": 604800000},
     "submittedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
     "withdrawnAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"}
   },

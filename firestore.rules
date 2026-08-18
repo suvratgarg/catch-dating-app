@@ -1076,6 +1076,30 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /organizerFormAggregates/{aggregateId} {
+      allow read, write: if false;
+    }
+
+    match /organizerFormAggregateEvents/{eventId} {
+      allow read, write: if false;
+    }
+
+    match /organizerFormExports/{exportId} {
+      allow read, write: if false;
+    }
+
+    match /organizerFormAutomationRules/{ruleId} {
+      allow read, write: if false;
+    }
+
+    match /organizerFormAutomationRuns/{runId} {
+      allow read, write: if false;
+    }
+
+    match /organizerFormConversionReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
     match /participantIntakeProfiles/{uid} {
       allow read, write: if false;
     }

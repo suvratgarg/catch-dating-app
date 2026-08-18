@@ -174,6 +174,27 @@ export {
   withdrawOrganizerFormResponse,
 } from "./organizers/organizerFormResponses";
 export {
+  getOrganizerFormAnalytics,
+  getOrganizerFormResponseDetail,
+  listOrganizerFormResponses,
+} from "./organizers/organizerFormOperations";
+export {onOrganizerFormResponseAggregated} from
+  "./organizers/organizerFormAggregates";
+export {
+  onOrganizerFormExportRequested,
+  requestOrganizerFormExport,
+} from "./organizers/organizerFormExports";
+export {
+  convertOrganizerFormResponse,
+  previewOrganizerFormConversion,
+} from "./organizers/organizerFormConversions";
+export {
+  createOrganizerFormAutomation,
+  listOrganizerFormAutomationRuns,
+  onOrganizerFormResponseAutomated,
+  setOrganizerFormAutomationState,
+} from "./organizers/organizerFormAutomations";
+export {
   getParticipantOrganizerApplicationForm,
   revokeParticipantOrganizerDataGrant,
   submitParticipantOrganizerApplication,

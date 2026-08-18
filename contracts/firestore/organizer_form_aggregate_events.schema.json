@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_form_aggregate_events.schema.json",
+  "title": "OrganizerFormAggregateEventDocument",
+  "description": "Idempotency marker for one aggregate projection event.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["organizerId", "formId", "versionId", "responseId", "eventKind", "projectedAt", "expiresAt"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "formId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "versionId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "responseId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "eventKind": {"type": "string", "enum": ["submitted", "withdrawn"]},
+    "projectedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "expiresAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+  },
+  "x-firestore-collection": "organizerFormAggregateEvents",
+  "x-firestore-path": "organizerFormAggregateEvents/{eventId}",
+  "x-document-id-field": "eventId",
+  "x-owner": "organizer form aggregate projection"
+}

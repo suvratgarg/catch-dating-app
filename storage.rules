@@ -268,6 +268,12 @@ service firebase.storage {
       allow read, write: if false;
     }
 
+    // Response exports are private backend objects surfaced only through
+    // short-lived manager-authorized signed URLs.
+    match /organizer-form-exports/{organizerId}/{fileName} {
+      allow read, write: if false;
+    }
+
     match /events/{eventId}/photos/{fileName} {
       allow read: if true;
       allow write: if canWriteEventMedia(eventId)

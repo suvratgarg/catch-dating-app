@@ -276,6 +276,42 @@ const schemaSpecs = [
       "functions/src/shared/generated/organizerFormAssetDocument.ts",
   },
   {
+    name: "OrganizerFormAggregateDocument",
+    source: "firestore/organizer_form_aggregates.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerFormAggregateDocument.ts",
+  },
+  {
+    name: "OrganizerFormAggregateEventDocument",
+    source: "firestore/organizer_form_aggregate_events.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerFormAggregateEventDocument.ts",
+  },
+  {
+    name: "OrganizerFormExportDocument",
+    source: "firestore/organizer_form_exports.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerFormExportDocument.ts",
+  },
+  {
+    name: "OrganizerFormAutomationRuleDocument",
+    source: "firestore/organizer_form_automation_rules.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerFormAutomationRuleDocument.ts",
+  },
+  {
+    name: "OrganizerFormAutomationRunDocument",
+    source: "firestore/organizer_form_automation_runs.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerFormAutomationRunDocument.ts",
+  },
+  {
+    name: "OrganizerFormConversionReceiptDocument",
+    source: "firestore/organizer_form_conversion_receipts.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerFormConversionReceiptDocument.ts",
+  },
+  {
     name: "OrganizerFormShareLinkDocument",
     source: "firestore/organizer_form_share_links.schema.json",
     typeOutput:
@@ -2053,6 +2089,129 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "getOrganizerFormShareAssetsCallableResponse.ts",
+  },
+  {
+    name: "ListOrganizerFormResponsesCallablePayload",
+    source: "callables/list_organizer_form_responses_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/listOrganizerFormResponsesCallablePayload.ts",
+  },
+  {
+    name: "ListOrganizerFormResponsesCallableResponse",
+    source:
+      "callable_responses/list_organizer_form_responses_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/listOrganizerFormResponsesCallableResponse.ts",
+  },
+  {
+    name: "GetOrganizerFormResponseDetailCallablePayload",
+    source:
+      "callables/get_organizer_form_response_detail_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/getOrganizerFormResponseDetailCallablePayload.ts",
+  },
+  {
+    name: "GetOrganizerFormResponseDetailCallableResponse",
+    source:
+      "callable_responses/get_organizer_form_response_detail_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/getOrganizerFormResponseDetailCallableResponse.ts",
+  },
+  {
+    name: "GetOrganizerFormAnalyticsCallablePayload",
+    source: "callables/get_organizer_form_analytics_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/getOrganizerFormAnalyticsCallablePayload.ts",
+  },
+  {
+    name: "GetOrganizerFormAnalyticsCallableResponse",
+    source:
+      "callable_responses/get_organizer_form_analytics_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/getOrganizerFormAnalyticsCallableResponse.ts",
+  },
+  {
+    name: "RequestOrganizerFormExportCallablePayload",
+    source: "callables/request_organizer_form_export_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/requestOrganizerFormExportCallablePayload.ts",
+  },
+  {
+    name: "RequestOrganizerFormExportCallableResponse",
+    source:
+      "callable_responses/request_organizer_form_export_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/requestOrganizerFormExportCallableResponse.ts",
+  },
+  {
+    name: "CreateOrganizerFormAutomationCallablePayload",
+    source:
+      "callables/create_organizer_form_automation_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createOrganizerFormAutomationCallablePayload.ts",
+  },
+  {
+    name: "CreateOrganizerFormAutomationCallableResponse",
+    source:
+      "callable_responses/create_organizer_form_automation_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createOrganizerFormAutomationCallableResponse.ts",
+  },
+  {
+    name: "SetOrganizerFormAutomationStateCallablePayload",
+    source:
+      "callables/set_organizer_form_automation_state_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/setOrganizerFormAutomationStateCallablePayload.ts",
+  },
+  {
+    name: "SetOrganizerFormAutomationStateCallableResponse",
+    source:
+      "callable_responses/set_organizer_form_automation_state_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/setOrganizerFormAutomationStateCallableResponse.ts",
+  },
+  {
+    name: "ListOrganizerFormAutomationRunsCallablePayload",
+    source:
+      "callables/list_organizer_form_automation_runs_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/listOrganizerFormAutomationRunsCallablePayload.ts",
+  },
+  {
+    name: "ListOrganizerFormAutomationRunsCallableResponse",
+    source:
+      "callable_responses/list_organizer_form_automation_runs_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/listOrganizerFormAutomationRunsCallableResponse.ts",
+  },
+  {
+    name: "PreviewOrganizerFormConversionCallablePayload",
+    source:
+      "callables/preview_organizer_form_conversion_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/previewOrganizerFormConversionCallablePayload.ts",
+  },
+  {
+    name: "PreviewOrganizerFormConversionCallableResponse",
+    source:
+      "callable_responses/preview_organizer_form_conversion_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/previewOrganizerFormConversionCallableResponse.ts",
+  },
+  {
+    name: "ConvertOrganizerFormResponseCallablePayload",
+    source:
+      "callables/convert_organizer_form_response_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/convertOrganizerFormResponseCallablePayload.ts",
+  },
+  {
+    name: "ConvertOrganizerFormResponseCallableResponse",
+    source:
+      "callable_responses/convert_organizer_form_response_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/convertOrganizerFormResponseCallableResponse.ts",
   },
   {
     name: "PublishOrganizerApplicationFormCallablePayload",

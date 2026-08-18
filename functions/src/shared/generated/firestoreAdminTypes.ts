@@ -2540,6 +2540,13 @@ export interface OrganizerFormResponseDocument {
     | "phoneVerified"
     | "catchAccount";
   respondentUid: string | null;
+  identity: {
+    displayName: string | null;
+    email: string | null;
+    phoneE164: string | null;
+    searchName: string | null;
+    origin: "anonymous" | "respondentGranted" | "organizerAcquired";
+  };
   withdrawalTokenHash: string | null;
   answers: {
     [k: string]: string | number | boolean | null | string[];
@@ -2569,6 +2576,7 @@ export interface OrganizerFormResponseDocument {
   }[];
   consentVersion: string;
   sourceLinkId: string | null;
+  completionMillis: number;
   submittedAt: FirebaseFirestore.Timestamp;
   withdrawnAt: FirebaseFirestore.Timestamp | null;
 }
@@ -2595,6 +2603,224 @@ export interface OrganizerFormAssetDocument {
   expiresAt: FirebaseFirestore.Timestamp;
   finalizedAt: FirebaseFirestore.Timestamp | null;
   deletedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Precomputed form/version funnel or privacy-aware question aggregate.
+ */
+export interface OrganizerFormAggregateDocument {
+  organizerId: string;
+  formId: string;
+  versionId: string;
+  scope: "version" | "question";
+  questionId: string | null;
+  questionLabel: string | null;
+  questionKind:
+    | (
+        | "shortText"
+        | "longText"
+        | "singleChoice"
+        | "multiChoice"
+        | "date"
+        | "phone"
+        | "email"
+        | "url"
+        | "number"
+        | "boolean"
+        | "file"
+        | "acknowledgement"
+        | "signature"
+      )
+    | null;
+  privacyClass: null | "contact" | "profile" | "sensitive" | "organizerCustom";
+  opens: number;
+  starts: number;
+  submissions: number;
+  withdrawals: number;
+  completionMillisTotal: number;
+  /**
+   * @maxItems 12
+   */
+  completionBuckets: {
+    upperBoundMillis: number;
+    count: number;
+  }[];
+  /**
+   * @maxItems 100
+   */
+  choiceCounts: {
+    value: string | boolean;
+    label: string;
+    count: number;
+  }[];
+  numericCount: number;
+  numericSum: number;
+  numericMin: number | null;
+  numericMax: number | null;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Idempotency marker for one aggregate projection event.
+ */
+export interface OrganizerFormAggregateEventDocument {
+  organizerId: string;
+  formId: string;
+  versionId: string;
+  responseId: string;
+  eventKind: "submitted" | "withdrawn";
+  projectedAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Asynchronous, expiring, manager-requested form response export receipt.
+ */
+export interface OrganizerFormExportDocument {
+  organizerId: string;
+  formId: string;
+  requestedByUid: string;
+  requestId: string;
+  format: "csv" | "xlsx";
+  /**
+   * @minItems 1
+   * @maxItems 2
+   */
+  statuses: ("submitted" | "withdrawn")[];
+  versionId: string | null;
+  fromMillis: number | null;
+  toMillis: number | null;
+  status: "pending" | "running" | "completed" | "failed" | "expired";
+  rowCount: number;
+  storagePath: string | null;
+  errorCode: string | null;
+  errorMessage: string | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  completedAt: FirebaseFirestore.Timestamp | null;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Manager-authored, revisioned, explicit form automation.
+ */
+export interface OrganizerFormAutomationRuleDocument {
+  organizerId: string;
+  formId: string;
+  name: string;
+  enabled: boolean;
+  revision: number;
+  trigger: "responseSubmitted" | "responseWithdrawn" | "answerMatches";
+  condition: {
+    questionId: string;
+    operator:
+      | "equals"
+      | "notEquals"
+      | "contains"
+      | "notContains"
+      | "greaterThan"
+      | "lessThan"
+      | "answered"
+      | "notAnswered";
+    /**
+     * @maxItems 20
+     */
+    expectedValues: (string | number | boolean)[];
+  } | null;
+  /**
+   * @minItems 1
+   * @maxItems 10
+   */
+  actions: {
+    actionId: string;
+    kind:
+      | "notifyTeam"
+      | "addOrganizerTag"
+      | "createCrmContact"
+      | "addApplicationQueue"
+      | "proposeEventAttendee"
+      | "signedWebhook"
+      | "campaignHandoff";
+    tagId: string | null;
+    eventId: string | null;
+    webhookUrl: string | null;
+    webhookSecret: string | null;
+    channel: null | "whatsapp" | "email";
+  }[];
+  createdByUid: string;
+  updatedByUid: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Idempotent, observable execution of one rule revision for one response event.
+ */
+export interface OrganizerFormAutomationRunDocument {
+  organizerId: string;
+  formId: string;
+  ruleId: string;
+  ruleRevision: number;
+  responseId: string;
+  eventKind: "submitted" | "withdrawn";
+  status:
+    | "pending"
+    | "running"
+    | "succeeded"
+    | "partiallyFailed"
+    | "failed"
+    | "skipped";
+  attemptCount: number;
+  /**
+   * @maxItems 10
+   */
+  actionResults: {
+    actionId: string;
+    kind:
+      | "notifyTeam"
+      | "addOrganizerTag"
+      | "createCrmContact"
+      | "addApplicationQueue"
+      | "proposeEventAttendee"
+      | "signedWebhook"
+      | "campaignHandoff";
+    status: "succeeded" | "failed" | "skipped";
+    resultId: string | null;
+    errorCode: string | null;
+  }[];
+  errorCode: string | null;
+  errorMessage: string | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  completedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Idempotent reviewed downstream conversion and safe-undo boundary.
+ */
+export interface OrganizerFormConversionReceiptDocument {
+  organizerId: string;
+  formId: string;
+  responseId: string;
+  kind: "crmContact" | "application" | "eventAttendeeProposal" | "followUp";
+  requestId: string;
+  actorUid: string;
+  status: "pending" | "completed" | "failed";
+  /**
+   * @maxItems 100
+   */
+  fields: {
+    destinationField: string;
+    label: string;
+    value: string | number | boolean | null;
+    origin: "verifiedIdentity" | "formAnswer" | "hostOverride";
+    conflict: string | null;
+  }[];
+  resultId: string | null;
+  undoStatus: "notAvailable" | "available" | "used" | "expired";
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  completedAt: FirebaseFirestore.Timestamp | null;
 }
 
 /**
@@ -5194,6 +5420,7 @@ export interface ActivityNotificationDocument {
     | "eventUpdated"
     | "clubUpdate"
     | "organizerUpdate"
+    | "formResponse"
     | "crossPathsInvitation"
     | "crossPathsInvitationAccepted"
     | "crossPathsInvitationDeclined"
