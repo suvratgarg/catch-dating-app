@@ -238,7 +238,7 @@ test("a final cursor is authoritative before its Delivery run reaches completed 
   assert.doesNotMatch(originAttempt, /\.status ==|\.conclusion ==/);
 });
 
-test("high-cardinality queue metadata resolves the oldest queued and latest bootstrap authorities", () => {
+test("high-cardinality queue metadata still resolves one cursor and one oldest authority", () => {
   const delivery = workflow("delivery.yml");
   const digest = `sha256:${"a".repeat(64)}`;
   const artifacts = [];
