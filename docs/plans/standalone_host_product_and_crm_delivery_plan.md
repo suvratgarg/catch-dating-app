@@ -1319,9 +1319,19 @@ them from the transport.
 | Organizer follower update | Catch Home/Activity plus preference-gated push; organizer identity | Users following the organizer, optionally linked to an event | Follow relationship and organizer-update preference; author, deleted accounts and blocked relationships are excluded | Durable Home post, deterministic Activity item, de-identified per-recipient retry receipt and aggregate organizer Sends delivery state; push is at-most-once and may be accepted, failed or unknown; no reply thread | Messaging → **Follower update · Organizer** → route-specific composer; **Implemented in source; retry scheduler deployment required** |
 
 Host Messaging first presents the route picker, then the route-specific
-composer or its exact readiness explanation. History rows repeat the route
-label. Unavailable routes remain explanatory page content with the owning entry
-point, not disabled commands in an overflow menu.
+composer or its exact readiness explanation. The picker groups delivery inside
+Catch separately from WhatsApp, while every row repeats the exact sender and
+audience semantics. History rows repeat the route label. Unavailable routes
+remain explanatory page content with the owning entry point, not disabled
+commands in an overflow menu. A widget contract requires every registered route
+to appear once, so future market adapters cannot be added invisibly.
+
+All server-managed Host outbound free text is moderated before persistence or
+provider handoff: event announcements, follower updates, organizer WhatsApp
+template/test values and service-window replies fail closed. Catch chat retains
+its message-trigger moderation/redaction path. Personal WhatsApp handoff remains
+Host-owned and editable in WhatsApp, so Catch does not claim to moderate or
+observe the final message.
 
 The follower-update route opens its composer in place, enforces the rolling
 three-per-seven-days quota before entry, and refreshes unified Sends history

@@ -1311,9 +1311,24 @@ Host event broadcasts completed their backend-first rollout in August 2026:
    5xx.
 3. After that proof passed in production, the temporary client flag was
    removed. The Host job in `Mobile Internal Release` still runs the
-   manifest-driven live dependency check before Flutter/Xcode work and refuses
-   to archive if the callable is not reachable. Broadcast visibility is now a
-   product capability, not a rollout flag.
+manifest-driven live dependency check before Flutter/Xcode work and refuses
+to archive if the callable is not reachable. Broadcast visibility is now a
+product capability, not a rollout flag.
+
+Organizer follower-update delivery uses the same backend-first boundary, but
+its durable retry scheduler is new and must be proved explicitly:
+
+1. Deploy the follower-delivery schemas, TTL policy, index, Firestore rules,
+   `createOrganizerPost`, `listOrganizerCampaigns`, and
+   `dispatchPendingOrganizerFollowerUpdates` before releasing the matching Host
+   client.
+2. In dev, then staging, then production, confirm the callable is reachable and
+   the scheduler is `ACTIVE`; create one request-id-bound update against a test
+   organizer with more than one follower page and prove the operation reaches a
+   terminal state without duplicate Activity or push attempts.
+3. Release the Host client only after the production callable and scheduler
+   postconditions pass. The request id is intentionally required; there is no
+   legacy-client fallback or duplicate compatibility path.
 
 `./tool/deploy_firebase_targets.sh` is the bounded stage executor beneath
 Delivery and an operator-only recovery helper. It plans selected targets in the

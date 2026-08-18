@@ -518,3 +518,51 @@ test("lost callable response replay returns one post and consumes quota once",
     );
     assert.equal(rateLimitCalls.length, 1);
   });
+
+test("follower updates reject moderated copy before writing or rate limiting",
+  async () => {
+    const firestore = new FakeFirestore({
+      "organizers/organizer-1": {
+        name: "Sunday Social",
+        hostUserId: "host-1",
+        ownerUserId: "host-1",
+        hostUserIds: ["host-1"],
+        hostProfiles: [],
+      },
+    });
+    const rateLimitCalls: string[] = [];
+    type CreateDeps = NonNullable<
+      Parameters<typeof createOrganizerPostHandler>[1]
+    >;
+    const deps: CreateDeps = {
+      firestore: () => firestore as unknown as FirebaseFirestore.Firestore,
+      now: () => new Date(nowMillis),
+      timestampFromMillis: (millis) => new FakeTimestamp(millis) as unknown as
+        FirebaseFirestore.Timestamp,
+      serverTimestamp: () => new FakeTimestamp(nowMillis) as unknown as
+        FirebaseFirestore.FieldValue,
+      checkRateLimit: async (_db, uid, action) => {
+        rateLimitCalls.push(`${uid}:${action}`);
+      },
+      dispatchDelivery: async () => null,
+    };
+
+    await assert.rejects(
+      createOrganizerPostHandler(
+        callableRequest("host-1", {
+          organizerId: "organizer-1",
+          requestId: "request-moderated",
+          text: "kill yourself",
+        }),
+        deps,
+      ),
+      (error) => error instanceof HttpsError &&
+        error.code === "invalid-argument" &&
+        error.message.includes("cannot be delivered"),
+    );
+    assert.equal(rateLimitCalls.length, 0);
+    assert.equal(firestore.query(
+      "organizers/organizer-1/posts",
+      [],
+    ).length, 0);
+  });

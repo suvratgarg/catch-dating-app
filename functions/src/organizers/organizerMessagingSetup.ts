@@ -40,6 +40,8 @@ import {
   OrganizerTokenStore,
   metaTemplateFromDocument,
 } from "./organizerWhatsappProvider";
+import {assertOutboundContentAllowed} from
+  "../communications/outboundContentPolicy";
 
 export const metaWhatsappAppId = defineString("META_WHATSAPP_APP_ID", {
   default: "",
@@ -220,6 +222,10 @@ export async function sendOrganizerWhatsappTestHandler(
     request,
     validateSendOrganizerWhatsappTestCallablePayload,
     normalizePayload
+  );
+  assertOutboundContentAllowed(
+    Object.values(data.templateVariables),
+    "A WhatsApp test value contains language that cannot be delivered.",
   );
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "sendOrganizerWhatsappTest");

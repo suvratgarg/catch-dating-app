@@ -43,6 +43,8 @@ import {
 } from "./organizerCampaignModel";
 import {organizerWhatsappCampaignRoute} from
   "../communications/communicationRoutes";
+import {assertOutboundContentAllowed} from
+  "../communications/outboundContentPolicy";
 import {
   metaWhatsappAppId,
   metaWhatsappAppSecret,
@@ -138,6 +140,10 @@ export async function dispatchCampaign(params: {
     if (!campaign || campaign.organizerId !== params.organizerId) {
       throw new HttpsError("not-found", "Campaign not found.");
     }
+    assertOutboundContentAllowed(
+      Object.values(campaign.templateVariables),
+      "A WhatsApp template value contains language that cannot be delivered.",
+    );
     if (
       params.expectedRevision !== null &&
       campaign.revision !== params.expectedRevision

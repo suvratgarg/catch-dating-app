@@ -15252,7 +15252,7 @@
             "symbol": "HostClubPostController"
           }
         ],
-        "notes": "HostInboxScreen is the Host-owned Messaging surface and follows the shell-selected organizer. Inbox selects that organizer's live or nearest-upcoming event, keeps General explicit, scopes personal inquiry threads by organizer and event, classifies Booked and Prospective rows, and derives broadcast counts from eventParticipations rather than conversation count. The user-facing Sends workspace owns mixed Campaign/Announcement/Follower update history, the route-specific follower composer, and the complete campaign lifecycle; its compatibility wire value remains campaigns. WhatsApp sender setup lives on the dedicated organizer messaging route. Event broadcasts and follower updates create durable Activity plus preference-gated push and never create chat fan-out."
+        "notes": "HostInboxScreen is the Host-owned Messaging surface and follows the shell-selected organizer. Inbox selects that organizer's live or nearest-upcoming event, keeps General explicit, scopes personal inquiry threads by organizer and event, classifies Booked and Prospective rows, and derives broadcast counts from eventParticipations rather than conversation count. The user-facing Sends workspace owns mixed Campaign/Announcement/Follower update history, groups every registered route under In Catch or WhatsApp, owns the route-specific follower composer, and owns the complete campaign lifecycle; its compatibility wire value remains campaigns. WhatsApp sender setup lives on the dedicated organizer messaging route. Event broadcasts and follower updates create durable Activity plus preference-gated push and never create chat fan-out."
       },
       "designRefs": [
         {

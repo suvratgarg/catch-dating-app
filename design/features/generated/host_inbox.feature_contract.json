@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/host_inbox.feature.json",
   "generatedFor": "2026-08-18",
-  "sourceDigest": "sha256:74a9acfd165f9e742e0afb34c3a4977a40fc6e1287b4e27ae3718418ccfb9a0e",
+  "sourceDigest": "sha256:85ea497ac8c15ebf568bc39110ee86bf31afe16fe127d58d6e1f1c914b3a03ba",
   "resolvedDigest": "sha256:3f6c8f69c2fc9e5604e7936e377a2227745c5bc03a9d516ebd31e98c9534f47a",
   "feature": {
     "id": "feature.host_inbox",
@@ -678,7 +678,7 @@
               }
             }
           ],
-          "description": "Shows every communication route with its sender and delivery semantics, opens Catch Inbox, an eligible organizer WhatsApp composer, or the in-place follower-update composer, and gives read-only ownership or activation guidance for routes that start elsewhere or are not active.",
+          "description": "Shows every registered communication route exactly once, grouped under In Catch or WhatsApp with its sender and delivery semantics; opens Catch Inbox, an eligible organizer WhatsApp composer, or the in-place follower-update composer; and gives read-only ownership or activation guidance for routes that start elsewhere or are not active.",
           "implementationStatus": "implemented"
         },
         {
