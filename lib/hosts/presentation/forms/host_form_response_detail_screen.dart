@@ -181,17 +181,6 @@ class _HostFormResponseDetailScreenState
                         HostFormConversionKind.eventAttendeeProposal,
                       ),
                     ),
-                    _ConversionFormSchemaField(
-                      detail: value,
-                      kind: HostFormConversionKind.followUp,
-                      label: context.l10n.hostFormConvertFollowUp,
-                      icon: CatchIcons.chatOutlined,
-                      converting: _converting,
-                      onTap: () => _reviewConversion(
-                        value,
-                        HostFormConversionKind.followUp,
-                      ),
-                    ),
                   ],
                 ),
               ],

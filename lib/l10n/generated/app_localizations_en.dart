@@ -14687,9 +14687,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormConvertAttendee => 'Propose attendee';
 
   @override
-  String get hostFormConvertFollowUp => 'Prepare follow-up';
-
-  @override
   String get hostFormConversionReviewTitle => 'Review this action';
 
   @override

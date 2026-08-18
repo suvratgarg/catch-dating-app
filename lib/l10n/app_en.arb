@@ -22308,8 +22308,6 @@
   "@hostFormConvertApplication": {"description": "Reviews a response to application conversion.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostFormConvertAttendee": "Propose attendee",
   "@hostFormConvertAttendee": {"description": "Reviews a response to event attendee proposal conversion.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
-  "hostFormConvertFollowUp": "Prepare follow-up",
-  "@hostFormConvertFollowUp": {"description": "Reviews a response to follow-up conversion.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostFormConversionReviewTitle": "Review this action",
   "@hostFormConversionReviewTitle": {"description": "Conversion preview confirmation title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostFormConversionReviewBody": "Catch will create only the fields shown in this preview. Existing records and conflicts remain protected.",

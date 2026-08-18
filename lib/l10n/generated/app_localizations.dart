@@ -23153,12 +23153,6 @@ abstract class AppLocalizations {
   /// **'Propose attendee'**
   String get hostFormConvertAttendee;
 
-  /// Reviews a response to follow-up conversion.
-  ///
-  /// In en, this message translates to:
-  /// **'Prepare follow-up'**
-  String get hostFormConvertFollowUp;
-
   /// Conversion preview confirmation title.
   ///
   /// In en, this message translates to:

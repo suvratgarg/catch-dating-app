@@ -2,7 +2,12 @@ import {strict as assert} from "node:assert";
 import {describe, it} from "node:test";
 import {OrganizerFormResponseDocument} from
   "../shared/generated/firestoreAdminTypes";
-import {formAutomationEventKind} from "./organizerFormAutomations";
+import {
+  formAutomationEventKind,
+  organizerFormCampaignHandoffUnavailableMessage,
+} from "./organizerFormAutomations";
+import {organizerFormFollowUpUnavailableMessage} from
+  "./organizerFormConversions";
 
 const response = (
   status: OrganizerFormResponseDocument["status"]
@@ -32,6 +37,17 @@ describe("organizer form automation lifecycle", () => {
     assert.equal(
       formAutomationEventKind(undefined, response("withdrawn")),
       null
+    );
+  });
+
+  it("keeps follow-up handoff fail-closed", () => {
+    assert.match(
+      organizerFormCampaignHandoffUnavailableMessage,
+      /approved sender, template, and recipient permission/
+    );
+    assert.match(
+      organizerFormFollowUpUnavailableMessage,
+      /approved messaging template and recipient permission/
     );
   });
 });

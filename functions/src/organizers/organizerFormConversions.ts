@@ -52,6 +52,10 @@ type FormQuestionKind = FormSection["questions"][number]["kind"];
 type ApplicationAnswers = OrganizerApplicationResponseDocument["answers"];
 type ApplicationAnswerValue = ApplicationAnswers[number]["value"];
 
+export const organizerFormFollowUpUnavailableMessage =
+  "Follow-up handoff needs an approved messaging template and recipient " +
+  "permission. Open the customer in Sends to review and approve the message.";
+
 interface FormConversionDeps {
   firestore: () => FirebaseFirestore.Firestore;
   checkRateLimit: typeof checkRateLimit;
@@ -199,8 +203,7 @@ export async function convertOrganizerFormResponseHandler(
       await receiptRef.update({
         status: "completed",
         resultId,
-        undoStatus: data.kind === "crmContact" ? "available" :
-          "notAvailable",
+        undoStatus: "notAvailable",
         updatedAt: now,
         completedAt: now,
       });
@@ -208,8 +211,7 @@ export async function convertOrganizerFormResponseHandler(
         ...receipt,
         status: "completed",
         resultId,
-        undoStatus: data.kind === "crmContact" ? "available" :
-          "notAvailable",
+        undoStatus: "notAvailable",
         updatedAt: now,
         completedAt: now,
       };
@@ -264,6 +266,10 @@ async function conversionContext(
   const warnings: string[] = [];
   let allowed = response.status === "submitted";
   if (!allowed) warnings.push("Withdrawn responses cannot be converted.");
+  if (data.kind === "followUp") {
+    warnings.push(organizerFormFollowUpUnavailableMessage);
+    allowed = false;
+  }
   if ((data.kind === "crmContact" || data.kind === "followUp") &&
       !response.identity.email && !response.identity.phoneE164) {
     warnings.push("A verified or submitted email or phone number is required.");
@@ -351,9 +357,9 @@ async function applyConversion(params: {
   case "eventAttendeeProposal":
     return applyEventAttendeeConversion(params);
   case "followUp":
-    return deterministicResultId(
-      "formfollowupproposal",
-      params.data.responseId
+    throw new HttpsError(
+      "failed-precondition",
+      organizerFormFollowUpUnavailableMessage
     );
   }
 }

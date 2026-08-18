@@ -46,6 +46,10 @@ import {organizerContactIdentityKey} from "./organizerAudienceSecrets";
 import {convertOrganizerFormResponseHandler} from
   "./organizerFormConversions";
 
+export const organizerFormCampaignHandoffUnavailableMessage =
+  "Campaign handoff needs an approved sender, template, and recipient " +
+  "permission. Create the reviewed follow-up in Sends.";
+
 type RuleProjection = CreateOrganizerFormAutomationCallableResponse;
 type AutomationAction = OrganizerFormAutomationRuleDocument["actions"][number];
 type AutomationCondition = NonNullable<
@@ -487,6 +491,14 @@ async function runAction(params: {
   if (params.action.kind === "signedWebhook") {
     return actionResult(params.action, "skipped", null, "approval_required");
   }
+  if (params.action.kind === "campaignHandoff") {
+    return actionResult(
+      params.action,
+      "skipped",
+      null,
+      "messaging_handoff_not_configured"
+    );
+  }
   try {
     let resultId: string | null;
     switch (params.action.kind) {
@@ -502,8 +514,6 @@ async function runAction(params: {
         params.action.eventId
       );
       break;
-    case "campaignHandoff":
-      resultId = await convert(params, "followUp", null); break;
     case "addOrganizerTag": resultId = await addTag(params); break;
     default: resultId = null;
     }
@@ -702,6 +712,12 @@ async function validateAutomationInput(
     }
     if (action.kind === "campaignHandoff" && !action.channel) {
       throw new HttpsError("invalid-argument", "Choose email or WhatsApp.");
+    }
+    if (action.kind === "campaignHandoff") {
+      throw new HttpsError(
+        "failed-precondition",
+        organizerFormCampaignHandoffUnavailableMessage
+      );
     }
   }
 }
