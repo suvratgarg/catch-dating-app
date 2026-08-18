@@ -58,9 +58,21 @@ enum Routes {
   hostCustomersScreen('/host/customers', AppRouteAudience.host),
   hostFormsScreen('/host/forms', AppRouteAudience.host),
   hostFormTemplatesScreen('/host/forms/new', AppRouteAudience.host),
+  hostFormResponseDetailScreen(
+    '/host/forms/responses/:responseId',
+    AppRouteAudience.host,
+  ),
   hostFormBuilderScreen('/host/forms/:formId', AppRouteAudience.host),
   hostFormPreviewScreen('/host/forms/:formId/preview', AppRouteAudience.host),
   hostFormShareScreen('/host/forms/:formId/share', AppRouteAudience.host),
+  hostFormAnalyticsScreen(
+    '/host/forms/:formId/analytics',
+    AppRouteAudience.host,
+  ),
+  hostFormAutomationsScreen(
+    '/host/forms/:formId/automations',
+    AppRouteAudience.host,
+  ),
   hostApplicationsScreen('/host/customers/applications', AppRouteAudience.host),
   hostApplicationDetailScreen(
     '/host/customers/applications/:applicationId',

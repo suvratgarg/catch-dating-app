@@ -14573,4 +14573,335 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostFormActionFinish => 'Finish the form';
+
+  @override
+  String get hostFormsViewForms => 'Forms';
+
+  @override
+  String get hostFormsViewResponses => 'Responses';
+
+  @override
+  String get hostFormResponsesSubtitle =>
+      'Review every submission, preserve its source, and choose what happens next.';
+
+  @override
+  String get hostFormResponsesSearch => 'Search responses';
+
+  @override
+  String get hostFormResponsesAll => 'All responses';
+
+  @override
+  String get hostFormResponsesSubmitted => 'Submitted';
+
+  @override
+  String get hostFormResponsesWithdrawn => 'Withdrawn';
+
+  @override
+  String get hostFormResponsesAnonymous => 'Anonymous respondent';
+
+  @override
+  String get hostFormResponsesEmptyTitle => 'No responses yet';
+
+  @override
+  String get hostFormResponsesEmptyBody =>
+      'Share a published form. New submissions will appear here without loading the full response history.';
+
+  @override
+  String get hostFormResponsesNoMatchesTitle => 'No responses match';
+
+  @override
+  String get hostFormResponsesNoMatchesBody =>
+      'Try another search or status filter.';
+
+  @override
+  String get hostFormResponsesLoadMore => 'Load more responses';
+
+  @override
+  String hostFormResponseRowSummary({
+    required String formTitle,
+    required String source,
+  }) {
+    return '$formTitle · $source';
+  }
+
+  @override
+  String get hostFormResponseDirectSource => 'Direct link';
+
+  @override
+  String get hostFormsViewResponsesAction => 'View responses';
+
+  @override
+  String get hostFormsAnalyticsAction => 'View analytics';
+
+  @override
+  String get hostFormsAutomationsAction => 'Manage automations';
+
+  @override
+  String get hostFormResponseTitle => 'Response';
+
+  @override
+  String get hostFormResponseIdentitySection => 'Respondent';
+
+  @override
+  String get hostFormResponseAnswersSection => 'Answers';
+
+  @override
+  String get hostFormResponseOperationsSection => 'Next actions';
+
+  @override
+  String get hostFormResponseName => 'Name';
+
+  @override
+  String get hostFormResponseEmail => 'Email';
+
+  @override
+  String get hostFormResponsePhone => 'Phone';
+
+  @override
+  String get hostFormResponseSource => 'Source';
+
+  @override
+  String get hostFormResponseSubmittedAt => 'Submitted';
+
+  @override
+  String get hostFormResponseConsent => 'Consent version';
+
+  @override
+  String get hostFormResponseCompletionTime => 'Completion time';
+
+  @override
+  String get hostFormResponseNotProvided => 'Not provided';
+
+  @override
+  String get hostFormResponseNoAnswer => 'No answer';
+
+  @override
+  String hostFormResponseDownloadFile({required String fileName}) {
+    return 'Open $fileName';
+  }
+
+  @override
+  String get hostFormConvertCrm => 'Create CRM contact';
+
+  @override
+  String get hostFormConvertApplication => 'Add to applications';
+
+  @override
+  String get hostFormConvertAttendee => 'Propose attendee';
+
+  @override
+  String get hostFormConvertFollowUp => 'Prepare follow-up';
+
+  @override
+  String get hostFormConversionReviewTitle => 'Review this action';
+
+  @override
+  String get hostFormConversionReviewBody =>
+      'Catch will create only the fields shown in this preview. Existing records and conflicts remain protected.';
+
+  @override
+  String get hostFormConversionConfirm => 'Confirm action';
+
+  @override
+  String get hostFormConversionUnavailable =>
+      'This action needs verified identity or additional setup.';
+
+  @override
+  String get hostFormConversionComplete => 'Action completed';
+
+  @override
+  String get hostFormAnalyticsTitle => 'Form analytics';
+
+  @override
+  String get hostFormAnalyticsFunnel => 'Response funnel';
+
+  @override
+  String get hostFormAnalyticsOpens => 'Opens';
+
+  @override
+  String get hostFormAnalyticsStarts => 'Starts';
+
+  @override
+  String get hostFormAnalyticsSubmissions => 'Submissions';
+
+  @override
+  String get hostFormAnalyticsCompletionRate => 'Completion rate';
+
+  @override
+  String get hostFormAnalyticsMedianTime => 'Median completion';
+
+  @override
+  String get hostFormAnalyticsSources => 'Sources';
+
+  @override
+  String get hostFormAnalyticsQuestions => 'Question results';
+
+  @override
+  String get hostFormAnalyticsPrivacyNotice =>
+      'Question results appear only when the privacy threshold is met. Sensitive and free-text answers are never charted.';
+
+  @override
+  String get hostFormExportCsv => 'Export CSV';
+
+  @override
+  String get hostFormExportXlsx => 'Export Excel';
+
+  @override
+  String get hostFormExportPreparing => 'Preparing export…';
+
+  @override
+  String get hostFormExportReady => 'Export ready';
+
+  @override
+  String get hostFormAutomationsTitle => 'Automations';
+
+  @override
+  String get hostFormAutomationsSubtitle =>
+      'Run explicit, observable actions after a response changes. You can disable any rule instantly.';
+
+  @override
+  String get hostFormAutomationsRules => 'Rules';
+
+  @override
+  String get hostFormAutomationsRuns => 'Recent runs';
+
+  @override
+  String get hostFormAutomationsEmptyTitle => 'No automations yet';
+
+  @override
+  String get hostFormAutomationsEmptyBody =>
+      'Start with a safe preset. Every run is recorded and can be disabled.';
+
+  @override
+  String get hostFormAutomationNotifyPreset => 'Notify my team';
+
+  @override
+  String get hostFormAutomationCrmPreset => 'Create CRM contacts';
+
+  @override
+  String get hostFormAutomationSubmittedTrigger =>
+      'When a response is submitted';
+
+  @override
+  String get hostFormAutomationWithdrawnTrigger =>
+      'When a response is withdrawn';
+
+  @override
+  String get hostFormAutomationAnswerTrigger => 'When an answer matches';
+
+  @override
+  String hostFormAutomationActionCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count actions',
+      one: '1 action',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostFormAutomationRunSummary({
+    required String trigger,
+    required int attempt,
+  }) {
+    return '$trigger · Attempt $attempt';
+  }
+
+  @override
+  String get hostFormAutomationsLoadMore => 'Load more runs';
+
+  @override
+  String get hostFormResponseOriginAnonymous => 'Anonymous';
+
+  @override
+  String get hostFormResponseOriginGranted => 'Shared by respondent';
+
+  @override
+  String get hostFormResponseOriginAcquired => 'Organizer record';
+
+  @override
+  String get hostFormResponseOriginRevoked => 'Access revoked';
+
+  @override
+  String get hostFormSelectEventTitle => 'Choose an event';
+
+  @override
+  String get hostFormSelectEventEmpty =>
+      'No upcoming events are available for an attendee proposal.';
+
+  @override
+  String get hostFormConversionExisting =>
+      'An existing record already matches this response.';
+
+  @override
+  String hostFormResponseFilteredTo({required String formTitle}) {
+    return 'Showing responses for $formTitle';
+  }
+
+  @override
+  String get hostFormResponseClearFormFilter => 'Show all';
+
+  @override
+  String hostFormAnalyticsSourceSummary({
+    required int opens,
+    required int starts,
+    required int submissions,
+  }) {
+    return '$opens opens · $starts starts · $submissions submissions';
+  }
+
+  @override
+  String hostFormAnalyticsQuestionSummary({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count answers',
+      one: '1 answer',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostFormAnalyticsChoiceCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count responses',
+      one: '1 response',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostFormExportFailed =>
+      'The export could not be prepared. Try again.';
+
+  @override
+  String get hostFormExportStillPreparing =>
+      'The export is still preparing. You can retry without creating a duplicate.';
+
+  @override
+  String get hostFormAutomationEnabled => 'Enabled';
+
+  @override
+  String get hostFormAutomationDisabled => 'Disabled';
+
+  @override
+  String get hostFormAutomationPending => 'Pending';
+
+  @override
+  String get hostFormAutomationRunning => 'Running';
+
+  @override
+  String get hostFormAutomationSucceeded => 'Succeeded';
+
+  @override
+  String get hostFormAutomationPartiallyFailed => 'Needs attention';
+
+  @override
+  String get hostFormAutomationFailed => 'Failed';
+
+  @override
+  String get hostFormAutomationSkipped => 'Skipped';
 }

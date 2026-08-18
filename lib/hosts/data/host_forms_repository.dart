@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/domain/host_form.dart';
+import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -233,6 +234,189 @@ class HostFormsRepository {
     ).toJson(),
     action: 'create organizer form share link',
     parse: HostFormShareLink.fromCallableData,
+  );
+
+  Future<HostFormResponsePage> listResponses(
+    HostFormResponseListRequest request,
+  ) => _call(
+    name: 'listOrganizerFormResponses',
+    payload: ListOrganizerFormResponsesCallableRequest(
+      organizerId: request.organizerId,
+      formId: request.formId,
+      versionId: request.versionId,
+      statuses: request.statuses.map((value) => value.name).toList(),
+      identityKinds: request.identityKinds.map((value) => value.name).toList(),
+      sourceLinkId: request.sourceLinkId,
+      query: request.query?.trim().isEmpty ?? true
+          ? null
+          : request.query?.trim(),
+      fromMillis: request.from?.millisecondsSinceEpoch,
+      toMillis: request.to?.millisecondsSinceEpoch,
+      cursor: request.cursor,
+      limit: request.limit.clamp(1, ReadLimitPolicy.historyPage).toInt(),
+    ).toJson(),
+    action: 'load organizer form responses',
+    parse: HostFormResponsePage.fromCallableData,
+  );
+
+  Future<HostFormResponseDetail> getResponseDetail({
+    required String organizerId,
+    required String responseId,
+  }) => _call(
+    name: 'getOrganizerFormResponseDetail',
+    payload: GetOrganizerFormResponseDetailCallableRequest(
+      organizerId: organizerId,
+      responseId: responseId,
+    ).toJson(),
+    action: 'load organizer form response',
+    parse: HostFormResponseDetail.fromCallableData,
+  );
+
+  Future<HostFormAnalytics> getAnalytics({
+    required String organizerId,
+    required String formId,
+    String? versionId,
+  }) => _call(
+    name: 'getOrganizerFormAnalytics',
+    payload: GetOrganizerFormAnalyticsCallableRequest(
+      organizerId: organizerId,
+      formId: formId,
+      versionId: versionId,
+    ).toJson(),
+    action: 'load organizer form analytics',
+    parse: HostFormAnalytics.fromCallableData,
+  );
+
+  Future<HostFormExportReceipt> requestExport({
+    required String organizerId,
+    required String formId,
+    required String requestId,
+    required HostFormExportFormat format,
+    Set<HostFormResponseStatus> statuses = const {},
+    String? versionId,
+    DateTime? from,
+    DateTime? to,
+  }) => _call(
+    name: 'requestOrganizerFormExport',
+    payload: RequestOrganizerFormExportCallableRequest(
+      organizerId: organizerId,
+      formId: formId,
+      requestId: requestId,
+      format: format.name,
+      statuses: statuses.map((value) => value.name).toList(),
+      versionId: versionId,
+      fromMillis: from?.millisecondsSinceEpoch,
+      toMillis: to?.millisecondsSinceEpoch,
+    ).toJson(),
+    action: 'export organizer form responses',
+    parse: HostFormExportReceipt.fromCallableData,
+  );
+
+  Future<HostFormConversionPreview> previewConversion({
+    required String organizerId,
+    required String responseId,
+    required HostFormConversionKind kind,
+    String? eventId,
+    Map<String, Object?> overrides = const {},
+  }) => _call(
+    name: 'previewOrganizerFormConversion',
+    payload: PreviewOrganizerFormConversionCallableRequest(
+      organizerId: organizerId,
+      responseId: responseId,
+      kind: kind.name,
+      eventId: eventId,
+      overrides: overrides,
+    ).toJson(),
+    action: 'preview organizer form response conversion',
+    parse: HostFormConversionPreview.fromCallableData,
+  );
+
+  Future<HostFormConversionReceipt> convertResponse({
+    required String organizerId,
+    required String responseId,
+    required HostFormConversionKind kind,
+    required String requestId,
+    String? eventId,
+    Map<String, Object?> overrides = const {},
+  }) => _call(
+    name: 'convertOrganizerFormResponse',
+    payload: ConvertOrganizerFormResponseCallableRequest(
+      organizerId: organizerId,
+      responseId: responseId,
+      kind: kind.name,
+      eventId: eventId,
+      overrides: overrides,
+      requestId: requestId,
+    ).toJson(),
+    action: 'convert organizer form response',
+    parse: HostFormConversionReceipt.fromCallableData,
+  );
+
+  Future<HostFormAutomationRule> saveAutomation({
+    required String organizerId,
+    required String formId,
+    required String requestId,
+    required String name,
+    required bool enabled,
+    required HostFormAutomationTrigger trigger,
+    required List<Map<String, Object?>> actions,
+    String? ruleId,
+    int? expectedRevision,
+    Map<String, Object?>? condition,
+  }) => _call(
+    name: 'createOrganizerFormAutomation',
+    payload: CreateOrganizerFormAutomationCallableRequest(
+      organizerId: organizerId,
+      formId: formId,
+      ruleId: ruleId,
+      requestId: requestId,
+      expectedRevision: expectedRevision,
+      name: name,
+      enabled: enabled,
+      trigger: trigger.name,
+      condition: condition,
+      actions: actions,
+    ).toJson(),
+    action: 'save organizer form automation',
+    parse: (data) =>
+        HostFormAutomationRule.fromMap(_requiredMap(data, 'form automation')),
+  );
+
+  Future<HostFormAutomationRule> setAutomationEnabled({
+    required String organizerId,
+    required String ruleId,
+    required int expectedRevision,
+    required bool enabled,
+  }) => _call(
+    name: 'setOrganizerFormAutomationState',
+    payload: SetOrganizerFormAutomationStateCallableRequest(
+      organizerId: organizerId,
+      ruleId: ruleId,
+      expectedRevision: expectedRevision,
+      enabled: enabled,
+    ).toJson(),
+    action: 'update organizer form automation',
+    parse: (data) =>
+        HostFormAutomationRule.fromMap(_requiredMap(data, 'form automation')),
+  );
+
+  Future<HostFormAutomationPage> listAutomations({
+    required String organizerId,
+    required String formId,
+    String? ruleId,
+    String? cursor,
+    int limit = 25,
+  }) => _call(
+    name: 'listOrganizerFormAutomationRuns',
+    payload: ListOrganizerFormAutomationRunsCallableRequest(
+      organizerId: organizerId,
+      formId: formId,
+      ruleId: ruleId,
+      cursor: cursor,
+      limit: limit.clamp(1, ReadLimitPolicy.historyPage).toInt(),
+    ).toJson(),
+    action: 'load organizer form automations',
+    parse: HostFormAutomationPage.fromCallableData,
   );
 
   Future<T> _call<T>({

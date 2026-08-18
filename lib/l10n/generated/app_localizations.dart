@@ -22945,6 +22945,562 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Finish the form'**
   String get hostFormActionFinish;
+
+  /// Forms library view tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Forms'**
+  String get hostFormsViewForms;
+
+  /// Form responses inbox view tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Responses'**
+  String get hostFormsViewResponses;
+
+  /// Explains the response inbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Review every submission, preserve its source, and choose what happens next.'**
+  String get hostFormResponsesSubtitle;
+
+  /// Searches the response inbox by permitted identity fields.
+  ///
+  /// In en, this message translates to:
+  /// **'Search responses'**
+  String get hostFormResponsesSearch;
+
+  /// Shows submitted and withdrawn form responses.
+  ///
+  /// In en, this message translates to:
+  /// **'All responses'**
+  String get hostFormResponsesAll;
+
+  /// Submitted response status label.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted'**
+  String get hostFormResponsesSubmitted;
+
+  /// Withdrawn response status label.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawn'**
+  String get hostFormResponsesWithdrawn;
+
+  /// Fallback identity label for anonymous form responses.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous respondent'**
+  String get hostFormResponsesAnonymous;
+
+  /// Empty form response inbox title.
+  ///
+  /// In en, this message translates to:
+  /// **'No responses yet'**
+  String get hostFormResponsesEmptyTitle;
+
+  /// Empty form response inbox guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Share a published form. New submissions will appear here without loading the full response history.'**
+  String get hostFormResponsesEmptyBody;
+
+  /// Filtered response inbox empty title.
+  ///
+  /// In en, this message translates to:
+  /// **'No responses match'**
+  String get hostFormResponsesNoMatchesTitle;
+
+  /// Filtered response inbox empty guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Try another search or status filter.'**
+  String get hostFormResponsesNoMatchesBody;
+
+  /// Loads the next bounded response page.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more responses'**
+  String get hostFormResponsesLoadMore;
+
+  /// Response inbox row form and source summary.
+  ///
+  /// In en, this message translates to:
+  /// **'{formTitle} · {source}'**
+  String hostFormResponseRowSummary({
+    required String formTitle,
+    required String source,
+  });
+
+  /// Fallback source label for a direct form visit.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct link'**
+  String get hostFormResponseDirectSource;
+
+  /// Opens responses filtered to one form.
+  ///
+  /// In en, this message translates to:
+  /// **'View responses'**
+  String get hostFormsViewResponsesAction;
+
+  /// Opens aggregate form analytics.
+  ///
+  /// In en, this message translates to:
+  /// **'View analytics'**
+  String get hostFormsAnalyticsAction;
+
+  /// Opens form automation rules and runs.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage automations'**
+  String get hostFormsAutomationsAction;
+
+  /// Form response detail title.
+  ///
+  /// In en, this message translates to:
+  /// **'Response'**
+  String get hostFormResponseTitle;
+
+  /// Response identity section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Respondent'**
+  String get hostFormResponseIdentitySection;
+
+  /// Response answers section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Answers'**
+  String get hostFormResponseAnswersSection;
+
+  /// Response conversion actions section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Next actions'**
+  String get hostFormResponseOperationsSection;
+
+  /// Response identity name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get hostFormResponseName;
+
+  /// Response identity email field.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get hostFormResponseEmail;
+
+  /// Response identity phone field.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get hostFormResponsePhone;
+
+  /// Response attribution source field.
+  ///
+  /// In en, this message translates to:
+  /// **'Source'**
+  String get hostFormResponseSource;
+
+  /// Response submission time field.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted'**
+  String get hostFormResponseSubmittedAt;
+
+  /// Response consent version field.
+  ///
+  /// In en, this message translates to:
+  /// **'Consent version'**
+  String get hostFormResponseConsent;
+
+  /// Response completion duration field.
+  ///
+  /// In en, this message translates to:
+  /// **'Completion time'**
+  String get hostFormResponseCompletionTime;
+
+  /// Fallback for a missing response field.
+  ///
+  /// In en, this message translates to:
+  /// **'Not provided'**
+  String get hostFormResponseNotProvided;
+
+  /// Fallback for an unanswered form question.
+  ///
+  /// In en, this message translates to:
+  /// **'No answer'**
+  String get hostFormResponseNoAnswer;
+
+  /// Opens a time-limited response attachment.
+  ///
+  /// In en, this message translates to:
+  /// **'Open {fileName}'**
+  String hostFormResponseDownloadFile({required String fileName});
+
+  /// Reviews a response to CRM conversion.
+  ///
+  /// In en, this message translates to:
+  /// **'Create CRM contact'**
+  String get hostFormConvertCrm;
+
+  /// Reviews a response to application conversion.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to applications'**
+  String get hostFormConvertApplication;
+
+  /// Reviews a response to event attendee proposal conversion.
+  ///
+  /// In en, this message translates to:
+  /// **'Propose attendee'**
+  String get hostFormConvertAttendee;
+
+  /// Reviews a response to follow-up conversion.
+  ///
+  /// In en, this message translates to:
+  /// **'Prepare follow-up'**
+  String get hostFormConvertFollowUp;
+
+  /// Conversion preview confirmation title.
+  ///
+  /// In en, this message translates to:
+  /// **'Review this action'**
+  String get hostFormConversionReviewTitle;
+
+  /// Conversion preview confirmation guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch will create only the fields shown in this preview. Existing records and conflicts remain protected.'**
+  String get hostFormConversionReviewBody;
+
+  /// Confirms a reviewed response conversion.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm action'**
+  String get hostFormConversionConfirm;
+
+  /// Unavailable response conversion explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'This action needs verified identity or additional setup.'**
+  String get hostFormConversionUnavailable;
+
+  /// Successful response conversion feedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Action completed'**
+  String get hostFormConversionComplete;
+
+  /// Form analytics screen title.
+  ///
+  /// In en, this message translates to:
+  /// **'Form analytics'**
+  String get hostFormAnalyticsTitle;
+
+  /// Form analytics funnel section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Response funnel'**
+  String get hostFormAnalyticsFunnel;
+
+  /// Public form open count.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens'**
+  String get hostFormAnalyticsOpens;
+
+  /// Public form start count.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts'**
+  String get hostFormAnalyticsStarts;
+
+  /// Form submission count.
+  ///
+  /// In en, this message translates to:
+  /// **'Submissions'**
+  String get hostFormAnalyticsSubmissions;
+
+  /// Form start-to-submit conversion rate.
+  ///
+  /// In en, this message translates to:
+  /// **'Completion rate'**
+  String get hostFormAnalyticsCompletionRate;
+
+  /// Median form completion time.
+  ///
+  /// In en, this message translates to:
+  /// **'Median completion'**
+  String get hostFormAnalyticsMedianTime;
+
+  /// Source link funnel section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Sources'**
+  String get hostFormAnalyticsSources;
+
+  /// Question aggregate analytics section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Question results'**
+  String get hostFormAnalyticsQuestions;
+
+  /// Explains form analytics privacy thresholds.
+  ///
+  /// In en, this message translates to:
+  /// **'Question results appear only when the privacy threshold is met. Sensitive and free-text answers are never charted.'**
+  String get hostFormAnalyticsPrivacyNotice;
+
+  /// Starts a CSV form response export.
+  ///
+  /// In en, this message translates to:
+  /// **'Export CSV'**
+  String get hostFormExportCsv;
+
+  /// Starts an XLSX form response export.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Excel'**
+  String get hostFormExportXlsx;
+
+  /// Pending form response export feedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing export…'**
+  String get hostFormExportPreparing;
+
+  /// Completed form response export feedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Export ready'**
+  String get hostFormExportReady;
+
+  /// Form automations screen title.
+  ///
+  /// In en, this message translates to:
+  /// **'Automations'**
+  String get hostFormAutomationsTitle;
+
+  /// Explains form automations.
+  ///
+  /// In en, this message translates to:
+  /// **'Run explicit, observable actions after a response changes. You can disable any rule instantly.'**
+  String get hostFormAutomationsSubtitle;
+
+  /// Form automation rules section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Rules'**
+  String get hostFormAutomationsRules;
+
+  /// Form automation execution history section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent runs'**
+  String get hostFormAutomationsRuns;
+
+  /// Empty automation rules title.
+  ///
+  /// In en, this message translates to:
+  /// **'No automations yet'**
+  String get hostFormAutomationsEmptyTitle;
+
+  /// Empty automation rules guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with a safe preset. Every run is recorded and can be disabled.'**
+  String get hostFormAutomationsEmptyBody;
+
+  /// Creates a team notification response automation.
+  ///
+  /// In en, this message translates to:
+  /// **'Notify my team'**
+  String get hostFormAutomationNotifyPreset;
+
+  /// Creates an identity-gated CRM response automation.
+  ///
+  /// In en, this message translates to:
+  /// **'Create CRM contacts'**
+  String get hostFormAutomationCrmPreset;
+
+  /// Response-submitted automation trigger label.
+  ///
+  /// In en, this message translates to:
+  /// **'When a response is submitted'**
+  String get hostFormAutomationSubmittedTrigger;
+
+  /// Response-withdrawn automation trigger label.
+  ///
+  /// In en, this message translates to:
+  /// **'When a response is withdrawn'**
+  String get hostFormAutomationWithdrawnTrigger;
+
+  /// Answer-matching automation trigger label.
+  ///
+  /// In en, this message translates to:
+  /// **'When an answer matches'**
+  String get hostFormAutomationAnswerTrigger;
+
+  /// Automation rule action count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 action} other{{count} actions}}'**
+  String hostFormAutomationActionCount({required int count});
+
+  /// Automation run event and retry summary.
+  ///
+  /// In en, this message translates to:
+  /// **'{trigger} · Attempt {attempt}'**
+  String hostFormAutomationRunSummary({
+    required String trigger,
+    required int attempt,
+  });
+
+  /// Loads the next bounded automation-run page.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more runs'**
+  String get hostFormAutomationsLoadMore;
+
+  /// Anonymous response data provenance label.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous'**
+  String get hostFormResponseOriginAnonymous;
+
+  /// Respondent-granted data provenance label.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared by respondent'**
+  String get hostFormResponseOriginGranted;
+
+  /// Organizer-acquired data provenance label.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer record'**
+  String get hostFormResponseOriginAcquired;
+
+  /// Revoked response data provenance label.
+  ///
+  /// In en, this message translates to:
+  /// **'Access revoked'**
+  String get hostFormResponseOriginRevoked;
+
+  /// Event attendee proposal picker title.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an event'**
+  String get hostFormSelectEventTitle;
+
+  /// Empty attendee proposal event picker guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'No upcoming events are available for an attendee proposal.'**
+  String get hostFormSelectEventEmpty;
+
+  /// Conversion preview existing-record notice.
+  ///
+  /// In en, this message translates to:
+  /// **'An existing record already matches this response.'**
+  String get hostFormConversionExisting;
+
+  /// Explains a form-scoped response inbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing responses for {formTitle}'**
+  String hostFormResponseFilteredTo({required String formTitle});
+
+  /// Clears the response inbox form filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Show all'**
+  String get hostFormResponseClearFormFilter;
+
+  /// One source-link form funnel summary.
+  ///
+  /// In en, this message translates to:
+  /// **'{opens} opens · {starts} starts · {submissions} submissions'**
+  String hostFormAnalyticsSourceSummary({
+    required int opens,
+    required int starts,
+    required int submissions,
+  });
+
+  /// Question aggregate response count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 answer} other{{count} answers}}'**
+  String hostFormAnalyticsQuestionSummary({required int count});
+
+  /// Choice aggregate response count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 response} other{{count} responses}}'**
+  String hostFormAnalyticsChoiceCount({required int count});
+
+  /// Failed or expired form export feedback.
+  ///
+  /// In en, this message translates to:
+  /// **'The export could not be prepared. Try again.'**
+  String get hostFormExportFailed;
+
+  /// Long-running form export feedback.
+  ///
+  /// In en, this message translates to:
+  /// **'The export is still preparing. You can retry without creating a duplicate.'**
+  String get hostFormExportStillPreparing;
+
+  /// Enabled automation state label.
+  ///
+  /// In en, this message translates to:
+  /// **'Enabled'**
+  String get hostFormAutomationEnabled;
+
+  /// Disabled automation state label.
+  ///
+  /// In en, this message translates to:
+  /// **'Disabled'**
+  String get hostFormAutomationDisabled;
+
+  /// Pending automation run status.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get hostFormAutomationPending;
+
+  /// Running automation run status.
+  ///
+  /// In en, this message translates to:
+  /// **'Running'**
+  String get hostFormAutomationRunning;
+
+  /// Successful automation run status.
+  ///
+  /// In en, this message translates to:
+  /// **'Succeeded'**
+  String get hostFormAutomationSucceeded;
+
+  /// Partially failed automation run status.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs attention'**
+  String get hostFormAutomationPartiallyFailed;
+
+  /// Failed automation run status.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get hostFormAutomationFailed;
+
+  /// Skipped automation run status.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped'**
+  String get hostFormAutomationSkipped;
 }
 
 class _AppLocalizationsDelegate

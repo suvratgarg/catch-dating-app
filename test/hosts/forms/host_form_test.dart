@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/hosts/domain/host_form.dart';
+import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -67,7 +68,7 @@ void main() {
             ),
           ),
         );
-        final opensAt = DateTime.utc(2026, 9, 1);
+        final opensAt = DateTime.utc(2026, 9);
         final updated = withQuestion
             .copyWith(
               appearancePreset: HostFormAppearancePreset.activity,
@@ -199,12 +200,12 @@ void main() {
   );
 
   test('form share projections retain canonical and attributed URLs', () {
-    final assets = HostFormShareAssets.fromCallableData({
+    final assets = HostFormShareAssets.fromCallableData(const {
       'canonicalUrl': 'https://catchdates.com/f/public_form_1234567890/',
       'embedUrl': 'https://catchdates.com/f/public_form_1234567890/?embed=1',
       'embedSnippet': '<iframe></iframe>',
     });
-    final link = HostFormShareLink.fromCallableData({
+    final link = HostFormShareLink.fromCallableData(const {
       'linkId': 'formlink_123',
       'label': 'Instagram story',
       'source': 'instagram_story',
@@ -216,7 +217,128 @@ void main() {
     expect(link.source, 'instagram_story');
     expect(link.url, contains('source='));
   });
+
+  test('response pages preserve provenance, pagination, and conversions', () {
+    final page = HostFormResponsePage.fromCallableData({
+      'organizerId': 'org_1',
+      'items': [_responseMap()],
+      'nextCursor': 'cursor_2',
+    });
+
+    expect(page.nextCursor, 'cursor_2');
+    expect(page.items.single.identity.primaryLabel, 'Ada Host');
+    expect(
+      page.items.single.conversionKinds,
+      contains(HostFormConversionKind.crmContact),
+    );
+    expect(
+      page.items.single.identity.origin,
+      HostFormDataOrigin.respondentGranted,
+    );
+  });
+
+  test('response request equality treats filter sets as unordered', () {
+    const first = HostFormResponseListRequest(
+      organizerId: 'org_1',
+      statuses: {
+        HostFormResponseStatus.submitted,
+        HostFormResponseStatus.withdrawn,
+      },
+      identityKinds: {
+        HostFormResponseIdentityKind.emailVerified,
+        HostFormResponseIdentityKind.phoneVerified,
+      },
+    );
+    const second = HostFormResponseListRequest(
+      organizerId: 'org_1',
+      statuses: {
+        HostFormResponseStatus.withdrawn,
+        HostFormResponseStatus.submitted,
+      },
+      identityKinds: {
+        HostFormResponseIdentityKind.phoneVerified,
+        HostFormResponseIdentityKind.emailVerified,
+      },
+    );
+
+    expect(first, second);
+    expect(first.hashCode, second.hashCode);
+  });
+
+  test('analytics and automation projections parse required state', () {
+    final analytics = HostFormAnalytics.fromCallableData(const {
+      'formId': 'form_1',
+      'versionId': 'version_1',
+      'version': 2,
+      'opens': 10,
+      'starts': 8,
+      'submissions': 6,
+      'withdrawals': 1,
+      'completionRate': 0.75,
+      'medianCompletionMillis': 60000,
+      'questions': <Object?>[],
+      'sources': <Object?>[],
+      'privacyThreshold': 5,
+    });
+    final automations = HostFormAutomationPage.fromCallableData(const {
+      'rules': <Object?>[
+        {
+          'ruleId': 'rule_1',
+          'organizerId': 'org_1',
+          'formId': 'form_1',
+          'name': 'Notify my team',
+          'enabled': true,
+          'revision': 1,
+          'trigger': 'responseSubmitted',
+          'condition': null,
+          'actions': <Object?>[
+            {
+              'actionId': 'action_1',
+              'kind': 'notifyTeam',
+              'tagId': null,
+              'eventId': null,
+              'webhookUrl': null,
+              'webhookSecretConfigured': false,
+              'channel': null,
+            },
+          ],
+          'updatedAtMillis': 10,
+        },
+      ],
+      'runs': <Object?>[],
+      'nextCursor': null,
+    });
+
+    expect(analytics.completionRate, 0.75);
+    expect(automations.rules.single.enabled, isTrue);
+    expect(
+      automations.rules.single.actions.single.kind,
+      HostFormAutomationActionKind.notifyTeam,
+    );
+  });
 }
+
+Map<String, Object?> _responseMap() => {
+  'responseId': 'response_1',
+  'formId': 'form_1',
+  'formTitle': 'Community application',
+  'versionId': 'version_1',
+  'version': 2,
+  'status': 'submitted',
+  'identityKind': 'emailVerified',
+  'identity': {
+    'displayName': 'Ada Host',
+    'email': 'ada@example.com',
+    'phoneE164': null,
+    'origin': 'respondentGranted',
+  },
+  'sourceLinkId': 'source_1',
+  'sourceLabel': 'Instagram',
+  'submittedAtMillis': 10,
+  'withdrawnAtMillis': null,
+  'highlights': <Object?>[],
+  'conversionKinds': ['crmContact'],
+};
 
 Map<String, Object?> _definitionMap() => {
   'schemaVersion': 1,

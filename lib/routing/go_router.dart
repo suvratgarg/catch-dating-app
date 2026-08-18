@@ -33,8 +33,11 @@ import 'package:catch_dating_app/hosts/presentation/customers/host_customer_deta
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_analytics_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_automations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_preview_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_share_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_templates_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
@@ -945,6 +948,9 @@ StatefulShellRoute _hostShellRoute(
             name: Routes.hostFormsScreen.name,
             builder: (context, state) => HostFormsScreen(
               initialOrganizerId: state.uri.queryParameters['organizerId'],
+              initialResponses:
+                  state.uri.queryParameters['view'] == 'responses',
+              initialFormId: state.uri.queryParameters['formId'],
             ),
             routes: [
               GoRoute(
@@ -953,6 +959,15 @@ StatefulShellRoute _hostShellRoute(
                 parentNavigatorKey: keys.root,
                 builder: (context, state) => HostFormTemplatesScreen(
                   organizerId: state.uri.queryParameters['organizerId'] ?? '',
+                ),
+              ),
+              GoRoute(
+                path: 'responses/:responseId',
+                name: Routes.hostFormResponseDetailScreen.name,
+                parentNavigatorKey: keys.root,
+                builder: (context, state) => HostFormResponseDetailScreen(
+                  organizerId: state.uri.queryParameters['organizerId'] ?? '',
+                  responseId: state.pathParameters['responseId']!,
                 ),
               ),
               GoRoute(
@@ -969,6 +984,24 @@ StatefulShellRoute _hostShellRoute(
                 name: Routes.hostFormShareScreen.name,
                 parentNavigatorKey: keys.root,
                 builder: (context, state) => HostFormShareScreen(
+                  organizerId: state.uri.queryParameters['organizerId'] ?? '',
+                  formId: state.pathParameters['formId']!,
+                ),
+              ),
+              GoRoute(
+                path: ':formId/analytics',
+                name: Routes.hostFormAnalyticsScreen.name,
+                parentNavigatorKey: keys.root,
+                builder: (context, state) => HostFormAnalyticsScreen(
+                  organizerId: state.uri.queryParameters['organizerId'] ?? '',
+                  formId: state.pathParameters['formId']!,
+                ),
+              ),
+              GoRoute(
+                path: ':formId/automations',
+                name: Routes.hostFormAutomationsScreen.name,
+                parentNavigatorKey: keys.root,
+                builder: (context, state) => HostFormAutomationsScreen(
                   organizerId: state.uri.queryParameters['organizerId'] ?? '',
                   formId: state.pathParameters['formId']!,
                 ),
