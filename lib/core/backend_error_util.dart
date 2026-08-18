@@ -11,6 +11,43 @@ typedef BackendErrorMapper =
       BackendErrorContext context,
     );
 
+/// Reclassifies the generic 404 returned when a callable endpoint has not been
+/// deployed yet. Domain callables can also intentionally throw `not-found`, so
+/// only the transport's generic messages are treated as capability failures.
+AppException? mapMissingCallableAsUnavailable(
+  Object error,
+  StackTrace stackTrace,
+  BackendErrorContext context,
+) {
+  if (error is! FirebaseFunctionsException ||
+      error.code != 'not-found' ||
+      !_isMissingCallableTransportMessage(error.message)) {
+    return null;
+  }
+  return BackendOperationException(
+    code: 'callable-unavailable',
+    message: 'This feature is not available right now. Please try again.',
+    debugMessage: _firebaseDebugMessage(error, context),
+    cause: error,
+    stackTrace: stackTrace,
+    context: context,
+    retryable: true,
+    severity: AppErrorSeverity.error,
+  );
+}
+
+bool _isMissingCallableTransportMessage(String? message) {
+  final normalized = message
+      ?.trim()
+      .toLowerCase()
+      .replaceAll(RegExp(r'[_-]+'), ' ')
+      .replaceAll(RegExp(r'\s+'), ' ');
+  return normalized == 'not found' ||
+      normalized == 'function not found' ||
+      normalized == 'requested function was not found' ||
+      normalized == 'the requested function was not found';
+}
+
 Future<T> withBackendErrorContext<T>(
   Future<T> Function() operation, {
   required BackendErrorContext context,

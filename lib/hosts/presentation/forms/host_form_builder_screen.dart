@@ -138,7 +138,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
           errorBuilder: (_, error, _) => CatchPageBody(
             child: CatchErrorState.fromError(
               error,
-              context: AppErrorContext.club,
+              context: AppErrorContext.forms,
               onRetry: notifier.reload,
             ),
           ),

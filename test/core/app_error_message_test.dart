@@ -145,6 +145,58 @@ void main() {
       expect(descriptor.retryable, isTrue);
     });
 
+    test('uses Forms copy when the Forms callable is unavailable', () {
+      const error = BackendOperationException(
+        code: 'callable-unavailable',
+        message: 'This feature is not available right now. Please try again.',
+        context: BackendErrorContext(
+          service: BackendService.functions,
+          action: 'load organizer forms',
+          resource: 'organizer_forms',
+        ),
+        retryable: true,
+      );
+
+      final descriptor = appErrorDescriptor(
+        error,
+        context: AppErrorContext.forms,
+      );
+
+      expect(descriptor.title, 'Forms unavailable');
+      expect(
+        descriptor.message,
+        'Forms is not available right now. Please try again in a moment.',
+      );
+      expect(descriptor.retryLabel, 'Reload forms');
+      expect(descriptor.retryable, isTrue);
+    });
+
+    test('uses response copy when the response callable is unavailable', () {
+      const error = BackendOperationException(
+        code: 'callable-unavailable',
+        message: 'This feature is not available right now. Please try again.',
+        context: BackendErrorContext(
+          service: BackendService.functions,
+          action: 'load organizer form responses',
+          resource: 'organizer_forms',
+        ),
+        retryable: true,
+      );
+
+      final descriptor = appErrorDescriptor(
+        error,
+        context: AppErrorContext.formResponses,
+      );
+
+      expect(descriptor.title, 'Responses unavailable');
+      expect(
+        descriptor.message,
+        'Form responses are not available right now. Please try again in a moment.',
+      );
+      expect(descriptor.retryLabel, 'Reload responses');
+      expect(descriptor.retryable, isTrue);
+    });
+
     test('describes storage and external action failures', () {
       final upload = appErrorDescriptor(
         const StorageException(

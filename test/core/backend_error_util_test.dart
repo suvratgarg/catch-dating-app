@@ -129,6 +129,51 @@ void main() {
       expect(error.context?.action, 'join event');
     });
 
+    test(
+      'maps a missing callable endpoint to a retryable capability error',
+      () {
+        final error = normalizeBackendError(
+          TestFirebaseFunctionsException(
+            code: 'not-found',
+            message: 'NOT FOUND',
+          ),
+          context: const BackendErrorContext(
+            service: BackendService.functions,
+            action: 'load organizer forms',
+            resource: 'organizer_forms',
+          ),
+          mapper: mapMissingCallableAsUnavailable,
+        );
+
+        expect(
+          error,
+          isA<BackendOperationException>()
+              .having((value) => value.code, 'code', 'callable-unavailable')
+              .having((value) => value.retryable, 'retryable', isTrue),
+        );
+        expect(error, isNot(isA<DocumentNotFoundException>()));
+        expect(error.context?.action, 'load organizer forms');
+      },
+    );
+
+    test('preserves domain not-found failures from deployed callables', () {
+      final error = normalizeBackendError(
+        TestFirebaseFunctionsException(
+          code: 'not-found',
+          message: 'Organizer not found.',
+        ),
+        context: const BackendErrorContext(
+          service: BackendService.functions,
+          action: 'load organizer forms',
+          resource: 'organizer_forms',
+        ),
+        mapper: mapMissingCallableAsUnavailable,
+      );
+
+      expect(error, isA<DocumentNotFoundException>());
+      expect(error, isNot(isA<BackendOperationException>()));
+    });
+
     test('maps Firebase Auth validation and retry failures', () {
       final invalidCode = normalizeBackendError(
         FirebaseAuthException(code: 'invalid-verification-code'),

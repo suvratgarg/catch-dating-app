@@ -148,7 +148,7 @@ class _HostFormResponsesPanelState
           loadingBuilder: (_) => const CatchSkeletonRows(count: 6),
           errorBuilder: (_, error, _) => CatchErrorState.fromError(
             error,
-            context: AppErrorContext.customer,
+            context: AppErrorContext.formResponses,
             mode: CatchErrorStateMode.compact,
             onRetry: () =>
                 ref.invalidate(hostFormResponsesControllerProvider(request)),
@@ -218,7 +218,7 @@ class _HostFormResponsesPanelState
                   gapH12,
                   CatchErrorState.fromError(
                     error,
-                    context: AppErrorContext.customer,
+                    context: AppErrorContext.formResponses,
                     mode: CatchErrorStateMode.compact,
                     onRetry: () => ref
                         .read(

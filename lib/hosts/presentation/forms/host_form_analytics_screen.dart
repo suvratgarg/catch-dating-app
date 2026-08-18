@@ -67,7 +67,7 @@ class _HostFormAnalyticsScreenState
           errorBuilder: (_, error, _) => CatchPageBody(
             child: CatchErrorState.fromError(
               error,
-              context: AppErrorContext.club,
+              context: AppErrorContext.forms,
               onRetry: () => ref.invalidate(provider),
             ),
           ),

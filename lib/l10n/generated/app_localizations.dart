@@ -21706,6 +21706,54 @@ abstract class AppLocalizations {
   /// **'Create form'**
   String get hostFormsCreate;
 
+  /// Forms workspace load failure title.
+  ///
+  /// In en, this message translates to:
+  /// **'Forms unavailable'**
+  String get hostFormsUnavailableTitle;
+
+  /// Forms workspace temporary service failure guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Forms is not available right now. Please try again in a moment.'**
+  String get hostFormsUnavailableBody;
+
+  /// Retries loading the Forms workspace.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload forms'**
+  String get hostFormsReload;
+
+  /// Missing form error title.
+  ///
+  /// In en, this message translates to:
+  /// **'Form not found'**
+  String get hostFormsNotFound;
+
+  /// Form responses load failure title.
+  ///
+  /// In en, this message translates to:
+  /// **'Responses unavailable'**
+  String get hostFormResponsesUnavailableTitle;
+
+  /// Form responses temporary service failure guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Form responses are not available right now. Please try again in a moment.'**
+  String get hostFormResponsesUnavailableBody;
+
+  /// Retries loading form responses.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload responses'**
+  String get hostFormResponsesReload;
+
+  /// Missing form response error title.
+  ///
+  /// In en, this message translates to:
+  /// **'Response not found'**
+  String get hostFormResponseNotFound;
+
   /// Explains the organizer Forms workspace.
   ///
   /// In en, this message translates to:

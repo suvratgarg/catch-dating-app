@@ -13,6 +13,8 @@ enum AppErrorContext {
   event,
   club,
   customer,
+  forms,
+  formResponses,
   chat,
   swipes,
   payments,
@@ -90,6 +92,14 @@ String _messageFor(
   if (context == AppErrorContext.explore &&
       _isFirestoreIndexPrecondition(appException)) {
     return l10n.coreAppErrorMessageVisiblecopyExploreIsStillGetting;
+  }
+  if (appException is BackendOperationException &&
+      appException.code == 'callable-unavailable') {
+    return switch (context) {
+      AppErrorContext.forms => l10n.hostFormsUnavailableBody,
+      AppErrorContext.formResponses => l10n.hostFormResponsesUnavailableBody,
+      _ => l10n.coreAppErrorMessageVisiblecopySomethingWentWrongPlease,
+    };
   }
   if (appException == null) {
     return l10n.coreAppErrorMessageVisiblecopySomethingWentWrongPlease;
@@ -267,6 +277,8 @@ String _contextTitle(AppLocalizations l10n, AppErrorContext context) {
       l10n.coreAppErrorMessageVisiblecopyEventUnavailable,
     AppErrorContext.club => l10n.coreAppErrorMessageVisiblecopyClubUnavailable,
     AppErrorContext.customer => l10n.hostCustomersDetailUnavailable,
+    AppErrorContext.forms => l10n.hostFormsUnavailableTitle,
+    AppErrorContext.formResponses => l10n.hostFormResponsesUnavailableTitle,
     AppErrorContext.chat =>
       l10n.coreAppErrorMessageVisiblecopyMessagesUnavailable,
     AppErrorContext.swipes =>
@@ -336,6 +348,8 @@ String _retryLabelFor(
     AppErrorContext.event => l10n.coreAppErrorMessageVisiblecopyReloadEvent,
     AppErrorContext.club => l10n.coreAppErrorMessageVisiblecopyReloadClub,
     AppErrorContext.customer => l10n.hostCustomersReloadDetail,
+    AppErrorContext.forms => l10n.hostFormsReload,
+    AppErrorContext.formResponses => l10n.hostFormResponsesReload,
     AppErrorContext.swipes => l10n.coreAppErrorMessageVisiblecopyReloadCatches,
     AppErrorContext.payments =>
       l10n.coreAppErrorMessageVisiblecopyReloadPayments,
@@ -386,6 +400,8 @@ String _notFoundTitle(AppLocalizations l10n, AppErrorContext context) {
     AppErrorContext.event => l10n.coreAppErrorMessageVisiblecopyEventNotFound,
     AppErrorContext.club => l10n.coreAppErrorMessageVisiblecopyClubNotFound,
     AppErrorContext.customer => l10n.hostCustomersDetailNotFound,
+    AppErrorContext.forms => l10n.hostFormsNotFound,
+    AppErrorContext.formResponses => l10n.hostFormResponseNotFound,
     AppErrorContext.chat => l10n.coreAppErrorMessageVisiblecopyChatNotFound,
     AppErrorContext.swipes =>
       l10n.coreAppErrorMessageVisiblecopyCatchesNotFound,

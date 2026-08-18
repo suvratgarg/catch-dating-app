@@ -436,6 +436,7 @@ class HostFormsRepository {
       action: action,
       resource: name,
     ),
+    mapper: mapMissingCallableAsUnavailable,
   );
 }
 

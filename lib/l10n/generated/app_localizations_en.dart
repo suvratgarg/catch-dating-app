@@ -13896,6 +13896,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormsCreate => 'Create form';
 
   @override
+  String get hostFormsUnavailableTitle => 'Forms unavailable';
+
+  @override
+  String get hostFormsUnavailableBody =>
+      'Forms is not available right now. Please try again in a moment.';
+
+  @override
+  String get hostFormsReload => 'Reload forms';
+
+  @override
+  String get hostFormsNotFound => 'Form not found';
+
+  @override
+  String get hostFormResponsesUnavailableTitle => 'Responses unavailable';
+
+  @override
+  String get hostFormResponsesUnavailableBody =>
+      'Form responses are not available right now. Please try again in a moment.';
+
+  @override
+  String get hostFormResponsesReload => 'Reload responses';
+
+  @override
+  String get hostFormResponseNotFound => 'Response not found';
+
+  @override
   String get hostFormsSubtitle =>
       'Applications, registrations, waivers, feedback, and surveys in one reusable workspace.';
 

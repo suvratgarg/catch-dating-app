@@ -69,7 +69,7 @@ class _HostFormResponseDetailScreenState
           errorBuilder: (_, error, _) => CatchPageBody(
             child: CatchErrorState.fromError(
               error,
-              context: AppErrorContext.customer,
+              context: AppErrorContext.formResponses,
               onRetry: () => ref.invalidate(provider),
             ),
           ),

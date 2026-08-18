@@ -66,7 +66,7 @@ class _HostFormTemplatesScreenState
                 loadingBuilder: (_) => const CatchSkeletonRows(count: 7),
                 errorBuilder: (_, error, _) => CatchErrorState.fromError(
                   error,
-                  context: AppErrorContext.club,
+                  context: AppErrorContext.forms,
                   onRetry: () => ref.invalidate(
                     hostFormTemplatesProvider(widget.organizerId),
                   ),
