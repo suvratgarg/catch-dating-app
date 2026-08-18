@@ -73,16 +73,12 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
           CatchIconAction(
             icon: CatchIcons.undoRounded,
             tooltip: context.l10n.hostFormUndo,
-            onPressed: editorValue != null && notifier.canUndo
-                ? notifier.undo
-                : null,
+            onPressed: editorValue?.canUndo ?? false ? notifier.undo : null,
           ),
           CatchIconAction(
             icon: CatchIcons.redoRounded,
             tooltip: context.l10n.hostFormRedo,
-            onPressed: editorValue != null && notifier.canRedo
-                ? notifier.redo
-                : null,
+            onPressed: editorValue?.canRedo ?? false ? notifier.redo : null,
           ),
           if (editorValue?.editor.form.activeVersionId != null)
             CatchIconAction(
@@ -847,7 +843,7 @@ class _QuestionEditor extends StatelessWidget {
       onOpenChanged: (open) {
         if (open) onSelected();
       },
-      control: CatchSection.containedFieldRows(
+      control: CatchSection.fieldRows(
         children: [
           CatchField.input(
             key: ValueKey(

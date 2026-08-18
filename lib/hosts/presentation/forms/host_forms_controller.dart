@@ -91,12 +91,16 @@ class HostFormEditorState {
     required this.editor,
     this.saveState = HostFormSaveState.saved,
     this.operationInProgress = false,
+    this.canUndo = false,
+    this.canRedo = false,
     this.error,
   });
 
   final HostFormEditor editor;
   final HostFormSaveState saveState;
   final bool operationInProgress;
+  final bool canUndo;
+  final bool canRedo;
   final Object? error;
 
   bool get hasBlockingValidationErrors => editor.validationIssues.any(
@@ -107,12 +111,16 @@ class HostFormEditorState {
     HostFormEditor? editor,
     HostFormSaveState? saveState,
     bool? operationInProgress,
+    bool? canUndo,
+    bool? canRedo,
     Object? error,
     bool clearError = false,
   }) => HostFormEditorState(
     editor: editor ?? this.editor,
     saveState: saveState ?? this.saveState,
     operationInProgress: operationInProgress ?? this.operationInProgress,
+    canUndo: canUndo ?? this.canUndo,
+    canRedo: canRedo ?? this.canRedo,
     error: clearError ? null : error ?? this.error,
   );
 }
@@ -125,9 +133,6 @@ class HostFormEditorController extends _$HostFormEditorController {
   bool _saveRunning = false;
   final List<HostFormDefinition> _undoStack = [];
   final List<HostFormDefinition> _redoStack = [];
-
-  bool get canUndo => _undoStack.isNotEmpty;
-  bool get canRedo => _redoStack.isNotEmpty;
 
   @override
   Future<HostFormEditorState> build(String organizerId, String formId) async {
@@ -549,7 +554,9 @@ class HostFormEditorController extends _$HostFormEditorController {
 
   void undo() {
     final current = state.asData?.value;
-    if (current == null || current.operationInProgress || !canUndo) return;
+    if (current == null || current.operationInProgress || _undoStack.isEmpty) {
+      return;
+    }
     final definition = _undoStack.removeLast();
     _redoStack.add(current.editor.definition);
     _replaceLocalDefinition(current, definition);
@@ -557,7 +564,9 @@ class HostFormEditorController extends _$HostFormEditorController {
 
   void redo() {
     final current = state.asData?.value;
-    if (current == null || current.operationInProgress || !canRedo) return;
+    if (current == null || current.operationInProgress || _redoStack.isEmpty) {
+      return;
+    }
     final definition = _redoStack.removeLast();
     _undoStack.add(current.editor.definition);
     _replaceLocalDefinition(current, definition);
@@ -572,6 +581,8 @@ class HostFormEditorController extends _$HostFormEditorController {
       current.copyWith(
         editor: current.editor.copyWith(definition: definition),
         saveState: HostFormSaveState.dirty,
+        canUndo: _undoStack.isNotEmpty,
+        canRedo: _redoStack.isNotEmpty,
         clearError: true,
       ),
     );
