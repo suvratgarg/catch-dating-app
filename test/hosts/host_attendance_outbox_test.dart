@@ -62,7 +62,7 @@ HostAttendanceOutboxEntry entry({
   desiredCheckedIn: true,
   expectedRevision: 4,
   clientOperationId: operationId,
-  createdAt: createdAt ?? DateTime(2026, 8, 12),
+  createdAt: createdAt ?? DateTime.now(),
   status: HostAttendanceOutboxStatus.pending,
 );
 
