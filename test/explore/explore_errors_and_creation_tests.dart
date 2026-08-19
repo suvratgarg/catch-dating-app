@@ -755,8 +755,10 @@ void _registerExploreErrorsAndCreationTests() {
       await tester.pump();
 
       expect(
-        tester.widget<CatchStepHeader>(find.byType(CatchStepHeader)).showBack,
-        isFalse,
+        tester
+            .widget<CatchStepHeader>(find.byType(CatchStepHeader))
+            .leadingType,
+        CatchTopBarLeading.close,
       );
       expect(
         tester
@@ -771,10 +773,10 @@ void _registerExploreErrorsAndCreationTests() {
       );
       expect(find.text('Save draft'), findsNothing);
       expect(
-        tester
-            .widgetList<PopScope<dynamic>>(find.byType(PopScope))
-            .any((scope) => !scope.canPop),
-        isTrue,
+        find.byWidgetPredicate(
+          (widget) => widget is PopScope<dynamic> && !widget.canPop,
+        ),
+        findsWidgets,
       );
 
       pendingSubmit.complete();
@@ -783,7 +785,7 @@ void _registerExploreErrorsAndCreationTests() {
     },
   );
 
-  testWidgets('CreateClubScreen validates and pops after a successful submit', (
+  testWidgets('CreateClubScreen reviews and pops after a successful submit', (
     tester,
   ) async {
     SharedPreferences.setMockInitialValues({});
@@ -848,16 +850,25 @@ void _registerExploreErrorsAndCreationTests() {
     await tester.tap(find.text('Next'));
     await _pumpClubUi(tester);
 
-    expect(find.text('Please enter an organizer name'), findsOneWidget);
-    expect(find.text('Please select a city'), findsOneWidget);
-    expect(find.text('Please enter an area'), findsOneWidget);
+    expect(find.text('Organizer details'), findsOneWidget);
+    expect(find.text('Please enter an organizer name'), findsNothing);
+
+    await tester.tap(find.text('Previous'));
+    await _pumpClubUi(tester);
+    expect(find.text('Organizer basics'), findsOneWidget);
 
     await tester.enterText(
-      find.widgetWithText(CatchField, 'Organizer name'),
+      find.descendant(
+        of: _field('Organizer name'),
+        matching: find.byType(EditableText),
+      ),
       'Sunset Striders',
     );
     await tester.enterText(
-      find.widgetWithText(CatchField, 'Area / neighbourhood'),
+      find.descendant(
+        of: _field('Area / neighbourhood'),
+        matching: find.byType(EditableText),
+      ),
       'Bandra',
     );
 
@@ -876,10 +887,16 @@ void _registerExploreErrorsAndCreationTests() {
     await tester.tap(find.text('Next'));
     await _pumpClubUi(tester);
 
-    expect(find.text('Please add a description'), findsOneWidget);
+    expect(find.text('DEFAULT EVENT POLICY'), findsOneWidget);
+
+    await tester.tap(find.text('Previous'));
+    await _pumpClubUi(tester);
 
     await tester.enterText(
-      find.widgetWithText(CatchField, 'Description'),
+      find.descendant(
+        of: _field('Description'),
+        matching: find.byType(EditableText),
+      ),
       'Easy social club',
     );
     tester.testTextInput.hide();
@@ -899,6 +916,12 @@ void _registerExploreErrorsAndCreationTests() {
 
     expect(find.text('Live event guide'), findsOneWidget);
     expect(_field('Live event guide'), findsOneWidget);
+
+    await tester.tap(find.text('Review organizer'));
+    await _pumpClubUi(tester);
+
+    expect(find.text('COMPLETE'), findsNWidgets(2));
+    expect(find.text('OPTIONAL'), findsNWidgets(2));
 
     await tester.tap(find.text('Create organizer'));
     await _pumpClubUi(tester);

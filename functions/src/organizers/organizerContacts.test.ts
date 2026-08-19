@@ -6,12 +6,14 @@ import {
   csvCell,
   decodeContactCursor,
   encodeContactCursor,
+  exactContactCountFromSummary,
   listContactsMatchCountResult,
   manualContactDetailsEditable,
   resolveManualTags,
   summarizeContactRevenue,
 } from "./organizerContacts";
 import {
+  OrganizerAudienceSummaryDocument,
   OrganizerContactTagVocabularyDocument,
   PaymentDocument,
 } from "../shared/generated/firestoreAdminTypes";
@@ -200,6 +202,15 @@ test("contact match counts never present a lower bound as exact", () => {
     matchCount: 8,
     matchCountCoverage: "atLeast",
   });
+  assert.equal(exactContactCountFromSummary(undefined), null);
+  assert.equal(exactContactCountFromSummary({
+    contactCount: 12,
+    sourceCoverage: "partial",
+  } as OrganizerAudienceSummaryDocument), null);
+  assert.equal(exactContactCountFromSummary({
+    contactCount: 12,
+    sourceCoverage: "exact",
+  } as OrganizerAudienceSummaryDocument), 12);
 });
 
 test("customer revenue includes completed organizer payments only", () => {

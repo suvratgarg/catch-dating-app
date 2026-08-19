@@ -169,7 +169,7 @@ export const EventRuntimeShells: Story = {
     a11y: {test: "error"},
     catchComponent: {
       id: "shared_event_runtime_shells",
-      routeIds: ["event_runtime"],
+      routeIds: ["event_runtime", "event_rehearsal"],
       states: ["phone-entry", "live-module-shell"],
     },
   },

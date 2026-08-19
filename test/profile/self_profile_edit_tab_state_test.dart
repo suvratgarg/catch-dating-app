@@ -9,10 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';
 
-const PhotoUploadState _idleUploadState = (
-  loadingIndices: <int>{},
-  uploadError: null,
-);
+const PhotoUploadState _idleUploadState = PhotoUploadState();
 final _today = DateTime(2026, 6, 24);
 final _l10n = AppLocalizationsEn();
 
@@ -29,7 +26,7 @@ void main() {
       l10n: _l10n,
       user: user,
       today: _today,
-      uploadState: (loadingIndices: {2}, uploadError: null),
+      uploadState: PhotoUploadState.fromLegacy(loadingIndices: {2}),
     );
 
     expect(

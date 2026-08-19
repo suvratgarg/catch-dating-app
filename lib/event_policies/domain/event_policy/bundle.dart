@@ -1,12 +1,29 @@
 part of '../event_policy.dart';
 
 class EventPolicyBundle {
-  const EventPolicyBundle({
+  factory EventPolicyBundle({
+    required EventAdmissionPolicy admissionPolicy,
+    required EventPricingPolicy pricingPolicy,
+    EventCancellationPolicy? cancellationPolicy,
+    EventSettlementPolicy settlementPolicy =
+        const EventSettlementPolicy.afterEventCompletion(),
+    EventCohortResolver cohortResolver = const EventCohortResolver(),
+  }) => EventPolicyBundle._(
+    admissionPolicy: admissionPolicy,
+    pricingPolicy: pricingPolicy,
+    cancellationPolicy: pricingPolicy.basePrice.isFree
+        ? const EventCancellationPolicy.notApplicable()
+        : cancellationPolicy ?? const EventCancellationPolicy.standard(),
+    settlementPolicy: settlementPolicy,
+    cohortResolver: cohortResolver,
+  );
+
+  const EventPolicyBundle._({
     required this.admissionPolicy,
     required this.pricingPolicy,
-    this.cancellationPolicy = const EventCancellationPolicy.standard(),
-    this.settlementPolicy = const EventSettlementPolicy.afterEventCompletion(),
-    this.cohortResolver = const EventCohortResolver(),
+    required this.cancellationPolicy,
+    required this.settlementPolicy,
+    required this.cohortResolver,
   });
 
   final EventAdmissionPolicy admissionPolicy;
@@ -15,7 +32,7 @@ class EventPolicyBundle {
   final EventSettlementPolicy settlementPolicy;
   final EventCohortResolver cohortResolver;
 
-  static const version = 1;
+  static const version = 2;
 
   factory EventPolicyBundle.openEvent({
     required int capacityLimit,
@@ -172,13 +189,14 @@ class EventPolicyBundle {
   }
 
   factory EventPolicyBundle.fromJson(Map<String, dynamic> json) {
+    final pricingPolicy = EventPricingPolicy.fromJson(
+      _mapValue(json['pricing']) ?? const {},
+    );
     return EventPolicyBundle(
       admissionPolicy: EventAdmissionPolicy.fromJson(
         _mapValue(json['admission']) ?? const {},
       ),
-      pricingPolicy: EventPricingPolicy.fromJson(
-        _mapValue(json['pricing']) ?? const {},
-      ),
+      pricingPolicy: pricingPolicy,
       cancellationPolicy: EventCancellationPolicy.fromJson(
         _mapValue(json['cancellation']) ?? const {},
       ),
@@ -202,6 +220,8 @@ class EventPolicyBundle {
       admissionPolicy.inviteRequired;
 
   bool get usesDemandPricing => pricingPolicy.hasDemandPricing;
+
+  bool get hasCancellationPolicy => cancellationPolicy.isApplicable;
 
   bool get usesCrossPathsPairInventory =>
       admissionPolicy.crossPathsPairInventory.isEnabled;

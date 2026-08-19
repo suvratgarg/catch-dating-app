@@ -285,11 +285,14 @@ void _registerHostOperationsAnalyticsTeamTests() {
     },
   );
 
-  testWidgets('Host club photo picks commit immediately', (tester) async {
+  testWidgets('Host club photo picks stay staged until Save media', (
+    tester,
+  ) async {
     final photoBytes = _testPngBytes();
     final actions = _RecordingHostClubEditActions(
       pickedPhotos: [
         HostPickedClubPhoto(
+          id: 'picked-photo',
           image: XFile.fromData(photoBytes, name: 'picked.jpg'),
           bytes: photoBytes,
         ),
@@ -303,10 +306,113 @@ void _registerHostOperationsAnalyticsTeamTests() {
     await tester.tap(add);
     await pumpFeatureUi(tester);
 
+    expect(actions.mediaWrites, isEmpty);
+    expect(find.text('Ready to upload'), findsWidgets);
+
+    final save = find.byKey(const ValueKey('host-media-save'));
+    await Scrollable.ensureVisible(tester.element(save));
+    await tester.tap(save);
+    await pumpFeatureUi(tester);
+
     expect(actions.mediaWrites, hasLength(1));
     expect(actions.mediaWrites.single, hasLength(1));
     expect(actions.mediaWrites.single.single, isA<HostNewClubPhotoInput>());
   });
+
+  testWidgets(
+    'Host organizer media summary keeps logo, cover, and gallery in one role-sized row',
+    (tester) async {
+      final actions = _RecordingHostClubEditActions();
+      final club = buildClub(
+        id: 'media-summary',
+        ownerUserId: _hostUid,
+        profileImageUrl: 'https://example.test/logo.png',
+        clubPhotos: [
+          _uploadedClubPhoto('one', position: 0),
+          _uploadedClubPhoto('two', position: 1),
+        ],
+      );
+
+      await _pumpHostClubEditTab(tester, club: club, actions: actions);
+
+      expect(find.byKey(HostClubMediaKeys.summaryStrip), findsOneWidget);
+      expect(find.byType(CreateClubProfileImagePicker), findsNothing);
+      expect(find.byType(CreateClubPhotosPicker), findsNothing);
+      expect(find.text('LOGO'), findsOneWidget);
+      expect(find.text('COVER'), findsOneWidget);
+      expect(find.text('Manage images'), findsOneWidget);
+      expect(find.text('3 photos'), findsOneWidget);
+
+      final logoSize = tester.getSize(find.byKey(HostClubMediaKeys.logoTile));
+      final coverSize = tester.getSize(
+        find.byKey(const ValueKey('host-media-summary-photo-existing-one')),
+      );
+      final gallerySize = tester.getSize(
+        find.byKey(const ValueKey('host-media-summary-photo-existing-two')),
+      );
+
+      expect(logoSize.width / logoSize.height, CatchAspectRatio.organizerLogo);
+      expect(
+        coverSize.width / coverSize.height,
+        closeTo(CatchAspectRatio.organizerCover, 0.001),
+      );
+      expect(
+        gallerySize.width / gallerySize.height,
+        closeTo(CatchAspectRatio.organizerGallery, 0.001),
+      );
+    },
+  );
+
+  testWidgets('Host organizer empty media summary stays compact', (
+    tester,
+  ) async {
+    final actions = _RecordingHostClubEditActions();
+    final club = buildClub(id: 'media-empty', ownerUserId: _hostUid);
+
+    await _pumpHostClubEditTab(tester, club: club, actions: actions);
+
+    final summary = find.byKey(HostClubMediaKeys.summaryStrip);
+    final add = find.byKey(OrderedPhotoPickerKeys.addAction('Add photos'));
+    expect(
+      tester.getSize(summary).height,
+      CatchLayout.hostMediaThumbnailExtent,
+    );
+    expect(tester.getSize(add).height, CatchLayout.hostMediaThumbnailExtent);
+    expect(find.text('0 photos'), findsOneWidget);
+
+    await tester.tap(find.byKey(OrderedPhotoPickerKeys.manageAction));
+    await pumpFeatureUi(tester);
+    expect(find.byKey(OrderedPhotoPickerKeys.managerScreen), findsOneWidget);
+    expect(find.byType(CreateClubProfileImagePicker), findsOneWidget);
+  });
+
+  testWidgets(
+    'Host organizer logo removal remains available in image manager',
+    (tester) async {
+      final actions = _RecordingHostClubEditActions();
+      final club = buildClub(
+        id: 'media-logo-remove',
+        ownerUserId: _hostUid,
+        profileImageUrl: 'https://example.test/logo.png',
+      );
+
+      await _pumpHostClubEditTab(tester, club: club, actions: actions);
+      await tester.tap(find.byKey(OrderedPhotoPickerKeys.manageAction));
+      await pumpFeatureUi(tester);
+      await tester.tap(find.text('Remove'));
+      await pumpFeatureUi(tester);
+      await tester.tap(find.text('Done'));
+      await pumpFeatureUi(tester);
+
+      expect(actions.mediaWrites, isEmpty);
+      final save = find.byKey(const ValueKey('host-media-save'));
+      await Scrollable.ensureVisible(tester.element(save));
+      await tester.tap(save);
+      await pumpFeatureUi(tester);
+
+      expect(actions.removeLogoWrites, [isTrue]);
+    },
+  );
 
   testWidgets('Host club photo upload failures stay visible and retry', (
     tester,
@@ -315,6 +421,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
     final actions = _RecordingHostClubEditActions(
       pickedPhotos: [
         HostPickedClubPhoto(
+          id: 'retry-photo',
           image: XFile.fromData(photoBytes, name: 'retry.jpg'),
           bytes: photoBytes,
         ),
@@ -329,10 +436,17 @@ void _registerHostOperationsAnalyticsTeamTests() {
     await tester.tap(add);
     await pumpFeatureUi(tester);
 
-    expect(actions.mediaUpdateCalls, 1);
-    expect(find.textContaining('Upload failed'), findsWidgets);
+    final save = find.byKey(const ValueKey('host-media-save'));
+    await Scrollable.ensureVisible(tester.element(save));
+    await tester.tap(save);
+    await pumpFeatureUi(tester);
 
-    await tester.tap(find.byKey(OrderedPhotoPickerKeys.coverRetryAction));
+    expect(actions.mediaUpdateCalls, 1);
+    expect(find.byKey(OrderedPhotoPickerKeys.coverRetryAction), findsOneWidget);
+
+    final retry = find.byKey(OrderedPhotoPickerKeys.coverRetryAction);
+    await Scrollable.ensureVisible(tester.element(retry));
+    await tester.tap(retry);
     await pumpFeatureUi(tester);
 
     expect(actions.mediaUpdateCalls, 2);
@@ -458,7 +572,9 @@ void _registerHostOperationsAnalyticsTeamTests() {
     expect(find.byType(HostPaymentAccountControllerCard), findsNothing);
   });
 
-  testWidgets('Host club photo removal commits immediately', (tester) async {
+  testWidgets('Host club photo removal stays staged until Save media', (
+    tester,
+  ) async {
     final actions = _RecordingHostClubEditActions();
     final club = buildClub(
       id: 'media-remove',
@@ -477,11 +593,19 @@ void _registerHostOperationsAnalyticsTeamTests() {
     await tester.tap(find.text('Remove photo'));
     await pumpFeatureUi(tester);
 
+    expect(actions.mediaWrites, isEmpty);
+    await tester.tap(find.text('Done'));
+    await pumpFeatureUi(tester);
+    final save = find.byKey(const ValueKey('host-media-save'));
+    await Scrollable.ensureVisible(tester.element(save));
+    await tester.tap(save);
+    await pumpFeatureUi(tester);
+
     expect(actions.mediaWrites, hasLength(1));
     expect(actions.mediaWrites.single, isEmpty);
   });
 
-  testWidgets('Host club photo reorder debounces one immediate commit', (
+  testWidgets('Host club photo reorder stays staged until Save media', (
     tester,
   ) async {
     final actions = _RecordingHostClubEditActions();
@@ -495,12 +619,20 @@ void _registerHostOperationsAnalyticsTeamTests() {
     );
 
     await _pumpHostClubEditTab(tester, club: club, actions: actions);
-    tester
-        .widget<CreateClubPhotosPicker>(find.byType(CreateClubPhotosPicker))
-        .onReorderPhoto!(0, 1);
-    await pumpFeatureUiFor(tester, const Duration(milliseconds: 399));
+    final manage = find.byKey(OrderedPhotoPickerKeys.manageAction);
+    await Scrollable.ensureVisible(tester.element(manage));
+    await tester.tap(manage);
+    await pumpFeatureUi(tester);
+    await tester.tap(find.byKey(OrderedPhotoPickerKeys.setCoverAction(1)));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Set as cover'));
+    await pumpFeatureUi(tester);
     expect(actions.mediaWrites, isEmpty);
-    await pumpFeatureUiFor(tester, const Duration(milliseconds: 1));
+    await tester.tap(find.text('Done'));
+    await pumpFeatureUi(tester);
+    final save = find.byKey(const ValueKey('host-media-save'));
+    await Scrollable.ensureVisible(tester.element(save));
+    await tester.tap(save);
     await pumpFeatureUi(tester);
 
     expect(actions.mediaWrites, hasLength(1));

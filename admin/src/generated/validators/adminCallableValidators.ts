@@ -1204,7 +1204,11 @@ const model = {
           "properties": {
             "version": {
               "type": "integer",
-              "const": 1
+              "enum": [
+                1,
+                2
+              ],
+              "description": "Version 2 models cancellation as notApplicable for free events. Version 1 remains readable for legacy snapshots."
             },
             "admission": {
               "type": "object",
@@ -1458,6 +1462,7 @@ const model = {
                 "policyId": {
                   "type": "string",
                   "enum": [
+                    "notApplicable",
                     "flexible",
                     "standard",
                     "strict"
@@ -1477,6 +1482,65 @@ const model = {
                   "enum": [
                     "afterEventCompletion"
                   ]
+                }
+              }
+            }
+          },
+          "if": {
+            "properties": {
+              "version": {
+                "const": 2
+              },
+              "pricing": {
+                "properties": {
+                  "basePriceInPaise": {
+                    "const": 0
+                  }
+                },
+                "required": [
+                  "basePriceInPaise"
+                ]
+              }
+            },
+            "required": [
+              "version",
+              "pricing"
+            ]
+          },
+          "then": {
+            "properties": {
+              "cancellation": {
+                "properties": {
+                  "policyId": {
+                    "const": "notApplicable"
+                  }
+                }
+              }
+            }
+          },
+          "else": {
+            "if": {
+              "properties": {
+                "version": {
+                  "const": 2
+                }
+              },
+              "required": [
+                "version"
+              ]
+            },
+            "then": {
+              "properties": {
+                "cancellation": {
+                  "properties": {
+                    "policyId": {
+                      "enum": [
+                        "flexible",
+                        "standard",
+                        "strict"
+                      ]
+                    }
+                  }
                 }
               }
             }

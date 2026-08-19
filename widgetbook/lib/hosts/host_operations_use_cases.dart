@@ -27,6 +27,8 @@ import 'package:catch_dating_app/core/widgets/catch_analytics_kit.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_form_step_flow.dart';
+import 'package:catch_dating_app/core/widgets/catch_form_step_overview.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -701,6 +703,7 @@ Widget hostCustomersStates(BuildContext context) {
         HostAudienceSegment.regular,
         HostAudienceSegment.reliableAttendee,
       },
+      whatsappStatus: HostAudiencePermissionStatus.optedIn,
       sourceCoverage: HostAudienceSourceCoverage.exact,
     ),
     revenue: const HostCustomerRevenue(
@@ -811,6 +814,33 @@ Widget hostCustomersStates(BuildContext context) {
           ),
         ),
       ),
+      _StateCard(
+        label: 'detail composition',
+        child: _DeviceFrame(
+          child: HostCustomerDetailBody(
+            customer: detail,
+            currentUid: HostOperationsFixtures.hostUid,
+            openingConversation: false,
+            updatingCustomer: false,
+            onEditDetails: () {},
+            onEditTags: () {},
+            onAddNote: () {},
+            onEditNote: (_) {},
+            onReviewDuplicates: () {},
+            onStartConversation: () {},
+            onOpenWhatsapp: () {},
+            onMessagingEnabledChanged: (_) {},
+            onRemove: () {},
+            onUndoMerge: (_) {},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'edit linked customer details',
+        child: _DeviceFrame(
+          child: Scaffold(body: HostCustomerEditDetailsSheet(customer: detail)),
+        ),
+      ),
     ],
   );
 }
@@ -845,6 +875,22 @@ Widget hostAddCustomerSheetStates(BuildContext context) =>
   path: '[P1 product surfaces]/Host operations/Customers',
 )
 Widget hostCustomerDetailStates(BuildContext context) =>
+    hostCustomersStates(context);
+
+@widgetbook.UseCase(
+  name: 'Detail composition states',
+  type: HostCustomerDetailBody,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostCustomerDetailBodyStates(BuildContext context) =>
+    hostCustomersStates(context);
+
+@widgetbook.UseCase(
+  name: 'Edit details states',
+  type: HostCustomerEditDetailsSheet,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostCustomerEditDetailsStates(BuildContext context) =>
     hostCustomersStates(context);
 
 @widgetbook.UseCase(
@@ -4083,7 +4129,57 @@ Widget orderedPhotoManagerCatalogState(BuildContext context) {
       onReorderPhoto: (_, _) {},
       onRetryPhoto: (_) {},
       canAdd: true,
+      header: CreateClubProfileImagePicker(
+        imageBytes: _createClubPngBytes(),
+        onTap: () {},
+        onRemove: () {},
+        variant: CreateClubProfileImagePickerVariant.editLogo,
+      ),
     ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Role-sized summary states',
+  type: HostClubMediaSummary,
+  path: '[P1 product surfaces]/Host organizer',
+)
+Widget hostClubMediaSummaryCatalogStates(BuildContext context) {
+  return _HostCatalog(
+    title: 'HostClubMediaSummary',
+    contractId: 'component.host.club.photos_picker',
+    children: [
+      _StateCard(
+        label: 'logo, cover, and gallery',
+        child: _DeviceFrame(
+          child: HostClubMediaSummary(
+            logoImageBytes: _createClubPngBytes(),
+            logoImageUrl: null,
+            photos: _orderedPhotoPreviews('summary-photo', 3),
+            logoBadgeLabel: 'LOGO',
+            addPhotosLabel: 'Add photos',
+            onPickLogo: () {},
+            onAddPhotos: () {},
+            onRetryPhoto: (_) {},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'compact empty',
+        child: _DeviceFrame(
+          child: HostClubMediaSummary(
+            logoImageBytes: null,
+            logoImageUrl: null,
+            photos: const [],
+            logoBadgeLabel: 'LOGO',
+            addPhotosLabel: 'Add photos',
+            onPickLogo: () {},
+            onAddPhotos: () {},
+            onRetryPhoto: null,
+          ),
+        ),
+      ),
+    ],
   );
 }
 
@@ -4303,7 +4399,8 @@ Widget createClubStepHeaderCatalogStates(BuildContext context) {
             subtitle: 'Add your club identity and media',
             currentStep: 0,
             totalSteps: 4,
-            onBack: () {},
+            onClose: () {},
+            onStepOverview: () {},
           ),
         ),
       ),
@@ -4329,7 +4426,8 @@ Widget createEventStepHeaderCatalogStates(BuildContext context) {
             clubName: _club.name,
             currentStep: 0,
             totalSteps: 5,
-            onBack: () {},
+            onClose: () {},
+            onStepOverview: () {},
           ),
         ),
       ),
@@ -4343,40 +4441,95 @@ Widget createEventStepHeaderCatalogStates(BuildContext context) {
   path: '[P1 product surfaces]/Host shared',
 )
 Widget stepperFooterCatalogStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+  Widget scrollingBody(String title) => ListView(
+    padding: CatchInsets.formStepBodyWithBottomActions,
+    children: [
+      Text(title, style: CatchTextStyles.titleL(context)),
+      gapH24,
+      for (var index = 0; index < 5; index++) ...[
+        DecoratedBox(
+          decoration: BoxDecoration(
+            color: t.surface,
+            border: Border.all(color: t.line),
+            borderRadius: BorderRadius.circular(CatchRadius.md),
+          ),
+          child: SizedBox(
+            height: 88,
+            child: Center(
+              child: Text(
+                'Scrolling form content ${index + 1}',
+                style: CatchTextStyles.supporting(context),
+              ),
+            ),
+          ),
+        ),
+        gapH12,
+      ],
+    ],
+  );
+
   return _HostCatalog(
     title: 'StepperFooter',
     contractId: 'component.host.stepper_footer',
     children: [
       _StateCard(
-        label: 'save and next',
+        label: 'previous and next',
         child: _DeviceFrame(
-          child: Column(
-            children: [
-              const Expanded(child: SizedBox.shrink()),
-              StepperFooter(
-                isLastStep: false,
-                isLoading: false,
-                onPrimary: () {},
-                onSaveDraft: () {},
-              ),
-            ],
+          child: StepperFooter(
+            body: scrollingBody('Event basics'),
+            isLastStep: false,
+            isLoading: false,
+            onPrimary: () {},
+            onPrevious: () {},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'review needs information',
+        child: _DeviceFrame(
+          child: StepperFooter(
+            body: CatchFormReviewBody(
+              message:
+                  'Review every section. Open a section to add or change information.',
+              items: const [
+                CatchFormStepReviewItem(
+                  index: 0,
+                  title: 'Event basics',
+                  status: CatchFormStepStatus.complete,
+                ),
+                CatchFormStepReviewItem(
+                  index: 1,
+                  title: 'Meeting location',
+                  status: CatchFormStepStatus.needsInformation,
+                ),
+                CatchFormStepReviewItem(
+                  index: 2,
+                  title: 'Live event guide',
+                  status: CatchFormStepStatus.optional,
+                ),
+              ],
+              onStepSelected: (_) {},
+            ),
+            isLastStep: true,
+            isLoading: false,
+            primaryEnabled: false,
+            primaryLabel: 'Schedule event',
+            onPrimary: () {},
+            onPrevious: () {},
           ),
         ),
       ),
       _StateCard(
         label: 'last step loading',
         child: _DeviceFrame(
-          child: Column(
-            children: [
-              const Expanded(child: SizedBox.shrink()),
-              StepperFooter(
-                isLastStep: true,
-                isLoading: true,
-                onPrimary: () {},
-                onSaveDraft: null,
-                lastStepLabel: 'Schedule event',
-              ),
-            ],
+          child: StepperFooter(
+            body: scrollingBody('Event success'),
+            isLastStep: true,
+            isLoading: true,
+            onPrimary: () {},
+            onPrevious: () {},
+            lastStepLabel: 'Schedule event',
           ),
         ),
       ),
@@ -4395,7 +4548,7 @@ Widget createEventUnsavedChangesDialogCatalogStates(BuildContext context) {
     contractId: 'component.host.event.unsaved_changes_dialog',
     children: [
       _StateCard(
-        label: 'save or discard',
+        label: 'keep, discard, or save and exit',
         child: const _DeviceFrame(
           child: Center(child: CreateEventUnsavedChangesDialog()),
         ),
@@ -6151,7 +6304,6 @@ class _HostTeamHostedClubsFrame extends StatelessWidget {
                     uid: _hostUid,
                     editMode: editMode,
                     creatingProfile: false,
-                    signOutPending: false,
                     profile: HostTeamProfileContent(
                       profile: HostOperationsFixtures.hostProfile,
                     ),
@@ -6704,11 +6856,23 @@ final class _NoopHostClubEditActions implements HostClubEditActions {
   Future<HostPickedClubLogo?> pickClubLogo() async => null;
 
   @override
-  Future<void> updateClubMedia({
+  Future<HostClubMediaSaveResult> updateClubMedia({
     required Club club,
     List<HostClubMediaInput>? photoInputs,
     HostPickedClubLogo? logo,
     bool removeLogo = false,
+    ValueChanged<HostClubMediaProgress>? onProgress,
+  }) async => HostClubMediaSaveResult(
+    photoInputs: photoInputs,
+    logo: logo,
+    failures: const {},
+    attached: true,
+  );
+
+  @override
+  Future<void> discardClubMedia({
+    required List<HostClubMediaInput> photoInputs,
+    HostPickedClubLogo? logo,
   }) async {}
 }
 

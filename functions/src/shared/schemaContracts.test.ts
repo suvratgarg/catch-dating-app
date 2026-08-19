@@ -104,6 +104,61 @@ function assertInvalid(validator: Validator, payload: unknown) {
   assert.equal(validator(payload), false);
 }
 
+function eventPolicyFixture(
+  basePriceInPaise: number,
+  policyId: "notApplicable" | "standard"
+) {
+  return {
+    version: 2,
+    admission: {
+      format: "open",
+      capacityLimit: 12,
+      waitlistPolicy: {mode: "rankedOffer", offerWindowMinutes: 20},
+      inviteRequired: false,
+      membershipRequired: false,
+      manualApprovalRequired: false,
+      privateAccessPolicy: {
+        mode: "none",
+        inviteCodeHint: null,
+        privateLinkEnabled: false,
+      },
+      cohortCapacityLimits: {},
+      balancedRatioPolicy: null,
+    },
+    pricing: {
+      basePriceInPaise,
+      cohortAdjustmentsInPaise: {},
+      demandPricingRules: [],
+    },
+    cancellation: {policyId},
+    settlement: {hostPayoutTiming: "afterEventCompletion"},
+  };
+}
+
+test("event policy v2 models cancellation applicability from price", () => {
+  const fixture = readFixture(
+    "fixtures/valid/create_event_payload.json"
+  ) as Record<string, unknown>;
+  const validate = validateCreateEventCallablePayload as Validator;
+
+  assertValid(validate, {
+    ...fixture,
+    eventPolicy: eventPolicyFixture(0, "notApplicable"),
+  });
+  assertInvalid(validate, {
+    ...fixture,
+    eventPolicy: eventPolicyFixture(0, "standard"),
+  });
+  assertValid(validate, {
+    ...fixture,
+    eventPolicy: eventPolicyFixture(25000, "standard"),
+  });
+  assertInvalid(validate, {
+    ...fixture,
+    eventPolicy: eventPolicyFixture(25000, "notApplicable"),
+  });
+});
+
 test("generated schema validators accept valid contract fixtures", () => {
   assertValid(
     validateProfilePromptAnswer as Validator,

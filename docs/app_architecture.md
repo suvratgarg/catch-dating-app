@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.12.0
-updated: 2026-08-14
+version: 1.13.0
+updated: 2026-08-20
 owner: app_architecture
 status: active
 ---
@@ -195,6 +195,33 @@ Allowed exceptions:
 - `lib/firebase_options_*.dart` and generated config files.
 - Intentional in-development feature folders documented by audit rules, such
   as `event_policies` and `event_success`.
+
+### Event Dress Rehearsal Boundary
+
+`lib/event_rehearsal/` is the first-class Host practice capability. Its two
+Host routes create a room and operate preparation, virtual live controls,
+synthetic guest behavior, issue simulation, and recap. The feature follows the
+ordinary domain/data/presentation split, owns one Functions repository and one
+Riverpod action controller, and is registered as
+`screen.host.event.rehearsal` plus `feature.event_rehearsal`.
+
+The rehearsal may copy bounded descriptive fields from a real event once at
+creation, or use a safe sample. After that snapshot it must not call an Event,
+participation, CRM, messaging, payment, matching, or Event Success mutation
+repository. Setup becomes immutable after start. Runtime changes are
+revision-fenced, carry client action ids, advance a virtual clock, and operate
+only on seeded synthetic actors. Internal transport/data faults require the
+server's internal/admin capability; normal Hosts always retain the product
+behavior scenarios.
+
+The Host console receives only the rehearsal projection and an opaque public
+guest URL. `/rehearse/:publicRehearsalId` is a separate React surface that
+redeems a deterministic browser slot without Auth or OTP and can mutate only
+that slot's synthetic actor. A persistent practice banner is content, not an
+unavailable menu row. Reset preserves the seed, fork preserves the original,
+and reproduction export contains bounded setup, actor, revision, and action
+history rather than production identifiers or PII. Direct Firestore access to
+all rehearsal collections remains denied.
 
 ### Exhibit ARCH-ROUTER-LIFECYCLE-001: App Router And Integration-Test Lifecycle
 
@@ -966,6 +993,14 @@ empty, retry, stale data, and mutation failure are handled.
 Use `CatchAsyncValueView` for simple body screens with one async value.
 
 Use `CatchAsyncValueSliver` for simple sliver surfaces.
+
+When the loaded detail or form composition is known, render that same
+composition with representative branch data inside `CatchSkeletonized`.
+Do not maintain a second tree of placeholder rows for a detail or form screen:
+section order, field geometry, typography changes, and responsive reflow must
+come from the production body. `CatchSkeletonRows` and `CatchSkeletonList`
+remain appropriate for genuinely repeated collections whose item count and
+row data do not exist yet; they are not substitutes for a known screen body.
 
 Both primitives apply `InitialLoadPolicy.standard` (12 seconds) to the first
 user-visible resolution. When the deadline expires, the skeleton becomes a
@@ -1955,7 +1990,7 @@ Current roles:
 | Role | Owns | Must not own |
 |---|---|---|
 | `consumer` | dating profile, discovery, booking, attendance, post-event reactions, matching, consumer chats, settings | host event creation/editing/manage tools, host-only club operations, professional host account setup |
-| `host` | phone-OTP host shell on mobile and web, private organizer/event quick start, external roster import/manual entry, unified event operations, Event Success host tooling, reviews, analytics, publishing/payment readiness, host inbox and professional host identity | dating browse/match surfaces, dating-profile editing as a prerequisite for host work, consumer-only social readiness gates, a dependency on Catch owning event registration |
+| `host` | phone-OTP host shell on mobile and web, private organizer/event quick start, event dress rehearsal, external roster import/manual entry, unified event operations, Event Success host tooling, reviews, analytics, publishing/payment readiness, host inbox and professional host identity | dating browse/match surfaces, dating-profile editing as a prerequisite for host work, consumer-only social readiness gates, a dependency on Catch owning event registration |
 
 Rules:
 
@@ -2096,9 +2131,11 @@ The Host Messaging contract is:
 - every workspace follows `hostOrganizerSelectionProvider`; Inbox events,
   inquiry previews, WhatsApp sender setup, and campaigns must all resolve from
   the same selected organizer;
-- Inbox and Campaigns are first-class local workspaces. Inbox owns personal
-  inquiries and event broadcasts; Campaigns owns cross-event WhatsApp sender
-  setup and campaign lifecycle;
+- Inbox and Sends are first-class local workspaces. Inbox owns personal
+  inquiries and event broadcasts; Sends owns the route picker, mixed outbound
+  history, route-specific follower-update composition and cross-event organizer
+  WhatsApp campaign lifecycle; sender setup stays on the dedicated organizer
+  messaging route;
 - an explicit selected Event or explicit General scope; General is never an
   event-id sentinel;
 - personal two-party contacted-host inquiry threads, separated by event;
@@ -2116,7 +2153,49 @@ filtering, scope, classification, roster/thread separation, search, lifecycle,
 and row-status policy. `HostInboxScreen` owns selected-organizer provider reads,
 workspace composition, typed route effects, and sheets;
 `HostInboxBroadcastController` owns the event-broadcast mutation and
-`HostAudienceController` owns campaign mutations.
+`HostAudienceController` owns campaign mutations. `HostClubPostController`
+owns follower-update submission while the shared route-specific composer owns
+only pending/error presentation and closes after callable acceptance.
+
+`communicationRouteCatalog` is the canonical provider-free capability model
+for communication choices. Transport alone is never sufficient routing or
+authorization input. Every route keeps a stable id and adapter key plus its
+sender identity, delivery mode, consent scope, observability, final-send
+ownership, audience/eligibility scope, reply support and scheduling support.
+Organizer WhatsApp and
+Catch-owned WhatsApp therefore remain different routes even though both use
+the WhatsApp transport. Their tokens, sender connections, permission evidence,
+suppression state, threads and receipts must never share authority.
+
+The current route set is personal WhatsApp handoff, organizer WhatsApp
+campaign, Catch-owned WhatsApp, Catch chat, Catch event announcement and
+organizer follower update. A future market transport extends this registry and
+implements its adapter; it must not add provider conditionals to route-neutral
+widgets or weaken an existing consent boundary. `HostSendsWorkspaceSliver`
+groups every catalog route by recipient surface (`In Catch` or `WhatsApp`),
+renders its readiness state, route-specific follower composer and mixed
+Campaign/Announcement/Follower update history. A widget contract requires one
+picker row for every catalog id, so adding a market route cannot silently omit
+its Host affordance. Route-specific controllers retain mutation ownership.
+
+Every server-managed Host outbound free-text boundary calls
+`assertOutboundContentAllowed` before persistence or provider handoff. This
+currently covers follower updates, WhatsApp campaign/test variables and
+service-window replies; event announcements retain the same fail-closed policy
+at their callable boundary. Catch chat retains its message-trigger moderation
+and redaction path. Personal WhatsApp handoff stays outside this managed-delivery
+rule because the Host edits and sends the final message in the external app.
+
+External handoff is intentionally a weak-observability route:
+`ExternalLinks.openWhatsappHandoff` may report only whether the device accepted
+the native WhatsApp scheme or its `wa.me` fallback. The Host edits the
+prefilled copy and presses Send in WhatsApp, so Catch must not create a delivery
+receipt, campaign record or reply thread from that launch. An explicit
+organizer WhatsApp opt-out or admin suppression keeps the route visible with
+the exact blocker but removes its action even though it is not a campaign
+route.
+Conversely, provider-backed routes are unavailable until their sender,
+template, permission and provider health gates pass.
 
 ### Installable App Target Contract
 

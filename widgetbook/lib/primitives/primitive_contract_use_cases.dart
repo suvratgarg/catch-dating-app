@@ -60,11 +60,13 @@ import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_privacy_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_row_press_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_scrim.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeletonized.dart';
 import 'package:catch_dating_app/core/widgets/catch_status_dot.dart';
 import 'package:catch_dating_app/core/widgets/catch_status_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
@@ -653,6 +655,7 @@ Widget catchSkeletonContractStates(BuildContext context) {
       'text-block',
       'circle',
       'custom',
+      'derived-content',
       'list',
       'async-screen',
       'async-sliver',
@@ -694,6 +697,18 @@ Widget catchSkeletonContractStates(BuildContext context) {
               color: CatchTokens.of(context).surface,
               borderRadius: BorderRadius.circular(CatchRadius.pill),
             ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'derived-content',
+        child: CatchSkeletonized(
+          child: CatchSection.containedFieldRows(
+            title: 'Customer details',
+            children: const [
+              CatchField.read(title: 'Name', body: 'Customer name'),
+              CatchField.read(title: 'Mobile number', body: '+919876543210'),
+            ],
           ),
         ),
       ),
@@ -4312,12 +4327,17 @@ Widget catchMenuContractStates(BuildContext context) {
     contractId: 'catch.menu',
     states: const [
       'default',
-      'selected-row',
+      'action-row',
+      'choice-row',
+      'choice-row-selected',
       'disabled-row',
       'danger-row',
       'with-icons',
       'with-sublabels',
-      'anchored-action',
+      'sectioned',
+      'scrolling',
+      'compact-selection-sheet',
+      'anchored-selection',
     ],
     children: [
       _StateCard(
@@ -4336,7 +4356,9 @@ Widget catchMenuContractStates(BuildContext context) {
               value: 'going',
               label: 'Going',
               selected: true,
+              role: CatchMenuItemRole.choice,
               icon: CatchIcons.checkCircle,
+              startsSection: true,
             ),
             CatchMenuItem(
               value: 'host-only',
@@ -4354,7 +4376,7 @@ Widget catchMenuContractStates(BuildContext context) {
         ),
       ),
       _StateCard(
-        label: 'anchored-action',
+        label: 'command overflow',
         child: CatchActionMenu<String>(
           tooltip: 'More actions',
           onSelected: _ignoreString,
@@ -4377,6 +4399,27 @@ Widget catchMenuContractStates(BuildContext context) {
               isDestructive: true,
             ),
           ],
+        ),
+      ),
+      _StateCard(
+        label: 'adaptive selection',
+        description:
+            'Open on compact and wider viewports to compare sheet and anchor.',
+        child: CatchAdaptiveSelectionControl<String>(
+          title: 'Sort customers',
+          subtitle: 'Choose how customers are ordered.',
+          tooltip: 'Sort customers',
+          value: 'last-seen',
+          items: const [
+            CatchSelectionMenuItem(value: 'last-seen', label: 'Last seen'),
+            CatchSelectionMenuItem(
+              value: 'most-attended',
+              label: 'Most attended',
+            ),
+            CatchSelectionMenuItem(value: 'name', label: 'Name'),
+          ],
+          triggerLabel: (item) => 'Sort: ${item.label}',
+          onSelected: _ignoreString,
         ),
       ),
     ],
@@ -5956,6 +5999,8 @@ Widget catchStepHeaderContractStates(BuildContext context) {
       'with-progress',
       'without-progress',
       'with-back',
+      'with-close',
+      'interactive-step-overview',
       'no-back',
       'custom-trailing',
       'no-gutter',
@@ -5981,6 +6026,28 @@ Widget catchStepHeaderContractStates(BuildContext context) {
         label: 'with-back',
         child: _TopBarFrame(
           child: CatchStepHeader(title: 'Guest list', onBack: _noop),
+        ),
+      ),
+      _StateCard(
+        label: 'with-close',
+        child: _TopBarFrame(
+          child: CatchStepHeader(
+            title: 'Create event',
+            leadingType: CatchTopBarLeading.close,
+            onBack: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'interactive-step-overview',
+        child: _TopBarFrame(
+          child: CatchStepHeader(
+            title: 'Create event',
+            step: 3,
+            total: 5,
+            onStepOverview: _noop,
+            stepOverviewSemanticsLabel: 'Review all event sections',
+          ),
         ),
       ),
       const _StateCard(
@@ -7004,6 +7071,7 @@ Widget catchBottomActionContractStates(BuildContext context) {
       'leading-content',
       'catch-line',
       'footnote',
+      'scroll-overlay',
       'loading',
       'disabled',
     ],
@@ -7032,6 +7100,46 @@ Widget catchBottomActionContractStates(BuildContext context) {
             catchLine: 'FREE TO JOIN',
             footnote: 'No charge until the host approves.',
             onPressed: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'scroll-overlay',
+        child: SizedBox(
+          width: WidgetbookPreviewLayout.dockFrameWidth,
+          height: 360,
+          child: CatchBottomActionOverlay(
+            body: ListView(
+              padding: CatchInsets.formStepBodyWithBottomActions,
+              children: [
+                for (var index = 0; index < 5; index++) ...[
+                  Text('Scrolling form row ${index + 1}'),
+                  const Divider(),
+                  const SizedBox(height: CatchSpacing.s6),
+                ],
+              ],
+            ),
+            actions: Row(
+              children: [
+                Expanded(
+                  child: CatchButton(
+                    label: 'Save Draft',
+                    variant: CatchButtonVariant.ghost,
+                    size: CatchButtonSize.lg,
+                    onPressed: _noop,
+                  ),
+                ),
+                const SizedBox(width: CatchSpacing.s3),
+                Expanded(
+                  child: CatchButton(
+                    label: 'Next',
+                    size: CatchButtonSize.lg,
+                    fullWidth: true,
+                    onPressed: _noop,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

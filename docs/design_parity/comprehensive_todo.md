@@ -96,22 +96,22 @@ ledgers as the source of truth when counts differ:
   overview, access-decision, role, safety, and marketing mutation directions
   now have strict request and response schemas; remaining structural callables
   stay explicitly labeled rather than being overclaimed.
-- Screen priority spread: 21 P1, 10 P2, and 5 P3 contracted screens.
-- Contracted screen states: 678.
-- Contracted screen sections: 239.
+- Screen priority spread: 22 P1, 10 P2, and 5 P3 contracted screens.
+- Contracted screen states: 689.
+- Contracted screen sections: 241.
 - Screen registry migration gaps: 19 open, 25 blocked, and 113 closed. One of
   the 19 non-blocked gaps is currently marked in progress. These are
   product migration gaps in `design/screens/catch.screens.json`, not
   validation failures.
-- Contracted section states: 1,113.
+- Contracted section states: 1,143.
 - Open screen-contract validation gaps: 0.
-- Design parity matrix: 12 feature groups, 37 screens, 680 matrix states, and
-  54 open matrix gaps across screen-state, lint-candidate, and preview-plan
+- Design parity matrix: 12 feature groups, 38 screens, 691 matrix states, and
+  55 open matrix gaps across screen-state, lint-candidate, and preview-plan
   queues.
-- Matrix state status spread: 562 captured, 43 implemented, 4 planned, and
-  71 tested.
+- Matrix state status spread: 562 captured, 48 implemented, 4 planned, and
+  77 tested.
 - Capture coverage registry: 624 capture ids across 39 captured route entries,
-  8 alias route entries, 7 planned route entries, and 2 excluded route entries.
+  8 alias route entries, 17 planned route entries, and 2 excluded route entries.
 - Component contracts: 71 reusable primitive/composite contracts with 445
   contract states.
 - Widgetbook registry: 870 generated component entries, 928 generated use-case
@@ -745,6 +745,7 @@ from those ledgers rather than hand-editing counts.
 | P1 | `screen.host.clubs` | 49 | 18 | 4 | `HOST-STANDALONE-ORGANIZER-WORKSPACE-001` | `DS-HOST-CLUBS-004`, `DS-HOST-CLUBS-005` | `feature.host_organizers` compiles all 49 registered states and 29 actions across Edit, Insights, Preview, settings spokes, payouts, team, host identity, hosted-organizer navigation, and sign out. Captures cover the default Organizer workspace, signed-out, co-host, loading, error/offline, empty, analytics, inline editor, payout, team mutation, and the canonical Host team workspace; 46 focused test/capture/preview obligations remain explicit evidence debt. The standalone-host publication and CRM expansion is bounded at `20.09%` mismatch / `25.94` mean delta under `HOST-STANDALONE-ORGANIZER-WORKSPACE-001` without weakening the canonical threshold. |
 | P1 | `screen.host.event.create` | 31 | 11 | 6 | Blocked: draft/validation/submit reference exports and masks | `DS-HOST-EVENT-CREATE-001` blocked, `DS-HOST-EVENT-CREATE-004` blocked, `DS-HOST-EVENT-CREATE-006` | `feature.host_event_create` compiles all 31 registered states and 33 meaningful actions across authorization, wizard choices and validation, ordered media, Places-backed location selection, local drafts, submission, offline recovery, and success navigation. Ten focused test/preview obligations remain explicit evidence debt. Raw text input stays under form and event-schema validation instead of becoming synthetic action cardinality. All six registered visual references remain within advisory thresholds; success/manage is bounded at `11.40% / 13.70`. |
 | P1 | `screen.host.event.manage` | 58 | 12 | 5 | Blocked: edge-state masks need canonical exports | `DS-HOST-EVENT-MANAGE-001`, `DS-HOST-EVENT-MANAGE-004`, `DS-HOST-EVENT-MANAGE-005` blocked, `DS-HOST-EVENT-MANAGE-006` | Host Manage now has an exact generated feature contract across all registered route/workspace states and primary edit/cancel/delete actions, including typed route, screen-state, and side-effect outcomes. The restored route-and-section Widgetbook use case closes the stale preview reference; 33 focused test gaps remain explicit evidence debt. Route/access, section, participant, invite-link, Event Success, action, report, cancellation, accessibility, and theme captures remain registered, while reference-specific edge masks are still blocked on canonical exports. |
+| P1 | `screen.host.event.rehearsal` | 8 | 2 | 0 | Planned: authenticated setup, live console, recap, accessibility, and theme references | None | `feature.event_rehearsal` binds the authenticated Host setup and control-room routes to an isolated practice domain plus a public synthetic guest-phone projection. The console freezes setup after start, advances a virtual clock, models 11 guest-behavior scenarios and eight internal fault states, rotates the guest link, and preserves deterministic reset, fork, replay, and reproduction export. Widget, controller, callable, rules, schema, and public web tests cover the first-class boundary; truthful routed captures remain planned until an authenticated organizer fixture is admitted to the canonical catalog. |
 | P1 | `screen.host.home` | 18 | 7 | 2 | Blocked: consolidated state variants need canonical exports | `DS-HOST-HOME-002` blocked, `DS-HOST-HOME-004` blocked, `DS-HOST-HOME-005` | `feature.host_home` compiles all 18 registered states and 11 actions across auth recovery, organizer switching, the consolidated detail-rich Events overview, nested event recovery, lifecycle filtering, and typed create/repeat/manage/task navigation. Fifteen focused evidence obligations remain explicit debt. Historical Today and Events references remain ingredient evidence until design supplies one approved consolidated Events source. |
 | P1 | `screen.host.customers` | 32 | 5 | 0 | Planned: canonical direct-directory and detail references | `HOST-CUSTOMERS-001` blocked, `HOST-CUSTOMERS-002` | `feature.host_customers` compiles all 32 registered states and 17 actions across computed segments, visually distinct organizer tags, author-stamped notes, notes-excluding export, campaign delivery history, pagination, contact administration, identity and revenue boundaries, and verified-account conversations. Deterministic directory and contact-memory captures are registered; broadcast history remains a deliberate Phase 4 seam, and a payment-maintained indexed High spender trait remains explicit follow-up work. |
 | P1 | `screen.host.applications` | 8 | 2 | 0 | Planned: canonical queue, import, and detail references | `HOST-APPLICATIONS-001`, `HOST-APPLICATIONS-002` | Host Applications owns one provider-neutral review queue, exact submitted-answer projection, validated outreach, revision-fenced review, and CSV/XLSX import mapping. Participant submission and revocation callables now enforce reviewed values and exact organizer grants; participant-facing Flutter UI, deterministic previews/captures, and only justified provider API connectors remain explicit follow-up work. |

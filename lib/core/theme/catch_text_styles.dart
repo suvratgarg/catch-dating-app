@@ -262,6 +262,16 @@ abstract final class CatchTextStyles {
     color: color ?? CatchTokens.of(context).ink2,
   );
 
+  /// Supporting copy inside command and selection menus.
+  static TextStyle menuSupporting(BuildContext context, {Color? color}) =>
+      _sans(
+        context,
+        size: 12,
+        weight: FontWeight.w400,
+        height: 1.4,
+        color: color ?? CatchTokens.of(context).ink3,
+      );
+
   static TextStyle labelL(BuildContext context, {Color? color}) =>
       _functionStrong14(context, color: color);
 

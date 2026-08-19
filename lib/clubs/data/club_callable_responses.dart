@@ -35,16 +35,54 @@ final class CreateClubPostCallableResponse {
   const CreateClubPostCallableResponse({
     required this.postId,
     required this.remainingWeeklyQuota,
+    required this.deliveryStatus,
+    required this.recipientCount,
+    required this.excludedCount,
+    required this.activityAvailableCount,
+    required this.pushAttemptedCount,
+    required this.pushAcceptedCount,
+    required this.pushFailedCount,
+    required this.pushUnknownCount,
+    required this.idempotentReplay,
   });
 
   factory CreateClubPostCallableResponse.fromCallableData(Object? data) {
     if (data case final Map<Object?, Object?> map) {
       final postId = map['postId'] as String?;
       final remainingWeeklyQuota = map['remainingWeeklyQuota'] as int?;
-      if (postId != null && postId.isNotEmpty && remainingWeeklyQuota != null) {
+      final deliveryStatus = map['deliveryStatus'] as String?;
+      final recipientCount = map['recipientCount'] as int?;
+      final excludedCount = map['excludedCount'] as int?;
+      final activityAvailableCount = map['activityAvailableCount'] as int?;
+      final pushAttemptedCount = map['pushAttemptedCount'] as int?;
+      final pushAcceptedCount = map['pushAcceptedCount'] as int?;
+      final pushFailedCount = map['pushFailedCount'] as int?;
+      final pushUnknownCount = map['pushUnknownCount'] as int?;
+      final idempotentReplay = map['idempotentReplay'] as bool?;
+      if (postId != null &&
+          postId.isNotEmpty &&
+          remainingWeeklyQuota != null &&
+          deliveryStatus != null &&
+          recipientCount != null &&
+          excludedCount != null &&
+          activityAvailableCount != null &&
+          pushAttemptedCount != null &&
+          pushAcceptedCount != null &&
+          pushFailedCount != null &&
+          pushUnknownCount != null &&
+          idempotentReplay != null) {
         return CreateClubPostCallableResponse(
           postId: postId,
           remainingWeeklyQuota: remainingWeeklyQuota,
+          deliveryStatus: deliveryStatus,
+          recipientCount: recipientCount,
+          excludedCount: excludedCount,
+          activityAvailableCount: activityAvailableCount,
+          pushAttemptedCount: pushAttemptedCount,
+          pushAcceptedCount: pushAcceptedCount,
+          pushFailedCount: pushFailedCount,
+          pushUnknownCount: pushUnknownCount,
+          idempotentReplay: idempotentReplay,
         );
       }
     }
@@ -56,6 +94,15 @@ final class CreateClubPostCallableResponse {
 
   final String postId;
   final int remainingWeeklyQuota;
+  final String deliveryStatus;
+  final int recipientCount;
+  final int excludedCount;
+  final int activityAvailableCount;
+  final int pushAttemptedCount;
+  final int pushAcceptedCount;
+  final int pushFailedCount;
+  final int pushUnknownCount;
+  final bool idempotentReplay;
 }
 
 final class StartClubHostConversationCallableResponse {

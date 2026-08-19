@@ -901,12 +901,6 @@ abstract class AppLocalizations {
   /// **'Done'**
   String get coreOrderedPhotoPickerActionDone;
 
-  /// Title for the selected cover photo.
-  ///
-  /// In en, this message translates to:
-  /// **'Cover photo'**
-  String get coreOrderedPhotoPickerTitleCoverPhoto;
-
   /// Explains cover-photo semantics in the gallery manager.
   ///
   /// In en, this message translates to:
@@ -960,6 +954,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Uploading…'**
   String get coreOrderedPhotoPickerStatusUploading;
+
+  /// Per-photo upload progress in the shared ordered photo picker.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading… {percent}%'**
+  String coreOrderedPhotoPickerStatusUploadingProgress({required int percent});
+
+  /// Status for a staged photo that will upload when the user saves.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to upload'**
+  String get coreOrderedPhotoPickerStatusQueued;
 
   /// Status shown on a Host gallery image after an upload failure.
   ///
@@ -3173,6 +3179,12 @@ abstract class AppLocalizations {
   /// **'Configure who can book, how waitlists open, what attendees pay, and what happens if plans change.'**
   String get hostsEventPolicyStepTextConfigureWhoCanBook;
 
+  /// Rules-step intro for externally booked events.
+  ///
+  /// In en, this message translates to:
+  /// **'Set the operational capacity, age range, and on-site pairing inventory. Bookings, payments, refunds, and cancellations stay with the external provider.'**
+  String get hostsEventPolicyStepExternalOperationsIntro;
+
   /// Product copy used by lib/hosts/presentation/event_management/widgets/event_policy_step.dart (title).
   ///
   /// In en, this message translates to:
@@ -4008,12 +4020,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Next'**
   String get hostsStepperFooterLabelNext;
-
-  /// Product copy used by lib/hosts/presentation/widgets/stepper_footer.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Save Draft'**
-  String get hostsStepperFooterLabelSaveDraft;
 
   /// Product copy used by lib/image_uploads/shared/profile_photo_editor_screen.dart (title).
   ///
@@ -6832,6 +6838,15 @@ abstract class AppLocalizations {
   String coreCatchStepFlowHeaderTextStepClampedstepOfTotal({
     required Object clampedStep,
     required Object total,
+  });
+
+  /// Compact visual step counter used when large text leaves less header width.
+  ///
+  /// In en, this message translates to:
+  /// **'{clampedStep}/{total}'**
+  String coreCatchStepFlowHeaderTextCompactStepClampedstepTotal({
+    required int clampedStep,
+    required int total,
   });
 
   /// Product copy used by lib/core/widgets/catch_step_progress.dart (Text).
@@ -9676,6 +9691,18 @@ abstract class AppLocalizations {
   /// **'Media'**
   String get hostsHostClubProfileTitleMedia;
 
+  /// Opens the full-screen organizer logo and gallery manager.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage images'**
+  String get hostsHostClubEditTabActionManageImages;
+
+  /// Role badge shown on the organizer logo in the compact media summary.
+  ///
+  /// In en, this message translates to:
+  /// **'LOGO'**
+  String get hostsHostClubEditTabBadgeLogo;
+
   /// Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (label).
   ///
   /// In en, this message translates to:
@@ -9741,6 +9768,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Organizer settings'**
   String get hostsHostClubEditTabTitleClubSettings;
+
+  /// Commits staged organizer gallery and logo changes.
+  ///
+  /// In en, this message translates to:
+  /// **'Save media'**
+  String get hostsHostClubEditTabActionSaveMedia;
+
+  /// Discards staged organizer gallery and logo changes.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get hostsHostClubEditTabActionDiscardMedia;
 
   /// Navigation row to club event defaults.
   ///
@@ -16760,30 +16799,6 @@ abstract class AppLocalizations {
   /// **'Profile'**
   String get publicProfilePublicProfileScreenStateTitleProfile;
 
-  /// Product copy used by lib/hosts/presentation/event_management/create/create_event_screen.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Unsaved changes'**
-  String get hostsCreateEventScreenVisiblecopyUnsavedChanges;
-
-  /// Product copy used by lib/hosts/presentation/event_management/create/create_event_screen.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'You have unsaved changes. Would you like to save a draft?'**
-  String get hostsCreateEventScreenVisiblecopyYouHaveUnsavedChanges;
-
-  /// Product copy used by lib/hosts/presentation/event_management/create/create_event_screen.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Discard'**
-  String get hostsCreateEventScreenLabelDiscard;
-
-  /// Product copy used by lib/hosts/presentation/event_management/create/create_event_screen.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Save draft'**
-  String get hostsCreateEventScreenLabelSaveDraft;
-
   /// Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (visibleCopy).
   ///
   /// In en, this message translates to:
@@ -18778,7 +18793,7 @@ abstract class AppLocalizations {
   /// Warning shown when a provider-specific roster export has not yet been verified.
   ///
   /// In en, this message translates to:
-  /// **'We do not have a verified export sample for this platform yet. Review every detected column before importing; Catch will save the mapping for a future adapter.'**
+  /// **'We do not have a verified export sample for this platform yet. Review every detected column before importing.'**
   String get hostsOperationalRosterAdapterSampleRequired;
 
   /// Roster mapping field for guest name.
@@ -18835,11 +18850,116 @@ abstract class AppLocalizations {
   /// **'{count} guests ready'**
   String hostsOperationalRosterPreviewCount({required int count});
 
+  /// Roster mapping rows that cannot yet be imported.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} need review'**
+  String hostsOperationalRosterNeedsReviewCount({required int count});
+
+  /// Roster mapping rows intentionally excluded due to status.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} excluded'**
+  String hostsOperationalRosterExcludedCount({required int count});
+
+  /// Warning when provider hint and detected export disagree.
+  ///
+  /// In en, this message translates to:
+  /// **'The selected booking source does not match this spreadsheet. Catch used the columns in the file; review the mapping before importing.'**
+  String get hostsOperationalRosterProviderMismatch;
+
+  /// Warning for legacy encoded CSV files.
+  ///
+  /// In en, this message translates to:
+  /// **'This CSV is not UTF-8. Catch read it using a legacy encoding; check names and symbols carefully.'**
+  String get hostsOperationalRosterLegacyEncoding;
+
+  /// Warning when an XLSX contains multiple worksheets.
+  ///
+  /// In en, this message translates to:
+  /// **'This workbook has {count} worksheets. Catch selected the best-matching guest worksheet; verify the columns before importing.'**
+  String hostsOperationalRosterMultipleWorksheets({required int count});
+
   /// Roster import confirmation CTA.
   ///
   /// In en, this message translates to:
   /// **'Import {count} guests'**
   String hostsOperationalRosterImportAction({required int count});
+
+  /// External event guest list field title.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest list'**
+  String get hostsCreateEventRosterTitle;
+
+  /// Attached external event roster summary.
+  ///
+  /// In en, this message translates to:
+  /// **'{fileName} · {ready} ready · {review} need review · {excluded} excluded'**
+  String hostsCreateEventRosterAttached({
+    required String fileName,
+    required int ready,
+    required int review,
+    required int excluded,
+  });
+
+  /// Roster reattachment guidance after restoring a draft.
+  ///
+  /// In en, this message translates to:
+  /// **'Reattach {fileName} before publishing. Drafts remember the file fingerprint, not guest data.'**
+  String hostsCreateEventRosterReattach({required String fileName});
+
+  /// External event roster picker action.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose CSV or XLSX'**
+  String get hostsCreateEventRosterChoose;
+
+  /// External event roster replacement action.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace file'**
+  String get hostsCreateEventRosterReplace;
+
+  /// Create event guest list import success summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest list imported: {created} added, {updated} refreshed, {skipped} skipped.'**
+  String hostsCreateEventRosterImportSuccess({
+    required int created,
+    required int updated,
+    required int skipped,
+  });
+
+  /// Create event partial roster import guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'The event is live, but {count} guest rows need attention. Open Manage event to review the roster and retry the file.'**
+  String hostsCreateEventRosterImportPartial({required int count});
+
+  /// Create event roster import failure recovery guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'The event is live, but the guest list was not imported. Open Manage event and retry the same file.'**
+  String get hostsCreateEventRosterImportFailed;
+
+  /// Success guidance for externally booked events.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch tracks the operational roster, check-in, walk-ins, and event safety. Bookings and payments stay with the external provider.'**
+  String get hostsCreateEventExternalSuccessNote;
+
+  /// Success detail label for an imported guest list.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest list'**
+  String get hostsCreateEventRosterDetailLabel;
+
+  /// Capacity validation against an attached guest list.
+  ///
+  /// In en, this message translates to:
+  /// **'Capacity must be at least {count} to include every ready guest.'**
+  String hostsCreateEventCapacityBelowRoster({required int count});
 
   /// Roster callable batch limit guidance.
   ///
@@ -18852,6 +18972,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Choose a CSV or XLSX spreadsheet.'**
   String get hostsOperationalRosterIssueUnsupported;
+
+  /// Roster source file size error.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a spreadsheet smaller than 5 MB.'**
+  String get hostsOperationalRosterIssueFileTooLarge;
+
+  /// Roster expanded workbook size error.
+  ///
+  /// In en, this message translates to:
+  /// **'This workbook expands beyond the 25 MB safety limit. Export only the guest worksheet and try again.'**
+  String get hostsOperationalRosterIssueExpandedFileTooLarge;
 
   /// Missing roster rows error.
   ///
@@ -18889,6 +19021,54 @@ abstract class AppLocalizations {
   /// **'Row {row}: guest name is empty.'**
   String hostsOperationalRosterIssueMissingName({required int row});
 
+  /// Duplicate roster column mapping error.
+  ///
+  /// In en, this message translates to:
+  /// **'Map each spreadsheet column to only one guest field.'**
+  String get hostsOperationalRosterIssueDuplicateMappedColumn;
+
+  /// Missing stable roster identity error.
+  ///
+  /// In en, this message translates to:
+  /// **'Row {row}: add a phone, email, or booking reference so retries cannot create a duplicate guest.'**
+  String hostsOperationalRosterIssueMissingStableIdentity({required int row});
+
+  /// Invalid roster phone error.
+  ///
+  /// In en, this message translates to:
+  /// **'Row {row}: phone number is not valid.'**
+  String hostsOperationalRosterIssueInvalidPhone({required int row});
+
+  /// Invalid roster email error.
+  ///
+  /// In en, this message translates to:
+  /// **'Row {row}: email address is not valid.'**
+  String hostsOperationalRosterIssueInvalidEmail({required int row});
+
+  /// Duplicate roster identity error.
+  ///
+  /// In en, this message translates to:
+  /// **'Row {row}: this guest has the same identity as an earlier row.'**
+  String hostsOperationalRosterIssueDuplicateIdentity({required int row});
+
+  /// Unknown roster status error.
+  ///
+  /// In en, this message translates to:
+  /// **'Row {row}: status \'{status}\' needs review and will not be imported.'**
+  String hostsOperationalRosterIssueUnknownStatus({
+    required int row,
+    required String status,
+  });
+
+  /// Excluded roster status explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Row {row}: status \'{status}\' is excluded from the active guest list.'**
+  String hostsOperationalRosterIssueExcludedStatus({
+    required int row,
+    required String status,
+  });
+
   /// Completed roster import summary.
   ///
   /// In en, this message translates to:
@@ -18898,6 +19078,34 @@ abstract class AppLocalizations {
     required int updated,
     required int skipped,
   });
+
+  /// Partial roster import result title.
+  ///
+  /// In en, this message translates to:
+  /// **'Some guest rows need attention'**
+  String get hostsOperationalRosterImportPartialTitle;
+
+  /// Partial roster import recovery guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'{created} added, {updated} refreshed, and {count} rows were not imported. Fix those rows in the spreadsheet and import the same file again; Catch will update existing guests instead of duplicating them.'**
+  String hostsOperationalRosterImportPartialBody({
+    required int created,
+    required int updated,
+    required int count,
+  });
+
+  /// Roster import row error label.
+  ///
+  /// In en, this message translates to:
+  /// **'Row {row}'**
+  String hostsOperationalRosterImportRowError({required String row});
+
+  /// Roster import result dismissal action.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get hostsOperationalRosterImportResultDone;
 
   /// Manual roster entry sheet title.
   ///
@@ -19131,21 +19339,6 @@ abstract class AppLocalizations {
   /// **'Repeat'**
   String get hostsHostAudienceRepeat;
 
-  /// WhatsApp reachable count label.
-  ///
-  /// In en, this message translates to:
-  /// **'WhatsApp ready'**
-  String get hostsHostAudienceWhatsappReady;
-
-  /// Audience source composition.
-  ///
-  /// In en, this message translates to:
-  /// **'{importedCount} came through external or manual rosters · {linkedCount} are linked to verified Catch identities'**
-  String hostsHostAudienceSources({
-    required int importedCount,
-    required int linkedCount,
-  });
-
   /// Audience search field.
   ///
   /// In en, this message translates to:
@@ -19161,13 +19354,13 @@ abstract class AppLocalizations {
   /// Partial audience coverage notice title.
   ///
   /// In en, this message translates to:
-  /// **'Customer history is still syncing'**
+  /// **'Some customer history is unavailable'**
   String get hostsHostAudienceCoveragePartial;
 
   /// Partial audience coverage explanation.
   ///
   /// In en, this message translates to:
-  /// **'Older roster changes may be missing. Messaging stays off until the sync is complete.'**
+  /// **'Some older attendance may be missing. Counts marked + are minimums, and audience campaigns stay off until history is complete.'**
   String get hostsHostAudienceCoveragePartialBody;
 
   /// WhatsApp sender section title.
@@ -19423,7 +19616,7 @@ abstract class AppLocalizations {
   /// Audience contact sheet privacy subtitle.
   ///
   /// In en, this message translates to:
-  /// **'Organizer-only CRM record'**
+  /// **'Private to your organizer team'**
   String get hostsHostAudienceContactSubtitle;
 
   /// Organizer-local audience contact name field.
@@ -19450,12 +19643,6 @@ abstract class AppLocalizations {
   /// **'Email'**
   String get hostsHostAudienceContactEmail;
 
-  /// Audience contact consent notice title.
-  ///
-  /// In en, this message translates to:
-  /// **'Consent controls delivery'**
-  String get hostsHostAudienceContactConsentTitle;
-
   /// Organizer-suppressed WhatsApp delivery explanation.
   ///
   /// In en, this message translates to:
@@ -19467,18 +19654,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Only the person-verified number and active organizer consent can receive a campaign.'**
   String get hostsHostAudienceContactConsentActive;
-
-  /// Resume organizer WhatsApp campaigns for a contact CTA.
-  ///
-  /// In en, this message translates to:
-  /// **'Resume organizer messages'**
-  String get hostsHostAudienceContactResumeMessages;
-
-  /// Pause organizer WhatsApp campaigns for a contact CTA.
-  ///
-  /// In en, this message translates to:
-  /// **'Pause organizer messages'**
-  String get hostsHostAudienceContactPauseMessages;
 
   /// New-to-organizer audience segment label.
   ///
@@ -19606,11 +19781,17 @@ abstract class AppLocalizations {
   /// **'WhatsApp opted in'**
   String get hostsHostAudienceWhatsappOptedIn;
 
-  /// Embedded signup platform limitation.
+  /// Confirms the native-to-web WhatsApp Embedded Signup handoff.
   ///
   /// In en, this message translates to:
-  /// **'Connect WhatsApp from the Host web app. Once connected, the sender can be managed on any device.'**
-  String get hostsHostAudienceWebSignupOnly;
+  /// **'Continue WhatsApp setup in the Host web app.'**
+  String get hostsHostAudienceWebSignupOpened;
+
+  /// Failure shown when native cannot open the Host web WhatsApp setup route.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open WhatsApp setup in the Host web app.'**
+  String get hostsHostAudienceWebSignupOpenFailed;
 
   /// Campaign provider blocker.
   ///
@@ -19639,7 +19820,7 @@ abstract class AppLocalizations {
   /// Campaign coverage blocker.
   ///
   /// In en, this message translates to:
-  /// **'Audience history is still being reconciled'**
+  /// **'Customer history is incomplete'**
   String get hostsHostAudienceBlockerCoverage;
 
   /// Campaign size blocker.
@@ -20341,17 +20522,173 @@ abstract class AppLocalizations {
   /// **'Sends'**
   String get hostMessagingWorkspaceSends;
 
-  /// Primary action in the Host Sends workspace.
+  /// Opens the explicit Host communication-route picker.
   ///
   /// In en, this message translates to:
-  /// **'New message'**
-  String get hostSendsNewMessage;
+  /// **'Choose channel'**
+  String get hostSendsChooseChannel;
+
+  /// Groups Host routes delivered inside Catch.
+  ///
+  /// In en, this message translates to:
+  /// **'In Catch'**
+  String get hostSendsInCatchChannels;
+
+  /// Groups distinct personal, organizer-owned, and Catch-owned WhatsApp routes.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp'**
+  String get hostSendsWhatsappChannels;
 
   /// Opens organizer WhatsApp sender setup.
   ///
   /// In en, this message translates to:
-  /// **'WhatsApp settings'**
+  /// **'WhatsApp Business settings'**
   String get hostSendsSettings;
+
+  /// Channel and sender label for one-to-one Catch conversations.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch chat · Organizer'**
+  String get hostSendsCatchChatChannel;
+
+  /// Delivery semantics for Catch chat.
+  ///
+  /// In en, this message translates to:
+  /// **'One linked Catch user · two-way in the Catch app'**
+  String get hostSendsCatchChatDescription;
+
+  /// Channel and sender label for an event announcement.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch announcement · Organizer'**
+  String get hostSendsCatchAnnouncementChannel;
+
+  /// Delivery semantics for a Catch event announcement.
+  ///
+  /// In en, this message translates to:
+  /// **'Event roster · Activity plus preference-gated push · no reply thread'**
+  String get hostSendsCatchAnnouncementDescription;
+
+  /// Channel and sender label for organizer-owned WhatsApp Business.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp Business · Organizer number'**
+  String get hostSendsWhatsappBusinessChannel;
+
+  /// Delivery semantics for an organizer WhatsApp campaign.
+  ///
+  /// In en, this message translates to:
+  /// **'Permissioned CRM audience · approved template · delivery receipts'**
+  String get hostSendsWhatsappBusinessDescription;
+
+  /// Channel and sender label for a personal-device WhatsApp handoff.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp app · You'**
+  String get hostSendsWhatsappAppChannel;
+
+  /// Delivery semantics for a personal WhatsApp handoff.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a person in Customers · editable text · you press Send · untracked by Catch'**
+  String get hostSendsWhatsappAppDescription;
+
+  /// Channel and sender label for organizer follower posts.
+  ///
+  /// In en, this message translates to:
+  /// **'Follower update · Organizer'**
+  String get hostSendsFollowerUpdateChannel;
+
+  /// Delivery semantics for organizer follower posts.
+  ///
+  /// In en, this message translates to:
+  /// **'Followers in Catch · Home and Activity · preference-gated push'**
+  String get hostSendsFollowerUpdateDescription;
+
+  /// Follower-update quota blocker in the Host route picker.
+  ///
+  /// In en, this message translates to:
+  /// **'This organizer has used its three follower updates for the rolling seven-day window.'**
+  String get hostSendsFollowerUpdateQuotaUsed;
+
+  /// Compact follower-update quota status.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly limit reached'**
+  String get hostSendsWeeklyLimit;
+
+  /// Audience label for an organizer follower update in Sends history.
+  ///
+  /// In en, this message translates to:
+  /// **'Followers in Catch'**
+  String get hostSendsFollowersAudience;
+
+  /// Follower-update history marker for a linked event.
+  ///
+  /// In en, this message translates to:
+  /// **'Linked event'**
+  String get hostSendsLinkedEventUpdate;
+
+  /// Channel and sender label for the separate Catch-owned WhatsApp route.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch WhatsApp · Catch number'**
+  String get hostSendsCatchWhatsappChannel;
+
+  /// Boundary for future Catch-owned WhatsApp messages.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch-owned sender and Catch-specific permission · not an organizer campaign'**
+  String get hostSendsCatchWhatsappDescription;
+
+  /// Loading state for managed-channel readiness.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking sender and template readiness…'**
+  String get hostSendsChannelChecking;
+
+  /// Error state for managed-channel readiness.
+  ///
+  /// In en, this message translates to:
+  /// **'Readiness could not be loaded. Open settings to retry.'**
+  String get hostSendsChannelUnavailable;
+
+  /// Managed-channel availability label.
+  ///
+  /// In en, this message translates to:
+  /// **'Setup required'**
+  String get hostSendsSetupRequired;
+
+  /// Honest availability label for a specified but inactive channel.
+  ///
+  /// In en, this message translates to:
+  /// **'Not active'**
+  String get hostSendsPlanned;
+
+  /// Organizer WhatsApp environment configuration blocker.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch has not enabled the Meta provider in this environment.'**
+  String get hostSendsWhatsappProviderUnavailable;
+
+  /// Organizer WhatsApp sender connection blocker.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect and verify an organizer-owned WhatsApp Business number.'**
+  String get hostSendsWhatsappSenderRequired;
+
+  /// Organizer WhatsApp sender health blocker.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish sender testing or resolve its connection health.'**
+  String get hostSendsWhatsappSenderNeedsAttention;
+
+  /// Organizer WhatsApp approved-template blocker.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync at least one approved WhatsApp message template.'**
+  String get hostSendsWhatsappTemplateRequired;
 
   /// Loads the next page of organizer Sends history.
   ///
@@ -20368,7 +20705,7 @@ abstract class AppLocalizations {
   /// Empty Sends history guidance.
   ///
   /// In en, this message translates to:
-  /// **'Campaigns and event announcements will appear here after you send them.'**
+  /// **'Campaigns, event announcements, and follower updates will appear here after you send them.'**
   String get hostSendsEmptyHelp;
 
   /// Typed label for a WhatsApp campaign row.
@@ -20395,11 +20732,53 @@ abstract class AppLocalizations {
   /// **'Some deliveries need attention'**
   String get hostSendsPartial;
 
+  /// User-facing delivery state for an organizer follower update.
+  ///
+  /// In en, this message translates to:
+  /// **'{status, select, pending{Delivering in Catch} completed{Available in Catch} partial{Some deliveries need attention} unknown{Delivery was not tracked} other{Delivery status unavailable}}'**
+  String hostSendsFollowerDeliveryStatus({required String status});
+
   /// Channel facet label for retained WhatsApp threads.
   ///
   /// In en, this message translates to:
-  /// **'WhatsApp'**
+  /// **'WhatsApp Business · Organizer number'**
   String get hostInboxWhatsappChannel;
+
+  /// Explicit channel/sender prefix for a Catch inquiry row.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch chat · Organizer · {details}'**
+  String hostInboxCatchChatPreview({required String details});
+
+  /// Delivery disclosure in the event announcement composer.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipients see a durable Activity update and may receive a push notification. This does not create a chat thread.'**
+  String get hostInboxAnnouncementDisclosure;
+
+  /// Closed event-announcement state.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch announcement · event delivery has closed'**
+  String get hostInboxAnnouncementClosed;
+
+  /// Backend-gated event-announcement state.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch announcement · backend preflight required'**
+  String get hostInboxAnnouncementBackendRequired;
+
+  /// Empty event-announcement audience state.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch announcement · no eligible recipients yet'**
+  String get hostInboxAnnouncementNoRecipients;
+
+  /// Available event-announcement delivery summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch announcement · Activity plus optional push'**
+  String get hostInboxAnnouncementAvailable;
 
   /// Sends a free-form WhatsApp service reply.
   ///
@@ -20455,12 +20834,6 @@ abstract class AppLocalizations {
   /// **'Send after approval'**
   String get hostSendsClearSchedule;
 
-  /// Opens organizer-owned customer identity and delivery controls.
-  ///
-  /// In en, this message translates to:
-  /// **'Manage'**
-  String get hostCustomersManage;
-
   /// Customer detail section for organizer-visible phone and email evidence.
   ///
   /// In en, this message translates to:
@@ -20473,11 +20846,11 @@ abstract class AppLocalizations {
   /// **'Edit details'**
   String get hostCustomersEditDetails;
 
-  /// Empty organizer-visible customer contact details.
+  /// Empty value shown for a non-editable customer contact field.
   ///
   /// In en, this message translates to:
-  /// **'No phone or email saved yet.'**
-  String get hostCustomersNoContactDetails;
+  /// **'Not saved'**
+  String get hostCustomersNotSaved;
 
   /// Customer event-history status for a completed check-in.
   ///
@@ -20560,7 +20933,7 @@ abstract class AppLocalizations {
   /// Boundary between organizer-owned contact details and a linked Catch profile.
   ///
   /// In en, this message translates to:
-  /// **'Contact details shown here come from this organizer’s records. Linking a Catch account does not reveal additional profile fields.'**
+  /// **'Linked Catch profiles stay private. Phone and email can’t be edited here.'**
   String get hostCustomersVerifiedDetailsManagedByCatch;
 
   /// Labels manually entered customer endpoints as unverified.
@@ -20607,6 +20980,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Clear'**
   String get hostCustomersClearFilter;
+
+  /// Reloads customer history coverage after an organizer import or repair.
+  ///
+  /// In en, this message translates to:
+  /// **'Check again'**
+  String get hostCustomersCoverageRefresh;
 
   /// Starts a campaign for the exact number of customers in the active segment.
   ///
@@ -20902,11 +21281,80 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{1 paid order} other{{count} paid orders}}'**
   String hostCustomersDetailPaidOrders({required int count});
 
-  /// Starts or reuses a direct organizer-customer thread.
+  /// Starts a direct Catch chat with a linked customer.
   ///
   /// In en, this message translates to:
-  /// **'New conversation'**
-  String get hostCustomersNewConversation;
+  /// **'Start Catch chat'**
+  String get hostCustomersStartCatchChat;
+
+  /// Explicit channel and sender label for a personal-device WhatsApp handoff.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp app · You'**
+  String get hostCustomersWhatsappAppChannel;
+
+  /// Disclosure for the untracked personal WhatsApp handoff.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens WhatsApp on this device with editable text. You review it and press Send; Catch cannot track delivery or replies.'**
+  String get hostCustomersWhatsappHandoffDisclosure;
+
+  /// Personal WhatsApp handoff blocker when the customer has no valid phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a valid phone number to use a personal WhatsApp handoff.'**
+  String get hostCustomersWhatsappMissingPhone;
+
+  /// Personal WhatsApp handoff blocker for an organizer-admin suppression.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp handoff is paused for this customer by your team.'**
+  String get hostCustomersWhatsappOrganizerSuppressed;
+
+  /// Personal WhatsApp handoff blocker for an explicit customer opt-out.
+  ///
+  /// In en, this message translates to:
+  /// **'This customer has opted out of WhatsApp messages.'**
+  String get hostCustomersWhatsappContactOptedOut;
+
+  /// Title for the personal WhatsApp handoff composer.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp app'**
+  String get hostCustomersWhatsappHandoffTitle;
+
+  /// Recipient shown in the personal WhatsApp handoff composer.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} · {phone}'**
+  String hostCustomersWhatsappHandoffSubtitle({
+    required String name,
+    required String phone,
+  });
+
+  /// Editable starter text for a personal WhatsApp handoff.
+  ///
+  /// In en, this message translates to:
+  /// **'Hi {name},'**
+  String hostCustomersWhatsappDefaultMessage({required String name});
+
+  /// Editable message field label in the personal WhatsApp handoff composer.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get hostCustomersWhatsappMessage;
+
+  /// Launches WhatsApp with the selected customer and editable text prefilled.
+  ///
+  /// In en, this message translates to:
+  /// **'Open WhatsApp'**
+  String get hostCustomersOpenWhatsapp;
+
+  /// Failure shown when the personal WhatsApp handoff cannot launch.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open WhatsApp on this device.'**
+  String get hostCustomersWhatsappOpenFailed;
 
   /// Unlinked customer messaging boundary.
   ///
@@ -21088,12 +21536,6 @@ abstract class AppLocalizations {
   /// **'The customer details are available. Try reloading to restore note history.'**
   String get hostCustomersNotesUnavailableBody;
 
-  /// System-computed customer activity group heading.
-  ///
-  /// In en, this message translates to:
-  /// **'Activity'**
-  String get hostCustomersActivity;
-
   /// Per-person campaign delivery history heading.
   ///
   /// In en, this message translates to:
@@ -21136,11 +21578,29 @@ abstract class AppLocalizations {
   /// **'Controls'**
   String get hostCustomersControls;
 
+  /// Per-customer organizer campaign delivery toggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer messages'**
+  String get hostCustomersOrganizerMessages;
+
   /// Customers directory sort menu group label.
   ///
   /// In en, this message translates to:
   /// **'Sort customers'**
   String get hostCustomersSort;
+
+  /// Visible Customers directory sort control with its current ordering.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort: {label}'**
+  String hostCustomersSortControl({required String label});
+
+  /// Explains the Customers directory sort sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how customers are ordered.'**
+  String get hostCustomersSortSheetSubtitle;
 
   /// Customers directory last-seen ordering.
   ///
@@ -21159,6 +21619,27 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Name'**
   String get hostCustomersSortName;
+
+  /// Accessible label for the Customers header overflow commands.
+  ///
+  /// In en, this message translates to:
+  /// **'More customer actions'**
+  String get hostCustomersMoreActions;
+
+  /// Number of organizer contacts currently reachable on WhatsApp.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 WhatsApp-ready contact} other{{count} WhatsApp-ready contacts}}'**
+  String hostCustomersWhatsappReadyCount({required int count});
+
+  /// Concise customer source and linked-account summary shown on the page.
+  ///
+  /// In en, this message translates to:
+  /// **'{importedCount, plural, =1{1 imported or added by your team} other{{importedCount} imported or added by your team}} · {linkedCount, plural, =1{1 linked Catch account} other{{linkedCount} linked Catch accounts}}'**
+  String hostCustomersSourceSummary({
+    required int importedCount,
+    required int linkedCount,
+  });
 
   /// Host accountability sweep heading.
   ///
@@ -21396,6 +21877,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Import responses'**
   String get hostApplicationsImport;
+
+  /// Accessible label and compact sheet title for application ordering.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort applications'**
+  String get hostApplicationsSort;
 
   /// Application spreadsheet import sheet title.
   ///
@@ -23531,6 +24018,1010 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Redo edit'**
   String get hostFormRedo;
+
+  /// Moves to the preceding section in a resumable Host creation wizard.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous'**
+  String get hostsWizardPrevious;
+
+  /// Section status when required creation information is ready.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete'**
+  String get hostsWizardStatusComplete;
+
+  /// Section status when required creation information is missing or invalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs information'**
+  String get hostsWizardStatusNeedsInformation;
+
+  /// Section status for an optional creation section.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional'**
+  String get hostsWizardStatusOptional;
+
+  /// Explains out-of-order navigation in resumable Host creation wizards.
+  ///
+  /// In en, this message translates to:
+  /// **'Open any section and finish the required details in any order.'**
+  String get hostsWizardOverviewSubtitle;
+
+  /// Section overview title in event creation.
+  ///
+  /// In en, this message translates to:
+  /// **'Event setup'**
+  String get hostsCreateEventOverviewTitle;
+
+  /// Create event review activity label.
+  ///
+  /// In en, this message translates to:
+  /// **'Event'**
+  String get hostsCreateEventReviewActivity;
+
+  /// Create event review booking authority label.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings'**
+  String get hostsCreateEventReviewBooking;
+
+  /// Create event review Catch booking authority value.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch bookings'**
+  String get hostsCreateEventReviewCatchBookings;
+
+  /// Create event review external booking authority value.
+  ///
+  /// In en, this message translates to:
+  /// **'External provider: {provider}'**
+  String hostsCreateEventReviewExternalBookings({required String provider});
+
+  /// Create event review location label.
+  ///
+  /// In en, this message translates to:
+  /// **'Meeting location'**
+  String get hostsCreateEventReviewLocation;
+
+  /// Create event review schedule label.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule'**
+  String get hostsCreateEventReviewSchedule;
+
+  /// Create event review capacity label.
+  ///
+  /// In en, this message translates to:
+  /// **'Capacity'**
+  String get hostsCreateEventReviewCapacity;
+
+  /// Create event review capacity value.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} attendees'**
+  String hostsCreateEventReviewCapacityValue({required int count});
+
+  /// Create event review price label.
+  ///
+  /// In en, this message translates to:
+  /// **'Price'**
+  String get hostsCreateEventReviewPrice;
+
+  /// Create event review external price value.
+  ///
+  /// In en, this message translates to:
+  /// **'Managed by the external provider'**
+  String get hostsCreateEventReviewExternalPrice;
+
+  /// Create event review free price value.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get hostsCreateEventReviewFree;
+
+  /// Create event review admission label.
+  ///
+  /// In en, this message translates to:
+  /// **'Admission'**
+  String get hostsCreateEventReviewAdmission;
+
+  /// Section overview title in organizer creation.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer setup'**
+  String get hostsCreateClubOverviewTitle;
+
+  /// Guidance on the final review screen for resumable Host creation flows.
+  ///
+  /// In en, this message translates to:
+  /// **'Review every section before publishing. Select a row to make changes.'**
+  String get hostsWizardReviewBody;
+
+  /// Final review title and action in event creation.
+  ///
+  /// In en, this message translates to:
+  /// **'Review event'**
+  String get hostsCreateEventReviewTitle;
+
+  /// Final review title and action in organizer creation.
+  ///
+  /// In en, this message translates to:
+  /// **'Review organizer'**
+  String get hostsCreateClubReviewTitle;
+
+  /// Publishes an event after the final creation review passes.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule event'**
+  String get hostsCreateEventScheduleAction;
+
+  /// Creates an organizer after the final creation review passes.
+  ///
+  /// In en, this message translates to:
+  /// **'Create organizer'**
+  String get hostsCreateClubCreateAction;
+
+  /// Title for leaving a dirty resumable Host creation wizard.
+  ///
+  /// In en, this message translates to:
+  /// **'Save your work?'**
+  String get hostsDraftExitTitle;
+
+  /// Explains the save-on-exit choice for a dirty Host creation wizard.
+  ///
+  /// In en, this message translates to:
+  /// **'Save this as a draft before you exit?'**
+  String get hostsDraftExitMessage;
+
+  /// Dismisses the draft exit dialog and returns to the wizard.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep editing'**
+  String get hostsDraftExitKeepEditing;
+
+  /// Leaves a dirty Host creation wizard without saving its latest changes.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard & exit'**
+  String get hostsDraftExitDiscardAndExit;
+
+  /// Saves a Host creation draft and exits only after the save succeeds.
+  ///
+  /// In en, this message translates to:
+  /// **'Save draft & exit'**
+  String get hostsDraftExitSaveAndExit;
+
+  /// Accessible label for the interactive wizard step counter.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {step} of {total}. Open section overview.'**
+  String hostsWizardStepOverviewSemantics({
+    required int step,
+    required int total,
+  });
+
+  /// Starts a safe rehearsal from the Host event entry sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Run a dress rehearsal'**
+  String get hostEventRehearsalEntryTitle;
+
+  /// Explains rehearsal isolation in the Host entry sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice the Host and guest experience with synthetic people. Nothing touches a real event.'**
+  String get hostEventRehearsalEntryBody;
+
+  /// Event rehearsal route title.
+  ///
+  /// In en, this message translates to:
+  /// **'Dress rehearsal'**
+  String get hostEventRehearsalTitle;
+
+  /// Persistent rehearsal safety banner.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice mode · No real guests, messages, payments, matches, or event records are changed'**
+  String get hostEventRehearsalPracticeBanner;
+
+  /// Rehearsal creation guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a room to practice. You can change the rehearsal copy and playbook before starting.'**
+  String get hostEventRehearsalStartSubtitle;
+
+  /// Existing-event rehearsal source label.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice this event'**
+  String get hostEventRehearsalSourceEvent;
+
+  /// Sample-template rehearsal source label.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch sample event'**
+  String get hostEventRehearsalSourceSample;
+
+  /// Rehearsal scenario field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice scenario'**
+  String get hostEventRehearsalScenario;
+
+  /// Synthetic rehearsal guest count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 synthetic guest} other{{count} synthetic guests}}'**
+  String hostEventRehearsalActorCount({required int count});
+
+  /// Explains actor-count bounds.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a realistic roster. Rehearsals are capped at 50 synthetic guests.'**
+  String get hostEventRehearsalActorCountBody;
+
+  /// Creates an isolated rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Create rehearsal'**
+  String get hostEventRehearsalCreate;
+
+  /// Rehearsal retention notice.
+  ///
+  /// In en, this message translates to:
+  /// **'This rehearsal and its guest link expire after 24 hours.'**
+  String get hostEventRehearsalExpiry;
+
+  /// Happy-path rehearsal scenario title.
+  ///
+  /// In en, this message translates to:
+  /// **'Smooth run'**
+  String get hostEventRehearsalScenarioSmoothRun;
+
+  /// Happy-path rehearsal scenario summary.
+  ///
+  /// In en, this message translates to:
+  /// **'A cooperative room for learning the normal Host and guest flow.'**
+  String get hostEventRehearsalScenarioSmoothRunBody;
+
+  /// Late arrival scenario title.
+  ///
+  /// In en, this message translates to:
+  /// **'Late arrivals and no-shows'**
+  String get hostEventRehearsalScenarioLateAndNoShow;
+
+  /// Late arrival scenario summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Recover when expected guests are missing or arrive after groups begin.'**
+  String get hostEventRehearsalScenarioLateAndNoShowBody;
+
+  /// Early exit scenario title.
+  ///
+  /// In en, this message translates to:
+  /// **'Early exit and return'**
+  String get hostEventRehearsalScenarioEarlyExitAndReturn;
+
+  /// Early exit scenario summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Rebalance when a guest leaves early and another returns later.'**
+  String get hostEventRehearsalScenarioEarlyExitAndReturnBody;
+
+  /// Roster capacity scenario title.
+  ///
+  /// In en, this message translates to:
+  /// **'Odd roster and capacity'**
+  String get hostEventRehearsalScenarioRosterAndCapacity;
+
+  /// Roster capacity scenario summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Expose odd-sized groups, tight capacity, and unassigned guests.'**
+  String get hostEventRehearsalScenarioRosterAndCapacityBody;
+
+  /// Walk-in scenario title.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk-in and ambiguous claim'**
+  String get hostEventRehearsalScenarioWalkInAndAmbiguousClaim;
+
+  /// Walk-in scenario summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Admit a walk-in and resolve two similar roster identities.'**
+  String get hostEventRehearsalScenarioWalkInAndAmbiguousClaimBody;
+
+  /// Privacy scenario title.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy and keep-apart'**
+  String get hostEventRehearsalScenarioPrivacyAndKeepApart;
+
+  /// Privacy scenario summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Respect an opt-out and a safety keep-apart constraint while preserving flow.'**
+  String get hostEventRehearsalScenarioPrivacyAndKeepApartBody;
+
+  /// Connectivity scenario title.
+  ///
+  /// In en, this message translates to:
+  /// **'Low connectivity'**
+  String get hostEventRehearsalScenarioLowConnectivity;
+
+  /// Connectivity scenario summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue through disconnects, delayed updates, and reconnection.'**
+  String get hostEventRehearsalScenarioLowConnectivityBody;
+
+  /// Concurrent Host scenario title.
+  ///
+  /// In en, this message translates to:
+  /// **'Two hosts, one revision'**
+  String get hostEventRehearsalScenarioConcurrentHosts;
+
+  /// Concurrent Host scenario summary.
+  ///
+  /// In en, this message translates to:
+  /// **'See how stale Host actions are rejected and recovered safely.'**
+  String get hostEventRehearsalScenarioConcurrentHostsBody;
+
+  /// Reveal interruption scenario title.
+  ///
+  /// In en, this message translates to:
+  /// **'Reveal interrupted'**
+  String get hostEventRehearsalScenarioRevealInterrupted;
+
+  /// Reveal interruption scenario summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause and recover around a reveal or round transition.'**
+  String get hostEventRehearsalScenarioRevealInterruptedBody;
+
+  /// External profile scenario title.
+  ///
+  /// In en, this message translates to:
+  /// **'External and incomplete profiles'**
+  String get hostEventRehearsalScenarioExternalProfiles;
+
+  /// External profile scenario summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise no-download guests and deliberately sparse participant data.'**
+  String get hostEventRehearsalScenarioExternalProfilesBody;
+
+  /// Accountability scenario title.
+  ///
+  /// In en, this message translates to:
+  /// **'Accountability sweep'**
+  String get hostEventRehearsalScenarioAccountabilitySweep;
+
+  /// Accountability scenario summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish with unresolved checked-in, departed, and disconnected guests.'**
+  String get hostEventRehearsalScenarioAccountabilitySweepBody;
+
+  /// Guest rehearsal link section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Live guest phone'**
+  String get hostEventRehearsalGuestLinkTitle;
+
+  /// Guest rehearsal link guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Open this link on another phone. It gets an anonymous synthetic guest and follows the virtual event live.'**
+  String get hostEventRehearsalGuestLinkBody;
+
+  /// Copies a rehearsal guest link.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy link'**
+  String get hostEventRehearsalCopyLink;
+
+  /// Shares a rehearsal guest link.
+  ///
+  /// In en, this message translates to:
+  /// **'Share link'**
+  String get hostEventRehearsalShareLink;
+
+  /// Rotates a rehearsal guest link.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace link'**
+  String get hostEventRehearsalRotateLink;
+
+  /// Rehearsal setup section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice setup'**
+  String get hostEventRehearsalSetupTitle;
+
+  /// Rehearsal setup freeze guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Setup is frozen after Start. Reset or fork to change it.'**
+  String get hostEventRehearsalSetupFrozen;
+
+  /// Rehearsal title input.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice event name'**
+  String get hostEventRehearsalFieldTitle;
+
+  /// Rehearsal location input.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice location'**
+  String get hostEventRehearsalFieldLocation;
+
+  /// Rehearsal Host goal input.
+  ///
+  /// In en, this message translates to:
+  /// **'Host goal'**
+  String get hostEventRehearsalFieldGoal;
+
+  /// Rehearsal guest prompt input.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest prompt'**
+  String get hostEventRehearsalFieldPrompt;
+
+  /// Rehearsal run-control section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Virtual event'**
+  String get hostEventRehearsalRunTitle;
+
+  /// Starts a rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get hostEventRehearsalStart;
+
+  /// Pauses a rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get hostEventRehearsalPause;
+
+  /// Resumes a rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get hostEventRehearsalResume;
+
+  /// Moves to the prior rehearsal moment.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous'**
+  String get hostEventRehearsalPrevious;
+
+  /// Moves to the next rehearsal moment.
+  ///
+  /// In en, this message translates to:
+  /// **'Next moment'**
+  String get hostEventRehearsalNext;
+
+  /// Advances rehearsal clock five minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'+5 min'**
+  String get hostEventRehearsalAdvanceFive;
+
+  /// Advances rehearsal clock fifteen minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'+15 min'**
+  String get hostEventRehearsalAdvanceFifteen;
+
+  /// Completes a rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete run'**
+  String get hostEventRehearsalComplete;
+
+  /// Synthetic behavior simulator title.
+  ///
+  /// In en, this message translates to:
+  /// **'Issue simulator'**
+  String get hostEventRehearsalSimulationTitle;
+
+  /// Synthetic behavior simulator guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a synthetic guest, then inject a realistic behavior. Automatic scenario cues also fire when the virtual clock crosses them.'**
+  String get hostEventRehearsalSimulationBody;
+
+  /// Explains when synthetic behavior controls are available.
+  ///
+  /// In en, this message translates to:
+  /// **'Start the virtual event to inject guest behavior. Completed runs can be reset or forked.'**
+  String get hostEventRehearsalSimulationUnavailable;
+
+  /// Synthetic guest picker label.
+  ///
+  /// In en, this message translates to:
+  /// **'Synthetic guest'**
+  String get hostEventRehearsalChooseGuest;
+
+  /// Synthetic issue picker label.
+  ///
+  /// In en, this message translates to:
+  /// **'Inject issue'**
+  String get hostEventRehearsalChooseIssue;
+
+  /// Synthetic rehearsal roster title.
+  ///
+  /// In en, this message translates to:
+  /// **'Synthetic room'**
+  String get hostEventRehearsalRosterTitle;
+
+  /// Synthetic room status summary.
+  ///
+  /// In en, this message translates to:
+  /// **'{present} present · {total} expected · {unresolved} unresolved'**
+  String hostEventRehearsalRoomSummary({
+    required int present,
+    required int total,
+    required int unresolved,
+  });
+
+  /// Internal rehearsal fault panel title.
+  ///
+  /// In en, this message translates to:
+  /// **'Internal QA faults'**
+  String get hostEventRehearsalQaFaultsTitle;
+
+  /// Internal fault panel guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Inject transport, revision, duplicate-delivery, legacy, motion, and bandwidth failures without touching production entities.'**
+  String get hostEventRehearsalQaFaultsBody;
+
+  /// Completed rehearsal recap title.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice recap'**
+  String get hostEventRehearsalRecapTitle;
+
+  /// Rehearsal reproducibility summary.
+  ///
+  /// In en, this message translates to:
+  /// **'{actions} actions recorded · seed {seed} · revision {revision}'**
+  String hostEventRehearsalRecapBody({
+    required int actions,
+    required int seed,
+    required int revision,
+  });
+
+  /// Resets a rehearsal with the same seed.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset run'**
+  String get hostEventRehearsalReset;
+
+  /// Forks a rehearsal into a fresh session.
+  ///
+  /// In en, this message translates to:
+  /// **'Fork setup'**
+  String get hostEventRehearsalFork;
+
+  /// Copies a deterministic rehearsal reproduction.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy reproduction'**
+  String get hostEventRehearsalExport;
+
+  /// Rehearsal action history title.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent simulated actions'**
+  String get hostEventRehearsalRecentActions;
+
+  /// Synthetic arrival action.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrives now'**
+  String get hostEventRehearsalBehaviorArrive;
+
+  /// Synthetic late arrival action.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrives late'**
+  String get hostEventRehearsalBehaviorArriveLate;
+
+  /// Synthetic no-show action.
+  ///
+  /// In en, this message translates to:
+  /// **'Becomes a no-show'**
+  String get hostEventRehearsalBehaviorNoShow;
+
+  /// Synthetic departure action.
+  ///
+  /// In en, this message translates to:
+  /// **'Leaves early'**
+  String get hostEventRehearsalBehaviorLeaves;
+
+  /// Synthetic return action.
+  ///
+  /// In en, this message translates to:
+  /// **'Returns'**
+  String get hostEventRehearsalBehaviorReturns;
+
+  /// Synthetic walk-in action.
+  ///
+  /// In en, this message translates to:
+  /// **'Walks in'**
+  String get hostEventRehearsalBehaviorWalkIn;
+
+  /// Synthetic ambiguous claim action.
+  ///
+  /// In en, this message translates to:
+  /// **'Claims an ambiguous name'**
+  String get hostEventRehearsalBehaviorAmbiguous;
+
+  /// Resolves a synthetic claim.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolve claim'**
+  String get hostEventRehearsalBehaviorResolve;
+
+  /// Synthetic privacy opt-out action.
+  ///
+  /// In en, this message translates to:
+  /// **'Opts out'**
+  String get hostEventRehearsalBehaviorOptOut;
+
+  /// Synthetic privacy opt-in action.
+  ///
+  /// In en, this message translates to:
+  /// **'Opts back in'**
+  String get hostEventRehearsalBehaviorOptIn;
+
+  /// Synthetic safety keep-apart action.
+  ///
+  /// In en, this message translates to:
+  /// **'Adds keep-apart'**
+  String get hostEventRehearsalBehaviorKeepApart;
+
+  /// Synthetic disconnect action.
+  ///
+  /// In en, this message translates to:
+  /// **'Loses connection'**
+  String get hostEventRehearsalBehaviorDisconnect;
+
+  /// Synthetic reconnect action.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnects'**
+  String get hostEventRehearsalBehaviorReconnect;
+
+  /// Clears rehearsal fault injection.
+  ///
+  /// In en, this message translates to:
+  /// **'No injected fault'**
+  String get hostEventRehearsalFaultNone;
+
+  /// Latency fault label.
+  ///
+  /// In en, this message translates to:
+  /// **'Artificial latency'**
+  String get hostEventRehearsalFaultLatency;
+
+  /// One-shot failure fault label.
+  ///
+  /// In en, this message translates to:
+  /// **'One-shot failure'**
+  String get hostEventRehearsalFaultOneShot;
+
+  /// Listener disconnect fault label.
+  ///
+  /// In en, this message translates to:
+  /// **'Listener disconnect'**
+  String get hostEventRehearsalFaultDisconnect;
+
+  /// Stale revision fault label.
+  ///
+  /// In en, this message translates to:
+  /// **'Stale revision'**
+  String get hostEventRehearsalFaultStaleRevision;
+
+  /// Duplicate delivery fault label.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate delivery'**
+  String get hostEventRehearsalFaultDuplicate;
+
+  /// Legacy fixture fault label.
+  ///
+  /// In en, this message translates to:
+  /// **'Legacy fixture'**
+  String get hostEventRehearsalFaultLegacy;
+
+  /// Reduced motion fault label.
+  ///
+  /// In en, this message translates to:
+  /// **'Reduced motion'**
+  String get hostEventRehearsalFaultReducedMotion;
+
+  /// Low bandwidth fault label.
+  ///
+  /// In en, this message translates to:
+  /// **'Low bandwidth'**
+  String get hostEventRehearsalFaultLowBandwidth;
+
+  /// Synthetic expected guest status.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected'**
+  String get hostEventRehearsalStatusExpected;
+
+  /// Synthetic present guest status.
+  ///
+  /// In en, this message translates to:
+  /// **'Present'**
+  String get hostEventRehearsalStatusPresent;
+
+  /// Synthetic late guest status.
+  ///
+  /// In en, this message translates to:
+  /// **'Late'**
+  String get hostEventRehearsalStatusLate;
+
+  /// Synthetic no-show status.
+  ///
+  /// In en, this message translates to:
+  /// **'No-show'**
+  String get hostEventRehearsalStatusNoShow;
+
+  /// Synthetic departed status.
+  ///
+  /// In en, this message translates to:
+  /// **'Departed'**
+  String get hostEventRehearsalStatusDeparted;
+
+  /// Synthetic returned status.
+  ///
+  /// In en, this message translates to:
+  /// **'Returned'**
+  String get hostEventRehearsalStatusReturned;
+
+  /// Synthetic disconnected status.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnected'**
+  String get hostEventRehearsalStatusDisconnected;
+
+  /// Synthetic walk-in status.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk-in'**
+  String get hostEventRehearsalStatusWalkIn;
+
+  /// Synthetic ambiguous claim status.
+  ///
+  /// In en, this message translates to:
+  /// **'Claim needs review'**
+  String get hostEventRehearsalStatusAmbiguous;
+
+  /// Synthetic guest help signal.
+  ///
+  /// In en, this message translates to:
+  /// **'Help requested'**
+  String get hostEventRehearsalSignalHelp;
+
+  /// Synthetic guest prompt-completion signal.
+  ///
+  /// In en, this message translates to:
+  /// **'Prompt complete'**
+  String get hostEventRehearsalSignalPromptComplete;
+
+  /// Rehearsal playbook module selector.
+  ///
+  /// In en, this message translates to:
+  /// **'Event Success playbook'**
+  String get hostEventRehearsalModules;
+
+  /// Arrival playbook module.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrival'**
+  String get hostEventRehearsalModuleArrival;
+
+  /// First Hello playbook module.
+  ///
+  /// In en, this message translates to:
+  /// **'First Hello'**
+  String get hostEventRehearsalModuleFirstHello;
+
+  /// Pods playbook module.
+  ///
+  /// In en, this message translates to:
+  /// **'Pods'**
+  String get hostEventRehearsalModulePods;
+
+  /// Rotations playbook module.
+  ///
+  /// In en, this message translates to:
+  /// **'Rotations'**
+  String get hostEventRehearsalModuleRotations;
+
+  /// Conversation cue playbook module.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation cues'**
+  String get hostEventRehearsalModuleCues;
+
+  /// Reveal playbook module.
+  ///
+  /// In en, this message translates to:
+  /// **'Reveal'**
+  String get hostEventRehearsalModuleReveal;
+
+  /// Afterglow playbook module.
+  ///
+  /// In en, this message translates to:
+  /// **'Afterglow'**
+  String get hostEventRehearsalModuleAfterglow;
+
+  /// Accountability playbook module.
+  ///
+  /// In en, this message translates to:
+  /// **'Accountability'**
+  String get hostEventRehearsalModuleAccountability;
+
+  /// Rehearsal duration input.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice duration'**
+  String get hostEventRehearsalDuration;
+
+  /// Current rehearsal run position.
+  ///
+  /// In en, this message translates to:
+  /// **'Moment {current} of {total}'**
+  String hostEventRehearsalMoment({required int current, required int total});
+
+  /// Rehearsal virtual clock label.
+  ///
+  /// In en, this message translates to:
+  /// **'Virtual time · {time}'**
+  String hostEventRehearsalClock({required String time});
+
+  /// Applies a synthetic issue.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply issue'**
+  String get hostEventRehearsalApplyIssue;
+
+  /// QA fault picker label.
+  ///
+  /// In en, this message translates to:
+  /// **'Injected fault'**
+  String get hostEventRehearsalChooseFault;
+
+  /// Guest link copy confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice guest link copied'**
+  String get hostEventRehearsalLinkCopied;
+
+  /// Guest link rotation warning.
+  ///
+  /// In en, this message translates to:
+  /// **'The current link and every connected practice phone will stop working.'**
+  String get hostEventRehearsalRotateLinkBody;
+
+  /// Rehearsal reset warning.
+  ///
+  /// In en, this message translates to:
+  /// **'This clears the simulated room and action history, then rebuilds the same deterministic roster.'**
+  String get hostEventRehearsalResetBody;
+
+  /// Reproduction copy confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Deterministic reproduction copied'**
+  String get hostEventRehearsalReproductionCopied;
+
+  /// Rehearsal ready action history label.
+  ///
+  /// In en, this message translates to:
+  /// **'Marks room ready'**
+  String get hostEventRehearsalActionMarkReady;
+
+  /// Rehearsal moment advance action history label.
+  ///
+  /// In en, this message translates to:
+  /// **'Advances moment'**
+  String get hostEventRehearsalActionAdvance;
+
+  /// Rehearsal previous action history label.
+  ///
+  /// In en, this message translates to:
+  /// **'Returns to previous moment'**
+  String get hostEventRehearsalActionPrevious;
+
+  /// Rehearsal clock advance action history label.
+  ///
+  /// In en, this message translates to:
+  /// **'Advances virtual time'**
+  String get hostEventRehearsalActionAdvanceClock;
+
+  /// Synthetic guest check-in history label.
+  ///
+  /// In en, this message translates to:
+  /// **'Checks in'**
+  String get hostEventRehearsalActionCheckIn;
+
+  /// Synthetic guest arrival-confirmation history label.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirms arrival'**
+  String get hostEventRehearsalActionConfirmArrival;
+
+  /// Synthetic guest help action history label.
+  ///
+  /// In en, this message translates to:
+  /// **'Requests Host help'**
+  String get hostEventRehearsalActionAskForHelp;
+
+  /// Synthetic guest prompt action history label.
+  ///
+  /// In en, this message translates to:
+  /// **'Completes prompt'**
+  String get hostEventRehearsalActionCompletePrompt;
+
+  /// Safe fallback for a newer rehearsal action history label.
+  ///
+  /// In en, this message translates to:
+  /// **'Simulated action'**
+  String get hostEventRehearsalActionUnknown;
+
+  /// Host rehearsal action kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Host control'**
+  String get hostEventRehearsalActionKindControl;
+
+  /// Behavior rehearsal action kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Simulated issue'**
+  String get hostEventRehearsalActionKindBehavior;
+
+  /// Guest rehearsal action kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest phone'**
+  String get hostEventRehearsalActionKindGuest;
+
+  /// Setup rehearsal action kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice setup'**
+  String get hostEventRehearsalActionKindSetup;
+
+  /// System rehearsal action kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice system'**
+  String get hostEventRehearsalActionKindSystem;
+
+  /// Rehearsal action kind and revision metadata.
+  ///
+  /// In en, this message translates to:
+  /// **'{kind} · revision {revision}'**
+  String hostEventRehearsalActionRevision({
+    required String kind,
+    required int revision,
+  });
 }
 
 class _AppLocalizationsDelegate

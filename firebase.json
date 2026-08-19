@@ -124,6 +124,10 @@
           "destination": "/join/index.html"
         },
         {
+          "source": "/rehearse/**",
+          "destination": "/rehearse/index.html"
+        },
+        {
           "source": "/invite/**",
           "destination": "/invite/index.html"
         },

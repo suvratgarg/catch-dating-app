@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_card.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/events/data/event_callable_responses.dart';
@@ -143,6 +144,14 @@ class _HostBroadcastComposerSheetState
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              CatchNotice(
+                notice: CatchNoticeData(
+                  id: 'host.inbox.catch-announcement',
+                  title: context.l10n.hostSendsCatchAnnouncementChannel,
+                  message: context.l10n.hostInboxAnnouncementDisclosure,
+                ),
+              ),
+              gapH20,
               Text(
                 context.l10n.hostsHostBroadcastComposerSheetTextAudience,
                 style: CatchTextStyles.fieldRowTitle(context),

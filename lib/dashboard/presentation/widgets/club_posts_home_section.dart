@@ -27,7 +27,7 @@ class ClubPostsHomeSection extends ConsumerWidget {
     if (notifications.isEmpty) return const SizedBox.shrink();
 
     final clubIds = notifications
-        .map((notification) => notification.clubId)
+        .map(_organizerIdFor)
         .whereType<String>()
         .toSet()
         .toList(growable: false);
@@ -45,12 +45,15 @@ class ClubPostsHomeSection extends ConsumerWidget {
         for (final entry in notifications.indexed)
           ClubPostHomeCard(
             notification: entry.$2,
-            club: entry.$2.clubId == null ? null : clubsById[entry.$2.clubId],
+            club: clubsById[_organizerIdFor(entry.$2)],
             onTap: () => onOpenPost(entry.$2),
           ),
       ],
     );
   }
+
+  String? _organizerIdFor(ActivityNotification notification) =>
+      notification.organizerId ?? notification.clubId;
 }
 
 class ClubPostHomeCard extends StatelessWidget {

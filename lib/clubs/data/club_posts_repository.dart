@@ -56,6 +56,7 @@ class ClubPostsRepository {
 
   Future<CreateClubPostCallableResponse> createPost({
     required String clubId,
+    required String requestId,
     required String text,
     String? eventId,
     String? photoPath,
@@ -66,6 +67,7 @@ class ClubPostsRepository {
           .call<Object?>(
             CreateOrganizerPostCallableRequest(
               organizerId: clubId,
+              requestId: requestId,
               text: text,
               eventId: eventId,
               photoPath: photoPath,

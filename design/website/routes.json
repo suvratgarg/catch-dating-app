@@ -1,7 +1,7 @@
 {
   "$schema": "./website.routes.schema.json",
-  "version": 14,
-  "updated": "2026-08-18",
+  "version": 15,
+  "updated": "2026-08-19",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/web_surface_architecture.md",
@@ -80,6 +80,28 @@
         "stateCoverage": {
           "storybook": ["phone-entry"],
           "manual": ["otp", "event-intake", "pending-approval", "live-runtime", "unavailable"]
+        }
+      }
+    },
+    {
+      "id": "event_rehearsal",
+      "kind": "clientDynamic",
+      "pathPattern": "/rehearse/:publicRehearsalId/",
+      "pageKey": "event_rehearsal",
+      "source": "website/src/features/eventRehearsal/EventRehearsalPage.tsx",
+      "metaKey": "event_rehearsal",
+      "staticOutput": "spa-rewrite",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "Anonymous, synthetic-only guest phone for a Host dress rehearsal. A high-entropy link redeems one deterministic browser slot without OTP, follows the Host virtual clock, and never reads or writes the live event domain.",
+      "review": {
+        "priority": "p0",
+        "status": "ready",
+        "viewports": ["desktop", "mobile"],
+        "states": ["loading", "welcome", "live-moment", "fault", "complete", "unavailable"],
+        "stateCoverage": {
+          "storybook": ["live-moment"],
+          "manual": ["loading", "welcome", "fault", "complete", "unavailable"]
         }
       }
     },

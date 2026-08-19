@@ -9,7 +9,6 @@ HostTeamWorkspaceState buildHostTeamWorkspaceState({
   required AsyncValue<List<Club>> clubs,
   bool editMode = true,
   bool creatingProfile = false,
-  bool signOutPending = false,
 }) {
   final profileState = buildHostTeamProfileState(
     uid: uid,
@@ -23,7 +22,6 @@ HostTeamWorkspaceState buildHostTeamWorkspaceState({
       uid: uid,
       editMode: editMode,
       creatingProfile: creatingProfile,
-      signOutPending: signOutPending,
       profile: profileState,
     ),
   );

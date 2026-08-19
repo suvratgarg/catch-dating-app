@@ -410,6 +410,7 @@ class HostCustomerTraits {
     required this.importedEventCount,
     required this.attendanceRate,
     required this.segments,
+    required this.whatsappStatus,
     required this.sourceCoverage,
   });
 
@@ -425,6 +426,11 @@ class HostCustomerTraits {
             .map(HostAudienceSegment.fromWireValue)
             .whereType<HostAudienceSegment>()
             .toSet(),
+        whatsappStatus: _enumByName(
+          HostAudiencePermissionStatus.values,
+          _requiredString(map, 'whatsappStatus'),
+          'whatsappStatus',
+        ),
         sourceCoverage: _enumByName(
           HostAudienceSourceCoverage.values,
           _requiredString(map, 'sourceCoverage'),
@@ -439,6 +445,7 @@ class HostCustomerTraits {
   final int importedEventCount;
   final double? attendanceRate;
   final Set<HostAudienceSegment> segments;
+  final HostAudiencePermissionStatus whatsappStatus;
   final HostAudienceSourceCoverage sourceCoverage;
 }
 
@@ -903,6 +910,13 @@ class HostWhatsappThreadDetail {
   final bool messagesTruncated;
 }
 
+enum HostPersonalWhatsappHandoffAvailability {
+  ready,
+  missingPhone,
+  organizerSuppressed,
+  contactOptedOut,
+}
+
 class HostAudienceContactDetail {
   const HostAudienceContactDetail({
     required this.organizerId,
@@ -1042,6 +1056,24 @@ class HostAudienceContactDetail {
   final HostCustomerHistoryCoverage sendsCoverage;
   final List<HostActiveContactMerge> activeMerges;
   final int revision;
+
+  HostPersonalWhatsappHandoffAvailability
+  get personalWhatsappHandoffAvailability {
+    if (phoneE164 == null) {
+      return HostPersonalWhatsappHandoffAvailability.missingPhone;
+    }
+    if (whatsappAdminSuppressed) {
+      return HostPersonalWhatsappHandoffAvailability.organizerSuppressed;
+    }
+    if (traits.whatsappStatus == HostAudiencePermissionStatus.optedOut) {
+      return HostPersonalWhatsappHandoffAvailability.contactOptedOut;
+    }
+    return HostPersonalWhatsappHandoffAvailability.ready;
+  }
+
+  bool get canUsePersonalWhatsappHandoff =>
+      personalWhatsappHandoffAvailability ==
+      HostPersonalWhatsappHandoffAvailability.ready;
 }
 
 class HostCreatedCustomer {
@@ -1206,6 +1238,14 @@ class HostWhatsappEmbeddedSignupConfig {
       appId != null && configId != null && graphVersion != null;
 }
 
+enum HostWhatsappCampaignReadiness {
+  providerUnavailable,
+  senderNotConnected,
+  senderNeedsAttention,
+  approvedTemplateRequired,
+  ready,
+}
+
 class HostWhatsappConnection {
   const HostWhatsappConnection({
     required this.connectionId,
@@ -1326,6 +1366,26 @@ class HostMessagingSetup {
   List<HostWhatsappTemplate> get approvedTemplates => templates
       .where((template) => template.isApproved)
       .toList(growable: false);
+
+  HostWhatsappCampaignReadiness get campaignReadiness {
+    if (!providerConfigured) {
+      return HostWhatsappCampaignReadiness.providerUnavailable;
+    }
+    final sender = connection;
+    if (sender == null) {
+      return HostWhatsappCampaignReadiness.senderNotConnected;
+    }
+    if (!sender.isActive) {
+      return HostWhatsappCampaignReadiness.senderNeedsAttention;
+    }
+    if (approvedTemplates.isEmpty) {
+      return HostWhatsappCampaignReadiness.approvedTemplateRequired;
+    }
+    return HostWhatsappCampaignReadiness.ready;
+  }
+
+  bool get canComposeCampaign =>
+      campaignReadiness == HostWhatsappCampaignReadiness.ready;
 }
 
 class HostWhatsappSignupResult {
@@ -1447,6 +1507,7 @@ sealed class HostSendSummary {
       switch (_requiredString(map, 'kind')) {
         'campaign' => HostCampaignSendSummary.fromMap(map),
         'announcement' => HostAnnouncementSendSummary.fromMap(map),
+        'followerUpdate' => HostFollowerUpdateSendSummary.fromMap(map),
         _ => throw const FormatException('Send row had an unsupported kind.'),
       };
 
@@ -1542,6 +1603,64 @@ final class HostAnnouncementSendSummary extends HostSendSummary {
 
   @override
   String get id => broadcastId;
+}
+
+final class HostFollowerUpdateSendSummary extends HostSendSummary {
+  const HostFollowerUpdateSendSummary({
+    required this.postId,
+    required this.eventId,
+    required this.audience,
+    required this.status,
+    required this.deliveryStatus,
+    required this.recipientCount,
+    required this.excludedCount,
+    required this.activityAvailableCount,
+    required this.pushAttemptedCount,
+    required this.pushAcceptedCount,
+    required this.pushFailedCount,
+    required this.pushUnknownCount,
+    required this.createdAt,
+    required super.activityAt,
+  });
+
+  factory HostFollowerUpdateSendSummary.fromMap(Map<Object?, Object?> map) =>
+      HostFollowerUpdateSendSummary(
+        postId: _requiredString(map, 'postId'),
+        eventId: _nullableString(map['eventId']),
+        audience: _requiredString(map, 'audience'),
+        status: _requiredString(map, 'status'),
+        deliveryStatus: _requiredString(map, 'deliveryStatus'),
+        recipientCount: _requiredInt(map, 'recipientCount'),
+        excludedCount: _requiredInt(map, 'excludedCount'),
+        activityAvailableCount: _requiredInt(map, 'activityAvailableCount'),
+        pushAttemptedCount: _requiredInt(map, 'pushAttemptedCount'),
+        pushAcceptedCount: _requiredInt(map, 'pushAcceptedCount'),
+        pushFailedCount: _requiredInt(map, 'pushFailedCount'),
+        pushUnknownCount: _requiredInt(map, 'pushUnknownCount'),
+        createdAt: _requiredDateTimeFromMillis(map, 'createdAtMillis'),
+        activityAt: _requiredDateTimeFromMillis(map, 'activityAtMillis'),
+      );
+
+  final String postId;
+  final String? eventId;
+  final String audience;
+  final String status;
+  final String deliveryStatus;
+  final int recipientCount;
+  final int excludedCount;
+  final int activityAvailableCount;
+  final int pushAttemptedCount;
+  final int pushAcceptedCount;
+  final int pushFailedCount;
+  final int pushUnknownCount;
+  final DateTime createdAt;
+
+  bool get hasTrackedDelivery => deliveryStatus != 'unknown';
+
+  bool get deliveryCompleted => deliveryStatus == 'completed';
+
+  @override
+  String get id => postId;
 }
 
 class HostSendsPage {

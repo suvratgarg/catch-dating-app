@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_card.dart';
@@ -24,12 +25,14 @@ import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
+import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_schedule_state.dart';
@@ -58,6 +61,7 @@ import 'host_control_room_test_helpers.dart';
 part 'host_create_event_lifecycle_tests.dart';
 part 'host_create_event_format_tests.dart';
 part 'host_create_event_interaction_test_helpers.dart';
+part 'host_create_event_wizard_flow_tests.dart';
 
 void main() {
   group('CreateEventScreen', () {
@@ -65,16 +69,7 @@ void main() {
       SharedPreferences.setMockInitialValues({});
     });
 
-    testWidgets('validates the first step when basics are missing', (
-      tester,
-    ) async {
-      await _pumpCreateEventFlow(tester);
-      await _openCreateEventFlow(tester);
-      await _tapPrimaryButton(tester, 'Next');
-      await tester.pump();
-      expect(find.text('Required'), findsOneWidget);
-      expect(find.text('Select a pace'), findsOneWidget);
-    });
+    _registerCreateEventWizardFlowTests();
 
     testWidgets(
       'basics disclosures start collapsed, share one accordion, and color activity chips',
@@ -219,9 +214,6 @@ void main() {
 
         await _tapPrimaryButton(tester, 'Next');
         await _pumpTestAnimation(tester);
-        await _tapPrimaryButton(tester, 'Next');
-        await tester.pump();
-        expect(find.text('Choose a meeting location'), findsOneWidget);
 
         await _enterCreateEventText(
           tester,
@@ -272,6 +264,12 @@ void main() {
           findsOneWidget,
         );
 
+        await _tapPrimaryButton(tester, 'Review event');
+        await _pumpTestAnimation(tester);
+        expect(
+          find.textContaining('Review every section before publishing.'),
+          findsOneWidget,
+        );
         await _tapPrimaryButton(tester, 'Schedule event');
         await _pumpTestAnimation(tester);
 
@@ -467,6 +465,8 @@ void main() {
       await _enterCreateEventText(tester, CreateEventFormKeys.price, '0');
       await _tapPrimaryButton(tester, 'Next');
       await _pumpTestAnimation(tester);
+      await _tapPrimaryButton(tester, 'Review event');
+      await _pumpTestAnimation(tester);
       await _tapPrimaryButton(tester, 'Schedule event');
       await _pumpTestAnimation(tester);
 
@@ -640,16 +640,16 @@ void main() {
 
       expect(find.text('Pinned location'), findsOneWidget);
 
-      await tester.tap(find.byTooltip('Back'));
+      await tester.tap(find.text('Previous'));
       await _pumpTestAnimation(tester);
       expect(find.text('Event basics'), findsOneWidget);
 
-      // Second back — unsaved changes dialog appears since we filled basics.
-      await tester.tap(find.byTooltip('Back'));
+      // The global close action offers a save-on-exit decision from any step.
+      await tester.tap(find.byTooltip('Close'));
       await _pumpTestAnimation(tester);
-      await tester.tap(_dialogAction('Save draft'));
+      expect(find.text('Keep editing'), findsOneWidget);
+      await tester.tap(_dialogAction('Save draft & exit'));
       await _pumpTestAnimation(tester);
-      expect(find.text('Draft saved'), findsOneWidget);
       expect(find.text('Open'), findsOneWidget);
 
       final draftRepository = EventDraftRepository(ErrorLogger());
@@ -1333,34 +1333,6 @@ EventDraft _buildEventDraft({
   );
 }
 
-class _FakePlacesRepository implements PlacesRepository {
-  const _FakePlacesRepository({
-    required this.suggestions,
-    required this.placeDetails,
-  });
-
-  final List<PlaceAutocompleteSuggestion> suggestions;
-  final PlaceDetails placeDetails;
-
-  @override
-  Future<List<PlaceAutocompleteSuggestion>> autocomplete({
-    required String input,
-    required String sessionToken,
-    LocationCoordinate? bias,
-    String? countryIsoCode,
-  }) async {
-    return suggestions;
-  }
-
-  @override
-  Future<PlaceDetails> details({
-    required String placeId,
-    required String sessionToken,
-  }) async {
-    return placeDetails;
-  }
-}
-
 Future<void> _pumpCreateEventFlow(
   WidgetTester tester, {
   Iterable overrides = const [],
@@ -1369,6 +1341,7 @@ Future<void> _pumpCreateEventFlow(
   Club? clubOverride,
   EventDraft? initialDraft,
   CreateEventPrefill? initialPrefill,
+  HostRosterImportPlan? initialRosterImportPlan,
   int initialStep = 0,
 }) async {
   final club = clubOverride ?? buildClub();
@@ -1394,6 +1367,7 @@ Future<void> _pumpCreateEventFlow(
           now: now ?? DateTime.now,
           initialDraft: initialDraft,
           initialPrefill: initialPrefill,
+          initialRosterImportPlan: initialRosterImportPlan,
           initialStep: initialStep,
         ),
       ),
@@ -1468,6 +1442,8 @@ Future<void> _submitValidEvent(WidgetTester tester) async {
   await _setEventAgeRange(tester, 21, 35);
   await _pumpTestAnimation(tester);
   await _tapPrimaryButton(tester, 'Next');
+  await _pumpTestAnimation(tester);
+  await _tapPrimaryButton(tester, 'Review event');
   await _pumpTestAnimation(tester);
   await _tapPrimaryButton(tester, 'Schedule event');
   await _pumpTestAnimation(tester);

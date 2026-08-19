@@ -7,12 +7,14 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/confirm_danger_dialog.dart';
+import 'package:catch_dating_app/image_uploads/domain/image_upload_job.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -144,6 +146,8 @@ class _ProfilePhotoEditorScreenState
             );
       });
       if (mounted) Navigator.of(context).pop(true);
+    } catch (_) {
+      // The persistent mutation banner below owns the user-facing error.
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -172,6 +176,8 @@ class _ProfilePhotoEditorScreenState
             .deletePhoto(widget.index);
       });
       if (mounted) Navigator.of(context).pop(true);
+    } catch (_) {
+      // The persistent mutation banner below owns the user-facing error.
     } finally {
       if (mounted) setState(() => _deleting = false);
     }
@@ -180,6 +186,10 @@ class _ProfilePhotoEditorScreenState
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final uploadMutation = ref.watch(PhotoUploadController.uploadPhotoMutation);
+    final uploadJob = ref
+        .watch(photoUploadControllerProvider)
+        .jobFor(widget.index);
     final hasEditableImage = _imageBytes != null;
     final profilePhotos =
         ref
@@ -210,6 +220,9 @@ class _ProfilePhotoEditorScreenState
       orElse: () => promptChoices.first,
     );
     final canDelete = widget.photo != null && widget.canDelete;
+    final uploadPercent = uploadJob?.stage == ImageUploadJobStage.uploading
+        ? (uploadJob!.progress * 100).round()
+        : null;
 
     return Scaffold(
       backgroundColor: t.bg,
@@ -289,11 +302,18 @@ class _ProfilePhotoEditorScreenState
                       icon: CatchIcons.autoAwesomeOutlined,
                     ),
                     gapH20,
+                    if (uploadMutation.hasError) ...[
+                      CatchMutationErrorBanner(mutation: uploadMutation),
+                      gapH12,
+                    ],
                     CatchButton(
                       label: _saving
-                          ? context
-                                .l10n
-                                .imageUploadsProfilePhotoEditorScreenLabelSaving
+                          ? uploadPercent == null
+                                ? context
+                                      .l10n
+                                      .imageUploadsProfilePhotoEditorScreenLabelSaving
+                                : '${context.l10n.imageUploadsProfilePhotoEditorScreenLabelSaving} '
+                                      '$uploadPercent%'
                           : context
                                 .l10n
                                 .imageUploadsProfilePhotoEditorScreenLabelSaveChanges,

@@ -10,6 +10,8 @@ import {
   OrganizerBroadcastSummaryDocument,
   OrganizerCampaignDocument,
   OrganizerMessageTemplateDocument,
+  OrganizerPostDeliveryOperationDocument,
+  OrganizerPostDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {ListOrganizerCampaignsCallablePayload} from
   "../shared/generated/listOrganizerCampaignsCallablePayload";
@@ -45,7 +47,7 @@ interface SendCursor {
 
 type SendRow = ListOrganizerCampaignsCallableResponse["sends"][number];
 
-/** Lists one reverse-chronological page across campaigns and announcements. */
+/** Lists one reverse-chronological page across every Host Sends route. */
 export async function listOrganizerCampaignsHandler(
   request: CallableRequest<unknown>,
   deps: OrganizerSendsDeps = defaultDeps,
@@ -75,6 +77,12 @@ export async function listOrganizerCampaignsHandler(
     .where("organizerId", "==", data.organizerId)
     .orderBy("sentAt", "desc")
     .orderBy(deps.documentIdField(), "desc");
+  let followerUpdatesQuery: FirebaseFirestore.Query = db
+    .collection("organizers")
+    .doc(data.organizerId)
+    .collection("posts")
+    .orderBy("createdAt", "desc")
+    .orderBy(deps.documentIdField(), "desc");
   if (cursor) {
     const timestamp = deps.timestampFromMillis(cursor.activityAtMillis);
     campaignsQuery = campaignsQuery.startAfter(timestamp, cursor.sendId);
@@ -82,10 +90,19 @@ export async function listOrganizerCampaignsHandler(
       timestamp,
       cursor.sendId,
     );
+    followerUpdatesQuery = followerUpdatesQuery.startAfter(
+      timestamp,
+      cursor.sendId,
+    );
   }
-  const [campaignSnapshot, announcementSnapshot] = await Promise.all([
+  const [
+    campaignSnapshot,
+    announcementSnapshot,
+    followerUpdateSnapshot,
+  ] = await Promise.all([
     campaignsQuery.limit(limit + 1).get(),
     announcementsQuery.limit(limit + 1).get(),
+    followerUpdatesQuery.limit(limit + 1).get(),
   ]);
   const campaigns = campaignSnapshot.docs.map((snapshot) => ({
     id: snapshot.id,
@@ -101,6 +118,16 @@ export async function listOrganizerCampaignsHandler(
     .map((snapshot) => [
       snapshot.id,
       (snapshot.data() as OrganizerMessageTemplateDocument).name,
+    ]));
+  const followerOperationSnapshots = followerUpdateSnapshot.docs.length === 0 ?
+    [] : await db.getAll(...followerUpdateSnapshot.docs.map((snapshot) =>
+      db.collection("organizerPostDeliveryOperations").doc(snapshot.id),
+    ));
+  const followerOperations = new Map(followerOperationSnapshots
+    .filter((snapshot) => snapshot.exists)
+    .map((snapshot) => [
+      snapshot.id,
+      snapshot.data() as OrganizerPostDeliveryOperationDocument,
     ]));
   const sends = sortOrganizerSendRows([
     ...campaigns.map(({id, data: campaign}): SendRow => ({
@@ -133,6 +160,33 @@ export async function listOrganizerCampaignsHandler(
         partialFailure: announcement.partialFailure,
         activityAtMillis: announcement.sentAt.toMillis(),
       })),
+    ...followerUpdateSnapshot.docs
+      .map((snapshot) => ({
+        id: snapshot.id,
+        data: snapshot.data() as OrganizerPostDocument,
+      }))
+      .map(({id, data: post}): SendRow => {
+        const operation = followerOperations.get(id);
+        const deliveryStatus = operation?.status === "processing" ?
+          "pending" : operation?.status ?? "unknown";
+        return {
+          kind: "followerUpdate",
+          postId: id,
+          eventId: post.eventId ?? null,
+          audience: post.audience,
+          status: post.status,
+          deliveryStatus,
+          recipientCount: operation?.recipientCount ?? 0,
+          excludedCount: operation?.excludedCount ?? 0,
+          activityAvailableCount: operation?.activityAvailableCount ?? 0,
+          pushAttemptedCount: operation?.pushAttemptedCount ?? 0,
+          pushAcceptedCount: operation?.pushAcceptedCount ?? 0,
+          pushFailedCount: operation?.pushFailedCount ?? 0,
+          pushUnknownCount: operation?.pushUnknownCount ?? 0,
+          createdAtMillis: post.createdAt.toMillis(),
+          activityAtMillis: post.createdAt.toMillis(),
+        };
+      }),
   ]);
   const page = sends.slice(0, limit);
   return {
@@ -153,7 +207,14 @@ export function sortOrganizerSendRows(rows: SendRow[]): SendRow[] {
 }
 
 function sendRowId(row: SendRow): string {
-  return row.kind === "campaign" ? row.campaignId : row.broadcastId;
+  switch (row.kind) {
+  case "campaign":
+    return row.campaignId;
+  case "announcement":
+    return row.broadcastId;
+  case "followerUpdate":
+    return row.postId;
+  }
 }
 
 export function encodeOrganizerSendCursor(row: SendRow): string {

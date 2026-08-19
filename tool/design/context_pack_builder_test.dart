@@ -896,6 +896,11 @@ final _styleRegistry = <_StyleEntry>[
   ),
   _StyleEntry.single('supporting', 'function', CatchTextStyles.supporting),
   _StyleEntry.single(
+    'menuSupporting',
+    'function',
+    CatchTextStyles.menuSupporting,
+  ),
+  _StyleEntry.single(
     'labelL',
     'function',
     CatchTextStyles.labelL,

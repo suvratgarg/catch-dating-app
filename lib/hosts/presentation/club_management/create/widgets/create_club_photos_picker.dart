@@ -23,6 +23,7 @@ class CreateClubPhotosPicker extends StatelessWidget {
     required this.onRemovePhoto,
     required this.onReorderPhoto,
     this.onRetryPhoto,
+    this.onAddPhotosInManager,
     this.variant = CreateClubPhotosPickerVariant.standard,
   });
 
@@ -32,6 +33,7 @@ class CreateClubPhotosPicker extends StatelessWidget {
   final ValueChanged<int>? onRemovePhoto;
   final void Function(int fromIndex, int toIndex)? onReorderPhoto;
   final ValueChanged<int>? onRetryPhoto;
+  final Future<List<OrderedPhotoPreview>> Function()? onAddPhotosInManager;
   final CreateClubPhotosPickerVariant variant;
 
   @override
@@ -73,6 +75,7 @@ class CreateClubPhotosPicker extends StatelessWidget {
       onRemovePhoto: hasEditablePhotos ? onRemovePhoto : null,
       onReorderPhoto: hasEditablePhotos ? onReorderPhoto : null,
       onRetryPhoto: hasEditablePhotos ? onRetryPhoto : null,
+      onAddPhotosInManager: onAddPhotosInManager,
       emptyActionLabel: editStrip
           ? context.l10n.hostsCreateClubPhotosPickerVisiblecopyAddPhotos
           : context.l10n.hostsCreateClubPhotosPickerVisiblecopyAddClubPhotos,

@@ -5,10 +5,11 @@ import 'package:catch_dating_app/hosts/presentation/club_management/create/creat
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  const steps = [
+  const steps = <CatchFormStepSpec>[
     CatchFormStepSpec(title: 'Organizer basics'),
     CatchFormStepSpec(title: 'Organizer details'),
-    CatchFormStepSpec(title: 'Host defaults'),
+    CatchFormStepSpec(title: 'Host defaults', optional: true),
+    CatchFormStepSpec(title: 'Live event guide', optional: true),
   ];
 
   test('HostClubCreateState maps create wizard display state', () {
@@ -23,19 +24,20 @@ void main() {
     expect(state.title, 'Organizer details');
     expect(state.subtitle, isNull);
     expect(state.currentStep, 1);
-    expect(state.totalSteps, 3);
+    expect(state.totalSteps, 4);
     expect(state.isLastStep, isFalse);
     expect(state.canPickMedia, isFalse);
-    expect(state.canSaveDraft, isFalse);
     expect(state.requestControlsEnabled, isFalse);
     expect(state.fields.detailsEnabled, isFalse);
-    expect(state.lastStepLabel, 'Create organizer');
     expect(state.isLoading, isTrue);
     expect(state.mutationError, 'Unable to save draft.');
     expect(state.footer.primaryEnabled, isFalse);
-    expect(state.footer.primaryLabel, 'Next');
     expect(state.footer.primaryIntent, HostClubCreatePrimaryIntent.nextStep);
-    expect(state.footer.saveDraftIntent, isNull);
+    expect(
+      state.footer.previousIntent,
+      HostClubCreatePreviousIntent.previousStep,
+    );
+    expect(state.closeIntent, HostClubCreateCloseIntent.close);
   });
 
   test('HostClubCreateState maps draft restore retry and disable state', () {
@@ -84,6 +86,57 @@ void main() {
     expect(state.media.clubPhotoPreviews, const [pickedPreview]);
     expect(state.media.existingCoverImageUrl, isNull);
     expect(state.media.existingProfileImageUrl, isNull);
+  });
+
+  test('HostClubCreateReviewState gates basics and details', () {
+    final incomplete = HostClubCreateReviewState.resolve(
+      activeSteps: steps,
+      name: '',
+      selectedCity: null,
+      area: '',
+      description: '',
+    );
+    final complete = HostClubCreateReviewState.resolve(
+      activeSteps: steps,
+      name: 'Saket Run Club',
+      selectedCity: 'in-dl-delhi',
+      area: 'Saket',
+      description: 'Weekly social runs.',
+    );
+
+    expect(incomplete.canSubmit, isFalse);
+    expect(incomplete.firstIncompleteStep, 0);
+    expect(complete.canSubmit, isTrue);
+    expect(complete.items.map((item) => item.status), [
+      CatchFormStepStatus.complete,
+      CatchFormStepStatus.complete,
+      CatchFormStepStatus.optional,
+      CatchFormStepStatus.optional,
+    ]);
+
+    final reviewState = HostClubCreateState.resolve(
+      currentStep: 3,
+      activeSteps: steps,
+      submitPending: false,
+      saveDraftPending: false,
+      mutationError: null,
+      isReviewing: true,
+      reviewState: complete,
+      hasUnsavedChanges: true,
+    );
+    expect(
+      reviewState.footer.primaryIntent,
+      HostClubCreatePrimaryIntent.submit,
+    );
+    expect(
+      reviewState.footer.previousIntent,
+      HostClubCreatePreviousIntent.returnToSteps,
+    );
+    expect(reviewState.footer.primaryEnabled, isTrue);
+    expect(
+      reviewState.closeIntent,
+      HostClubCreateCloseIntent.confirmUnsavedChanges,
+    );
   });
 
   test('HostClubCreate route intents carry typed callback payloads', () {

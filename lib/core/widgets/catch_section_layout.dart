@@ -298,6 +298,7 @@ class CatchSection extends StatelessWidget {
     this.elevation = CatchSurfaceElevation.card,
     this.boxShadow,
     this.showInternalDividers = true,
+    this.showTopDivider = true,
     this.footer,
     this.focused = false,
     this.hasError = false,
@@ -365,6 +366,7 @@ class CatchSection extends StatelessWidget {
     Color? titleColor,
     double bodyGap = CatchFieldTokens.sectionRuleGap,
     bool showInternalDividers = true,
+    bool showTopDivider = true,
     List<Widget>? children,
     Widget? child,
   }) : this._(
@@ -383,6 +385,7 @@ class CatchSection extends StatelessWidget {
          titleColor: titleColor,
          bodyGap: bodyGap,
          showInternalDividers: showInternalDividers,
+         showTopDivider: showTopDivider,
          footer: footer,
          fieldRows: true,
          children: children,
@@ -519,6 +522,7 @@ class CatchSection extends StatelessWidget {
   final CatchSurfaceElevation elevation;
   final List<BoxShadow>? boxShadow;
   final bool showInternalDividers;
+  final bool showTopDivider;
   final Widget? footer;
   final bool focused;
   final bool hasError;
@@ -596,10 +600,11 @@ class CatchSection extends StatelessWidget {
           // it from its rows. Headerless groups (for example destructive
           // account actions) still need that boundary; only the kicker-to-
           // rule gap is conditional on a header.
-          CatchDivider(
-            color: dividerColor ?? CatchDivider.colorFor(t, dividerRole),
-            role: dividerRole,
-          ),
+          if (showTopDivider)
+            CatchDivider(
+              color: dividerColor ?? CatchDivider.colorFor(t, dividerRole),
+              role: dividerRole,
+            ),
           CatchFieldInsetScope(flush: true, child: _body(context, t)),
         ],
       );

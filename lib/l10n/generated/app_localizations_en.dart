@@ -470,9 +470,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get coreOrderedPhotoPickerActionDone => 'Done';
 
   @override
-  String get coreOrderedPhotoPickerTitleCoverPhoto => 'Cover photo';
-
-  @override
   String get coreOrderedPhotoPickerBodyCoverPhoto =>
       'This is the first image guests see. Choose any gallery photo as the cover.';
 
@@ -499,6 +496,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get coreOrderedPhotoPickerStatusUploading => 'Uploading…';
+
+  @override
+  String coreOrderedPhotoPickerStatusUploadingProgress({required int percent}) {
+    return 'Uploading… $percent%';
+  }
+
+  @override
+  String get coreOrderedPhotoPickerStatusQueued => 'Ready to upload';
 
   @override
   String get coreOrderedPhotoPickerStatusUploadFailed => 'Upload failed';
@@ -1820,6 +1825,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Configure who can book, how waitlists open, what attendees pay, and what happens if plans change.';
 
   @override
+  String get hostsEventPolicyStepExternalOperationsIntro =>
+      'Set the operational capacity, age range, and on-site pairing inventory. Bookings, payments, refunds, and cancellations stay with the external provider.';
+
+  @override
   String get hostsEventPolicyStepTitleMaxAttendees => 'Max attendees';
 
   @override
@@ -2298,9 +2307,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsStepperFooterLabelNext => 'Next';
-
-  @override
-  String get hostsStepperFooterLabelSaveDraft => 'Save Draft';
 
   @override
   String get imageUploadsProfilePhotoEditorScreenTitleDeletePhoto =>
@@ -4093,6 +4099,14 @@ class AppLocalizationsEn extends AppLocalizations {
     required Object total,
   }) {
     return 'STEP $clampedStep OF $total';
+  }
+
+  @override
+  String coreCatchStepFlowHeaderTextCompactStepClampedstepTotal({
+    required int clampedStep,
+    required int total,
+  }) {
+    return '$clampedStep/$total';
   }
 
   @override
@@ -6096,6 +6110,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostClubProfileTitleMedia => 'Media';
 
   @override
+  String get hostsHostClubEditTabActionManageImages => 'Manage images';
+
+  @override
+  String get hostsHostClubEditTabBadgeLogo => 'LOGO';
+
+  @override
   String get hostsHostClubProfileLabelClubName => 'Organizer name';
 
   @override
@@ -6129,6 +6149,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostClubEditTabTitleClubSettings => 'Organizer settings';
+
+  @override
+  String get hostsHostClubEditTabActionSaveMedia => 'Save media';
+
+  @override
+  String get hostsHostClubEditTabActionDiscardMedia => 'Discard';
 
   @override
   String get hostsHostClubEditTabLabelEventDefaults => 'Event defaults';
@@ -10718,20 +10744,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get publicProfilePublicProfileScreenStateTitleProfile => 'Profile';
 
   @override
-  String get hostsCreateEventScreenVisiblecopyUnsavedChanges =>
-      'Unsaved changes';
-
-  @override
-  String get hostsCreateEventScreenVisiblecopyYouHaveUnsavedChanges =>
-      'You have unsaved changes. Would you like to save a draft?';
-
-  @override
-  String get hostsCreateEventScreenLabelDiscard => 'Discard';
-
-  @override
-  String get hostsCreateEventScreenLabelSaveDraft => 'Save draft';
-
-  @override
   String get hostsDraftPickerSheetVisiblecopyDeleteDraft => 'Delete draft?';
 
   @override
@@ -12032,7 +12044,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsOperationalRosterAdapterSampleRequired =>
-      'We do not have a verified export sample for this platform yet. Review every detected column before importing; Catch will save the mapping for a future adapter.';
+      'We do not have a verified export sample for this platform yet. Review every detected column before importing.';
 
   @override
   String get hostsOperationalRosterFieldName => 'Guest name';
@@ -12064,8 +12076,85 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String hostsOperationalRosterNeedsReviewCount({required int count}) {
+    return '$count need review';
+  }
+
+  @override
+  String hostsOperationalRosterExcludedCount({required int count}) {
+    return '$count excluded';
+  }
+
+  @override
+  String get hostsOperationalRosterProviderMismatch =>
+      'The selected booking source does not match this spreadsheet. Catch used the columns in the file; review the mapping before importing.';
+
+  @override
+  String get hostsOperationalRosterLegacyEncoding =>
+      'This CSV is not UTF-8. Catch read it using a legacy encoding; check names and symbols carefully.';
+
+  @override
+  String hostsOperationalRosterMultipleWorksheets({required int count}) {
+    return 'This workbook has $count worksheets. Catch selected the best-matching guest worksheet; verify the columns before importing.';
+  }
+
+  @override
   String hostsOperationalRosterImportAction({required int count}) {
     return 'Import $count guests';
+  }
+
+  @override
+  String get hostsCreateEventRosterTitle => 'Guest list';
+
+  @override
+  String hostsCreateEventRosterAttached({
+    required String fileName,
+    required int ready,
+    required int review,
+    required int excluded,
+  }) {
+    return '$fileName · $ready ready · $review need review · $excluded excluded';
+  }
+
+  @override
+  String hostsCreateEventRosterReattach({required String fileName}) {
+    return 'Reattach $fileName before publishing. Drafts remember the file fingerprint, not guest data.';
+  }
+
+  @override
+  String get hostsCreateEventRosterChoose => 'Choose CSV or XLSX';
+
+  @override
+  String get hostsCreateEventRosterReplace => 'Replace file';
+
+  @override
+  String hostsCreateEventRosterImportSuccess({
+    required int created,
+    required int updated,
+    required int skipped,
+  }) {
+    return 'Guest list imported: $created added, $updated refreshed, $skipped skipped.';
+  }
+
+  @override
+  String hostsCreateEventRosterImportPartial({required int count}) {
+    return 'The event is live, but $count guest rows need attention. Open Manage event to review the roster and retry the file.';
+  }
+
+  @override
+  String get hostsCreateEventRosterImportFailed =>
+      'The event is live, but the guest list was not imported. Open Manage event and retry the same file.';
+
+  @override
+  String get hostsCreateEventExternalSuccessNote =>
+      'Catch tracks the operational roster, check-in, walk-ins, and event safety. Bookings and payments stay with the external provider.';
+
+  @override
+  String get hostsCreateEventRosterDetailLabel => 'Guest list';
+
+  @override
+  String hostsCreateEventCapacityBelowRoster({required int count}) {
+    return 'Capacity must be at least $count to include every ready guest.';
   }
 
   @override
@@ -12076,6 +12165,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsOperationalRosterIssueUnsupported =>
       'Choose a CSV or XLSX spreadsheet.';
+
+  @override
+  String get hostsOperationalRosterIssueFileTooLarge =>
+      'Choose a spreadsheet smaller than 5 MB.';
+
+  @override
+  String get hostsOperationalRosterIssueExpandedFileTooLarge =>
+      'This workbook expands beyond the 25 MB safety limit. Export only the guest worksheet and try again.';
 
   @override
   String get hostsOperationalRosterIssueMissingRows =>
@@ -12103,6 +12200,46 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get hostsOperationalRosterIssueDuplicateMappedColumn =>
+      'Map each spreadsheet column to only one guest field.';
+
+  @override
+  String hostsOperationalRosterIssueMissingStableIdentity({required int row}) {
+    return 'Row $row: add a phone, email, or booking reference so retries cannot create a duplicate guest.';
+  }
+
+  @override
+  String hostsOperationalRosterIssueInvalidPhone({required int row}) {
+    return 'Row $row: phone number is not valid.';
+  }
+
+  @override
+  String hostsOperationalRosterIssueInvalidEmail({required int row}) {
+    return 'Row $row: email address is not valid.';
+  }
+
+  @override
+  String hostsOperationalRosterIssueDuplicateIdentity({required int row}) {
+    return 'Row $row: this guest has the same identity as an earlier row.';
+  }
+
+  @override
+  String hostsOperationalRosterIssueUnknownStatus({
+    required int row,
+    required String status,
+  }) {
+    return 'Row $row: status {status} needs review and will not be imported.';
+  }
+
+  @override
+  String hostsOperationalRosterIssueExcludedStatus({
+    required int row,
+    required String status,
+  }) {
+    return 'Row $row: status {status} is excluded from the active guest list.';
+  }
+
+  @override
   String hostsOperationalRosterImportSuccess({
     required int created,
     required int updated,
@@ -12110,6 +12247,27 @@ class AppLocalizationsEn extends AppLocalizations {
   }) {
     return 'Roster updated: $created added, $updated refreshed, $skipped skipped.';
   }
+
+  @override
+  String get hostsOperationalRosterImportPartialTitle =>
+      'Some guest rows need attention';
+
+  @override
+  String hostsOperationalRosterImportPartialBody({
+    required int created,
+    required int updated,
+    required int count,
+  }) {
+    return '$created added, $updated refreshed, and $count rows were not imported. Fix those rows in the spreadsheet and import the same file again; Catch will update existing guests instead of duplicating them.';
+  }
+
+  @override
+  String hostsOperationalRosterImportRowError({required String row}) {
+    return 'Row $row';
+  }
+
+  @override
+  String get hostsOperationalRosterImportResultDone => 'Done';
 
   @override
   String get hostsOperationalRosterManualTitle => 'Add a guest';
@@ -12251,17 +12409,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostAudienceRepeat => 'Repeat';
 
   @override
-  String get hostsHostAudienceWhatsappReady => 'WhatsApp ready';
-
-  @override
-  String hostsHostAudienceSources({
-    required int importedCount,
-    required int linkedCount,
-  }) {
-    return '$importedCount came through external or manual rosters · $linkedCount are linked to verified Catch identities';
-  }
-
-  @override
   String get hostsHostAudienceSearch => 'Search by name';
 
   @override
@@ -12269,11 +12416,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostAudienceCoveragePartial =>
-      'Customer history is still syncing';
+      'Some customer history is unavailable';
 
   @override
   String get hostsHostAudienceCoveragePartialBody =>
-      'Older roster changes may be missing. Messaging stays off until the sync is complete.';
+      'Some older attendance may be missing. Counts marked + are minimums, and audience campaigns stay off until history is complete.';
 
   @override
   String get hostsHostAudienceWhatsappSender => 'WhatsApp Business sender';
@@ -12440,7 +12587,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostAudienceRemoveAction => 'Remove customer';
 
   @override
-  String get hostsHostAudienceContactSubtitle => 'Organizer-only CRM record';
+  String get hostsHostAudienceContactSubtitle =>
+      'Private to your organizer team';
 
   @override
   String get hostsHostAudienceContactName => 'Name shown to your team';
@@ -12456,24 +12604,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostAudienceContactEmail => 'Email';
 
   @override
-  String get hostsHostAudienceContactConsentTitle =>
-      'Consent controls delivery';
-
-  @override
   String get hostsHostAudienceContactConsentPaused =>
       'Your team has paused WhatsApp campaigns to this person. Their own opt-out remains authoritative.';
 
   @override
   String get hostsHostAudienceContactConsentActive =>
       'Only the person-verified number and active organizer consent can receive a campaign.';
-
-  @override
-  String get hostsHostAudienceContactResumeMessages =>
-      'Resume organizer messages';
-
-  @override
-  String get hostsHostAudienceContactPauseMessages =>
-      'Pause organizer messages';
 
   @override
   String get hostsHostAudienceSegmentNew => 'New to your audience';
@@ -12551,8 +12687,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostAudienceWhatsappOptedIn => 'WhatsApp opted in';
 
   @override
-  String get hostsHostAudienceWebSignupOnly =>
-      'Connect WhatsApp from the Host web app. Once connected, the sender can be managed on any device.';
+  String get hostsHostAudienceWebSignupOpened =>
+      'Continue WhatsApp setup in the Host web app.';
+
+  @override
+  String get hostsHostAudienceWebSignupOpenFailed =>
+      'Could not open WhatsApp setup in the Host web app.';
 
   @override
   String get hostsHostAudienceBlockerProvider =>
@@ -12572,7 +12712,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostAudienceBlockerCoverage =>
-      'Audience history is still being reconciled';
+      'Customer history is incomplete';
 
   @override
   String get hostsHostAudienceBlockerTooLarge =>
@@ -13031,10 +13171,103 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostMessagingWorkspaceSends => 'Sends';
 
   @override
-  String get hostSendsNewMessage => 'New message';
+  String get hostSendsChooseChannel => 'Choose channel';
 
   @override
-  String get hostSendsSettings => 'WhatsApp settings';
+  String get hostSendsInCatchChannels => 'In Catch';
+
+  @override
+  String get hostSendsWhatsappChannels => 'WhatsApp';
+
+  @override
+  String get hostSendsSettings => 'WhatsApp Business settings';
+
+  @override
+  String get hostSendsCatchChatChannel => 'Catch chat · Organizer';
+
+  @override
+  String get hostSendsCatchChatDescription =>
+      'One linked Catch user · two-way in the Catch app';
+
+  @override
+  String get hostSendsCatchAnnouncementChannel =>
+      'Catch announcement · Organizer';
+
+  @override
+  String get hostSendsCatchAnnouncementDescription =>
+      'Event roster · Activity plus preference-gated push · no reply thread';
+
+  @override
+  String get hostSendsWhatsappBusinessChannel =>
+      'WhatsApp Business · Organizer number';
+
+  @override
+  String get hostSendsWhatsappBusinessDescription =>
+      'Permissioned CRM audience · approved template · delivery receipts';
+
+  @override
+  String get hostSendsWhatsappAppChannel => 'WhatsApp app · You';
+
+  @override
+  String get hostSendsWhatsappAppDescription =>
+      'Choose a person in Customers · editable text · you press Send · untracked by Catch';
+
+  @override
+  String get hostSendsFollowerUpdateChannel => 'Follower update · Organizer';
+
+  @override
+  String get hostSendsFollowerUpdateDescription =>
+      'Followers in Catch · Home and Activity · preference-gated push';
+
+  @override
+  String get hostSendsFollowerUpdateQuotaUsed =>
+      'This organizer has used its three follower updates for the rolling seven-day window.';
+
+  @override
+  String get hostSendsWeeklyLimit => 'Weekly limit reached';
+
+  @override
+  String get hostSendsFollowersAudience => 'Followers in Catch';
+
+  @override
+  String get hostSendsLinkedEventUpdate => 'Linked event';
+
+  @override
+  String get hostSendsCatchWhatsappChannel => 'Catch WhatsApp · Catch number';
+
+  @override
+  String get hostSendsCatchWhatsappDescription =>
+      'Catch-owned sender and Catch-specific permission · not an organizer campaign';
+
+  @override
+  String get hostSendsChannelChecking =>
+      'Checking sender and template readiness…';
+
+  @override
+  String get hostSendsChannelUnavailable =>
+      'Readiness could not be loaded. Open settings to retry.';
+
+  @override
+  String get hostSendsSetupRequired => 'Setup required';
+
+  @override
+  String get hostSendsPlanned => 'Not active';
+
+  @override
+  String get hostSendsWhatsappProviderUnavailable =>
+      'Catch has not enabled the Meta provider in this environment.';
+
+  @override
+  String get hostSendsWhatsappSenderRequired =>
+      'Connect and verify an organizer-owned WhatsApp Business number.';
+
+  @override
+  String get hostSendsWhatsappSenderNeedsAttention =>
+      'Finish sender testing or resolve its connection health.';
+
+  @override
+  String get hostSendsWhatsappTemplateRequired =>
+      'Sync at least one approved WhatsApp message template.';
 
   @override
   String get hostSendsLoadMore => 'Load more';
@@ -13044,7 +13277,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostSendsEmptyHelp =>
-      'Campaigns and event announcements will appear here after you send them.';
+      'Campaigns, event announcements, and follower updates will appear here after you send them.';
 
   @override
   String get hostSendsCampaignType => 'Campaign';
@@ -13061,7 +13294,44 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostSendsPartial => 'Some deliveries need attention';
 
   @override
-  String get hostInboxWhatsappChannel => 'WhatsApp';
+  String hostSendsFollowerDeliveryStatus({required String status}) {
+    String _temp0 = intl.Intl.selectLogic(status, {
+      'pending': 'Delivering in Catch',
+      'completed': 'Available in Catch',
+      'partial': 'Some deliveries need attention',
+      'unknown': 'Delivery was not tracked',
+      'other': 'Delivery status unavailable',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get hostInboxWhatsappChannel => 'WhatsApp Business · Organizer number';
+
+  @override
+  String hostInboxCatchChatPreview({required String details}) {
+    return 'Catch chat · Organizer · $details';
+  }
+
+  @override
+  String get hostInboxAnnouncementDisclosure =>
+      'Recipients see a durable Activity update and may receive a push notification. This does not create a chat thread.';
+
+  @override
+  String get hostInboxAnnouncementClosed =>
+      'Catch announcement · event delivery has closed';
+
+  @override
+  String get hostInboxAnnouncementBackendRequired =>
+      'Catch announcement · backend preflight required';
+
+  @override
+  String get hostInboxAnnouncementNoRecipients =>
+      'Catch announcement · no eligible recipients yet';
+
+  @override
+  String get hostInboxAnnouncementAvailable =>
+      'Catch announcement · Activity plus optional push';
 
   @override
   String get hostInboxWhatsappReply => 'Reply';
@@ -13095,16 +13365,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostSendsClearSchedule => 'Send after approval';
 
   @override
-  String get hostCustomersManage => 'Manage';
-
-  @override
   String get hostCustomersContactDetails => 'Details';
 
   @override
   String get hostCustomersEditDetails => 'Edit details';
 
   @override
-  String get hostCustomersNoContactDetails => 'No phone or email saved yet.';
+  String get hostCustomersNotSaved => 'Not saved';
 
   @override
   String get hostCustomersCheckedIn => 'Checked in';
@@ -13150,7 +13417,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersVerifiedDetailsManagedByCatch =>
-      'Contact details shown here come from this organizer’s records. Linking a Catch account does not reveal additional profile fields.';
+      'Linked Catch profiles stay private. Phone and email can’t be edited here.';
 
   @override
   String get hostCustomersUnverifiedContactDetails =>
@@ -13178,6 +13445,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersClearFilter => 'Clear';
+
+  @override
+  String get hostCustomersCoverageRefresh => 'Check again';
 
   @override
   String hostCustomersMessageThese({required int count}) {
@@ -13384,7 +13654,52 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostCustomersNewConversation => 'New conversation';
+  String get hostCustomersStartCatchChat => 'Start Catch chat';
+
+  @override
+  String get hostCustomersWhatsappAppChannel => 'WhatsApp app · You';
+
+  @override
+  String get hostCustomersWhatsappHandoffDisclosure =>
+      'Opens WhatsApp on this device with editable text. You review it and press Send; Catch cannot track delivery or replies.';
+
+  @override
+  String get hostCustomersWhatsappMissingPhone =>
+      'Add a valid phone number to use a personal WhatsApp handoff.';
+
+  @override
+  String get hostCustomersWhatsappOrganizerSuppressed =>
+      'WhatsApp handoff is paused for this customer by your team.';
+
+  @override
+  String get hostCustomersWhatsappContactOptedOut =>
+      'This customer has opted out of WhatsApp messages.';
+
+  @override
+  String get hostCustomersWhatsappHandoffTitle => 'WhatsApp app';
+
+  @override
+  String hostCustomersWhatsappHandoffSubtitle({
+    required String name,
+    required String phone,
+  }) {
+    return '$name · $phone';
+  }
+
+  @override
+  String hostCustomersWhatsappDefaultMessage({required String name}) {
+    return 'Hi $name,';
+  }
+
+  @override
+  String get hostCustomersWhatsappMessage => 'Message';
+
+  @override
+  String get hostCustomersOpenWhatsapp => 'Open WhatsApp';
+
+  @override
+  String get hostCustomersWhatsappOpenFailed =>
+      'Could not open WhatsApp on this device.';
 
   @override
   String get hostCustomersConversationUnlinked =>
@@ -13490,9 +13805,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'The customer details are available. Try reloading to restore note history.';
 
   @override
-  String get hostCustomersActivity => 'Activity';
-
-  @override
   String get hostCustomersSendHistory => 'Messages sent';
 
   @override
@@ -13532,7 +13844,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersControls => 'Controls';
 
   @override
+  String get hostCustomersOrganizerMessages => 'Organizer messages';
+
+  @override
   String get hostCustomersSort => 'Sort customers';
+
+  @override
+  String hostCustomersSortControl({required String label}) {
+    return 'Sort: $label';
+  }
+
+  @override
+  String get hostCustomersSortSheetSubtitle =>
+      'Choose how customers are ordered.';
 
   @override
   String get hostCustomersSortLastSeen => 'Last seen';
@@ -13542,6 +13866,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersSortName => 'Name';
+
+  @override
+  String get hostCustomersMoreActions => 'More customer actions';
+
+  @override
+  String hostCustomersWhatsappReadyCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count WhatsApp-ready contacts',
+      one: '1 WhatsApp-ready contact',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostCustomersSourceSummary({
+    required int importedCount,
+    required int linkedCount,
+  }) {
+    String _temp0 = intl.Intl.pluralLogic(
+      importedCount,
+      locale: localeName,
+      other: '$importedCount imported or added by your team',
+      one: '1 imported or added by your team',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      linkedCount,
+      locale: localeName,
+      other: '$linkedCount linked Catch accounts',
+      one: '1 linked Catch account',
+    );
+    return '$_temp0 · $_temp1';
+  }
 
   @override
   String get eventSuccessAccountabilityTitle => 'Return sweep';
@@ -13702,6 +14060,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostApplicationsImport => 'Import responses';
+
+  @override
+  String get hostApplicationsSort => 'Sort applications';
 
   @override
   String get hostApplicationsImportTitle => 'Import applications';
@@ -14921,4 +15282,573 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostFormRedo => 'Redo edit';
+
+  @override
+  String get hostsWizardPrevious => 'Previous';
+
+  @override
+  String get hostsWizardStatusComplete => 'Complete';
+
+  @override
+  String get hostsWizardStatusNeedsInformation => 'Needs information';
+
+  @override
+  String get hostsWizardStatusOptional => 'Optional';
+
+  @override
+  String get hostsWizardOverviewSubtitle =>
+      'Open any section and finish the required details in any order.';
+
+  @override
+  String get hostsCreateEventOverviewTitle => 'Event setup';
+
+  @override
+  String get hostsCreateEventReviewActivity => 'Event';
+
+  @override
+  String get hostsCreateEventReviewBooking => 'Bookings';
+
+  @override
+  String get hostsCreateEventReviewCatchBookings => 'Catch bookings';
+
+  @override
+  String hostsCreateEventReviewExternalBookings({required String provider}) {
+    return 'External provider: $provider';
+  }
+
+  @override
+  String get hostsCreateEventReviewLocation => 'Meeting location';
+
+  @override
+  String get hostsCreateEventReviewSchedule => 'Schedule';
+
+  @override
+  String get hostsCreateEventReviewCapacity => 'Capacity';
+
+  @override
+  String hostsCreateEventReviewCapacityValue({required int count}) {
+    return '$count attendees';
+  }
+
+  @override
+  String get hostsCreateEventReviewPrice => 'Price';
+
+  @override
+  String get hostsCreateEventReviewExternalPrice =>
+      'Managed by the external provider';
+
+  @override
+  String get hostsCreateEventReviewFree => 'Free';
+
+  @override
+  String get hostsCreateEventReviewAdmission => 'Admission';
+
+  @override
+  String get hostsCreateClubOverviewTitle => 'Organizer setup';
+
+  @override
+  String get hostsWizardReviewBody =>
+      'Review every section before publishing. Select a row to make changes.';
+
+  @override
+  String get hostsCreateEventReviewTitle => 'Review event';
+
+  @override
+  String get hostsCreateClubReviewTitle => 'Review organizer';
+
+  @override
+  String get hostsCreateEventScheduleAction => 'Schedule event';
+
+  @override
+  String get hostsCreateClubCreateAction => 'Create organizer';
+
+  @override
+  String get hostsDraftExitTitle => 'Save your work?';
+
+  @override
+  String get hostsDraftExitMessage => 'Save this as a draft before you exit?';
+
+  @override
+  String get hostsDraftExitKeepEditing => 'Keep editing';
+
+  @override
+  String get hostsDraftExitDiscardAndExit => 'Discard & exit';
+
+  @override
+  String get hostsDraftExitSaveAndExit => 'Save draft & exit';
+
+  @override
+  String hostsWizardStepOverviewSemantics({
+    required int step,
+    required int total,
+  }) {
+    return 'Step $step of $total. Open section overview.';
+  }
+
+  @override
+  String get hostEventRehearsalEntryTitle => 'Run a dress rehearsal';
+
+  @override
+  String get hostEventRehearsalEntryBody =>
+      'Practice the Host and guest experience with synthetic people. Nothing touches a real event.';
+
+  @override
+  String get hostEventRehearsalTitle => 'Dress rehearsal';
+
+  @override
+  String get hostEventRehearsalPracticeBanner =>
+      'Practice mode · No real guests, messages, payments, matches, or event records are changed';
+
+  @override
+  String get hostEventRehearsalStartSubtitle =>
+      'Choose a room to practice. You can change the rehearsal copy and playbook before starting.';
+
+  @override
+  String get hostEventRehearsalSourceEvent => 'Practice this event';
+
+  @override
+  String get hostEventRehearsalSourceSample => 'Catch sample event';
+
+  @override
+  String get hostEventRehearsalScenario => 'Practice scenario';
+
+  @override
+  String hostEventRehearsalActorCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count synthetic guests',
+      one: '1 synthetic guest',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostEventRehearsalActorCountBody =>
+      'Use a realistic roster. Rehearsals are capped at 50 synthetic guests.';
+
+  @override
+  String get hostEventRehearsalCreate => 'Create rehearsal';
+
+  @override
+  String get hostEventRehearsalExpiry =>
+      'This rehearsal and its guest link expire after 24 hours.';
+
+  @override
+  String get hostEventRehearsalScenarioSmoothRun => 'Smooth run';
+
+  @override
+  String get hostEventRehearsalScenarioSmoothRunBody =>
+      'A cooperative room for learning the normal Host and guest flow.';
+
+  @override
+  String get hostEventRehearsalScenarioLateAndNoShow =>
+      'Late arrivals and no-shows';
+
+  @override
+  String get hostEventRehearsalScenarioLateAndNoShowBody =>
+      'Recover when expected guests are missing or arrive after groups begin.';
+
+  @override
+  String get hostEventRehearsalScenarioEarlyExitAndReturn =>
+      'Early exit and return';
+
+  @override
+  String get hostEventRehearsalScenarioEarlyExitAndReturnBody =>
+      'Rebalance when a guest leaves early and another returns later.';
+
+  @override
+  String get hostEventRehearsalScenarioRosterAndCapacity =>
+      'Odd roster and capacity';
+
+  @override
+  String get hostEventRehearsalScenarioRosterAndCapacityBody =>
+      'Expose odd-sized groups, tight capacity, and unassigned guests.';
+
+  @override
+  String get hostEventRehearsalScenarioWalkInAndAmbiguousClaim =>
+      'Walk-in and ambiguous claim';
+
+  @override
+  String get hostEventRehearsalScenarioWalkInAndAmbiguousClaimBody =>
+      'Admit a walk-in and resolve two similar roster identities.';
+
+  @override
+  String get hostEventRehearsalScenarioPrivacyAndKeepApart =>
+      'Privacy and keep-apart';
+
+  @override
+  String get hostEventRehearsalScenarioPrivacyAndKeepApartBody =>
+      'Respect an opt-out and a safety keep-apart constraint while preserving flow.';
+
+  @override
+  String get hostEventRehearsalScenarioLowConnectivity => 'Low connectivity';
+
+  @override
+  String get hostEventRehearsalScenarioLowConnectivityBody =>
+      'Continue through disconnects, delayed updates, and reconnection.';
+
+  @override
+  String get hostEventRehearsalScenarioConcurrentHosts =>
+      'Two hosts, one revision';
+
+  @override
+  String get hostEventRehearsalScenarioConcurrentHostsBody =>
+      'See how stale Host actions are rejected and recovered safely.';
+
+  @override
+  String get hostEventRehearsalScenarioRevealInterrupted =>
+      'Reveal interrupted';
+
+  @override
+  String get hostEventRehearsalScenarioRevealInterruptedBody =>
+      'Pause and recover around a reveal or round transition.';
+
+  @override
+  String get hostEventRehearsalScenarioExternalProfiles =>
+      'External and incomplete profiles';
+
+  @override
+  String get hostEventRehearsalScenarioExternalProfilesBody =>
+      'Exercise no-download guests and deliberately sparse participant data.';
+
+  @override
+  String get hostEventRehearsalScenarioAccountabilitySweep =>
+      'Accountability sweep';
+
+  @override
+  String get hostEventRehearsalScenarioAccountabilitySweepBody =>
+      'Finish with unresolved checked-in, departed, and disconnected guests.';
+
+  @override
+  String get hostEventRehearsalGuestLinkTitle => 'Live guest phone';
+
+  @override
+  String get hostEventRehearsalGuestLinkBody =>
+      'Open this link on another phone. It gets an anonymous synthetic guest and follows the virtual event live.';
+
+  @override
+  String get hostEventRehearsalCopyLink => 'Copy link';
+
+  @override
+  String get hostEventRehearsalShareLink => 'Share link';
+
+  @override
+  String get hostEventRehearsalRotateLink => 'Replace link';
+
+  @override
+  String get hostEventRehearsalSetupTitle => 'Practice setup';
+
+  @override
+  String get hostEventRehearsalSetupFrozen =>
+      'Setup is frozen after Start. Reset or fork to change it.';
+
+  @override
+  String get hostEventRehearsalFieldTitle => 'Practice event name';
+
+  @override
+  String get hostEventRehearsalFieldLocation => 'Practice location';
+
+  @override
+  String get hostEventRehearsalFieldGoal => 'Host goal';
+
+  @override
+  String get hostEventRehearsalFieldPrompt => 'Guest prompt';
+
+  @override
+  String get hostEventRehearsalRunTitle => 'Virtual event';
+
+  @override
+  String get hostEventRehearsalStart => 'Start';
+
+  @override
+  String get hostEventRehearsalPause => 'Pause';
+
+  @override
+  String get hostEventRehearsalResume => 'Resume';
+
+  @override
+  String get hostEventRehearsalPrevious => 'Previous';
+
+  @override
+  String get hostEventRehearsalNext => 'Next moment';
+
+  @override
+  String get hostEventRehearsalAdvanceFive => '+5 min';
+
+  @override
+  String get hostEventRehearsalAdvanceFifteen => '+15 min';
+
+  @override
+  String get hostEventRehearsalComplete => 'Complete run';
+
+  @override
+  String get hostEventRehearsalSimulationTitle => 'Issue simulator';
+
+  @override
+  String get hostEventRehearsalSimulationBody =>
+      'Choose a synthetic guest, then inject a realistic behavior. Automatic scenario cues also fire when the virtual clock crosses them.';
+
+  @override
+  String get hostEventRehearsalSimulationUnavailable =>
+      'Start the virtual event to inject guest behavior. Completed runs can be reset or forked.';
+
+  @override
+  String get hostEventRehearsalChooseGuest => 'Synthetic guest';
+
+  @override
+  String get hostEventRehearsalChooseIssue => 'Inject issue';
+
+  @override
+  String get hostEventRehearsalRosterTitle => 'Synthetic room';
+
+  @override
+  String hostEventRehearsalRoomSummary({
+    required int present,
+    required int total,
+    required int unresolved,
+  }) {
+    return '$present present · $total expected · $unresolved unresolved';
+  }
+
+  @override
+  String get hostEventRehearsalQaFaultsTitle => 'Internal QA faults';
+
+  @override
+  String get hostEventRehearsalQaFaultsBody =>
+      'Inject transport, revision, duplicate-delivery, legacy, motion, and bandwidth failures without touching production entities.';
+
+  @override
+  String get hostEventRehearsalRecapTitle => 'Practice recap';
+
+  @override
+  String hostEventRehearsalRecapBody({
+    required int actions,
+    required int seed,
+    required int revision,
+  }) {
+    return '$actions actions recorded · seed $seed · revision $revision';
+  }
+
+  @override
+  String get hostEventRehearsalReset => 'Reset run';
+
+  @override
+  String get hostEventRehearsalFork => 'Fork setup';
+
+  @override
+  String get hostEventRehearsalExport => 'Copy reproduction';
+
+  @override
+  String get hostEventRehearsalRecentActions => 'Recent simulated actions';
+
+  @override
+  String get hostEventRehearsalBehaviorArrive => 'Arrives now';
+
+  @override
+  String get hostEventRehearsalBehaviorArriveLate => 'Arrives late';
+
+  @override
+  String get hostEventRehearsalBehaviorNoShow => 'Becomes a no-show';
+
+  @override
+  String get hostEventRehearsalBehaviorLeaves => 'Leaves early';
+
+  @override
+  String get hostEventRehearsalBehaviorReturns => 'Returns';
+
+  @override
+  String get hostEventRehearsalBehaviorWalkIn => 'Walks in';
+
+  @override
+  String get hostEventRehearsalBehaviorAmbiguous => 'Claims an ambiguous name';
+
+  @override
+  String get hostEventRehearsalBehaviorResolve => 'Resolve claim';
+
+  @override
+  String get hostEventRehearsalBehaviorOptOut => 'Opts out';
+
+  @override
+  String get hostEventRehearsalBehaviorOptIn => 'Opts back in';
+
+  @override
+  String get hostEventRehearsalBehaviorKeepApart => 'Adds keep-apart';
+
+  @override
+  String get hostEventRehearsalBehaviorDisconnect => 'Loses connection';
+
+  @override
+  String get hostEventRehearsalBehaviorReconnect => 'Reconnects';
+
+  @override
+  String get hostEventRehearsalFaultNone => 'No injected fault';
+
+  @override
+  String get hostEventRehearsalFaultLatency => 'Artificial latency';
+
+  @override
+  String get hostEventRehearsalFaultOneShot => 'One-shot failure';
+
+  @override
+  String get hostEventRehearsalFaultDisconnect => 'Listener disconnect';
+
+  @override
+  String get hostEventRehearsalFaultStaleRevision => 'Stale revision';
+
+  @override
+  String get hostEventRehearsalFaultDuplicate => 'Duplicate delivery';
+
+  @override
+  String get hostEventRehearsalFaultLegacy => 'Legacy fixture';
+
+  @override
+  String get hostEventRehearsalFaultReducedMotion => 'Reduced motion';
+
+  @override
+  String get hostEventRehearsalFaultLowBandwidth => 'Low bandwidth';
+
+  @override
+  String get hostEventRehearsalStatusExpected => 'Expected';
+
+  @override
+  String get hostEventRehearsalStatusPresent => 'Present';
+
+  @override
+  String get hostEventRehearsalStatusLate => 'Late';
+
+  @override
+  String get hostEventRehearsalStatusNoShow => 'No-show';
+
+  @override
+  String get hostEventRehearsalStatusDeparted => 'Departed';
+
+  @override
+  String get hostEventRehearsalStatusReturned => 'Returned';
+
+  @override
+  String get hostEventRehearsalStatusDisconnected => 'Disconnected';
+
+  @override
+  String get hostEventRehearsalStatusWalkIn => 'Walk-in';
+
+  @override
+  String get hostEventRehearsalStatusAmbiguous => 'Claim needs review';
+
+  @override
+  String get hostEventRehearsalSignalHelp => 'Help requested';
+
+  @override
+  String get hostEventRehearsalSignalPromptComplete => 'Prompt complete';
+
+  @override
+  String get hostEventRehearsalModules => 'Event Success playbook';
+
+  @override
+  String get hostEventRehearsalModuleArrival => 'Arrival';
+
+  @override
+  String get hostEventRehearsalModuleFirstHello => 'First Hello';
+
+  @override
+  String get hostEventRehearsalModulePods => 'Pods';
+
+  @override
+  String get hostEventRehearsalModuleRotations => 'Rotations';
+
+  @override
+  String get hostEventRehearsalModuleCues => 'Conversation cues';
+
+  @override
+  String get hostEventRehearsalModuleReveal => 'Reveal';
+
+  @override
+  String get hostEventRehearsalModuleAfterglow => 'Afterglow';
+
+  @override
+  String get hostEventRehearsalModuleAccountability => 'Accountability';
+
+  @override
+  String get hostEventRehearsalDuration => 'Practice duration';
+
+  @override
+  String hostEventRehearsalMoment({required int current, required int total}) {
+    return 'Moment $current of $total';
+  }
+
+  @override
+  String hostEventRehearsalClock({required String time}) {
+    return 'Virtual time · $time';
+  }
+
+  @override
+  String get hostEventRehearsalApplyIssue => 'Apply issue';
+
+  @override
+  String get hostEventRehearsalChooseFault => 'Injected fault';
+
+  @override
+  String get hostEventRehearsalLinkCopied => 'Practice guest link copied';
+
+  @override
+  String get hostEventRehearsalRotateLinkBody =>
+      'The current link and every connected practice phone will stop working.';
+
+  @override
+  String get hostEventRehearsalResetBody =>
+      'This clears the simulated room and action history, then rebuilds the same deterministic roster.';
+
+  @override
+  String get hostEventRehearsalReproductionCopied =>
+      'Deterministic reproduction copied';
+
+  @override
+  String get hostEventRehearsalActionMarkReady => 'Marks room ready';
+
+  @override
+  String get hostEventRehearsalActionAdvance => 'Advances moment';
+
+  @override
+  String get hostEventRehearsalActionPrevious => 'Returns to previous moment';
+
+  @override
+  String get hostEventRehearsalActionAdvanceClock => 'Advances virtual time';
+
+  @override
+  String get hostEventRehearsalActionCheckIn => 'Checks in';
+
+  @override
+  String get hostEventRehearsalActionConfirmArrival => 'Confirms arrival';
+
+  @override
+  String get hostEventRehearsalActionAskForHelp => 'Requests Host help';
+
+  @override
+  String get hostEventRehearsalActionCompletePrompt => 'Completes prompt';
+
+  @override
+  String get hostEventRehearsalActionUnknown => 'Simulated action';
+
+  @override
+  String get hostEventRehearsalActionKindControl => 'Host control';
+
+  @override
+  String get hostEventRehearsalActionKindBehavior => 'Simulated issue';
+
+  @override
+  String get hostEventRehearsalActionKindGuest => 'Guest phone';
+
+  @override
+  String get hostEventRehearsalActionKindSetup => 'Practice setup';
+
+  @override
+  String get hostEventRehearsalActionKindSystem => 'Practice system';
+
+  @override
+  String hostEventRehearsalActionRevision({
+    required String kind,
+    required int revision,
+  }) {
+    return '$kind · revision $revision';
+  }
 }

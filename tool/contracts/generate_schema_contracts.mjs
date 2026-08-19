@@ -131,6 +131,20 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/organizerPostDocument.ts",
   },
   {
+    name: "OrganizerPostDeliveryOperationDocument",
+    source: "firestore/organizer_post_delivery_operations.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerPostDeliveryOperationDocument.ts",
+  },
+  {
+    name: "OrganizerPostDeliveryRecipientDocument",
+    source: "firestore/organizer_post_delivery_recipients.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerPostDeliveryRecipientDocument.ts",
+  },
+  {
     name: "OrganizerTeamMembershipDocument",
     source: "firestore/organizer_team_memberships.schema.json",
     typeOutput:
@@ -574,6 +588,30 @@ const schemaSpecs = [
     source: "firestore/event_success_late_arrivals.schema.json",
     typeOutput:
       "functions/src/shared/generated/eventSuccessLateArrivalDocument.ts",
+  },
+  {
+    name: "EventRehearsalDocument",
+    source: "firestore/event_rehearsals.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventRehearsalDocument.ts",
+  },
+  {
+    name: "EventRehearsalActorDocument",
+    source: "firestore/event_rehearsal_actors.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventRehearsalActorDocument.ts",
+  },
+  {
+    name: "EventRehearsalActionDocument",
+    source: "firestore/event_rehearsal_actions.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventRehearsalActionDocument.ts",
+  },
+  {
+    name: "EventRehearsalGuestViewDocument",
+    source: "firestore/event_rehearsal_guest_views.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventRehearsalGuestViewDocument.ts",
   },
   {
     name: "EventRuntimeClaimRequestDocument",
@@ -1616,6 +1654,103 @@ const schemaSpecs = [
     source: "callables/get_event_runtime_bootstrap_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/getEventRuntimeBootstrapCallablePayload.ts",
+  },
+  {
+    name: "CreateEventRehearsalCallablePayload",
+    source: "callables/create_event_rehearsal_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createEventRehearsalCallablePayload.ts",
+  },
+  {
+    name: "CreateEventRehearsalCallableResponse",
+    source: "callable_responses/create_event_rehearsal_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createEventRehearsalCallableResponse.ts",
+  },
+  {
+    name: "GetEventRehearsalBootstrapCallablePayload",
+    source: "callables/get_event_rehearsal_bootstrap_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/getEventRehearsalBootstrapCallablePayload.ts",
+  },
+  {
+    name: "EventRehearsalBootstrapCallableResponse",
+    source:
+      "callable_responses/event_rehearsal_bootstrap_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventRehearsalBootstrapCallableResponse.ts",
+  },
+  {
+    name: "UpdateEventRehearsalSetupCallablePayload",
+    source: "callables/update_event_rehearsal_setup_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/updateEventRehearsalSetupCallablePayload.ts",
+  },
+  {
+    name: "ControlEventRehearsalCallablePayload",
+    source: "callables/control_event_rehearsal_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/controlEventRehearsalCallablePayload.ts",
+  },
+  {
+    name: "InjectEventRehearsalBehaviorCallablePayload",
+    source:
+      "callables/inject_event_rehearsal_behavior_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/injectEventRehearsalBehaviorCallablePayload.ts",
+  },
+  {
+    name: "ResetEventRehearsalCallablePayload",
+    source: "callables/reset_event_rehearsal_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/resetEventRehearsalCallablePayload.ts",
+  },
+  {
+    name: "RotateEventRehearsalGuestLinkCallablePayload",
+    source:
+      "callables/rotate_event_rehearsal_guest_link_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/rotateEventRehearsalGuestLinkCallablePayload.ts",
+  },
+  {
+    name: "GetEventRehearsalGuestBootstrapCallablePayload",
+    source:
+      "callables/get_event_rehearsal_guest_bootstrap_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/getEventRehearsalGuestBootstrapCallablePayload.ts",
+    additionalTypeOutputs: [
+      "website/src/shared/contracts/generated/" +
+      "getEventRehearsalGuestBootstrapCallablePayload.ts",
+    ],
+  },
+  {
+    name: "EventRehearsalGuestBootstrapCallableResponse",
+    source:
+      "callable_responses/event_rehearsal_guest_bootstrap_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventRehearsalGuestBootstrapCallableResponse.ts",
+    additionalTypeOutputs: [
+      "website/src/shared/contracts/generated/" +
+      "eventRehearsalGuestBootstrapCallableResponse.ts",
+    ],
+  },
+  {
+    name: "SubmitEventRehearsalGuestActionCallablePayload",
+    source:
+      "callables/submit_event_rehearsal_guest_action_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/submitEventRehearsalGuestActionCallablePayload.ts",
+    additionalTypeOutputs: [
+      "website/src/shared/contracts/generated/" +
+      "submitEventRehearsalGuestActionCallablePayload.ts",
+    ],
+  },
+  {
+    name: "EventRehearsalReproductionCallableResponse",
+    source:
+      "callable_responses/event_rehearsal_reproduction_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventRehearsalReproductionCallableResponse.ts",
   },
   {
     name: "UpsertEventSuccessLayoutCallablePayload",

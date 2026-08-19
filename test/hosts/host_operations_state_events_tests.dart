@@ -34,7 +34,7 @@ void _registerHostOperationsStateEventsTests() {
   );
 
   test(
-    'HostTeamWorkspaceActionState maps account and club navigation policy',
+    'HostTeamWorkspaceActionState maps profile and club navigation policy',
     () {
       final profile = HostProfile(
         uid: _hostUid,
@@ -60,7 +60,6 @@ void _registerHostOperationsStateEventsTests() {
         profile: AsyncData<HostProfile?>(profile),
         clubs: AsyncData<List<Club>>([ownedClub, cohostClub]),
       );
-      expect(editState.actions.canSignOut, isTrue);
       expect(editState.actions.canCreateProfile, isFalse);
       expect(editState.actions.canEditProfile, isTrue);
       expect(
@@ -81,9 +80,7 @@ void _registerHostOperationsStateEventsTests() {
         profile: const AsyncData<HostProfile?>(null),
         clubs: const AsyncData<List<Club>>([]),
         editMode: false,
-        signOutPending: true,
       );
-      expect(previewState.actions.canSignOut, isFalse);
       expect(previewState.actions.canCreateProfile, isTrue);
       expect(previewState.actions.canEditProfile, isFalse);
       expect(

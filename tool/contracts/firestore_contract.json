@@ -514,6 +514,101 @@
       ]
     },
     {
+      "id": "eventRehearsals",
+      "path": "eventRehearsals/{sessionId}",
+      "rulesMatch": "/eventRehearsals/{sessionId}",
+      "typescriptInterface": "EventRehearsalDocument",
+      "dartModel": "lib/event_rehearsal/domain/event_rehearsal.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": ["keeps all dress rehearsal collections callable-only"],
+      "owner": "event rehearsal callables and hourly expiry",
+      "read": "server only; organizer managers and public guest slots receive bounded callable projections",
+      "write": "server only",
+      "exportedFunctions": [
+        "createEventRehearsal",
+        "getEventRehearsalBootstrap",
+        "updateEventRehearsalSetup",
+        "controlEventRehearsal",
+        "injectEventRehearsalBehavior",
+        "resetEventRehearsal",
+        "rotateEventRehearsalGuestLink",
+        "getEventRehearsalGuestBootstrap",
+        "submitEventRehearsalGuestAction",
+        "completeEventRehearsal",
+        "exportEventRehearsalReproduction",
+        "expireEventRehearsals"
+      ],
+      "migrationNotes": [
+        "A real event is a bounded read-only source at creation; every later mutation remains inside the rehearsal domain.",
+        "Sessions expire after 24 hours and are capped at five active sessions per owner, 50 actors, and 500 actions."
+      ]
+    },
+    {
+      "id": "eventRehearsalActors",
+      "path": "eventRehearsalActors/{actorId}",
+      "rulesMatch": "/eventRehearsalActors/{actorId}",
+      "typescriptInterface": "EventRehearsalActorDocument",
+      "dartModel": "lib/event_rehearsal/domain/event_rehearsal.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": ["keeps all dress rehearsal collections callable-only"],
+      "owner": "event rehearsal callables",
+      "read": "server only; bounded callable projections only",
+      "write": "server only",
+      "exportedFunctions": [
+        "createEventRehearsal",
+        "updateEventRehearsalSetup",
+        "controlEventRehearsal",
+        "injectEventRehearsalBehavior",
+        "resetEventRehearsal",
+        "getEventRehearsalGuestBootstrap",
+        "submitEventRehearsalGuestAction",
+        "completeEventRehearsal",
+        "expireEventRehearsals"
+      ],
+      "migrationNotes": [
+        "Actors are seed-derived synthetic identities with no UID, phone, email, booking, payment, match, message, or production attendee reference."
+      ]
+    },
+    {
+      "id": "eventRehearsalActions",
+      "path": "eventRehearsalActions/{actionId}",
+      "rulesMatch": "/eventRehearsalActions/{actionId}",
+      "typescriptInterface": "EventRehearsalActionDocument",
+      "dartModel": "lib/event_rehearsal/domain/event_rehearsal.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": ["keeps all dress rehearsal collections callable-only"],
+      "owner": "event rehearsal callables",
+      "read": "server only; Host bootstrap and reproduction export return bounded history",
+      "write": "server only with deterministic client-action deduplication",
+      "exportedFunctions": [
+        "controlEventRehearsal",
+        "injectEventRehearsalBehavior",
+        "submitEventRehearsalGuestAction",
+        "completeEventRehearsal",
+        "exportEventRehearsalReproduction",
+        "expireEventRehearsals"
+      ]
+    },
+    {
+      "id": "eventRehearsalGuestViews",
+      "path": "eventRehearsalGuestViews/{viewId}",
+      "rulesMatch": "/eventRehearsalGuestViews/{viewId}",
+      "typescriptInterface": "EventRehearsalGuestViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": ["keeps all dress rehearsal collections callable-only"],
+      "owner": "public event rehearsal guest callables",
+      "read": "server only",
+      "write": "server only; hashed slot tokens bind one browser instance to one synthetic actor",
+      "exportedFunctions": [
+        "getEventRehearsalGuestBootstrap",
+        "submitEventRehearsalGuestAction",
+        "rotateEventRehearsalGuestLink",
+        "resetEventRehearsal",
+        "expireEventRehearsals"
+      ]
+    },
+    {
       "id": "eventAttendees",
       "path": "eventAttendees/{attendeeId}",
       "rulesMatch": "/eventAttendees/{attendeeId}",
@@ -1089,6 +1184,74 @@
       "migrationNotes": [
         "Owns signed-up, waitlisted, attended, cancelled, and deleted event roster state; events documents retain only callable-owned aggregate counts.",
         "As of 2026-08-05, consumer roster enumeration is denied. Post-event candidate identity is resolved by fetchSwipeCandidates after attendance, window, reciprocal-preference, prior-decision, and block checks."
+      ]
+    },
+    {
+      "id": "organizerPostDeliveryOperations",
+      "path": "organizerPostDeliveryOperations/{postId}",
+      "rulesMatch": "/organizerPostDeliveryOperations/{postId}",
+      "typescriptInterface": "OrganizerPostDeliveryOperationDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "createOrganizerPost callable and dispatchPendingOrganizerFollowerUpdates scheduler",
+      "read": "server/admin only; organizer managers receive sanitized delivery counts through callables",
+      "write": "server only",
+      "exportedFunctions": [
+        "createOrganizerPost",
+        "dispatchPendingOrganizerFollowerUpdates"
+      ],
+      "operations": [
+        {
+          "id": "host_create_organizer_post",
+          "type": "callable",
+          "owner": "authenticated organizer manager",
+          "function": "createOrganizerPost",
+          "payloadSchemaRef": "contracts/callables/create_organizer_post_payload.schema.json",
+          "rulesTestNames": [
+            "keeps organizer follower delivery receipts server-only"
+          ]
+        },
+        {
+          "id": "dispatch_pending_organizer_follower_updates",
+          "type": "scheduled",
+          "owner": "backend scheduler",
+          "function": "dispatchPendingOrganizerFollowerUpdates"
+        }
+      ],
+      "migrationNotes": [
+        "The operation is the durable lease and aggregate retry boundary; post creation and operation creation are atomic.",
+        "Legacy posts without an operation report delivery status unknown rather than inferred success."
+      ]
+    },
+    {
+      "id": "organizerPostDeliveryRecipients",
+      "path": "organizerPostDeliveryRecipients/{receiptId}",
+      "rulesMatch": "/organizerPostDeliveryRecipients/{receiptId}",
+      "typescriptInterface": "OrganizerPostDeliveryRecipientDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "createOrganizerPost callable and dispatchPendingOrganizerFollowerUpdates scheduler",
+      "read": "server/admin only; recipient identifiers are hashed and clients receive aggregate counts only",
+      "write": "server only",
+      "exportedFunctions": [
+        "createOrganizerPost",
+        "dispatchPendingOrganizerFollowerUpdates"
+      ],
+      "operations": [
+        {
+          "id": "organizer_follower_delivery_receipt",
+          "type": "scheduled",
+          "owner": "backend dispatcher",
+          "function": "dispatchPendingOrganizerFollowerUpdates",
+          "rulesTestNames": [
+            "keeps organizer follower delivery receipts server-only"
+          ]
+        }
+      ],
+      "migrationNotes": [
+        "A deterministic post-scoped recipient hash prevents duplicate Activity or push attempts across cursor replay without correlating one recipient across posts.",
+        "Requires a Firestore TTL policy on expiresAt; de-identified per-recipient evidence expires after 90 days while aggregate history remains on the operation.",
+        "Receipts contain no raw recipient UID; Activity remains the user-owned durable delivery surface."
       ]
     },
     {

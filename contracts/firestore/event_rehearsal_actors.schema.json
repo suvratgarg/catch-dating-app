@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#", "$id": "https://catch.app/contracts/firestore/event_rehearsal_actors.schema.json", "title": "EventRehearsalActorDocument",
+  "description": "Synthetic participant state stored only for an isolated rehearsal.", "type": "object", "additionalProperties": false,
+  "x-firestore-collection": "eventRehearsalActors", "x-firestore-path": "eventRehearsalActors/{actorDocumentId}", "x-document-id-field": "id", "x-owner": "event rehearsal callables",
+  "required": ["sessionId", "actorId", "displayName", "persona", "status", "guestMoment", "optedOut", "keepApartActorIds", "helpRequested", "promptCompleted", "lastActionAt", "createdAt", "updatedAt"],
+  "properties": {
+    "sessionId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "callable-owned"},
+    "actorId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "callable-owned"},
+    "displayName": {"type": "string", "minLength": 1, "maxLength": 80, "x-catch-ownership": "callable-owned"},
+    "persona": {"type": "string", "enum": ["firstTimer", "regular", "quiet", "connector", "external", "sparseProfile", "accessibilityNeeds", "walkIn"], "x-catch-ownership": "callable-owned"},
+    "status": {"$ref": "../shared/event_rehearsal_common.schema.json#/definitions/actorStatus", "x-catch-ownership": "callable-owned"},
+    "guestMoment": {"$ref": "../shared/event_rehearsal_common.schema.json#/definitions/guestMoment", "x-catch-ownership": "callable-owned"},
+    "optedOut": {"type": "boolean", "x-catch-ownership": "callable-owned"},
+    "keepApartActorIds": {"type": "array", "maxItems": 10, "uniqueItems": true, "items": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, "x-catch-ownership": "callable-owned"},
+    "helpRequested": {"type": "boolean", "x-catch-ownership": "callable-owned"},
+    "promptCompleted": {"type": "boolean", "x-catch-ownership": "callable-owned"},
+    "lastActionAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp", "x-catch-ownership": "callable-owned"},
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "callable-owned"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "callable-owned"}
+  }
+}

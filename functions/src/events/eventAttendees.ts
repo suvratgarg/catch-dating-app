@@ -158,6 +158,7 @@ export async function importEventAttendeesForHost(
   const {prepared, errors} = prepareImportRows({
     eventId: payload.eventId,
     importKey: payload.importKey,
+    format: payload.format,
     rows: payload.rows,
   });
   const attendeeRefs = prepared.map((row) =>
@@ -766,6 +767,7 @@ export function publicRegistrationStatus(params: {
 export function prepareImportRows(params: {
   eventId: string;
   importKey: string;
+  format?: "csv" | "xlsx" | "manual";
   rows: ImportRow[];
 }): {prepared: PreparedRow[]; errors: ImportError[]} {
   const prepared: PreparedRow[] = [];
@@ -802,6 +804,14 @@ export function prepareImportRows(params: {
       stableKey = `email:${email}`;
     } else if (externalReference !== null) {
       stableKey = `external:${externalReference.toLowerCase()}`;
+    } else if (params.format !== "manual") {
+      errors.push({
+        rowId: row.rowId,
+        code: "missing-stable-identity",
+        message: "Map a phone, email, or booking reference so this guest " +
+          "can be safely re-imported.",
+      });
+      continue;
     }
     const attendeeId = eventAttendeeId(params.eventId, stableKey);
     if (seenAttendeeIds.has(attendeeId)) {

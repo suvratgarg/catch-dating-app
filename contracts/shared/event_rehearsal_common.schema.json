@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/event_rehearsal_common.schema.json",
+  "title": "Event rehearsal common definitions",
+  "definitions": {
+    "scenarioId": {"type": "string", "enum": ["smoothRun", "lateAndNoShow", "earlyExitAndReturn", "rosterAndCapacity", "walkInAndAmbiguousClaim", "privacyAndKeepApart", "lowConnectivity", "concurrentHosts", "revealInterrupted", "externalProfiles", "accountabilitySweep"]},
+    "status": {"type": "string", "enum": ["draft", "ready", "running", "paused", "complete", "expired"]},
+    "actorStatus": {"type": "string", "enum": ["expected", "present", "late", "noShow", "departed", "returned", "disconnected", "walkIn", "ambiguousClaim"]},
+    "guestMoment": {"type": "string", "enum": ["welcome", "checkIn", "firstHello", "assignment", "rotation", "pause", "reveal", "afterglow", "complete"]},
+    "controlAction": {"type": "string", "enum": ["markReady", "start", "pause", "resume", "advance", "previous", "advanceClock", "complete"]},
+    "behavior": {"type": "string", "enum": ["arrive", "arriveLate", "markNoShow", "leaveEarly", "return", "walkIn", "ambiguousClaim", "resolveClaim", "optOut", "optIn", "keepApart", "disconnect", "reconnect"]},
+    "guestAction": {"type": "string", "enum": ["checkIn", "confirmArrival", "optOut", "optIn", "askForHelp", "completePrompt"]},
+    "faultId": {"type": "string", "enum": ["none", "latency", "oneShotFailure", "listenerDisconnect", "staleRevision", "duplicateDelivery", "legacyFixture", "reducedMotion", "lowBandwidth"]},
+    "moduleId": {"type": "string", "enum": ["arrival", "firstHello", "pods", "rotations", "conversationCues", "reveal", "afterglow", "accountability"]},
+    "safeSetup": {
+      "type": "object", "additionalProperties": false,
+      "required": ["title", "locationName", "durationMinutes", "hostGoal", "attendeePrompt", "moduleIds"],
+      "properties": {
+        "title": {"type": "string", "minLength": 1, "maxLength": 120},
+        "locationName": {"type": "string", "minLength": 1, "maxLength": 180},
+        "durationMinutes": {"type": "integer", "minimum": 30, "maximum": 360},
+        "hostGoal": {"type": "string", "minLength": 1, "maxLength": 240},
+        "attendeePrompt": {"type": "string", "minLength": 1, "maxLength": 320},
+        "moduleIds": {"type": "array", "minItems": 1, "maxItems": 8, "uniqueItems": true, "items": {"$ref": "#/definitions/moduleId"}}
+      }
+    }
+  }
+}

@@ -151,6 +151,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
             initialSearch: widget.initialCampaignSearch,
             onRetry: _retry,
             onBusyChanged: _setCampaignBusy,
+            onOpenInbox: () => _selectWorkspace(HostMessagingWorkspace.inbox),
           );
     final inbox = isInbox
         ? ref.watch(chatsListViewModelProvider).asData?.value
@@ -429,6 +430,7 @@ class _HostCampaignWorkspaceSliver extends StatelessWidget {
     required this.initialSearch,
     required this.onRetry,
     required this.onBusyChanged,
+    required this.onOpenInbox,
   });
 
   final AsyncValue<String?> uidAsync;
@@ -439,6 +441,7 @@ class _HostCampaignWorkspaceSliver extends StatelessWidget {
   final String? initialSearch;
   final ValueChanged<String?> onRetry;
   final ValueChanged<bool> onBusyChanged;
+  final VoidCallback onOpenInbox;
 
   @override
   Widget build(BuildContext context) {
@@ -460,6 +463,7 @@ class _HostCampaignWorkspaceSliver extends StatelessWidget {
       initialSegments: initialSegments,
       initialSearch: initialSearch,
       onBusyChanged: onBusyChanged,
+      onOpenInbox: onOpenInbox,
     );
   }
 }
@@ -558,6 +562,7 @@ class _HostInboxScopeSelectorState extends State<HostInboxScopeSelector> {
                 value: scope,
                 label: _scopeMenuLabel(scope, eventsById),
                 selected: scope == selectedScope,
+                role: CatchMenuItemRole.choice,
               ),
           ],
           onSelected: (scope, _) {
@@ -730,7 +735,7 @@ class HostInboxWorkspaceSliver extends StatelessWidget {
                     .hostsHostInboxScreenVisiblecopyNameAttendee(
                       name: workspace.selectedSegment.name,
                     ),
-                subtitle: _broadcastSubtitle,
+                subtitle: _broadcastSubtitle(context),
                 onTap: canSend ? () => onBroadcastSelected(workspace) : null,
               ),
             ),
@@ -746,9 +751,14 @@ class HostInboxWorkspaceSliver extends StatelessWidget {
                   preview.timestamp,
                   now: now,
                 ),
-            previewTextFor: (preview) =>
-                rowsByMatchId[preview.matchId]?.supportingText ??
-                preview.previewText,
+            previewTextFor: (preview) {
+              final row = rowsByMatchId[preview.matchId];
+              return row == null
+                  ? preview.previewText
+                  : context.l10n.hostInboxCatchChatPreview(
+                      details: row.supportingText,
+                    );
+            },
             onThreadSelected: onThreadSelected,
           ),
         if (whatsappThreads.isNotEmpty)
@@ -801,17 +811,17 @@ class HostInboxWorkspaceSliver extends StatelessWidget {
     );
   }
 
-  String get _broadcastSubtitle {
+  String _broadcastSubtitle(BuildContext context) {
     if (!workspace.broadcastLifecycleAvailable) {
-      return 'Broadcasts close when the event ends';
+      return context.l10n.hostInboxAnnouncementClosed;
     }
     if (!broadcastEnabled) {
-      return 'Available after the production backend preflight';
+      return context.l10n.hostInboxAnnouncementBackendRequired;
     }
     if (workspace.selectedAudienceCount == 0) {
-      return 'No eligible recipients in this audience yet';
+      return context.l10n.hostInboxAnnouncementNoRecipients;
     }
-    return 'Reminders, the meeting point, changes';
+    return context.l10n.hostInboxAnnouncementAvailable;
   }
 }
 

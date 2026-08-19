@@ -18,7 +18,6 @@ final class HostTeamWorkspaceActionState {
     required this.uid,
     required this.editMode,
     required this.creatingProfile,
-    required this.signOutPending,
     required this.canCreateProfile,
     required this.profileForEdit,
   });
@@ -27,14 +26,12 @@ final class HostTeamWorkspaceActionState {
     required String? uid,
     required bool editMode,
     required bool creatingProfile,
-    required bool signOutPending,
     required HostTeamProfileState profile,
   }) {
     return HostTeamWorkspaceActionState(
       uid: uid,
       editMode: editMode,
       creatingProfile: creatingProfile,
-      signOutPending: signOutPending,
       canCreateProfile:
           uid != null && !creatingProfile && profile is HostTeamProfileMissing,
       profileForEdit: switch (profile) {
@@ -47,11 +44,9 @@ final class HostTeamWorkspaceActionState {
   final String? uid;
   final bool editMode;
   final bool creatingProfile;
-  final bool signOutPending;
   final bool canCreateProfile;
   final HostProfile? profileForEdit;
 
-  bool get canSignOut => !signOutPending;
   bool get canEditProfile => editMode && uid != null && profileForEdit != null;
 
   HostTeamClubNavigationState clubNavigationFor(Club club) {

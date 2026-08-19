@@ -136,6 +136,11 @@ class _HostEventsScaffoldState extends ConsumerState<HostEventsScaffold> {
         final source = state.repeatSource;
         if (source == null) return;
         await _openRepeatEvent(club, source);
+      case HostEventEntryIntent.dressRehearsal:
+        await context.pushNamed(
+          Routes.hostEventRehearsalStartScreen.name,
+          pathParameters: {'clubId': club.id},
+        );
       case HostEventEntryIntent.createWithCatchBookings:
         await _openCreateEvent(club);
       case HostEventEntryIntent.createFromGuestList:
@@ -167,6 +172,7 @@ class _HostEventsScaffoldState extends ConsumerState<HostEventsScaffold> {
       extra: HostCreateEventRouteArguments(
         initialClub: club,
         initialDraft: initialDraft,
+        externalBookingMode: initialDraft?.externalBookingMode ?? false,
         promptForDrafts: false,
       ),
     );
@@ -174,12 +180,33 @@ class _HostEventsScaffoldState extends ConsumerState<HostEventsScaffold> {
   }
 
   Future<void> _openExternalEvent(Club club) async {
+    HostRosterTable? table;
+    try {
+      table = await ref
+          .read(createEventControllerProvider.notifier)
+          .pickRosterFile();
+    } on HostRosterImportException catch (error) {
+      if (mounted) {
+        showCatchSnackBar(
+          context,
+          hostRosterImportIssueCopy(context, error.issue),
+        );
+      }
+      return;
+    } on Object catch (error) {
+      if (mounted) showCatchErrorSnackBar(context, error);
+      return;
+    }
+    if (table == null || !mounted) return;
+    final rosterPlan = await showHostRosterMapping(context, table);
+    if (rosterPlan == null || !mounted) return;
     await context.pushNamed(
       Routes.hostCreateEventScreen.name,
       pathParameters: {'clubId': club.id},
       extra: HostCreateEventRouteArguments(
         initialClub: club,
         externalBookingMode: true,
+        initialRosterImportPlan: rosterPlan,
         promptForDrafts: false,
       ),
     );

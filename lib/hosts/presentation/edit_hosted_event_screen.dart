@@ -1258,17 +1258,34 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
           maximumContract: CatchContractConstraints
               .updateEventCallablePayloadFieldsConstraintsMaxAge,
         ),
-        CatchField.optionCards<EventCancellationPolicyId>(
-          title: context.l10n.hostsEditHostedEventScreenLabelCancellationPolicy,
-          contract: CatchContractConstraints
-              .updateEventCallablePayloadFieldsEventPolicyCancellationPolicyId,
-          contractValue: (value) => value.name,
-          values: EventCancellationPolicyId.values,
-          itemTitle: (policyId) => policyFor(policyId).title,
-          itemDescription: (policyId) => policyFor(policyId).attendeeSummary,
-          selected: state.cancellationPolicyId,
-          onChanged: onCancellationPolicyChanged,
-          icon: CatchIcons.ruleOutlined,
+        ValueListenableBuilder<TextEditingValue>(
+          valueListenable: priceController,
+          builder: (context, price, _) {
+            final priceInMinorUnits = parseMajorCurrencyAmountToMinorUnits(
+              price.text,
+              currencyCode: state.currencyCode,
+            );
+            if (priceInMinorUnits == 0) return const SizedBox.shrink();
+            return CatchField.optionCards<EventCancellationPolicyId>(
+              title: context
+                  .l10n
+                  .hostsEditHostedEventScreenLabelCancellationPolicy,
+              contract: CatchContractConstraints
+                  .updateEventCallablePayloadFieldsEventPolicyCancellationPolicyId,
+              contractValue: (value) => value.name,
+              values: EventCancellationPolicyId.values
+                  .where((value) => value.isApplicable)
+                  .toList(growable: false),
+              itemTitle: (policyId) => policyFor(policyId).title,
+              itemDescription: (policyId) =>
+                  policyFor(policyId).attendeeSummary,
+              selected: state.cancellationPolicyId.isApplicable
+                  ? state.cancellationPolicyId
+                  : EventCancellationPolicyId.standard,
+              onChanged: onCancellationPolicyChanged,
+              icon: CatchIcons.ruleOutlined,
+            );
+          },
         ),
       ],
     );

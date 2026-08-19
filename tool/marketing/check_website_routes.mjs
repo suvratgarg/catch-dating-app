@@ -148,6 +148,7 @@ function validateRoutes(routes, storyDeclarations) {
     "home",
     "host",
     "event_runtime",
+    "event_rehearsal",
     "event_invite",
     "public_form",
     "organizer_search",
@@ -280,6 +281,7 @@ function validatePageKey(route) {
     "listing",
     "event_detail",
     "event_runtime",
+    "event_rehearsal",
     "event_invite",
     "public_form",
     "claim",
@@ -316,6 +318,7 @@ function validatePageKey(route) {
     help: "pathname.startsWith(\"/help\")",
     host: "pathname.startsWith(\"/host\")",
     event_runtime: "pathname.startsWith(\"/join/\")",
+    event_rehearsal: "pathname.startsWith(\"/rehearse/\")",
     organizers: "pathname.startsWith(\"/organizers\")",
   };
   const expected = expectedChecks[route.pageKey];
@@ -906,6 +909,7 @@ export const OrganizerSearch = {
         "host",
         "public_form",
         "event_runtime",
+        "event_rehearsal",
         "event_invite",
         "organizers",
         "claim",

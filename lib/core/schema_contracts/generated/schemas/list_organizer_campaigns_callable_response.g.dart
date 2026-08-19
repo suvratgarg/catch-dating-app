@@ -8,7 +8,7 @@ const schemaListOrganizerCampaignsCallableResponseSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/callable_responses/list_organizer_campaigns_response.schema.json',
   'title': 'ListOrganizerCampaignsCallableResponse',
-  'description': 'Reverse-chronological organizer Sends rows mixing WhatsApp campaigns and event announcements.',
+  'description': 'Reverse-chronological organizer Sends rows mixing WhatsApp campaigns, event announcements, and follower updates.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
@@ -301,6 +301,101 @@ const schemaListOrganizerCampaignsCallableResponseSchema = <String, Object?>{
               },
               'partialFailure': <String, Object?>{
                 'type': 'boolean',
+              },
+              'activityAtMillis': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+            },
+          },
+          <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'kind',
+              'postId',
+              'eventId',
+              'audience',
+              'status',
+              'deliveryStatus',
+              'recipientCount',
+              'excludedCount',
+              'activityAvailableCount',
+              'pushAttemptedCount',
+              'pushAcceptedCount',
+              'pushFailedCount',
+              'pushUnknownCount',
+              'createdAtMillis',
+              'activityAtMillis',
+            ],
+            'properties': <String, Object?>{
+              'kind': <String, Object?>{
+                'const': 'followerUpdate',
+              },
+              'postId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'eventId': <String, Object?>{
+                'type': <Object?>[
+                  'string',
+                  'null',
+                ],
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'audience': <String, Object?>{
+                'const': 'followers',
+              },
+              'status': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'active',
+                  'removed',
+                ],
+                'x-catch-ownership': 'callable-owned',
+              },
+              'deliveryStatus': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'pending',
+                  'completed',
+                  'partial',
+                  'unknown',
+                ],
+              },
+              'recipientCount': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+              'excludedCount': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+              'activityAvailableCount': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+              'pushAttemptedCount': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+              'pushAcceptedCount': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+              'pushFailedCount': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+              'pushUnknownCount': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+              'createdAtMillis': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
               },
               'activityAtMillis': <String, Object?>{
                 'type': 'integer',
@@ -603,6 +698,101 @@ const schemaListOrganizerCampaignsCallableResponseSchema = <String, Object?>{
             },
           },
         },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'postId',
+            'eventId',
+            'audience',
+            'status',
+            'deliveryStatus',
+            'recipientCount',
+            'excludedCount',
+            'activityAvailableCount',
+            'pushAttemptedCount',
+            'pushAcceptedCount',
+            'pushFailedCount',
+            'pushUnknownCount',
+            'createdAtMillis',
+            'activityAtMillis',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'followerUpdate',
+            },
+            'postId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'eventId': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'audience': <String, Object?>{
+              'const': 'followers',
+            },
+            'status': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'active',
+                'removed',
+              ],
+              'x-catch-ownership': 'callable-owned',
+            },
+            'deliveryStatus': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'pending',
+                'completed',
+                'partial',
+                'unknown',
+              ],
+            },
+            'recipientCount': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+            },
+            'excludedCount': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+            },
+            'activityAvailableCount': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+            },
+            'pushAttemptedCount': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+            },
+            'pushAcceptedCount': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+            },
+            'pushFailedCount': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+            },
+            'pushUnknownCount': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+            },
+            'createdAtMillis': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+            },
+            'activityAtMillis': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+            },
+          },
+        },
       ],
     },
     'campaign': <String, Object?>{
@@ -879,6 +1069,101 @@ const schemaListOrganizerCampaignsCallableResponseSchema = <String, Object?>{
         },
         'partialFailure': <String, Object?>{
           'type': 'boolean',
+        },
+        'activityAtMillis': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+      },
+    },
+    'followerUpdate': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'kind',
+        'postId',
+        'eventId',
+        'audience',
+        'status',
+        'deliveryStatus',
+        'recipientCount',
+        'excludedCount',
+        'activityAvailableCount',
+        'pushAttemptedCount',
+        'pushAcceptedCount',
+        'pushFailedCount',
+        'pushUnknownCount',
+        'createdAtMillis',
+        'activityAtMillis',
+      ],
+      'properties': <String, Object?>{
+        'kind': <String, Object?>{
+          'const': 'followerUpdate',
+        },
+        'postId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'eventId': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'audience': <String, Object?>{
+          'const': 'followers',
+        },
+        'status': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'active',
+            'removed',
+          ],
+          'x-catch-ownership': 'callable-owned',
+        },
+        'deliveryStatus': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'pending',
+            'completed',
+            'partial',
+            'unknown',
+          ],
+        },
+        'recipientCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+        'excludedCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+        'activityAvailableCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+        'pushAttemptedCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+        'pushAcceptedCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+        'pushFailedCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+        'pushUnknownCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+        'createdAtMillis': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
         },
         'activityAtMillis': <String, Object?>{
           'type': 'integer',

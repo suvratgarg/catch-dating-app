@@ -1213,6 +1213,17 @@ final directories = <_widgetbook.WidgetbookNode>[
               ),
             ],
           ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchSkeletonized',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Derived content',
+                builder:
+                    _widgetbook_workspace_primitives_skeleton_layout_use_cases
+                        .catchSkeletonizedCatalogState,
+              ),
+            ],
+          ),
         ],
       ),
       _widgetbook.WidgetbookFolder(
@@ -1280,6 +1291,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Catalog states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
                     .catchMenuRowCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchSelectionMenu',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Catalog states',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .catchSelectionMenuCatalogStates,
               ),
             ],
           ),
@@ -7785,6 +7806,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerDetailBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Detail composition states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostCustomerDetailBodyStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostCustomerDetailScreen',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -7792,6 +7824,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
                             .hostCustomerDetailStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerEditDetailsSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Edit details states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostCustomerEditDetailsStates,
                   ),
                 ],
               ),
@@ -8471,6 +8514,21 @@ final directories = <_widgetbook.WidgetbookNode>[
                             .hostStrictHostLoadingScreenCatalogStates,
                   ),
                 ],
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Host organizer',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'HostClubMediaSummary',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Role-sized summary states',
+                builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                    .hostClubMediaSummaryCatalogStates,
               ),
             ],
           ),

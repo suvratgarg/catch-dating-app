@@ -3483,7 +3483,7 @@
       "name": "CatchSkeleton",
       "status": "active",
       "kind": "pattern",
-      "summary": "Content-shaped placeholder concept for known loading layouts, including list and screen/sliver placement adapters.",
+      "summary": "Content-shaped placeholder concept for known loading layouts, including structure-derived content and list/screen/sliver placement adapters.",
       "dart": {
         "symbol": "CatchSkeleton",
         "file": "lib/core/widgets/catch_skeleton.dart",
@@ -3563,6 +3563,7 @@
           "text-block",
           "circle",
           "custom",
+          "derived-content",
           "list",
           "async-screen",
           "async-sliver"
@@ -3590,6 +3591,7 @@
           "CatchSkeleton.textBlock",
           "CatchSkeleton.circle",
           "CatchSkeleton.custom",
+          "CatchSkeletonized",
           "CatchSkeletonList",
           "CatchAsyncScreenLoading",
           "CatchAsyncSliverLoading",
@@ -3598,6 +3600,25 @@
         ],
         "goldens": [],
         "members": [
+          {
+            "id": "catch.skeleton.derived_content",
+            "symbol": "CatchSkeletonized",
+            "file": "lib/core/widgets/catch_skeletonized.dart",
+            "summary": "Skeletonizes the real loaded composition so layout edits cannot drift into a parallel placeholder tree.",
+            "states": [
+              "derived-content",
+              "enabled",
+              "disabled",
+              "reduced-motion"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.skeleton",
+              "parentConceptId": "catch.skeleton",
+              "qualifier": "adapter",
+              "decisionRef": "pattern-family:loading-concept-decompression"
+            }
+          },
           {
             "id": "catch.skeleton.list",
             "symbol": "CatchSkeletonList",
@@ -3678,6 +3699,7 @@
         ],
         "notes": [
           "Prefer content-shaped skeletons when the eventual layout is known.",
+          "Prefer CatchSkeletonized for detail or form layouts whose loaded composition can be rendered with representative placeholder data.",
           "Async screen and sliver loading are placement adapters over CatchSkeletonList, not separate visual concepts."
         ]
       },
@@ -5120,7 +5142,7 @@
       "name": "CatchMenu",
       "status": "active",
       "kind": "composite",
-      "summary": "Canonical anchored menu family for overflow actions, row selection, disabled rows, destructive actions, and typed callbacks.",
+      "summary": "Canonical menu family with separate command overflow and adaptive mutually-exclusive selection contracts.",
       "dart": {
         "symbol": "CatchMenu",
         "file": "lib/core/widgets/catch_menu.dart",
@@ -5159,20 +5181,25 @@
             "dartType": "void Function(T value, CatchMenuItem<T> item)?"
           },
           {
-            "name": "selected",
-            "type": "object",
+            "name": "width",
+            "type": "number",
             "required": false,
-            "dartType": "T?"
+            "dartType": "double?"
           }
         ],
         "states": [
           "default",
-          "selected-row",
+          "action-row",
+          "choice-row",
+          "choice-row-selected",
           "disabled-row",
           "danger-row",
           "with-icons",
           "with-sublabels",
-          "anchored-action"
+          "sectioned",
+          "scrolling",
+          "compact-selection-sheet",
+          "anchored-selection"
         ],
         "slots": [],
         "tokens": [
@@ -5189,9 +5216,15 @@
         ],
         "dartRoles": [
           "CatchMenuItem",
+          "CatchMenuItemRole",
           "CatchActionMenuItem",
+          "CatchSelectionMenuItem",
           "CatchMenuRow",
           "CatchActionMenu",
+          "CatchSelectionMenu",
+          "CatchSelectionSheet",
+          "CatchAdaptiveSelectionMenu",
+          "CatchAdaptiveSelectionControl",
           "CatchSurface",
           "CatchIconButton",
           "CatchTextStyles.body",
@@ -5203,10 +5236,11 @@
             "id": "catch.menu.row",
             "symbol": "CatchMenuRow",
             "file": "lib/core/widgets/catch_menu.dart",
-            "summary": "Direct menu-row renderer for selected, disabled, danger, icon, sublabel, and checkmark states.",
+            "summary": "Direct menu-row renderer with explicit action or mutually-exclusive choice semantics.",
             "states": [
-              "default",
-              "selected",
+              "action",
+              "choice",
+              "choice-selected",
               "disabled",
               "danger",
               "with-icon",
@@ -5224,12 +5258,12 @@
             "id": "catch.menu.action_menu",
             "symbol": "CatchActionMenu",
             "file": "lib/core/widgets/catch_action_menu.dart",
-            "summary": "Anchored overflow trigger that opens CatchMenu from a CatchIconButton.",
+            "summary": "Anchored overflow trigger for at most five commands; selected or informational status rows are structurally excluded.",
             "states": [
               "closed",
               "open",
               "disabled",
-              "selected-row",
+              "disabled-command-with-reason",
               "danger-row"
             ],
             "governance": {
@@ -5237,6 +5271,64 @@
               "conceptId": "catch.menu",
               "parentConceptId": "catch.menu",
               "qualifier": "layout",
+              "decisionRef": "contract-family:catch.menu"
+            }
+          },
+          {
+            "id": "catch.menu.selection_menu",
+            "symbol": "CatchSelectionMenu",
+            "file": "lib/core/widgets/catch_selection_menu.dart",
+            "summary": "Anchored picker for typed mutually-exclusive choices on medium and expanded layouts.",
+            "states": [
+              "closed",
+              "open",
+              "selected-choice",
+              "disabled-choice"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.menu",
+              "parentConceptId": "catch.menu",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.menu"
+            }
+          },
+          {
+            "id": "catch.menu.selection_sheet",
+            "symbol": "CatchSelectionSheet",
+            "file": "lib/core/widgets/catch_selection_menu.dart",
+            "summary": "Phone-friendly bottom sheet for typed mutually-exclusive choices with title and optional explanatory copy.",
+            "states": [
+              "selected-choice",
+              "disabled-choice",
+              "with-subtitle",
+              "scrolling"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.menu",
+              "parentConceptId": "catch.menu",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.menu"
+            }
+          },
+          {
+            "id": "catch.menu.adaptive_selection",
+            "symbol": "CatchAdaptiveSelectionControl",
+            "file": "lib/core/widgets/catch_selection_menu.dart",
+            "summary": "Visible selection control that opens a sheet on compact windows and an anchored picker on wider windows.",
+            "states": [
+              "compact",
+              "medium",
+              "expanded",
+              "open",
+              "closed"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.menu",
+              "parentConceptId": "catch.menu",
+              "qualifier": "adapter",
               "decisionRef": "contract-family:catch.menu"
             }
           }
@@ -5261,8 +5353,10 @@
           "catch.surface"
         ],
         "notes": [
-          "Use CatchActionMenu for icon-triggered overflow menus and CatchMenu for direct menu panel review.",
-          "Keep selected, disabled, and destructive row states in this family instead of creating feature-local menu rows."
+          "Use CatchActionMenu only for short command lists. Keep sort, filter, and other selected choices out of overflow.",
+          "Use CatchAdaptiveSelectionControl when the current choice should remain visible, or CatchAdaptiveSelectionMenu with a custom trigger.",
+          "Informational status belongs on the owning page, not as a disabled menu row. Disabled commands must explain why they are unavailable.",
+          "Use explicit section boundaries instead of drawing a divider after every row."
         ]
       },
       "governance": {
@@ -9143,7 +9237,7 @@
       "name": "CatchStepHeader",
       "status": "active",
       "kind": "composite",
-      "summary": "Wizard/step-flow header built from CatchTopBar large mode plus an optional progress hairline.",
+      "summary": "Wizard/step-flow header with back or close navigation, an optional interactive section counter, and a progress hairline.",
       "dart": {
         "symbol": "CatchStepHeader",
         "file": "lib/core/widgets/catch_step_flow_header.dart",
@@ -9213,6 +9307,30 @@
             "dartType": "bool"
           },
           {
+            "name": "leadingType",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchTopBarLeading?",
+            "values": [
+              "auto",
+              "back",
+              "close",
+              "none"
+            ]
+          },
+          {
+            "name": "onStepOverview",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback?"
+          },
+          {
+            "name": "stepOverviewSemanticsLabel",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
             "name": "trailing",
             "type": "widget",
             "required": false,
@@ -9230,6 +9348,8 @@
           "with-progress",
           "without-progress",
           "with-back",
+          "with-close",
+          "interactive-step-overview",
           "no-back",
           "custom-trailing",
           "no-gutter"
@@ -9256,6 +9376,7 @@
         "dartRoles": [
           "CatchTopBar",
           "CatchTopBarLeading",
+          "CatchTextButton",
           "CatchTextStyles.monoLabel",
           "CatchLayout.stepHeaderProgressHeight",
           "CatchStepProgress"
@@ -9302,7 +9423,7 @@
           "catch.icon_button"
         ],
         "notes": [
-          "Use for multi-step flows; do not create thin feature wrappers unless they add real behavior.",
+          "Use for multi-step flows; prefer a close leading action for global wizard exit and expose the step counter as an overview action in resumable forms.",
           "CatchStepProgress is the progress member of catch.step_header, not a separate wizard primitive."
         ]
       },
@@ -12988,7 +13109,7 @@
       "name": "CatchBottomAction",
       "status": "active",
       "kind": "composite",
-      "summary": "Canonical platform-adaptive primary bottom action: inset floating chrome on Cupertino platforms and an anchored full-width action bar on Material platforms.",
+      "summary": "Canonical primary bottom-action family: platform-adaptive single-CTA chrome plus a scroll-aware fade overlay for dockless multi-action forms.",
       "design": {
         "figma": {
           "status": "unmapped",
@@ -13081,6 +13202,7 @@
           "leading-content",
           "catch-line",
           "footnote",
+          "scroll-overlay",
           "loading",
           "disabled"
         ],
@@ -13098,7 +13220,11 @@
           "space.s2",
           "space.s3",
           "space.s4",
+          "space.s12",
+          "space.s16",
+          "space.micro18",
           "radius.lg",
+          "theme.light.color.bg",
           "theme.light.color.ink2",
           "theme.light.color.ink3",
           "theme.light.color.line",
@@ -13108,11 +13234,33 @@
           "CatchButton",
           "CatchElevation.raised",
           "CatchIcons.sparkle",
+          "CatchLayout.bottomActionOverlayScrimHeight",
+          "CatchOpacity.bottomActionScrim",
           "CatchSpacing.screenPx",
           "CatchTextStyles.monoLabel"
         ],
         "goldens": [],
         "members": [
+          {
+            "id": "catch.bottom_action.overlay",
+            "symbol": "CatchBottomActionOverlay",
+            "file": "lib/core/widgets/catch_bottom_action.dart",
+            "summary": "Dockless pinned-action layout that lets scrolling content pass beneath a soft background fade while paired form insets keep final content reachable.",
+            "states": [
+              "scrolling",
+              "long-content",
+              "safe-area",
+              "light",
+              "dark"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.bottom_action",
+              "parentConceptId": "catch.bottom_action",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.bottom_action"
+            }
+          },
           {
             "id": "catch.bottom_action.content",
             "symbol": "CatchBottomActionContent",
@@ -13157,6 +13305,7 @@
         ],
         "notes": [
           "Callers provide one CTA contract; CatchBottomAction selects floating Cupertino or anchored Material chrome from the active platform.",
+          "Use CatchBottomActionOverlay for multi-action form footers that must stay pinned without an opaque dock; keep the scrolling body visible beneath its fade.",
           "Do not place primary screen CTAs in CatchBottomDock or branch on platform at feature call sites."
         ]
       },

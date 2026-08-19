@@ -63,6 +63,8 @@ String? validateAge(
 /// Resolves an [EventCancellationPolicyId] to its [EventCancellationPolicy].
 EventCancellationPolicy policyFor(EventCancellationPolicyId id) {
   return switch (id) {
+    EventCancellationPolicyId.notApplicable =>
+      const EventCancellationPolicy.notApplicable(),
     EventCancellationPolicyId.flexible =>
       const EventCancellationPolicy.flexible(),
     EventCancellationPolicyId.standard =>

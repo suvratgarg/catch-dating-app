@@ -180,12 +180,14 @@ class CatchMetaRow extends StatelessWidget {
     required this.label,
     this.color,
     this.labelColor,
+    this.maxLines = 1,
   });
 
   final IconData icon;
   final String label;
   final Color? color;
   final Color? labelColor;
+  final int maxLines;
 
   @override
   Widget build(BuildContext context) {
@@ -197,7 +199,7 @@ class CatchMetaRow extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            maxLines: 1,
+            maxLines: maxLines,
             overflow: TextOverflow.ellipsis,
             style: CatchTextStyles.labelM(context, color: labelColor ?? t.ink2),
           ),

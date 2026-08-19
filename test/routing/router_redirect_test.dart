@@ -185,6 +185,14 @@ void main() {
       expect(Routes.hostClubTeamScreen.path, '/host/organizers/team');
       expect(Routes.hostClubPaymentsScreen.path, '/host/organizers/payments');
       expect(
+        Routes.hostEventRehearsalStartScreen.path,
+        '/host/organizers/:clubId/rehearsals/new',
+      );
+      expect(
+        Routes.hostEventRehearsalScreen.path,
+        '/host/organizers/:clubId/rehearsals/:sessionId',
+      );
+      expect(
         Routes.hostOrganizerMessagingScreen.path,
         '/host/organizer/:clubId/messaging',
       );

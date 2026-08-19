@@ -39,7 +39,7 @@ void _registerProfileShellLayoutTests() {
       await pumpState(
         const SelfProfileScreenState(
           status: SelfProfileRouteStatus.unavailable,
-          uploadState: (loadingIndices: <int>{}, uploadError: null),
+          uploadState: PhotoUploadState(),
           mutationMode: SelfProfileMutationMode.idle,
         ),
       );
@@ -50,7 +50,7 @@ void _registerProfileShellLayoutTests() {
         SelfProfileScreenState(
           status: SelfProfileRouteStatus.error,
           error: StateError('profile failed'),
-          uploadState: const (loadingIndices: <int>{}, uploadError: null),
+          uploadState: const PhotoUploadState(),
           mutationMode: SelfProfileMutationMode.idle,
         ),
       );
@@ -692,10 +692,7 @@ void _registerProfileShellLayoutTests() {
         child: MaterialApp(
           theme: AppTheme.light,
           home: Scaffold(
-            body: ProfileTab(
-              user: user,
-              uploadState: (loadingIndices: <int>{}, uploadError: null),
-            ),
+            body: ProfileTab(user: user, uploadState: const PhotoUploadState()),
           ),
         ),
       ),

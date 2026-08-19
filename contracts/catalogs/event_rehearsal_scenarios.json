@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "kind": "eventRehearsalScenarios",
+  "scenarios": [
+    {"id": "smoothRun", "title": "Smooth run", "summary": "A cooperative room for learning the normal Host and guest flow.", "defaultActorCount": 12, "timeline": [{"atMinute": 0, "behavior": "arrive", "actorIndex": 0}, {"atMinute": 4, "behavior": "arrive", "actorIndex": 1}]},
+    {"id": "lateAndNoShow", "title": "Late arrivals and no-shows", "summary": "Practice recovery when expected guests are missing or arrive after groups begin.", "defaultActorCount": 16, "timeline": [{"atMinute": 10, "behavior": "arriveLate", "actorIndex": 2}, {"atMinute": 15, "behavior": "markNoShow", "actorIndex": 5}]},
+    {"id": "earlyExitAndReturn", "title": "Early exit and return", "summary": "Rebalance when a guest leaves early and another returns later.", "defaultActorCount": 14, "timeline": [{"atMinute": 18, "behavior": "leaveEarly", "actorIndex": 3}, {"atMinute": 32, "behavior": "return", "actorIndex": 3}]},
+    {"id": "rosterAndCapacity", "title": "Odd roster and capacity", "summary": "Expose odd-sized groups, tight capacity, and unassigned guests.", "defaultActorCount": 15, "timeline": [{"atMinute": 12, "behavior": "leaveEarly", "actorIndex": 4}, {"atMinute": 13, "behavior": "walkIn", "actorIndex": 15}]},
+    {"id": "walkInAndAmbiguousClaim", "title": "Walk-in and ambiguous claim", "summary": "Practice admitting a walk-in and resolving two similar roster identities.", "defaultActorCount": 12, "timeline": [{"atMinute": 3, "behavior": "walkIn", "actorIndex": 12}, {"atMinute": 5, "behavior": "ambiguousClaim", "actorIndex": 6}]},
+    {"id": "privacyAndKeepApart", "title": "Privacy and keep-apart", "summary": "Respect an opt-out and a safety keep-apart constraint while preserving flow.", "defaultActorCount": 14, "timeline": [{"atMinute": 7, "behavior": "optOut", "actorIndex": 7}, {"atMinute": 8, "behavior": "keepApart", "actorIndex": 8}]},
+    {"id": "lowConnectivity", "title": "Low connectivity", "summary": "Continue through disconnects, delayed updates, and reconnection.", "defaultActorCount": 12, "timeline": [{"atMinute": 6, "behavior": "disconnect", "actorIndex": 2}, {"atMinute": 16, "behavior": "reconnect", "actorIndex": 2}]},
+    {"id": "concurrentHosts", "title": "Two hosts, one revision", "summary": "Show how stale Host actions are rejected and recovered safely.", "defaultActorCount": 12, "timeline": []},
+    {"id": "revealInterrupted", "title": "Reveal interrupted", "summary": "Pause and recover around a reveal or round transition.", "defaultActorCount": 12, "timeline": [{"atMinute": 25, "behavior": "disconnect", "actorIndex": 1}, {"atMinute": 27, "behavior": "reconnect", "actorIndex": 1}]},
+    {"id": "externalProfiles", "title": "External and incomplete profiles", "summary": "Exercise no-download guests and deliberately sparse participant data.", "defaultActorCount": 14, "timeline": [{"atMinute": 2, "behavior": "ambiguousClaim", "actorIndex": 10}]},
+    {"id": "accountabilitySweep", "title": "Accountability sweep", "summary": "Finish with unresolved checked-in, departed, and disconnected guests.", "defaultActorCount": 18, "timeline": [{"atMinute": 40, "behavior": "leaveEarly", "actorIndex": 2}, {"atMinute": 41, "behavior": "disconnect", "actorIndex": 4}]}
+  ],
+  "faults": [
+    {"id": "none", "title": "No injected fault", "internalOnly": false},
+    {"id": "latency", "title": "Artificial latency", "internalOnly": true},
+    {"id": "oneShotFailure", "title": "One-shot callable failure", "internalOnly": true},
+    {"id": "listenerDisconnect", "title": "Listener disconnect", "internalOnly": true},
+    {"id": "staleRevision", "title": "Stale revision", "internalOnly": true},
+    {"id": "duplicateDelivery", "title": "Duplicate action delivery", "internalOnly": true},
+    {"id": "legacyFixture", "title": "Legacy fixture shape", "internalOnly": true},
+    {"id": "reducedMotion", "title": "Reduced motion", "internalOnly": true},
+    {"id": "lowBandwidth", "title": "Low bandwidth", "internalOnly": true}
+  ]
+}

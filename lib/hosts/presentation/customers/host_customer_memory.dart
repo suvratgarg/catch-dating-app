@@ -38,135 +38,86 @@ class HostCustomerMemorySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return CatchSection.divided(
-      title: context.l10n.hostCustomersMemory,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
+    final notes = customer.notes;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        CatchSection.containedFieldRows(
+          key: const ValueKey('host-customer-memory'),
+          title: context.l10n.hostCustomersMemory,
+          trailing: notes.isEmpty
+              ? null
+              : CatchButton(
+                  key: const ValueKey('host-customer-add-note'),
+                  label: context.l10n.hostCustomersAddNote,
+                  variant: CatchButtonVariant.ghost,
+                  size: CatchButtonSize.sm,
+                  onPressed: onAddNote,
+                ),
+          footer: Text(
             context.l10n.hostCustomersMemoryHelp,
             style: CatchTextStyles.supporting(context),
           ),
-          gapH16,
-          _MemorySubsectionHeader(
-            title: context.l10n.hostCustomersManualTags,
-            actionLabel: context.l10n.hostCustomersEditTags,
-            actionKey: const ValueKey('host-customer-edit-tags'),
-            onAction: onEditTags,
-          ),
-          gapH8,
-          if (customer.manualTags.isEmpty)
-            Text(
-              context.l10n.hostCustomersNoManualTags,
-              style: CatchTextStyles.supporting(context),
-            )
-          else
-            Wrap(
-              spacing: CatchSpacing.s2,
-              runSpacing: CatchSpacing.s2,
-              children: [
-                for (final tag in customer.manualTags)
-                  CatchChip.tag(
-                    key: ValueKey('host-customer-manual-tag-${tag.tagId}'),
-                    label: tag.label,
-                    leading: Icon(CatchIcons.editNoteOutlined),
-                    tintColor: t.raised,
-                    inkColor: t.ink,
-                    semanticsLabel: context.l10n.hostCustomersManualTags,
+          children: [
+            CatchField.nav(
+              key: const ValueKey('host-customer-edit-tags'),
+              title: context.l10n.hostCustomersManualTags,
+              body: customer.manualTags.isEmpty
+                  ? context.l10n.hostCustomersNoManualTags
+                  : customer.manualTags.map((tag) => tag.label).join(' · '),
+              valueText: context.l10n.hostCustomersEditTags,
+              icon: CatchIcons.editNoteOutlined,
+              onTap: onEditTags,
+            ),
+            if (notes.isEmpty)
+              CatchField.nav(
+                key: const ValueKey('host-customer-add-note'),
+                title: context.l10n.hostCustomersNotes,
+                body: context.l10n.hostCustomersNoNotes,
+                valueText: context.l10n.hostCustomersAddNote,
+                icon: CatchIcons.editNoteOutlined,
+                onTap: onAddNote,
+              )
+            else
+              for (final note in notes)
+                CatchField.content(
+                  key: ValueKey('host-customer-note-${note.noteId}'),
+                  title: note.body,
+                  body: _noteAttribution(context, note, currentUid),
+                  titleMaxLines: 6,
+                  bodyMaxLines: 2,
+                  icon: CatchIcons.editNoteOutlined,
+                  action: CatchIconButton.icon(
+                    tooltip: context.l10n.hostCustomersEditNote,
+                    icon: CatchIcons.edit,
+                    variant: CatchIconButtonVariant.plain,
+                    onTap: () => onEditNote(note),
                   ),
-              ],
-            ),
-          gapH20,
-          Divider(height: 1, color: t.line),
-          gapH16,
-          _MemorySubsectionHeader(
-            title: context.l10n.hostCustomersNotes,
-            actionLabel: context.l10n.hostCustomersAddNote,
-            actionKey: const ValueKey('host-customer-add-note'),
-            onAction: onAddNote,
-          ),
-          gapH8,
-          if (customer.notes.isEmpty &&
-              customer.notesCoverage == HostCustomerHistoryCoverage.exact)
-            Text(
-              context.l10n.hostCustomersNoNotes,
-              style: CatchTextStyles.supporting(context),
-            )
-          else if (customer.notes.isNotEmpty)
-            CatchFieldLanes.single(
-              child: Column(
-                children: [
-                  for (final (index, note) in customer.notes.indexed)
-                    CatchField.content(
-                      key: ValueKey('host-customer-note-${note.noteId}'),
-                      title: note.body,
-                      body: _noteAttribution(context, note, currentUid),
-                      titleMaxLines: 6,
-                      bodyMaxLines: 2,
-                      action: CatchIconButton.icon(
-                        tooltip: context.l10n.hostCustomersEditNote,
-                        icon: CatchIcons.edit,
-                        variant: CatchIconButtonVariant.plain,
-                        onTap: () => onEditNote(note),
-                      ),
-                      divider: index < customer.notes.length - 1,
-                    ),
-                ],
-              ),
-            ),
-          if (customer.notesCoverage ==
-              HostCustomerHistoryCoverage.unavailable) ...[
-            gapH12,
-            CatchSurface.message(
-              title: context.l10n.hostCustomersNotesUnavailableTitle,
-              message: context.l10n.hostCustomersNotesUnavailableBody,
-              messageIcon: CatchIcons.infoOutlineRounded,
-              messageTone: CatchSurfaceMessageTone.warning,
-            ),
-          ] else if (customer.notesTruncated) ...[
-            gapH12,
-            CatchSurface.message(
-              title: context.l10n.hostCustomersNotes,
-              message: context.l10n.hostCustomersNotesTruncated,
-              messageIcon: CatchIcons.infoOutlineRounded,
-              messageTone: CatchSurfaceMessageTone.warning,
-            ),
+                  onTap: () => onEditNote(note),
+                ),
           ],
+        ),
+        if (customer.notesCoverage ==
+            HostCustomerHistoryCoverage.unavailable) ...[
+          gapH12,
+          CatchSurface.message(
+            title: context.l10n.hostCustomersNotesUnavailableTitle,
+            message: context.l10n.hostCustomersNotesUnavailableBody,
+            messageIcon: CatchIcons.infoOutlineRounded,
+            messageTone: CatchSurfaceMessageTone.warning,
+          ),
+        ] else if (customer.notesTruncated) ...[
+          gapH12,
+          CatchSurface.message(
+            title: context.l10n.hostCustomersNotes,
+            message: context.l10n.hostCustomersNotesTruncated,
+            messageIcon: CatchIcons.infoOutlineRounded,
+            messageTone: CatchSurfaceMessageTone.warning,
+          ),
         ],
-      ),
+      ],
     );
   }
-}
-
-class _MemorySubsectionHeader extends StatelessWidget {
-  const _MemorySubsectionHeader({
-    required this.title,
-    required this.actionLabel,
-    required this.actionKey,
-    required this.onAction,
-  });
-
-  final String title;
-  final String actionLabel;
-  final Key actionKey;
-  final VoidCallback onAction;
-
-  @override
-  Widget build(BuildContext context) => Row(
-    children: [
-      Expanded(
-        child: Text(title, style: CatchTextStyles.fieldRowTitle(context)),
-      ),
-      CatchButton(
-        key: actionKey,
-        label: actionLabel,
-        variant: CatchButtonVariant.ghost,
-        size: CatchButtonSize.sm,
-        onPressed: onAction,
-      ),
-    ],
-  );
 }
 
 class HostCustomerSendHistory extends StatelessWidget {
@@ -175,7 +126,7 @@ class HostCustomerSendHistory extends StatelessWidget {
   final HostAudienceContactDetail customer;
 
   @override
-  Widget build(BuildContext context) => CatchSection.divided(
+  Widget build(BuildContext context) => CatchSection.plain(
     title: context.l10n.hostCustomersSendHistory,
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

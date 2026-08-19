@@ -46,6 +46,12 @@ class EventDetailsStep extends StatefulWidget {
     this.runtimeWalkInPolicy = EventRuntimeWalkInPolicy.hostApproval,
     this.onExternalBookingProviderChanged,
     this.onRuntimeWalkInPolicyChanged,
+    this.rosterFileName,
+    this.rosterReadyCount,
+    this.rosterNeedsReviewCount = 0,
+    this.rosterExcludedCount = 0,
+    this.rosterAttached = false,
+    this.onPickRoster,
   });
 
   final GlobalKey<FormState> formKey;
@@ -74,6 +80,12 @@ class EventDetailsStep extends StatefulWidget {
   final EventRuntimeWalkInPolicy runtimeWalkInPolicy;
   final ValueChanged<ExternalBookingProvider>? onExternalBookingProviderChanged;
   final ValueChanged<EventRuntimeWalkInPolicy>? onRuntimeWalkInPolicyChanged;
+  final String? rosterFileName;
+  final int? rosterReadyCount;
+  final int rosterNeedsReviewCount;
+  final int rosterExcludedCount;
+  final bool rosterAttached;
+  final VoidCallback? onPickRoster;
 
   @override
   State<EventDetailsStep> createState() => _EventDetailsStepState();
@@ -159,7 +171,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
       key: widget.formKey,
       autovalidateMode: widget.autovalidateMode,
       child: ListView(
-        padding: CatchInsets.formStepBody,
+        padding: CatchInsets.formStepBodyWithBottomActions,
         children: [
           CatchSectionList(
             emptyStateOmitted: true,
@@ -177,6 +189,28 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                 ),
                 CatchSection.fieldRows(
                   children: [
+                    CatchField.action(
+                      key: const ValueKey('host.create_event.roster_file'),
+                      title: context.l10n.hostsCreateEventRosterTitle,
+                      body: widget.rosterFileName == null
+                          ? context.l10n.hostsCreateEventRosterChoose
+                          : widget.rosterAttached
+                          ? context.l10n.hostsCreateEventRosterAttached(
+                              fileName: widget.rosterFileName!,
+                              ready: widget.rosterReadyCount ?? 0,
+                              review: widget.rosterNeedsReviewCount,
+                              excluded: widget.rosterExcludedCount,
+                            )
+                          : context.l10n.hostsCreateEventRosterReattach(
+                              fileName: widget.rosterFileName!,
+                            ),
+                      bodyMaxLines: 4,
+                      valueText: widget.rosterFileName == null
+                          ? context.l10n.hostsCreateEventRosterChoose
+                          : context.l10n.hostsCreateEventRosterReplace,
+                      icon: CatchIcons.cloudUploadOutlined,
+                      onTap: widget.onPickRoster,
+                    ),
                     CatchField.choices<ExternalBookingProvider>(
                       key: CreateEventFormKeys.externalBookingProvider,
                       title: context

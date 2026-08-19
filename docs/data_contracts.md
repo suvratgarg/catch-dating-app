@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.32.0
-updated: 2026-08-18
+version: 1.33.0
+updated: 2026-08-19
 owner: recursive_audit_loop
 status: active
 ---
@@ -47,6 +47,40 @@ Read this before changing:
 
 Do not hand-edit generated outputs. Change the contract source, run the schema
 generator, and commit the generated diff.
+
+### Event Dress Rehearsal Isolation Contract
+
+Event rehearsal is a separate bounded domain with four callable-owned,
+server-only collections:
+
+| Collection | Purpose | Limits and authority |
+|---|---|---|
+| `eventRehearsals/{sessionId}` | Frozen source snapshot, editable pre-start setup, scenario/seed, virtual clock, lifecycle and revisions | Organizer manager reads through Host callables only; 24-hour expiry; at most five active sessions per owner |
+| `eventRehearsalActors/{sessionId_actorId}` | Deterministically generated synthetic people, status, guest moment, opt-out/help/prompt flags and keep-apart ids | At most 50 actors; no UID, phone, email, booking, payment, match, chat, or production attendee id |
+| `eventRehearsalActions/{sessionId_actionKey}` | Idempotent Host/guest controls and deterministic replay history | At most 500 actions; a stable hash of session plus client action id deduplicates delivery |
+| `eventRehearsalGuestViews/{sessionId_slotId}` | One browser-instance-to-actor lease with hashed bearer token state | Created only by the public guest bootstrap callable; link rotation invalidates prior slots |
+
+The schemas under `contracts/firestore/event_rehearsal_*.schema.json` and
+`contracts/callables/*event_rehearsal*.schema.json` are authoritative.
+Functions may read `events/{sourceEventId}` exactly once during creation to
+copy a bounded title, location, duration, and supported playbook shape after
+verifying organizer authority. No rehearsal handler may write a production
+collection. Firestore rules deny every direct client read and write to the four
+collections; App-Check-protected callables own all Host access.
+
+Host writes carry the expected setup or runtime revision. Mutating controls and
+guest actions carry a bounded client action id, exact replays return the same
+projection, and stale revisions fail closed. Setup freezes at start. Reset
+regenerates actors from the same seed and clears action count; fork creates a
+new session. The scheduled expiry handler deletes the bounded child set after
+24 hours. Advanced latency/failure/disconnect/stale/duplicate/legacy/reduced-
+motion/low-bandwidth faults require internal/admin authorization; behavioral
+scenarios remain available to an ordinary organizer manager.
+
+The public guest response contains only a practice banner, safe session fields,
+one synthetic actor, and a slot token. `clientInstanceId` stabilizes retries in
+one browser; the server derives and stores only deterministic hashes. It never
+uses Firebase Auth, OTP, attendee claims, or a production roster.
 
 ### Event Success Moment Presentation Contract
 
@@ -738,8 +772,13 @@ trailing 365 days; raw link opens and share-button taps never qualify.
 Trait and summary writes use exactly-once TTL receipts, so retries cannot
 double-count an organizer. The dry-run-first organizer-audience backfill uses
 the same production projector and marks a summary `exact` only after every
-current attendee row has completed. Newer live rows always win over stale
-backfill snapshots.
+current attendee row has completed. Its discovery set is the union of attendee,
+contact, and incomplete-summary organizers, so a manual-only organizer with
+zero attendees can still be completed. Newer live rows always win over stale
+backfill snapshots. A missing or partial summary is also effectively `exact`
+when a bounded canonical-history check proves that the organizer has no
+`eventAttendees`; absence of projection state alone is not treated as an
+incomplete migration.
 
 `getOrganizerCrmSummary` reads `organizerAudienceSummaries` only when its
 coverage is `exact` and returns only privacy-bounded counts for contacts, past
@@ -1130,6 +1169,9 @@ validates optional linked events against the same organizer, enforces the
 rolling three-posts-per-seven-days quota, writes the canonical post, and fans
 out durable `organizerUpdate` activity notifications to active followers.
 `createClubPost` and the nested club post are compatibility shadows.
+Manager Sends history reads the same organizer-scoped collection through
+`listOrganizerCampaigns` and returns post identity, audience, status, optional
+linked event and timestamps without returning the message body.
 
 ## Event Broadcast Receipts
 
@@ -1146,9 +1188,10 @@ event/activity label, audience, recipient count, send timestamp, partial-failure
 flag and bounded contact delivery states, but no message body, UID, endpoint or
 raw provider receipt. Direct client reads and writes are denied.
 `listOrganizerCampaigns` is the manager-authorized, rate-limited pagination
-boundary for the Host Sends workspace: it merges campaign summaries with these
-Announcement summaries in reverse chronological order using an opaque stable
-cursor. The query is organizer-scoped and never uses a collection-group scan.
+boundary for the Host Sends workspace: it merges campaign summaries, these
+Announcement summaries and organizer follower updates in reverse chronological
+order using an opaque stable cursor. The queries are organizer-scoped and never
+use a collection-group scan.
 
 The callable verifies current event-host authority and freezes a server-resolved
 audience from `eventParticipations`. Booked means `signedUp` plus `attended`;
@@ -1331,6 +1374,21 @@ host locks:
 `organizerTeamMemberships` owns active owner and manager seats. Legacy
 `clubHostClaims` remains only long enough to support released club callables;
 it is not organizer claim authority.
+
+## Event Policy Applicability
+
+`contracts/shared/event_common.schema.json` owns the versioned event-policy
+bundle invariant. Bundle version 2 couples pricing and cancellation semantics:
+
+- `pricing.basePriceInPaise == 0` requires
+  `cancellation.policyId == notApplicable`;
+- a positive base price requires `flexible`, `standard`, or `strict`;
+- external-companion events remain price-zero inside Catch because the external
+  booking authority owns payments, refunds, and attendee cancellations.
+
+Backend event create/update normalization derives this relationship rather than
+trusting a client-supplied cancellation value. Version 1 remains readable for
+legacy event documents.
 
 ## Event Discovery Projection
 
@@ -1574,6 +1632,36 @@ underlying callable and Firestore document-size limits, so clients must render
 and edit them through a virtualized/scrolling manager rather than an expanding
 inline grid. Consumer dating-profile media retains its independent six-photo
 policy and grouped `profilePhotos` contract.
+
+Firebase Storage owns immutable image bytes by stable media identity; Firestore
+owns presentation order, cover selection, captions, and the active references.
+The canonical object layout is:
+
+```text
+organizers/{organizerId}/media/{mediaId}/original.jpg
+organizers/{organizerId}/media/{mediaId}/thumbnail.jpg
+organizers/{organizerId}/logo/{mediaId}/original.jpg
+organizers/{organizerId}/logo/{mediaId}/thumbnail.jpg
+events/{eventId}/media/{mediaId}/original.jpg
+events/{eventId}/media/{mediaId}/thumbnail.jpg
+```
+
+Clients may create and compensation-delete only `original` objects for an
+organizer owner or active manager. Replacing an object in place is denied;
+editing media creates a new stable `mediaId`. Backend Firestore triggers create
+the responsive thumbnails only after the URL is attached to the canonical
+document, and organizer/event update and delete operations remove originals and
+derived thumbnails after the Firestore commit. This separates unordered object
+storage from the ordered gallery contract and prevents gallery reordering from
+renaming or re-uploading bytes.
+
+Released-client paths such as `organizers/{organizerId}/photos/{position}_{time}.jpg`,
+`organizers/{organizerId}/logo/{time}.jpg`, and the equivalent `clubs` and
+`events/{eventId}/photos` paths stay accepted during the compatibility window;
+their six-slot filename bound is not the canonical gallery policy. Private form
+assets remain separate: `organizerForms/...` and `organizer-form-exports/...`
+deny direct SDK access and are exposed only through short-lived backend-signed
+requests.
 
 Remote organizer backfill is complete in staging and production; legacy
 cleanup is intentionally not complete. Follow

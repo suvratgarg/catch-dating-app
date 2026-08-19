@@ -131,10 +131,11 @@ DateTime _dateTimeFromJson(Object? value) {
 }
 
 String _uploadedPhotoIdForStoragePath(String storagePath, int position) {
-  final sourceName = storagePath
-      .split('/')
-      .last
-      .replaceFirst(RegExp(r'\.[^.]+$'), '');
+  final segments = storagePath.split('/');
+  var sourceName = segments.last.replaceFirst(RegExp(r'\.[^.]+$'), '');
+  if (sourceName == 'original' && segments.length >= 2) {
+    sourceName = segments[segments.length - 2];
+  }
   final token = sourceName.replaceAll(RegExp(r'[^A-Za-z0-9_-]+'), '_');
   return token.isEmpty ? 'photo_$position' : token;
 }

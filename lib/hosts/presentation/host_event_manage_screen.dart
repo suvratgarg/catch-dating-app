@@ -320,6 +320,22 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
           children: [HostEventStaffSection(eventId: event.id)],
         ),
         gapH20,
+        CatchSection.fieldRows(
+          children: [
+            CatchField.action(
+              title: context.l10n.hostEventRehearsalEntryTitle,
+              body: context.l10n.hostEventRehearsalEntryBody,
+              icon: CatchIcons.scienceOutlined,
+              emphasis: CatchFieldEmphasis.title,
+              onTap: () => context.pushNamed(
+                Routes.hostEventRehearsalStartScreen.name,
+                pathParameters: {'clubId': club.id},
+                queryParameters: {'eventId': event.id},
+              ),
+            ),
+          ],
+        ),
+        gapH20,
         eventSuccessSetup,
         gapH20,
         hostActions,

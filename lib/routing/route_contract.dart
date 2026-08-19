@@ -103,6 +103,14 @@ enum Routes {
     '/host/organizers/:clubId/create-event',
     AppRouteAudience.host,
   ),
+  hostEventRehearsalStartScreen(
+    '/host/organizers/:clubId/rehearsals/new',
+    AppRouteAudience.host,
+  ),
+  hostEventRehearsalScreen(
+    '/host/organizers/:clubId/rehearsals/:sessionId',
+    AppRouteAudience.host,
+  ),
   hostAppEventDetailScreen(
     '/host/organizers/:clubId/events/:eventId',
     AppRouteAudience.host,

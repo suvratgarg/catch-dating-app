@@ -11,7 +11,6 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -20,9 +19,11 @@ import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -44,16 +45,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-enum _HostCustomersHeaderAction {
-  applications,
-  sortLastSeen,
-  sortMostAttended,
-  sortName,
-  reviewDuplicates,
-  export,
-  whatsappReady,
-  sources,
-}
+enum _HostCustomersHeaderAction { applications, reviewDuplicates, export }
 
 class HostCustomersScreen extends ConsumerStatefulWidget {
   const HostCustomersScreen({super.key, this.initialOrganizerId});
@@ -137,11 +129,6 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
       hostCustomersDirectoryControllerProvider(request),
     );
     final activeSegment = hostAudienceSegmentForCustomerFilter(effectiveFilter);
-    final campaignBridgeBlocker = hostCampaignBridgeBlocker(
-      segment: activeSegment,
-      smsReadiness: summary.asData?.value.smsReadiness,
-      messagingSetup: messagingSetup.asData?.value,
-    );
     final t = CatchTokens.of(context);
     final compactHeader = ScreenSize.fromWidth(
       MediaQuery.sizeOf(context).width,
@@ -180,12 +167,11 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                       onPressed: () => _addCustomer(selectedClub, request),
                     ),
                   CatchTopBarMenuAction<_HostCustomersHeaderAction>(
-                    tooltip: context.l10n.hostsHostAudienceExport,
+                    tooltip: context.l10n.hostCustomersMoreActions,
                     items: _hostCustomersHeaderActions(
                       context,
-                      summary.asData?.value,
-                      selectedSort: _sort,
-                      exportEnabled: !_exporting && _manualTag == null,
+                      includeExport: !_exporting,
+                      exportEnabled: _manualTag == null,
                       exportSublabel: _manualTag == null
                           ? null
                           : context
@@ -193,18 +179,6 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                                 .hostCustomersManualTagExportUnavailable,
                     ),
                     onSelected: (action) {
-                      final selectedSort = switch (action) {
-                        _HostCustomersHeaderAction.sortLastSeen =>
-                          HostCustomerSort.lastSeen,
-                        _HostCustomersHeaderAction.sortMostAttended =>
-                          HostCustomerSort.mostAttended,
-                        _HostCustomersHeaderAction.sortName =>
-                          HostCustomerSort.name,
-                        _ => null,
-                      };
-                      if (selectedSort != null) {
-                        setState(() => _sort = selectedSort);
-                      }
                       if (action ==
                           _HostCustomersHeaderAction.reviewDuplicates) {
                         unawaited(_reviewDuplicates(selectedClub.id));
@@ -237,17 +211,12 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                         ref.invalidate(hostCrmSummaryProvider(selectedClub.id)),
                   ),
                   gapH16,
-                  CatchSearchField(
-                    key: const ValueKey('host-customers-search'),
-                    mode: CatchSearchFieldMode.expanded,
-                    value: _search ?? '',
-                    contract: CatchContractConstraints
-                        .listOrganizerContactsCallablePayloadQuery,
-                    placeholder: context.l10n.hostsHostAudienceSearch,
-                    semanticLabel: context.l10n.hostsHostAudienceSearch,
-                    textInputAction: TextInputAction.search,
-                    onChanged: _scheduleSearch,
-                    onSubmitted: _applySearch,
+                  HostCustomerDirectoryToolbar(
+                    search: _search ?? '',
+                    sort: _sort,
+                    onSearchChanged: _scheduleSearch,
+                    onSearchSubmitted: _applySearch,
+                    onSortChanged: (sort) => setState(() => _sort = sort),
                   ),
                   gapH16,
                   CatchAsyncValueView<HostCustomersDirectoryState>(
@@ -265,59 +234,79 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                         hostCustomersDirectoryControllerProvider(request),
                       ),
                     ),
-                    builder: (context, state) => Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        HostCustomerFilterSummary(
-                          filter: effectiveFilter,
-                          manualTag: _manualTag,
-                          count: state.matchCount,
-                          countCoverage: state.matchCountCoverage,
-                          campaignBlocker: campaignBridgeBlocker,
-                          onMessage:
-                              campaignBridgeBlocker == null &&
-                                  activeSegment != null
-                              ? () => _messageCustomers(
-                                  selectedClub,
-                                  activeSegment,
-                                )
-                              : null,
-                          onOpenFilters: () => _openFilters(
-                            effectiveFilter,
-                            _manualTag,
-                            state,
-                            summary.asData?.value.smsReadiness,
+                    builder: (context, state) {
+                      final campaignBridgeBlocker = hostCampaignBridgeBlocker(
+                        segment: activeSegment,
+                        smsReadiness: summary.asData?.value.smsReadiness,
+                        messagingSetup: messagingSetup.asData?.value,
+                        audienceCoverageComplete:
+                            state.sourceCoverage ==
+                            HostCustomerDirectoryCoverage.exact,
+                      );
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          HostCustomerFilterSummary(
+                            filter: effectiveFilter,
+                            manualTag: _manualTag,
+                            count: state.matchCount,
+                            countCoverage: state.matchCountCoverage,
+                            campaignBlocker: campaignBridgeBlocker,
+                            onMessage:
+                                campaignBridgeBlocker == null &&
+                                    activeSegment != null
+                                ? () => _messageCustomers(
+                                    selectedClub,
+                                    activeSegment,
+                                  )
+                                : null,
+                            onOpenFilters: () => _openFilters(
+                              effectiveFilter,
+                              _manualTag,
+                              state,
+                              summary.asData?.value.smsReadiness,
+                            ),
+                            onClear:
+                                effectiveFilter == HostCustomerFilter.all &&
+                                    _manualTag == null
+                                ? null
+                                : () => setState(() {
+                                    _filter = HostCustomerFilter.all;
+                                    _manualTag = null;
+                                  }),
                           ),
-                          onClear:
-                              effectiveFilter == HostCustomerFilter.all &&
-                                  _manualTag == null
-                              ? null
-                              : () => setState(() {
-                                  _filter = HostCustomerFilter.all;
-                                  _manualTag = null;
-                                }),
-                        ),
-                        gapH16,
-                        HostCustomersDirectory(
-                          state: state,
-                          hasActiveQuery:
-                              _search != null ||
-                              effectiveFilter != HostCustomerFilter.all ||
-                              _manualTag != null,
-                          onCustomerSelected: (contact) =>
-                              _openCustomer(selectedClub, contact),
-                          onLoadMore: state.canLoadMore
-                              ? () => ref
-                                    .read(
-                                      hostCustomersDirectoryControllerProvider(
-                                        request,
-                                      ).notifier,
-                                    )
-                                    .loadMore()
-                              : null,
-                        ),
-                      ],
-                    ),
+                          gapH16,
+                          HostCustomersDirectory(
+                            state: state,
+                            hasActiveQuery:
+                                _search != null ||
+                                effectiveFilter != HostCustomerFilter.all ||
+                                _manualTag != null,
+                            onCustomerSelected: (contact) =>
+                                _openCustomer(selectedClub, contact),
+                            onLoadMore: state.canLoadMore
+                                ? () => ref
+                                      .read(
+                                        hostCustomersDirectoryControllerProvider(
+                                          request,
+                                        ).notifier,
+                                      )
+                                      .loadMore()
+                                : null,
+                            onRefreshCoverage: () {
+                              ref.invalidate(
+                                hostCrmSummaryProvider(selectedClub.id),
+                              );
+                              ref.invalidate(
+                                hostCustomersDirectoryControllerProvider(
+                                  request,
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      );
+                    },
                   ),
                   const CatchScrollTerminalPadding(),
                 ],
@@ -331,9 +320,8 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
 
   List<CatchActionMenuItem<_HostCustomersHeaderAction>>
   _hostCustomersHeaderActions(
-    BuildContext context,
-    HostCrmSummary? summary, {
-    required HostCustomerSort selectedSort,
+    BuildContext context, {
+    required bool includeExport,
     required bool exportEnabled,
     String? exportSublabel,
   }) => [
@@ -343,56 +331,18 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
       icon: CatchIcons.factCheckOutlined,
     ),
     CatchActionMenuItem(
-      value: _HostCustomersHeaderAction.sortLastSeen,
-      label: context.l10n.hostCustomersSortLastSeen,
-      sublabel: context.l10n.hostCustomersSort,
-      icon: CatchIcons.sort,
-      selected: selectedSort == HostCustomerSort.lastSeen,
-    ),
-    CatchActionMenuItem(
-      value: _HostCustomersHeaderAction.sortMostAttended,
-      label: context.l10n.hostCustomersSortMostAttended,
-      sublabel: context.l10n.hostCustomersSort,
-      icon: CatchIcons.sort,
-      selected: selectedSort == HostCustomerSort.mostAttended,
-    ),
-    CatchActionMenuItem(
-      value: _HostCustomersHeaderAction.sortName,
-      label: context.l10n.hostCustomersSortName,
-      sublabel: context.l10n.hostCustomersSort,
-      icon: CatchIcons.sort,
-      selected: selectedSort == HostCustomerSort.name,
-    ),
-    CatchActionMenuItem(
       value: _HostCustomersHeaderAction.reviewDuplicates,
       label: context.l10n.hostCustomersReviewDuplicates,
       icon: CatchIcons.peopleOutlineRounded,
     ),
-    CatchActionMenuItem(
-      value: _HostCustomersHeaderAction.export,
-      label: context.l10n.hostsHostAudienceExport,
-      sublabel: exportSublabel,
-      icon: CatchIcons.downloadRounded,
-      enabled: exportEnabled,
-    ),
-    if (summary != null) ...[
+    if (includeExport)
       CatchActionMenuItem(
-        value: _HostCustomersHeaderAction.whatsappReady,
-        label: context.l10n.hostsHostAudienceWhatsappReady,
-        sublabel: '${summary.whatsappOptInCount}',
-        icon: CatchIcons.tabChats,
-        enabled: false,
+        value: _HostCustomersHeaderAction.export,
+        label: context.l10n.hostsHostAudienceExport,
+        sublabel: exportSublabel,
+        icon: CatchIcons.downloadRounded,
+        enabled: exportEnabled,
       ),
-      CatchActionMenuItem(
-        value: _HostCustomersHeaderAction.sources,
-        label: context.l10n.hostsHostAudienceSources(
-          importedCount: summary.importedContactCount,
-          linkedCount: summary.linkedAccountCount,
-        ),
-        icon: CatchIcons.info,
-        enabled: false,
-      ),
-    ],
   ];
 
   Future<void> _reviewDuplicates(String organizerId) async {
@@ -533,6 +483,77 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
       pathParameters: {'contactId': contactId},
       queryParameters: {'organizerId': club.id},
       extra: HostCustomerDetailRouteArguments(displayName: displayName),
+    );
+  }
+}
+
+class HostCustomerDirectoryToolbar extends StatelessWidget {
+  const HostCustomerDirectoryToolbar({
+    super.key,
+    required this.search,
+    required this.sort,
+    required this.onSearchChanged,
+    required this.onSearchSubmitted,
+    required this.onSortChanged,
+  });
+
+  final String search;
+  final HostCustomerSort sort;
+  final ValueChanged<String> onSearchChanged;
+  final ValueChanged<String> onSearchSubmitted;
+  final ValueChanged<HostCustomerSort> onSortChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final compact = ScreenSize.fromWidth(
+      MediaQuery.sizeOf(context).width,
+    ).isCompact;
+    final searchField = CatchSearchField(
+      key: const ValueKey('host-customers-search'),
+      mode: CatchSearchFieldMode.expanded,
+      value: search,
+      contract:
+          CatchContractConstraints.listOrganizerContactsCallablePayloadQuery,
+      placeholder: context.l10n.hostsHostAudienceSearch,
+      semanticLabel: context.l10n.hostsHostAudienceSearch,
+      textInputAction: TextInputAction.search,
+      onChanged: onSearchChanged,
+      onSubmitted: onSearchSubmitted,
+    );
+    final sortControl = CatchAdaptiveSelectionControl<HostCustomerSort>(
+      buttonKey: const ValueKey('host-customers-sort'),
+      title: context.l10n.hostCustomersSort,
+      subtitle: context.l10n.hostCustomersSortSheetSubtitle,
+      tooltip: context.l10n.hostCustomersSort,
+      value: sort,
+      items: [
+        for (final option in HostCustomerSort.values)
+          CatchSelectionMenuItem(
+            value: option,
+            label: _customerSortLabel(context, option),
+          ),
+      ],
+      triggerLabel: (selected) =>
+          context.l10n.hostCustomersSortControl(label: selected.label),
+      onSelected: onSortChanged,
+    );
+
+    if (compact) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          searchField,
+          gapH12,
+          Align(alignment: AlignmentDirectional.centerEnd, child: sortControl),
+        ],
+      );
+    }
+    return Row(
+      children: [
+        Expanded(child: searchField),
+        gapW12,
+        sortControl,
+      ],
     );
   }
 }
@@ -821,12 +842,14 @@ class HostCustomersDirectory extends StatelessWidget {
     required this.hasActiveQuery,
     required this.onCustomerSelected,
     required this.onLoadMore,
+    required this.onRefreshCoverage,
   });
 
   final HostCustomersDirectoryState state;
   final bool hasActiveQuery;
   final ValueChanged<HostCustomerDirectoryContact> onCustomerSelected;
   final VoidCallback? onLoadMore;
+  final VoidCallback onRefreshCoverage;
 
   @override
   Widget build(BuildContext context) {
@@ -841,6 +864,17 @@ class HostCustomersDirectory extends StatelessWidget {
             messageIcon: CatchIcons.infoOutlineRounded,
             messageTone: CatchSurfaceMessageTone.warning,
           ),
+          gapH8,
+          Align(
+            alignment: Alignment.centerLeft,
+            child: CatchButton(
+              key: const ValueKey('host-customers-refresh-coverage'),
+              label: context.l10n.hostCustomersCoverageRefresh,
+              variant: CatchButtonVariant.secondary,
+              size: CatchButtonSize.sm,
+              onPressed: onRefreshCoverage,
+            ),
+          ),
           gapH12,
         ],
         if (contacts.isEmpty)
@@ -853,17 +887,16 @@ class HostCustomersDirectory extends StatelessWidget {
             layout: CatchEmptyStateLayout.inline,
           )
         else
-          CatchFieldLanes.single(
-            child: Column(
-              children: [
-                for (final (index, contact) in contacts.indexed)
-                  HostCustomerRow(
-                    contact: contact,
-                    divider: index < contacts.length - 1,
-                    onTap: () => onCustomerSelected(contact),
-                  ),
-              ],
-            ),
+          CatchSection.containedFieldRows(
+            key: const ValueKey('host-customers-directory-list'),
+            children: [
+              for (final contact in contacts)
+                HostCustomerRow(
+                  contact: contact,
+                  divider: false,
+                  onTap: () => onCustomerSelected(contact),
+                ),
+            ],
           ),
         if (onLoadMore != null) ...[
           gapH12,
@@ -1026,20 +1059,20 @@ class _HostAddCustomerSheetState extends ConsumerState<HostAddCustomerSheet> {
   }
 }
 
-enum HostCustomerManageResult { updated, hidden }
+enum HostCustomerEditDetailsResult { updated }
 
-class HostCustomerManageSheet extends ConsumerStatefulWidget {
-  const HostCustomerManageSheet({super.key, required this.customer});
+class HostCustomerEditDetailsSheet extends ConsumerStatefulWidget {
+  const HostCustomerEditDetailsSheet({super.key, required this.customer});
 
   final HostAudienceContactDetail customer;
 
   @override
-  ConsumerState<HostCustomerManageSheet> createState() =>
-      _HostCustomerManageSheetState();
+  ConsumerState<HostCustomerEditDetailsSheet> createState() =>
+      _HostCustomerEditDetailsSheetState();
 }
 
-class _HostCustomerManageSheetState
-    extends ConsumerState<HostCustomerManageSheet> {
+class _HostCustomerEditDetailsSheetState
+    extends ConsumerState<HostCustomerEditDetailsSheet> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController = TextEditingController(
     text:
@@ -1064,95 +1097,74 @@ class _HostCustomerManageSheetState
 
   @override
   Widget build(BuildContext context) => CatchBottomSheetScaffold(
-    title: widget.customer.displayName,
+    title: context.l10n.hostCustomersEditDetails,
     subtitle: context.l10n.hostsHostAudienceContactSubtitle,
     keyboardSafe: true,
     child: SingleChildScrollView(
       child: Form(
         key: _formKey,
-        child: CatchFieldLanes.custom(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              CatchField.input(
-                title: context.l10n.hostsHostAudienceContactName,
-                contract: CatchContractConstraints
-                    .mutateOrganizerContactCallablePayloadDisplayNameOverride,
-                controller: _nameController,
-                helperText: context.l10n.hostsHostAudienceContactNameHelp,
-                textCapitalization: TextCapitalization.words,
-                textInputAction: TextInputAction.next,
-                validator: (value) => (value ?? '').trim().isEmpty
-                    ? context.l10n.hostCustomersNameRequired
-                    : null,
-              ),
-              if (_canEditContactDetails) ...[
-                gapH12,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            CatchSection.containedFieldRows(
+              children: [
                 CatchField.input(
-                  title: context.l10n.hostCustomersPhone,
+                  key: const ValueKey('host-customer-edit-name'),
+                  title: context.l10n.hostsHostAudienceContactName,
                   contract: CatchContractConstraints
-                      .mutateOrganizerContactCallablePayloadPhoneE164,
-                  controller: _phoneController,
-                  isOptional: true,
-                  keyboardType: TextInputType.phone,
+                      .mutateOrganizerContactCallablePayloadDisplayNameOverride,
+                  controller: _nameController,
+                  helperText: context.l10n.hostsHostAudienceContactNameHelp,
+                  textCapitalization: TextCapitalization.words,
                   textInputAction: TextInputAction.next,
-                  placeholder: '+919876543210',
-                  helperText: context.l10n.hostCustomersPhoneHelp,
-                  validator: (value) => _manualPhoneError(context, value),
+                  validator: (value) => (value ?? '').trim().isEmpty
+                      ? context.l10n.hostCustomersNameRequired
+                      : null,
                 ),
-                gapH12,
-                CatchField.input(
-                  title: context.l10n.hostCustomersEmail,
-                  contract: CatchContractConstraints
-                      .mutateOrganizerContactCallablePayloadEmail,
-                  controller: _emailController,
-                  isOptional: true,
-                  keyboardType: TextInputType.emailAddress,
-                  textInputAction: TextInputAction.done,
-                  validator: (value) => _manualEmailError(context, value),
-                ),
-              ] else ...[
-                gapH12,
-                Text(
-                  context.l10n.hostCustomersVerifiedDetailsManagedByCatch,
-                  style: CatchTextStyles.supporting(context),
-                ),
+                if (_canEditContactDetails) ...[
+                  CatchField.input(
+                    key: const ValueKey('host-customer-edit-phone'),
+                    title: context.l10n.hostCustomersPhone,
+                    contract: CatchContractConstraints
+                        .mutateOrganizerContactCallablePayloadPhoneE164,
+                    controller: _phoneController,
+                    isOptional: true,
+                    keyboardType: TextInputType.phone,
+                    textInputAction: TextInputAction.next,
+                    placeholder: '+919876543210',
+                    helperText: context.l10n.hostCustomersPhoneHelp,
+                    validator: (value) => _manualPhoneError(context, value),
+                  ),
+                  CatchField.input(
+                    key: const ValueKey('host-customer-edit-email'),
+                    title: context.l10n.hostCustomersEmail,
+                    contract: CatchContractConstraints
+                        .mutateOrganizerContactCallablePayloadEmail,
+                    controller: _emailController,
+                    isOptional: true,
+                    keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.done,
+                    validator: (value) => _manualEmailError(context, value),
+                  ),
+                ],
               ],
+            ),
+            if (!_canEditContactDetails) ...[
               gapH12,
-              CatchButton(
-                key: const ValueKey('host-customer-save-details'),
-                label: context.l10n.hostCustomersSaveDetails,
-                size: CatchButtonSize.sm,
-                isLoading: _saving,
-                onPressed: _saving ? null : _saveDetails,
-              ),
-              gapH16,
-              CatchNotice(
-                notice: CatchNoticeData(
-                  id: 'host.customers.contact.delivery-boundary',
-                  title: context.l10n.hostsHostAudienceContactConsentTitle,
-                  message: widget.customer.whatsappAdminSuppressed
-                      ? context.l10n.hostsHostAudienceContactConsentPaused
-                      : context.l10n.hostsHostAudienceContactConsentActive,
-                ),
-              ),
-              gapH12,
-              CatchButton(
-                label: widget.customer.whatsappAdminSuppressed
-                    ? context.l10n.hostsHostAudienceContactResumeMessages
-                    : context.l10n.hostsHostAudienceContactPauseMessages,
-                variant: CatchButtonVariant.secondary,
-                onPressed: _saving ? null : _toggleSuppression,
-              ),
-              gapH8,
-              CatchButton(
-                label: context.l10n.hostsHostAudienceRemoveAction,
-                variant: CatchButtonVariant.ghost,
-                onPressed: _saving ? null : _hideCustomer,
+              Text(
+                context.l10n.hostCustomersVerifiedDetailsManagedByCatch,
+                style: CatchTextStyles.supporting(context),
               ),
             ],
-          ),
+            gapH16,
+            CatchButton(
+              key: const ValueKey('host-customer-save-details'),
+              label: context.l10n.hostCustomersSaveDetails,
+              isLoading: _saving,
+              onPressed: _saving ? null : _saveDetails,
+            ),
+          ],
         ),
       ),
     ),
@@ -1172,25 +1184,7 @@ class _HostCustomerManageSheetState
       updatePhoneE164: _canEditContactDetails,
       email: _optionalNormalizedEmail(_emailController.text),
       updateEmail: _canEditContactDetails,
-      result: HostCustomerManageResult.updated,
     );
-  }
-
-  Future<void> _toggleSuppression() => _mutate(
-    whatsappAdminSuppressed: !widget.customer.whatsappAdminSuppressed,
-    result: HostCustomerManageResult.updated,
-  );
-
-  Future<void> _hideCustomer() async {
-    final confirmed = await showCatchConfirmDialog(
-      context: context,
-      title: context.l10n.hostsHostAudienceRemoveTitle,
-      message: context.l10n.hostsHostAudienceRemoveBody,
-      confirmLabel: context.l10n.hostsHostAudienceRemoveConfirm,
-      danger: true,
-    );
-    if (confirmed != true) return;
-    await _mutate(hidden: true, result: HostCustomerManageResult.hidden);
   }
 
   Future<void> _mutate({
@@ -1200,9 +1194,6 @@ class _HostCustomerManageSheetState
     bool updatePhoneE164 = false,
     String? email,
     bool updateEmail = false,
-    bool? whatsappAdminSuppressed,
-    bool? hidden,
-    required HostCustomerManageResult result,
   }) async {
     if (_saving) return;
     setState(() => _saving = true);
@@ -1219,10 +1210,10 @@ class _HostCustomerManageSheetState
             updatePhoneE164: updatePhoneE164,
             email: email,
             updateEmail: updateEmail,
-            whatsappAdminSuppressed: whatsappAdminSuppressed,
-            hidden: hidden,
           );
-      if (mounted) Navigator.of(context).pop(result);
+      if (mounted) {
+        Navigator.of(context).pop(HostCustomerEditDetailsResult.updated);
+      }
     } on Object catch (error) {
       if (mounted) {
         showCatchErrorSnackBar(
@@ -1248,54 +1239,66 @@ class HostCustomerIdentityCard extends StatelessWidget {
   final VoidCallback onManage;
 
   @override
-  Widget build(BuildContext context) => CatchSection.divided(
+  Widget build(BuildContext context) => CatchSection.containedFieldRows(
+    key: const ValueKey('host-customer-contact-details'),
     title: context.l10n.hostCustomersContactDetails,
     trailing: CatchButton(
-      label: customer.contactDetailsEditable
-          ? context.l10n.hostCustomersEditDetails
-          : context.l10n.hostCustomersManage,
-      variant: CatchButtonVariant.secondary,
+      key: const ValueKey('host-customer-edit-details'),
+      label: context.l10n.hostCustomersEditDetails,
+      variant: CatchButtonVariant.ghost,
       size: CatchButtonSize.sm,
       onPressed: onManage,
     ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (customer.phoneE164 == null && customer.email == null)
-          Text(
-            context.l10n.hostCustomersNoContactDetails,
-            style: CatchTextStyles.supporting(context),
-          )
-        else ...[
-          if (!customer.isIdentityVerified) ...[
-            Text(
-              context.l10n.hostCustomersUnverifiedContactDetails,
-              style: CatchTextStyles.supporting(context),
-            ),
-            gapH8,
-          ],
-          CatchFieldLanes.single(
-            child: Column(
-              children: [
-                if (customer.phoneE164 != null)
-                  CatchField.read(
-                    title: customer.isIdentityVerified
-                        ? context.l10n.hostsHostAudienceContactVerifiedPhone
-                        : context.l10n.hostCustomersPhone,
-                    body: customer.phoneE164,
-                    divider: customer.email != null,
-                  ),
-                if (customer.email != null)
-                  CatchField.read(
-                    title: context.l10n.hostsHostAudienceContactEmail,
-                    body: customer.email,
-                  ),
-              ],
-            ),
-          ),
-        ],
-      ],
+    footer: Text(
+      customer.contactDetailsEditable
+          ? context.l10n.hostCustomersUnverifiedContactDetails
+          : context.l10n.hostCustomersVerifiedDetailsManagedByCatch,
+      style: CatchTextStyles.supporting(context),
     ),
+    children: [
+      CatchField.read(
+        title: context.l10n.hostsHostAudienceContactName,
+        body: customer.displayName,
+      ),
+      if (customer.contactDetailsEditable)
+        CatchField.nav(
+          key: const ValueKey('host-customer-phone-field'),
+          title: context.l10n.hostCustomersPhone,
+          body: customer.phoneE164,
+          placeholder: CatchField.defaultEmptyValueText(
+            context,
+            context.l10n.hostCustomersPhone,
+          ),
+          onTap: onManage,
+        )
+      else
+        CatchField.read(
+          key: const ValueKey('host-customer-phone-field'),
+          title: customer.isIdentityVerified
+              ? context.l10n.hostsHostAudienceContactVerifiedPhone
+              : context.l10n.hostCustomersPhone,
+          body: customer.phoneE164,
+          placeholder: context.l10n.hostCustomersNotSaved,
+        ),
+      if (customer.contactDetailsEditable)
+        CatchField.nav(
+          key: const ValueKey('host-customer-email-field'),
+          title: context.l10n.hostCustomersEmail,
+          body: customer.email,
+          placeholder: CatchField.defaultEmptyValueText(
+            context,
+            context.l10n.hostCustomersEmail,
+          ),
+          onTap: onManage,
+        )
+      else
+        CatchField.read(
+          key: const ValueKey('host-customer-email-field'),
+          title: context.l10n.hostsHostAudienceContactEmail,
+          body: customer.email,
+          placeholder: context.l10n.hostCustomersNotSaved,
+        ),
+    ],
   );
 }
 
@@ -1305,13 +1308,17 @@ class HostCustomerConversationCard extends StatelessWidget {
     required this.customer,
     required this.loading,
     required this.onOpen,
+    required this.onMessagingEnabledChanged,
+    this.onOpenWhatsapp,
     this.onReview,
   });
 
   final HostAudienceContactDetail customer;
   final bool loading;
   final VoidCallback? onOpen;
+  final VoidCallback? onOpenWhatsapp;
   final VoidCallback? onReview;
+  final ValueChanged<bool>? onMessagingEnabledChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -1328,32 +1335,64 @@ class HostCustomerConversationCard extends StatelessWidget {
       HostCustomerConversationAvailability.ambiguous =>
         context.l10n.hostCustomersConversationAmbiguous,
     };
-    return CatchSurface(
-      padding: CatchInsets.cardContent,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (message != null) ...[
-            Text(message, style: CatchTextStyles.supporting(context)),
-            gapH12,
-          ],
-          if (availability == HostCustomerConversationAvailability.ambiguous &&
-              onReview != null) ...[
-            CatchButton(
-              label: context.l10n.hostCustomersReviewDuplicates,
-              variant: CatchButtonVariant.secondary,
-              onPressed: onReview,
-            ),
-            gapH12,
-          ],
-          CatchButton(
-            label: context.l10n.hostCustomersNewConversation,
-            icon: Icon(CatchIcons.tabChats),
-            isLoading: loading,
-            onPressed: loading ? null : onOpen,
+    final whatsappAvailability = customer.personalWhatsappHandoffAvailability;
+    final whatsappMessage = switch (whatsappAvailability) {
+      HostPersonalWhatsappHandoffAvailability.ready =>
+        context.l10n.hostCustomersWhatsappHandoffDisclosure,
+      HostPersonalWhatsappHandoffAvailability.missingPhone =>
+        context.l10n.hostCustomersWhatsappMissingPhone,
+      HostPersonalWhatsappHandoffAvailability.organizerSuppressed =>
+        context.l10n.hostCustomersWhatsappOrganizerSuppressed,
+      HostPersonalWhatsappHandoffAvailability.contactOptedOut =>
+        context.l10n.hostCustomersWhatsappContactOptedOut,
+    };
+    return CatchSection.containedFieldRows(
+      key: const ValueKey('host-customer-messaging'),
+      title: context.l10n.hostInboxTitle,
+      children: [
+        CatchField.action(
+          key: const ValueKey('host-customer-new-conversation'),
+          title: context.l10n.hostCustomersStartCatchChat,
+          body: message,
+          icon: CatchIcons.tabChats,
+          onTap: loading ? null : onOpen,
+        ),
+        if (availability == HostCustomerConversationAvailability.ambiguous &&
+            onReview != null)
+          CatchField.action(
+            key: const ValueKey('host-customer-review-duplicates'),
+            title: context.l10n.hostCustomersReviewDuplicates,
+            icon: CatchIcons.peopleOutlineRounded,
+            onTap: onReview,
           ),
-        ],
-      ),
+        if (whatsappAvailability ==
+            HostPersonalWhatsappHandoffAvailability.ready)
+          CatchField.action(
+            key: const ValueKey('host-customer-open-whatsapp'),
+            title: context.l10n.hostCustomersWhatsappAppChannel,
+            body: whatsappMessage,
+            icon: CatchIcons.sendRounded,
+            onTap: onOpenWhatsapp,
+          )
+        else
+          CatchField.read(
+            key: const ValueKey('host-customer-whatsapp-status'),
+            title: context.l10n.hostCustomersWhatsappAppChannel,
+            body: whatsappMessage,
+            icon: CatchIcons.sendRounded,
+          ),
+        CatchField.toggle(
+          key: const ValueKey('host-customer-organizer-messages'),
+          title: context.l10n.hostCustomersOrganizerMessages,
+          contract: CatchContractConstraints
+              .mutateOrganizerContactCallablePayloadWhatsappAdminSuppressed,
+          body: customer.whatsappAdminSuppressed
+              ? context.l10n.hostsHostAudienceContactConsentPaused
+              : context.l10n.hostsHostAudienceContactConsentActive,
+          value: !customer.whatsappAdminSuppressed,
+          onChanged: onMessagingEnabledChanged,
+        ),
+      ],
     );
   }
 }
@@ -1369,7 +1408,7 @@ class HostCustomerAttendanceCard extends StatelessWidget {
     final attendanceRate = traits.attendanceRate == null
         ? '—'
         : '${(traits.attendanceRate! * 100).round()}%';
-    return CatchSection.divided(
+    return CatchSection.plain(
       title: context.l10n.hostCustomersDetailAttendance,
       child: Row(
         children: [
@@ -1406,7 +1445,7 @@ class HostCustomerRevenueCard extends StatelessWidget {
   final HostCustomerRevenue revenue;
 
   @override
-  Widget build(BuildContext context) => CatchSection.divided(
+  Widget build(BuildContext context) => CatchSection.plain(
     title: context.l10n.hostCustomersDetailRevenue,
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1463,7 +1502,7 @@ class HostCustomerAttendanceHistory extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final events = customer.events;
-    return CatchSection.divided(
+    return CatchSection.plain(
       title: context.l10n.hostCustomersEventHistory,
       child: events.isEmpty
           ? Text(
@@ -1522,56 +1561,82 @@ class HostCustomersSummary extends StatelessWidget {
     ),
     builder: (context, value) {
       final usesLargeText = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
+      String countLabel(int count) => value.truncated ? '$count+' : '$count';
       return CatchSurface(
         padding: CatchInsets.cardContent,
-        child: usesLargeText
-            ? Column(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (usesLargeText)
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   CatchStatColumn(
-                    value: '${value.contactCount}',
+                    value: countLabel(value.contactCount),
                     label: context.l10n.hostsHostAudienceContacts,
                     monoValue: true,
                   ),
                   gapH16,
                   CatchStatColumn(
-                    value: '${value.pastAttendeeCount}',
+                    value: countLabel(value.pastAttendeeCount),
                     label: context.l10n.hostsHostAudienceAttended,
                     monoValue: true,
                   ),
                   gapH16,
                   CatchStatColumn(
-                    value: '${value.repeatAttendeeCount}',
+                    value: countLabel(value.repeatAttendeeCount),
                     label: context.l10n.hostsHostAudienceRepeat,
                     monoValue: true,
                   ),
                 ],
               )
-            : Row(
+            else
+              Row(
                 children: [
                   Expanded(
                     child: CatchStatColumn(
-                      value: '${value.contactCount}',
+                      value: countLabel(value.contactCount),
                       label: context.l10n.hostsHostAudienceContacts,
                       monoValue: true,
                     ),
                   ),
                   Expanded(
                     child: CatchStatColumn(
-                      value: '${value.pastAttendeeCount}',
+                      value: countLabel(value.pastAttendeeCount),
                       label: context.l10n.hostsHostAudienceAttended,
                       monoValue: true,
                     ),
                   ),
                   Expanded(
                     child: CatchStatColumn(
-                      value: '${value.repeatAttendeeCount}',
+                      value: countLabel(value.repeatAttendeeCount),
                       label: context.l10n.hostsHostAudienceRepeat,
                       monoValue: true,
                     ),
                   ),
                 ],
               ),
+            gapH16,
+            const CatchDivider.section(),
+            gapH12,
+            CatchMetaRow(
+              icon: CatchIcons.tabChats,
+              label: context.l10n.hostCustomersWhatsappReadyCount(
+                count: value.whatsappOptInCount,
+              ),
+              maxLines: 2,
+            ),
+            gapH8,
+            CatchMetaRow(
+              icon: CatchIcons.infoOutlineRounded,
+              label: context.l10n.hostCustomersSourceSummary(
+                importedCount: value.importedContactCount,
+                linkedCount: value.linkedAccountCount,
+              ),
+              maxLines: 3,
+            ),
+          ],
+        ),
       );
     },
   );
@@ -1598,6 +1663,14 @@ String _customerFilterLabel(
     context.l10n.hostsHostAudienceSegmentWhatsapp,
   HostCustomerFilter.smsReachable => context.l10n.hostsHostAudienceSegmentSms,
 };
+
+String _customerSortLabel(BuildContext context, HostCustomerSort sort) =>
+    switch (sort) {
+      HostCustomerSort.lastSeen => context.l10n.hostCustomersSortLastSeen,
+      HostCustomerSort.mostAttended =>
+        context.l10n.hostCustomersSortMostAttended,
+      HostCustomerSort.name => context.l10n.hostCustomersSortName,
+    };
 
 String _customerFilterGroupLabel(
   BuildContext context,

@@ -9,9 +9,11 @@ import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_controller.dart';
 import 'package:flutter/material.dart';
 
-enum HostClubCreatePrimaryIntent { nextStep, submit }
+enum HostClubCreateCloseIntent { confirmUnsavedChanges, close }
 
-enum HostClubCreateSaveDraftIntent { saveDraft }
+enum HostClubCreatePreviousIntent { previousStep, returnToSteps }
+
+enum HostClubCreatePrimaryIntent { nextStep, review, submit }
 
 enum HostClubCreateDraftRestoreIntent { retry }
 
@@ -57,21 +59,58 @@ class HostClubCreateFooterState {
     required this.isLastStep,
     required this.isLoading,
     required this.primaryEnabled,
-    required this.primaryLabel,
-    required this.lastStepLabel,
     required this.primaryIntent,
-    required this.saveDraftIntent,
+    required this.previousIntent,
   });
 
   final bool isLastStep;
   final bool isLoading;
   final bool primaryEnabled;
-  final String primaryLabel;
-  final String lastStepLabel;
   final HostClubCreatePrimaryIntent primaryIntent;
-  final HostClubCreateSaveDraftIntent? saveDraftIntent;
+  final HostClubCreatePreviousIntent? previousIntent;
+}
 
-  bool get canSaveDraft => saveDraftIntent != null;
+@immutable
+class HostClubCreateReviewState {
+  const HostClubCreateReviewState({required this.formReview});
+
+  factory HostClubCreateReviewState.resolve({
+    required List<CatchFormStepSpec> activeSteps,
+    required String name,
+    required String? selectedCity,
+    required String area,
+    required String description,
+  }) {
+    final completion = <bool>[
+      name.trim().isNotEmpty &&
+          selectedCity?.trim().isNotEmpty == true &&
+          area.trim().isNotEmpty,
+      description.trim().isNotEmpty,
+      true,
+      true,
+    ];
+    final items = <CatchFormStepReviewItem>[
+      for (var index = 0; index < activeSteps.length; index++)
+        CatchFormStepReviewItem(
+          index: index,
+          title: activeSteps[index].title,
+          status: activeSteps[index].optional
+              ? CatchFormStepStatus.optional
+              : completion[index]
+              ? CatchFormStepStatus.complete
+              : CatchFormStepStatus.needsInformation,
+        ),
+    ];
+    return HostClubCreateReviewState(
+      formReview: CatchFormReviewState(List.unmodifiable(items)),
+    );
+  }
+
+  final CatchFormReviewState formReview;
+
+  bool get canSubmit => formReview.canSubmit;
+  int? get firstIncompleteStep => formReview.firstIncompleteStep;
+  List<CatchFormStepReviewItem> get items => formReview.items;
 }
 
 @immutable
@@ -268,6 +307,8 @@ class HostClubCreateState {
     required this.fields,
     required this.draftRestore,
     required this.mutationError,
+    required this.isReviewing,
+    required this.closeIntent,
   });
 
   final int currentStep;
@@ -278,12 +319,12 @@ class HostClubCreateState {
   final HostClubCreateFieldDisplayState fields;
   final HostClubCreateDraftRestoreState draftRestore;
   final String? mutationError;
+  final bool isReviewing;
+  final HostClubCreateCloseIntent closeIntent;
 
   String? get subtitle => null;
   bool get isLastStep => footer.isLastStep;
   bool get canPickMedia => media.enabled;
-  bool get canSaveDraft => footer.canSaveDraft;
-  String get lastStepLabel => footer.lastStepLabel;
   bool get isLoading => footer.isLoading;
   bool get requestControlsEnabled => !isLoading;
 
@@ -303,6 +344,9 @@ class HostClubCreateState {
     String? selectedCity,
     String area = '',
     String description = '',
+    bool isReviewing = false,
+    bool hasUnsavedChanges = false,
+    HostClubCreateReviewState? reviewState,
   }) {
     final totalSteps = activeSteps.length;
     final clampedStep = totalSteps == 0
@@ -313,15 +357,18 @@ class HostClubCreateState {
     final footer = HostClubCreateFooterState(
       isLastStep: isLastStep,
       isLoading: isLoading,
-      primaryEnabled: !isLoading,
-      primaryLabel: isLastStep ? 'Create organizer' : 'Next',
-      lastStepLabel: 'Create organizer',
-      primaryIntent: isLastStep
+      primaryEnabled:
+          !isLoading && (!isReviewing || (reviewState?.canSubmit ?? false)),
+      primaryIntent: isReviewing
           ? HostClubCreatePrimaryIntent.submit
+          : isLastStep
+          ? HostClubCreatePrimaryIntent.review
           : HostClubCreatePrimaryIntent.nextStep,
-      saveDraftIntent: isLoading
-          ? null
-          : HostClubCreateSaveDraftIntent.saveDraft,
+      previousIntent: isReviewing
+          ? HostClubCreatePreviousIntent.returnToSteps
+          : clampedStep > 0
+          ? HostClubCreatePreviousIntent.previousStep
+          : null,
     );
     return HostClubCreateState(
       currentStep: clampedStep,
@@ -343,6 +390,10 @@ class HostClubCreateState {
         loadError: draftLoadError,
       ),
       mutationError: mutationError,
+      isReviewing: isReviewing,
+      closeIntent: hasUnsavedChanges
+          ? HostClubCreateCloseIntent.confirmUnsavedChanges
+          : HostClubCreateCloseIntent.close,
     );
   }
 }

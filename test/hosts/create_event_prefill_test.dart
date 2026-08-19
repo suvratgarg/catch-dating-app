@@ -69,9 +69,11 @@ void main() {
 
   test('members-only source is not exposed as repeatable', () {
     final event = buildEvent(
-      eventPolicy: const EventPolicyBundle(
-        admissionPolicy: EventAdmissionPolicy.membersOnly(capacityLimit: 20),
-        pricingPolicy: EventPricingPolicy.fixed(MoneyAmount.inPaise(0)),
+      eventPolicy: EventPolicyBundle(
+        admissionPolicy: const EventAdmissionPolicy.membersOnly(
+          capacityLimit: 20,
+        ),
+        pricingPolicy: const EventPricingPolicy.fixed(MoneyAmount.inPaise(0)),
       ),
     );
 
@@ -99,8 +101,8 @@ void main() {
 
   test('lossy custom pricing policy is not exposed as repeatable', () {
     final event = buildEvent(
-      eventPolicy: const EventPolicyBundle(
-        admissionPolicy: EventAdmissionPolicy.balancedRatio(
+      eventPolicy: EventPolicyBundle(
+        admissionPolicy: const EventAdmissionPolicy.balancedRatio(
           capacityLimit: 20,
           waitlistPolicy: EventWaitlistPolicy.rankedOffer(),
           balancedRatioPolicy: BalancedRatioPolicy(
@@ -110,7 +112,7 @@ void main() {
                 EventOutOfRatioCohortPolicy.admitWithinGeneralCapacity,
           ),
         ),
-        pricingPolicy: EventPricingPolicy(
+        pricingPolicy: const EventPricingPolicy(
           basePrice: MoneyAmount.inPaise(10000),
           demandPricingRules: [
             EventDemandPricingRule(

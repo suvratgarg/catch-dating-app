@@ -71,8 +71,8 @@ void _registerHostOperationsTeamFailuresTests() {
       ),
       findsOneWidget,
     );
-    expect(find.text('Save media'), findsNothing);
-    expect(find.byKey(const ValueKey('host-media-action-bar')), findsNothing);
+    expect(find.text('Save media'), findsOneWidget);
+    expect(find.byKey(const ValueKey('host-media-action-bar')), findsOneWidget);
     expect(find.text('Live event guide'), findsOneWidget);
     expect(find.text('Save defaults'), findsNothing);
     expect(
@@ -132,7 +132,7 @@ void _registerHostOperationsTeamFailuresTests() {
       ),
       findsOneWidget,
     );
-    expect(find.text('Save media'), findsNothing);
+    expect(find.text('Save media'), findsOneWidget);
     expect(find.text('Advanced event defaults'), findsNothing);
     expect(find.text('Save defaults'), findsNothing);
 
@@ -648,32 +648,26 @@ void _registerHostOperationsTeamFailuresTests() {
     );
   });
 
-  testWidgets('Host team workspace surfaces sign out failures', (tester) async {
-    final profile = HostProfile(
-      uid: _hostUid,
-      displayName: 'Asha Host',
-      status: HostProfileStatus.active,
-      createdAt: DateTime(2026),
-      updatedAt: DateTime(2026),
-    );
+  testWidgets('Organizer top bar surfaces sign out failures', (tester) async {
     final authRepository = _FakeHostAuthRepository(throwOnSignOut: true);
+    final club = _hostTeamClub();
 
     await _pumpHostScreen(
       tester,
-      const HostClubTeamScreen(clubId: 'owned-club'),
+      const HostClubsScreen(),
       overrides: [
-        ..._hostClubOverrides(owned: [_hostTeamClub()]),
-        watchHostProfileProvider(
-          _hostUid,
-        ).overrideWithValue(AsyncData<HostProfile?>(profile)),
+        ..._hostClubOverrides(owned: [club]),
         authRepositoryProvider.overrideWithValue(authRepository),
+        watchHostPaymentAccountProvider(
+          _hostUid,
+        ).overrideWithValue(const AsyncData<HostPaymentAccount?>(null)),
       ],
     );
 
-    final signOutRow = find.byKey(const ValueKey('host-team-sign-out'));
-    await tester.ensureVisible(signOutRow);
-    await pumpFeatureUi(tester);
-    await tester.tap(signOutRow);
+    final signOutAction = find.byKey(
+      const ValueKey<String>('host-organizer-sign-out'),
+    );
+    await tester.tap(signOutAction);
     await pumpFeatureUi(tester);
 
     expect(authRepository.signOutCallCount, 1);
@@ -681,29 +675,58 @@ void _registerHostOperationsTeamFailuresTests() {
       find.text('Something went wrong. Please try again.'),
       findsOneWidget,
     );
-    expect(find.byType(HostClubTeamScreen), findsOneWidget);
+    expect(find.byType(HostClubsScreen), findsOneWidget);
   });
 
   testWidgets(
-    'Host team workspace keeps management and sign out on Edit only',
+    'Host team Preview renders the consumer profile instead of management',
     (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(390, 844);
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final user = buildUser(uid: _hostUid, name: 'Asha Consumer');
+      final publicProfile = publicProfileFromUserProfile(
+        user,
+        today: DateTime(2026, 8, 19),
+      ).copyWith(name: 'Asha Consumer');
       await _pumpHostScreen(
         tester,
         const HostClubTeamScreen(clubId: 'owned-club'),
-        overrides: _hostClubOverrides(owned: [_hostTeamClub()]),
+        overrides: [
+          ..._hostClubOverrides(owned: [_hostTeamClub()]),
+          watchPublicProfileProvider(
+            _hostUid,
+          ).overrideWithValue(AsyncData<PublicProfile?>(publicProfile)),
+          watchUserProfileProvider.overrideWithValue(AsyncData(user)),
+        ],
       );
 
       expect(find.text('Add host'), findsOneWidget);
-      expect(find.byKey(const ValueKey('host-team-sign-out')), findsOneWidget);
       expect(find.text('ORGANIZERS YOU HOST'), findsOneWidget);
+      expect(find.byType(TabBarView), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey<String>('host-organizer-sign-out')),
+        findsNothing,
+      );
 
-      await tester.tap(find.text('Preview'));
+      await tester.drag(find.byType(TabBarView), const Offset(-320, 0));
       await pumpFeatureUi(tester);
 
       expect(find.text('Add host'), findsNothing);
-      expect(find.byKey(const ValueKey('host-team-sign-out')), findsNothing);
-      expect(find.text('ORGANIZERS YOU HOST'), findsOneWidget);
-      expect(find.text('Catch Host'), findsWidgets);
+      expect(find.text('ORGANIZERS YOU HOST'), findsNothing);
+      expect(find.textContaining('Asha Consumer'), findsWidgets);
+      expect(
+        find.byKey(
+          const ValueKey<String>('host-team-consumer-profile-preview'),
+        ),
+        findsOneWidget,
+      );
+      final surface = tester.widget<ProfileSurface>(
+        find.byType(ProfileSurface),
+      );
+      expect(surface.mode, ProfileSurfaceMode.publicProfile);
     },
   );
 

@@ -20,6 +20,14 @@ abstract class EventDraft with _$EventDraft {
     String? capacity,
     String? price,
     String? description,
+    @Default(false) bool externalBookingMode,
+    String? externalBookingProvider,
+    String? externalEventUrl,
+    String? externalEventId,
+    String? runtimeWalkInPolicy,
+    String? rosterFileName,
+    String? rosterFileFingerprint,
+    int? rosterReadyCount,
     String? activityKind,
     String? customActivityLabel,
     String? interactionModel,
@@ -72,6 +80,14 @@ extension EventDraftX on EventDraft {
       capacity == null &&
       price == null &&
       description == null &&
+      externalBookingMode == false &&
+      externalBookingProvider == null &&
+      externalEventUrl == null &&
+      externalEventId == null &&
+      runtimeWalkInPolicy == null &&
+      rosterFileName == null &&
+      rosterFileFingerprint == null &&
+      rosterReadyCount == null &&
       (activityKind == null || activityKind == 'socialRun') &&
       customActivityLabel == null &&
       interactionModel == null &&

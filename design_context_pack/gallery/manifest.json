@@ -2,13 +2,13 @@
   "version": 1,
   "source": "test/ui_captures/catalog/screen_capture_catalog.dart",
   "coverage": {
-    "routes": 64,
-    "captures": 624,
+    "routes": 66,
+    "captures": 625,
     "statusCounts": {
       "excluded": 2,
       "captured": 39,
       "alias": 8,
-      "planned": 15
+      "planned": 17
     }
   },
   "profile": {
@@ -2007,6 +2007,23 @@
         "dark": "dark/host_clubs_management.png"
       },
       "whatItIs": "Host Clubs Management",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_organizer_media_summary",
+      "routes": [
+        "hostOrganizerScreen"
+      ],
+      "device": "claude-phone-390x812",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_organizer_media_summary.png",
+        "dark": "dark/host_organizer_media_summary.png"
+      },
+      "whatItIs": "Host Organizer Media Summary",
       "keepChangeNotes": ""
     },
     {

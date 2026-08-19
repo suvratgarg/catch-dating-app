@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
@@ -28,7 +29,7 @@ void main() {
               home: Scaffold(
                 body: ProfileTab(
                   user: _profileWithCompletedPrompts(completedCount),
-                  uploadState: (loadingIndices: <int>{}, uploadError: null),
+                  uploadState: const PhotoUploadState(),
                 ),
               ),
             ),

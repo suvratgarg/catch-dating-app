@@ -370,6 +370,138 @@ describe("storage.rules", () => {
   });
 
   describe("club and event media", () => {
+    it("supports position-independent v2 organizer media and compensation", async () => {
+      await seedFirestore(["organizers", "organizer-1"], {
+        hostUserId: "owner-1",
+        ownerUserId: "owner-1",
+        hostUserIds: ["owner-1", "manager-1"],
+      });
+      const paths = [
+        "organizers/organizer-1/media/position-0-media01/original.jpg",
+        "organizers/organizer-1/media/position-6-media01/original.jpg",
+        "organizers/organizer-1/media/position-24-media1/original.jpg",
+      ];
+
+      for (const objectPath of paths) {
+        await assertSucceeds(uploadImage(authedStorage("manager-1"), objectPath));
+      }
+      await assertSucceeds(
+        uploadImage(
+          authedStorage("owner-1"),
+          "organizers/organizer-1/logo/stable-logo-00001/original.jpg",
+        ),
+      );
+      await assertFails(
+        uploadImage(authedStorage("manager-1"), paths[0], {data: "replacement"}),
+      );
+      await assertFails(
+        uploadImage(
+          authedStorage("manager-1"),
+          "organizers/organizer-1/media/position-0-media01/thumbnail.jpg",
+        ),
+      );
+      await assertFails(
+        uploadImage(
+          authedStorage("manager-1"),
+          "organizers/organizer-1/media/short/original.jpg",
+        ),
+      );
+      await assertFails(authedStorage("runner-1").ref(paths[1]).delete());
+      await assertSucceeds(authedStorage("manager-1").ref(paths[1]).delete());
+    });
+
+    it("uses active organizer team edges for v2 organizer and event media", async () => {
+      await seedFirestore(["organizers", "organizer-1"], {
+        hostUserId: "owner-1",
+        ownerUserId: "owner-1",
+        hostUserIds: ["owner-1"],
+      });
+      await seedFirestore(
+        ["organizerTeamMemberships", "organizer-1_manager-edge"],
+        {
+          organizerId: "organizer-1",
+          uid: "manager-edge",
+          role: "manager",
+          status: "active",
+        },
+      );
+      await seedFirestore(
+        ["organizerTeamMemberships", "organizer-1_inactive-manager"],
+        {
+          organizerId: "organizer-1",
+          uid: "inactive-manager",
+          role: "manager",
+          status: "inactive",
+        },
+      );
+      await seedFirestore(["events", "event-1"], {
+        organizerId: "organizer-1",
+        clubId: "organizer-1",
+      });
+
+      await assertSucceeds(
+        uploadImage(
+          authedStorage("manager-edge"),
+          "organizers/organizer-1/media/team-media-00001/original.jpg",
+        ),
+      );
+      await assertSucceeds(
+        uploadImage(
+          authedStorage("manager-edge"),
+          "events/event-1/media/team-event-00001/original.jpg",
+        ),
+      );
+      await assertFails(
+        uploadImage(
+          authedStorage("inactive-manager"),
+          "organizers/organizer-1/media/inactive-media-01/original.jpg",
+        ),
+      );
+    });
+
+    it("keeps v2 thumbnails server-only and publicly readable", async () => {
+      const original =
+        "events/event-1/media/public-event-001/original.jpg";
+      const thumbnail =
+        "events/event-1/media/public-event-001/thumbnail.jpg";
+      await seedStorageFile(original);
+      await seedStorageFile(thumbnail);
+
+      await assertSucceeds(
+        unauthenticatedStorage().ref(original).getMetadata(),
+      );
+      await assertSucceeds(
+        unauthenticatedStorage().ref(thumbnail).getMetadata(),
+      );
+      await assertFails(authedStorage("host-1").ref(thumbnail).delete());
+    });
+
+    it("allows authorized rollback deletes on released media paths", async () => {
+      await seedFirestore(["organizers", "organizer-1"], {
+        ownerUserId: "owner-1",
+        hostUserIds: ["owner-1"],
+      });
+      await seedFirestore(["events", "event-1"], {
+        organizerId: "organizer-1",
+        clubId: "organizer-1",
+      });
+      await seedStorageFile("users/runner-1/photos/0_123.jpg");
+      await seedStorageFile("organizers/organizer-1/photos/0_123.jpg");
+      await seedStorageFile("events/event-1/photos/0_123.jpg");
+
+      await assertSucceeds(
+        authedStorage("runner-1").ref("users/runner-1/photos/0_123.jpg").delete(),
+      );
+      await assertSucceeds(
+        authedStorage("owner-1")
+          .ref("organizers/organizer-1/photos/0_123.jpg")
+          .delete(),
+      );
+      await assertSucceeds(
+        authedStorage("owner-1").ref("events/event-1/photos/0_123.jpg").delete(),
+      );
+    });
+
     it("allows organizer managers to upload canonical organizer media", async () => {
       await seedFirestore(["organizers", "organizer-1"], {
         hostUserId: "owner-1",

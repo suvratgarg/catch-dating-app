@@ -28,7 +28,7 @@ class HostCreateEventRouteLoadingScreen extends StatelessWidget {
                   .hostsHostCreateEventRouteLoadingScreenBodyLoadingClub,
               currentStep: 0,
               totalSteps: 5,
-              onBack: () => Navigator.of(context).maybePop(),
+              onClose: () => Navigator.of(context).maybePop(),
             ),
             gapH4,
             const Expanded(child: CreateEventLoadingBody()),

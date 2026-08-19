@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
@@ -8,20 +8,28 @@ import 'package:flutter/material.dart';
 class StepperFooter extends StatelessWidget {
   const StepperFooter({
     super.key,
+    required this.body,
     required this.isLastStep,
     required this.isLoading,
     required this.onPrimary,
-    this.onSaveDraft,
+    this.onPrevious,
+    this.notice,
     this.primaryLabel,
     this.lastStepLabel = 'Done',
+    this.primaryEnabled = true,
+    this.primaryIcon,
   });
 
+  final Widget body;
   final bool isLastStep;
   final bool isLoading;
-  final VoidCallback onPrimary;
-  final VoidCallback? onSaveDraft;
+  final VoidCallback? onPrimary;
+  final VoidCallback? onPrevious;
+  final Widget? notice;
   final String? primaryLabel;
   final String lastStepLabel;
+  final bool primaryEnabled;
+  final Widget? primaryIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -29,39 +37,50 @@ class StepperFooter extends StatelessWidget {
     final label =
         primaryLabel ??
         (isLastStep ? lastStepLabel : context.l10n.hostsStepperFooterLabelNext);
-    return CatchBottomDock(
-      child: Row(
-        children: [
-          if (onSaveDraft != null) ...[
-            Expanded(
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: CatchButton(
-                  label: context.l10n.hostsStepperFooterLabelSaveDraft,
-                  onPressed: isLoading ? null : onSaveDraft,
-                  variant: CatchButtonVariant.ghost,
-                  size: CatchButtonSize.lg,
-                  icon: Icon(CatchIcons.saveOutlined),
-                  foregroundColor: t.primary,
-                ),
-              ),
+    final previousButton = CatchButton(
+      label: context.l10n.hostsWizardPrevious,
+      onPressed: isLoading ? null : onPrevious,
+      variant: CatchButtonVariant.ghost,
+      size: CatchButtonSize.lg,
+      icon: Icon(CatchIcons.arrowBackRounded),
+      foregroundColor: t.primary,
+      fullWidth: true,
+    );
+    final primaryButton = CatchButton(
+      label: label,
+      onPressed: isLoading || !primaryEnabled ? null : onPrimary,
+      isLoading: isLoading,
+      fullWidth: true,
+      size: CatchButtonSize.lg,
+      icon:
+          primaryIcon ??
+          (isLastStep ? null : Icon(CatchIcons.arrowForwardRounded)),
+    );
+    final stacksActions =
+        onPrevious != null && MediaQuery.textScalerOf(context).scale(1) >= 1.6;
+
+    return CatchBottomActionOverlay(
+      body: body,
+      notice: notice,
+      actions: stacksActions
+          ? Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                primaryButton,
+                const SizedBox(height: CatchSpacing.s2),
+                previousButton,
+              ],
+            )
+          : Row(
+              children: [
+                if (onPrevious != null)
+                  Expanded(child: previousButton)
+                else
+                  const Spacer(),
+                const SizedBox(width: CatchSpacing.s3),
+                Expanded(child: primaryButton),
+              ],
             ),
-            const SizedBox(width: CatchSpacing.s3),
-          ],
-          Expanded(
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: CatchButton(
-                label: label,
-                onPressed: onPrimary,
-                isLoading: isLoading,
-                fullWidth: true,
-                icon: isLastStep ? null : Icon(CatchIcons.arrowForwardRounded),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

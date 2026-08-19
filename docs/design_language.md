@@ -248,10 +248,12 @@ owns that geometry along with safe-area, platform, focus, and disabled/loading
 behavior. Callers provide semantic state, content slots, and callbacks; they do
 not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
 
-- Primary screen CTA placement routes through `CatchBottomAction`. It owns
-  floating Cupertino versus anchored Material geometry. `CatchBottomDock` is a
-  required-child utility plane for chat inputs and compact action strips, not a
-  second CTA family.
+- Primary screen CTA placement routes through the `CatchBottomAction` family.
+  `CatchBottomAction` owns one floating Cupertino or anchored Material action;
+  `CatchBottomActionOverlay` owns pinned multi-action form controls over a soft
+  fade and blur while the form remains visible and scrollable beneath them.
+  `CatchBottomDock` is a required-child utility plane for chat inputs and
+  compact action strips, not a second CTA family.
 - Top-bar action grouping routes through `CatchTopBarActionGroup`; callers do
   not compose parallel header rows.
 - Pushed utility/list and identity chrome routes through

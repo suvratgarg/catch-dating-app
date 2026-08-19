@@ -5,6 +5,8 @@ import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
+enum CatchMenuItemRole { action, choice }
+
 typedef CatchMenuAnchorBuilder =
     Widget Function(
       BuildContext context,
@@ -21,8 +23,13 @@ class CatchMenuItem<T> {
     this.selected = false,
     this.danger = false,
     this.enabled = true,
+    this.role = CatchMenuItemRole.action,
+    this.startsSection = false,
     this.onSelected,
-  });
+  }) : assert(
+         !selected || role == CatchMenuItemRole.choice,
+         'Only choice rows can be selected.',
+       );
 
   final T value;
   final String label;
@@ -31,6 +38,8 @@ class CatchMenuItem<T> {
   final bool selected;
   final bool danger;
   final bool enabled;
+  final CatchMenuItemRole role;
+  final bool startsSection;
   final ValueChanged<T>? onSelected;
 }
 
@@ -93,6 +102,8 @@ class CatchMenu<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final viewportHeight = MediaQuery.sizeOf(context).height;
+    final maxHeight = CatchLayout.menuMaxHeightFor(viewportHeight);
 
     return CatchSurface(
       elevation: CatchSurfaceElevation.overlay,
@@ -101,14 +112,21 @@ class CatchMenu<T> extends StatelessWidget {
       padding: EdgeInsets.zero,
       width: width,
       clipBehavior: Clip.antiAlias,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          for (final indexed in items.indexed) ...[
-            if (indexed.$1 > 0) const CatchDivider.fieldRow(indent: 0),
-            CatchMenuRow<T>(item: indexed.$2, onSelected: onSelected),
-          ],
-        ],
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: maxHeight),
+        child: SingleChildScrollView(
+          primary: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (final indexed in items.indexed) ...[
+                if (indexed.$1 > 0 && indexed.$2.startsSection)
+                  const CatchDivider.fieldRow(indent: 0),
+                CatchMenuRow<T>(item: indexed.$2, onSelected: onSelected),
+              ],
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -132,64 +150,70 @@ class CatchMenuRow<T> extends StatelessWidget {
         : null;
 
     return Semantics(
-      button: true,
+      button: item.role == CatchMenuItemRole.action,
       enabled: item.enabled,
       selected: item.selected,
+      inMutuallyExclusiveGroup: item.role == CatchMenuItemRole.choice,
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: CatchSpacing.micro14,
-              vertical: CatchLayout.menuRowVerticalPadding,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              minHeight: CatchLayout.menuRowMinHeight,
             ),
-            child: Row(
-              children: [
-                if (item.icon != null) ...[
-                  Icon(
-                    item.icon,
-                    size: CatchLayout.menuRowIconSize,
-                    color: item.danger ? t.danger : t.ink2,
-                  ),
-                  const SizedBox(width: CatchLayout.menuRowGap),
-                ],
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        item.label,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: CatchTextStyles.labelL(context, color: color),
-                      ),
-                      if (item.sublabel != null &&
-                          item.sublabel!.trim().isNotEmpty) ...[
-                        const SizedBox(height: CatchSpacing.micro2),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: CatchSpacing.micro14,
+                vertical: CatchLayout.menuRowVerticalPadding,
+              ),
+              child: Row(
+                children: [
+                  if (item.icon != null) ...[
+                    Icon(
+                      item.icon,
+                      size: CatchLayout.menuRowIconSize,
+                      color: item.danger ? t.danger : t.ink2,
+                    ),
+                    const SizedBox(width: CatchLayout.menuRowGap),
+                  ],
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
                         Text(
-                          item.sublabel!,
-                          maxLines: 1,
+                          item.label,
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: CatchTextStyles.monoLabel(
-                            context,
-                            color: t.ink3,
-                          ).copyWith(fontSize: CatchLayout.menuRowSublabelSize),
+                          style: CatchTextStyles.labelL(context, color: color),
                         ),
+                        if (item.sublabel != null &&
+                            item.sublabel!.trim().isNotEmpty) ...[
+                          const SizedBox(height: CatchSpacing.micro2),
+                          Text(
+                            item.sublabel!,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: CatchTextStyles.menuSupporting(
+                              context,
+                              color: t.ink3,
+                            ),
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
-                ),
-                if (item.selected) ...[
-                  const SizedBox(width: CatchLayout.menuRowGap),
-                  Icon(
-                    CatchIcons.check,
-                    size: CatchLayout.menuRowCheckSize,
-                    color: t.ink,
-                  ),
+                  if (item.selected) ...[
+                    const SizedBox(width: CatchLayout.menuRowGap),
+                    Icon(
+                      CatchIcons.check,
+                      size: CatchLayout.menuRowCheckSize,
+                      color: t.ink,
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         ),

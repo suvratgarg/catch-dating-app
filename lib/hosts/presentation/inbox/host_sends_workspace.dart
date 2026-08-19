@@ -1,4 +1,8 @@
+import 'dart:async';
+
+import 'package:catch_dating_app/clubs/data/club_posts_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/communications/domain/communication_route.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
@@ -12,7 +16,9 @@ import 'package:catch_dating_app/core/widgets/catch_row_press_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/host_club_post_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_follower_update_composer.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
@@ -26,12 +32,14 @@ class HostSendsWorkspaceSliver extends ConsumerStatefulWidget {
     required this.initialSegments,
     required this.initialSearch,
     required this.onBusyChanged,
+    required this.onOpenInbox,
   });
 
   final Club club;
   final Set<HostAudienceSegment> initialSegments;
   final String? initialSearch;
   final ValueChanged<bool> onBusyChanged;
+  final VoidCallback onOpenInbox;
 
   @override
   ConsumerState<HostSendsWorkspaceSliver> createState() =>
@@ -41,8 +49,10 @@ class HostSendsWorkspaceSliver extends ConsumerStatefulWidget {
 class _HostSendsWorkspaceSliverState
     extends ConsumerState<HostSendsWorkspaceSliver> {
   late bool _composing;
+  bool _choosingRoute = false;
   HostCampaign? _campaignReport;
   HostAnnouncementSendSummary? _announcementReport;
+  HostFollowerUpdateSendSummary? _followerUpdateReport;
   String? _paginationBaseKey;
   List<HostSendSummary> _additionalSends = const [];
   String? _nextCursor;
@@ -62,8 +72,10 @@ class _HostSendsWorkspaceSliverState
     super.didUpdateWidget(oldWidget);
     if (oldWidget.club.id != widget.club.id) {
       _composing = false;
+      _choosingRoute = false;
       _campaignReport = null;
       _announcementReport = null;
+      _followerUpdateReport = null;
       _paginationBaseKey = null;
       _additionalSends = const [];
       _nextCursor = null;
@@ -74,7 +86,18 @@ class _HostSendsWorkspaceSliverState
 
   @override
   Widget build(BuildContext context) {
-    final content = _composing
+    final content = _choosingRoute
+        ? _HostSendsRoutePicker(
+            club: widget.club,
+            onBack: _showHistory,
+            onOpenInbox: widget.onOpenInbox,
+            onStartCampaign: () => setState(() {
+              _choosingRoute = false;
+              _composing = true;
+            }),
+            onStartFollowerUpdate: _composeFollowerUpdate,
+          )
+        : _composing
         ? _HostSendsComposer(
             club: widget.club,
             initialSegments: widget.initialSegments,
@@ -106,12 +129,17 @@ class _HostSendsWorkspaceSliverState
             onRefresh: () => _openCampaign(_campaignReport!.campaignId),
             onNew: () => setState(() {
               _campaignReport = null;
-              _composing = true;
+              _choosingRoute = true;
             }),
           )
         : _announcementReport != null
         ? _HostSendsAnnouncementReport(
             announcement: _announcementReport!,
+            onBack: _showHistory,
+          )
+        : _followerUpdateReport != null
+        ? _HostSendsFollowerUpdateReport(
+            update: _followerUpdateReport!,
             onBack: _showHistory,
           )
         : _HostSendsHistory(
@@ -121,7 +149,7 @@ class _HostSendsWorkspaceSliverState
             paginationBaseKey: _paginationBaseKey,
             additionalSends: _additionalSends,
             nextCursor: _nextCursor,
-            onNew: () => setState(() => _composing = true),
+            onNew: () => setState(() => _choosingRoute = true),
             onOpen: _open,
             onLoadMore: _loadMore,
           );
@@ -135,8 +163,10 @@ class _HostSendsWorkspaceSliverState
     if (_busy) return;
     setState(() {
       _composing = false;
+      _choosingRoute = false;
       _campaignReport = null;
       _announcementReport = null;
+      _followerUpdateReport = null;
       ref.invalidate(hostSendsProvider(widget.club.id));
     });
   }
@@ -147,7 +177,37 @@ class _HostSendsWorkspaceSliverState
         await _openCampaign(send.campaignId);
       case HostAnnouncementSendSummary():
         setState(() => _announcementReport = send);
+      case HostFollowerUpdateSendSummary():
+        setState(() => _followerUpdateReport = send);
     }
+  }
+
+  Future<void> _composeFollowerUpdate(int remainingQuota) async {
+    if (_busy) return;
+    final sent = await showHostFollowerUpdateComposer(
+      context: context,
+      club: widget.club,
+      remainingQuota: remainingQuota,
+      requestIdFactory: HostClubPostController.generateRequestId,
+      onSubmitPost: ({required requestId, required text}) async {
+        _setBusy(true);
+        try {
+          await ref
+              .read(hostClubPostControllerProvider)
+              .createPost(
+                clubId: widget.club.id,
+                requestId: requestId,
+                text: text,
+              );
+        } finally {
+          _setBusy(false);
+        }
+      },
+    );
+    if (!mounted || !sent) return;
+    ref.invalidate(watchClubPostRemainingWeeklyQuotaProvider(widget.club.id));
+    ref.invalidate(hostSendsProvider(widget.club.id));
+    setState(() => _choosingRoute = false);
   }
 
   Future<void> _openCampaign(String campaignId) async {
@@ -281,7 +341,7 @@ class _HostSendsHistory extends ConsumerWidget {
           children: [
             CatchButton(
               key: const ValueKey('host-sends-new-message'),
-              label: context.l10n.hostSendsNewMessage,
+              label: context.l10n.hostSendsChooseChannel,
               onPressed: busy ? null : onNew,
             ),
             CatchButton(
@@ -321,6 +381,190 @@ class _HostSendsHistory extends ConsumerWidget {
     );
   }
 }
+
+class _HostSendsRoutePicker extends ConsumerWidget {
+  const _HostSendsRoutePicker({
+    required this.club,
+    required this.onBack,
+    required this.onOpenInbox,
+    required this.onStartCampaign,
+    required this.onStartFollowerUpdate,
+  });
+
+  final Club club;
+  final VoidCallback onBack;
+  final VoidCallback onOpenInbox;
+  final VoidCallback onStartCampaign;
+  final Future<void> Function(int remainingQuota) onStartFollowerUpdate;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final setup = ref.watch(hostMessagingSetupProvider(club.id));
+    final followerQuota = ref.watch(
+      watchClubPostRemainingWeeklyQuotaProvider(club.id),
+    );
+    final chat = communicationRouteCapability(CommunicationRouteId.catchChat);
+    final announcement = communicationRouteCapability(
+      CommunicationRouteId.catchEventAnnouncement,
+    );
+    final whatsappApp = communicationRouteCapability(
+      CommunicationRouteId.personalWhatsappHandoff,
+    );
+    final whatsappBusiness = communicationRouteCapability(
+      CommunicationRouteId.organizerWhatsappCampaign,
+    );
+    final catchWhatsapp = communicationRouteCapability(
+      CommunicationRouteId.catchWhatsapp,
+    );
+    final followerUpdate = communicationRouteCapability(
+      CommunicationRouteId.organizerFollowerUpdate,
+    );
+    final whatsappBusinessField = setup.when<Widget>(
+      loading: () => CatchFieldLanes.single(
+        child: CatchField.read(
+          key: ValueKey('host-route-${whatsappBusiness.id.name}'),
+          title: context.l10n.hostSendsWhatsappBusinessChannel,
+          body: context.l10n.hostSendsChannelChecking,
+        ),
+      ),
+      error: (_, _) => CatchFieldLanes.single(
+        child: CatchField.read(
+          key: ValueKey('host-route-${whatsappBusiness.id.name}'),
+          title: context.l10n.hostSendsWhatsappBusinessChannel,
+          body: context.l10n.hostSendsChannelUnavailable,
+          valueText: context.l10n.hostSendsSetupRequired,
+        ),
+      ),
+      data: (value) => CatchFieldLanes.single(
+        child: value.canComposeCampaign
+            ? CatchField.nav(
+                key: ValueKey('host-route-${whatsappBusiness.id.name}'),
+                title: context.l10n.hostSendsWhatsappBusinessChannel,
+                body: context.l10n.hostSendsWhatsappBusinessDescription,
+                onTap: onStartCampaign,
+              )
+            : CatchField.read(
+                key: ValueKey('host-route-${whatsappBusiness.id.name}'),
+                title: context.l10n.hostSendsWhatsappBusinessChannel,
+                body: _whatsappReadinessMessage(
+                  context,
+                  value.campaignReadiness,
+                ),
+                valueText: context.l10n.hostSendsSetupRequired,
+              ),
+      ),
+    );
+    final followerUpdateField = followerQuota.when<Widget>(
+      loading: () => CatchFieldLanes.single(
+        child: CatchField.read(
+          key: ValueKey('host-route-${followerUpdate.id.name}'),
+          title: context.l10n.hostSendsFollowerUpdateChannel,
+          body: context.l10n.hostSendsChannelChecking,
+        ),
+      ),
+      error: (_, _) => CatchFieldLanes.single(
+        child: CatchField.read(
+          key: ValueKey('host-route-${followerUpdate.id.name}'),
+          title: context.l10n.hostSendsFollowerUpdateChannel,
+          body: context.l10n.hostSendsChannelUnavailable,
+        ),
+      ),
+      data: (remainingQuota) => CatchFieldLanes.single(
+        child: remainingQuota > 0
+            ? CatchField.nav(
+                key: ValueKey('host-route-${followerUpdate.id.name}'),
+                title: context.l10n.hostSendsFollowerUpdateChannel,
+                body: context.l10n.hostSendsFollowerUpdateDescription,
+                onTap: () => unawaited(onStartFollowerUpdate(remainingQuota)),
+              )
+            : CatchField.read(
+                key: ValueKey('host-route-${followerUpdate.id.name}'),
+                title: context.l10n.hostSendsFollowerUpdateChannel,
+                body: context.l10n.hostSendsFollowerUpdateQuotaUsed,
+                valueText: context.l10n.hostSendsWeeklyLimit,
+              ),
+      ),
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _HostSendsBackButton(onPressed: onBack),
+        gapH12,
+        CatchSection.divided(
+          title: context.l10n.hostSendsInCatchChannels,
+          child: CatchFieldLanes.single(
+            child: Column(
+              children: [
+                CatchField.nav(
+                  key: ValueKey('host-route-${chat.id.name}'),
+                  title: context.l10n.hostSendsCatchChatChannel,
+                  body: context.l10n.hostSendsCatchChatDescription,
+                  onTap: onOpenInbox,
+                ),
+                CatchField.nav(
+                  key: ValueKey('host-route-${announcement.id.name}'),
+                  title: context.l10n.hostSendsCatchAnnouncementChannel,
+                  body: context.l10n.hostSendsCatchAnnouncementDescription,
+                  onTap: onOpenInbox,
+                ),
+                followerUpdateField,
+              ],
+            ),
+          ),
+        ),
+        gapH12,
+        CatchSection.divided(
+          title: context.l10n.hostSendsWhatsappChannels,
+          child: CatchFieldLanes.single(
+            child: Column(
+              children: [
+                whatsappBusinessField,
+                CatchField.nav(
+                  key: ValueKey('host-route-${whatsappApp.id.name}'),
+                  title: context.l10n.hostSendsWhatsappAppChannel,
+                  body: context.l10n.hostSendsWhatsappAppDescription,
+                  onTap: () => context.goNamed(Routes.hostCustomersScreen.name),
+                ),
+                CatchField.read(
+                  key: ValueKey('host-route-${catchWhatsapp.id.name}'),
+                  title: context.l10n.hostSendsCatchWhatsappChannel,
+                  body: context.l10n.hostSendsCatchWhatsappDescription,
+                  valueText: context.l10n.hostSendsPlanned,
+                ),
+              ],
+            ),
+          ),
+        ),
+        gapH12,
+        CatchButton(
+          label: context.l10n.hostSendsSettings,
+          variant: CatchButtonVariant.secondary,
+          onPressed: () => context.pushNamed(
+            Routes.hostOrganizerMessagingScreen.name,
+            pathParameters: {'clubId': club.id},
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+String _whatsappReadinessMessage(
+  BuildContext context,
+  HostWhatsappCampaignReadiness readiness,
+) => switch (readiness) {
+  HostWhatsappCampaignReadiness.providerUnavailable =>
+    context.l10n.hostSendsWhatsappProviderUnavailable,
+  HostWhatsappCampaignReadiness.senderNotConnected =>
+    context.l10n.hostSendsWhatsappSenderRequired,
+  HostWhatsappCampaignReadiness.senderNeedsAttention =>
+    context.l10n.hostSendsWhatsappSenderNeedsAttention,
+  HostWhatsappCampaignReadiness.approvedTemplateRequired =>
+    context.l10n.hostSendsWhatsappTemplateRequired,
+  HostWhatsappCampaignReadiness.ready =>
+    context.l10n.hostSendsWhatsappBusinessDescription,
+};
 
 class _HostSendsHistoryPage extends StatelessWidget {
   const _HostSendsHistoryPage({
@@ -400,7 +644,7 @@ class _HostSendRow extends StatelessWidget {
         key: ValueKey('host-send-campaign-${campaign.campaignId}'),
         title: campaign.name,
         body: [
-          context.l10n.hostSendsCampaignType,
+          context.l10n.hostSendsWhatsappBusinessChannel,
           campaign.templateName ?? campaign.templateId,
           AppTimeFormatters.shortDate(campaign.activityAt),
         ].join(' · '),
@@ -411,13 +655,29 @@ class _HostSendRow extends StatelessWidget {
         key: ValueKey('host-send-announcement-${announcement.broadcastId}'),
         title: announcement.eventName,
         body: [
-          context.l10n.hostSendsAnnouncementType,
+          context.l10n.hostSendsCatchAnnouncementChannel,
           context.l10n.hostSendsRecipients(count: announcement.recipientCount),
           AppTimeFormatters.shortDate(announcement.sentAt),
         ].join(' · '),
         valueText: announcement.partialFailure
             ? context.l10n.hostSendsPartial
             : announcement.audience,
+        divider: divider,
+      ),
+      HostFollowerUpdateSendSummary update => CatchField.read(
+        key: ValueKey('host-send-follower-update-${update.postId}'),
+        title: context.l10n.hostSendsFollowerUpdateChannel,
+        body: [
+          context.l10n.hostSendsFollowersAudience,
+          if (update.hasTrackedDelivery)
+            context.l10n.hostSendsRecipients(
+              count: update.activityAvailableCount,
+            ),
+          AppTimeFormatters.shortDate(update.createdAt),
+        ].join(' · '),
+        valueText: context.l10n.hostSendsFollowerDeliveryStatus(
+          status: update.deliveryStatus,
+        ),
         divider: divider,
       ),
     },
@@ -527,6 +787,49 @@ class _HostSendsAnnouncementReport extends StatelessWidget {
             tone: announcement.partialFailure
                 ? CatchNoticeTone.warning
                 : CatchNoticeTone.status,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+class _HostSendsFollowerUpdateReport extends StatelessWidget {
+  const _HostSendsFollowerUpdateReport({
+    required this.update,
+    required this.onBack,
+  });
+
+  final HostFollowerUpdateSendSummary update;
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      _HostSendsBackButton(onPressed: onBack),
+      gapH12,
+      CatchSection.divided(
+        title: context.l10n.hostSendsFollowerUpdateChannel,
+        child: CatchNotice(
+          notice: CatchNoticeData(
+            id: 'host.sends.follower-update.${update.postId}',
+            title: context.l10n.hostSendsFollowersAudience,
+            message: [
+              AppTimeFormatters.dateTime(update.createdAt),
+              if (update.eventId != null)
+                context.l10n.hostSendsLinkedEventUpdate,
+              context.l10n.hostSendsFollowerDeliveryStatus(
+                status: update.deliveryStatus,
+              ),
+              if (update.hasTrackedDelivery)
+                context.l10n.hostSendsRecipients(
+                  count: update.activityAvailableCount,
+                ),
+            ].join(' · '),
+            tone: update.deliveryCompleted
+                ? CatchNoticeTone.status
+                : CatchNoticeTone.warning,
           ),
         ),
       ),

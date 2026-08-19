@@ -222,10 +222,12 @@ function harness(initialDocs: Record<string, FakeData | undefined>) {
   const firestore = new FakeFirestore(initialDocs);
   const rateLimitCalls: string[] = [];
   const notifications: FcmParams[] = [];
+  const deletedStoragePaths: string[] = [];
   return {
     firestore,
     rateLimitCalls,
     notifications,
+    deletedStoragePaths,
     deps: {
       firestore: () =>
         firestore as unknown as FirebaseFirestore.Firestore,
@@ -244,6 +246,9 @@ function harness(initialDocs: Record<string, FakeData | undefined>) {
       },
       serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
       runtimePublicId: () => "runtime_123456789012345678901234",
+      deleteStoragePaths: async (paths: string[]) => {
+        deletedStoragePaths.push(...paths);
+      },
     },
   };
 }
@@ -300,6 +305,19 @@ function event(overrides: FakeData = {}): FakeData {
     cohortCounts: {},
     waitlistedCohortCounts: {},
     ...overrides,
+  };
+}
+
+function uploadedEventPhoto(id: string, position: number): FakeData {
+  return {
+    id,
+    url: `https://example.com/${id}.jpg`,
+    storagePath: `events/event-1/media/${id}/original.jpg`,
+    thumbnailUrl: `https://example.com/${id}-thumb.jpg`,
+    thumbnailStoragePath: `events/event-1/media/${id}/thumbnail.jpg`,
+    position,
+    createdAt: {_seconds: 1, _nanoseconds: 0},
+    updatedAt: {_seconds: 1, _nanoseconds: 0},
   };
 }
 
@@ -428,7 +446,7 @@ test("createEventHandler creates a server-owned event for the club host",
       cancellationReason: null,
       constraints: {minAge: 21, maxAge: 35, maxMen: 10, maxWomen: null},
       eventPolicy: {
-        version: 1,
+        version: 2,
         admission: {
           format: "fixedCohortCaps",
           capacityLimit: 20,
@@ -454,7 +472,7 @@ test("createEventHandler creates a server-owned event for the club host",
           cohortAdjustmentsInPaise: {},
           demandPricingRules: [],
         },
-        cancellation: {policyId: "standard"},
+        cancellation: {policyId: "notApplicable"},
         settlement: {hostPayoutTiming: "afterEventCompletion"},
       },
       genderCounts: {},
@@ -515,7 +533,10 @@ test("createEventHandler accepts client event-policy snapshots", async () => {
   );
 
   assert.deepEqual(result, {eventId: "event-1"});
-  assert.deepEqual(h.firestore.get("events/event-1")?.eventPolicy, eventPolicy);
+  assert.deepEqual(h.firestore.get("events/event-1")?.eventPolicy, {
+    ...eventPolicy,
+    version: 2,
+  });
   assert.equal(h.firestore.get("events/event-1")?.priceInPaise, 40000);
   assert.equal(h.firestore.get("events/event-1")?.capacityLimit, 20);
 });
@@ -586,6 +607,32 @@ test("createEventHandler creates companion-only external events", async () => {
   const h = harness({"clubs/club-1": club()});
 
   await createEventHandler(request("host-1", payload({
+    priceInPaise: 40000,
+    eventPolicy: {
+      version: 1,
+      admission: {
+        format: "open",
+        capacityLimit: 20,
+        waitlistPolicy: {mode: "rankedOffer", offerWindowMinutes: 20},
+        inviteRequired: false,
+        membershipRequired: false,
+        manualApprovalRequired: false,
+        privateAccessPolicy: {
+          mode: "none",
+          inviteCodeHint: null,
+          privateLinkEnabled: false,
+        },
+        cohortCapacityLimits: {},
+        balancedRatioPolicy: null,
+      },
+      pricing: {
+        basePriceInPaise: 40000,
+        cohortAdjustmentsInPaise: {},
+        demandPricingRules: [],
+      },
+      cancellation: {policyId: "strict"},
+      settlement: {hostPayoutTiming: "afterEventCompletion"},
+    },
     externalOrigin: {
       provider: "luma",
       externalEventId: "evt_luma_123",
@@ -614,6 +661,15 @@ test("createEventHandler creates companion-only external events", async () => {
   assert.equal(
     (created?.runtimeAccess as FakeData).walkInPolicy,
     "hostApproval"
+  );
+  assert.equal(created?.priceInPaise, 0);
+  assert.equal(
+    ((created?.eventPolicy as FakeData).pricing as FakeData).basePriceInPaise,
+    0
+  );
+  assert.equal(
+    ((created?.eventPolicy as FakeData).cancellation as FakeData).policyId,
+    "notApplicable"
   );
 });
 
@@ -841,7 +897,11 @@ test("createEventHandler stores invite codes in host-private access docs",
     const createdEvent = h.firestore.get("events/event-1");
     const privateAccess = h.firestore.get("eventPrivateAccess/event-1");
     assert.deepEqual(result, {eventId: "event-1"});
-    assert.deepEqual(createdEvent?.eventPolicy, eventPolicy);
+    assert.deepEqual(createdEvent?.eventPolicy, {
+      ...eventPolicy,
+      version: 2,
+      cancellation: {policyId: "notApplicable"},
+    });
     assert.equal(JSON.stringify(createdEvent).includes("CATCH-DELHI"), false);
     assert.equal(privateAccess?.eventId, "event-1");
     assert.equal(privateAccess?.clubId, "club-1");
@@ -1037,6 +1097,25 @@ test("updateEventHandler updates only host-editable event fields", async () => {
   assert.equal(updated?.photoUrl, "https://img.example/events/event-1.jpg");
   assert.equal(updated?.description, "Updated route.");
   assert.equal(updated?.capacityLimit, 12);
+});
+
+test("updateEventHandler cleans removed event media after commit", async () => {
+  const kept = uploadedEventPhoto("keep", 0);
+  const removed = uploadedEventPhoto("remove", 1);
+  const h = harness({
+    "clubs/club-1": club(),
+    "events/event-1": event({eventPhotos: [kept, removed]}),
+  });
+
+  await updateEventHandler(request("host-1", {
+    eventId: "event-1",
+    fields: {eventPhotos: [kept]},
+  }), h.deps);
+
+  assert.deepEqual(h.deletedStoragePaths, [
+    "events/event-1/media/remove/original.jpg",
+    "events/event-1/media/remove/thumbnail.jpg",
+  ]);
 });
 
 test(
@@ -1291,9 +1370,10 @@ test("cancelEventHandler marks the event cancelled and notifies participants",
 );
 
 test("deleteEventHandler hard-deletes only unused events", async () => {
+  const photo = uploadedEventPhoto("delete", 0);
   const h = harness({
     "clubs/club-1": club(),
-    "events/event-1": event(),
+    "events/event-1": event({eventPhotos: [photo]}),
   });
 
   const result = await deleteEventHandler(
@@ -1304,6 +1384,10 @@ test("deleteEventHandler hard-deletes only unused events", async () => {
   assert.deepEqual(result, {deleted: true});
   assert.deepEqual(h.rateLimitCalls, ["host-1:deleteEvent"]);
   assert.equal(h.firestore.get("events/event-1"), undefined);
+  assert.deepEqual(h.deletedStoragePaths, [
+    "events/event-1/media/delete/original.jpg",
+    "events/event-1/media/delete/thumbnail.jpg",
+  ]);
 });
 
 test("deleteEventHandler rejects events with user activity", async () => {

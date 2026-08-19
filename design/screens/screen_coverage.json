@@ -1,7 +1,7 @@
 {
   "$schema": "./screen_coverage.schema.json",
   "version": 1,
-  "updated": "2026-08-18",
+  "updated": "2026-08-19",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Design screen coverage policy. Every route from the generated route inventory must be contracted, aliased to a canonical design surface, planned for a future screen contract, or explicitly excluded from baseline design parity.",
   "routes": [
@@ -393,6 +393,20 @@
       "priority": "P1",
       "reason": "Covered by screen.host.event.create as the Host app create-event wizard route.",
       "screenId": "screen.host.event.create"
+    },
+    {
+      "routeId": "hostEventRehearsalStartScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Covered by screen.host.event.rehearsal as the authenticated practice-room creation route.",
+      "screenId": "screen.host.event.rehearsal"
+    },
+    {
+      "routeId": "hostEventRehearsalScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Covered by screen.host.event.rehearsal as the isolated virtual event control room and recap route.",
+      "screenId": "screen.host.event.rehearsal"
     },
     {
       "routeId": "hostAppEventDetailScreen",

@@ -36,7 +36,11 @@ export type EventOutOfRatioCohortPolicy =
 
 export type EventPrivateAccessMode = "none" | "inviteCode";
 
-export type EventCancellationPolicyId = "flexible" | "standard" | "strict";
+export type EventCancellationPolicyId =
+  | "notApplicable"
+  | "flexible"
+  | "standard"
+  | "strict";
 
 export type EventCancellationRemedy =
   | "fullRefund"
@@ -115,8 +119,11 @@ export function eventPolicyFromEvent(
 
 export function normalizePolicy(policy: EventPolicyBundleDocument):
   EventPolicyBundleDocument {
+  const basePriceInPaise = Math.max(0, Math.trunc(
+    policy.pricing?.basePriceInPaise ?? 0
+  ));
   return {
-    version: 1,
+    version: 2,
     admission: {
       format: policy.admission?.format ?? "open",
       capacityLimit: Math.max(1, Math.trunc(
@@ -145,16 +152,16 @@ export function normalizePolicy(policy: EventPolicyBundleDocument):
       ),
     },
     pricing: {
-      basePriceInPaise: Math.max(0, Math.trunc(
-        policy.pricing?.basePriceInPaise ?? 0
-      )),
+      basePriceInPaise,
       cohortAdjustmentsInPaise: sanitizeAmountMap(
         policy.pricing?.cohortAdjustmentsInPaise
       ),
       demandPricingRules: policy.pricing?.demandPricingRules ?? [],
     },
     cancellation: {
-      policyId: policy.cancellation?.policyId ?? "standard",
+      policyId: basePriceInPaise === 0 ?
+        "notApplicable" :
+        paidCancellationPolicyId(policy.cancellation?.policyId),
     },
     settlement: {
       hostPayoutTiming: "afterEventCompletion",
@@ -203,7 +210,9 @@ export function legacyPolicyFromEvent(
       cohortAdjustmentsInPaise: {},
       demandPricingRules: [],
     },
-    cancellation: {policyId: "standard"},
+    cancellation: {
+      policyId: event.priceInPaise === 0 ? "notApplicable" : "standard",
+    },
     settlement: {hostPayoutTiming: "afterEventCompletion"},
   };
 }
@@ -622,6 +631,12 @@ function cancellationWindow(policyId: EventCancellationPolicyId): {
 } {
   const hourMillis = 60 * 60 * 1000;
   switch (policyId) {
+  case "notApplicable":
+    return {
+      fullRefundBeforeStartMillis: 0,
+      creditBeforeStartMillis: 0,
+      creditPercent: 0,
+    };
   case "flexible":
     return {
       fullRefundBeforeStartMillis: 6 * hourMillis,
@@ -642,6 +657,12 @@ function cancellationWindow(policyId: EventCancellationPolicyId): {
       creditPercent: 50,
     };
   }
+}
+
+function paidCancellationPolicyId(
+  value: EventCancellationPolicyId | undefined
+): Exclude<EventCancellationPolicyId, "notApplicable"> {
+  return value === "flexible" || value === "strict" ? value : "standard";
 }
 
 /**

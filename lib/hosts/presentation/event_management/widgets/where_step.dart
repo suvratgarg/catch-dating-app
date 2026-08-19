@@ -33,10 +33,11 @@ class WhereStep extends StatelessWidget {
       key: formKey,
       autovalidateMode: autovalidateMode,
       child: ListView(
-        padding: CatchInsets.formStepBody,
+        padding: CatchInsets.formStepBodyWithBottomActions,
         children: [
           CatchSection.fieldRows(
             first: true,
+            showTopDivider: false,
             children: [
               FormField<LocationCoordinate>(
                 key: ValueKey(startingPoint),

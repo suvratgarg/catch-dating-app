@@ -10,7 +10,7 @@ const architectureAdoptionPath =
 const screenChromeArchitectureId = "ARCH-SCREEN-CHROME-001";
 const appBarPattern = /\bappBar\s*:\s*([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?)/gu;
 const routeTopBarBuilderPattern =
-  /\btopBarBuilder\s*:\s*\([^)]*\)\s*=>\s*(CatchTopBar(?:\.identity)?)/gu;
+  /\btopBarBuilder\s*:\s*\([^)]*\)\s*=>\s*(CatchScreenTopBar|CatchTopBar(?:\.identity)?)/gu;
 const canonicalRouteScaffoldPath =
   "lib/core/widgets/catch_route_scaffold.dart";
 const rawChromePattern =

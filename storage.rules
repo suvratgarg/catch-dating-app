@@ -12,6 +12,30 @@ service firebase.storage {
         && request.resource.size <= 8 * 1024 * 1024;
     }
 
+    function isStoredImage() {
+      return resource != null && resource.contentType.matches('image/.*');
+    }
+
+    function isNewImageUpload() {
+      return resource == null && isImage();
+    }
+
+    function isStoredImageDelete() {
+      return request.resource == null && isStoredImage();
+    }
+
+    function isStableMediaId(mediaId) {
+      return mediaId.matches('[A-Za-z0-9_-]{16,64}');
+    }
+
+    function isOriginalMediaFileName(fileName) {
+      return fileName.matches('original\\.(jpg|jpeg|png)');
+    }
+
+    function isV2MediaFileName(fileName) {
+      return isOriginalMediaFileName(fileName) || fileName == 'thumbnail.jpg';
+    }
+
     function isGalleryPhotoFileName(fileName) {
       return fileName.matches('[0-5]_[0-9]+\\.(jpg|jpeg|png)');
     }
@@ -162,13 +186,27 @@ service firebase.storage {
           /databases/(default)/documents/organizers/$(organizerId)
         )
         && (
-          firestore.get(
-            /databases/(default)/documents/organizers/$(organizerId)
-          ).data.hostUserId == request.auth.uid
-          || firestore.get(
-            /databases/(default)/documents/organizers/$(organizerId)
-          ).data.ownerUserId == request.auth.uid
+          (
+            firestore.get(
+              /databases/(default)/documents/organizers/$(organizerId)
+            ).data.keys().hasAny(['hostUserId'])
+            && firestore.get(
+              /databases/(default)/documents/organizers/$(organizerId)
+            ).data.hostUserId == request.auth.uid
+          )
           || (
+            firestore.get(
+              /databases/(default)/documents/organizers/$(organizerId)
+            ).data.keys().hasAny(['ownerUserId'])
+            && firestore.get(
+              /databases/(default)/documents/organizers/$(organizerId)
+            ).data.ownerUserId == request.auth.uid
+          )
+          || (
+            firestore.get(
+              /databases/(default)/documents/organizers/$(organizerId)
+            ).data.keys().hasAny(['hostUserIds'])
+            &&
             firestore.get(
               /databases/(default)/documents/organizers/$(organizerId)
             ).data.hostUserIds is list
@@ -176,6 +214,43 @@ service firebase.storage {
               /databases/(default)/documents/organizers/$(organizerId)
             ).data.hostUserIds.hasAny([request.auth.uid])
           )
+          || hasActiveOrganizerTeamMembership(organizerId)
+        );
+    }
+
+    function hasActiveOrganizerTeamMembership(organizerId) {
+      return isSignedIn()
+        && firestore.exists(
+          /databases/(default)/documents/organizerTeamMemberships/$(
+            organizerId + '_' + request.auth.uid
+          )
+        )
+        && firestore.get(
+          /databases/(default)/documents/organizerTeamMemberships/$(
+            organizerId + '_' + request.auth.uid
+          )
+        ).data.organizerId == organizerId
+        && firestore.get(
+          /databases/(default)/documents/organizerTeamMemberships/$(
+            organizerId + '_' + request.auth.uid
+          )
+        ).data.uid == request.auth.uid
+        && firestore.get(
+          /databases/(default)/documents/organizerTeamMemberships/$(
+            organizerId + '_' + request.auth.uid
+          )
+        ).data.status == 'active'
+        && (
+          firestore.get(
+            /databases/(default)/documents/organizerTeamMemberships/$(
+              organizerId + '_' + request.auth.uid
+            )
+          ).data.role == 'owner'
+          || firestore.get(
+            /databases/(default)/documents/organizerTeamMemberships/$(
+              organizerId + '_' + request.auth.uid
+            )
+          ).data.role == 'manager'
         );
     }
 
@@ -211,7 +286,7 @@ service firebase.storage {
       allow write: if isSignedIn()
         && request.auth.uid == uid
         && isGalleryPhotoFileName(fileName)
-        && isImage();
+        && (isNewImageUpload() || isStoredImageDelete());
     }
 
     match /users/{uid}/photoThumbnails/{fileName} {
@@ -228,14 +303,14 @@ service firebase.storage {
       allow read: if true;
       allow write: if canWriteClubMedia(clubId)
         && isGalleryPhotoFileName(fileName)
-        && isImage();
+        && (isNewImageUpload() || isStoredImageDelete());
     }
 
     match /clubs/{clubId}/logo/{fileName} {
       allow read: if true;
       allow write: if canWriteClubMedia(clubId)
         && isTimestampImageFileName(fileName)
-        && isImage();
+        && (isNewImageUpload() || isStoredImageDelete());
     }
 
     match /clubs/{clubId}/logoThumbnails/{fileName} {
@@ -247,14 +322,32 @@ service firebase.storage {
       allow read: if true;
       allow write: if canWriteOrganizerMedia(organizerId)
         && isGalleryPhotoFileName(fileName)
-        && isImage();
+        && (isNewImageUpload() || isStoredImageDelete());
     }
 
     match /organizers/{organizerId}/logo/{fileName} {
       allow read: if true;
       allow write: if canWriteOrganizerMedia(organizerId)
         && isTimestampImageFileName(fileName)
-        && isImage();
+        && (isNewImageUpload() || isStoredImageDelete());
+    }
+
+    match /organizers/{organizerId}/media/{mediaId}/{fileName} {
+      allow read: if isStableMediaId(mediaId)
+        && isV2MediaFileName(fileName);
+      allow write: if canWriteOrganizerMedia(organizerId)
+        && isStableMediaId(mediaId)
+        && isOriginalMediaFileName(fileName)
+        && (isNewImageUpload() || isStoredImageDelete());
+    }
+
+    match /organizers/{organizerId}/logo/{mediaId}/{fileName} {
+      allow read: if isStableMediaId(mediaId)
+        && isV2MediaFileName(fileName);
+      allow write: if canWriteOrganizerMedia(organizerId)
+        && isStableMediaId(mediaId)
+        && isOriginalMediaFileName(fileName)
+        && (isNewImageUpload() || isStoredImageDelete());
     }
 
     match /organizers/{organizerId}/logoThumbnails/{fileName} {
@@ -278,7 +371,16 @@ service firebase.storage {
       allow read: if true;
       allow write: if canWriteEventMedia(eventId)
         && isGalleryPhotoFileName(fileName)
-        && isImage();
+        && (isNewImageUpload() || isStoredImageDelete());
+    }
+
+    match /events/{eventId}/media/{mediaId}/{fileName} {
+      allow read: if isStableMediaId(mediaId)
+        && isV2MediaFileName(fileName);
+      allow write: if canWriteEventMedia(eventId)
+        && isStableMediaId(mediaId)
+        && isOriginalMediaFileName(fileName)
+        && (isNewImageUpload() || isStoredImageDelete());
     }
 
     match /matches/{matchId}/images/{fileName} {

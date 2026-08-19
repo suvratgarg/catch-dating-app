@@ -139,7 +139,7 @@
         {
           "id": "navigate_back",
           "owner": "route_intent",
-          "codeValue": "HostClubCreateBackIntent",
+          "codeValue": "HostClubCreatePreviousIntent",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",

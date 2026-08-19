@@ -39,6 +39,8 @@ class EventPolicyStep extends StatelessWidget {
     required this.onCrossPathsPairInventoryChanged,
     required this.cancellationPolicyId,
     required this.onCancellationPolicyChanged,
+    this.externalBookingMode = false,
+    this.minimumCapacity,
   });
 
   final GlobalKey<FormState> formKey;
@@ -64,6 +66,8 @@ class EventPolicyStep extends StatelessWidget {
   final ValueChanged<bool> onCrossPathsPairInventoryChanged;
   final EventCancellationPolicyId cancellationPolicyId;
   final ValueChanged<EventCancellationPolicyId> onCancellationPolicyChanged;
+  final bool externalBookingMode;
+  final int? minimumCapacity;
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +76,7 @@ class EventPolicyStep extends StatelessWidget {
       key: formKey,
       autovalidateMode: autovalidateMode,
       child: ListView(
-        padding: CatchInsets.formStepBody,
+        padding: CatchInsets.formStepBodyWithBottomActions,
         children: [
           CatchSectionList(
             emptyStateOmitted: true,
@@ -80,7 +84,11 @@ class EventPolicyStep extends StatelessWidget {
             children: [
               CatchSection.plain(
                 child: Text(
-                  context.l10n.hostsEventPolicyStepTextConfigureWhoCanBook,
+                  externalBookingMode
+                      ? context.l10n.hostsEventPolicyStepExternalOperationsIntro
+                      : context
+                            .l10n
+                            .hostsEventPolicyStepTextConfigureWhoCanBook,
                   style: CatchTextStyles.supporting(context, color: t.primary),
                 ),
               ),
@@ -107,67 +115,79 @@ class EventPolicyStep extends StatelessWidget {
                       if (capacity == null || capacity < 1) {
                         return context.l10n.hostsEventPolicyStepVisiblecopyMin1;
                       }
+                      final requiredCapacity = minimumCapacity;
+                      if (requiredCapacity != null &&
+                          capacity < requiredCapacity) {
+                        return context.l10n.hostsCreateEventCapacityBelowRoster(
+                          count: requiredCapacity,
+                        );
+                      }
                       return null;
                     },
                   ),
-                  CatchField.input(
-                    key: CreateEventFormKeys.price,
-                    title: context.l10n
-                        .hostsEventPolicyStepTitleBasePriceCurrencycode(
-                          currencyCode: currencyCode,
-                        ),
-                    contract: CatchContractConstraints
-                        .createEventCallablePayloadPriceInPaise,
-                    controller: priceController,
-                    inputHint: '0',
-                    icon: CatchIcons.paymentsOutlined,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(
-                        RegExp(context.l10n.hostsEventPolicyStepVisiblecopyDD),
+                  if (!externalBookingMode)
+                    CatchField.input(
+                      key: CreateEventFormKeys.price,
+                      title: context.l10n
+                          .hostsEventPolicyStepTitleBasePriceCurrencycode(
+                            currencyCode: currencyCode,
+                          ),
+                      contract: CatchContractConstraints
+                          .createEventCallablePayloadPriceInPaise,
+                      controller: priceController,
+                      inputHint: '0',
+                      icon: CatchIcons.paymentsOutlined,
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
                       ),
-                    ],
-                    textInputAction: TextInputAction.next,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return context
-                            .l10n
-                            .hostsEventPolicyStepVisiblecopyRequired;
-                      }
-                      final amount = parseMajorCurrencyAmountToMinorUnits(
-                        value,
-                        currencyCode: currencyCode,
-                      );
-                      if (amount == null) {
-                        return context
-                            .l10n
-                            .hostsEventPolicyStepVisiblecopyInvalid;
-                      }
-                      return null;
-                    },
-                  ),
-                  CatchField.optionCards<EventAdmissionPreset>(
-                    title:
-                        context.l10n.hostsEventPolicyStepLabelAdmissionFormat,
-                    contract: CatchContractConstraints
-                        .createEventCallablePayloadEventPolicyAdmissionFormat,
-                    contractValue: (preset) => switch (preset) {
-                      EventAdmissionPreset.openCapacity => 'open',
-                      EventAdmissionPreset.inviteOnly => 'inviteOnly',
-                      EventAdmissionPreset.requestToJoin => 'manualApproval',
-                      EventAdmissionPreset.balancedSingles => 'balancedRatio',
-                    },
-                    values: EventAdmissionPreset.values,
-                    itemTitle: (preset) => preset.title(context.l10n),
-                    itemDescription: (preset) =>
-                        preset.description(context.l10n),
-                    selected: admissionPreset,
-                    onChanged: onAdmissionPresetChanged,
-                    icon: CatchIcons.howToRegOutlined,
-                  ),
-                  if (admissionPreset == EventAdmissionPreset.inviteOnly)
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                          RegExp(
+                            context.l10n.hostsEventPolicyStepVisiblecopyDD,
+                          ),
+                        ),
+                      ],
+                      textInputAction: TextInputAction.next,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return context
+                              .l10n
+                              .hostsEventPolicyStepVisiblecopyRequired;
+                        }
+                        final amount = parseMajorCurrencyAmountToMinorUnits(
+                          value,
+                          currencyCode: currencyCode,
+                        );
+                        if (amount == null) {
+                          return context
+                              .l10n
+                              .hostsEventPolicyStepVisiblecopyInvalid;
+                        }
+                        return null;
+                      },
+                    ),
+                  if (!externalBookingMode)
+                    CatchField.optionCards<EventAdmissionPreset>(
+                      title:
+                          context.l10n.hostsEventPolicyStepLabelAdmissionFormat,
+                      contract: CatchContractConstraints
+                          .createEventCallablePayloadEventPolicyAdmissionFormat,
+                      contractValue: (preset) => switch (preset) {
+                        EventAdmissionPreset.openCapacity => 'open',
+                        EventAdmissionPreset.inviteOnly => 'inviteOnly',
+                        EventAdmissionPreset.requestToJoin => 'manualApproval',
+                        EventAdmissionPreset.balancedSingles => 'balancedRatio',
+                      },
+                      values: EventAdmissionPreset.values,
+                      itemTitle: (preset) => preset.title(context.l10n),
+                      itemDescription: (preset) =>
+                          preset.description(context.l10n),
+                      selected: admissionPreset,
+                      onChanged: onAdmissionPresetChanged,
+                      icon: CatchIcons.howToRegOutlined,
+                    ),
+                  if (!externalBookingMode &&
+                      admissionPreset == EventAdmissionPreset.inviteOnly)
                     CatchField.input(
                       key: CreateEventFormKeys.inviteCode,
                       title: context.l10n.hostsEventPolicyStepTitleInviteCode,
@@ -193,7 +213,8 @@ class EventPolicyStep extends StatelessWidget {
                           ? (value) => inviteCodeValidator(value, context.l10n)
                           : null,
                     ),
-                  if (admissionPreset == EventAdmissionPreset.openCapacity) ...[
+                  if (!externalBookingMode &&
+                      admissionPreset == EventAdmissionPreset.openCapacity) ...[
                     CatchField.toggle(
                       key: CreateEventFormKeys.cohortCapsToggle,
                       title: context.l10n.hostsEventPolicyStepTitleCohortCaps,
@@ -262,7 +283,8 @@ class EventPolicyStep extends StatelessWidget {
                         ],
                       ),
                   ],
-                  if (admissionPreset == EventAdmissionPreset.requestToJoin)
+                  if (!externalBookingMode &&
+                      admissionPreset == EventAdmissionPreset.requestToJoin)
                     CatchField.read(
                       title: admissionPreset.title(context.l10n),
                       body: context
@@ -321,8 +343,9 @@ class EventPolicyStep extends StatelessWidget {
                         ),
                       ],
                     ),
-                  if (admissionPreset ==
-                      EventAdmissionPreset.balancedSingles) ...[
+                  if (!externalBookingMode &&
+                      admissionPreset ==
+                          EventAdmissionPreset.balancedSingles) ...[
                     CatchField.toggle(
                       key: CreateEventFormKeys.dynamicPricingToggle,
                       title:
@@ -396,28 +419,58 @@ class EventPolicyStep extends StatelessWidget {
                     maximumContract: CatchContractConstraints
                         .createEventCallablePayloadConstraintsMaxAge,
                   ),
-                  CatchField.optionCards<EventCancellationPolicyId>(
-                    title: context
-                        .l10n
-                        .hostsEventPolicyStepLabelCancellationPolicy,
-                    contract: CatchContractConstraints
-                        .createEventCallablePayloadEventPolicyCancellationPolicyId,
-                    contractValue: (value) => value.name,
-                    values: EventCancellationPolicyId.values,
-                    itemTitle: (policyId) => policyFor(policyId).title,
-                    itemDescription: (policyId) =>
-                        policyFor(policyId).attendeeSummary,
-                    selected: cancellationPolicyId,
-                    onChanged: onCancellationPolicyChanged,
-                    icon: CatchIcons.ruleOutlined,
+                  ValueListenableBuilder<TextEditingValue>(
+                    valueListenable: priceController,
+                    builder: (context, price, _) {
+                      final priceInMinorUnits =
+                          parseMajorCurrencyAmountToMinorUnits(
+                            price.text,
+                            currencyCode: currencyCode,
+                          );
+                      if (externalBookingMode || priceInMinorUnits == 0) {
+                        return const SizedBox.shrink();
+                      }
+                      return CatchField.optionCards<EventCancellationPolicyId>(
+                        title: context
+                            .l10n
+                            .hostsEventPolicyStepLabelCancellationPolicy,
+                        contract: CatchContractConstraints
+                            .createEventCallablePayloadEventPolicyCancellationPolicyId,
+                        contractValue: (value) => value.name,
+                        values: EventCancellationPolicyId.values
+                            .where((value) => value.isApplicable)
+                            .toList(growable: false),
+                        itemTitle: (policyId) => policyFor(policyId).title,
+                        itemDescription: (policyId) =>
+                            policyFor(policyId).attendeeSummary,
+                        selected: cancellationPolicyId.isApplicable
+                            ? cancellationPolicyId
+                            : EventCancellationPolicyId.standard,
+                        onChanged: onCancellationPolicyChanged,
+                        icon: CatchIcons.ruleOutlined,
+                      );
+                    },
                   ),
                 ],
               ),
-              CatchSection.divided(
-                child: Text(
-                  context.l10n.hostsEventPolicyStepTextHostPayoutIsReleased,
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
-                ),
+              ValueListenableBuilder<TextEditingValue>(
+                valueListenable: priceController,
+                builder: (context, price, _) {
+                  final priceInMinorUnits =
+                      parseMajorCurrencyAmountToMinorUnits(
+                        price.text,
+                        currencyCode: currencyCode,
+                      );
+                  if (externalBookingMode || priceInMinorUnits == 0) {
+                    return const SizedBox.shrink();
+                  }
+                  return CatchSection.divided(
+                    child: Text(
+                      context.l10n.hostsEventPolicyStepTextHostPayoutIsReleased,
+                      style: CatchTextStyles.supporting(context, color: t.ink2),
+                    ),
+                  );
+                },
               ),
             ],
           ),

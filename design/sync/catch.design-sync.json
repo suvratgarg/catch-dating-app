@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-08-17",
+  "updated": "2026-08-19",
   "sourceOfTruth": {
     "behavior": "Flutter sources named by design/components/catch.components.json",
     "componentContracts": "design/components/catch.components.json",
@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "70a68d0bde9ac783ccd127b56c361f2c995c70bc43ae624845771824201bd82b",
+  "sourceDigest": "4e97bcba1bd2172b8be514446a576e9f6e6035ace0a7fc8662e5c4a9f080bd6f",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "70a68d0bde9ac783ccd127b56c361f2c995c70bc43ae624845771824201bd82b",
-    "contractDigest": "70a68d0bde9ac783ccd127b56c361f2c995c70bc43ae624845771824201bd82b"
+    "digest": "4e97bcba1bd2172b8be514446a576e9f6e6035ace0a7fc8662e5c4a9f080bd6f",
+    "contractDigest": "4e97bcba1bd2172b8be514446a576e9f6e6035ace0a7fc8662e5c4a9f080bd6f"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "d0a7d8974f955cdff8c178c2c01c4c37365b66297b676c8ed87c13404e703e21",
+    "handoffRequestDigest": "f20b01faa16a5d068b726fb163104d1a31c641fcfc9eb71a5f9a1eb789af64ae",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 71,
-    "publicClassCount": 203,
+    "publicClassCount": 208,
     "conceptCount": 65,
-    "memberCount": 120,
-    "membersPerConcept": 1.85,
+    "memberCount": 125,
+    "membersPerConcept": 1.92,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 65,
-      "member": 120,
+      "member": 125,
       "screen": 15
     },
     "collisionCount": 33,
@@ -117,7 +117,8 @@
         "key": "catch.bottom_action",
         "symbols": [
           "CatchBottomAction",
-          "CatchBottomActionContent"
+          "CatchBottomActionContent",
+          "CatchBottomActionOverlay"
         ]
       },
       {
@@ -244,8 +245,11 @@
         "key": "catch.menu",
         "symbols": [
           "CatchActionMenu",
+          "CatchAdaptiveSelectionControl",
           "CatchMenu",
-          "CatchMenuRow"
+          "CatchMenuRow",
+          "CatchSelectionMenu",
+          "CatchSelectionSheet"
         ]
       },
       {
@@ -361,7 +365,8 @@
           "CatchAsyncScreenLoading",
           "CatchAsyncSliverLoading",
           "CatchSkeleton",
-          "CatchSkeletonList"
+          "CatchSkeletonList",
+          "CatchSkeletonized"
         ]
       },
       {
@@ -868,7 +873,7 @@
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
       "figmaExpectedPropertyCount": 6,
-      "figmaExpectedPropertyDigest": "708db51f80ffb8cf11fde07f0bb556860da569b5c8cb6d7cf186c3c3e2fbcb6b",
+      "figmaExpectedPropertyDigest": "92c10409141a2c52fe7c2fecffa475423303f1c4cedc1defabf6944157e43513",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -876,7 +881,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Skeleton",
       "claudeAllowed": true,
-      "contractDigest": "b108a85d9b9e09934cdd6c8f88b65fd7adcd7908314ec4b4ed10ad60ffdd2050"
+      "contractDigest": "fd945f7948591d76c23d6cc59416530d865ef711a3b3b615eb6a98a0f47ba7a4"
     },
     {
       "contractId": "catch.loading_indicator",
@@ -1155,8 +1160,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 1,
-      "figmaExpectedPropertyDigest": "4ea54775b26aed617a25c3ef525321bc934995cf8a62d818d89da593b50c44c0",
+      "figmaExpectedPropertyCount": 2,
+      "figmaExpectedPropertyDigest": "c59f33dc3b371888e1c181afce11420b8faf6f0c8f2a42fc554e57ca9e6e1d6f",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -1164,7 +1169,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Menu",
       "claudeAllowed": true,
-      "contractDigest": "82a4723ee107e6810f6c36503e1312971d5d61ebd88d71a6b1181423169cbeae"
+      "contractDigest": "33c477701f5fbb6233c34ff42a6c830999f3446ea09141fd9dd51ebfc27aa350"
     },
     {
       "contractId": "catch.icon_tile",
@@ -1923,8 +1928,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 8,
-      "figmaExpectedPropertyDigest": "d4fd8db30facd489618900cb693bd7fe89b46b207a140e57a1aab1f9dc25a1de",
+      "figmaExpectedPropertyCount": 10,
+      "figmaExpectedPropertyDigest": "cbd075a54324dbf73c37eead36daa1d801e55df7c27072cddd3ab60653642c5c",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -1932,7 +1937,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "StepHeader",
       "claudeAllowed": true,
-      "contractDigest": "78abed54212a23df8118b59ff275088bb1435feb4ce306ecc62aeba8ec5f3c5c"
+      "contractDigest": "b8ab84b5023ae4d995ee72d1ecadebad4e00ac74d2babdc5155f7c46ff85ee45"
     },
     {
       "contractId": "catch.tab_bar",
@@ -2564,7 +2569,7 @@
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
       "figmaExpectedPropertyCount": 5,
-      "figmaExpectedPropertyDigest": "578e652cfac60a21b92e424246c2a07cc1a075eab72725ec7942bfaa68b9224d",
+      "figmaExpectedPropertyDigest": "6bee3a412ec392ba063850ef1e51342e1822c6be80a542aa703b75844028bb43",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -2572,7 +2577,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "BookingDock",
       "claudeAllowed": true,
-      "contractDigest": "6afae0739730249d961922b350a87f0dc7e61a54e37ace4131e52fb8e4553531"
+      "contractDigest": "2a7818d00f733a00dacc721749e86d58bb0b46662e15ee506138b1c0dd21d1b9"
     },
     {
       "contractId": "catch.host_row",

@@ -16,6 +16,11 @@ This folder is intentional app code. Do not delete `lib/event_policies/**` or
 
 - New event creation writes an `EventPolicyBundle` snapshot with admission,
   waitlist, pricing, cancellation, and settlement policy.
+- Bundle version 2 derives cancellation applicability from price: free events
+  use `cancellation.policyId = notApplicable`; only paid events may use
+  `flexible`, `standard`, or `strict`.
+- External-companion events are modeled as free inside Catch because the
+  external provider owns attendee charges, refunds, and cancellations.
 - `Event.capacityLimit`, `Event.priceInPaise`, and `EventConstraints` remain
   backward-compatible projections for legacy documents and UI surfaces.
 - Booking and payment callables use backend-owned helpers for admission, cohort
@@ -34,9 +39,10 @@ This folder is intentional app code. Do not delete `lib/event_policies/**` or
 4. Inclusive event formats should use explicit cohort policies rather than
    forcing non-binary, queer, or open-to-multiple-genders users into a binary
    gender-ratio bucket.
-5. Cancellation policy is a bounded platform policy axis, not free-form host
-   text. Host cancellations always make attendees complete, and host payout is
-   held until after event completion.
+5. Cancellation policy is a bounded platform policy axis for paid events, not
+   free-form host text. Free events have no attendee cancellation policy. Host
+   cancellations still make attendees complete, and paid host payout is held
+   until after event completion.
 6. Invite-only/private-link access is a booking gate, not an unlisted-event
    visibility mode. Events remain discoverable by default unless a future
    explicit visibility field is added.

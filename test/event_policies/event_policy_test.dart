@@ -382,16 +382,30 @@ void main() {
     });
   });
 
-  test('policy bundle defaults cancellation and settlement safely', () {
+  test('free policy bundles derive no cancellation policy', () {
     final policy = bundle(
       admissionPolicy: const EventAdmissionPolicy.open(capacityLimit: 20),
     );
 
-    expect(policy.cancellationPolicy.id, EventCancellationPolicyId.standard);
+    expect(
+      policy.cancellationPolicy.id,
+      EventCancellationPolicyId.notApplicable,
+    );
+    expect(policy.hasCancellationPolicy, isFalse);
     expect(
       policy.settlementPolicy.hostPayoutTiming,
       EventHostPayoutTiming.afterEventCompletion,
     );
+  });
+
+  test('paid policy bundles keep the selected cancellation policy', () {
+    final policy = bundle(
+      admissionPolicy: const EventAdmissionPolicy.open(capacityLimit: 20),
+      pricingPolicy: const EventPricingPolicy.fixed(MoneyAmount.inPaise(25000)),
+    );
+
+    expect(policy.cancellationPolicy.id, EventCancellationPolicyId.standard);
+    expect(policy.hasCancellationPolicy, isTrue);
   });
 
   test('migration status flags the production policy snapshot', () {

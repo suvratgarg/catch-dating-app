@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_attendee.dart';
 
 enum HostRosterAdapterId {
@@ -21,11 +22,15 @@ class HostRosterAdapterDetection {
     required this.adapterId,
     required this.support,
     required this.confidence,
+    this.hintedAdapterId,
+    this.providerMismatch = false,
   });
 
   final HostRosterAdapterId adapterId;
   final HostRosterAdapterSupport support;
   final double confidence;
+  final HostRosterAdapterId? hintedAdapterId;
+  final bool providerMismatch;
 }
 
 enum HostRosterField {
@@ -40,6 +45,8 @@ enum HostRosterField {
 
 enum HostRosterImportIssue {
   unsupportedFile,
+  fileTooLarge,
+  expandedFileTooLarge,
   missingRows,
   tooManyColumns,
   malformedCsv,
@@ -57,13 +64,24 @@ class HostRosterImportException implements Exception {
   String toString() => 'HostRosterImportException($issue, $cause)';
 }
 
-enum HostRosterRowIssueType { missingNameColumn, missingName }
+enum HostRosterRowIssueType {
+  missingNameColumn,
+  duplicateMappedColumn,
+  missingName,
+  missingStableIdentity,
+  invalidPhone,
+  invalidEmail,
+  duplicateIdentity,
+  unknownStatus,
+  excludedStatus,
+}
 
 class HostRosterRowIssue {
-  const HostRosterRowIssue(this.type, {this.rowNumber});
+  const HostRosterRowIssue(this.type, {this.rowNumber, this.value});
 
   final HostRosterRowIssueType type;
   final int? rowNumber;
+  final String? value;
 }
 
 class HostRosterTable {
@@ -74,6 +92,9 @@ class HostRosterTable {
     required this.rows,
     required this.suggestedMapping,
     required this.adapter,
+    this.fileFingerprint = '',
+    this.usedLegacyEncoding = false,
+    this.worksheetCount = 1,
   });
 
   final String fileName;
@@ -82,6 +103,9 @@ class HostRosterTable {
   final List<List<String>> rows;
   final Map<HostRosterField, int?> suggestedMapping;
   final HostRosterAdapterDetection adapter;
+  final String fileFingerprint;
+  final bool usedLegacyEncoding;
+  final int worksheetCount;
 
   HostRosterMappedRows mapRows(Map<HostRosterField, int?> mapping) {
     final nameColumn = mapping[HostRosterField.displayName];
@@ -90,10 +114,27 @@ class HostRosterTable {
         rows: [],
         issues: [HostRosterRowIssue(HostRosterRowIssueType.missingNameColumn)],
         truncatedCount: 0,
+        excludedCount: 0,
+        needsReviewCount: 0,
+      );
+    }
+    final mappedColumns = mapping.values.whereType<int>().toList();
+    if (mappedColumns.toSet().length != mappedColumns.length) {
+      return const HostRosterMappedRows(
+        rows: [],
+        issues: [
+          HostRosterRowIssue(HostRosterRowIssueType.duplicateMappedColumn),
+        ],
+        truncatedCount: 0,
+        excludedCount: 0,
+        needsReviewCount: 0,
       );
     }
     final mapped = <EventAttendeeImportRow>[];
     final issues = <HostRosterRowIssue>[];
+    final seenIdentities = <String>{};
+    var excludedCount = 0;
+    var needsReviewCount = 0;
     final boundedRows = rows.take(250).toList(growable: false);
     for (var index = 0; index < boundedRows.length; index += 1) {
       final source = boundedRows[index];
@@ -105,29 +146,107 @@ class HostRosterTable {
             rowNumber: index + 2,
           ),
         );
+        needsReviewCount += 1;
+        continue;
+      }
+      final phone = _nullableValueAt(source, mapping[HostRosterField.phone]);
+      final email = _nullableValueAt(source, mapping[HostRosterField.email]);
+      final externalReference = _nullableValueAt(
+        source,
+        mapping[HostRosterField.externalReference],
+      );
+      final arrivalGroup = _nullableValueAt(
+        source,
+        mapping[HostRosterField.arrivalGroup],
+      );
+      final statusValue = _nullableValueAt(
+        source,
+        mapping[HostRosterField.status],
+      );
+      final parsedStatus = _parseStatus(statusValue);
+      if (parsedStatus.disposition == _RosterRowDisposition.excluded) {
+        issues.add(
+          HostRosterRowIssue(
+            HostRosterRowIssueType.excludedStatus,
+            rowNumber: index + 2,
+            value: statusValue,
+          ),
+        );
+        excludedCount += 1;
+        continue;
+      }
+      if (parsedStatus.disposition == _RosterRowDisposition.needsReview) {
+        issues.add(
+          HostRosterRowIssue(
+            HostRosterRowIssueType.unknownStatus,
+            rowNumber: index + 2,
+            value: statusValue,
+          ),
+        );
+        needsReviewCount += 1;
+        continue;
+      }
+      if (phone != null && !_isValidRosterPhone(phone)) {
+        issues.add(
+          HostRosterRowIssue(
+            HostRosterRowIssueType.invalidPhone,
+            rowNumber: index + 2,
+            value: phone,
+          ),
+        );
+        needsReviewCount += 1;
+        continue;
+      }
+      if (email != null && !_isValidRosterEmail(email)) {
+        issues.add(
+          HostRosterRowIssue(
+            HostRosterRowIssueType.invalidEmail,
+            rowNumber: index + 2,
+            value: email,
+          ),
+        );
+        needsReviewCount += 1;
+        continue;
+      }
+      final identity = _stableRosterIdentity(
+        phone: phone,
+        email: email,
+        externalReference: externalReference,
+        arrivalGroup: arrivalGroup,
+      );
+      if (identity == null) {
+        issues.add(
+          HostRosterRowIssue(
+            HostRosterRowIssueType.missingStableIdentity,
+            rowNumber: index + 2,
+          ),
+        );
+        needsReviewCount += 1;
+        continue;
+      }
+      if (!seenIdentities.add(identity)) {
+        issues.add(
+          HostRosterRowIssue(
+            HostRosterRowIssueType.duplicateIdentity,
+            rowNumber: index + 2,
+          ),
+        );
+        needsReviewCount += 1;
         continue;
       }
       mapped.add(
         EventAttendeeImportRow(
           rowId: '${index + 2}',
           displayName: displayName,
-          phone: _nullableValueAt(source, mapping[HostRosterField.phone]),
-          email: _nullableValueAt(source, mapping[HostRosterField.email]),
-          externalReference: _nullableValueAt(
-            source,
-            mapping[HostRosterField.externalReference],
-          ),
-          arrivalGroup: _nullableValueAt(
-            source,
-            mapping[HostRosterField.arrivalGroup],
-          ),
+          phone: phone,
+          email: email,
+          externalReference: externalReference,
+          arrivalGroup: arrivalGroup,
           ticketType: _nullableValueAt(
             source,
             mapping[HostRosterField.ticketType],
           ),
-          status: _parseStatus(
-            _nullableValueAt(source, mapping[HostRosterField.status]),
-          ),
+          status: parsedStatus.status,
         ),
       );
     }
@@ -135,6 +254,8 @@ class HostRosterTable {
       rows: mapped,
       issues: issues,
       truncatedCount: rows.length > 250 ? rows.length - 250 : 0,
+      excludedCount: excludedCount,
+      needsReviewCount: needsReviewCount,
     );
   }
 }
@@ -144,11 +265,68 @@ class HostRosterMappedRows {
     required this.rows,
     required this.issues,
     required this.truncatedCount,
+    required this.excludedCount,
+    required this.needsReviewCount,
   });
 
   final List<EventAttendeeImportRow> rows;
   final List<HostRosterRowIssue> issues;
   final int truncatedCount;
+  final int excludedCount;
+  final int needsReviewCount;
+
+  int get readyCount => rows.length;
+
+  bool get hasBlockingMappingIssue => issues.any(
+    (issue) =>
+        issue.type == HostRosterRowIssueType.missingNameColumn ||
+        issue.type == HostRosterRowIssueType.duplicateMappedColumn,
+  );
+}
+
+class HostRosterImportPlan {
+  const HostRosterImportPlan({
+    required this.fileName,
+    required this.fileFingerprint,
+    required this.format,
+    required this.rows,
+    required this.readyCount,
+    required this.needsReviewCount,
+    required this.excludedCount,
+    required this.adapterId,
+  });
+
+  factory HostRosterImportPlan.fromMappedRows({
+    required HostRosterTable table,
+    required HostRosterMappedRows mapped,
+  }) => HostRosterImportPlan(
+    fileName: table.fileName,
+    fileFingerprint: table.fileFingerprint,
+    format: table.format,
+    rows: List.unmodifiable(mapped.rows),
+    readyCount: mapped.readyCount,
+    needsReviewCount: mapped.needsReviewCount,
+    excludedCount: mapped.excludedCount,
+    adapterId: table.adapter.adapterId,
+  );
+
+  final String fileName;
+  final String fileFingerprint;
+  final EventAttendeeImportFormat format;
+  final List<EventAttendeeImportRow> rows;
+  final int readyCount;
+  final int needsReviewCount;
+  final int excludedCount;
+  final HostRosterAdapterId adapterId;
+
+  ExternalBookingProvider get bookingProvider => switch (adapterId) {
+    HostRosterAdapterId.lumaV1 => ExternalBookingProvider.luma,
+    HostRosterAdapterId.eventbriteV1 => ExternalBookingProvider.eventbrite,
+    HostRosterAdapterId.partifulV1 => ExternalBookingProvider.partiful,
+    HostRosterAdapterId.poshV1 => ExternalBookingProvider.posh,
+    HostRosterAdapterId.genericV1 ||
+    HostRosterAdapterId.sampleRequired => ExternalBookingProvider.generic,
+  };
 }
 
 List<String> uniqueHostRosterHeaders(List<String> rawHeaders) {
@@ -293,13 +471,96 @@ String? _nullableValueAt(List<String> row, int? index) {
   return value.isEmpty ? null : value;
 }
 
-EventAttendeeStatus _parseStatus(String? value) {
+enum _RosterRowDisposition { ready, needsReview, excluded }
+
+class _ParsedRosterStatus {
+  const _ParsedRosterStatus(this.status, this.disposition);
+
+  final EventAttendeeStatus status;
+  final _RosterRowDisposition disposition;
+}
+
+_ParsedRosterStatus _parseStatus(String? value) {
   final normalized = _normalizeHeader(value ?? '');
   if ({'waitlist', 'waitlisted', 'waiting'}.contains(normalized)) {
-    return EventAttendeeStatus.waitlisted;
+    return const _ParsedRosterStatus(
+      EventAttendeeStatus.waitlisted,
+      _RosterRowDisposition.ready,
+    );
   }
   if ({'invited', 'invite', 'pending'}.contains(normalized)) {
-    return EventAttendeeStatus.invited;
+    return const _ParsedRosterStatus(
+      EventAttendeeStatus.invited,
+      _RosterRowDisposition.ready,
+    );
   }
-  return EventAttendeeStatus.registered;
+  if ({
+    'cancelled',
+    'canceled',
+    'refunded',
+    'declined',
+    'rejected',
+    'notgoing',
+    'noshow',
+    'void',
+    'voided',
+  }.contains(normalized)) {
+    return const _ParsedRosterStatus(
+      EventAttendeeStatus.cancelled,
+      _RosterRowDisposition.excluded,
+    );
+  }
+  if ({
+    '',
+    'registered',
+    'confirmed',
+    'approved',
+    'accepted',
+    'attending',
+    'going',
+    'booked',
+    'checkedin',
+  }.contains(normalized)) {
+    return const _ParsedRosterStatus(
+      EventAttendeeStatus.registered,
+      _RosterRowDisposition.ready,
+    );
+  }
+  return const _ParsedRosterStatus(
+    EventAttendeeStatus.cancelled,
+    _RosterRowDisposition.needsReview,
+  );
+}
+
+bool _isValidRosterEmail(String value) =>
+    RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(value.trim());
+
+String? _normalizedRosterPhone(String value) {
+  var normalized = value.trim().replaceAll(RegExp(r'[^\d+]'), '');
+  if (normalized.startsWith('00')) normalized = '+${normalized.substring(2)}';
+  if (!normalized.startsWith('+')) {
+    final digits = normalized.replaceFirst(RegExp(r'^0+'), '');
+    normalized = digits.length == 10 ? '+91$digits' : '+$digits';
+  }
+  return RegExp(r'^\+[1-9][0-9]{7,14}$').hasMatch(normalized)
+      ? normalized
+      : null;
+}
+
+bool _isValidRosterPhone(String value) => _normalizedRosterPhone(value) != null;
+
+String? _stableRosterIdentity({
+  required String? phone,
+  required String? email,
+  required String? externalReference,
+  required String? arrivalGroup,
+}) {
+  final reference = externalReference?.trim().toLowerCase();
+  if (arrivalGroup != null && reference != null && reference.isNotEmpty) {
+    return 'external:$reference';
+  }
+  if (phone != null) return 'phone:${_normalizedRosterPhone(phone)}';
+  if (email != null) return 'email:${email.trim().toLowerCase()}';
+  if (reference != null && reference.isNotEmpty) return 'external:$reference';
+  return null;
 }

@@ -16,6 +16,8 @@ import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_invitation_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_screen.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/calendar/calendar_screen.dart';
@@ -727,6 +729,11 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
                       arguments.externalBookingMode,
                     _ => false,
                   },
+                  initialRosterImportPlan: switch (extra) {
+                    final HostCreateEventRouteArguments arguments =>
+                      arguments.initialRosterImportPlan,
+                    _ => null,
+                  },
                   promptForDrafts: switch (extra) {
                     final HostCreateEventRouteArguments arguments =>
                       arguments.promptForDrafts,
@@ -734,6 +741,22 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
                   },
                 );
               },
+            ),
+            GoRoute(
+              path: 'rehearsals/new',
+              name: Routes.hostEventRehearsalStartScreen.name,
+              builder: (context, state) => HostEventRehearsalStartScreen(
+                clubId: state.pathParameters['clubId']!,
+                sourceEventId: state.uri.queryParameters['eventId'],
+              ),
+            ),
+            GoRoute(
+              path: 'rehearsals/:sessionId',
+              name: Routes.hostEventRehearsalScreen.name,
+              builder: (context, state) => HostEventRehearsalScreen(
+                clubId: state.pathParameters['clubId']!,
+                sessionId: state.pathParameters['sessionId']!,
+              ),
             ),
             GoRoute(
               path: 'events/:eventId',

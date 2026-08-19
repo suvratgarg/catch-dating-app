@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.1.3
-updated: 2026-08-19
+version: 2.2.0
+updated: 2026-08-20
 owner: recursive_audit_loop
 status: active
 ---
@@ -802,6 +802,36 @@ source-owned configuration check trims to empty, the graph version remains
 `v23.0`, and the newer explicit gate remains `false`. Secret values still come
 only from Secret Manager, and the recovery path never enables the provider.
 
+### WhatsApp provider activation
+
+The disabled discovery profile is not a staging or production readiness
+receipt. Organizer WhatsApp may be enabled in an environment only after an
+operator verifies the following against the live target rather than a checked-in
+description:
+
+- `META_WHATSAPP_ENABLED=true` is an intentional environment approval, and the
+  Meta app id, Embedded Signup configuration id and supported Graph version are
+  non-placeholder values for that same app;
+- the app secret and organizer access-token vault secrets exist in Secret
+  Manager, the Functions runtime has only the required access, and no token or
+  secret is stored in Firestore, logs, CI artifacts or client configuration;
+- the public webhook challenge and raw-body signature path are reachable, the
+  correct WABA is subscribed, and duplicate/out-of-order status and inbound
+  webhook tests pass;
+- one organizer-owned number completes onboarding, identity/quality inspection,
+  template sync, test delivery and status receipt in the target environment;
+- exact organizer-scoped WhatsApp permission, STOP/admin suppression, frequency
+  caps, service-window rules, retention, cost/quality monitoring and support
+  escalation have named owners; and
+- the released Host clients expose provider unavailability and setup blockers
+  rather than enabling a campaign composer optimistically.
+
+Catch-owned WhatsApp is a separate activation. It requires a separate Catch
+WABA/number, credentials, templates, consent/suppression ledger, webhook/thread
+authority, retention policy and support owner. Enabling organizer WhatsApp must
+not make the Catch route active. Personal `wa.me` handoff requires no backend
+provider activation and generates no Catch delivery receipt.
+
 Mobile artifacts remain separate from backend deployment. A successful
 same-repository `main` CI attempt wakes `.github/workflows/mobile-internal-release.yml`,
 which verifies CI authority v3 and consumes only the exact
@@ -1281,9 +1311,24 @@ Host event broadcasts completed their backend-first rollout in August 2026:
    5xx.
 3. After that proof passed in production, the temporary client flag was
    removed. The Host job in `Mobile Internal Release` still runs the
-   manifest-driven live dependency check before Flutter/Xcode work and refuses
-   to archive if the callable is not reachable. Broadcast visibility is now a
-   product capability, not a rollout flag.
+manifest-driven live dependency check before Flutter/Xcode work and refuses
+to archive if the callable is not reachable. Broadcast visibility is now a
+product capability, not a rollout flag.
+
+Organizer follower-update delivery uses the same backend-first boundary, but
+its durable retry scheduler is new and must be proved explicitly:
+
+1. Deploy the follower-delivery schemas, TTL policy, index, Firestore rules,
+   `createOrganizerPost`, `listOrganizerCampaigns`, and
+   `dispatchPendingOrganizerFollowerUpdates` before releasing the matching Host
+   client.
+2. In dev, then staging, then production, confirm the callable is reachable and
+   the scheduler is `ACTIVE`; create one request-id-bound update against a test
+   organizer with more than one follower page and prove the operation reaches a
+   terminal state without duplicate Activity or push attempts.
+3. Release the Host client only after the production callable and scheduler
+   postconditions pass. The request id is intentionally required; there is no
+   legacy-client fallback or duplicate compatibility path.
 
 `./tool/deploy_firebase_targets.sh` is the bounded stage executor beneath
 Delivery and an operator-only recovery helper. It plans selected targets in the

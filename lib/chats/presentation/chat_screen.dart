@@ -206,28 +206,23 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   CatchActionMenuItem<ChatThreadAction> _threadActionMenuItem(
     BuildContext context,
-    HostChatScreenState chatState,
     ChatThreadAction action,
   ) {
-    final enabled = !chatState.disabledThreadActions.contains(action);
     return switch (action) {
       ChatThreadAction.shareCard => CatchActionMenuItem(
         value: ChatThreadAction.shareCard,
         label: context.l10n.chatsChatScreenLabelShareCard,
         icon: CatchIcons.platformShare(platform: Theme.of(context).platform),
-        enabled: enabled,
       ),
       ChatThreadAction.report => CatchActionMenuItem(
         value: ChatThreadAction.report,
         label: context.l10n.chatsChatScreenLabelReport,
         icon: CatchIcons.flagOutlined,
-        enabled: enabled,
       ),
       ChatThreadAction.block => CatchActionMenuItem(
         value: ChatThreadAction.block,
         label: context.l10n.chatsChatScreenLabelBlock,
         icon: CatchIcons.blockRounded,
-        enabled: enabled,
         isDestructive: true,
       ),
     };
@@ -267,6 +262,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       ),
     );
     final chatState = routeState.chatState;
+    final availableThreadActions = chatState.threadActions
+        .where((action) => !chatState.disabledThreadActions.contains(action))
+        .toList(growable: false);
     final conversationContext = chatConversationContextFor(
       isHostInquiry: routeState.lookupState.isHostInquiry,
       viewerIsHost: AppConfig.appRole.isHost,
@@ -302,7 +300,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           leadingType: CatchTopBarLeading.back,
           divider: scrolledUnder,
           actions: [
-            if (chatState.threadActions.isNotEmpty)
+            if (availableThreadActions.isNotEmpty)
               CatchTopBarMenuAction<ChatThreadAction>(
                 tooltip: context.l10n.chatsChatScreenTooltipChatActions,
                 onSelected: (action) => unawaited(
@@ -316,11 +314,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     ui: _threadActionUi(),
                   ),
                 ),
-                items: chatState.threadActions
-                    .map(
-                      (action) =>
-                          _threadActionMenuItem(context, chatState, action),
-                    )
+                items: availableThreadActions
+                    .map((action) => _threadActionMenuItem(context, action))
                     .toList(),
               ),
           ],

@@ -77,12 +77,16 @@ String? hostCampaignBridgeBlocker({
   required HostAudienceSegment? segment,
   required HostCrmChannelReadiness? smsReadiness,
   required HostMessagingSetup? messagingSetup,
+  required bool audienceCoverageComplete,
 }) {
   if (segment == null ||
       !hostCampaignEligibleSegmentsForSmsReadiness(
         smsReadiness,
       ).contains(segment)) {
     return HostCampaignBlockers.noReachableRecipients;
+  }
+  if (!audienceCoverageComplete) {
+    return HostCampaignBlockers.audienceCoveragePartial;
   }
   if (messagingSetup?.providerConfigured == false) {
     return HostCampaignBlockers.providerSetupRequired;

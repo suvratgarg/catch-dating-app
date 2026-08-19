@@ -20,6 +20,8 @@ import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
+import 'package:catch_dating_app/image_uploads/domain/image_upload_job.dart';
+import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -54,10 +56,7 @@ Widget _profileTab(UserProfile user) {
     child: MaterialApp(
       theme: AppTheme.light,
       home: Scaffold(
-        body: ProfileTab(
-          user: user,
-          uploadState: (loadingIndices: <int>{}, uploadError: null),
-        ),
+        body: ProfileTab(user: user, uploadState: const PhotoUploadState()),
       ),
     ),
   );
@@ -190,10 +189,7 @@ Widget _editableProfileTab(
       child: MaterialApp(
         theme: AppTheme.light,
         home: Scaffold(
-          body: ProfileTab(
-            user: user,
-            uploadState: (loadingIndices: <int>{}, uploadError: null),
-          ),
+          body: ProfileTab(user: user, uploadState: const PhotoUploadState()),
         ),
       ),
     ),
@@ -442,6 +438,8 @@ class _FailingProfileImageUploadRepository extends Fake
     required String uid,
     required int index,
     required XFile image,
+    ValueChanged<ImageUploadProgress>? onProgress,
+    ImageUploadCancellationToken? cancellationToken,
   }) async {
     throw obviousOfflineException();
   }

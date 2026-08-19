@@ -9,15 +9,26 @@ class HostClubTeamScreen extends ConsumerStatefulWidget {
   ConsumerState<HostClubTeamScreen> createState() => _HostClubTeamScreenState();
 }
 
-class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen> {
-  var _selectedTab = HostTeamMode.edit;
+class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
   final _displayNameController = TextEditingController();
   final _roleTitleController = TextEditingController();
   final _bioController = TextEditingController();
   String? _loadedProfileKey;
 
   @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(
+      length: HostTeamMode.values.length,
+      vsync: this,
+    );
+  }
+
+  @override
   void dispose() {
+    _tabController.dispose();
     _displayNameController.dispose();
     _roleTitleController.dispose();
     _bioController.dispose();
@@ -72,131 +83,110 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen> {
       HostProfileController.ensureProfileMutation,
     );
     final saveMutation = ref.watch(HostProfileController.saveProfileMutation);
-    final signOutMutation = ref.watch(AuthSessionController.signOutMutation);
-    final isEditMode = _selectedTab == HostTeamMode.edit;
     final state = buildHostTeamWorkspaceState(
       uid: uid,
       profile: hostProfileAsync,
       clubs: clubsAsync,
-      editMode: isEditMode,
       creatingProfile: ensureMutation.isPending,
-      signOutPending: signOutMutation.isPending,
     );
     final actions = state.actions;
     final editableProfile = actions.profileForEdit;
     if (editableProfile != null) _syncProfileControllers(editableProfile);
 
-    return CatchMutationErrorListener(
-      mutation: AuthSessionController.signOutMutation,
-      errorContext: AppErrorContext.auth,
-      child: CatchMutationErrorListeners(
-        mutations: [
-          HostProfileController.ensureProfileMutation,
-          HostProfileController.saveProfileMutation,
-        ],
-        errorContext: AppErrorContext.profile,
-        child: CatchRouteScaffold(
-          topBarBuilder: (context, scrolledUnder) => CatchTopBar(
-            title: context.l10n.hostsHostClubEditTabLabelHostTeam,
-            subtitle: club.name,
-            leading: CatchIconAction(
-              tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-              icon: CatchIcons.arrowBackIosNewRounded,
-              onPressed: _leaveTeam,
-            ),
-            leadingType: CatchTopBarLeading.back,
-            divider: scrolledUnder,
-            bottom: CatchTabRail<HostTeamMode>(
-              selected: _selectedTab,
-              onChanged: (tab) => setState(() => _selectedTab = tab),
-              options: [
-                CatchOption(
-                  value: HostTeamMode.edit,
-                  label: context.l10n.hostsHostClubTeamScreenLabelEdit,
-                ),
-                CatchOption(
-                  value: HostTeamMode.preview,
-                  label: context.l10n.hostsHostClubTeamScreenLabelPreview,
-                ),
-              ],
-            ),
+    return CatchMutationErrorListeners(
+      mutations: [
+        HostProfileController.ensureProfileMutation,
+        HostProfileController.saveProfileMutation,
+      ],
+      errorContext: AppErrorContext.profile,
+      child: CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+          title: context.l10n.hostsHostClubEditTabLabelHostTeam,
+          subtitle: club.name,
+          leading: CatchIconAction(
+            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+            icon: CatchIcons.arrowBackIosNewRounded,
+            onPressed: _leaveTeam,
           ),
-          body: SafeArea(
-            top: false,
-            bottom: false,
-            child: ListView(
-              padding: CatchInsets.pageBody.copyWith(bottom: 0),
-              children: [
-                Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      maxWidth: CatchLayout.maxContentWidth,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        HostTeamProfileSection(
-                          state: state.profile,
-                          editMode: actions.editMode,
-                          creatingProfile: actions.creatingProfile,
-                          onRetry: () =>
-                              ref.invalidate(watchHostProfileProvider(uid)),
-                          onCreateProfile: actions.canCreateProfile
-                              ? () => unawaited(_createHostProfile())
-                              : null,
-                          displayNameController: _displayNameController,
-                          roleTitleController: _roleTitleController,
-                          bioController: _bioController,
-                          savingProfile: saveMutation.isPending,
-                          onSaveProfile:
-                              actions.canEditProfile && !saveMutation.isPending
-                              ? _saveProfile
-                              : null,
-                        ),
-                        HostTeamManagementSection(
-                          club: club,
-                          currentUid: uid,
-                          canManage: club.isOwnedBy(uid) && isEditMode,
-                        ),
-                        HostTeamHostedClubsSection(
-                          actions: actions,
-                          state: state.clubs,
-                          onRetry: () =>
-                              ref.invalidate(_hostClubsForUserProvider(uid)),
-                          onOpenClub: _openHostedClub,
-                        ),
-                        if (isEditMode)
-                          CatchSection.fieldRows(
-                            children: [
-                              CatchField.nav(
-                                key: const ValueKey('host-team-sign-out'),
-                                title: context
-                                    .l10n
-                                    .hostsHostClubTeamScreenTitleSignOut,
-                                icon: CatchIcons.logoutRounded,
-                                tone: CatchFieldTone.danger,
-                                action: actions.signOutPending
-                                    ? const SizedBox.square(
-                                        dimension: CatchIcon.control,
-                                        child: CatchLoadingIndicator(
-                                          strokeWidth: 2,
-                                        ),
-                                      )
-                                    : null,
-                                onTap: actions.canSignOut
-                                    ? () => unawaited(_signOut())
-                                    : null,
-                              ),
-                            ],
+          leadingType: CatchTopBarLeading.back,
+          divider: scrolledUnder,
+          bottom: CatchTabControllerRail<HostTeamMode>(
+            controller: _tabController,
+            options: [
+              CatchOption(
+                value: HostTeamMode.edit,
+                label: context.l10n.hostsHostClubTeamScreenLabelEdit,
+              ),
+              CatchOption(
+                value: HostTeamMode.preview,
+                label: context.l10n.hostsHostClubTeamScreenLabelPreview,
+              ),
+            ],
+          ),
+        ),
+        body: TabBarView(
+          controller: _tabController,
+          children: [
+            SafeArea(
+              top: false,
+              bottom: false,
+              child: ListView(
+                key: const PageStorageKey<String>('host-team-edit-scroll'),
+                padding: CatchInsets.pageBody.copyWith(bottom: 0),
+                children: [
+                  Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxWidth: CatchLayout.maxContentWidth,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          HostTeamProfileSection(
+                            state: state.profile,
+                            editMode: actions.editMode,
+                            creatingProfile: actions.creatingProfile,
+                            onRetry: () =>
+                                ref.invalidate(watchHostProfileProvider(uid)),
+                            onCreateProfile: actions.canCreateProfile
+                                ? () => unawaited(_createHostProfile())
+                                : null,
+                            displayNameController: _displayNameController,
+                            roleTitleController: _roleTitleController,
+                            bioController: _bioController,
+                            savingProfile: saveMutation.isPending,
+                            onSaveProfile:
+                                actions.canEditProfile &&
+                                    !saveMutation.isPending
+                                ? _saveProfile
+                                : null,
                           ),
-                      ],
+                          HostTeamManagementSection(
+                            club: club,
+                            currentUid: uid,
+                            canManage: club.isOwnedBy(uid),
+                          ),
+                          HostTeamHostedClubsSection(
+                            actions: actions,
+                            state: state.clubs,
+                            onRetry: () =>
+                                ref.invalidate(_hostClubsForUserProvider(uid)),
+                            onOpenClub: _openHostedClub,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                const CatchScrollTerminalPadding(),
-              ],
+                  const CatchScrollTerminalPadding(),
+                ],
+              ),
             ),
-          ),
+            SafeArea(
+              top: false,
+              bottom: false,
+              child: HostTeamConsumerProfilePreview(uid: uid),
+            ),
+          ],
         ),
       ),
     );
@@ -281,21 +271,6 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen> {
     );
   }
 
-  Future<void> _signOut() async {
-    final mutation = ref.read(AuthSessionController.signOutMutation);
-    if (mutation.isPending) return;
-    try {
-      await AuthSessionController.signOutMutation.run(
-        ref,
-        (tx) async => tx.get(authSessionControllerProvider.notifier).signOut(),
-      );
-    } catch (_) {
-      // CatchMutationErrorListener owns user-facing error display.
-      return;
-    }
-    if (mounted) context.go(Routes.startScreen.path);
-  }
-
   void _leaveTeam() {
     if (context.canPop()) {
       context.pop();
@@ -304,6 +279,35 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen> {
     context.goNamed(
       Routes.hostOrganizerScreen.name,
       queryParameters: {'clubId': widget.clubId, 'tab': HostClubTab.edit.name},
+    );
+  }
+}
+
+/// Read-only host profile preview rendered through the same consumer profile
+/// body used by [PublicProfileScreen].
+class HostTeamConsumerProfilePreview extends ConsumerWidget {
+  const HostTeamConsumerProfilePreview({super.key, required this.uid});
+
+  final String uid;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(
+      publicProfileScreenStateProvider(
+        PublicProfileScreenStateArgs(
+          uid: uid,
+          initialProfile: null,
+          sharedRunTitle: null,
+        ),
+      ),
+    );
+
+    return PublicProfileScreenBody(
+      key: const ValueKey<String>('host-team-consumer-profile-preview'),
+      state: state,
+      onRetry: state.retryIntent == PublicProfileRetryIntent.reloadProfile
+          ? () => ref.invalidate(watchPublicProfileProvider(uid))
+          : null,
     );
   }
 }

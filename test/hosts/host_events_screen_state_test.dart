@@ -29,6 +29,7 @@ void main() {
     final firstEvent = HostEventEntryState.resolve(organizerId: 'club-1');
     expect(firstEvent.continueIntents, isEmpty);
     expect(firstEvent.startIntents, [
+      HostEventEntryIntent.dressRehearsal,
       HostEventEntryIntent.createWithCatchBookings,
       HostEventEntryIntent.createFromGuestList,
     ]);

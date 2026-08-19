@@ -7,10 +7,12 @@ import {
 
 test("audience backfill plan groups attendee work by organizer", async () => {
   const plan = await buildOrganizerAudienceBackfillPlan(fakeFirestore({
-    "attendee-1": {organizerId: "organizer-b"},
-    "attendee-2": {organizerId: "organizer-a"},
-    "attendee-3": {organizerId: "organizer-b"},
-    "attendee-invalid": {organizerId: null},
+    eventAttendees: {
+      "attendee-1": {organizerId: "organizer-b"},
+      "attendee-2": {organizerId: "organizer-a"},
+      "attendee-3": {organizerId: "organizer-b"},
+      "attendee-invalid": {organizerId: null},
+    },
   }));
   assert.equal(plan.attendeeCount, 4);
   assert.equal(plan.skippedInvalidOrganizerCount, 1);
@@ -25,12 +27,51 @@ test("audience backfill plan groups attendee work by organizer", async () => {
 
 test("audience backfill plan can be organizer scoped", async () => {
   const plan = await buildOrganizerAudienceBackfillPlan(fakeFirestore({
-    "attendee-1": {organizerId: "organizer-a"},
-    "attendee-2": {organizerId: "organizer-b"},
+    eventAttendees: {
+      "attendee-1": {organizerId: "organizer-a"},
+      "attendee-2": {organizerId: "organizer-b"},
+    },
   }), "organizer-b");
   assert.deepEqual(plan.organizers.map((item) => item.organizerId), [
     "organizer-b",
   ]);
+});
+
+test("audience backfill discovers zero-attendee CRM organizers", async () => {
+  const plan = await buildOrganizerAudienceBackfillPlan(fakeFirestore({
+    organizerContacts: {
+      "contact-1": {organizerId: "organizer-manual"},
+    },
+    organizerAudienceSummaries: {
+      "organizer-stuck": {
+        organizerId: "organizer-stuck",
+        sourceCoverage: "partial",
+      },
+      "organizer-complete": {
+        organizerId: "organizer-complete",
+        sourceCoverage: "exact",
+      },
+    },
+  }));
+
+  assert.deepEqual(plan.organizers.map((item) => [
+    item.organizerId,
+    item.attendeeCount,
+  ]), [
+    ["organizer-manual", 0],
+    ["organizer-stuck", 0],
+  ]);
+});
+
+test("organizer-scoped backfill retains an empty organizer", async () => {
+  const plan = await buildOrganizerAudienceBackfillPlan(
+    fakeFirestore({}),
+    "organizer-empty"
+  );
+  assert.deepEqual(plan.organizers.map((item) => [
+    item.organizerId,
+    item.attendeeCount,
+  ]), [["organizer-empty", 0]]);
 });
 
 test("backfill receipt identity includes the canonical source revision", () => {
@@ -41,14 +82,19 @@ test("backfill receipt identity includes the canonical source revision", () => {
   );
 });
 
-function fakeFirestore(attendees) {
+function fakeFirestore(collections) {
   return {
     collection: (collectionName) => {
-      assert.equal(collectionName, "eventAttendees");
-      const allDocs = Object.entries(attendees).map(([id, value]) => ({
+      assert.ok([
+        "eventAttendees",
+        "organizerContacts",
+        "organizerAudienceSummaries",
+      ].includes(collectionName));
+      const allDocs = Object.entries(collections[collectionName] ?? {})
+        .map(([id, value]) => ({
         id,
         data: () => structuredClone(value),
-      }));
+        }));
       return {
         get: async () => ({size: allDocs.length, docs: allDocs}),
         where: (field, operator, expected) => {

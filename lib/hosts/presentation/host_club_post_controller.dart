@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:catch_dating_app/clubs/data/club_callable_responses.dart';
 import 'package:catch_dating_app/clubs/data/club_posts_repository.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -18,14 +21,31 @@ class HostClubPostController {
   final ClubPostsRepository _postsRepository;
   final AppAnalytics _analytics;
 
-  Future<void> createPost({
+  static final Random _secureRandom = Random.secure();
+
+  static String generateRequestId() {
+    final timestamp = DateTime.now().microsecondsSinceEpoch.toRadixString(36);
+    final entropy = List.generate(
+      3,
+      (_) => _secureRandom.nextInt(1 << 32).toRadixString(36),
+    ).join();
+    return 'post-$timestamp-$entropy';
+  }
+
+  Future<CreateClubPostCallableResponse> createPost({
     required String clubId,
+    required String requestId,
     required String text,
   }) async {
-    await _postsRepository.createPost(clubId: clubId, text: text);
+    final response = await _postsRepository.createPost(
+      clubId: clubId,
+      requestId: requestId,
+      text: text,
+    );
     _analytics.logEvent(
       AnalyticsEvents.clubPostCreated,
       parameters: {AnalyticsParameters.clubId: clubId},
     );
+    return response;
   }
 }

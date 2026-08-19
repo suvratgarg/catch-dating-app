@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-08-18",
+  "updated": "2026-08-19",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Phase 1 UI capture coverage policy. Every route from go_router.dart must be captured, aliased to a canonical capture surface, planned, or explicitly excluded.",
   "routes": [
@@ -735,9 +735,10 @@
       "status": "captured",
       "priority": "P1",
       "captureIds": [
-        "host_clubs_management"
+        "host_clubs_management",
+        "host_organizer_media_summary"
       ],
-      "reason": "The first-class Host Organizer branch is captured through the real four-branch Host shell and compared against the pinned full-shell Organizer source reference."
+      "reason": "The first-class Host Organizer branch is captured through the real four-branch Host shell and compared against the pinned full-shell Organizer source reference; a deterministic focused capture proves the role-sized media summary with real local image bytes."
     },
     {
       "routeId": "hostOrganizerMessagingScreen",
@@ -921,6 +922,18 @@
         "host_create_success_manage"
       ],
       "reason": "Host app create-event route now has deterministic captures for initial club-extra hydration, route loading/error/offline/not-found/unauthorized, basics, validation, custom activity, inherited organizer identity, picked event photos, the shared 24-photo scalable gallery manager, selected location, map-picker offline search, schedule validation, policy age validation, invite-only policy, cohort caps policy, dynamic-pricing enabled/disabled/validation policy, draft picker/restored/delete confirmation, unsaved-changes dialog, save-draft pending/error/offline, submit pending/error/offline, photo-upload offline, success, wizard location/schedule/policy/guide, text scale 2.0, reduced motion, and paired light/dark output. Remaining captures are reference-specific variants."
+    },
+    {
+      "routeId": "hostEventRehearsalStartScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "The authenticated rehearsal setup route is implemented with deterministic widget tests; routed sample-event, existing-event, validation, loading, error, accessibility, and theme captures remain planned until an authenticated organizer fixture is admitted to the canonical capture catalog."
+    },
+    {
+      "routeId": "hostEventRehearsalScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "The authenticated rehearsal control room is implemented with deterministic controller and widget coverage across setup, live simulation, fault injection, roster signals, and recap; routed narrow and expanded captures remain planned until a truthful organizer rehearsal fixture is admitted to the canonical capture catalog."
     },
     {
       "routeId": "hostAppEventDetailScreen",

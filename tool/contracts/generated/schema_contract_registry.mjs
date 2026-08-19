@@ -11592,6 +11592,398 @@ export const organizerPostDocumentSchema = {
   }
 };
 
+export const organizerPostDeliveryOperationDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_post_delivery_operations.schema.json",
+  "title": "OrganizerPostDeliveryOperationDocument",
+  "description": "Server-owned retry state and aggregate delivery receipt for one organizer follower update.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerPostDeliveryOperations",
+  "x-firestore-path": "organizerPostDeliveryOperations/{postId}",
+  "x-document-id-field": "id",
+  "x-owner": "createOrganizerPost callable and dispatchPendingOrganizerFollowerUpdates scheduler",
+  "required": [
+    "organizerId",
+    "postId",
+    "authorUid",
+    "requestId",
+    "payloadHash",
+    "status",
+    "remainingWeeklyQuota",
+    "cursorFollowId",
+    "recipientCount",
+    "excludedCount",
+    "activityAvailableCount",
+    "pushAttemptedCount",
+    "pushAcceptedCount",
+    "pushFailedCount",
+    "pushUnknownCount",
+    "errorCodes",
+    "attemptCount",
+    "leaseOwner",
+    "leaseExpiresAt",
+    "createdAt",
+    "updatedAt",
+    "completedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "postId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "authorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "payloadHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "server-only"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "processing",
+        "completed",
+        "partial"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "remainingWeeklyQuota": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3,
+      "x-catch-ownership": "server-only"
+    },
+    "cursorFollowId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "recipientCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "server-only"
+    },
+    "excludedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "server-only"
+    },
+    "activityAvailableCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "server-only"
+    },
+    "pushAttemptedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "server-only"
+    },
+    "pushAcceptedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "server-only"
+    },
+    "pushFailedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "server-only"
+    },
+    "pushUnknownCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "server-only"
+    },
+    "errorCodes": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 120
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "attemptCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "server-only"
+    },
+    "leaseOwner": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "leaseExpiresAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "completedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
+export const organizerPostDeliveryRecipientDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_post_delivery_recipients.schema.json",
+  "title": "OrganizerPostDeliveryRecipientDocument",
+  "description": "Server-only post-scoped, de-identified per-recipient retry evidence for an organizer follower update.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerPostDeliveryRecipients",
+  "x-firestore-path": "organizerPostDeliveryRecipients/{receiptId}",
+  "x-document-id-field": "id",
+  "x-owner": "createOrganizerPost callable and dispatchPendingOrganizerFollowerUpdates scheduler",
+  "required": [
+    "organizerId",
+    "postId",
+    "activityStatus",
+    "pushStatus",
+    "activityNotificationId",
+    "excluded",
+    "errorCode",
+    "expiresAt",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "postId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "activityStatus": {
+      "type": "string",
+      "enum": [
+        "created",
+        "existing",
+        "failed"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "pushStatus": {
+      "type": "string",
+      "enum": [
+        "ineligible",
+        "accepted",
+        "failed",
+        "unknown"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "activityNotificationId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "excluded": {
+      "type": "boolean",
+      "x-catch-ownership": "server-only"
+    },
+    "errorCode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 120,
+      "x-catch-ownership": "server-only"
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only",
+      "x-firestore-ttl": true
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
 export const organizerTeamMembershipDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_team_memberships.schema.json",
@@ -25583,7 +25975,11 @@ export const eventDocumentSchema = {
       "properties": {
         "version": {
           "type": "integer",
-          "const": 1
+          "enum": [
+            1,
+            2
+          ],
+          "description": "Version 2 models cancellation as notApplicable for free events. Version 1 remains readable for legacy snapshots."
         },
         "admission": {
           "type": "object",
@@ -25837,6 +26233,7 @@ export const eventDocumentSchema = {
             "policyId": {
               "type": "string",
               "enum": [
+                "notApplicable",
                 "flexible",
                 "standard",
                 "strict"
@@ -25856,6 +26253,65 @@ export const eventDocumentSchema = {
               "enum": [
                 "afterEventCompletion"
               ]
+            }
+          }
+        }
+      },
+      "if": {
+        "properties": {
+          "version": {
+            "const": 2
+          },
+          "pricing": {
+            "properties": {
+              "basePriceInPaise": {
+                "const": 0
+              }
+            },
+            "required": [
+              "basePriceInPaise"
+            ]
+          }
+        },
+        "required": [
+          "version",
+          "pricing"
+        ]
+      },
+      "then": {
+        "properties": {
+          "cancellation": {
+            "properties": {
+              "policyId": {
+                "const": "notApplicable"
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "if": {
+          "properties": {
+            "version": {
+              "const": 2
+            }
+          },
+          "required": [
+            "version"
+          ]
+        },
+        "then": {
+          "properties": {
+            "cancellation": {
+              "properties": {
+                "policyId": {
+                  "enum": [
+                    "flexible",
+                    "standard",
+                    "strict"
+                  ]
+                }
+              }
             }
           }
         }
@@ -30438,6 +30894,780 @@ export const eventSuccessLateArrivalDocumentSchema = {
       "x-catch-ownership": "callable-owned"
     },
     "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+};
+
+export const eventRehearsalDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_rehearsals.schema.json",
+  "title": "EventRehearsalDocument",
+  "description": "Server-owned isolated Host rehearsal session stored at eventRehearsals/{sessionId}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventRehearsals",
+  "x-firestore-path": "eventRehearsals/{sessionId}",
+  "x-document-id-field": "id",
+  "x-owner": "event rehearsal callables",
+  "required": [
+    "organizerId",
+    "clubId",
+    "ownerUid",
+    "sourceEventId",
+    "sourceEventRevision",
+    "publicRehearsalId",
+    "viewerTokenHash",
+    "scenarioId",
+    "seed",
+    "actorCount",
+    "actionCount",
+    "status",
+    "setup",
+    "setupRevision",
+    "runtimeRevision",
+    "activeStepIndex",
+    "virtualStartedAt",
+    "virtualNow",
+    "faultId",
+    "faultConsumed",
+    "createdAt",
+    "updatedAt",
+    "expiresAt",
+    "completedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "ownerUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "sourceEventId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "sourceEventRevision": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "publicRehearsalId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{20,80}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "viewerTokenHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "scenarioId": {
+      "type": "string",
+      "enum": [
+        "smoothRun",
+        "lateAndNoShow",
+        "earlyExitAndReturn",
+        "rosterAndCapacity",
+        "walkInAndAmbiguousClaim",
+        "privacyAndKeepApart",
+        "lowConnectivity",
+        "concurrentHosts",
+        "revealInterrupted",
+        "externalProfiles",
+        "accountabilitySweep"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "seed": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "x-catch-ownership": "callable-owned"
+    },
+    "actorCount": {
+      "type": "integer",
+      "minimum": 2,
+      "maximum": 50,
+      "x-catch-ownership": "callable-owned"
+    },
+    "actionCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500,
+      "x-catch-ownership": "callable-owned"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "ready",
+        "running",
+        "paused",
+        "complete",
+        "expired"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "setup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "locationName",
+        "durationMinutes",
+        "hostGoal",
+        "attendeePrompt",
+        "moduleIds"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "locationName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "durationMinutes": {
+          "type": "integer",
+          "minimum": 30,
+          "maximum": 360
+        },
+        "hostGoal": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "attendeePrompt": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 320
+        },
+        "moduleIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "arrival",
+              "firstHello",
+              "pods",
+              "rotations",
+              "conversationCues",
+              "reveal",
+              "afterglow",
+              "accountability"
+            ]
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "setupRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647,
+      "x-catch-ownership": "callable-owned"
+    },
+    "runtimeRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647,
+      "x-catch-ownership": "callable-owned"
+    },
+    "activeStepIndex": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 8,
+      "x-catch-ownership": "callable-owned"
+    },
+    "virtualStartedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "virtualNow": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "faultId": {
+      "type": "string",
+      "enum": [
+        "none",
+        "latency",
+        "oneShotFailure",
+        "listenerDisconnect",
+        "staleRevision",
+        "duplicateDelivery",
+        "legacyFixture",
+        "reducedMotion",
+        "lowBandwidth"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "faultConsumed": {
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "completedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+};
+
+export const eventRehearsalActorDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_rehearsal_actors.schema.json",
+  "title": "EventRehearsalActorDocument",
+  "description": "Synthetic participant state stored only for an isolated rehearsal.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventRehearsalActors",
+  "x-firestore-path": "eventRehearsalActors/{actorDocumentId}",
+  "x-document-id-field": "id",
+  "x-owner": "event rehearsal callables",
+  "required": [
+    "sessionId",
+    "actorId",
+    "displayName",
+    "persona",
+    "status",
+    "guestMoment",
+    "optedOut",
+    "keepApartActorIds",
+    "helpRequested",
+    "promptCompleted",
+    "lastActionAt",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "sessionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "actorId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "x-catch-ownership": "callable-owned"
+    },
+    "persona": {
+      "type": "string",
+      "enum": [
+        "firstTimer",
+        "regular",
+        "quiet",
+        "connector",
+        "external",
+        "sparseProfile",
+        "accessibilityNeeds",
+        "walkIn"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "expected",
+        "present",
+        "late",
+        "noShow",
+        "departed",
+        "returned",
+        "disconnected",
+        "walkIn",
+        "ambiguousClaim"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "guestMoment": {
+      "type": "string",
+      "enum": [
+        "welcome",
+        "checkIn",
+        "firstHello",
+        "assignment",
+        "rotation",
+        "pause",
+        "reveal",
+        "afterglow",
+        "complete"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "optedOut": {
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
+    },
+    "keepApartActorIds": {
+      "type": "array",
+      "maxItems": 10,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "helpRequested": {
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
+    },
+    "promptCompleted": {
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
+    },
+    "lastActionAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+};
+
+export const eventRehearsalActionDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_rehearsal_actions.schema.json",
+  "title": "EventRehearsalActionDocument",
+  "description": "Bounded idempotency and reproduction record for rehearsal actions.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventRehearsalActions",
+  "x-firestore-path": "eventRehearsalActions/{actionDocumentId}",
+  "x-document-id-field": "id",
+  "x-owner": "event rehearsal callables",
+  "required": [
+    "sessionId",
+    "clientActionId",
+    "actorUid",
+    "actorId",
+    "kind",
+    "name",
+    "runtimeRevision",
+    "virtualNow",
+    "createdAt"
+  ],
+  "properties": {
+    "sessionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "clientActionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{8,120}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "actorUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "actorId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "control",
+        "behavior",
+        "guest",
+        "setup",
+        "system"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "x-catch-ownership": "callable-owned"
+    },
+    "runtimeRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647,
+      "x-catch-ownership": "callable-owned"
+    },
+    "virtualNow": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+};
+
+export const eventRehearsalGuestViewDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_rehearsal_guest_views.schema.json",
+  "title": "EventRehearsalGuestViewDocument",
+  "description": "Ephemeral anonymous guest slot for a rehearsal web link.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventRehearsalGuestViews",
+  "x-firestore-path": "eventRehearsalGuestViews/{viewId}",
+  "x-document-id-field": "id",
+  "x-owner": "event rehearsal guest callables",
+  "required": [
+    "sessionId",
+    "slotId",
+    "actorId",
+    "tokenHash",
+    "createdAt",
+    "lastSeenAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "sessionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "slotId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "actorId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "tokenHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "lastSeenAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "expiresAt": {
       "type": "object",
       "description": "Serialized Firestore Timestamp fixture shape.",
       "x-firestore-type": "timestamp",
@@ -46013,10 +47243,16 @@ export const createOrganizerPostCallablePayloadSchema = {
   "additionalProperties": false,
   "required": [
     "organizerId",
+    "requestId",
     "text"
   ],
   "properties": {
     "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -46048,7 +47284,16 @@ export const createOrganizerPostCallableResponseSchema = {
   "additionalProperties": false,
   "required": [
     "postId",
-    "remainingWeeklyQuota"
+    "remainingWeeklyQuota",
+    "deliveryStatus",
+    "recipientCount",
+    "excludedCount",
+    "activityAvailableCount",
+    "pushAttemptedCount",
+    "pushAcceptedCount",
+    "pushFailedCount",
+    "pushUnknownCount",
+    "idempotentReplay"
   ],
   "properties": {
     "postId": {
@@ -46060,6 +47305,45 @@ export const createOrganizerPostCallableResponseSchema = {
       "type": "integer",
       "minimum": 0,
       "maximum": 3
+    },
+    "deliveryStatus": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "completed",
+        "partial"
+      ]
+    },
+    "recipientCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "excludedCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "activityAvailableCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "pushAttemptedCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "pushAcceptedCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "pushFailedCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "pushUnknownCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "idempotentReplay": {
+      "type": "boolean"
     }
   }
 };
@@ -52590,7 +53874,11 @@ export const createEventCallablePayloadSchema = {
       "properties": {
         "version": {
           "type": "integer",
-          "const": 1
+          "enum": [
+            1,
+            2
+          ],
+          "description": "Version 2 models cancellation as notApplicable for free events. Version 1 remains readable for legacy snapshots."
         },
         "admission": {
           "type": "object",
@@ -52844,6 +54132,7 @@ export const createEventCallablePayloadSchema = {
             "policyId": {
               "type": "string",
               "enum": [
+                "notApplicable",
                 "flexible",
                 "standard",
                 "strict"
@@ -52863,6 +54152,65 @@ export const createEventCallablePayloadSchema = {
               "enum": [
                 "afterEventCompletion"
               ]
+            }
+          }
+        }
+      },
+      "if": {
+        "properties": {
+          "version": {
+            "const": 2
+          },
+          "pricing": {
+            "properties": {
+              "basePriceInPaise": {
+                "const": 0
+              }
+            },
+            "required": [
+              "basePriceInPaise"
+            ]
+          }
+        },
+        "required": [
+          "version",
+          "pricing"
+        ]
+      },
+      "then": {
+        "properties": {
+          "cancellation": {
+            "properties": {
+              "policyId": {
+                "const": "notApplicable"
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "if": {
+          "properties": {
+            "version": {
+              "const": 2
+            }
+          },
+          "required": [
+            "version"
+          ]
+        },
+        "then": {
+          "properties": {
+            "cancellation": {
+              "properties": {
+                "policyId": {
+                  "enum": [
+                    "flexible",
+                    "standard",
+                    "strict"
+                  ]
+                }
+              }
             }
           }
         }
@@ -53871,7 +55219,11 @@ export const updateEventCallablePayloadSchema = {
           "properties": {
             "version": {
               "type": "integer",
-              "const": 1
+              "enum": [
+                1,
+                2
+              ],
+              "description": "Version 2 models cancellation as notApplicable for free events. Version 1 remains readable for legacy snapshots."
             },
             "admission": {
               "type": "object",
@@ -54125,6 +55477,7 @@ export const updateEventCallablePayloadSchema = {
                 "policyId": {
                   "type": "string",
                   "enum": [
+                    "notApplicable",
                     "flexible",
                     "standard",
                     "strict"
@@ -54144,6 +55497,65 @@ export const updateEventCallablePayloadSchema = {
                   "enum": [
                     "afterEventCompletion"
                   ]
+                }
+              }
+            }
+          },
+          "if": {
+            "properties": {
+              "version": {
+                "const": 2
+              },
+              "pricing": {
+                "properties": {
+                  "basePriceInPaise": {
+                    "const": 0
+                  }
+                },
+                "required": [
+                  "basePriceInPaise"
+                ]
+              }
+            },
+            "required": [
+              "version",
+              "pricing"
+            ]
+          },
+          "then": {
+            "properties": {
+              "cancellation": {
+                "properties": {
+                  "policyId": {
+                    "const": "notApplicable"
+                  }
+                }
+              }
+            }
+          },
+          "else": {
+            "if": {
+              "properties": {
+                "version": {
+                  "const": 2
+                }
+              },
+              "required": [
+                "version"
+              ]
+            },
+            "then": {
+              "properties": {
+                "cancellation": {
+                  "properties": {
+                    "policyId": {
+                      "enum": [
+                        "flexible",
+                        "standard",
+                        "strict"
+                      ]
+                    }
+                  }
                 }
               }
             }
@@ -55353,7 +56765,7 @@ export const listOrganizerCampaignsCallableResponseSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/list_organizer_campaigns_response.schema.json",
   "title": "ListOrganizerCampaignsCallableResponse",
-  "description": "Reverse-chronological organizer Sends rows mixing WhatsApp campaigns and event announcements.",
+  "description": "Reverse-chronological organizer Sends rows mixing WhatsApp campaigns, event announcements, and follower updates.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -55646,6 +57058,101 @@ export const listOrganizerCampaignsCallableResponseSchema = {
               },
               "partialFailure": {
                 "type": "boolean"
+              },
+              "activityAtMillis": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "postId",
+              "eventId",
+              "audience",
+              "status",
+              "deliveryStatus",
+              "recipientCount",
+              "excludedCount",
+              "activityAvailableCount",
+              "pushAttemptedCount",
+              "pushAcceptedCount",
+              "pushFailedCount",
+              "pushUnknownCount",
+              "createdAtMillis",
+              "activityAtMillis"
+            ],
+            "properties": {
+              "kind": {
+                "const": "followerUpdate"
+              },
+              "postId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "eventId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "audience": {
+                "const": "followers"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "removed"
+                ],
+                "x-catch-ownership": "callable-owned"
+              },
+              "deliveryStatus": {
+                "type": "string",
+                "enum": [
+                  "pending",
+                  "completed",
+                  "partial",
+                  "unknown"
+                ]
+              },
+              "recipientCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "excludedCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "activityAvailableCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "pushAttemptedCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "pushAcceptedCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "pushFailedCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "pushUnknownCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "createdAtMillis": {
+                "type": "integer",
+                "minimum": 0
               },
               "activityAtMillis": {
                 "type": "integer",
@@ -55947,6 +57454,101 @@ export const listOrganizerCampaignsCallableResponseSchema = {
               "minimum": 0
             }
           }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "postId",
+            "eventId",
+            "audience",
+            "status",
+            "deliveryStatus",
+            "recipientCount",
+            "excludedCount",
+            "activityAvailableCount",
+            "pushAttemptedCount",
+            "pushAcceptedCount",
+            "pushFailedCount",
+            "pushUnknownCount",
+            "createdAtMillis",
+            "activityAtMillis"
+          ],
+          "properties": {
+            "kind": {
+              "const": "followerUpdate"
+            },
+            "postId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "eventId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "audience": {
+              "const": "followers"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "active",
+                "removed"
+              ],
+              "x-catch-ownership": "callable-owned"
+            },
+            "deliveryStatus": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "completed",
+                "partial",
+                "unknown"
+              ]
+            },
+            "recipientCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "excludedCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "activityAvailableCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "pushAttemptedCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "pushAcceptedCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "pushFailedCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "pushUnknownCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "createdAtMillis": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "activityAtMillis": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
         }
       ]
     },
@@ -56224,6 +57826,101 @@ export const listOrganizerCampaignsCallableResponseSchema = {
         },
         "partialFailure": {
           "type": "boolean"
+        },
+        "activityAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "followerUpdate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "postId",
+        "eventId",
+        "audience",
+        "status",
+        "deliveryStatus",
+        "recipientCount",
+        "excludedCount",
+        "activityAvailableCount",
+        "pushAttemptedCount",
+        "pushAcceptedCount",
+        "pushFailedCount",
+        "pushUnknownCount",
+        "createdAtMillis",
+        "activityAtMillis"
+      ],
+      "properties": {
+        "kind": {
+          "const": "followerUpdate"
+        },
+        "postId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "eventId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "audience": {
+          "const": "followers"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "removed"
+          ],
+          "x-catch-ownership": "callable-owned"
+        },
+        "deliveryStatus": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "completed",
+            "partial",
+            "unknown"
+          ]
+        },
+        "recipientCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "excludedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "activityAvailableCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pushAttemptedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pushAcceptedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pushFailedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pushUnknownCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "createdAtMillis": {
+          "type": "integer",
+          "minimum": 0
         },
         "activityAtMillis": {
           "type": "integer",
@@ -57821,6 +59518,1312 @@ export const getEventRuntimeBootstrapCallablePayloadSchema = {
     "publicRuntimeId": {
       "type": "string",
       "pattern": "^[A-Za-z0-9_-]{20,80}$"
+    }
+  }
+};
+
+export const createEventRehearsalCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/create_event_rehearsal_payload.schema.json",
+  "title": "CreateEventRehearsalCallablePayload",
+  "description": "Creates an isolated rehearsal from a real event snapshot or the safe sample template.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "sourceEventId",
+    "scenarioId",
+    "seed",
+    "actorCount"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "sourceEventId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180
+    },
+    "scenarioId": {
+      "type": "string",
+      "enum": [
+        "smoothRun",
+        "lateAndNoShow",
+        "earlyExitAndReturn",
+        "rosterAndCapacity",
+        "walkInAndAmbiguousClaim",
+        "privacyAndKeepApart",
+        "lowConnectivity",
+        "concurrentHosts",
+        "revealInterrupted",
+        "externalProfiles",
+        "accountabilitySweep"
+      ]
+    },
+    "seed": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    },
+    "actorCount": {
+      "type": "integer",
+      "minimum": 2,
+      "maximum": 50
+    }
+  }
+};
+
+export const createEventRehearsalCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/create_event_rehearsal_response.schema.json",
+  "title": "CreateEventRehearsalCallableResponse",
+  "description": "Identifiers and guest link returned when a rehearsal is created.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sessionId",
+    "guestUrl",
+    "setupRevision",
+    "runtimeRevision"
+  ],
+  "properties": {
+    "sessionId": {
+      "type": "string"
+    },
+    "guestUrl": {
+      "type": "string"
+    },
+    "setupRevision": {
+      "type": "integer"
+    },
+    "runtimeRevision": {
+      "type": "integer"
+    }
+  }
+};
+
+export const getEventRehearsalBootstrapCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_event_rehearsal_bootstrap_payload.schema.json",
+  "title": "GetEventRehearsalBootstrapCallablePayload",
+  "description": "Returns Host-safe rehearsal state.",
+  "x-callable-aliases": [
+    "completeEventRehearsal",
+    "exportEventRehearsalReproduction"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sessionId"
+  ],
+  "properties": {
+    "sessionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const eventRehearsalBootstrapCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/event_rehearsal_bootstrap_response.schema.json",
+  "title": "EventRehearsalBootstrapCallableResponse",
+  "description": "Host projection of a rehearsal session, synthetic actors, and bounded action history.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "session",
+    "actors",
+    "actions",
+    "guestUrl",
+    "canUseInternalFaults"
+  ],
+  "properties": {
+    "session": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "organizerId",
+        "sourceEventId",
+        "scenarioId",
+        "seed",
+        "actorCount",
+        "actionCount",
+        "status",
+        "setup",
+        "setupRevision",
+        "runtimeRevision",
+        "activeStepIndex",
+        "virtualNowMillis",
+        "faultId",
+        "expiresAtMillis"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "organizerId": {
+          "type": "string"
+        },
+        "sourceEventId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "scenarioId": {
+          "type": "string",
+          "enum": [
+            "smoothRun",
+            "lateAndNoShow",
+            "earlyExitAndReturn",
+            "rosterAndCapacity",
+            "walkInAndAmbiguousClaim",
+            "privacyAndKeepApart",
+            "lowConnectivity",
+            "concurrentHosts",
+            "revealInterrupted",
+            "externalProfiles",
+            "accountabilitySweep"
+          ]
+        },
+        "seed": {
+          "type": "integer"
+        },
+        "actorCount": {
+          "type": "integer"
+        },
+        "actionCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 500
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "ready",
+            "running",
+            "paused",
+            "complete",
+            "expired"
+          ]
+        },
+        "setup": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "title",
+            "locationName",
+            "durationMinutes",
+            "hostGoal",
+            "attendeePrompt",
+            "moduleIds"
+          ],
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "locationName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "durationMinutes": {
+              "type": "integer",
+              "minimum": 30,
+              "maximum": 360
+            },
+            "hostGoal": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            "attendeePrompt": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
+            },
+            "moduleIds": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 8,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "arrival",
+                  "firstHello",
+                  "pods",
+                  "rotations",
+                  "conversationCues",
+                  "reveal",
+                  "afterglow",
+                  "accountability"
+                ]
+              }
+            }
+          }
+        },
+        "setupRevision": {
+          "type": "integer"
+        },
+        "runtimeRevision": {
+          "type": "integer"
+        },
+        "activeStepIndex": {
+          "type": "integer"
+        },
+        "virtualNowMillis": {
+          "type": "integer"
+        },
+        "faultId": {
+          "type": "string",
+          "enum": [
+            "none",
+            "latency",
+            "oneShotFailure",
+            "listenerDisconnect",
+            "staleRevision",
+            "duplicateDelivery",
+            "legacyFixture",
+            "reducedMotion",
+            "lowBandwidth"
+          ]
+        },
+        "expiresAtMillis": {
+          "type": "integer"
+        }
+      }
+    },
+    "actors": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "actorId",
+          "displayName",
+          "persona",
+          "status",
+          "guestMoment",
+          "optedOut",
+          "keepApartActorIds",
+          "helpRequested",
+          "promptCompleted"
+        ],
+        "properties": {
+          "actorId": {
+            "type": "string"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "persona": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "expected",
+              "present",
+              "late",
+              "noShow",
+              "departed",
+              "returned",
+              "disconnected",
+              "walkIn",
+              "ambiguousClaim"
+            ]
+          },
+          "guestMoment": {
+            "type": "string",
+            "enum": [
+              "welcome",
+              "checkIn",
+              "firstHello",
+              "assignment",
+              "rotation",
+              "pause",
+              "reveal",
+              "afterglow",
+              "complete"
+            ]
+          },
+          "optedOut": {
+            "type": "boolean"
+          },
+          "keepApartActorIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "helpRequested": {
+            "type": "boolean"
+          },
+          "promptCompleted": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "clientActionId",
+          "actorId",
+          "kind",
+          "name",
+          "runtimeRevision",
+          "virtualNowMillis"
+        ],
+        "properties": {
+          "clientActionId": {
+            "type": "string"
+          },
+          "actorId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "kind": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "runtimeRevision": {
+            "type": "integer"
+          },
+          "virtualNowMillis": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "guestUrl": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "canUseInternalFaults": {
+      "type": "boolean"
+    }
+  },
+  "definitions": {
+    "session": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "organizerId",
+        "sourceEventId",
+        "scenarioId",
+        "seed",
+        "actorCount",
+        "actionCount",
+        "status",
+        "setup",
+        "setupRevision",
+        "runtimeRevision",
+        "activeStepIndex",
+        "virtualNowMillis",
+        "faultId",
+        "expiresAtMillis"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "organizerId": {
+          "type": "string"
+        },
+        "sourceEventId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "scenarioId": {
+          "type": "string",
+          "enum": [
+            "smoothRun",
+            "lateAndNoShow",
+            "earlyExitAndReturn",
+            "rosterAndCapacity",
+            "walkInAndAmbiguousClaim",
+            "privacyAndKeepApart",
+            "lowConnectivity",
+            "concurrentHosts",
+            "revealInterrupted",
+            "externalProfiles",
+            "accountabilitySweep"
+          ]
+        },
+        "seed": {
+          "type": "integer"
+        },
+        "actorCount": {
+          "type": "integer"
+        },
+        "actionCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 500
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "ready",
+            "running",
+            "paused",
+            "complete",
+            "expired"
+          ]
+        },
+        "setup": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "title",
+            "locationName",
+            "durationMinutes",
+            "hostGoal",
+            "attendeePrompt",
+            "moduleIds"
+          ],
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "locationName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "durationMinutes": {
+              "type": "integer",
+              "minimum": 30,
+              "maximum": 360
+            },
+            "hostGoal": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            "attendeePrompt": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
+            },
+            "moduleIds": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 8,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "arrival",
+                  "firstHello",
+                  "pods",
+                  "rotations",
+                  "conversationCues",
+                  "reveal",
+                  "afterglow",
+                  "accountability"
+                ]
+              }
+            }
+          }
+        },
+        "setupRevision": {
+          "type": "integer"
+        },
+        "runtimeRevision": {
+          "type": "integer"
+        },
+        "activeStepIndex": {
+          "type": "integer"
+        },
+        "virtualNowMillis": {
+          "type": "integer"
+        },
+        "faultId": {
+          "type": "string",
+          "enum": [
+            "none",
+            "latency",
+            "oneShotFailure",
+            "listenerDisconnect",
+            "staleRevision",
+            "duplicateDelivery",
+            "legacyFixture",
+            "reducedMotion",
+            "lowBandwidth"
+          ]
+        },
+        "expiresAtMillis": {
+          "type": "integer"
+        }
+      }
+    },
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "actorId",
+        "displayName",
+        "persona",
+        "status",
+        "guestMoment",
+        "optedOut",
+        "keepApartActorIds",
+        "helpRequested",
+        "promptCompleted"
+      ],
+      "properties": {
+        "actorId": {
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string"
+        },
+        "persona": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "expected",
+            "present",
+            "late",
+            "noShow",
+            "departed",
+            "returned",
+            "disconnected",
+            "walkIn",
+            "ambiguousClaim"
+          ]
+        },
+        "guestMoment": {
+          "type": "string",
+          "enum": [
+            "welcome",
+            "checkIn",
+            "firstHello",
+            "assignment",
+            "rotation",
+            "pause",
+            "reveal",
+            "afterglow",
+            "complete"
+          ]
+        },
+        "optedOut": {
+          "type": "boolean"
+        },
+        "keepApartActorIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "helpRequested": {
+          "type": "boolean"
+        },
+        "promptCompleted": {
+          "type": "boolean"
+        }
+      }
+    },
+    "action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "clientActionId",
+        "actorId",
+        "kind",
+        "name",
+        "runtimeRevision",
+        "virtualNowMillis"
+      ],
+      "properties": {
+        "clientActionId": {
+          "type": "string"
+        },
+        "actorId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "kind": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "runtimeRevision": {
+          "type": "integer"
+        },
+        "virtualNowMillis": {
+          "type": "integer"
+        }
+      }
+    }
+  }
+};
+
+export const updateEventRehearsalSetupCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/update_event_rehearsal_setup_payload.schema.json",
+  "title": "UpdateEventRehearsalSetupCallablePayload",
+  "description": "Revision-fenced update to safe rehearsal-only event and playbook setup.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sessionId",
+    "expectedRevision",
+    "scenarioId",
+    "actorCount",
+    "setup"
+  ],
+  "properties": {
+    "sessionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "scenarioId": {
+      "type": "string",
+      "enum": [
+        "smoothRun",
+        "lateAndNoShow",
+        "earlyExitAndReturn",
+        "rosterAndCapacity",
+        "walkInAndAmbiguousClaim",
+        "privacyAndKeepApart",
+        "lowConnectivity",
+        "concurrentHosts",
+        "revealInterrupted",
+        "externalProfiles",
+        "accountabilitySweep"
+      ]
+    },
+    "actorCount": {
+      "type": "integer",
+      "minimum": 2,
+      "maximum": 50
+    },
+    "setup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "locationName",
+        "durationMinutes",
+        "hostGoal",
+        "attendeePrompt",
+        "moduleIds"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "locationName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "durationMinutes": {
+          "type": "integer",
+          "minimum": 30,
+          "maximum": 360
+        },
+        "hostGoal": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "attendeePrompt": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 320
+        },
+        "moduleIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "arrival",
+              "firstHello",
+              "pods",
+              "rotations",
+              "conversationCues",
+              "reveal",
+              "afterglow",
+              "accountability"
+            ]
+          }
+        }
+      }
+    }
+  }
+};
+
+export const controlEventRehearsalCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/control_event_rehearsal_payload.schema.json",
+  "title": "ControlEventRehearsalCallablePayload",
+  "description": "Revision-fenced Host lifecycle or virtual-clock control.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sessionId",
+    "expectedRevision",
+    "clientActionId",
+    "action"
+  ],
+  "properties": {
+    "sessionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "clientActionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{8,120}$"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "markReady",
+        "start",
+        "pause",
+        "resume",
+        "advance",
+        "previous",
+        "advanceClock",
+        "complete"
+      ]
+    },
+    "minutes": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 120
+    }
+  }
+};
+
+export const injectEventRehearsalBehaviorCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/inject_event_rehearsal_behavior_payload.schema.json",
+  "title": "InjectEventRehearsalBehaviorCallablePayload",
+  "description": "Applies a deterministic synthetic-actor behavior or an internal-only fault.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sessionId",
+    "expectedRevision",
+    "clientActionId",
+    "actorId",
+    "behavior",
+    "faultId"
+  ],
+  "properties": {
+    "sessionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "clientActionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{8,120}$"
+    },
+    "actorId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "behavior": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "arrive",
+        "arriveLate",
+        "markNoShow",
+        "leaveEarly",
+        "return",
+        "walkIn",
+        "ambiguousClaim",
+        "resolveClaim",
+        "optOut",
+        "optIn",
+        "keepApart",
+        "disconnect",
+        "reconnect",
+        null
+      ]
+    },
+    "faultId": {
+      "type": "string",
+      "enum": [
+        "none",
+        "latency",
+        "oneShotFailure",
+        "listenerDisconnect",
+        "staleRevision",
+        "duplicateDelivery",
+        "legacyFixture",
+        "reducedMotion",
+        "lowBandwidth"
+      ]
+    }
+  }
+};
+
+export const resetEventRehearsalCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/reset_event_rehearsal_payload.schema.json",
+  "title": "ResetEventRehearsalCallablePayload",
+  "description": "Deterministically resets or forks a rehearsal run.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sessionId",
+    "fork",
+    "seed"
+  ],
+  "properties": {
+    "sessionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "fork": {
+      "type": "boolean"
+    },
+    "seed": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 2147483647
+    }
+  }
+};
+
+export const rotateEventRehearsalGuestLinkCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/rotate_event_rehearsal_guest_link_payload.schema.json",
+  "title": "RotateEventRehearsalGuestLinkCallablePayload",
+  "description": "Revokes prior anonymous viewer tokens and returns a new guest link.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sessionId"
+  ],
+  "properties": {
+    "sessionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const getEventRehearsalGuestBootstrapCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_event_rehearsal_guest_bootstrap_payload.schema.json",
+  "title": "GetEventRehearsalGuestBootstrapCallablePayload",
+  "description": "Redeems or refreshes an anonymous rehearsal guest view.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "publicRehearsalId",
+    "clientInstanceId",
+    "viewerToken",
+    "slotToken"
+  ],
+  "properties": {
+    "publicRehearsalId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{20,80}$"
+    },
+    "clientInstanceId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{16,80}$"
+    },
+    "viewerToken": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120
+    },
+    "slotToken": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180
+    }
+  }
+};
+
+export const eventRehearsalGuestBootstrapCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/event_rehearsal_guest_bootstrap_response.schema.json",
+  "title": "EventRehearsalGuestBootstrapCallableResponse",
+  "description": "Sanitized anonymous guest projection for a rehearsal.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "slotToken",
+    "session",
+    "actor",
+    "practiceBanner"
+  ],
+  "properties": {
+    "slotToken": {
+      "type": "string"
+    },
+    "practiceBanner": {
+      "type": "string"
+    },
+    "session": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "locationName",
+        "status",
+        "activeStepIndex",
+        "virtualNowMillis",
+        "attendeePrompt",
+        "moduleIds",
+        "runtimeRevision",
+        "faultId"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "locationName": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "ready",
+            "running",
+            "paused",
+            "complete",
+            "expired"
+          ]
+        },
+        "activeStepIndex": {
+          "type": "integer"
+        },
+        "virtualNowMillis": {
+          "type": "integer"
+        },
+        "attendeePrompt": {
+          "type": "string"
+        },
+        "moduleIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "arrival",
+              "firstHello",
+              "pods",
+              "rotations",
+              "conversationCues",
+              "reveal",
+              "afterglow",
+              "accountability"
+            ]
+          }
+        },
+        "runtimeRevision": {
+          "type": "integer"
+        },
+        "faultId": {
+          "type": "string",
+          "enum": [
+            "none",
+            "latency",
+            "oneShotFailure",
+            "listenerDisconnect",
+            "staleRevision",
+            "duplicateDelivery",
+            "legacyFixture",
+            "reducedMotion",
+            "lowBandwidth"
+          ]
+        }
+      }
+    },
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "actorId",
+        "displayName",
+        "status",
+        "guestMoment",
+        "optedOut",
+        "helpRequested",
+        "promptCompleted"
+      ],
+      "properties": {
+        "actorId": {
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "expected",
+            "present",
+            "late",
+            "noShow",
+            "departed",
+            "returned",
+            "disconnected",
+            "walkIn",
+            "ambiguousClaim"
+          ]
+        },
+        "guestMoment": {
+          "type": "string",
+          "enum": [
+            "welcome",
+            "checkIn",
+            "firstHello",
+            "assignment",
+            "rotation",
+            "pause",
+            "reveal",
+            "afterglow",
+            "complete"
+          ]
+        },
+        "optedOut": {
+          "type": "boolean"
+        },
+        "helpRequested": {
+          "type": "boolean"
+        },
+        "promptCompleted": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+};
+
+export const submitEventRehearsalGuestActionCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/submit_event_rehearsal_guest_action_payload.schema.json",
+  "title": "SubmitEventRehearsalGuestActionCallablePayload",
+  "description": "Applies a bounded action from an anonymous rehearsal guest slot.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "publicRehearsalId",
+    "slotToken",
+    "clientActionId",
+    "action"
+  ],
+  "properties": {
+    "publicRehearsalId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{20,80}$"
+    },
+    "slotToken": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{20,180}$"
+    },
+    "clientActionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{8,120}$"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "checkIn",
+        "confirmArrival",
+        "optOut",
+        "optIn",
+        "askForHelp",
+        "completePrompt"
+      ]
+    }
+  }
+};
+
+export const eventRehearsalReproductionCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/event_rehearsal_reproduction_response.schema.json",
+  "title": "EventRehearsalReproductionCallableResponse",
+  "description": "Portable deterministic reproduction record for internal QA and product review.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "sessionId",
+    "scenarioId",
+    "seed",
+    "setup",
+    "actions"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "sessionId": {
+      "type": "string"
+    },
+    "scenarioId": {
+      "type": "string",
+      "enum": [
+        "smoothRun",
+        "lateAndNoShow",
+        "earlyExitAndReturn",
+        "rosterAndCapacity",
+        "walkInAndAmbiguousClaim",
+        "privacyAndKeepApart",
+        "lowConnectivity",
+        "concurrentHosts",
+        "revealInterrupted",
+        "externalProfiles",
+        "accountabilitySweep"
+      ]
+    },
+    "seed": {
+      "type": "integer"
+    },
+    "setup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "locationName",
+        "durationMinutes",
+        "hostGoal",
+        "attendeePrompt",
+        "moduleIds"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "locationName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "durationMinutes": {
+          "type": "integer",
+          "minimum": 30,
+          "maximum": 360
+        },
+        "hostGoal": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "attendeePrompt": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 320
+        },
+        "moduleIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "arrival",
+              "firstHello",
+              "pods",
+              "rotations",
+              "conversationCues",
+              "reveal",
+              "afterglow",
+              "accountability"
+            ]
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object"
+      }
     }
   }
 };

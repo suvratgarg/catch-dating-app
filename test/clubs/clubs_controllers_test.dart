@@ -28,6 +28,8 @@ import 'package:image_picker/image_picker.dart';
 
 import 'clubs_test_helpers.dart';
 
+part 'clubs_controller_media_reliability_tests.dart';
+
 ClubMembership _membership({
   String clubId = 'club-1',
   String uid = 'runner-1',
@@ -689,6 +691,8 @@ void main() {
   });
 
   group('CreateClubController', () {
+    _registerClubMediaReliabilityTests();
+
     test('deduplicates an active organizer submit snapshot', () async {
       final pendingCreate = Completer<String>();
       final fakeRepository = FakeClubsRepository()
@@ -987,7 +991,10 @@ void main() {
           .updateClubMedia(
             club: club,
             photoInputs: [
-              HostNewClubPhotoInput(fakeImageUploadRepository.pickedImage!),
+              HostNewClubPhotoInput(
+                id: 'photo-one',
+                image: fakeImageUploadRepository.pickedImage!,
+              ),
             ],
           );
 
@@ -1065,14 +1072,17 @@ void main() {
             .updateClubMedia(
               club: club,
               photoInputs: [
-                HostNewClubPhotoInput(fakeImageUploadRepository.pickedImage!),
+                HostNewClubPhotoInput(
+                  id: 'photo-one',
+                  image: fakeImageUploadRepository.pickedImage!,
+                ),
               ],
             ),
         throwsStateError,
       );
 
       expect(fakeImageUploadRepository.deletedStoragePaths, [
-        'clubs/${club.id}/photos/0_test.jpg',
+        'organizers/${club.id}/media/photo-one/original.jpg',
       ]);
     });
 

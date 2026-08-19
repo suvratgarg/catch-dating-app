@@ -14,6 +14,14 @@ void main() {
           capacity: '20',
           price: '100',
           description: 'Easy morning event',
+          externalBookingMode: true,
+          externalBookingProvider: 'eventbrite',
+          externalEventUrl: 'https://eventbrite.com/e/123',
+          externalEventId: '123',
+          runtimeWalkInPolicy: 'hostApproval',
+          rosterFileName: 'guest-list.csv',
+          rosterFileFingerprint: 'sha256',
+          rosterReadyCount: 20,
           activityKind: 'pickleball',
           customActivityLabel: 'Salsa night',
           interactionModel: 'pairedRotations',
@@ -43,6 +51,14 @@ void main() {
         expect(restored.capacity, '20');
         expect(restored.price, '100');
         expect(restored.description, 'Easy morning event');
+        expect(restored.externalBookingMode, isTrue);
+        expect(restored.externalBookingProvider, 'eventbrite');
+        expect(restored.externalEventUrl, 'https://eventbrite.com/e/123');
+        expect(restored.externalEventId, '123');
+        expect(restored.runtimeWalkInPolicy, 'hostApproval');
+        expect(restored.rosterFileName, 'guest-list.csv');
+        expect(restored.rosterFileFingerprint, 'sha256');
+        expect(restored.rosterReadyCount, 20);
         expect(restored.activityKind, 'pickleball');
         expect(restored.customActivityLabel, 'Salsa night');
         expect(restored.interactionModel, 'pairedRotations');
@@ -130,6 +146,17 @@ void main() {
           clubId: 'club-1',
           savedAt: DateTime.now(),
           distance: '5',
+        );
+        expect(draft.isEmpty, isFalse);
+      });
+
+      test('returns false when only external roster metadata is set', () {
+        final draft = EventDraft(
+          id: 'draft-roster',
+          clubId: 'club-1',
+          savedAt: DateTime.now(),
+          externalBookingMode: true,
+          rosterFileFingerprint: 'sha256',
         );
         expect(draft.isEmpty, isFalse);
       });

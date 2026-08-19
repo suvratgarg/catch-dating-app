@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.18.0
-updated: 2026-08-18
+version: 0.19.0
+updated: 2026-08-19
 owner: web_platform
 status: active
 ---
@@ -1090,7 +1090,7 @@ web; it does not require or silently create a dating profile.
 
 ### No-Download Event Runtime And Invite Landing
 
-The React marketing runtime owns two non-SEO transactional routes:
+The React marketing runtime owns three non-SEO transactional routes:
 
 - `/join/:publicRuntimeId` resolves only a bounded event projection before
   Firebase phone OTP. After authentication it claims or requests one roster
@@ -1108,6 +1108,17 @@ The React marketing runtime owns two non-SEO transactional routes:
   creating a Consumer profile or booking edge. The conversation roster is
   fetched through an attendee-authorized callable; Hosts receive only numeric
   scorecard counts and exclusion, never who named whom.
+
+- `/rehearse/:publicRehearsalId` is the synthetic-only guest phone for a Host
+  dress rehearsal. It never enters the OTP, attendee-claim, booking, payment,
+  messaging, or matching paths. A high-entropy link plus a stable browser
+  instance redeems one deterministic synthetic actor; the returned slot token
+  can submit only bounded guest practice actions. The route follows the Host's
+  virtual clock, renders the shared Event Runtime shell and modules, keeps a
+  persistent Practice mode banner, and exposes fault-specific recovery copy.
+  It is `noindex,follow`, excluded from the sitemap, emitted through the exact
+  `/rehearse/**` Firebase rewrite, and registered in
+  `feature.event_rehearsal` with the Flutter Host console.
 
 The same route renders `social_missions` from the generated Event Success
 prompt catalog. Prompt ids carry `light`, `personal`, or `reflective`

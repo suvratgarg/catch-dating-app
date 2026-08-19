@@ -429,7 +429,7 @@ export interface EventPolicyBundleDocument {
   admission: EventPolicyAdmissionDocument;
   pricing: EventPolicyPricingDocument;
   cancellation: {
-    policyId: "flexible" | "standard" | "strict";
+    policyId: "notApplicable" | "flexible" | "standard" | "strict";
   };
   settlement: {
     hostPayoutTiming: "afterEventCompletion";
@@ -1553,6 +1553,53 @@ export interface OrganizerPostDocument {
   audience: "followers";
   createdAt: FirebaseFirestore.Timestamp;
   status: "active" | "removed";
+}
+
+/**
+ * Server-owned retry state and aggregate delivery receipt for one organizer follower update.
+ */
+export interface OrganizerPostDeliveryOperationDocument {
+  organizerId: string;
+  postId: string;
+  authorUid: string;
+  requestId: string;
+  payloadHash: string;
+  status: "pending" | "processing" | "completed" | "partial";
+  remainingWeeklyQuota: number;
+  cursorFollowId: string | null;
+  recipientCount: number;
+  excludedCount: number;
+  activityAvailableCount: number;
+  pushAttemptedCount: number;
+  pushAcceptedCount: number;
+  pushFailedCount: number;
+  pushUnknownCount: number;
+  /**
+   * @maxItems 20
+   */
+  errorCodes: string[];
+  attemptCount: number;
+  leaseOwner: string | null;
+  leaseExpiresAt: FirebaseFirestore.Timestamp | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  completedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Server-only post-scoped, de-identified per-recipient retry evidence for an organizer follower update.
+ */
+export interface OrganizerPostDeliveryRecipientDocument {
+  organizerId: string;
+  postId: string;
+  activityStatus: "created" | "existing" | "failed";
+  pushStatus: "ineligible" | "accepted" | "failed" | "unknown";
+  activityNotificationId: string;
+  excluded: boolean;
+  errorCode: string | null;
+  expiresAt: FirebaseFirestore.Timestamp;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
 }
 
 /**
@@ -4440,6 +4487,152 @@ export interface EventSuccessLateArrivalDocument {
   reason: string;
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Server-owned isolated Host rehearsal session stored at eventRehearsals/{sessionId}.
+ */
+export interface EventRehearsalDocument {
+  organizerId: string;
+  clubId: string;
+  ownerUid: string;
+  sourceEventId: string | null;
+  sourceEventRevision: string | null;
+  publicRehearsalId: string;
+  viewerTokenHash: string;
+  scenarioId:
+    | "smoothRun"
+    | "lateAndNoShow"
+    | "earlyExitAndReturn"
+    | "rosterAndCapacity"
+    | "walkInAndAmbiguousClaim"
+    | "privacyAndKeepApart"
+    | "lowConnectivity"
+    | "concurrentHosts"
+    | "revealInterrupted"
+    | "externalProfiles"
+    | "accountabilitySweep";
+  seed: number;
+  actorCount: number;
+  actionCount: number;
+  status: "draft" | "ready" | "running" | "paused" | "complete" | "expired";
+  setup: {
+    title: string;
+    locationName: string;
+    durationMinutes: number;
+    hostGoal: string;
+    attendeePrompt: string;
+    /**
+     * @minItems 1
+     * @maxItems 8
+     */
+    moduleIds: (
+      | "arrival"
+      | "firstHello"
+      | "pods"
+      | "rotations"
+      | "conversationCues"
+      | "reveal"
+      | "afterglow"
+      | "accountability"
+    )[];
+  };
+  setupRevision: number;
+  runtimeRevision: number;
+  activeStepIndex: number;
+  virtualStartedAt: FirebaseFirestore.Timestamp;
+  virtualNow: FirebaseFirestore.Timestamp;
+  faultId:
+    | "none"
+    | "latency"
+    | "oneShotFailure"
+    | "listenerDisconnect"
+    | "staleRevision"
+    | "duplicateDelivery"
+    | "legacyFixture"
+    | "reducedMotion"
+    | "lowBandwidth";
+  faultConsumed: boolean;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+  completedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Synthetic participant state stored only for an isolated rehearsal.
+ */
+export interface EventRehearsalActorDocument {
+  sessionId: string;
+  actorId: string;
+  displayName: string;
+  persona:
+    | "firstTimer"
+    | "regular"
+    | "quiet"
+    | "connector"
+    | "external"
+    | "sparseProfile"
+    | "accessibilityNeeds"
+    | "walkIn";
+  status:
+    | "expected"
+    | "present"
+    | "late"
+    | "noShow"
+    | "departed"
+    | "returned"
+    | "disconnected"
+    | "walkIn"
+    | "ambiguousClaim";
+  guestMoment:
+    | "welcome"
+    | "checkIn"
+    | "firstHello"
+    | "assignment"
+    | "rotation"
+    | "pause"
+    | "reveal"
+    | "afterglow"
+    | "complete";
+  optedOut: boolean;
+  /**
+   * @maxItems 10
+   */
+  keepApartActorIds: string[];
+  helpRequested: boolean;
+  promptCompleted: boolean;
+  lastActionAt: FirebaseFirestore.Timestamp | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Bounded idempotency and reproduction record for rehearsal actions.
+ */
+export interface EventRehearsalActionDocument {
+  sessionId: string;
+  clientActionId: string;
+  actorUid: string | null;
+  actorId: string | null;
+  kind: "control" | "behavior" | "guest" | "setup" | "system";
+  name: string;
+  runtimeRevision: number;
+  virtualNow: FirebaseFirestore.Timestamp;
+  createdAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Ephemeral anonymous guest slot for a rehearsal web link.
+ */
+export interface EventRehearsalGuestViewDocument {
+  sessionId: string;
+  slotId: string;
+  actorId: string;
+  tokenHash: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  lastSeenAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
 }
 
 /**

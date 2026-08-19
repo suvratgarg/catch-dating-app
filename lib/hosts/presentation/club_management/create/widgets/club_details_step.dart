@@ -10,6 +10,7 @@ class ClubDetailsStep extends StatelessWidget {
   const ClubDetailsStep({
     super.key,
     required this.formKey,
+    this.autovalidateMode = AutovalidateMode.disabled,
     required this.descriptionController,
     required this.instagramController,
     required this.phoneController,
@@ -17,6 +18,7 @@ class ClubDetailsStep extends StatelessWidget {
   });
 
   final GlobalKey<FormState> formKey;
+  final AutovalidateMode autovalidateMode;
   final TextEditingController descriptionController;
   final TextEditingController instagramController;
   final TextEditingController phoneController;
@@ -26,14 +28,16 @@ class ClubDetailsStep extends StatelessWidget {
   Widget build(BuildContext context) {
     return Form(
       key: formKey,
+      autovalidateMode: autovalidateMode,
       child: SingleChildScrollView(
-        padding: CatchInsets.formStepBody,
+        padding: CatchInsets.formStepBodyWithBottomActions,
         child: CatchSectionList(
           emptyStateOmitted: true,
           gap: 0,
           children: [
             CatchSection.fieldRows(
               first: true,
+              showTopDivider: false,
               child: CatchField.input(
                 title: context.l10n.hostsClubDetailsStepTitleDescription,
                 contract: CatchContractConstraints

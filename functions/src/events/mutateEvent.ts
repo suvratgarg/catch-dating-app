@@ -73,6 +73,10 @@ import {
   normalizeUploadedPhotosForFirestore,
 } from "../shared/uploadedPhotoNormalization";
 import {
+  deleteMediaStoragePaths,
+  removedMediaStoragePaths,
+} from "../shared/mediaStorageLifecycle";
+import {
   effectiveInteractionModelFor,
   eventSuccessPrimitivesFor,
   isEventSuccessAssignmentAlgorithm,
@@ -112,6 +116,7 @@ interface EventMutationDeps {
   ) => Promise<void>;
   refundPayment?: (paymentId: string, amount: number) => Promise<void>;
   runtimePublicId?: () => string;
+  deleteStoragePaths?: (paths: string[]) => Promise<void>;
 }
 
 type ParsedEventConstraints = NonNullable<
@@ -180,6 +185,7 @@ const defaultDeps: EventMutationDeps = {
     await createRazorpayClient().payments.refund(paymentId, {amount});
   },
   runtimePublicId: () => randomBytes(24).toString("base64url"),
+  deleteStoragePaths: deleteMediaStoragePaths,
 };
 
 /**
@@ -405,6 +411,7 @@ export async function updateEventHandler(
   let updatedEvent: EventDocument | null = null;
   let affectedClubId: string | null = null;
   let shouldNotifyParticipants = false;
+  let removedStoragePaths: string[] = [];
 
   await db.runTransaction(async (tx) => {
     const [eventSnap, deletedUserSnap] = await Promise.all([
@@ -492,6 +499,11 @@ export async function updateEventHandler(
       });
     }
     tx.update(eventRef, patch);
+    removedStoragePaths = removedMediaStoragePaths({
+      before: event,
+      after: {...event, ...patch},
+      owner: {kind: "event", id: data.eventId},
+    });
     if (hasPolicyChange(data.fields) && nextPolicy) {
       syncPrivateAccessForPolicyUpdate({
         tx,
@@ -508,6 +520,8 @@ export async function updateEventHandler(
     affectedClubId = organizerId;
     shouldNotifyParticipants = hasScheduleOrLocationChange(data.fields);
   });
+
+  await cleanupRemovedEventMedia(deps, data.eventId, removedStoragePaths);
 
   if (updatedEvent && shouldNotifyParticipants) {
     await notifyEventParticipants({
@@ -723,6 +737,7 @@ export async function deleteEventHandler(
   const eventRef = db.collection("events").doc(data.eventId);
   const deletedUserRef = db.collection("deletedUsers").doc(hostUserId);
   let deletedClubId: string | null = null;
+  let removedStoragePaths: string[] = [];
 
   await db.runTransaction(async (tx) => {
     const eventSnap = await tx.get(eventRef);
@@ -782,6 +797,11 @@ export async function deleteEventHandler(
     }
 
     tx.delete(eventRef);
+    removedStoragePaths = removedMediaStoragePaths({
+      before: event,
+      after: {},
+      owner: {kind: "event", id: data.eventId},
+    });
     deletedClubId = organizerId;
     releaseClubScheduleInTransaction(tx, db, {
       clubId: organizerId,
@@ -791,6 +811,8 @@ export async function deleteEventHandler(
     });
   });
 
+  await cleanupRemovedEventMedia(deps, data.eventId, removedStoragePaths);
+
   if (deletedClubId) {
     await deps.refreshClubNextEvent?.(deletedClubId, {
       firestore: deps.firestore,
@@ -799,6 +821,19 @@ export async function deleteEventHandler(
   }
 
   return {deleted: true};
+}
+
+async function cleanupRemovedEventMedia(
+  deps: EventMutationDeps,
+  eventId: string,
+  paths: string[]
+) {
+  if (paths.length === 0) return;
+  try {
+    await deps.deleteStoragePaths?.(paths);
+  } catch (error) {
+    logger.error("Event media cleanup failed", {eventId, paths, error});
+  }
 }
 
 /**
@@ -819,7 +854,7 @@ function buildCreateEventDoc(
   const maxMen = data.constraints?.maxMen;
   const maxWomen = data.constraints?.maxWomen;
   const hasLegacyCaps = maxMen != null || maxWomen != null;
-  const eventPolicy = normalizePolicy(
+  const normalizedPolicy = normalizePolicy(
     (data as CreateEventPayloadWithPolicy).eventPolicy ?? {
       version: 1,
       admission: {
@@ -842,10 +877,21 @@ function buildCreateEventDoc(
       pricing: {
         basePriceInPaise: data.priceInPaise,
       },
-      cancellation: {policyId: "standard"},
+      cancellation: {
+        policyId: data.priceInPaise === 0 ? "notApplicable" : "standard",
+      },
       settlement: {hostPayoutTiming: "afterEventCompletion"},
     }
   );
+  // External companion events may charge on their booking provider, but Catch
+  // never owns that price, payment, refund, or cancellation policy.
+  const eventPolicy = data.externalOrigin ? normalizePolicy({
+    ...normalizedPolicy,
+    pricing: {
+      ...normalizedPolicy.pricing,
+      basePriceInPaise: 0,
+    },
+  }) : normalizedPolicy;
   return {
     eventOrigin: data.externalOrigin ? {
       mode: "externalCompanion",

@@ -7,15 +7,13 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/hosts/presentation/host_club_post_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_follower_update_composer.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_tools.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
@@ -174,15 +172,22 @@ class HostClubManagementPanel extends StatelessWidget {
                           : context.l10n.hostsHostClubToolsLabelPostUpdate,
                       onPressed: quotaExhausted
                           ? null
-                          : () => _showClubPostComposer(
+                          : () => showHostFollowerUpdateComposer(
                               context: context,
                               club: club,
                               remainingQuota: remainingQuota,
-                              onSubmitPost: (text) async {
-                                await ref
-                                    .read(hostClubPostControllerProvider)
-                                    .createPost(clubId: club.id, text: text);
-                              },
+                              requestIdFactory:
+                                  HostClubPostController.generateRequestId,
+                              onSubmitPost:
+                                  ({required requestId, required text}) async {
+                                    await ref
+                                        .read(hostClubPostControllerProvider)
+                                        .createPost(
+                                          clubId: club.id,
+                                          requestId: requestId,
+                                          text: text,
+                                        );
+                                  },
                             ),
                       icon: Icon(CatchIcons.megaphone, size: CatchIcon.md),
                       variant: CatchButtonVariant.secondary,
@@ -205,111 +210,6 @@ class HostClubManagementPanel extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-Future<void> _showClubPostComposer({
-  required BuildContext context,
-  required Club club,
-  required int remainingQuota,
-  required Future<void> Function(String text) onSubmitPost,
-}) async {
-  final controller = TextEditingController();
-  Object? error;
-  var pending = false;
-
-  try {
-    await showCatchBottomSheet<void>(
-      context: context,
-      builder: (sheetContext) {
-        return StatefulBuilder(
-          builder: (context, setSheetState) {
-            final text = controller.text.trim();
-            final canSubmit = !pending && remainingQuota > 0 && text.isNotEmpty;
-
-            return CatchBottomSheetScaffold(
-              title: context.l10n.hostsHostClubToolsTitlePostToFollowers,
-              subtitle: context.l10n
-                  .hostsHostClubToolsSubtitleRemainingquotaOfWeeklyquotaPosts(
-                    remainingQuota: remainingQuota,
-                    weeklyQuota: ClubPostsRepository.weeklyQuota,
-                  ),
-              keyboardSafe: true,
-              action: CatchButton(
-                label: pending
-                    ? context.l10n.hostsHostClubToolsLabelPosting
-                    : context.l10n.hostsHostClubToolsLabelPostUpdate,
-                onPressed: canSubmit
-                    ? () async {
-                        setSheetState(() {
-                          pending = true;
-                          error = null;
-                        });
-                        try {
-                          await onSubmitPost(text);
-                          if (!sheetContext.mounted) return;
-                          Navigator.of(sheetContext).pop();
-                          if (!context.mounted) return;
-                          showCatchSnackBar(
-                            context,
-                            context
-                                .l10n
-                                .hostsHostClubToolsCatchbuttonPostedToFollowers,
-                          );
-                        } catch (caught) {
-                          setSheetState(() {
-                            pending = false;
-                            error = caught;
-                          });
-                        }
-                      }
-                    : null,
-                fullWidth: true,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CatchFieldLanes.single(
-                    child: CatchField.input(
-                      title: context.l10n.hostsHostClubToolsTitleUpdate,
-                      contract: CatchContractConstraints
-                          .createClubPostCallablePayloadText,
-                      controller: controller,
-                      placeholder: context
-                          .l10n
-                          .hostsHostClubToolsPlaceholderShareARouteNote,
-                      keyboardType: TextInputType.multiline,
-                      textInputAction: TextInputAction.newline,
-                      textCapitalization: TextCapitalization.sentences,
-                      maxLines: 5,
-                      minLines: 3,
-                      helperText: context.l10n
-                          .hostsHostClubToolsHelpertextValue1CharactersLeft(
-                            value1: 500 - controller.text.length,
-                          ),
-                      onChanged: (_) => setSheetState(() {}),
-                    ),
-                  ),
-                  if (error != null) ...[
-                    gapH10,
-                    Text(
-                      context.l10n.hostsHostClubToolsTextCouldNotPostThis,
-                      style: CatchTextStyles.supporting(
-                        context,
-                        color: CatchTokens.of(context).danger,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
-  } finally {
-    controller.dispose();
   }
 }
 

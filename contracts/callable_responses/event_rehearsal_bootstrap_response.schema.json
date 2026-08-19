@@ -1,0 +1,20 @@
+{
+  "$schema":"http://json-schema.org/draft-07/schema#",
+  "$id":"https://catch.app/contracts/callable_responses/event_rehearsal_bootstrap_response.schema.json",
+  "title":"EventRehearsalBootstrapCallableResponse",
+  "description":"Host projection of a rehearsal session, synthetic actors, and bounded action history.",
+  "type":"object","additionalProperties":false,
+  "required":["session","actors","actions","guestUrl","canUseInternalFaults"],
+  "properties":{
+    "session":{"$ref":"#/definitions/session"},
+    "actors":{"type":"array","maxItems":50,"items":{"$ref":"#/definitions/actor"}},
+    "actions":{"type":"array","maxItems":500,"items":{"$ref":"#/definitions/action"}},
+    "guestUrl":{"type":"string","minLength":1,"maxLength":500},
+    "canUseInternalFaults":{"type":"boolean"}
+  },
+  "definitions":{
+    "session":{"type":"object","additionalProperties":false,"required":["id","organizerId","sourceEventId","scenarioId","seed","actorCount","actionCount","status","setup","setupRevision","runtimeRevision","activeStepIndex","virtualNowMillis","faultId","expiresAtMillis"],"properties":{"id":{"type":"string"},"organizerId":{"type":"string"},"sourceEventId":{"type":["string","null"]},"scenarioId":{"$ref":"../shared/event_rehearsal_common.schema.json#/definitions/scenarioId"},"seed":{"type":"integer"},"actorCount":{"type":"integer"},"actionCount":{"type":"integer","minimum":0,"maximum":500},"status":{"$ref":"../shared/event_rehearsal_common.schema.json#/definitions/status"},"setup":{"$ref":"../shared/event_rehearsal_common.schema.json#/definitions/safeSetup"},"setupRevision":{"type":"integer"},"runtimeRevision":{"type":"integer"},"activeStepIndex":{"type":"integer"},"virtualNowMillis":{"type":"integer"},"faultId":{"$ref":"../shared/event_rehearsal_common.schema.json#/definitions/faultId"},"expiresAtMillis":{"type":"integer"}}},
+    "actor":{"type":"object","additionalProperties":false,"required":["actorId","displayName","persona","status","guestMoment","optedOut","keepApartActorIds","helpRequested","promptCompleted"],"properties":{"actorId":{"type":"string"},"displayName":{"type":"string"},"persona":{"type":"string"},"status":{"$ref":"../shared/event_rehearsal_common.schema.json#/definitions/actorStatus"},"guestMoment":{"$ref":"../shared/event_rehearsal_common.schema.json#/definitions/guestMoment"},"optedOut":{"type":"boolean"},"keepApartActorIds":{"type":"array","items":{"type":"string"}},"helpRequested":{"type":"boolean"},"promptCompleted":{"type":"boolean"}}},
+    "action":{"type":"object","additionalProperties":false,"required":["clientActionId","actorId","kind","name","runtimeRevision","virtualNowMillis"],"properties":{"clientActionId":{"type":"string"},"actorId":{"type":["string","null"]},"kind":{"type":"string"},"name":{"type":"string"},"runtimeRevision":{"type":"integer"},"virtualNowMillis":{"type":"integer"}}}
+  }
+}

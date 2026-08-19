@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
@@ -5,6 +6,7 @@ import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
+import 'package:catch_dating_app/image_uploads/domain/image_upload_job.dart';
 import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
@@ -33,9 +35,17 @@ class PhotoUploadController extends _$PhotoUploadController {
 
   Future<void> _pendingPhotoWrite = Future.value();
   bool _isPickingImage = false;
+  final _cancellationTokens = <int, ImageUploadCancellationToken>{};
 
   @override
-  PhotoUploadState build() => (loadingIndices: {}, uploadError: null);
+  PhotoUploadState build() {
+    ref.onDispose(() {
+      for (final token in _cancellationTokens.values) {
+        unawaited(token.cancel());
+      }
+    });
+    return const PhotoUploadState();
+  }
 
   Future<void> pickAndUpload(int index) async {
     RangeError.checkValueInInterval(
@@ -49,7 +59,7 @@ class PhotoUploadController extends _$PhotoUploadController {
     final repo = ref.read(imageUploadRepositoryProvider);
     final userProfileRepository = ref.read(userProfileRepositoryProvider);
 
-    _markUploading(index);
+    _updateJob(index, stage: ImageUploadJobStage.picking, progress: 0);
 
     final XFile? photo;
     try {
@@ -61,29 +71,52 @@ class PhotoUploadController extends _$PhotoUploadController {
     }
     if (!ref.mounted) return;
     if (photo == null) {
-      _finishUploading(index);
+      _updateJob(index, stage: ImageUploadJobStage.cancelled, progress: 0);
       return;
     }
 
+    final cancellationToken = ImageUploadCancellationToken();
+    _cancellationTokens[index] = cancellationToken;
+    UploadedImage? upload;
     try {
       final uid = requireSignedInUid(ref, action: 'upload photos');
-      final upload = await repo.uploadUserProfilePhoto(
+      upload = await repo.uploadUserProfilePhoto(
         uid: uid,
         index: index,
         image: photo,
+        cancellationToken: cancellationToken,
+        onProgress: (progress) => _handleProgress(
+          index,
+          cancellationToken: cancellationToken,
+          progress: progress,
+        ),
       );
-      await _persistUploadedPhoto(
-        userProfileRepository: userProfileRepository,
-        uid: uid,
-        index: index,
-        upload: upload,
-      );
+      _updateJob(index, stage: ImageUploadJobStage.attaching, progress: 1);
+      try {
+        await _persistUploadedPhoto(
+          userProfileRepository: userProfileRepository,
+          uid: uid,
+          index: index,
+          upload: upload,
+        );
+      } catch (_) {
+        await repo.deleteByPath(upload.storagePath);
+        rethrow;
+      }
 
       if (!ref.mounted) return;
       _finishUploading(index);
     } catch (e, st) {
       if (!ref.mounted) return;
-      _failUploading(index, e, st);
+      if (cancellationToken.isCancellationRequested) {
+        _updateJob(index, stage: ImageUploadJobStage.cancelled, progress: 0);
+      } else {
+        _failUploading(index, e, st);
+      }
+    } finally {
+      if (identical(_cancellationTokens[index], cancellationToken)) {
+        _cancellationTokens.remove(index);
+      }
     }
   }
 
@@ -115,26 +148,60 @@ class PhotoUploadController extends _$PhotoUploadController {
     );
 
     if (state.loadingIndices.contains(index)) return;
-    _markUploading(index);
+    final cancellationToken = ImageUploadCancellationToken();
+    _cancellationTokens[index] = cancellationToken;
+    _updateJob(index, stage: ImageUploadJobStage.queued, progress: 0);
     try {
       final uid = requireSignedInUid(ref, action: 'upload photos');
-      final upload = await ref
-          .read(imageUploadRepositoryProvider)
-          .uploadUserProfilePhoto(uid: uid, index: index, image: image);
-      await _persistUploadedPhoto(
-        userProfileRepository: ref.read(userProfileRepositoryProvider),
+      final imageUploadRepository = ref.read(imageUploadRepositoryProvider);
+      final upload = await imageUploadRepository.uploadUserProfilePhoto(
         uid: uid,
         index: index,
-        upload: upload,
-        prompt: prompt,
+        image: image,
+        cancellationToken: cancellationToken,
+        onProgress: (progress) => _handleProgress(
+          index,
+          cancellationToken: cancellationToken,
+          progress: progress,
+        ),
       );
+      _updateJob(index, stage: ImageUploadJobStage.attaching, progress: 1);
+      try {
+        await _persistUploadedPhoto(
+          userProfileRepository: ref.read(userProfileRepositoryProvider),
+          uid: uid,
+          index: index,
+          upload: upload,
+          prompt: prompt,
+        );
+      } catch (_) {
+        await imageUploadRepository.deleteByPath(upload.storagePath);
+        rethrow;
+      }
 
       if (!ref.mounted) return;
       _finishUploading(index);
     } catch (e, st) {
       if (!ref.mounted) return;
-      _failUploading(index, e, st);
+      if (cancellationToken.isCancellationRequested) {
+        _updateJob(index, stage: ImageUploadJobStage.cancelled, progress: 0);
+      } else {
+        _failUploading(index, e, st);
+      }
+      rethrow;
+    } finally {
+      if (identical(_cancellationTokens[index], cancellationToken)) {
+        _cancellationTokens.remove(index);
+      }
     }
+  }
+
+  Future<void> cancelUpload(int index) async {
+    final cancellationToken = _cancellationTokens[index];
+    if (cancellationToken == null) return;
+    await cancellationToken.cancel();
+    if (!ref.mounted) return;
+    _updateJob(index, stage: ImageUploadJobStage.cancelled, progress: 0);
   }
 
   Future<void> deletePhoto(int index) {
@@ -210,18 +277,32 @@ class PhotoUploadController extends _$PhotoUploadController {
     }
   }
 
-  void _markUploading(int index) {
-    state = (
-      loadingIndices: {...state.loadingIndices, index},
-      uploadError: null,
+  void _handleProgress(
+    int index, {
+    required ImageUploadCancellationToken cancellationToken,
+    required ImageUploadProgress progress,
+  }) {
+    if (!ref.mounted ||
+        !identical(_cancellationTokens[index], cancellationToken)) {
+      return;
+    }
+    _updateJob(index, stage: progress.stage, progress: progress.fraction);
+  }
+
+  void _updateJob(
+    int index, {
+    required ImageUploadJobStage stage,
+    required double progress,
+    Object? error,
+  }) {
+    state = state.withJob(
+      index,
+      ImageUploadJobState(stage: stage, progress: progress, error: error),
     );
   }
 
   void _finishUploading(int index) {
-    state = (
-      loadingIndices: state.loadingIndices.difference({index}),
-      uploadError: null,
-    );
+    _updateJob(index, stage: ImageUploadJobStage.complete, progress: 1);
   }
 
   void _failUploading(int index, Object error, [StackTrace? st]) {
@@ -238,9 +319,11 @@ class PhotoUploadController extends _$PhotoUploadController {
             ),
           ),
         );
-    state = (
-      loadingIndices: state.loadingIndices.difference({index}),
-      uploadError: error,
+    _updateJob(
+      index,
+      stage: ImageUploadJobStage.failed,
+      progress: 0,
+      error: error,
     );
   }
 

@@ -575,6 +575,25 @@ abstract final class CatchInsets {
   /// Form-step padding with more bottom space for final/action-heavy steps.
   static const EdgeInsets formStepBodyRelaxed = pageBodyRelaxed;
 
+  /// Scroll padding for form steps rendered beneath dockless pinned actions.
+  /// The final field can clear the 56-point control row and its breathing room
+  /// while ordinary content remains visible behind the action scrim.
+  static const EdgeInsets formStepBodyWithBottomActions = EdgeInsets.fromLTRB(
+    CatchSpacing.screenPx,
+    CatchSpacing.screenPt,
+    CatchSpacing.screenPx,
+    CatchSpacing.s16 + CatchSpacing.s8,
+  );
+
+  /// Relaxed scroll-end variant for final/action-heavy overlaid form steps.
+  static const EdgeInsets formStepBodyRelaxedWithBottomActions =
+      EdgeInsets.fromLTRB(
+        CatchSpacing.screenPx,
+        CatchSpacing.screenPt,
+        CatchSpacing.screenPx,
+        CatchSpacing.s16 + CatchSpacing.s12,
+      );
+
   /// Long-form edit body padding under a top app bar.
   static const EdgeInsets formEditBodyRelaxed = EdgeInsets.fromLTRB(
     CatchSpacing.screenPx,
@@ -782,6 +801,12 @@ abstract final class CatchInsets {
   static const EdgeInsets compactLabelContent = EdgeInsets.symmetric(
     horizontal: CatchSpacing.s3,
     vertical: CatchSpacing.micro6,
+  );
+
+  /// Tight role-badge padding over compact image thumbnails.
+  static const EdgeInsets mediaRoleBadgeContent = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.micro6,
+    vertical: CatchSpacing.micro3,
   );
 
   /// Balanced small-card/control padding.
@@ -1416,7 +1441,8 @@ abstract final class CatchOpacity {
   static const double profileShadowDark = 0.34;
   static const double profileShadowLight = 0.10;
 
-  /// Bottom scrim stop for overlaid actions on full-bleed media.
+  /// Midpoint stop for bottom action scrims over scrolling page content or
+  /// full-bleed media.
   static const double bottomActionScrim = 0.82;
 
   /// Hover overlay for buttons and tappable controls.
@@ -2116,6 +2142,7 @@ abstract final class CatchLayout {
   static const double celebrationPaperActionTopGap = CatchSpacing.s6;
   static const double celebrationDetailLabelWidth = 78.0;
   static const double bottomActionScrimHeight = 128.0;
+  static const double bottomActionOverlayScrimHeight = 160.0;
   static const double floatingControlExtent = 48.0;
   static const double selectionBadgeRadius = 14.0;
   static const double badgeMdVerticalPadding =
@@ -2168,14 +2195,18 @@ abstract final class CatchLayout {
   static const double toggleTrackHeight = 28.0;
   static const double toggleKnobExtent = 22.0;
   static const double toggleTrackPadding = CatchSpacing.micro3;
-  static const double menuRowVerticalPadding = 13.0;
-  static const double menuRowGap = 10.0;
-  static const double menuRowIconSize = 17.0;
+  static const double menuRowMinHeight = 56.0;
+  static const double menuRowVerticalPadding = 10.0;
+  static const double menuRowGap = 12.0;
+  static const double menuRowIconSize = 20.0;
   static const double menuRowCheckSize = 16.0;
-  static const double menuRowSublabelSize = 8.5;
+  static const double menuViewportInset = CatchSpacing.s4;
   static const double activityChipIconSize = 15.0;
   static const double activityChipIconGap = 7.0;
   static const double buttonLgHeight = CatchSpacing.s12 + CatchSpacing.s2;
+  static const double bottomActionHorizontalPadding = CatchSpacing.screenPx;
+  static const double bottomActionMinimumBottomPadding = CatchSpacing.micro18;
+  static const double bottomActionBlurSigma = 10.0;
   static const double controlCompactMinHeight =
       CatchSpacing.s12 + CatchSpacing.s1;
   static const double controlMdMinHeight = CatchSpacing.s12 + CatchSpacing.s2;
@@ -2253,10 +2284,29 @@ abstract final class CatchLayout {
   static const double browseHeaderSearchExtent = 52.0;
   static const double horizontalRailHeight = 92.0;
   static const double horizontalRailDividerHeight = CatchSpacing.s6;
-  static const double actionMenuWidth = 192.0;
+  static const int actionMenuMaxItems = 5;
+  static const double actionMenuWidth = 280.0;
   static const double actionMenuContentWidth =
       actionMenuWidth - CatchSpacing.s16;
-  static const double actionMenuAlignmentX = -160.0;
+  static const double selectionMenuWidth = 360.0;
+
+  static double menuWidthFor({
+    required double preferredWidth,
+    required double viewportWidth,
+  }) => math.min(
+    preferredWidth,
+    math.max(0, viewportWidth - (menuViewportInset * 2)),
+  );
+
+  static double menuMaxHeightFor(double viewportHeight) {
+    final totalInset = menuViewportInset * 2;
+    return viewportHeight > totalInset
+        ? viewportHeight - totalInset
+        : double.infinity;
+  }
+
+  static double actionMenuAlignmentXFor(double menuWidth) =>
+      -(menuWidth - iconButtonSize);
   static const double avatarStatusDotExtent = 9.0;
   static const double eventHeroBackdropIconSize = 220.0;
   static const double eventCardBackdropIconSize =
@@ -2419,6 +2469,8 @@ abstract final class CatchLayout {
   static const double startupLogoExtent = 96.0;
   static const double startupIndicatorExtent = CatchSpacing.s7;
   static const double startupIndicatorOffsetY = 76.0;
+  static const double stepHeaderTopBarHeight = 80.0;
+  static const double stepHeaderCounterTopPadding = CatchSpacing.s2;
   static const double stepHeaderProgressHeight = 2.0;
   static const double statusBarTopPadding = CatchSpacing.micro14;
   static const double statusBarHorizontalPadding = CatchSpacing.s7;
@@ -2713,6 +2765,11 @@ abstract final class CatchAspectRatio {
   static const double activityCard = 16 / 10;
   static const double roomMap = activityCard;
   static const double standardPhoto = 4 / 3;
+  // Organizer media roles intentionally point at shared ratios so a future
+  // client-display policy change is a one-line edit per role.
+  static const double organizerLogo = square;
+  static const double organizerCover = wide16x9;
+  static const double organizerGallery = standardPhoto;
   static const double portrait4x5 = 4 / 5;
   static const double portrait3x4 = 3 / 4;
   static const double organizerPoster = portrait3x4;

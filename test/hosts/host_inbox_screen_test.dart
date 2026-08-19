@@ -2,7 +2,9 @@
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
+import 'package:catch_dating_app/clubs/data/club_posts_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/communications/domain/communication_route.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
@@ -82,7 +84,10 @@ void main() {
     );
     expect(find.text('Message 1 booked attendee'), findsOneWidget);
     expect(find.text('Asha Guest'), findsOneWidget);
-    expect(find.text('Booked · Can you help?'), findsOneWidget);
+    expect(
+      find.text('Catch chat · Organizer · Booked · Can you help?'),
+      findsOneWidget,
+    );
     expect(find.text('Mira Guest'), findsNothing);
 
     await tester.tap(find.text('PROSPECTIVE · 1'));
@@ -90,7 +95,10 @@ void main() {
 
     expect(find.text('Message 1 prospective attendee'), findsOneWidget);
     expect(find.text('Mira Guest'), findsOneWidget);
-    expect(find.text('Requested · Can you help?'), findsOneWidget);
+    expect(
+      find.text('Catch chat · Organizer · Requested · Can you help?'),
+      findsOneWidget,
+    );
     expect(find.text('Asha Guest'), findsNothing);
   });
 
@@ -160,7 +168,7 @@ void main() {
 
     expect(find.text('Event Guest'), findsOneWidget);
     expect(find.text('Where is the entrance?'), findsOneWidget);
-    expect(find.text('WhatsApp'), findsOneWidget);
+    expect(find.text('WhatsApp Business · Organizer number'), findsOneWidget);
     expect(find.text('General Guest'), findsNothing);
 
     await tester.tap(find.bySemanticsLabel(RegExp('Inbox scope')));
@@ -197,7 +205,10 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.text('Asha Guest'), findsOneWidget);
-    expect(find.text('General inquiry · Can you help?'), findsOneWidget);
+    expect(
+      find.text('Catch chat · Organizer · General inquiry · Can you help?'),
+      findsOneWidget,
+    );
     expect(find.text('Chat not found'), findsNothing);
   });
 
@@ -223,11 +234,31 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.text('Messaging'), findsOneWidget);
-    expect(find.text('New message'), findsOneWidget);
-    expect(find.text('WhatsApp settings'), findsOneWidget);
+    expect(find.text('Choose channel'), findsOneWidget);
+    expect(find.text('WhatsApp Business settings'), findsOneWidget);
     expect(find.byType(HostCampaignComposer), findsNothing);
 
-    await tester.tap(find.text('New message'));
+    await tester.tap(find.text('Choose channel'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('IN CATCH'), findsOneWidget);
+    expect(find.text('WHATSAPP'), findsOneWidget);
+    expect(find.text('Catch chat · Organizer'), findsOneWidget);
+    expect(find.text('Catch announcement · Organizer'), findsOneWidget);
+    expect(find.text('WhatsApp Business · Organizer number'), findsOneWidget);
+    expect(find.text('WhatsApp app · You'), findsOneWidget);
+    expect(find.text('Follower update · Organizer'), findsOneWidget);
+    expect(find.text('Catch WhatsApp · Catch number'), findsOneWidget);
+    for (final routeId in CommunicationRouteId.values) {
+      expect(
+        find.byKey(ValueKey('host-route-${routeId.name}')),
+        findsOneWidget,
+        reason: '${routeId.name} must remain represented in the route picker',
+      );
+    }
+    expect(find.byType(HostCampaignComposer), findsNothing);
+
+    await tester.tap(find.text('WhatsApp Business · Organizer number'));
     await pumpFeatureUi(tester);
 
     expect(find.byType(HostCampaignComposer), findsOneWidget);
@@ -236,7 +267,39 @@ void main() {
     expect(find.byType(HostInboxAudienceRail), findsNothing);
   });
 
-  testWidgets('Sends history renders Campaign and Announcement rows', (
+  testWidgets('Follower update route opens its route-specific composer', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _app(
+        event: null,
+        previews: const [],
+        participations: const [],
+        now: now,
+        remainingFollowerQuota: 2,
+      ),
+    );
+    await pumpFeatureUi(tester);
+
+    await tester.tap(find.text('Sends'));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Choose channel'));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Follower update · Organizer'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Post to followers'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('host-follower-update-text')),
+      findsOneWidget,
+    );
+    expect(
+      find.textContaining('Followers in Catch · Home and Activity'),
+      findsWidgets,
+    );
+  });
+
+  testWidgets('Sends history renders every server-managed send route', (
     tester,
   ) async {
     final event = event_test.buildEvent(
@@ -267,6 +330,22 @@ void main() {
         dispatchedAt: now.subtract(const Duration(days: 1)),
         activityAt: now.subtract(const Duration(days: 1)),
       ),
+      HostFollowerUpdateSendSummary(
+        postId: 'post-1',
+        eventId: null,
+        audience: 'followers',
+        status: 'active',
+        deliveryStatus: 'completed',
+        recipientCount: 20,
+        excludedCount: 1,
+        activityAvailableCount: 19,
+        pushAttemptedCount: 15,
+        pushAcceptedCount: 15,
+        pushFailedCount: 0,
+        pushUnknownCount: 0,
+        createdAt: now.subtract(const Duration(hours: 12)),
+        activityAt: now.subtract(const Duration(hours: 12)),
+      ),
     ];
 
     await tester.pumpWidget(
@@ -285,8 +364,16 @@ void main() {
 
     expect(find.text('Doors open update'), findsOneWidget);
     expect(find.text('Bring regulars back'), findsOneWidget);
-    expect(find.textContaining('Announcement'), findsOneWidget);
-    expect(find.textContaining('Campaign'), findsOneWidget);
+    expect(find.text('Follower update · Organizer'), findsOneWidget);
+    expect(find.text('Available in Catch'), findsOneWidget);
+    expect(
+      find.textContaining('Catch announcement · Organizer'),
+      findsOneWidget,
+    );
+    expect(
+      find.textContaining('WhatsApp Business · Organizer number'),
+      findsOneWidget,
+    );
     expect(
       tester.getTopLeft(find.text('Doors open update')).dy,
       lessThan(tester.getTopLeft(find.text('Bring regulars back')).dy),
@@ -355,7 +442,10 @@ void main() {
 
     expect(find.text('GENERAL INQUIRIES'), findsOneWidget);
     expect(find.text('General Guest'), findsOneWidget);
-    expect(find.text('General inquiry · Can you help?'), findsOneWidget);
+    expect(
+      find.text('Catch chat · Organizer · General inquiry · Can you help?'),
+      findsOneWidget,
+    );
     expect(find.text('Event Guest'), findsNothing);
     expect(find.textContaining('Message '), findsNothing);
     expect(find.textContaining('Booked ·'), findsNothing);
@@ -438,6 +528,7 @@ Widget _app({
   List<HostSendSummary> sends = const [],
   List<HostWhatsappThreadSummary> whatsappThreads = const [],
   AsyncValue<HostWhatsappThreadPage>? whatsappThreadsValue,
+  int remainingFollowerQuota = 3,
 }) {
   final club = club_test.buildClub(id: event?.clubId ?? 'club-1');
   final inbox = ChatsListViewModel(
@@ -464,6 +555,9 @@ Widget _app({
           HostSendsPage(organizerId: club.id, sends: sends, nextCursor: null),
         ),
       ),
+      watchClubPostRemainingWeeklyQuotaProvider(
+        club.id,
+      ).overrideWith((ref) => Stream.value(remainingFollowerQuota)),
       hostWhatsappThreadsProvider(club.id).overrideWithValue(
         whatsappThreadsValue ??
             AsyncData(

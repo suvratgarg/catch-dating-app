@@ -67,6 +67,20 @@ export {
   submitEventRuntimeProfile,
 } from "./eventSuccess/eventRuntime";
 export {
+  completeEventRehearsal,
+  controlEventRehearsal,
+  createEventRehearsal,
+  expireEventRehearsals,
+  exportEventRehearsalReproduction,
+  getEventRehearsalBootstrap,
+  getEventRehearsalGuestBootstrap,
+  injectEventRehearsalBehavior,
+  resetEventRehearsal,
+  rotateEventRehearsalGuestLink,
+  submitEventRehearsalGuestAction,
+  updateEventRehearsalSetup,
+} from "./eventRehearsal/handlers";
+export {
   onEventParticipationRosterProjected,
 } from "./events/eventAttendeeProjection";
 export {selfCheckInAttendance} from "./events/selfCheckInAttendance";
@@ -131,6 +145,8 @@ export {
   transferOrganizerOwnership,
 } from "./organizers/manageOrganizerTeam";
 export {createOrganizerPost} from "./organizers/organizerPosts";
+export {dispatchPendingOrganizerFollowerUpdates} from
+  "./organizers/organizerPostDelivery";
 export {getOrganizerCrmSummary} from "./organizers/organizerCrm";
 export {getEventRosterInsights} from "./organizers/eventRosterInsights";
 export {
@@ -344,6 +360,10 @@ export {
 export {
   generateOrganizerLogoThumbnail,
 } from "./organizers/generateOrganizerLogoThumbnail";
+export {
+  generateEventMediaThumbnails,
+  generateOrganizerMediaThumbnails,
+} from "./media/generateAttachedMediaThumbnails";
 export {joinWaitlist} from "./waitlist/joinWaitlist";
 export {blockUser, unblockUser, onBlockCreated} from "./safety/blocking";
 export {requestAccountDeletion} from "./safety/accountDeletion";

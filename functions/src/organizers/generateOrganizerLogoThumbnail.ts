@@ -11,6 +11,7 @@ const JPEG_QUALITY = 72;
 interface OrganizerLogoPath {
   organizerId: string;
   fileName: string;
+  mediaId?: string;
 }
 
 /**
@@ -77,6 +78,18 @@ export const generateOrganizerLogoThumbnail = onObjectFinalized(
 function parseOrganizerLogoPath(filePath: string): OrganizerLogoPath | null {
   const parts = filePath.split("/");
   if (
+    parts.length === 5 &&
+    parts[0] === "organizers" &&
+    parts[2] === "logo" &&
+    /^original\.[A-Za-z0-9]+$/.test(parts[4])
+  ) {
+    return {
+      organizerId: parts[1],
+      mediaId: parts[3],
+      fileName: parts[4],
+    };
+  }
+  if (
     parts.length !== 4 ||
     parts[0] !== "organizers" ||
     parts[2] !== "logo"
@@ -92,6 +105,10 @@ function parseOrganizerLogoPath(filePath: string): OrganizerLogoPath | null {
  * @return {string} The generated thumbnail object path.
  */
 function thumbnailPathFor(photo: OrganizerLogoPath): string {
+  if (photo.mediaId) {
+    return `organizers/${photo.organizerId}/logo/${photo.mediaId}/` +
+      "thumbnail.jpg";
+  }
   const sourceName = photo.fileName.replace(/\.[^.]+$/, "");
   return `organizers/${photo.organizerId}/logoThumbnails/${sourceName}.jpg`;
 }

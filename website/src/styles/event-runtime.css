@@ -47,6 +47,18 @@
   white-space: nowrap;
 }
 
+.event-runtime__practice-banner {
+  background: color-mix(in srgb, var(--runtime-coral) 16%, white);
+  border: 1px solid color-mix(in srgb, var(--runtime-coral) 42%, white);
+  border-radius: var(--catch-radius-md);
+  color: var(--runtime-ink);
+  font-weight: 700;
+  margin: 0 auto var(--catch-space-4);
+  max-width: 920px;
+  padding: var(--catch-space-s3) var(--catch-space-s4);
+  text-align: center;
+}
+
 .event-runtime__panel {
   background: var(--runtime-paper);
   border: 1px solid #ded9d0;
@@ -416,6 +428,34 @@
 .event-runtime__module h2 {
   font-size: 1.4rem;
   letter-spacing: -.035em;
+}
+
+.event-runtime__action-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--catch-space-s3);
+  margin-top: var(--catch-space-s4);
+}
+
+.event-runtime__notice-stack {
+  display: grid;
+  gap: var(--catch-space-s2);
+}
+
+.event-runtime__notice-stack p {
+  background: color-mix(in srgb, var(--runtime-paper) 88%, transparent);
+  border: 1px solid #ded9d0;
+  border-radius: var(--catch-radius-md);
+  margin: 0;
+  padding: var(--catch-space-s3) var(--catch-space-s4);
+}
+
+.event-runtime__live[data-reduced-motion="true"] *,
+.event-runtime__live[data-reduced-motion="true"] *::before,
+.event-runtime__live[data-reduced-motion="true"] *::after {
+  animation-duration: 1ms !important;
+  scroll-behavior: auto !important;
+  transition-duration: 1ms !important;
 }
 
 .event-runtime__module--coral > p {

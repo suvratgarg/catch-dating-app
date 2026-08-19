@@ -4,6 +4,8 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/forms/catch_form_descriptors.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
+    show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -13,9 +15,11 @@ import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/design_fixtures/profile_surface_fixtures.dart';
+import 'package:catch_dating_app/image_uploads/domain/image_upload_job.dart';
+import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
-import 'package:catch_dating_app/design_fixtures/profile_surface_fixtures.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -27,8 +31,6 @@ import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/user_analytics/data/user_analytics_repository.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
-    show UpdateUserProfilePatch;
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_edit_tab_state.dart';
@@ -52,6 +54,10 @@ final _incompleteViewer = ProfileSurfaceFixtures.incompleteViewer;
 final _longContentViewer = ProfileSurfaceFixtures.longContentViewer;
 final _targetProfile = ProfileSurfaceFixtures.targetPublicProfile;
 final _ownProfile = ProfileSurfaceFixtures.ownPublicProfile;
+const _idlePhotoUploadState = PhotoUploadState();
+const _secondPhotoUploadingState = PhotoUploadState(
+  jobs: {1: ImageUploadJobState(stage: ImageUploadJobStage.uploading)},
+);
 
 @widgetbook.UseCase(
   name: 'Self route states',
@@ -144,7 +150,7 @@ Widget profileScreenSelfRouteStates(BuildContext context) {
   path: '[P1 product surfaces]/Profiles/Sections',
 )
 Widget profileScreenSelfTabBodyStates(BuildContext context) {
-  final idleUploadState = (loadingIndices: <int>{}, uploadError: null);
+  const idleUploadState = _idlePhotoUploadState;
 
   return _ProfileCatalog(
     title: 'SelfProfileTabBody',
@@ -258,10 +264,7 @@ Widget profileScreenSelfSectionStates(BuildContext context) {
         label: 'edit tab complete profile',
         child: _SectionFrame(
           height: WidgetbookPreviewLayout.profileExpandedPreviewHeight,
-          child: ProfileTab(
-            user: _viewer,
-            uploadState: (loadingIndices: <int>{}, uploadError: null),
-          ),
+          child: ProfileTab(user: _viewer, uploadState: _idlePhotoUploadState),
         ),
       ),
       _StateCard(
@@ -270,7 +273,7 @@ Widget profileScreenSelfSectionStates(BuildContext context) {
           height: WidgetbookPreviewLayout.profilePhonePreviewHeight,
           child: ProfileTab(
             user: _incompleteViewer,
-            uploadState: (loadingIndices: <int>{}, uploadError: null),
+            uploadState: _idlePhotoUploadState,
           ),
         ),
       ),
@@ -311,7 +314,7 @@ Widget profileScreenSelfSectionStates(BuildContext context) {
             textScaler: const TextScaler.linear(1.45),
             child: ProfileTab(
               user: _longContentViewer,
-              uploadState: (loadingIndices: <int>{}, uploadError: null),
+              uploadState: _idlePhotoUploadState,
             ),
           ),
         ),
@@ -439,10 +442,7 @@ Widget profileTabStates(BuildContext context) {
         label: 'complete profile',
         child: _SectionFrame(
           height: WidgetbookPreviewLayout.profileExpandedPreviewHeight,
-          child: ProfileTab(
-            user: _viewer,
-            uploadState: (loadingIndices: <int>{}, uploadError: null),
-          ),
+          child: ProfileTab(user: _viewer, uploadState: _idlePhotoUploadState),
         ),
       ),
     ],
@@ -465,7 +465,7 @@ Widget profileTabContentStates(BuildContext context) {
           height: WidgetbookPreviewLayout.profileExpandedPreviewHeight,
           child: ProfileTabContent(
             user: _viewer,
-            uploadState: (loadingIndices: <int>{}, uploadError: null),
+            uploadState: _idlePhotoUploadState,
             builder: (context, children) => ListView(
               padding: CatchInsets.formEditBodyRelaxed,
               children: children,
@@ -485,11 +485,11 @@ Widget profileTabContentStates(BuildContext context) {
 Widget profilePhotosSectionStates(BuildContext context) {
   final completeState = SelfProfilePhotoGridState.fromProfile(
     user: _viewer,
-    uploadState: (loadingIndices: <int>{}, uploadError: null),
+    uploadState: _idlePhotoUploadState,
   );
   final loadingState = SelfProfilePhotoGridState.fromProfile(
     user: _incompleteViewer,
-    uploadState: (loadingIndices: <int>{1}, uploadError: null),
+    uploadState: _secondPhotoUploadingState,
   );
 
   return _ProfileCatalog(
@@ -542,7 +542,7 @@ Widget profileFieldRowStates(BuildContext context) {
     l10n: context.l10n,
     user: _viewer,
     today: ProfileSurfaceFixtures.now,
-    uploadState: (loadingIndices: <int>{}, uploadError: null),
+    uploadState: _idlePhotoUploadState,
   );
   final rows = [
     ...editState.runningRows.take(3),
@@ -791,7 +791,7 @@ Widget profilePromptEntryStates(BuildContext context) {
     l10n: context.l10n,
     user: _viewer,
     today: ProfileSurfaceFixtures.now,
-    uploadState: (loadingIndices: <int>{}, uploadError: null),
+    uploadState: _idlePhotoUploadState,
   );
   final slot = editState.promptSlots.first;
 
@@ -849,7 +849,7 @@ Widget profileTabSliverBodyStates(BuildContext context) {
             slivers: [
               ProfileTabSliverBody(
                 user: _viewer,
-                uploadState: (loadingIndices: <int>{}, uploadError: null),
+                uploadState: _idlePhotoUploadState,
               ),
             ],
           ),
@@ -2004,10 +2004,9 @@ class _SelfProfileRouteScope extends StatelessWidget {
         userProfileRepositoryProvider.overrideWithValue(
           ProfileFixtureUserProfileRepository(profile: _viewer),
         ),
-        photoUploadControllerProvider.overrideWithValue((
-          loadingIndices: uploadLoadingIndices,
-          uploadError: null,
-        )),
+        photoUploadControllerProvider.overrideWithValue(
+          PhotoUploadState.fromLegacy(loadingIndices: uploadLoadingIndices),
+        ),
         userAnalyticsRepositoryProvider.overrideWithValue(
           ProfileFixtureUserAnalyticsRepository(
             report: ProfileSurfaceFixtures.analyticsReport,

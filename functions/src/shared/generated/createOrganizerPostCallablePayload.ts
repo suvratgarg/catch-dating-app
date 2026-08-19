@@ -7,6 +7,7 @@
  */
 export interface CreateOrganizerPostCallablePayload {
   organizerId: string;
+  requestId: string;
   text: string;
   photoPath?: string;
   eventId?: string;

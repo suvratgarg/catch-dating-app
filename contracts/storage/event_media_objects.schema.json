@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/storage/event_media_objects.schema.json",
+  "title": "EventMediaObjectsStoragePath",
+  "description": "Stable event gallery media stored at events/{eventId}/media/{mediaId}/{fileName}; gallery order lives in Firestore rather than object names.",
+  "type": "object",
+  "x-storage-rules-match": "match /events/{eventId}/media/{mediaId}/{fileName}",
+  "x-storage-read": "public for original and thumbnail objects",
+  "x-storage-write": "event organizer owner or manager may create/delete original images; updates denied; thumbnails server only",
+  "x-storage-content-type-pattern": "image/.*",
+  "x-storage-file-name-pattern": "(original\\.(jpg|jpeg|png)|thumbnail\\.jpg)",
+  "x-storage-max-bytes": 8388608,
+  "x-storage-rules-test-file": "functions/test/storage.rules.test.cjs",
+  "x-storage-related-collection": "events",
+  "x-storage-known-consumers": [
+    "lib/image_uploads/data/image_upload_repository.dart",
+    "functions/src/media/generateAttachedMediaThumbnails.ts"
+  ],
+  "properties": {
+    "eventId": {"type": "string", "description": "Event document id; path segment."},
+    "mediaId": {"type": "string", "pattern": "^[A-Za-z0-9_-]{16,64}$", "description": "Stable random media identity independent of gallery position."},
+    "fileName": {"type": "string", "enum": ["original.jpg", "original.jpeg", "original.png", "thumbnail.jpg"]}
+  }
+}

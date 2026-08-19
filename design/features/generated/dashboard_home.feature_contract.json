@@ -2,15 +2,15 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/dashboard_home.feature.json",
-  "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:8af31ee2a3f9950bf5a05bd9af9c74827a3cc0e5035e0f5aef245b5330cc401c",
+  "generatedFor": "2026-08-18",
+  "sourceDigest": "sha256:a9954cec774351d9b6eb0f00a859220416cef6af021079ebbc3a06b3833faa2a",
   "resolvedDigest": "sha256:916cea074d1a0c6d6d145dc2f9803cffaac6d62500ae584da0957e9f68fa54ab",
   "feature": {
     "id": "feature.dashboard_home",
     "name": "Dashboard Home",
     "owner": "dashboard",
     "status": "pilot",
-    "description": "Orchestrates the signed-in consumer home across initial loading and recovery, empty discovery, event focus, check-in, Catch-window and review entry, notification routing, and registered enrichment variants."
+    "description": "Orchestrates the signed-in consumer home across initial loading and recovery, empty discovery, event focus, check-in, Catch-window and review entry, organizer follower updates, notification routing, and registered enrichment variants."
   },
   "coverage": {
     "surfaces": 1,
@@ -32,7 +32,7 @@
         "id": "screen.dashboard.home"
       },
       "actionScope": {
-        "included": "Dashboard route recovery, header navigation, empty-state discovery, event-focus actions, club-post routing, and self-check-in recovery.",
+        "included": "Dashboard route recovery, header navigation, empty-state discovery, event-focus actions, legacy club and organizer follower-post routing, and self-check-in recovery.",
         "excluded": [
           "Notification-list mutations, Event Detail booking, Catch deck decisions, review submission, calendar persistence, companion internals, and recommendation ranking retain their owning feature contracts or controllers."
         ]
@@ -76,6 +76,7 @@
           "contracts/firestore/activity_notifications.schema.json",
           "contracts/firestore/club_memberships.schema.json",
           "contracts/firestore/club_posts.schema.json",
+          "contracts/firestore/organizer_posts.schema.json",
           "contracts/firestore/event_participations.schema.json",
           "contracts/firestore/events.schema.json",
           "contracts/firestore/reviews.schema.json",
@@ -241,6 +242,7 @@
           "scopeKeys": [
             "viewerUid",
             "notificationId",
+            "organizerId",
             "notificationVersion"
           ],
           "outcomes": [
@@ -249,7 +251,7 @@
               "id": "dashboard.club_post_opened_and_marked_read"
             }
           ],
-          "description": "Marks the selected club-post notification read and follows its typed destination when one exists.",
+          "description": "Marks the selected legacy club or organizer follower-post notification read and routes through organizerId with clubId fallback, including an optional linked event.",
           "implementationStatus": "implemented"
         },
         {

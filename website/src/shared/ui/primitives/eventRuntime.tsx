@@ -94,17 +94,35 @@ export function EventRuntimeLive({
   activityId,
   background,
   children,
+  reducedMotion = false,
 }: {
   activityId?: string | null;
   background?: ReactNode;
   children: ReactNode;
+  reducedMotion?: boolean;
 }) {
   return (
-    <main className="event-runtime__live" data-activity={activityId ?? undefined}>
+    <main
+      className="event-runtime__live"
+      data-activity={activityId ?? undefined}
+      data-reduced-motion={reducedMotion || undefined}
+    >
       {background}
       <div className="event-runtime__live-content">{children}</div>
     </main>
   );
+}
+
+export function EventRuntimePracticeBanner({children}: {children: ReactNode}) {
+  return <aside className="event-runtime__practice-banner">{children}</aside>;
+}
+
+export function EventRuntimeActionGrid({children}: {children: ReactNode}) {
+  return <div className="event-runtime__action-grid">{children}</div>;
+}
+
+export function EventRuntimeNoticeStack({children}: {children: ReactNode}) {
+  return <div className="event-runtime__notice-stack">{children}</div>;
 }
 
 export function EventRuntimeLiveHeader({

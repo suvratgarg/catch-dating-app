@@ -27,4 +27,24 @@ void main() {
       expect(notificationRoute(accepted), '/chats/plan-1');
     },
   );
+
+  test('organizer updates route with their organizer identity', () {
+    final update = ActivityNotification(
+      id: 'notification-2',
+      uid: 'runner-2',
+      type: ActivityNotificationType.organizerUpdate,
+      title: 'Organizer update',
+      body: 'Meet at the west gate.',
+      createdAt: DateTime.utc(2026, 8, 18),
+      organizerId: 'organizer-1',
+      postId: 'post-1',
+    );
+    final eventUpdate = update.copyWith(eventId: 'event-1');
+
+    expect(notificationRoute(update), '/organizers/organizer-1');
+    expect(
+      notificationRoute(eventUpdate),
+      '/organizers/organizer-1/events/event-1',
+    );
+  });
 }

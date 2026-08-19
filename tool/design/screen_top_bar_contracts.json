@@ -110,6 +110,22 @@
       "owner": "CatchTopBar"
     },
     {
+      "path": "lib/event_rehearsal/presentation/host_event_rehearsal_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
+      "leading": "back"
+    },
+    {
+      "path": "lib/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
+      "leading": "back"
+    },
+    {
       "path": "lib/events/presentation/calendar/calendar_screen.dart",
       "role": "screen",
       "expression": "CatchScreenTopBar",
@@ -234,9 +250,9 @@
     },
     {
       "path": "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
-      "role": "compact",
-      "expression": "CatchTopBar",
-      "owner": "CatchTopBar",
+      "role": "screen",
+      "expression": "CatchScreenTopBar",
+      "owner": "CatchScreenTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },

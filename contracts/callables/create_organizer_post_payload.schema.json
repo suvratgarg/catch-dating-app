@@ -7,10 +7,14 @@
   "additionalProperties": false,
   "required": [
     "organizerId",
+    "requestId",
     "text"
   ],
   "properties": {
     "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "requestId": {
       "$ref": "../shared/event_common.schema.json#/definitions/documentId"
     },
     "text": {

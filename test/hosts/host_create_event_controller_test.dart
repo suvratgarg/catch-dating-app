@@ -9,6 +9,8 @@ import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
+import 'package:catch_dating_app/image_uploads/domain/image_upload_job.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
@@ -34,6 +36,9 @@ class FakeRunImageUploadRepository extends Fake
     required String eventId,
     required int position,
     required XFile image,
+    String? mediaId,
+    ValueChanged<ImageUploadProgress>? onProgress,
+    ImageUploadCancellationToken? cancellationToken,
   }) async {
     if (failOnPosition == position) {
       throw Exception('upload failed at $position');
@@ -43,9 +48,10 @@ class FakeRunImageUploadRepository extends Fake
     uploadedImage = image;
     uploadedPositions.add(position);
     uploadedImages.add(image);
+    final resolvedMediaId = mediaId ?? 'event-media-${position}_0000';
     return UploadedImage(
       url: uploadResult,
-      storagePath: _storagePathFor(eventId, position),
+      storagePath: _storagePathFor(eventId, resolvedMediaId),
     );
   }
 
@@ -54,11 +60,13 @@ class FakeRunImageUploadRepository extends Fake
     deletedPaths.add(storagePath);
   }
 
-  String _storagePathFor(String eventId, int position) =>
-      'events/$eventId/photos/${position}_123.jpg';
+  String _storagePathFor(String eventId, String mediaId) =>
+      'events/$eventId/media/$mediaId/original.jpg';
 
-  String get uploadedStoragePath =>
-      _storagePathFor(uploadedEventId ?? 'generated-7', uploadedPosition ?? 0);
+  String get uploadedStoragePath => _storagePathFor(
+    uploadedEventId ?? 'generated-7',
+    'event-media-${uploadedPosition ?? 0}_0000',
+  );
 }
 
 void main() {
@@ -152,7 +160,7 @@ void main() {
         expect(updatedEvent.eventPhotos, hasLength(1));
         expect(
           updatedEvent.eventPhotos.single.storagePath,
-          'events/generated-7/photos/0_123.jpg',
+          'events/generated-7/media/event-media-0_0000/original.jpg',
         );
         expect(submittedEvent.photoUrl, fakeImageUploadRepository.uploadResult);
       },
@@ -203,8 +211,8 @@ void main() {
       expect(submittedEvent.eventPhotos, hasLength(2));
       expect(submittedEvent.eventPhotos.map((photo) => photo.position), [0, 1]);
       expect(submittedEvent.eventPhotos.map((photo) => photo.storagePath), [
-        'events/generated-9/photos/0_123.jpg',
-        'events/generated-9/photos/1_123.jpg',
+        'events/generated-9/media/event-media-0_0000/original.jpg',
+        'events/generated-9/media/event-media-1_0000/original.jpg',
       ]);
       expect(submittedEvent.photoUrl, submittedEvent.eventPhotos.first.url);
     });
@@ -256,7 +264,7 @@ void main() {
       // The first photo uploaded before the failure must be cleaned up so it
       // doesn't orphan in Storage; the event doc was never attached photos.
       expect(fakeImageUploadRepository.deletedPaths, [
-        'events/generated-9/photos/0_123.jpg',
+        'events/generated-9/media/event-media-0_0000/original.jpg',
       ]);
       expect(fakeEventRepository.updatedEvent, isNull);
     });
