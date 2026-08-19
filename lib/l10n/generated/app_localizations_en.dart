@@ -501,6 +501,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get coreOrderedPhotoPickerStatusUploading => 'Uploading…';
 
   @override
+  String coreOrderedPhotoPickerStatusUploadingProgress({required int percent}) {
+    return 'Uploading… $percent%';
+  }
+
+  @override
+  String get coreOrderedPhotoPickerStatusQueued => 'Ready to upload';
+
+  @override
   String get coreOrderedPhotoPickerStatusUploadFailed => 'Upload failed';
 
   @override
@@ -6129,6 +6137,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostClubEditTabTitleClubSettings => 'Organizer settings';
+
+  @override
+  String get hostsHostClubEditTabActionSaveMedia => 'Save media';
+
+  @override
+  String get hostsHostClubEditTabActionDiscardMedia => 'Discard';
 
   @override
   String get hostsHostClubEditTabLabelEventDefaults => 'Event defaults';

@@ -1090,6 +1090,21 @@
     "x-owner": "product",
     "x-surface": "core.widgets.ordered_photo_picker"
   },
+  "coreOrderedPhotoPickerStatusUploadingProgress": "Uploading… {percent}%",
+  "@coreOrderedPhotoPickerStatusUploadingProgress": {
+    "description": "Per-photo upload progress in the shared ordered photo picker.",
+    "placeholders": {"percent": {"type": "int"}},
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "core.widgets.ordered_photo_picker"
+  },
+  "coreOrderedPhotoPickerStatusQueued": "Ready to upload",
+  "@coreOrderedPhotoPickerStatusQueued": {
+    "description": "Status for a staged photo that will upload when the user saves.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "core.widgets.ordered_photo_picker"
+  },
   "coreOrderedPhotoPickerStatusUploadFailed": "Upload failed",
   "@coreOrderedPhotoPickerStatusUploadFailed": {
     "description": "Status shown on a Host gallery image after an upload failure.",
@@ -11383,6 +11398,20 @@
   "hostsHostClubEditTabTitleClubSettings": "Organizer settings",
   "@hostsHostClubEditTabTitleClubSettings": {
     "description": "Section heading for organizer configuration destinations.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.host_operations.host_club_edit_tab"
+  },
+  "hostsHostClubEditTabActionSaveMedia": "Save media",
+  "@hostsHostClubEditTabActionSaveMedia": {
+    "description": "Commits staged organizer gallery and logo changes.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.host_operations.host_club_edit_tab"
+  },
+  "hostsHostClubEditTabActionDiscardMedia": "Discard",
+  "@hostsHostClubEditTabActionDiscardMedia": {
+    "description": "Discards staged organizer gallery and logo changes.",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_club_edit_tab"

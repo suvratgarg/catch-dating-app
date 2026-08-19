@@ -225,22 +225,44 @@ class _RecordingHostClubEditActions implements HostClubEditActions {
   Future<HostPickedClubLogo?> pickClubLogo() async => null;
 
   @override
-  Future<void> updateClubMedia({
+  Future<HostClubMediaSaveResult> updateClubMedia({
     required Club club,
     List<HostClubMediaInput>? photoInputs,
     HostPickedClubLogo? logo,
     bool removeLogo = false,
+    ValueChanged<HostClubMediaProgress>? onProgress,
   }) async {
     mediaUpdateCalls += 1;
     removeLogoWrites.add(removeLogo);
     if (mediaFailuresRemaining > 0) {
       mediaFailuresRemaining -= 1;
-      throw StateError('media update failed');
+      final error = StateError('media update failed');
+      final newInputs =
+          photoInputs?.whereType<HostNewClubPhotoInput>().toList() ?? const [];
+      final failedId = newInputs.isEmpty ? null : newInputs.first.id;
+      return HostClubMediaSaveResult(
+        photoInputs: photoInputs,
+        logo: logo,
+        failures: {?failedId: error},
+        attached: false,
+      );
     }
     if (photoInputs != null) {
       mediaWrites.add(List<HostClubMediaInput>.of(photoInputs));
     }
+    return HostClubMediaSaveResult(
+      photoInputs: photoInputs,
+      logo: logo,
+      failures: const {},
+      attached: true,
+    );
   }
+
+  @override
+  Future<void> discardClubMedia({
+    required List<HostClubMediaInput> photoInputs,
+    HostPickedClubLogo? logo,
+  }) async {}
 }
 
 class _FakeHostProfileRepository implements HostProfileRepository {

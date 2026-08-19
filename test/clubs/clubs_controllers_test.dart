@@ -987,7 +987,10 @@ void main() {
           .updateClubMedia(
             club: club,
             photoInputs: [
-              HostNewClubPhotoInput(fakeImageUploadRepository.pickedImage!),
+              HostNewClubPhotoInput(
+                id: 'photo-one',
+                image: fakeImageUploadRepository.pickedImage!,
+              ),
             ],
           );
 
@@ -1065,15 +1068,68 @@ void main() {
             .updateClubMedia(
               club: club,
               photoInputs: [
-                HostNewClubPhotoInput(fakeImageUploadRepository.pickedImage!),
+                HostNewClubPhotoInput(
+                  id: 'photo-one',
+                  image: fakeImageUploadRepository.pickedImage!,
+                ),
               ],
             ),
         throwsStateError,
       );
 
       expect(fakeImageUploadRepository.deletedStoragePaths, [
-        'clubs/${club.id}/photos/0_test.jpg',
+        'organizers/${club.id}/media/photo-one/original.jpg',
       ]);
+    });
+
+    test('partial media retries reuse successful staged uploads', () async {
+      final club = buildClub(ownerUserId: 'host-1');
+      final fakeRepository = FakeClubsRepository();
+      final uploads = FakeImageUploadRepository()
+        ..failingClubMediaIds.add('photo-two');
+      final firstImage = XFile.fromData(Uint8List(1), name: 'one.jpg');
+      final secondImage = XFile.fromData(Uint8List(1), name: 'two.jpg');
+      final container = ProviderContainer(
+        overrides: [
+          clubsRepositoryProvider.overrideWith((ref) => fakeRepository),
+          imageUploadRepositoryProvider.overrideWith((ref) => uploads),
+          uidProvider.overrideWith((ref) => Stream.value('host-1')),
+        ],
+      );
+      addTearDown(container.dispose);
+      final uidSubscription = container.listen(
+        uidProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(uidSubscription.close);
+      await container.pump();
+
+      final firstResult = await container
+          .read(hostClubEditControllerProvider)
+          .updateClubMedia(
+            club: club,
+            photoInputs: [
+              HostNewClubPhotoInput(id: 'photo-one', image: firstImage),
+              HostNewClubPhotoInput(id: 'photo-two', image: secondImage),
+            ],
+          );
+
+      expect(firstResult.attached, isFalse);
+      expect(firstResult.failures.keys, ['photo-two']);
+      expect(fakeRepository.lastUpdatedFields, isNull);
+
+      final retryResult = await container
+          .read(hostClubEditControllerProvider)
+          .updateClubMedia(club: club, photoInputs: firstResult.photoInputs);
+
+      expect(retryResult.attached, isTrue);
+      expect(uploads.uploadedClubMediaIds, [
+        'photo-one',
+        'photo-two',
+        'photo-two',
+      ]);
+      expect(fakeRepository.lastUpdatedFields?['clubPhotos'], hasLength(2));
     });
 
     test('club media edits reject non-host users', () async {

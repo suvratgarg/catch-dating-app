@@ -42,11 +42,13 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
   late List<_HostClubMediaDraft> _mediaDrafts;
   late List<_HostClubMediaDraft> _committedMediaDrafts;
   HostPickedClubLogo? _pickedLogo;
-  Timer? _reorderDebounce;
+  bool _removeLogoOnSave = false;
+  bool _mediaDirty = false;
   bool _mediaCommitInFlight = false;
   bool _mediaAwaitingSnapshot = false;
   int _mediaSourceRevision = 0;
   bool _showMediaError = false;
+  Object? _mediaError;
 
   Future<void> _setPublicListingEnabled(bool enabled) async {
     try {
@@ -93,7 +95,6 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
 
   @override
   void dispose() {
-    _reorderDebounce?.cancel();
     _fieldAccordion
       ..removeListener(_handleAccordionChanged)
       ..dispose();
@@ -122,66 +123,100 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
     _mediaDrafts = drafts;
     _committedMediaDrafts = [...drafts];
     _pickedLogo = null;
+    _removeLogoOnSave = false;
+    _mediaDirty = false;
     _mediaAwaitingSnapshot = false;
     _showMediaError = false;
+    _mediaError = null;
   }
 
   Future<void> _pickLogo() async {
     final logo = await ref.read(hostClubEditControllerProvider).pickClubLogo();
     if (!mounted || logo == null) return;
-    setState(() => _pickedLogo = logo);
-    await _commitMedia(logo: logo);
+    final previousLogo = _pickedLogo;
+    setState(() {
+      _pickedLogo = logo;
+      _removeLogoOnSave = false;
+      _mediaDirty = true;
+      _showMediaError = false;
+    });
+    if (previousLogo?.uploadedPhoto != null) {
+      unawaited(
+        ref
+            .read(hostClubEditControllerProvider)
+            .discardClubMedia(photoInputs: const [], logo: previousLogo),
+      );
+    }
   }
 
   Future<void> _pickPhotos() async {
+    await _pickAndAppendPhotos();
+  }
+
+  Future<List<OrderedPhotoPreview>> _pickPhotosInManager() async {
+    final added = await _pickAndAppendPhotos();
+    return [for (final draft in added) draft.preview];
+  }
+
+  Future<List<_HostPickedClubMediaDraft>> _pickAndAppendPhotos() async {
     final photos = await ref
         .read(hostClubEditControllerProvider)
         .pickClubPhotos();
-    if (!mounted || photos.isEmpty) return;
-    _reorderDebounce?.cancel();
+    if (!mounted || photos.isEmpty) return const [];
+    final added = [
+      for (final photo in photos) _HostPickedClubMediaDraft(photo),
+    ];
     setState(() {
-      _mediaDrafts.addAll(
-        photos.map(
-          (photo) => _HostPickedClubMediaDraft(
-            '${DateTime.now().microsecondsSinceEpoch}-${photo.image.name}',
-            photo,
-            status: OrderedPhotoStatus.uploading,
-          ),
-        ),
-      );
+      _mediaDrafts.addAll(added);
+      _mediaDirty = true;
+      _showMediaError = false;
     });
-    await _commitMedia(commitPhotos: true, preserveFailedUploads: true);
+    return added;
   }
 
   Future<void> _retryPhoto(int index) async {
     if (index < 0 || index >= _mediaDrafts.length) return;
     final draft = _mediaDrafts[index];
-    if (draft is! _HostPickedClubMediaDraft ||
-        draft.status != OrderedPhotoStatus.failed) {
+    if (draft is! _HostPickedClubMediaDraft || !draft.job.canRetry) {
       return;
     }
     setState(() {
-      _mediaDrafts = [
-        for (final item in _mediaDrafts)
-          if (item is _HostPickedClubMediaDraft)
-            item.withStatus(OrderedPhotoStatus.uploading)
-          else
-            item,
-      ];
+      _mediaDrafts[index] = draft.withJob(const ImageUploadJobState.queued());
+      _mediaDirty = true;
     });
-    await _commitMedia(commitPhotos: true, preserveFailedUploads: true);
+    await _saveMedia();
   }
 
   Future<void> _removeLogo() async {
-    setState(() => _pickedLogo = null);
-    await _commitMedia(removeLogo: true);
+    final stagedLogo = _pickedLogo;
+    setState(() {
+      _pickedLogo = null;
+      _removeLogoOnSave = widget.club.profileImageUrl != null;
+      _mediaDirty = true;
+      _showMediaError = false;
+    });
+    if (stagedLogo?.uploadedPhoto != null) {
+      await ref
+          .read(hostClubEditControllerProvider)
+          .discardClubMedia(photoInputs: const [], logo: stagedLogo);
+    }
   }
 
   void _removePhoto(int index) {
     if (index < 0 || index >= _mediaDrafts.length) return;
-    _reorderDebounce?.cancel();
-    setState(() => _mediaDrafts.removeAt(index));
-    unawaited(_commitMedia(commitPhotos: true));
+    final removed = _mediaDrafts[index];
+    setState(() {
+      _mediaDrafts.removeAt(index);
+      _mediaDirty = true;
+      _showMediaError = false;
+    });
+    if (removed is _HostPickedClubMediaDraft && removed.input.isUploaded) {
+      unawaited(
+        ref
+            .read(hostClubEditControllerProvider)
+            .discardClubMedia(photoInputs: [removed.input]),
+      );
+    }
   }
 
   void _reorderPhoto(int fromIndex, int toIndex) {
@@ -195,76 +230,124 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
     setState(() {
       final moved = _mediaDrafts.removeAt(fromIndex);
       _mediaDrafts.insert(toIndex, moved);
-    });
-    _reorderDebounce?.cancel();
-    _reorderDebounce = Timer(CatchMotion.mediaReorderDebounce, () {
-      if (mounted) unawaited(_commitMedia(commitPhotos: true));
+      _mediaDirty = true;
+      _showMediaError = false;
     });
   }
 
-  Future<void> _commitMedia({
-    bool commitPhotos = false,
-    HostPickedClubLogo? logo,
-    bool removeLogo = false,
-    bool preserveFailedUploads = false,
-  }) async {
-    if (_mediaCommitInFlight) return;
+  Future<void> _saveMedia() async {
+    if (!_mediaDirty || _mediaCommitInFlight) return;
     final sourceRevision = _mediaSourceRevision;
     _mediaCommitInFlight = true;
-    setState(() => _showMediaError = false);
+    setState(() {
+      _showMediaError = false;
+      _mediaError = null;
+      _mediaDrafts = [
+        for (final draft in _mediaDrafts)
+          if (draft is _HostPickedClubMediaDraft && !draft.input.isUploaded)
+            draft.withJob(const ImageUploadJobState.queued())
+          else
+            draft,
+      ];
+    });
     try {
-      await HostClubEditController.updateMediaMutation.run(
+      final result = await HostClubEditController.updateMediaMutation.run(
         ref,
         (tx) => tx
             .get(hostClubEditControllerProvider)
             .updateClubMedia(
               club: widget.club,
-              photoInputs: commitPhotos
-                  ? [for (final draft in _mediaDrafts) draft.input]
-                  : null,
-              logo: logo,
-              removeLogo: removeLogo,
+              photoInputs: [for (final draft in _mediaDrafts) draft.input],
+              logo: _pickedLogo,
+              removeLogo: _removeLogoOnSave,
+              onProgress: _updateMediaProgress,
             ),
       );
-    } catch (_) {
       if (!mounted) return;
       setState(() {
-        if (commitPhotos) {
-          _mediaDrafts = preserveFailedUploads
-              ? [
-                  for (final draft in _mediaDrafts)
-                    if (draft is _HostPickedClubMediaDraft)
-                      draft.withStatus(OrderedPhotoStatus.failed)
-                    else
-                      draft,
-                ]
-              : [..._committedMediaDrafts];
+        _applyResolvedInputs(result);
+        if (result.hasFailures) {
+          _mediaAwaitingSnapshot = false;
+          _showMediaError = true;
+          _mediaError = result.failures.values.first;
+          return;
         }
-        if (logo != null || removeLogo) _pickedLogo = null;
+        _committedMediaDrafts = [..._mediaDrafts];
+        _mediaDirty = false;
+        _removeLogoOnSave = false;
+        _mediaAwaitingSnapshot = _mediaSourceRevision == sourceRevision;
+        _showMediaError = false;
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _mediaDrafts = [
+          for (final draft in _mediaDrafts)
+            if (draft is _HostPickedClubMediaDraft)
+              draft.clearUpload(error)
+            else
+              draft,
+        ];
+        if (_pickedLogo != null) {
+          _pickedLogo = HostPickedClubLogo(
+            id: _pickedLogo!.id,
+            image: _pickedLogo!.image,
+            bytes: _pickedLogo!.bytes,
+          );
+        }
         _mediaAwaitingSnapshot = false;
         _showMediaError = true;
+        _mediaError = error;
       });
-      return;
     } finally {
       _mediaCommitInFlight = false;
       if (mounted) setState(() {});
     }
+  }
+
+  void _updateMediaProgress(HostClubMediaProgress progress) {
     if (!mounted) return;
-    setState(() {
-      if (commitPhotos) {
-        _mediaDrafts = [
-          for (final draft in _mediaDrafts)
-            if (draft is _HostPickedClubMediaDraft)
-              draft.withStatus(OrderedPhotoStatus.ready)
-            else
-              draft,
-        ];
-        _committedMediaDrafts = [..._mediaDrafts];
-      }
-      if (logo != null || removeLogo) _pickedLogo = null;
-      _mediaAwaitingSnapshot = _mediaSourceRevision == sourceRevision;
-      _showMediaError = false;
-    });
+    final index = _mediaDrafts.indexWhere((draft) => draft.id == progress.id);
+    if (index < 0) return;
+    final draft = _mediaDrafts[index];
+    if (draft is! _HostPickedClubMediaDraft) return;
+    setState(() => _mediaDrafts[index] = draft.withJob(progress.state));
+  }
+
+  void _applyResolvedInputs(HostClubMediaSaveResult result) {
+    final resolvedById = {
+      for (final input in result.photoInputs ?? const <HostClubMediaInput>[])
+        input.id: input,
+    };
+    _mediaDrafts = [
+      for (final draft in _mediaDrafts)
+        switch (draft) {
+          _HostExistingClubMediaDraft() => draft,
+          _HostPickedClubMediaDraft() => draft.withResolvedInput(
+            resolvedById[draft.id],
+            error: result.failures[draft.id],
+          ),
+        },
+    ];
+    _pickedLogo = result.logo;
+  }
+
+  Future<void> _discardMedia() async {
+    if (_mediaCommitInFlight) return;
+    _mediaCommitInFlight = true;
+    if (mounted) setState(() {});
+    try {
+      await ref
+          .read(hostClubEditControllerProvider)
+          .discardClubMedia(
+            photoInputs: [for (final draft in _mediaDrafts) draft.input],
+            logo: _pickedLogo,
+          );
+      if (mounted) setState(_resetMediaFromClub);
+    } finally {
+      _mediaCommitInFlight = false;
+      if (mounted) setState(() {});
+    }
   }
 
   @override
@@ -278,7 +361,15 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
         mediaMutation.isPending ||
         _mediaCommitInFlight ||
         _mediaAwaitingSnapshot;
-    final mediaError = _showMediaError && mediaMutation.hasError
+    final mediaError = !_showMediaError
+        ? null
+        : _mediaError != null
+        ? appErrorMessage(
+            _mediaError!,
+            l10n: context.l10n,
+            context: AppErrorContext.club,
+          )
+        : mediaMutation.hasError
         ? mutationErrorMessage(
             mediaMutation,
             l10n: context.l10n,
@@ -414,7 +505,9 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
               children: [
                 CreateClubProfileImagePicker(
                   imageBytes: _pickedLogo?.bytes,
-                  existingImageUrl: club.profileImageUrl,
+                  existingImageUrl: _removeLogoOnSave
+                      ? null
+                      : club.profileImageUrl,
                   onTap: mediaPending ? null : _pickLogo,
                   onRemove: mediaPending ? null : _removeLogo,
                   variant: CreateClubProfileImagePickerVariant.editLogo,
@@ -424,10 +517,43 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
                   photos: [for (final draft in _mediaDrafts) draft.preview],
                   existingImageUrl: _mediaDrafts.isEmpty ? club.imageUrl : null,
                   onAddPhotos: mediaPending ? null : _pickPhotos,
+                  onAddPhotosInManager: mediaPending
+                      ? null
+                      : _pickPhotosInManager,
                   onRemovePhoto: mediaPending ? null : _removePhoto,
                   onReorderPhoto: mediaPending ? null : _reorderPhoto,
                   onRetryPhoto: mediaPending ? null : _retryPhoto,
                   variant: CreateClubPhotosPickerVariant.editStrip,
+                ),
+                gapH16,
+                Row(
+                  key: const ValueKey('host-media-action-bar'),
+                  children: [
+                    Expanded(
+                      child: CatchButton(
+                        key: const ValueKey('host-media-discard'),
+                        label:
+                            context.l10n.hostsHostClubEditTabActionDiscardMedia,
+                        onPressed: _mediaDirty && !mediaPending
+                            ? () => unawaited(_discardMedia())
+                            : null,
+                        variant: CatchButtonVariant.secondary,
+                        fullWidth: true,
+                      ),
+                    ),
+                    gapW8,
+                    Expanded(
+                      child: CatchButton(
+                        key: const ValueKey('host-media-save'),
+                        label: context.l10n.hostsHostClubEditTabActionSaveMedia,
+                        onPressed: _mediaDirty && !mediaPending
+                            ? () => unawaited(_saveMedia())
+                            : null,
+                        isLoading: mediaPending && _mediaCommitInFlight,
+                        fullWidth: true,
+                      ),
+                    ),
+                  ],
                 ),
                 if (mediaError != null) ...[
                   gapH12,
@@ -781,6 +907,7 @@ String _hostOrganizerTypeLabel(BuildContext context, OrganizerType type) =>
 sealed class _HostClubMediaDraft {
   const _HostClubMediaDraft();
 
+  String get id;
   OrderedPhotoPreview get preview;
   HostClubMediaInput get input;
 }
@@ -789,6 +916,9 @@ final class _HostExistingClubMediaDraft extends _HostClubMediaDraft {
   const _HostExistingClubMediaDraft(this.photo);
 
   final UploadedPhoto photo;
+
+  @override
+  String get id => photo.id;
 
   @override
   OrderedPhotoPreview get preview => OrderedPhotoPreview(
@@ -802,22 +932,71 @@ final class _HostExistingClubMediaDraft extends _HostClubMediaDraft {
 
 final class _HostPickedClubMediaDraft extends _HostClubMediaDraft {
   const _HostPickedClubMediaDraft(
-    this.id,
     this.photo, {
-    this.status = OrderedPhotoStatus.ready,
+    this.uploadedPhoto,
+    this.job = const ImageUploadJobState.queued(),
   });
 
-  final String id;
   final HostPickedClubPhoto photo;
-  final OrderedPhotoStatus status;
-
-  _HostPickedClubMediaDraft withStatus(OrderedPhotoStatus status) =>
-      _HostPickedClubMediaDraft(id, photo, status: status);
+  final UploadedPhoto? uploadedPhoto;
+  final ImageUploadJobState job;
 
   @override
-  OrderedPhotoPreview get preview =>
-      OrderedPhotoPreview(id: id, bytes: photo.bytes, status: status);
+  String get id => photo.id;
+
+  _HostPickedClubMediaDraft withJob(ImageUploadJobState job) =>
+      _HostPickedClubMediaDraft(photo, uploadedPhoto: uploadedPhoto, job: job);
+
+  _HostPickedClubMediaDraft withResolvedInput(
+    HostClubMediaInput? resolved, {
+    Object? error,
+  }) {
+    final uploaded = switch (resolved) {
+      HostNewClubPhotoInput(:final uploadedPhoto) => uploadedPhoto,
+      _ => uploadedPhoto,
+    };
+    return _HostPickedClubMediaDraft(
+      photo,
+      uploadedPhoto: uploaded,
+      job: error == null
+          ? const ImageUploadJobState(stage: ImageUploadJobStage.complete)
+          : ImageUploadJobState(
+              stage: ImageUploadJobStage.failed,
+              error: error,
+            ),
+    );
+  }
+
+  _HostPickedClubMediaDraft clearUpload(Object error) =>
+      _HostPickedClubMediaDraft(
+        photo,
+        job: ImageUploadJobState(
+          stage: ImageUploadJobStage.failed,
+          error: error,
+        ),
+      );
 
   @override
-  HostClubMediaInput get input => HostNewClubPhotoInput(photo.image);
+  OrderedPhotoPreview get preview => OrderedPhotoPreview(
+    id: id,
+    bytes: photo.bytes,
+    status: switch (job.stage) {
+      ImageUploadJobStage.failed => OrderedPhotoStatus.failed,
+      ImageUploadJobStage.preparing ||
+      ImageUploadJobStage.uploading ||
+      ImageUploadJobStage.attaching => OrderedPhotoStatus.uploading,
+      ImageUploadJobStage.queued ||
+      ImageUploadJobStage.picking => OrderedPhotoStatus.queued,
+      _ => OrderedPhotoStatus.ready,
+    },
+    progress: job.progress,
+    error: job.error,
+  );
+
+  @override
+  HostNewClubPhotoInput get input => HostNewClubPhotoInput(
+    id: id,
+    image: photo.image,
+    uploadedPhoto: uploadedPhoto,
+  );
 }

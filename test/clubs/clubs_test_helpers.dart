@@ -453,6 +453,8 @@ class FakeImageUploadRepository implements ImageUploadRepository {
   XFile? lastUploadedImage;
   final uploadedClubPhotoPositions = <int>[];
   final uploadedClubPhotoImages = <XFile>[];
+  final uploadedClubMediaIds = <String>[];
+  final failingClubMediaIds = <String>{};
 
   @override
   Future<XFile?> pickImage({
@@ -496,6 +498,8 @@ class FakeImageUploadRepository implements ImageUploadRepository {
     required XFile image,
     ImageUploadPurpose purpose = ImageUploadPurpose.profilePhoto,
     Map<String, String>? customMetadata,
+    ValueChanged<ImageUploadProgress>? onProgress,
+    ImageUploadCancellationToken? cancellationToken,
   }) async {
     if (uploadError != null) {
       throw uploadError!;
@@ -510,9 +514,16 @@ class FakeImageUploadRepository implements ImageUploadRepository {
     required String clubId,
     required int position,
     required XFile image,
+    String? mediaId,
+    ValueChanged<ImageUploadProgress>? onProgress,
+    ImageUploadCancellationToken? cancellationToken,
   }) async {
     if (uploadError != null) {
       throw uploadError!;
+    }
+    if (mediaId != null) uploadedClubMediaIds.add(mediaId);
+    if (mediaId != null && failingClubMediaIds.remove(mediaId)) {
+      throw StateError('upload failed for $mediaId');
     }
     lastUploadUid = uid;
     lastUploadClubId = clubId;
@@ -520,9 +531,16 @@ class FakeImageUploadRepository implements ImageUploadRepository {
     lastUploadedImage = image;
     uploadedClubPhotoPositions.add(position);
     uploadedClubPhotoImages.add(image);
+    onProgress?.call(
+      const ImageUploadProgress(
+        stage: ImageUploadJobStage.uploading,
+        fraction: 1,
+      ),
+    );
+    final resolvedMediaId = mediaId ?? 'test-media';
     return UploadedImage(
       url: uploadResult,
-      storagePath: 'clubs/$clubId/photos/${position}_test.jpg',
+      storagePath: 'organizers/$clubId/media/$resolvedMediaId/original.jpg',
     );
   }
 
@@ -531,6 +549,9 @@ class FakeImageUploadRepository implements ImageUploadRepository {
     String? uid,
     required String clubId,
     required XFile image,
+    String? mediaId,
+    ValueChanged<ImageUploadProgress>? onProgress,
+    ImageUploadCancellationToken? cancellationToken,
   }) async {
     if (uploadError != null) {
       throw uploadError!;
@@ -539,9 +560,16 @@ class FakeImageUploadRepository implements ImageUploadRepository {
     lastUploadClubId = clubId;
     lastUploadPosition = 0;
     lastUploadedImage = image;
+    onProgress?.call(
+      const ImageUploadProgress(
+        stage: ImageUploadJobStage.uploading,
+        fraction: 1,
+      ),
+    );
+    final resolvedMediaId = mediaId ?? 'test-logo';
     return UploadedImage(
       url: uploadResult,
-      storagePath: 'clubs/$clubId/logo/test.jpg',
+      storagePath: 'organizers/$clubId/logo/$resolvedMediaId/original.jpg',
     );
   }
 
@@ -599,6 +627,9 @@ class FakeImageUploadRepository implements ImageUploadRepository {
     required String eventId,
     required int position,
     required XFile image,
+    String? mediaId,
+    ValueChanged<ImageUploadProgress>? onProgress,
+    ImageUploadCancellationToken? cancellationToken,
   }) async {
     if (uploadError != null) {
       throw uploadError!;
@@ -606,9 +637,10 @@ class FakeImageUploadRepository implements ImageUploadRepository {
     lastUploadEventId = eventId;
     lastUploadPosition = position;
     lastUploadedImage = image;
+    final resolvedMediaId = mediaId ?? 'test-media';
     return UploadedImage(
       url: uploadResult,
-      storagePath: 'events/$eventId/photos/${position}_test.jpg',
+      storagePath: 'events/$eventId/media/$resolvedMediaId/original.jpg',
     );
   }
 

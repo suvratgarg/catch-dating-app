@@ -285,11 +285,14 @@ void _registerHostOperationsAnalyticsTeamTests() {
     },
   );
 
-  testWidgets('Host club photo picks commit immediately', (tester) async {
+  testWidgets('Host club photo picks stay staged until Save media', (
+    tester,
+  ) async {
     final photoBytes = _testPngBytes();
     final actions = _RecordingHostClubEditActions(
       pickedPhotos: [
         HostPickedClubPhoto(
+          id: 'picked-photo',
           image: XFile.fromData(photoBytes, name: 'picked.jpg'),
           bytes: photoBytes,
         ),
@@ -301,6 +304,14 @@ void _registerHostOperationsAnalyticsTeamTests() {
     final add = find.byKey(OrderedPhotoPickerKeys.addAction('Add photos'));
     await Scrollable.ensureVisible(tester.element(add));
     await tester.tap(add);
+    await pumpFeatureUi(tester);
+
+    expect(actions.mediaWrites, isEmpty);
+    expect(find.text('Ready to upload'), findsWidgets);
+
+    final save = find.byKey(const ValueKey('host-media-save'));
+    await Scrollable.ensureVisible(tester.element(save));
+    await tester.tap(save);
     await pumpFeatureUi(tester);
 
     expect(actions.mediaWrites, hasLength(1));
@@ -315,6 +326,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
     final actions = _RecordingHostClubEditActions(
       pickedPhotos: [
         HostPickedClubPhoto(
+          id: 'retry-photo',
           image: XFile.fromData(photoBytes, name: 'retry.jpg'),
           bytes: photoBytes,
         ),
@@ -329,10 +341,17 @@ void _registerHostOperationsAnalyticsTeamTests() {
     await tester.tap(add);
     await pumpFeatureUi(tester);
 
-    expect(actions.mediaUpdateCalls, 1);
-    expect(find.textContaining('Upload failed'), findsWidgets);
+    final save = find.byKey(const ValueKey('host-media-save'));
+    await Scrollable.ensureVisible(tester.element(save));
+    await tester.tap(save);
+    await pumpFeatureUi(tester);
 
-    await tester.tap(find.byKey(OrderedPhotoPickerKeys.coverRetryAction));
+    expect(actions.mediaUpdateCalls, 1);
+    expect(find.byKey(OrderedPhotoPickerKeys.coverRetryAction), findsOneWidget);
+
+    final retry = find.byKey(OrderedPhotoPickerKeys.coverRetryAction);
+    await Scrollable.ensureVisible(tester.element(retry));
+    await tester.tap(retry);
     await pumpFeatureUi(tester);
 
     expect(actions.mediaUpdateCalls, 2);
@@ -458,7 +477,9 @@ void _registerHostOperationsAnalyticsTeamTests() {
     expect(find.byType(HostPaymentAccountControllerCard), findsNothing);
   });
 
-  testWidgets('Host club photo removal commits immediately', (tester) async {
+  testWidgets('Host club photo removal stays staged until Save media', (
+    tester,
+  ) async {
     final actions = _RecordingHostClubEditActions();
     final club = buildClub(
       id: 'media-remove',
@@ -477,11 +498,19 @@ void _registerHostOperationsAnalyticsTeamTests() {
     await tester.tap(find.text('Remove photo'));
     await pumpFeatureUi(tester);
 
+    expect(actions.mediaWrites, isEmpty);
+    await tester.tap(find.text('Done'));
+    await pumpFeatureUi(tester);
+    final save = find.byKey(const ValueKey('host-media-save'));
+    await Scrollable.ensureVisible(tester.element(save));
+    await tester.tap(save);
+    await pumpFeatureUi(tester);
+
     expect(actions.mediaWrites, hasLength(1));
     expect(actions.mediaWrites.single, isEmpty);
   });
 
-  testWidgets('Host club photo reorder debounces one immediate commit', (
+  testWidgets('Host club photo reorder stays staged until Save media', (
     tester,
   ) async {
     final actions = _RecordingHostClubEditActions();
@@ -498,9 +527,11 @@ void _registerHostOperationsAnalyticsTeamTests() {
     tester
         .widget<CreateClubPhotosPicker>(find.byType(CreateClubPhotosPicker))
         .onReorderPhoto!(0, 1);
-    await pumpFeatureUiFor(tester, const Duration(milliseconds: 399));
+    await pumpFeatureUi(tester);
     expect(actions.mediaWrites, isEmpty);
-    await pumpFeatureUiFor(tester, const Duration(milliseconds: 1));
+    final save = find.byKey(const ValueKey('host-media-save'));
+    await Scrollable.ensureVisible(tester.element(save));
+    await tester.tap(save);
     await pumpFeatureUi(tester);
 
     expect(actions.mediaWrites, hasLength(1));

@@ -961,6 +961,18 @@ abstract class AppLocalizations {
   /// **'Uploading…'**
   String get coreOrderedPhotoPickerStatusUploading;
 
+  /// Per-photo upload progress in the shared ordered photo picker.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading… {percent}%'**
+  String coreOrderedPhotoPickerStatusUploadingProgress({required int percent});
+
+  /// Status for a staged photo that will upload when the user saves.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to upload'**
+  String get coreOrderedPhotoPickerStatusQueued;
+
   /// Status shown on a Host gallery image after an upload failure.
   ///
   /// In en, this message translates to:
@@ -9741,6 +9753,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Organizer settings'**
   String get hostsHostClubEditTabTitleClubSettings;
+
+  /// Commits staged organizer gallery and logo changes.
+  ///
+  /// In en, this message translates to:
+  /// **'Save media'**
+  String get hostsHostClubEditTabActionSaveMedia;
+
+  /// Discards staged organizer gallery and logo changes.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get hostsHostClubEditTabActionDiscardMedia;
 
   /// Navigation row to club event defaults.
   ///

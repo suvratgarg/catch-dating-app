@@ -71,8 +71,8 @@ void _registerHostOperationsTeamFailuresTests() {
       ),
       findsOneWidget,
     );
-    expect(find.text('Save media'), findsNothing);
-    expect(find.byKey(const ValueKey('host-media-action-bar')), findsNothing);
+    expect(find.text('Save media'), findsOneWidget);
+    expect(find.byKey(const ValueKey('host-media-action-bar')), findsOneWidget);
     expect(find.text('Live event guide'), findsOneWidget);
     expect(find.text('Save defaults'), findsNothing);
     expect(
@@ -132,7 +132,7 @@ void _registerHostOperationsTeamFailuresTests() {
       ),
       findsOneWidget,
     );
-    expect(find.text('Save media'), findsNothing);
+    expect(find.text('Save media'), findsOneWidget);
     expect(find.text('Advanced event defaults'), findsNothing);
     expect(find.text('Save defaults'), findsNothing);
 

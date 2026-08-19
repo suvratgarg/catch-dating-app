@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
@@ -7,6 +5,8 @@ import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
+import 'package:catch_dating_app/image_uploads/domain/image_upload_job.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -27,49 +27,129 @@ abstract interface class HostClubEditActions {
 
   Future<HostPickedClubLogo?> pickClubLogo();
 
-  Future<void> updateClubMedia({
+  Future<HostClubMediaSaveResult> updateClubMedia({
     required Club club,
     List<HostClubMediaInput>? photoInputs,
     HostPickedClubLogo? logo,
     bool removeLogo = false,
+    ValueChanged<HostClubMediaProgress>? onProgress,
+  });
+
+  Future<void> discardClubMedia({
+    required List<HostClubMediaInput> photoInputs,
+    HostPickedClubLogo? logo,
   });
 }
 
 class HostPickedClubPhoto {
-  const HostPickedClubPhoto({required this.image, required this.bytes});
+  const HostPickedClubPhoto({
+    required this.id,
+    required this.image,
+    required this.bytes,
+  });
 
+  final String id;
   final XFile image;
   final Uint8List bytes;
 }
 
 class HostPickedClubLogo {
-  const HostPickedClubLogo({required this.image, required this.bytes});
+  const HostPickedClubLogo({
+    required this.id,
+    required this.image,
+    required this.bytes,
+    this.uploadedPhoto,
+  });
 
+  final String id;
   final XFile image;
   final Uint8List bytes;
+  final UploadedPhoto? uploadedPhoto;
+
+  HostPickedClubLogo copyWith({UploadedPhoto? uploadedPhoto}) =>
+      HostPickedClubLogo(
+        id: id,
+        image: image,
+        bytes: bytes,
+        uploadedPhoto: uploadedPhoto ?? this.uploadedPhoto,
+      );
 }
 
 sealed class HostClubMediaInput {
   const HostClubMediaInput();
+
+  String get id;
+  UploadedPhoto get resolvedPhoto;
 }
 
 final class HostExistingClubPhotoInput extends HostClubMediaInput {
   const HostExistingClubPhotoInput(this.photo);
 
   final UploadedPhoto photo;
+
+  @override
+  String get id => photo.id;
+
+  @override
+  UploadedPhoto get resolvedPhoto => photo;
 }
 
 final class HostNewClubPhotoInput extends HostClubMediaInput {
-  const HostNewClubPhotoInput(this.image);
+  const HostNewClubPhotoInput({
+    required this.id,
+    required this.image,
+    this.uploadedPhoto,
+  });
 
+  @override
+  final String id;
   final XFile image;
+  final UploadedPhoto? uploadedPhoto;
+
+  bool get isUploaded => uploadedPhoto != null;
+
+  HostNewClubPhotoInput copyWith({UploadedPhoto? uploadedPhoto}) =>
+      HostNewClubPhotoInput(
+        id: id,
+        image: image,
+        uploadedPhoto: uploadedPhoto ?? this.uploadedPhoto,
+      );
+
+  HostNewClubPhotoInput clearUpload() =>
+      HostNewClubPhotoInput(id: id, image: image);
+
+  @override
+  UploadedPhoto get resolvedPhoto => uploadedPhoto!;
+}
+
+class HostClubMediaProgress {
+  const HostClubMediaProgress({required this.id, required this.state});
+
+  final String id;
+  final ImageUploadJobState state;
+}
+
+class HostClubMediaSaveResult {
+  const HostClubMediaSaveResult({
+    required this.photoInputs,
+    required this.logo,
+    required this.failures,
+    required this.attached,
+  });
+
+  final List<HostClubMediaInput>? photoInputs;
+  final HostPickedClubLogo? logo;
+  final Map<String, Object> failures;
+  final bool attached;
+
+  bool get hasFailures => failures.isNotEmpty;
 }
 
 class HostClubEditController implements HostClubEditActions {
   const HostClubEditController(this._ref);
 
   static final updateClubMutation = Mutation<void>();
-  static final updateMediaMutation = Mutation<void>();
+  static final updateMediaMutation = Mutation<HostClubMediaSaveResult>();
   static final publicationMutation = Mutation<void>();
 
   final Ref _ref;
@@ -88,37 +168,44 @@ class HostClubEditController implements HostClubEditActions {
 
   @override
   Future<List<HostPickedClubPhoto>> pickClubPhotos({int? limit}) async {
-    final images = await _ref
-        .read(imageUploadRepositoryProvider)
-        .pickImages(
-          purpose: ImageUploadPurpose.clubPhoto,
-          imageQuality: 85,
-          limit: limit,
-        );
+    final repository = _ref.read(imageUploadRepositoryProvider);
+    final images = await repository.pickImages(
+      purpose: ImageUploadPurpose.clubPhoto,
+      imageQuality: 85,
+      limit: limit,
+    );
     return [
       for (final image in images)
-        HostPickedClubPhoto(image: image, bytes: await image.readAsBytes()),
+        HostPickedClubPhoto(
+          id: ImageUploadRepository.createMediaId(),
+          image: image,
+          bytes: await image.readAsBytes(),
+        ),
     ];
   }
 
   @override
   Future<HostPickedClubLogo?> pickClubLogo() async {
-    final image = await _ref
-        .read(imageUploadRepositoryProvider)
-        .pickImage(
-          purpose: ImageUploadPurpose.clubProfileImage,
-          imageQuality: 85,
-        );
+    final repository = _ref.read(imageUploadRepositoryProvider);
+    final image = await repository.pickImage(
+      purpose: ImageUploadPurpose.clubProfileImage,
+      imageQuality: 85,
+    );
     if (image == null) return null;
-    return HostPickedClubLogo(image: image, bytes: await image.readAsBytes());
+    return HostPickedClubLogo(
+      id: ImageUploadRepository.createMediaId(),
+      image: image,
+      bytes: await image.readAsBytes(),
+    );
   }
 
   @override
-  Future<void> updateClubMedia({
+  Future<HostClubMediaSaveResult> updateClubMedia({
     required Club club,
     List<HostClubMediaInput>? photoInputs,
     HostPickedClubLogo? logo,
     bool removeLogo = false,
+    ValueChanged<HostClubMediaProgress>? onProgress,
   }) async {
     final uid = requireSignedInUid(_ref, action: 'edit this organizer media');
     if (!club.isHostedBy(uid)) {
@@ -133,87 +220,212 @@ class HostClubEditController implements HostClubEditActions {
     }
 
     final patch = <String, Object?>{};
-    final newStoragePaths = <String>[];
+    final failures = <String, Object>{};
+    List<HostClubMediaInput>? resolvedInputs;
+    HostPickedClubLogo? resolvedLogo = logo;
     try {
       if (photoInputs != null) {
-        final photos = await _resolvePhotoInputs(
+        resolvedInputs = await _resolvePhotoInputs(
           uid: uid,
           clubId: club.id,
           inputs: photoInputs,
-          newStoragePaths: newStoragePaths,
+          failures: failures,
+          onProgress: onProgress,
         );
+      }
+      if (logo != null && logo.uploadedPhoto == null) {
+        try {
+          onProgress?.call(
+            HostClubMediaProgress(
+              id: logo.id,
+              state: const ImageUploadJobState(
+                stage: ImageUploadJobStage.preparing,
+              ),
+            ),
+          );
+          final upload = await _ref
+              .read(imageUploadRepositoryProvider)
+              .uploadClubLogo(
+                uid: uid,
+                clubId: club.id,
+                mediaId: logo.id,
+                image: logo.image,
+                onProgress: (progress) => onProgress?.call(
+                  HostClubMediaProgress(
+                    id: logo.id,
+                    state: ImageUploadJobState(
+                      stage: progress.stage,
+                      progress: progress.fraction,
+                    ),
+                  ),
+                ),
+              );
+          resolvedLogo = logo.copyWith(
+            uploadedPhoto: UploadedPhoto.fromUpload(
+              url: upload.url,
+              storagePath: upload.storagePath,
+              position: 0,
+            ),
+          );
+        } catch (error) {
+          failures[logo.id] = error;
+          onProgress?.call(
+            HostClubMediaProgress(
+              id: logo.id,
+              state: ImageUploadJobState(
+                stage: ImageUploadJobStage.failed,
+                error: error,
+              ),
+            ),
+          );
+        }
+      }
+
+      if (failures.isNotEmpty) {
+        return HostClubMediaSaveResult(
+          photoInputs: resolvedInputs,
+          logo: resolvedLogo,
+          failures: failures,
+          attached: false,
+        );
+      }
+
+      if (resolvedInputs != null) {
+        final photos = [
+          for (final indexedInput in resolvedInputs.indexed)
+            indexedInput.$2.resolvedPhoto.copyWith(
+              position: indexedInput.$1,
+              updatedAt: DateTime.now(),
+            ),
+        ];
         patch['imageUrl'] = photos.isEmpty ? null : photos.first.url;
         patch['clubPhotos'] = photos
             .map((photo) => photo.toJson())
             .toList(growable: false);
       }
-      if (logo != null) {
-        final upload = await _ref
-            .read(imageUploadRepositoryProvider)
-            .uploadClubLogo(uid: uid, clubId: club.id, image: logo.image);
-        newStoragePaths.add(upload.storagePath);
-        final logoPhoto = UploadedPhoto.fromUpload(
-          url: upload.url,
-          storagePath: upload.storagePath,
-          position: 0,
-        );
+      if (resolvedLogo?.uploadedPhoto case final logoPhoto?) {
         patch['profileImageUrl'] = logoPhoto.thumbnailOrUrl;
         patch['logoPhoto'] = logoPhoto.toJson();
       } else if (removeLogo) {
         patch['profileImageUrl'] = null;
         patch['logoPhoto'] = null;
       }
-      if (patch.isEmpty) return;
-      await _ref
-          .read(clubsRepositoryProvider)
-          .updateClub(clubId: club.id, patch: UpdateClubPatch.raw(patch));
-    } catch (_) {
-      for (final storagePath in newStoragePaths) {
-        try {
-          await _ref
-              .read(imageUploadRepositoryProvider)
-              .deleteByPath(storagePath);
-        } catch (_) {
-          // Preserve the mutation failure; storage cleanup is best effort.
-        }
+      if (patch.isNotEmpty) {
+        await _ref
+            .read(clubsRepositoryProvider)
+            .updateClub(clubId: club.id, patch: UpdateClubPatch.raw(patch));
       }
+    } catch (_) {
+      await discardClubMedia(
+        photoInputs: resolvedInputs ?? const [],
+        logo: resolvedLogo,
+      );
       rethrow;
     }
+    return HostClubMediaSaveResult(
+      photoInputs: resolvedInputs,
+      logo: resolvedLogo,
+      failures: const {},
+      attached: true,
+    );
   }
 
-  Future<List<UploadedPhoto>> _resolvePhotoInputs({
+  Future<List<HostClubMediaInput>> _resolvePhotoInputs({
     required String uid,
     required String clubId,
     required List<HostClubMediaInput> inputs,
-    required List<String> newStoragePaths,
+    required Map<String, Object> failures,
+    required ValueChanged<HostClubMediaProgress>? onProgress,
   }) async {
-    final photos = <UploadedPhoto>[];
-    for (final indexedInput in inputs.indexed) {
-      final position = indexedInput.$1;
-      switch (indexedInput.$2) {
-        case HostExistingClubPhotoInput(:final photo):
-          photos.add(
-            photo.copyWith(position: position, updatedAt: DateTime.now()),
-          );
-        case HostNewClubPhotoInput(:final image):
-          final upload = await _ref
-              .read(imageUploadRepositoryProvider)
-              .uploadClubPhoto(
-                uid: uid,
-                clubId: clubId,
-                position: position,
-                image: image,
-              );
-          newStoragePaths.add(upload.storagePath);
-          photos.add(
-            UploadedPhoto.fromUpload(
-              url: upload.url,
-              storagePath: upload.storagePath,
-              position: position,
-            ),
-          );
+    final resolved = List<HostClubMediaInput?>.filled(inputs.length, null);
+
+    Future<void> resolveAt(int index) async {
+      final input = inputs[index];
+      switch (input) {
+        case HostExistingClubPhotoInput():
+          resolved[index] = input;
+        case HostNewClubPhotoInput(
+          :final id,
+          :final image,
+          :final uploadedPhoto,
+        ):
+          if (uploadedPhoto != null) {
+            resolved[index] = input;
+            return;
+          }
+          try {
+            final upload = await _ref
+                .read(imageUploadRepositoryProvider)
+                .uploadClubPhoto(
+                  uid: uid,
+                  clubId: clubId,
+                  mediaId: id,
+                  position: index,
+                  image: image,
+                  onProgress: (progress) => onProgress?.call(
+                    HostClubMediaProgress(
+                      id: id,
+                      state: ImageUploadJobState(
+                        stage: progress.stage,
+                        progress: progress.fraction,
+                      ),
+                    ),
+                  ),
+                );
+            resolved[index] = input.copyWith(
+              uploadedPhoto: UploadedPhoto.fromUpload(
+                url: upload.url,
+                storagePath: upload.storagePath,
+                position: index,
+              ),
+            );
+          } catch (error) {
+            failures[id] = error;
+            resolved[index] = input;
+            onProgress?.call(
+              HostClubMediaProgress(
+                id: id,
+                state: ImageUploadJobState(
+                  stage: ImageUploadJobStage.failed,
+                  error: error,
+                ),
+              ),
+            );
+          }
       }
     }
-    return photos;
+
+    for (var start = 0; start < inputs.length; start += 2) {
+      await Future.wait([
+        for (
+          var index = start;
+          index < inputs.length && index < start + 2;
+          index += 1
+        )
+          resolveAt(index),
+      ]);
+    }
+    return resolved.cast<HostClubMediaInput>();
+  }
+
+  @override
+  Future<void> discardClubMedia({
+    required List<HostClubMediaInput> photoInputs,
+    HostPickedClubLogo? logo,
+  }) async {
+    final repository = _ref.read(imageUploadRepositoryProvider);
+    final paths = <String>{
+      for (final input in photoInputs)
+        if (input is HostNewClubPhotoInput && input.uploadedPhoto != null)
+          input.uploadedPhoto!.storagePath,
+      if (logo?.uploadedPhoto != null) logo!.uploadedPhoto!.storagePath,
+    };
+    for (final path in paths) {
+      try {
+        await repository.deleteByPath(path);
+      } catch (_) {
+        // Cleanup must never hide the user's original save or discard action.
+      }
+    }
   }
 }

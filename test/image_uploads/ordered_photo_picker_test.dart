@@ -144,6 +144,59 @@ void main() {
     expect(find.text('Uploading…'), findsWidgets);
   });
 
+  testWidgets('photo manager adds photos in place without closing', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: OrderedPhotoManagerScreen(
+          photos: [OrderedPhotoPreview(id: 'one', bytes: _pngBytes())],
+          onAddPhotos: null,
+          onAddPhotosInManager: () async => [
+            OrderedPhotoPreview(id: 'two', bytes: _pngBytes()),
+          ],
+          onRemovePhoto: (_) {},
+          onReorderPhoto: (_, _) {},
+          onRetryPhoto: null,
+          canAdd: true,
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.byType(OrderedPhotoTile), findsOneWidget);
+    await tester.tap(find.text('Add photos'));
+    await tester.pump();
+
+    expect(find.byKey(OrderedPhotoPickerKeys.managerScreen), findsOneWidget);
+    expect(find.byType(OrderedPhotoTile), findsNWidgets(2));
+    expect(find.text('2 photos'), findsOneWidget);
+  });
+
+  testWidgets('photo manager avoids duplicate cover and unavailable menus', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: OrderedPhotoManagerScreen(
+          photos: [OrderedPhotoPreview(id: 'one', bytes: _pngBytes())],
+          onAddPhotos: null,
+          onRemovePhoto: null,
+          onReorderPhoto: null,
+          onRetryPhoto: null,
+          canAdd: false,
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.byType(OrderedPhotoTile), findsOneWidget);
+    expect(find.text('Cover photo'), findsNothing);
+    expect(find.byKey(OrderedPhotoPickerKeys.setCoverAction(0)), findsNothing);
+  });
+
   testWidgets('picker supports section-owned labels without a spacer', (
     tester,
   ) async {
