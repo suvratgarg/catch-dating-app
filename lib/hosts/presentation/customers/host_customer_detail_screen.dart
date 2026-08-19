@@ -578,6 +578,7 @@ HostAudienceContactDetail _hostCustomerSkeletonDetail({
       importedEventCount: 0,
       attendanceRate: 0.67,
       segments: {HostAudienceSegment.repeatAttendee},
+      whatsappStatus: HostAudiencePermissionStatus.optedIn,
       sourceCoverage: HostAudienceSourceCoverage.exact,
     ),
     revenue: const HostCustomerRevenue(

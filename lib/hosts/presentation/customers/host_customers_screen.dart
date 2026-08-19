@@ -261,7 +261,6 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                                   )
                                 : null,
                             onOpenFilters: () => _openFilters(
-                              selectedClub,
                               effectiveFilter,
                               _manualTag,
                               state,
@@ -1352,7 +1351,7 @@ class HostCustomerConversationCard extends StatelessWidget {
       children: [
         CatchField.action(
           key: const ValueKey('host-customer-new-conversation'),
-          title: context.l10n.hostCustomersNewConversation,
+          title: context.l10n.hostCustomersStartCatchChat,
           body: message,
           icon: CatchIcons.tabChats,
           onTap: loading ? null : onOpen,
