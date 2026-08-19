@@ -1,7 +1,7 @@
 ---
 doc_id: legacy_retirement_audit
-version: 1.0.0
-updated: 2026-08-15
+version: 1.1.0
+updated: 2026-08-19
 owner: data_platform
 status: proposed
 ---
@@ -20,28 +20,80 @@ This audit found compatibility paths that are broken, not merely untidy:
 2. a missing `eventOrigin` is treated as Catch-native and therefore booking-capable even though current writers populate the field;
 3. the legacy attendance toggle does not advance `attendanceRevision`;
 4. the supply-capability migration says clients fail closed, but Flutter and the website still derive capabilities, with the website defaulting a missing authority to public-readable;
-5. canonical `organizers/` media is not recognized by the photo-moderation trigger, while legacy `clubs/` media is;
-6. `pushInstallations` is written by Flutter but has no repository contract and is read by no sender;
-7. the profile-photo contract says captions are no longer written, while current Dart and Functions paths still accept and emit them; and
-8. the media hygiene tool calls a schema-retired path canonical and can copy `clubs/` media into it.
+5. `pushInstallations` is written by Flutter but has no repository contract and is read by no sender;
+6. the profile-photo contract says captions are no longer written, while current Dart and Functions paths still accept and emit them; and
+7. the media hygiene tool calls a schema-retired path canonical and can copy `clubs/` media into it.
 
 ## Audit contract
 
 - **Goal:** inventory the repository's backwards-compatibility artifacts, identify their live dependencies, and give a safe deletion order optimized for one clean schema.
 - **Scope:** `contracts/`, `firestore.rules`, `firestore.indexes.json`, `storage.rules`, `lib/`, `functions/src/`, `admin/src/`, `website/src/`, route/design manifests, and related `tool/` migration, generator, validator, and seed code.
-- **Exclusions:** no source, schema, rule, fixture, generated-output, or data changes; no commits; no remote mutation; no migration execution. In particular, `tool/data/migrate_clubs_to_organizers.mjs` was read but not run.
-- **Evidence base:** source tree at `b2b4830dcbd233db4da41ab26c3edc40c2de6971`; working tree was clean before this report. The repository impact planner and context pack were used read-only.
+- **Exclusions:** no source, schema, rule, fixture, generated-output, or data changes; no remote mutation. `tool/data/migrate_clubs_to_organizers.mjs` was run only in its default read-only dry-run mode; no apply, backup, deletion, or compatibility retirement was performed.
+- **Evidence base:** source tree at `fc800d43a2132816f6fd38506c37fba92bc0fcae`, live Firebase metadata, and read-only migration dry runs on 2026-08-19. The repository impact planner and context pack were also used read-only.
 - **Acceptance for this audit:** each semantic compatibility artifact is assigned to a theme, supported by `file:line`, classified as load-bearing, deletion-only, broken, or not legacy, and placed in dependency order.
 
 “Verified” below means the complete owning source file or the complete relevant machine contract was read. “Inference” is used where a conclusion depends on external state or on consumers outside this repository. Generated files and tests are satellites: change their source or generator and regenerate/update them in the same retirement tranche; never hand-edit generated output.
 
 Difficulty and blast radius use a 1–5 scale. Difficulty measures implementation/verification effort. Blast radius measures how much product behavior or authority can fail if the change is wrong.
 
+## Live revalidation — 2026-08-19
+
+The live inventory confirms that compatibility retirement and cumulative
+backend deployment must remain separate operations:
+
+| Surface | Dev | Staging | Prod | Retirement implication |
+|---|---:|---:|---:|---|
+| `clubs` documents | 21 | 0 | 11 | The legacy authority is still live in dev and prod. |
+| `organizers` documents | 21 | 0 | 13 | Production has canonical-only organizers as well as migrated club pairs. |
+| Organizer migration writes needed | 79 | 0 | 0 | Dev needs repair or reseed first: 3 event-participation and 76 notification-item writes. |
+| Organizer migration blockers | 0 | 0 | 0 | The audited migration graph is repairable; zero blockers is not deletion authorization. |
+| Legacy Storage files scanned | 1 | 0 | 0 | The one dev file already has its canonical copy; no live copy operation is pending. |
+| Composite indexes in `READY` | 138 | 133 | 140 | Environment inventories have drifted and should be rebaselined before retirement work. |
+| Repository Functions missing live | 40 | 40 | 40 | All missing exports are the new Forms surface; the cumulative Functions snapshot is not deployed. |
+
+The repository declares 280 Functions. Firebase reports 264 deployed app and
+Extension Functions in dev and staging and 296 in production; 24, 24, and 56
+respectively are environment-only, primarily installed Firebase Extensions.
+The deployer must preserve those environment-only Functions. At the same time,
+club-named app Functions such as `createClub`, `joinClub`, `addClubHost`, club
+claim/admin operations, review/stat synchronizers, and club media/index triggers
+remain deployed in every environment. Current Firestore and Storage rules also
+differ from the live rulesets in every environment. These facts reinforce the
+source audit's conclusion: client read migration is substantially complete,
+but server authority, callable vocabulary, rules, triggers, and some stored
+references are still load-bearing compatibility surfaces.
+
+### Recommended simplification backlog
+
+1. **Repair canonical correctness first:** require one event owner identity,
+   explicit event origin/policy/location, revisioned attendance, and
+   fail-closed supply capabilities; retain the now-passing canonical organizer
+   media moderation regression.
+2. **Finish the organizer authority cutover:** repair or reseed dev, repoint
+   Functions/rules/admin/reviews/notifications/Event Success to `organizers`
+   and organizer team/follower edges, then stop all `clubs` reads and dual
+   writes.
+3. **Remove the legacy public vocabulary:** replace club-named callables,
+   response aliases, routes, analytics fields, and admin commands with
+   organizer names; deploy consumers first, then remove the old exports.
+4. **Collapse duplicate delivery models:** make `pushInstallations` the only
+   push-token source; remove `users.fcmToken`, redundant `clubId` projections,
+   `linkedClubIds`, `compatibilityClubId`, and dual organizer/club ID response
+   arrays after one synthetic-data rewrite.
+5. **Retire old storage and tooling:** move moderation/thumbnail ownership to
+   `organizers/`, remove `clubs/` and retired `hostedMedia/` rule paths, then
+   delete migration-only tools and add absence checks so legacy paths cannot
+   return.
+6. **Clean low-risk source shims last:** remove deprecated Dart aliases,
+   constructor wrappers, route redirects, old Remote Config names, demo flags,
+   and visual-token aliases only after persisted and server compatibility has
+   been eliminated.
+
 ## Dependency graph
 
 The generic “migrate, read, write, schema, delete” sequence is insufficient because authority and fan-out collections cross the themes. The repository-specific order is:
 
-1. **Repair canonical contracts before deleting fallbacks.** Define `pushInstallations`; make organizer media moderation recognize `organizers/`; make supply capabilities fail closed; make attendance mutation consistently revisioned; decide the canonical event identity and policy fields.
+1. **Repair canonical contracts before deleting fallbacks.** Define `pushInstallations`; make supply capabilities fail closed; make attendance mutation consistently revisioned; decide the canonical event identity and policy fields. Canonical organizer media moderation is now covered by a regression test and should remain a prerequisite, not an open repair.
 2. **Reseed or rewrite synthetic data into one canonical shape.** Re-run the organizer copier only with owner approval, then rewrite organizer-team authority, events and every event descendant, reviews, notifications/matches, Event Success plans, profiles/photos, invite links, and media references. Because the corpus is disposable, deleting and reseeding a feature corpus is preferable where it is simpler.
 3. **Repoint every current read and authority decision.** Host discovery must stop querying organizer `hostUserId` projections; Functions and rules must stop consulting `clubs`; push senders must read installations; event policy/location/origin and Event Success must reject missing canonical fields.
 4. **Stop compatibility writes and public entry points.** Remove dual writes, old callable exports, HTTP input aliases, old routes, raw invite-link bearer IDs, and old FCM payload keys. This prevents the synthetic corpus from becoming mixed again.
@@ -60,7 +112,7 @@ Deleting in a different order has two acute failure modes. Removing legacy field
 | Event capacity/price/constraints/cohort/location scalars | **Load-bearing.** Policy, discovery, and Flutter synthesize canonical behavior from them when bundles are absent. Reseed canonical bundles/locations first. |
 | `users.fcmToken` | **Only working push source.** `pushInstallations` is currently write-only. Build the sender side first. |
 | Event Success structure/module/reveal defaults | **Load-bearing for old plan shape.** Prefer deleting/reseeding synthetic plans, then make all fields explicit. |
-| `clubs/` and `hostedMedia/` Storage objects | **Potentially load-bearing by reference.** Object inventory was not inspected; rewrite references and add organizer moderation before deletion. |
+| `clubs/` and `hostedMedia/` Storage objects | **Potentially load-bearing by reference.** The targeted migration scan found one dev `clubs/` object with no copy pending and none in staging/prod; rewrite all persisted references and preserve organizer moderation before deleting rule paths. |
 | Profile root activity fields, `bio`, old draft versions, old route redirects, `cityNames`, deprecated UI/type shims | **Deletion-only after local/fixture reseed.** Repository migration receipts say the significant remote backfills are complete, and no current runtime source was found for `cityNames`. |
 | Raw invite-link document ID as bearer | **Not worth preserving.** Delete/reseed old links, then remove the weaker authentication branch. |
 
@@ -235,13 +287,19 @@ Delete/reseed pre-v2 links and secrets, require v2 tokens, remove raw-ID branche
 
 ## Theme 10 — Media paths and moderation
 
-**Rating:** difficulty 3/5; blast radius 4/5. **Status:** old paths are partially load-bearing; tooling and moderation are broken.
+**Rating:** difficulty 3/5; blast radius 4/5. **Status:** old paths are partially load-bearing; tooling is broken, while canonical moderation has been repaired.
 
 The schema calls `users/{uid}/hostedMedia/{fileName}` retired and read-only (`contracts/storage/hosted_media.schema.json:5-15`), yet Storage rules keep it public (`storage.rules:222-244`) and the current uploader contract parser accepts both `hostedMedia/` and `clubs/` in addition to canonical organizer/event paths (`lib/image_uploads/data/image_upload_repository.dart:501-522`). The organizer migration also retains `clubs/` logos/covers (`storage.rules:122-153`, `storage.rules:189-203`).
 
 `tool/data/hygiene_media_paths.mjs:365-385` can copy legacy `clubs/` objects into `hostedMedia/`, and its report labels that retired path current/canonical (`tool/data/hygiene_media_paths.mjs:480-510`). Under the current contracts, that tool moves data in the wrong direction and must not be used for retirement without redesign.
 
-More seriously, moderation recognizes profile, hostedMedia, clubs, events, and chats but not `organizers/` (`functions/src/moderation/moderatePhoto.ts:210-234`). The canonical uploader writes organizer media under `organizers/`, so new canonical organizer photos bypass this trigger while legacy club photos are moderated. Add organizer-path moderation and tests before moving/reseeding objects; rewrite all stored URLs/storage paths; then remove legacy path acceptance, rules, old thumbnail triggers, and objects.
+Moderation now recognizes both canonical `organizers/` and legacy `clubs/`
+paths (`functions/src/moderation/moderatedPhotoPath.ts:1-17`), and the Functions suite
+locks that behavior with the “canonical and legacy organizer media paths are
+moderated” regression (`functions/src/moderation/moderatedPhotoPath.test.ts:5-14`). Treat that repair as a satisfied migration prerequisite:
+rewrite all stored URLs/storage paths, then remove legacy path acceptance,
+rules, old thumbnail triggers, and objects while preserving canonical
+moderation coverage.
 
 ## Theme 11 — Small persisted/API compatibility surfaces
 
@@ -310,7 +368,7 @@ Several grep hits are canonical product or platform terminology:
 | Event provenance fails open | missing origin is called Catch-native (`contracts/firestore/events.schema.json:68-71`); checker rejects only explicit external (`functions/src/events/eventOrigin.ts:4-11`) | Missing/malformed provenance can receive Catch booking behavior. |
 | Attendance revisions can be bypassed | old toggle changes state without revision update (`functions/src/events/eventAttendees.ts:248-317`) while revision protocol exists (`contracts/firestore/event_attendees.schema.json:113-118`) | Stale absolute writes can be accepted. |
 | Capability migration claim is false | complete/fail-closed claim (`contracts/migrations/organizer_supply_capabilities.json:39-46`, `contracts/migrations/organizer_supply_capabilities.json:70-73`) versus Flutter/web derivation (`lib/organizers/domain/organizer_supply_capabilities.dart:99-128`, `website/src/features/organizers/organizerPolicy.ts:111-181`) | Unsupported actions can appear; clients disagree on absence. |
-| Canonical organizer media misses moderation | uploader accepts/writes organizer path (`lib/image_uploads/data/image_upload_repository.dart:501-522`); trigger path matcher omits it (`functions/src/moderation/moderatePhoto.ts:210-234`) | New organizer photos bypass the moderation workflow. |
+| Canonical organizer media moderation | **Resolved:** the trigger accepts canonical and legacy organizer paths (`functions/src/moderation/moderatedPhotoPath.ts:1-17`) and the Functions suite covers both (`functions/src/moderation/moderatedPhotoPath.test.ts:5-14`). | Keep the regression while retiring legacy paths. |
 | Push replacement is write-only | Flutter writes installations (`lib/core/fcm_service.dart:240-258`); all senders use `fcmToken`, and only rules mention the subcollection (`firestore.rules:685-704`) | Removing the old token today disables push; multi-device state is unused. |
 | Caption contract disagrees with writers | legacy-only schema (`contracts/embedded/photo_prompt_answer.schema.json:5-29`) versus active writes (`functions/src/profiles/updateUserProfile.ts:271-294`, `functions/src/profiles/updateUserProfile.ts:505-520`) | New documents can recreate supposedly retired data. |
 | Media migration tool targets a retired path | retired schema (`contracts/storage/hosted_media.schema.json:5-15`) versus tool destination/report (`tool/data/hygiene_media_paths.mjs:365-385`, `tool/data/hygiene_media_paths.mjs:480-510`) | Running it can move media away from the canonical organizer layout. |
@@ -329,7 +387,7 @@ Several grep hits are canonical product or platform terminology:
 
 ## Verification and implementation gates for a future retirement
 
-No migration or mutating check was run for this audit. A future implementation should be split into reviewable tranches and prove the following before destructive deletion:
+Only read-only migration dry runs and metadata inventories were run for this audit; no apply or mutating check ran. A future implementation should be split into reviewable tranches and prove the following before destructive deletion:
 
 1. canonical organizer/event/profile/push schemas validate all reseeded fixtures and disposable remote data;
 2. no production source reads or writes `clubs`, old organizer authority fields, `event.clubId`, old event scalars, `users.fcmToken`, raw invite IDs, or retired profile fields;
@@ -339,4 +397,9 @@ No migration or mutating check was run for this audit. A future implementation s
 6. the deletion target is resolved exactly and backed by a recoverable export or accepted disposable-environment reset; and
 7. the final tree contains an absence scanner, not a new tracked evidence registry.
 
-External production contents, deployed Functions/rules, Remote Config, Algolia configuration, and object-storage inventories were not inspected. Statements about those live systems are therefore inferences from repository receipts. Under the owner's explicit synthetic-data assertion, those gaps affect operational sequencing, not the conclusion that compatibility may be retired.
+Targeted organizer documents, deployed Functions, rules, composite indexes, and
+legacy organizer Storage prefixes were inspected live. Remote Config, Algolia,
+untargeted collection contents, and untargeted Storage prefixes were not. Claims
+about those remaining systems are therefore source- or receipt-derived. Under
+the owner's explicit synthetic-data assertion, those gaps affect operational
+sequencing, not the conclusion that compatibility may be retired.

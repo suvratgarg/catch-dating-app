@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.1.2
-updated: 2026-08-16
+version: 2.1.3
+updated: 2026-08-19
 owner: recursive_audit_loop
 status: active
 ---
@@ -762,6 +762,27 @@ control plane no longer declares that exact index. This deterministic recovery
 normalization changes no query capability because Firestore's built-in
 single-field index already owns the shape; all other packaged bytes and stages
 remain bound to the original CI authority.
+
+`Backend Rebaseline` is the exceptional cumulative-snapshot lane for an
+explicitly approved stale-queue recovery. It is manual-only, shares the
+`backend-delivery` concurrency key, and accepts only the exact current `main`
+SHA plus a single-line operator reason and an affirmative all-backend
+confirmation. It restores the latest verified v4 cursor, binds the current
+successful `main` CI authority, and uses the required Harness graph to select
+exactly Functions, Firestore indexes, Firestore rules, and Storage rules. It
+then reruns the Functions, contract/index, and rules validation lanes and
+packages their exact tested output in the rebaseline run; it does not borrow
+or rebuild an older pending backend package.
+
+The resulting immutable package follows the ordinary ordered promotion path
+through `dev`, `staging`, and protected `prod`. Every environment additionally
+requires the package source to remain the exact live `main` head. Only a
+successful production promotion may publish a normal v4 delivery cursor for
+the current successful `main` CI authority; that cursor supersedes the covered
+pending CI window without deleting its artifacts. Rebaseline does not delete
+Firestore documents, Storage objects, Extension-owned Functions, or
+environment-only Functions. Legacy data and API retirement remains a separate
+contract migration with its own read, write, rules, and deletion sequence.
 
 When no verified delivery cursor exists, automatic selection has a separate,
 fail-closed bootstrap rule: it may select only the latest successful immutable

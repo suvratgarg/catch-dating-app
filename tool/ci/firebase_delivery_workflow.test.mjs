@@ -555,6 +555,67 @@ test("promotion guards optional deploy-group payloads", () => {
   );
 });
 
+test("Backend Rebaseline authorizes one exact all-backend snapshot", () => {
+  const rebaseline = workflow("backend-rebaseline.yml");
+  assert.match(rebaseline, /^name: Backend Rebaseline/m);
+  assert.match(rebaseline, /workflow_dispatch:[\s\S]*source_sha:[\s\S]*reason:[\s\S]*confirm_full_backend_rebaseline:/);
+  assert.doesNotMatch(rebaseline, /workflow_run:|repository_dispatch:|schedule:/);
+  assert.match(rebaseline, /group: backend-delivery\n/);
+  assert.match(rebaseline, /test "\$GITHUB_REF" = "refs\/heads\/main"/);
+  assert.match(rebaseline, /test "\$CONFIRM_FULL_BACKEND_REBASELINE" = "true"/);
+  assert.match(rebaseline, /test "\$\(git rev-parse refs\/remotes\/origin\/main\)" = "\$SOURCE_SHA"/);
+  assert.match(rebaseline, /test "\$GITHUB_WORKFLOW_SHA" = "\$SOURCE_SHA"/);
+  assert.match(rebaseline, /A verified v4 delivery cursor is required before a backend rebaseline/);
+  assert.match(rebaseline, /actions\/runs\/\$delivery_run_id\/attempts\/\$delivery_run_attempt/);
+  assert.match(rebaseline, /\.name == "Delivery"[\s\S]*\.name == "Backend Rebaseline"/);
+  assert.match(rebaseline, /node tool\/harness\.mjs plan[\s\S]*--paths functions\/src\/index\.ts,firestore\.indexes\.json,firestore\.rules,storage\.rules[\s\S]*--mode main/);
+  for (const group of [
+    "firestore-indexes",
+    "firestore-rules",
+    "functions",
+    "storage-rules",
+  ]) assert.match(rebaseline, new RegExp(`"${group}"`));
+  for (const workflowName of [
+    "functions-ci.yml",
+    "contracts-ci.yml",
+    "firestore-rules-ci.yml",
+  ]) assert.match(rebaseline, new RegExp(escapeRegex(workflowName)));
+  assert.match(rebaseline, /functions-lib-\$\{\{ needs\.authorize\.outputs\.source_sha \}\}-\$\{\{ github\.run_attempt \}\}/);
+  assert.match(rebaseline, /package_firebase_delivery\.mjs prepare[\s\S]*--functions-lib-dir build\/rebaseline\/tested-functions-lib/);
+  assert.match(rebaseline, /test "\$stages" = "firestore-indexes,functions,firestore-rules,storage-rules"/);
+  assert.match(rebaseline, /name: firebase-delivery-\$\{\{ needs\.authorize\.outputs\.source_sha \}\}-\$\{\{ github\.run_attempt \}\}/);
+  assert.doesNotMatch(rebaseline, /functions:delete|firestore:delete|storage:delete|--force|firebase deploy --only extensions/);
+});
+
+test("Backend Rebaseline promotes in order and advances only a successful current-main prod", () => {
+  const rebaseline = workflow("backend-rebaseline.yml");
+  assert.match(rebaseline, /dev:[\s\S]*needs: \[authorize, package\][\s\S]*environment: dev/);
+  assert.match(rebaseline, /staging:[\s\S]*needs: \[authorize, dev\][\s\S]*environment: staging/);
+  assert.match(rebaseline, /prod:[\s\S]*needs: \[authorize, staging\][\s\S]*environment: prod/);
+  assert.equal((rebaseline.match(/require_current_main: true/g) ?? []).length, 3);
+  const finalizer = rebaseline.slice(rebaseline.indexOf("  finalize:"));
+  assert.match(finalizer, /needs\.prod\.result == 'success'/);
+  assert.match(finalizer, /test "\$GITHUB_RUN_ATTEMPT" = "1"/);
+  assert.match(finalizer, /test "\$\(git rev-parse refs\/remotes\/origin\/main\)" = "\$SOURCE_SHA"/);
+  assert.match(finalizer, /catch\.backend-delivery-cursor\/v4/);
+  assert.match(finalizer, /sourceCiRunId: \$sourceCiRunId/);
+  assert.match(finalizer, /name: backend-delivery-cursor-v4-/);
+  assert.match(finalizer, /event_type=backend-delivery-drain/);
+
+  const promotion = workflow("_firebase-promote.yml");
+  assert.match(promotion, /require_current_main:[\s\S]*default: false[\s\S]*type: boolean/);
+  assert.match(promotion, /\[\[ "\$REQUIRE_CURRENT_MAIN" =~ \^\(true\|false\)\$ \]\]/);
+  assert.match(promotion, /if \[\[ "\$REQUIRE_CURRENT_MAIN" == "true" \]\]; then[\s\S]*rev-parse refs\/remotes\/origin\/main\)" = "\$SOURCE_SHA"/);
+
+  const delivery = workflow("delivery.yml");
+  const cursorOrigin = delivery.slice(
+    delivery.indexOf("historical_delivery="),
+    delivery.indexOf("cursor_source_run="),
+  );
+  assert.match(cursorOrigin, /\.name == "Delivery"[\s\S]*\.github\/workflows\/delivery\.yml/);
+  assert.match(cursorOrigin, /\.name == "Backend Rebaseline"[\s\S]*\.github\/workflows\/backend-rebaseline\.yml/);
+});
+
 test("automatic target planning rejects broad and unrelated Firebase products", () => {
   const planner = fs.readFileSync(
     path.join(repoRoot, "tool/firebase/plan_firebase_deploy_targets.mjs"),
