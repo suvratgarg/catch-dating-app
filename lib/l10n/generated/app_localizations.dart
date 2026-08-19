@@ -4015,12 +4015,6 @@ abstract class AppLocalizations {
   /// **'Next'**
   String get hostsStepperFooterLabelNext;
 
-  /// Product copy used by lib/hosts/presentation/widgets/stepper_footer.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Save Draft'**
-  String get hostsStepperFooterLabelSaveDraft;
-
   /// Product copy used by lib/image_uploads/shared/profile_photo_editor_screen.dart (title).
   ///
   /// In en, this message translates to:
@@ -6838,6 +6832,15 @@ abstract class AppLocalizations {
   String coreCatchStepFlowHeaderTextStepClampedstepOfTotal({
     required Object clampedStep,
     required Object total,
+  });
+
+  /// Compact visual step counter used when large text leaves less header width.
+  ///
+  /// In en, this message translates to:
+  /// **'{clampedStep}/{total}'**
+  String coreCatchStepFlowHeaderTextCompactStepClampedstepTotal({
+    required int clampedStep,
+    required int total,
   });
 
   /// Product copy used by lib/core/widgets/catch_step_progress.dart (Text).
@@ -16790,30 +16793,6 @@ abstract class AppLocalizations {
   /// **'Profile'**
   String get publicProfilePublicProfileScreenStateTitleProfile;
 
-  /// Product copy used by lib/hosts/presentation/event_management/create/create_event_screen.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Unsaved changes'**
-  String get hostsCreateEventScreenVisiblecopyUnsavedChanges;
-
-  /// Product copy used by lib/hosts/presentation/event_management/create/create_event_screen.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'You have unsaved changes. Would you like to save a draft?'**
-  String get hostsCreateEventScreenVisiblecopyYouHaveUnsavedChanges;
-
-  /// Product copy used by lib/hosts/presentation/event_management/create/create_event_screen.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Discard'**
-  String get hostsCreateEventScreenLabelDiscard;
-
-  /// Product copy used by lib/hosts/presentation/event_management/create/create_event_screen.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Save draft'**
-  String get hostsCreateEventScreenLabelSaveDraft;
-
   /// Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (visibleCopy).
   ///
   /// In en, this message translates to:
@@ -23828,6 +23807,117 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Redo edit'**
   String get hostFormRedo;
+
+  /// Moves to the preceding section in a resumable Host creation wizard.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous'**
+  String get hostsWizardPrevious;
+
+  /// Section status when required creation information is ready.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete'**
+  String get hostsWizardStatusComplete;
+
+  /// Section status when required creation information is missing or invalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs information'**
+  String get hostsWizardStatusNeedsInformation;
+
+  /// Section status for an optional creation section.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional'**
+  String get hostsWizardStatusOptional;
+
+  /// Explains out-of-order navigation in resumable Host creation wizards.
+  ///
+  /// In en, this message translates to:
+  /// **'Open any section and finish the required details in any order.'**
+  String get hostsWizardOverviewSubtitle;
+
+  /// Section overview title in event creation.
+  ///
+  /// In en, this message translates to:
+  /// **'Event setup'**
+  String get hostsCreateEventOverviewTitle;
+
+  /// Section overview title in organizer creation.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer setup'**
+  String get hostsCreateClubOverviewTitle;
+
+  /// Guidance on the final review screen for resumable Host creation flows.
+  ///
+  /// In en, this message translates to:
+  /// **'Review every section before publishing. Select a row to make changes.'**
+  String get hostsWizardReviewBody;
+
+  /// Final review title and action in event creation.
+  ///
+  /// In en, this message translates to:
+  /// **'Review event'**
+  String get hostsCreateEventReviewTitle;
+
+  /// Final review title and action in organizer creation.
+  ///
+  /// In en, this message translates to:
+  /// **'Review organizer'**
+  String get hostsCreateClubReviewTitle;
+
+  /// Publishes an event after the final creation review passes.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule event'**
+  String get hostsCreateEventScheduleAction;
+
+  /// Creates an organizer after the final creation review passes.
+  ///
+  /// In en, this message translates to:
+  /// **'Create organizer'**
+  String get hostsCreateClubCreateAction;
+
+  /// Title for leaving a dirty resumable Host creation wizard.
+  ///
+  /// In en, this message translates to:
+  /// **'Save your work?'**
+  String get hostsDraftExitTitle;
+
+  /// Explains the save-on-exit choice for a dirty Host creation wizard.
+  ///
+  /// In en, this message translates to:
+  /// **'Save this as a draft before you exit?'**
+  String get hostsDraftExitMessage;
+
+  /// Dismisses the draft exit dialog and returns to the wizard.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep editing'**
+  String get hostsDraftExitKeepEditing;
+
+  /// Leaves a dirty Host creation wizard without saving its latest changes.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard & exit'**
+  String get hostsDraftExitDiscardAndExit;
+
+  /// Saves a Host creation draft and exits only after the save succeeds.
+  ///
+  /// In en, this message translates to:
+  /// **'Save draft & exit'**
+  String get hostsDraftExitSaveAndExit;
+
+  /// Accessible label for the interactive wizard step counter.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {step} of {total}. Open section overview.'**
+  String hostsWizardStepOverviewSemantics({
+    required int step,
+    required int total,
+  });
 }
 
 class _AppLocalizationsDelegate

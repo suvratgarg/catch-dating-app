@@ -2305,9 +2305,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsStepperFooterLabelNext => 'Next';
 
   @override
-  String get hostsStepperFooterLabelSaveDraft => 'Save Draft';
-
-  @override
   String get imageUploadsProfilePhotoEditorScreenTitleDeletePhoto =>
       'Delete photo?';
 
@@ -4098,6 +4095,14 @@ class AppLocalizationsEn extends AppLocalizations {
     required Object total,
   }) {
     return 'STEP $clampedStep OF $total';
+  }
+
+  @override
+  String coreCatchStepFlowHeaderTextCompactStepClampedstepTotal({
+    required int clampedStep,
+    required int total,
+  }) {
+    return '$clampedStep/$total';
   }
 
   @override
@@ -10735,20 +10740,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get publicProfilePublicProfileScreenStateTitleProfile => 'Profile';
 
   @override
-  String get hostsCreateEventScreenVisiblecopyUnsavedChanges =>
-      'Unsaved changes';
-
-  @override
-  String get hostsCreateEventScreenVisiblecopyYouHaveUnsavedChanges =>
-      'You have unsaved changes. Would you like to save a draft?';
-
-  @override
-  String get hostsCreateEventScreenLabelDiscard => 'Discard';
-
-  @override
-  String get hostsCreateEventScreenLabelSaveDraft => 'Save draft';
-
-  @override
   String get hostsDraftPickerSheetVisiblecopyDeleteDraft => 'Delete draft?';
 
   @override
@@ -15112,4 +15103,65 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostFormRedo => 'Redo edit';
+
+  @override
+  String get hostsWizardPrevious => 'Previous';
+
+  @override
+  String get hostsWizardStatusComplete => 'Complete';
+
+  @override
+  String get hostsWizardStatusNeedsInformation => 'Needs information';
+
+  @override
+  String get hostsWizardStatusOptional => 'Optional';
+
+  @override
+  String get hostsWizardOverviewSubtitle =>
+      'Open any section and finish the required details in any order.';
+
+  @override
+  String get hostsCreateEventOverviewTitle => 'Event setup';
+
+  @override
+  String get hostsCreateClubOverviewTitle => 'Organizer setup';
+
+  @override
+  String get hostsWizardReviewBody =>
+      'Review every section before publishing. Select a row to make changes.';
+
+  @override
+  String get hostsCreateEventReviewTitle => 'Review event';
+
+  @override
+  String get hostsCreateClubReviewTitle => 'Review organizer';
+
+  @override
+  String get hostsCreateEventScheduleAction => 'Schedule event';
+
+  @override
+  String get hostsCreateClubCreateAction => 'Create organizer';
+
+  @override
+  String get hostsDraftExitTitle => 'Save your work?';
+
+  @override
+  String get hostsDraftExitMessage => 'Save this as a draft before you exit?';
+
+  @override
+  String get hostsDraftExitKeepEditing => 'Keep editing';
+
+  @override
+  String get hostsDraftExitDiscardAndExit => 'Discard & exit';
+
+  @override
+  String get hostsDraftExitSaveAndExit => 'Save draft & exit';
+
+  @override
+  String hostsWizardStepOverviewSemantics({
+    required int step,
+    required int total,
+  }) {
+    return 'Step $step of $total. Open section overview.';
+  }
 }

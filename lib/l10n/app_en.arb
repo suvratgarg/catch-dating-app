@@ -4638,13 +4638,6 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.widgets.stepper_footer"
   },
-  "hostsStepperFooterLabelSaveDraft": "Save Draft",
-  "@hostsStepperFooterLabelSaveDraft": {
-    "description": "Product copy used by lib/hosts/presentation/widgets/stepper_footer.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.stepper_footer"
-  },
   "imageUploadsProfilePhotoEditorScreenTitleDeletePhoto": "Delete photo?",
   "@imageUploadsProfilePhotoEditorScreenTitleDeletePhoto": {
     "description": "Product copy used by lib/image_uploads/shared/profile_photo_editor_screen.dart (title).",
@@ -8021,6 +8014,21 @@
     "placeholders": {
       "clampedStep": {},
       "total": {}
+    },
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "core.widgets.catch_step_flow_header"
+  },
+  "coreCatchStepFlowHeaderTextCompactStepClampedstepTotal": "{clampedStep}/{total}",
+  "@coreCatchStepFlowHeaderTextCompactStepClampedstepTotal": {
+    "description": "Compact visual step counter used when large text leaves less header width.",
+    "placeholders": {
+      "clampedStep": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     },
     "x-audience": "shared",
     "x-owner": "product",
@@ -19599,34 +19607,6 @@
     "x-owner": "product",
     "x-surface": "public_profile.presentation.public_profile_screen_state"
   },
-  "hostsCreateEventScreenVisiblecopyUnsavedChanges": "Unsaved changes",
-  "@hostsCreateEventScreenVisiblecopyUnsavedChanges": {
-    "description": "Product copy used by lib/hosts/presentation/event_management/create/create_event_screen.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.create.create_event_screen"
-  },
-  "hostsCreateEventScreenVisiblecopyYouHaveUnsavedChanges": "You have unsaved changes. Would you like to save a draft?",
-  "@hostsCreateEventScreenVisiblecopyYouHaveUnsavedChanges": {
-    "description": "Product copy used by lib/hosts/presentation/event_management/create/create_event_screen.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.create.create_event_screen"
-  },
-  "hostsCreateEventScreenLabelDiscard": "Discard",
-  "@hostsCreateEventScreenLabelDiscard": {
-    "description": "Product copy used by lib/hosts/presentation/event_management/create/create_event_screen.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.create.create_event_screen"
-  },
-  "hostsCreateEventScreenLabelSaveDraft": "Save draft",
-  "@hostsCreateEventScreenLabelSaveDraft": {
-    "description": "Product copy used by lib/hosts/presentation/event_management/create/create_event_screen.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.create.create_event_screen"
-  },
   "hostsDraftPickerSheetVisiblecopyDeleteDraft": "Delete draft?",
   "@hostsDraftPickerSheetVisiblecopyDeleteDraft": {
     "description": "Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (visibleCopy).",
@@ -22555,5 +22535,41 @@
   "hostFormUndo": "Undo last edit",
   "@hostFormUndo": {"description": "Undoes the most recent local form-builder edit.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostFormRedo": "Redo edit",
-  "@hostFormRedo": {"description": "Reapplies the most recently undone form-builder edit.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"}
+  "@hostFormRedo": {"description": "Reapplies the most recently undone form-builder edit.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostsWizardPrevious": "Previous",
+  "@hostsWizardPrevious": {"description": "Moves to the preceding section in a resumable Host creation wizard.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.stepper_footer"},
+  "hostsWizardStatusComplete": "Complete",
+  "@hostsWizardStatusComplete": {"description": "Section status when required creation information is ready.", "x-audience": "host", "x-owner": "product", "x-surface": "core.widgets.catch_form_step_overview"},
+  "hostsWizardStatusNeedsInformation": "Needs information",
+  "@hostsWizardStatusNeedsInformation": {"description": "Section status when required creation information is missing or invalid.", "x-audience": "host", "x-owner": "product", "x-surface": "core.widgets.catch_form_step_overview"},
+  "hostsWizardStatusOptional": "Optional",
+  "@hostsWizardStatusOptional": {"description": "Section status for an optional creation section.", "x-audience": "host", "x-owner": "product", "x-surface": "core.widgets.catch_form_step_overview"},
+  "hostsWizardOverviewSubtitle": "Open any section and finish the required details in any order.",
+  "@hostsWizardOverviewSubtitle": {"description": "Explains out-of-order navigation in resumable Host creation wizards.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.creation_wizards"},
+  "hostsCreateEventOverviewTitle": "Event setup",
+  "@hostsCreateEventOverviewTitle": {"description": "Section overview title in event creation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.create"},
+  "hostsCreateClubOverviewTitle": "Organizer setup",
+  "@hostsCreateClubOverviewTitle": {"description": "Section overview title in organizer creation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.club_management.create"},
+  "hostsWizardReviewBody": "Review every section before publishing. Select a row to make changes.",
+  "@hostsWizardReviewBody": {"description": "Guidance on the final review screen for resumable Host creation flows.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.creation_wizards"},
+  "hostsCreateEventReviewTitle": "Review event",
+  "@hostsCreateEventReviewTitle": {"description": "Final review title and action in event creation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.create"},
+  "hostsCreateClubReviewTitle": "Review organizer",
+  "@hostsCreateClubReviewTitle": {"description": "Final review title and action in organizer creation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.club_management.create"},
+  "hostsCreateEventScheduleAction": "Schedule event",
+  "@hostsCreateEventScheduleAction": {"description": "Publishes an event after the final creation review passes.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.create"},
+  "hostsCreateClubCreateAction": "Create organizer",
+  "@hostsCreateClubCreateAction": {"description": "Creates an organizer after the final creation review passes.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.club_management.create"},
+  "hostsDraftExitTitle": "Save your work?",
+  "@hostsDraftExitTitle": {"description": "Title for leaving a dirty resumable Host creation wizard.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_draft_exit_dialog"},
+  "hostsDraftExitMessage": "Save this as a draft before you exit?",
+  "@hostsDraftExitMessage": {"description": "Explains the save-on-exit choice for a dirty Host creation wizard.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_draft_exit_dialog"},
+  "hostsDraftExitKeepEditing": "Keep editing",
+  "@hostsDraftExitKeepEditing": {"description": "Dismisses the draft exit dialog and returns to the wizard.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_draft_exit_dialog"},
+  "hostsDraftExitDiscardAndExit": "Discard & exit",
+  "@hostsDraftExitDiscardAndExit": {"description": "Leaves a dirty Host creation wizard without saving its latest changes.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_draft_exit_dialog"},
+  "hostsDraftExitSaveAndExit": "Save draft & exit",
+  "@hostsDraftExitSaveAndExit": {"description": "Saves a Host creation draft and exits only after the save succeeds.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_draft_exit_dialog"},
+  "hostsWizardStepOverviewSemantics": "Step {step} of {total}. Open section overview.",
+  "@hostsWizardStepOverviewSemantics": {"description": "Accessible label for the interactive wizard step counter.", "placeholders": {"step": {"type": "int"}, "total": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "core.widgets.catch_step_flow_header"}
 }

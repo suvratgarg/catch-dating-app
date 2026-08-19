@@ -27,6 +27,8 @@ import 'package:catch_dating_app/core/widgets/catch_analytics_kit.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_form_step_flow.dart';
+import 'package:catch_dating_app/core/widgets/catch_form_step_overview.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -4396,7 +4398,8 @@ Widget createClubStepHeaderCatalogStates(BuildContext context) {
             subtitle: 'Add your club identity and media',
             currentStep: 0,
             totalSteps: 4,
-            onBack: () {},
+            onClose: () {},
+            onStepOverview: () {},
           ),
         ),
       ),
@@ -4422,7 +4425,8 @@ Widget createEventStepHeaderCatalogStates(BuildContext context) {
             clubName: _club.name,
             currentStep: 0,
             totalSteps: 5,
-            onBack: () {},
+            onClose: () {},
+            onStepOverview: () {},
           ),
         ),
       ),
@@ -4469,14 +4473,49 @@ Widget stepperFooterCatalogStates(BuildContext context) {
     contractId: 'component.host.stepper_footer',
     children: [
       _StateCard(
-        label: 'save and next',
+        label: 'previous and next',
         child: _DeviceFrame(
           child: StepperFooter(
             body: scrollingBody('Event basics'),
             isLastStep: false,
             isLoading: false,
             onPrimary: () {},
-            onSaveDraft: () {},
+            onPrevious: () {},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'review needs information',
+        child: _DeviceFrame(
+          child: StepperFooter(
+            body: CatchFormReviewBody(
+              message:
+                  'Review every section. Open a section to add or change information.',
+              items: const [
+                CatchFormStepReviewItem(
+                  index: 0,
+                  title: 'Event basics',
+                  status: CatchFormStepStatus.complete,
+                ),
+                CatchFormStepReviewItem(
+                  index: 1,
+                  title: 'Meeting location',
+                  status: CatchFormStepStatus.needsInformation,
+                ),
+                CatchFormStepReviewItem(
+                  index: 2,
+                  title: 'Live event guide',
+                  status: CatchFormStepStatus.optional,
+                ),
+              ],
+              onStepSelected: (_) {},
+            ),
+            isLastStep: true,
+            isLoading: false,
+            primaryEnabled: false,
+            primaryLabel: 'Schedule event',
+            onPrimary: () {},
+            onPrevious: () {},
           ),
         ),
       ),
@@ -4488,7 +4527,7 @@ Widget stepperFooterCatalogStates(BuildContext context) {
             isLastStep: true,
             isLoading: true,
             onPrimary: () {},
-            onSaveDraft: null,
+            onPrevious: () {},
             lastStepLabel: 'Schedule event',
           ),
         ),
@@ -4508,7 +4547,7 @@ Widget createEventUnsavedChangesDialogCatalogStates(BuildContext context) {
     contractId: 'component.host.event.unsaved_changes_dialog',
     children: [
       _StateCard(
-        label: 'save or discard',
+        label: 'keep, discard, or save and exit',
         child: const _DeviceFrame(
           child: Center(child: CreateEventUnsavedChangesDialog()),
         ),

@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +18,9 @@ class CatchStepHeader extends StatelessWidget {
     this.total,
     this.onBack,
     this.showBack = true,
+    this.leadingType,
+    this.onStepOverview,
+    this.stepOverviewSemanticsLabel,
     this.trailing,
     this.gutter = true,
   });
@@ -27,6 +32,9 @@ class CatchStepHeader extends StatelessWidget {
   final int? total;
   final VoidCallback? onBack;
   final bool showBack;
+  final CatchTopBarLeading? leadingType;
+  final VoidCallback? onStepOverview;
+  final String? stepOverviewSemanticsLabel;
   final Widget? trailing;
   final bool gutter;
 
@@ -38,6 +46,19 @@ class CatchStepHeader extends StatelessWidget {
     final fraction = hasProgress
         ? (clampedStep! / total!).clamp(0.0, 1.0)
         : 0.0;
+    final stepLabel = hasProgress
+        ? context.l10n.coreCatchStepFlowHeaderTextStepClampedstepOfTotal(
+            clampedStep: clampedStep!,
+            total: total!,
+          )
+        : null;
+    final visibleStepLabel =
+        hasProgress && MediaQuery.textScalerOf(context).scale(1) >= 1.6
+        ? context.l10n.coreCatchStepFlowHeaderTextCompactStepClampedstepTotal(
+            clampedStep: clampedStep!,
+            total: total!,
+          )
+        : stepLabel;
     final topRight =
         trailing ??
         (hasProgress
@@ -47,14 +68,33 @@ class CatchStepHeader extends StatelessWidget {
                       ? CatchLayout.stepHeaderCounterTopPadding
                       : CatchSpacing.s0,
                 ),
-                child: Text(
-                  context.l10n
-                      .coreCatchStepFlowHeaderTextStepClampedstepOfTotal(
-                        clampedStep: clampedStep!,
-                        total: total!,
+                child: onStepOverview == null
+                    ? Text(
+                        visibleStepLabel!,
+                        style: CatchTextStyles.monoLabel(
+                          context,
+                          color: t.ink3,
+                        ),
+                      )
+                    : Semantics(
+                        button: true,
+                        label: stepOverviewSemanticsLabel ?? stepLabel,
+                        excludeSemantics: true,
+                        child: CatchTextButton(
+                          label: visibleStepLabel!,
+                          onPressed: onStepOverview,
+                          tone: CatchTextButtonTone.neutral,
+                          minimumSize: const Size(
+                            CatchSpacing.s0,
+                            CatchIconButton.navSize,
+                          ),
+                          padding: EdgeInsets.zero,
+                          textStyle: CatchTextStyles.monoLabel(
+                            context,
+                            color: t.ink3,
+                          ),
+                        ),
                       ),
-                  style: CatchTextStyles.monoLabel(context, color: t.ink3),
-                ),
               )
             : null);
 
@@ -66,9 +106,9 @@ class CatchStepHeader extends StatelessWidget {
           subtitle: subtitle,
           kicker: kicker,
           large: true,
-          leadingType: showBack
-              ? CatchTopBarLeading.back
-              : CatchTopBarLeading.none,
+          leadingType:
+              leadingType ??
+              (showBack ? CatchTopBarLeading.back : CatchTopBarLeading.none),
           onBack: onBack,
           trailing: topRight,
           gutter: gutter,

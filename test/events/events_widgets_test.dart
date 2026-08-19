@@ -742,14 +742,14 @@ void main() {
               isLastStep: true,
               isLoading: false,
               onPrimary: _noop,
-              onSaveDraft: _noop,
+              onPrevious: _noop,
               lastStepLabel: 'Schedule event',
             ),
           ),
         );
 
         expect(tester.takeException(), isNull);
-        expect(find.text('Save Draft'), findsOneWidget);
+        expect(find.text('Previous'), findsOneWidget);
         expect(find.text('Schedule event'), findsOneWidget);
         expect(find.byType(CatchBottomDock), findsNothing);
         expect(find.byType(Divider), findsNothing);

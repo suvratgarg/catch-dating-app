@@ -9099,7 +9099,7 @@
       "name": "CatchStepHeader",
       "status": "active",
       "kind": "composite",
-      "summary": "Wizard/step-flow header built from CatchTopBar large mode plus an optional progress hairline.",
+      "summary": "Wizard/step-flow header with back or close navigation, an optional interactive section counter, and a progress hairline.",
       "dart": {
         "symbol": "CatchStepHeader",
         "file": "lib/core/widgets/catch_step_flow_header.dart",
@@ -9169,6 +9169,30 @@
             "dartType": "bool"
           },
           {
+            "name": "leadingType",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchTopBarLeading?",
+            "values": [
+              "auto",
+              "back",
+              "close",
+              "none"
+            ]
+          },
+          {
+            "name": "onStepOverview",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback?"
+          },
+          {
+            "name": "stepOverviewSemanticsLabel",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
             "name": "trailing",
             "type": "widget",
             "required": false,
@@ -9186,6 +9210,8 @@
           "with-progress",
           "without-progress",
           "with-back",
+          "with-close",
+          "interactive-step-overview",
           "no-back",
           "custom-trailing",
           "no-gutter"
@@ -9212,6 +9238,7 @@
         "dartRoles": [
           "CatchTopBar",
           "CatchTopBarLeading",
+          "CatchTextButton",
           "CatchTextStyles.monoLabel",
           "CatchLayout.stepHeaderProgressHeight",
           "CatchStepProgress"
@@ -9258,7 +9285,7 @@
           "catch.icon_button"
         ],
         "notes": [
-          "Use for multi-step flows; do not create thin feature wrappers unless they add real behavior.",
+          "Use for multi-step flows; prefer a close leading action for global wizard exit and expose the step counter as an overview action in resumable forms.",
           "CatchStepProgress is the progress member of catch.step_header, not a separate wizard primitive."
         ]
       },

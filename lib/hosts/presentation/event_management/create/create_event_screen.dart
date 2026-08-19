@@ -7,11 +7,11 @@ import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_flow.dart';
+import 'package:catch_dating_app/core/widgets/catch_form_step_overview.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
@@ -42,6 +42,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/widgets/eve
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_success_step.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/when_step.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/where_step.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_draft_exit_dialog.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -51,45 +52,18 @@ import 'package:go_router/go_router.dart';
 
 DateTime _systemNow() => DateTime.now();
 
-String createEventUnsavedChangesDialogTitle(AppLocalizations l10n) =>
-    l10n.hostsCreateEventScreenVisiblecopyUnsavedChanges;
-String createEventUnsavedChangesDialogMessage(AppLocalizations l10n) =>
-    l10n.hostsCreateEventScreenVisiblecopyYouHaveUnsavedChanges;
-List<CatchDialogAction<bool>> createEventUnsavedChangesDialogActions(
-  AppLocalizations l10n,
-) => [
-  CatchDialogAction(
-    label: l10n.hostsCreateEventScreenLabelDiscard,
-    value: false,
-  ),
-  CatchDialogAction(
-    label: l10n.hostsCreateEventScreenLabelSaveDraft,
-    value: true,
-    isDefault: true,
-  ),
-];
-
 class CreateEventUnsavedChangesDialog extends StatelessWidget {
   const CreateEventUnsavedChangesDialog({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return CatchConfirmDialog<bool>(
-      title: createEventUnsavedChangesDialogTitle(context.l10n),
-      message: createEventUnsavedChangesDialogMessage(context.l10n),
-      actions: createEventUnsavedChangesDialogActions(context.l10n),
-    );
+    return const HostDraftExitDialog();
   }
 }
 
-Future<bool?> showCreateEventUnsavedChangesDialog(BuildContext context) {
-  return showCatchAdaptiveDialog<bool>(
-    context: context,
-    title: createEventUnsavedChangesDialogTitle(context.l10n),
-    message: createEventUnsavedChangesDialogMessage(context.l10n),
-    actions: createEventUnsavedChangesDialogActions(context.l10n),
-  );
-}
+Future<HostDraftExitDecision?> showCreateEventUnsavedChangesDialog(
+  BuildContext context,
+) => showHostDraftExitDialog(context);
 
 class CreateEventScreen extends ConsumerStatefulWidget {
   const CreateEventScreen({
@@ -131,6 +105,9 @@ class CreateEventScreen extends ConsumerStatefulWidget {
 class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   late final PageController _pageController;
   int _currentStep = 0;
+  bool _isReviewing = false;
+  bool _allowRoutePop = false;
+  bool _showValidationErrors = false;
   Event? _createdEvent;
 
   // Draft support
@@ -418,32 +395,47 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     setState(() => _eventPhotos = _eventPhotos.reorder(fromIndex, toIndex));
   }
 
-  void _handleBackIntent(CreateEventWizardBackIntent intent) {
+  Future<void> _handleCloseIntent(CreateEventWizardCloseIntent intent) async {
+    if (_requestPending) return;
     switch (intent) {
-      case CreateEventWizardBackIntent.previousStep:
-        _goToStep(_currentStep - 1);
-      case CreateEventWizardBackIntent.confirmUnsavedChanges:
-        _showUnsavedChangesDialog();
-      case CreateEventWizardBackIntent.close:
-        Navigator.of(context).pop();
+      case CreateEventWizardCloseIntent.confirmUnsavedChanges:
+        final decision = await showCreateEventUnsavedChangesDialog(context);
+        if (!mounted || decision == null) return;
+        switch (decision) {
+          case HostDraftExitDecision.keepEditing:
+            return;
+          case HostDraftExitDecision.discardAndExit:
+            _completeClose();
+          case HostDraftExitDecision.saveDraftAndExit:
+            if (await _saveDraft(showSuccess: false)) {
+              _completeClose();
+            }
+        }
+      case CreateEventWizardCloseIntent.close:
+        _completeClose();
+    }
+  }
+
+  void _handlePreviousIntent(CreateEventWizardPreviousIntent intent) {
+    if (_requestPending) return;
+    switch (intent) {
+      case CreateEventWizardPreviousIntent.previousStep:
+        _showStep(_currentStep - 1);
+      case CreateEventWizardPreviousIntent.returnToSteps:
+        _showStep(_currentStep);
     }
   }
 
   void _handlePrimaryIntent(CreateEventWizardPrimaryIntent intent) {
-    if (!_validateCurrentInput()) return;
+    if (_requestPending) return;
 
     switch (intent) {
       case CreateEventWizardPrimaryIntent.nextStep:
         _goToStep(_currentStep + 1);
+      case CreateEventWizardPrimaryIntent.review:
+        setState(() => _isReviewing = true);
       case CreateEventWizardPrimaryIntent.submit:
-        _submit();
-    }
-  }
-
-  Future<void> _handleSaveDraftIntent(CreateEventWizardSaveDraftIntent intent) {
-    switch (intent) {
-      case CreateEventWizardSaveDraftIntent.saveDraft:
-        return _saveDraft();
+        if (_validateAllInput()) _submit();
     }
   }
 
@@ -468,26 +460,55 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   }
 
   void _goToStep(int step) {
-    setState(() => _currentStep = step);
-    _pageController.animateToPage(
-      step,
-      duration: CatchMotion.pageStep,
-      curve: CatchMotion.easeInOutCurve,
-    );
+    if (step < 0 || step >= _stepSpecs.length || _requestPending) return;
+    setState(() {
+      _isReviewing = false;
+      _currentStep = step;
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_pageController.hasClients) return;
+      _pageController.animateToPage(
+        step,
+        duration: CatchMotion.pageStep,
+        curve: CatchMotion.easeInOutCurve,
+      );
+    });
   }
 
-  bool _validateCurrentInput() {
-    final plan = CreateEventWizardValidationPlan.resolve(
-      activeSteps: _stepSpecs,
-      currentStep: _currentStep,
-      scheduleState: _scheduleState,
-      now: widget.now(),
-    );
-    final formIsValid = plan.formKey?.currentState?.validate() ?? true;
-    if (plan.scheduleErrorText != null) {
-      setState(() => _scheduleErrorText = plan.scheduleErrorText);
+  void _showStep(int step) {
+    if (step < 0 || step >= _stepSpecs.length || _requestPending) return;
+    setState(() {
+      _isReviewing = false;
+      _currentStep = step;
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_pageController.hasClients) return;
+      _pageController.jumpToPage(step);
+    });
+  }
+
+  bool _validateAllInput() {
+    var formsAreValid = true;
+    int? firstInvalidForm;
+    for (var index = 0; index < _stepSpecs.length; index++) {
+      final form = _stepSpecs[index].formKey?.currentState;
+      if (form != null && !form.validate()) {
+        formsAreValid = false;
+        firstInvalidForm ??= index;
+      }
     }
-    return formIsValid && plan.scheduleAllowsContinue;
+    final review = _reviewState;
+    final firstInvalid = review.firstIncompleteStep ?? firstInvalidForm;
+    if (!formsAreValid || !review.canSubmit) {
+      final scheduleError = _scheduleState.errorText(now: widget.now());
+      setState(() {
+        _showValidationErrors = true;
+        _scheduleErrorText = scheduleError;
+      });
+      if (firstInvalid != null) _showStep(firstInvalid);
+      return false;
+    }
+    return true;
   }
 
   void _submit() {
@@ -558,6 +579,41 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   bool get _hasUnsavedChanges {
     return _draftActionState.hasUnsavedChanges;
   }
+
+  bool get _requestPending =>
+      ref.read(CreateEventController.submitMutation).isPending ||
+      ref.read(CreateEventDraftController.saveDraftMutation).isPending;
+
+  CreateEventWizardReviewState get _reviewState =>
+      CreateEventWizardReviewState.resolve(
+        activeSteps: _stepSpecs,
+        activityKind: _selectedActivityKind,
+        customActivityLabel: _customActivityLabelController.text,
+        distance: _distanceController.text,
+        pace: _selectedPace,
+        externalBookingMode: widget.externalBookingMode,
+        externalEventUrl: _externalEventUrlController.text,
+        hasStartingPoint: _locationState.hasStartingPoint,
+        meetingPoint: _meetingPointController.text,
+        scheduleState: _scheduleState,
+        now: widget.now(),
+        capacity: _capacityController.text,
+        price: _priceController.text,
+        currencyCode: _eventCurrencyCode,
+        admissionPreset: _policyState.admissionPreset,
+        inviteCode: _inviteCodeController.text,
+        cohortCapsEnabled: _policyState.cohortCapsEnabled,
+        maxMen: _maxMenController.text,
+        maxWomen: _maxWomenController.text,
+        crossPathsPairInventoryEnabled:
+            _policyState.crossPathsPairInventoryEnabled,
+        crossPathsPairCapacity: _crossPathsPairCapacityController.text,
+        dynamicPricingEnabled: _policyState.dynamicPricingEnabled,
+        dynamicPricingStep: _dynamicPricingStepController.text,
+        dynamicPricingMax: _dynamicPricingMaxController.text,
+        minAge: _minAgeController.text,
+        maxAge: _maxAgeController.text,
+      );
 
   Object get _currentDraftContentSignature => _currentDraftSnapshot.signature;
 
@@ -731,7 +787,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     );
   }
 
-  Future<void> _saveDraft() async {
+  Future<bool> _saveDraft({bool showSuccess = true}) async {
     final draftAction = _draftActionState;
     final now = widget.now();
     final draft = _currentDraftSnapshot.toDraft(
@@ -745,24 +801,22 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       (tx) async =>
           tx.get(createEventDraftControllerProvider.notifier).saveDraft(draft),
     );
-    if (savedDraft == null) return;
+    if (savedDraft == null) return false;
 
     _activeDraftId = savedDraft.id;
     _lastSavedDraftSignature = _currentDraftContentSignature;
 
-    if (!mounted) return;
-    showCatchSnackBar(context, draftAction.saveSuccessMessage);
+    if (mounted && showSuccess) {
+      showCatchSnackBar(context, draftAction.saveSuccessMessage);
+    }
+    return true;
   }
 
-  void _showUnsavedChangesDialog() {
-    showCreateEventUnsavedChangesDialog(context).then((save) async {
-      if (!mounted) return;
-      if (save == true) {
-        await _saveDraft();
-        if (mounted) Navigator.of(context).pop();
-      } else if (save == false) {
-        if (mounted) Navigator.of(context).pop();
-      }
+  void _completeClose() {
+    if (!mounted || _allowRoutePop) return;
+    setState(() => _allowRoutePop = true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) Navigator.of(context).pop();
     });
   }
 
@@ -837,6 +891,27 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     return double.parse(_distanceController.text.trim());
   }
 
+  Future<void> _showStepOverview() async {
+    if (_requestPending) return;
+    final selected = await showCatchFormStepOverview(
+      context: context,
+      title: context.l10n.hostsCreateEventOverviewTitle,
+      subtitle: context.l10n.hostsWizardOverviewSubtitle,
+      items: _reviewState.items,
+    );
+    if (mounted && selected != null) _showStep(selected);
+  }
+
+  String _primaryLabel(CreateEventWizardPrimaryIntent intent) =>
+      switch (intent) {
+        CreateEventWizardPrimaryIntent.nextStep =>
+          context.l10n.hostsStepperFooterLabelNext,
+        CreateEventWizardPrimaryIntent.review =>
+          context.l10n.hostsCreateEventReviewTitle,
+        CreateEventWizardPrimaryIntent.submit =>
+          context.l10n.hostsCreateEventScheduleAction,
+      };
+
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
@@ -857,6 +932,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
             context: AppErrorContext.event,
           )
         : null;
+    final reviewState = _reviewState;
     final wizardState = CreateEventWizardState.resolve(
       club: widget.club,
       activeSteps: _stepSpecs,
@@ -867,6 +943,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       createdEvent: _createdEvent,
       inviteCode: _trimmedTextOrNull(_inviteCodeController),
       hasUnsavedChanges: _hasUnsavedChanges,
+      isReviewing: _isReviewing,
+      reviewState: reviewState,
     );
 
     final successNavigation = wizardState.successNavigation;
@@ -886,176 +964,234 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       );
     }
 
-    return Scaffold(
-      backgroundColor: t.bg,
-      body: SafeArea(
-        child: Column(
-          children: [
-            CreateEventStepHeader(
-              title: wizardState.title,
-              clubName: wizardState.club.name,
-              currentStep: wizardState.currentStep,
-              totalSteps: wizardState.totalSteps,
-              onBack: () => _handleBackIntent(wizardState.backIntent),
-            ),
-            gapH4,
-            Expanded(
-              child: StepperFooter(
-                body: PageView(
-                  controller: _pageController,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: [
-                    EventDetailsStep(
-                      formKey: _eventDetailsFormKey,
-                      autovalidateMode: widget.formAutovalidateMode,
-                      photoPreviews: _eventPhotoPreviews,
-                      onPickPhotos: _pickEventPhotos,
-                      onRemovePhoto: _removeEventPhoto,
-                      onReorderPhoto: _reorderEventPhoto,
-                      organizerName: widget.club.name,
-                      organizerLogoUrl: widget.club.profileImageUrl,
-                      distanceController: _distanceController,
-                      customActivityLabelController:
-                          _customActivityLabelController,
-                      descriptionController: _descriptionController,
-                      selectedActivityKind: _selectedActivityKind,
-                      onActivityKindChanged: (activityKind) => setState(() {
-                        _selectedActivityKind = activityKind;
-                        _selectedInteractionModel =
-                            activityKind.defaultInteractionModel;
-                        _routePlan = RouteEventPlan.defaultForActivity(
-                          activityKind,
-                        );
-                        if (!activityKind.isDistanceBased) {
-                          _selectedPace = null;
-                        }
-                        _eventSuccessDefaults = widget.club.hostDefaults
-                            .eventSuccessForFormat(
-                              _selectedEventFormat,
-                              targetAttendeeCount:
-                                  _eventSuccessTargetAttendeeCount,
-                            );
-                      }),
-                      selectedInteractionModel: _selectedInteractionModel,
-                      onInteractionModelChanged: (model) => setState(() {
-                        _selectedInteractionModel = model;
-                        _eventSuccessDefaults = widget.club.hostDefaults
-                            .eventSuccessForFormat(
-                              _selectedEventFormat,
-                              targetAttendeeCount:
-                                  _eventSuccessTargetAttendeeCount,
-                            );
-                      }),
-                      selectedPace: _selectedPace,
-                      onPaceChanged: (p) => setState(() => _selectedPace = p),
-                      routePlan: _routePlan,
-                      onRoutePlanChanged: (plan) =>
-                          setState(() => _routePlan = plan),
-                      externalBookingMode: widget.externalBookingMode,
-                      externalBookingProvider: _externalBookingProvider,
-                      externalEventUrlController: _externalEventUrlController,
-                      externalEventIdController: _externalEventIdController,
-                      runtimeWalkInPolicy: _runtimeWalkInPolicy,
-                      onExternalBookingProviderChanged: (provider) =>
-                          setState(() => _externalBookingProvider = provider),
-                      onRuntimeWalkInPolicyChanged: (policy) =>
-                          setState(() => _runtimeWalkInPolicy = policy),
-                    ),
-                    WhereStep(
-                      formKey: _whereFormKey,
-                      autovalidateMode: widget.formAutovalidateMode,
-                      meetingPointController: _meetingPointController,
-                      locationDetailsController: _locationDetailsController,
-                      startingPoint: _locationState.startingPoint,
-                      onMeetingPointChanged: (_) => setState(() {}),
-                      onPickLocation: _pickLocation,
-                    ),
-                    WhenStep(
-                      formKey: _whenFormKey,
-                      autovalidateMode: widget.formAutovalidateMode,
-                      dateController: _dateController,
-                      startTimeController: _startTimeController,
-                      durationMinutes: _durationMinutes,
-                      onPickDate: _pickDate,
-                      onPickTime: _pickStartTime,
-                      onDecreaseDuration: _decreaseDurationCallback,
-                      onIncreaseDuration: _increaseDurationCallback,
-                      formatDuration: EventFormatters.durationMinutes,
-                      scheduleErrorText: _scheduleErrorText,
-                    ),
-                    EventPolicyStep(
-                      formKey: _eventPolicyFormKey,
-                      autovalidateMode: widget.formAutovalidateMode,
-                      capacityController: _capacityController,
-                      priceController: _priceController,
-                      currencyCode: _eventCurrencyCode,
-                      inviteCodeController: _inviteCodeController,
-                      dynamicPricingStepController:
-                          _dynamicPricingStepController,
-                      dynamicPricingMaxController: _dynamicPricingMaxController,
-                      minAgeController: _minAgeController,
-                      maxAgeController: _maxAgeController,
-                      maxMenController: _maxMenController,
-                      maxWomenController: _maxWomenController,
-                      crossPathsPairCapacityController:
-                          _crossPathsPairCapacityController,
-                      admissionPreset: _policyState.admissionPreset,
-                      onAdmissionPresetChanged: (preset) => setState(() {
-                        _policyState = _policyState.selectAdmissionPreset(
-                          preset,
-                        );
-                      }),
-                      cohortCapsEnabled: _policyState.cohortCapsEnabled,
-                      onCohortCapsEnabledChanged: (enabled) => setState(() {
-                        _policyState = _policyState.setCohortCapsEnabled(
-                          enabled,
-                        );
-                      }),
-                      dynamicPricingEnabled: _policyState.dynamicPricingEnabled,
-                      onDynamicPricingChanged: (enabled) => setState(() {
-                        _policyState = _policyState.setDynamicPricingEnabled(
-                          enabled,
-                        );
-                      }),
-                      crossPathsPairInventoryEnabled:
-                          _policyState.crossPathsPairInventoryEnabled,
-                      onCrossPathsPairInventoryChanged: (enabled) => setState(
-                        () => _policyState = _policyState
-                            .setCrossPathsPairInventoryEnabled(enabled),
-                      ),
-                      cancellationPolicyId: _policyState.cancellationPolicyId,
-                      onCancellationPolicyChanged: (policyId) => setState(
-                        () => _policyState = _policyState.setCancellationPolicy(
-                          policyId,
-                        ),
-                      ),
-                    ),
-                    EventSuccessStep(
-                      organizerId: widget.club.id,
-                      activityKind: _selectedActivityKind,
-                      eventFormat: _selectedEventFormat,
-                      eventSuccessDefaults: _eventSuccessDefaults,
-                      targetAttendeeCount: _eventSuccessTargetAttendeeCount,
-                      onEventSuccessDefaultsChanged: (defaults) =>
-                          setState(() => _eventSuccessDefaults = defaults),
-                    ),
-                  ],
-                ),
-                notice: wizardState.mutationError == null
+    final autovalidateMode = _showValidationErrors
+        ? AutovalidateMode.onUserInteraction
+        : widget.formAutovalidateMode;
+
+    return PopScope(
+      canPop: _allowRoutePop,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) {
+          _handleCloseIntent(
+            _hasUnsavedChanges
+                ? CreateEventWizardCloseIntent.confirmUnsavedChanges
+                : CreateEventWizardCloseIntent.close,
+          ).ignore();
+        }
+      },
+      child: Scaffold(
+        backgroundColor: t.bg,
+        body: SafeArea(
+          child: Column(
+            children: [
+              CreateEventStepHeader(
+                title: _isReviewing
+                    ? context.l10n.hostsCreateEventReviewTitle
+                    : wizardState.title,
+                clubName: wizardState.club.name,
+                currentStep: wizardState.currentStep,
+                totalSteps: wizardState.totalSteps,
+                isReviewing: _isReviewing,
+                onClose: wizardState.isLoading
                     ? null
-                    : CatchErrorBanner(message: wizardState.mutationError!),
-                isLastStep: wizardState.isLastStep,
-                isLoading: wizardState.isLoading,
-                primaryLabel: wizardState.primaryActionLabel,
-                onPrimary: () =>
-                    _handlePrimaryIntent(wizardState.primaryIntent),
-                onSaveDraft: wizardState.saveDraftIntent == null
+                    : () => _handleCloseIntent(
+                        _hasUnsavedChanges
+                            ? CreateEventWizardCloseIntent.confirmUnsavedChanges
+                            : CreateEventWizardCloseIntent.close,
+                      ).ignore(),
+                onStepOverview: wizardState.isLoading
                     ? null
-                    : () =>
-                          _handleSaveDraftIntent(wizardState.saveDraftIntent!),
+                    : _showStepOverview,
               ),
-            ),
-          ],
+              gapH4,
+              Expanded(
+                child: StepperFooter(
+                  body: _isReviewing
+                      ? CatchFormReviewBody(
+                          message: context.l10n.hostsWizardReviewBody,
+                          items: reviewState.items,
+                          onStepSelected: _showStep,
+                        )
+                      : PageView(
+                          controller: _pageController,
+                          physics: const NeverScrollableScrollPhysics(),
+                          children: [
+                            EventDetailsStep(
+                              formKey: _eventDetailsFormKey,
+                              autovalidateMode: autovalidateMode,
+                              photoPreviews: _eventPhotoPreviews,
+                              onPickPhotos: _pickEventPhotos,
+                              onRemovePhoto: _removeEventPhoto,
+                              onReorderPhoto: _reorderEventPhoto,
+                              organizerName: widget.club.name,
+                              organizerLogoUrl: widget.club.profileImageUrl,
+                              distanceController: _distanceController,
+                              customActivityLabelController:
+                                  _customActivityLabelController,
+                              descriptionController: _descriptionController,
+                              selectedActivityKind: _selectedActivityKind,
+                              onActivityKindChanged: (activityKind) =>
+                                  setState(() {
+                                    _selectedActivityKind = activityKind;
+                                    _selectedInteractionModel =
+                                        activityKind.defaultInteractionModel;
+                                    _routePlan =
+                                        RouteEventPlan.defaultForActivity(
+                                          activityKind,
+                                        );
+                                    if (!activityKind.isDistanceBased) {
+                                      _selectedPace = null;
+                                    }
+                                    _eventSuccessDefaults = widget
+                                        .club
+                                        .hostDefaults
+                                        .eventSuccessForFormat(
+                                          _selectedEventFormat,
+                                          targetAttendeeCount:
+                                              _eventSuccessTargetAttendeeCount,
+                                        );
+                                  }),
+                              selectedInteractionModel:
+                                  _selectedInteractionModel,
+                              onInteractionModelChanged: (model) =>
+                                  setState(() {
+                                    _selectedInteractionModel = model;
+                                    _eventSuccessDefaults = widget
+                                        .club
+                                        .hostDefaults
+                                        .eventSuccessForFormat(
+                                          _selectedEventFormat,
+                                          targetAttendeeCount:
+                                              _eventSuccessTargetAttendeeCount,
+                                        );
+                                  }),
+                              selectedPace: _selectedPace,
+                              onPaceChanged: (p) =>
+                                  setState(() => _selectedPace = p),
+                              routePlan: _routePlan,
+                              onRoutePlanChanged: (plan) =>
+                                  setState(() => _routePlan = plan),
+                              externalBookingMode: widget.externalBookingMode,
+                              externalBookingProvider: _externalBookingProvider,
+                              externalEventUrlController:
+                                  _externalEventUrlController,
+                              externalEventIdController:
+                                  _externalEventIdController,
+                              runtimeWalkInPolicy: _runtimeWalkInPolicy,
+                              onExternalBookingProviderChanged: (provider) =>
+                                  setState(
+                                    () => _externalBookingProvider = provider,
+                                  ),
+                              onRuntimeWalkInPolicyChanged: (policy) =>
+                                  setState(() => _runtimeWalkInPolicy = policy),
+                            ),
+                            WhereStep(
+                              formKey: _whereFormKey,
+                              autovalidateMode: autovalidateMode,
+                              meetingPointController: _meetingPointController,
+                              locationDetailsController:
+                                  _locationDetailsController,
+                              startingPoint: _locationState.startingPoint,
+                              onMeetingPointChanged: (_) => setState(() {}),
+                              onPickLocation: _pickLocation,
+                            ),
+                            WhenStep(
+                              formKey: _whenFormKey,
+                              autovalidateMode: autovalidateMode,
+                              dateController: _dateController,
+                              startTimeController: _startTimeController,
+                              durationMinutes: _durationMinutes,
+                              onPickDate: _pickDate,
+                              onPickTime: _pickStartTime,
+                              onDecreaseDuration: _decreaseDurationCallback,
+                              onIncreaseDuration: _increaseDurationCallback,
+                              formatDuration: EventFormatters.durationMinutes,
+                              scheduleErrorText: _scheduleErrorText,
+                            ),
+                            EventPolicyStep(
+                              formKey: _eventPolicyFormKey,
+                              autovalidateMode: autovalidateMode,
+                              capacityController: _capacityController,
+                              priceController: _priceController,
+                              currencyCode: _eventCurrencyCode,
+                              inviteCodeController: _inviteCodeController,
+                              dynamicPricingStepController:
+                                  _dynamicPricingStepController,
+                              dynamicPricingMaxController:
+                                  _dynamicPricingMaxController,
+                              minAgeController: _minAgeController,
+                              maxAgeController: _maxAgeController,
+                              maxMenController: _maxMenController,
+                              maxWomenController: _maxWomenController,
+                              crossPathsPairCapacityController:
+                                  _crossPathsPairCapacityController,
+                              admissionPreset: _policyState.admissionPreset,
+                              onAdmissionPresetChanged: (preset) =>
+                                  setState(() {
+                                    _policyState = _policyState
+                                        .selectAdmissionPreset(preset);
+                                  }),
+                              cohortCapsEnabled: _policyState.cohortCapsEnabled,
+                              onCohortCapsEnabledChanged: (enabled) =>
+                                  setState(() {
+                                    _policyState = _policyState
+                                        .setCohortCapsEnabled(enabled);
+                                  }),
+                              dynamicPricingEnabled:
+                                  _policyState.dynamicPricingEnabled,
+                              onDynamicPricingChanged: (enabled) =>
+                                  setState(() {
+                                    _policyState = _policyState
+                                        .setDynamicPricingEnabled(enabled);
+                                  }),
+                              crossPathsPairInventoryEnabled:
+                                  _policyState.crossPathsPairInventoryEnabled,
+                              onCrossPathsPairInventoryChanged: (enabled) =>
+                                  setState(
+                                    () => _policyState = _policyState
+                                        .setCrossPathsPairInventoryEnabled(
+                                          enabled,
+                                        ),
+                                  ),
+                              cancellationPolicyId:
+                                  _policyState.cancellationPolicyId,
+                              onCancellationPolicyChanged: (policyId) =>
+                                  setState(
+                                    () => _policyState = _policyState
+                                        .setCancellationPolicy(policyId),
+                                  ),
+                            ),
+                            EventSuccessStep(
+                              organizerId: widget.club.id,
+                              activityKind: _selectedActivityKind,
+                              eventFormat: _selectedEventFormat,
+                              eventSuccessDefaults: _eventSuccessDefaults,
+                              targetAttendeeCount:
+                                  _eventSuccessTargetAttendeeCount,
+                              onEventSuccessDefaultsChanged: (defaults) =>
+                                  setState(
+                                    () => _eventSuccessDefaults = defaults,
+                                  ),
+                            ),
+                          ],
+                        ),
+                  notice: wizardState.mutationError == null
+                      ? null
+                      : CatchErrorBanner(message: wizardState.mutationError!),
+                  isLastStep: wizardState.isLastStep || _isReviewing,
+                  isLoading: wizardState.isLoading,
+                  primaryEnabled: wizardState.primaryEnabled,
+                  primaryLabel: _primaryLabel(wizardState.primaryIntent),
+                  onPrimary: () =>
+                      _handlePrimaryIntent(wizardState.primaryIntent),
+                  onPrevious: wizardState.previousIntent == null
+                      ? null
+                      : () =>
+                            _handlePreviousIntent(wizardState.previousIntent!),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

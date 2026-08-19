@@ -667,6 +667,90 @@ void _registerCatchPrimitivesControlsTests() {
     );
   });
 
+  testWidgets('CatchStepHeader exposes its step overview as a 44px action', (
+    tester,
+  ) async {
+    var overviewTaps = 0;
+    await tester.pumpWidget(
+      _wrap(
+        CatchStepHeader(
+          title: 'Schedule',
+          step: 1,
+          total: 3,
+          onStepOverview: () => overviewTaps += 1,
+          stepOverviewSemanticsLabel: 'Open event section overview',
+        ),
+      ),
+    );
+
+    final action = find.bySemanticsLabel('Open event section overview');
+    expect(action, findsOneWidget);
+    expect(tester.getSize(action).height, greaterThanOrEqualTo(44));
+    await tester.tap(action);
+    expect(overviewTaps, 1);
+  });
+
+  testWidgets(
+    'CatchStepHeader compacts only the visual counter at large text',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          CatchStepHeader(
+            title: 'Meeting location',
+            step: 2,
+            total: 5,
+            onStepOverview: () {},
+            stepOverviewSemanticsLabel: 'Step 2 of 5. Open section overview.',
+          ),
+          textScale: 2,
+        ),
+      );
+
+      expect(find.text('2/5'), findsOneWidget);
+      expect(find.text('STEP 2 OF 5'), findsNothing);
+      expect(
+        find.bySemanticsLabel('Step 2 of 5. Open section overview.'),
+        findsOneWidget,
+      );
+    },
+  );
+
+  testWidgets('CatchFormStepOverview renders status and opens a section', (
+    tester,
+  ) async {
+    int? selectedStep;
+    await tester.pumpWidget(
+      _wrap(
+        CatchFormStepOverview(
+          items: const [
+            CatchFormStepReviewItem(
+              index: 0,
+              title: 'Event basics',
+              status: CatchFormStepStatus.complete,
+            ),
+            CatchFormStepReviewItem(
+              index: 1,
+              title: 'Meeting location',
+              status: CatchFormStepStatus.needsInformation,
+            ),
+            CatchFormStepReviewItem(
+              index: 2,
+              title: 'Live event guide',
+              status: CatchFormStepStatus.optional,
+            ),
+          ],
+          onStepSelected: (index) => selectedStep = index,
+        ),
+      ),
+    );
+
+    expect(find.text('COMPLETE'), findsOneWidget);
+    expect(find.text('NEEDS INFORMATION'), findsOneWidget);
+    expect(find.text('OPTIONAL'), findsOneWidget);
+    await tester.tap(find.text('Meeting location'));
+    expect(selectedStep, 1);
+  });
+
   testWidgets('CatchButton light variant stays legible in dark mode', (
     tester,
   ) async {

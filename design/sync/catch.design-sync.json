@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-08-18",
+  "updated": "2026-08-19",
   "sourceOfTruth": {
     "behavior": "Flutter sources named by design/components/catch.components.json",
     "componentContracts": "design/components/catch.components.json",
@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "eddece93d08752dd88ae784dff1b6589877482ff71d9e198e0131803edc5d687",
+  "sourceDigest": "fcfcb1680c7a147a5c0703830ee332fb90a7dd86e7d913bac7e01f9a7e7da30a",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "eddece93d08752dd88ae784dff1b6589877482ff71d9e198e0131803edc5d687",
-    "contractDigest": "eddece93d08752dd88ae784dff1b6589877482ff71d9e198e0131803edc5d687"
+    "digest": "fcfcb1680c7a147a5c0703830ee332fb90a7dd86e7d913bac7e01f9a7e7da30a",
+    "contractDigest": "fcfcb1680c7a147a5c0703830ee332fb90a7dd86e7d913bac7e01f9a7e7da30a"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "936f5de6a50517dbd741083725806611bdfaabfb76595161dd496459efa93384",
+    "handoffRequestDigest": "50591c7cc0ce1e719985c52c015ca2d4e490801a59728a90a1acd9c6d56e44b0",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -1924,8 +1924,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 8,
-      "figmaExpectedPropertyDigest": "d4fd8db30facd489618900cb693bd7fe89b46b207a140e57a1aab1f9dc25a1de",
+      "figmaExpectedPropertyCount": 10,
+      "figmaExpectedPropertyDigest": "cbd075a54324dbf73c37eead36daa1d801e55df7c27072cddd3ab60653642c5c",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -1933,7 +1933,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "StepHeader",
       "claudeAllowed": true,
-      "contractDigest": "78abed54212a23df8118b59ff275088bb1435feb4ce306ecc62aeba8ec5f3c5c"
+      "contractDigest": "b8ab84b5023ae4d995ee72d1ecadebad4e00ac74d2babdc5155f7c46ff85ee45"
     },
     {
       "contractId": "catch.tab_bar",

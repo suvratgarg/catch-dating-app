@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/widgets/catch_form_step_flow.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
@@ -114,11 +115,12 @@ void main() {
       expect(state.totalSteps, 5);
       expect(state.isLastStep, isFalse);
       expect(state.isLoading, isTrue);
-      expect(state.canSaveDraft, isTrue);
-      expect(state.primaryActionLabel, 'Next');
-      expect(state.backIntent, CreateEventWizardBackIntent.previousStep);
+      expect(state.closeIntent, CreateEventWizardCloseIntent.close);
+      expect(
+        state.previousIntent,
+        CreateEventWizardPreviousIntent.previousStep,
+      );
       expect(state.primaryIntent, CreateEventWizardPrimaryIntent.nextStep);
-      expect(state.saveDraftIntent, CreateEventWizardSaveDraftIntent.saveDraft);
       expect(state.successNavigation, isNull);
       expect(state.mutationError, 'Unable to save draft.');
     },
@@ -142,11 +144,9 @@ void main() {
     expect(state.currentStepKind, CreateEventWizardStep.eventSuccessGuide);
     expect(state.title, 'Live event guide');
     expect(state.isLastStep, isTrue);
-    expect(state.primaryActionLabel, 'Schedule event');
-    expect(state.backIntent, CreateEventWizardBackIntent.previousStep);
-    expect(state.primaryIntent, CreateEventWizardPrimaryIntent.submit);
-    expect(state.canSaveDraft, isFalse);
-    expect(state.saveDraftIntent, isNull);
+    expect(state.closeIntent, CreateEventWizardCloseIntent.close);
+    expect(state.previousIntent, CreateEventWizardPreviousIntent.previousStep);
+    expect(state.primaryIntent, CreateEventWizardPrimaryIntent.review);
     expect(state.createdEvent, event);
     expect(state.inviteCode, 'CATCH-DELHI');
     expect(state.successNavigation?.club.id, 'club-1');
@@ -249,7 +249,7 @@ void main() {
     expect(detailsPlan.scheduleErrorText, isNull);
   });
 
-  test('CreateEventWizardState maps first-step back intents', () {
+  test('CreateEventWizardState maps global close intents', () {
     final clean = CreateEventWizardState.resolve(
       club: buildClub(),
       activeSteps: steps,
@@ -272,8 +272,91 @@ void main() {
       hasUnsavedChanges: true,
     );
 
-    expect(clean.backIntent, CreateEventWizardBackIntent.close);
-    expect(dirty.backIntent, CreateEventWizardBackIntent.confirmUnsavedChanges);
+    expect(clean.closeIntent, CreateEventWizardCloseIntent.close);
+    expect(
+      dirty.closeIntent,
+      CreateEventWizardCloseIntent.confirmUnsavedChanges,
+    );
+    expect(clean.previousIntent, isNull);
+  });
+
+  test('CreateEventWizardReviewState gates only required sections', () {
+    final now = DateTime(2026, 8, 19, 9);
+    final review = CreateEventWizardReviewState.resolve(
+      activeSteps: steps,
+      activityKind: ActivityKind.socialRun,
+      customActivityLabel: '',
+      distance: '5',
+      pace: PaceLevel.moderate,
+      externalBookingMode: false,
+      externalEventUrl: '',
+      hasStartingPoint: true,
+      meetingPoint: 'Saket sports complex',
+      scheduleState: CreateEventScheduleState(
+        selectedDate: DateTime(2026, 8, 20),
+        selectedStartTime: const TimeOfDay(hour: 7, minute: 0),
+      ),
+      now: now,
+      capacity: '20',
+      price: '0',
+      currencyCode: 'INR',
+      admissionPreset: EventAdmissionPreset.openCapacity,
+      inviteCode: '',
+      cohortCapsEnabled: false,
+      maxMen: '',
+      maxWomen: '',
+      crossPathsPairInventoryEnabled: false,
+      crossPathsPairCapacity: '2',
+      dynamicPricingEnabled: false,
+      dynamicPricingStep: '',
+      dynamicPricingMax: '',
+      minAge: '',
+      maxAge: '',
+    );
+
+    expect(review.canSubmit, isTrue);
+    expect(review.items.map((item) => item.status), [
+      CatchFormStepStatus.complete,
+      CatchFormStepStatus.complete,
+      CatchFormStepStatus.complete,
+      CatchFormStepStatus.complete,
+      CatchFormStepStatus.optional,
+    ]);
+
+    final incomplete = CreateEventWizardReviewState.resolve(
+      activeSteps: steps,
+      activityKind: ActivityKind.socialRun,
+      customActivityLabel: '',
+      distance: '',
+      pace: null,
+      externalBookingMode: false,
+      externalEventUrl: '',
+      hasStartingPoint: false,
+      meetingPoint: '',
+      scheduleState: const CreateEventScheduleState(
+        selectedDate: null,
+        selectedStartTime: null,
+      ),
+      now: now,
+      capacity: '',
+      price: '',
+      currencyCode: 'INR',
+      admissionPreset: EventAdmissionPreset.openCapacity,
+      inviteCode: '',
+      cohortCapsEnabled: false,
+      maxMen: '',
+      maxWomen: '',
+      crossPathsPairInventoryEnabled: false,
+      crossPathsPairCapacity: '2',
+      dynamicPricingEnabled: false,
+      dynamicPricingStep: '',
+      dynamicPricingMax: '',
+      minAge: '',
+      maxAge: '',
+    );
+
+    expect(incomplete.canSubmit, isFalse);
+    expect(incomplete.firstIncompleteStep, 0);
   });
 
   test('CreateEventPolicyState maps defaults, transitions, and drafts', () {

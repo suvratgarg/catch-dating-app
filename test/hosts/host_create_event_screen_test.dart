@@ -66,15 +66,15 @@ void main() {
       SharedPreferences.setMockInitialValues({});
     });
 
-    testWidgets('validates the first step when basics are missing', (
-      tester,
-    ) async {
+    testWidgets('allows sections to be completed out of order', (tester) async {
       await _pumpCreateEventFlow(tester);
       await _openCreateEventFlow(tester);
       await _tapPrimaryButton(tester, 'Next');
-      await tester.pump();
-      expect(find.text('Required'), findsOneWidget);
-      expect(find.text('Select a pace'), findsOneWidget);
+      await _pumpTestAnimation(tester);
+      expect(find.text('Meeting location'), findsWidgets);
+      expect(find.text('Required'), findsNothing);
+      expect(find.text('Select a pace'), findsNothing);
+      expect(find.text('Previous'), findsOneWidget);
     });
 
     testWidgets(
@@ -253,9 +253,6 @@ void main() {
 
         await _tapPrimaryButton(tester, 'Next');
         await _pumpTestAnimation(tester);
-        await _tapPrimaryButton(tester, 'Next');
-        await tester.pump();
-        expect(find.text('Choose a meeting location'), findsOneWidget);
 
         await _enterCreateEventText(
           tester,
@@ -306,6 +303,12 @@ void main() {
           findsOneWidget,
         );
 
+        await _tapPrimaryButton(tester, 'Review event');
+        await _pumpTestAnimation(tester);
+        expect(
+          find.textContaining('Review every section before publishing.'),
+          findsOneWidget,
+        );
         await _tapPrimaryButton(tester, 'Schedule event');
         await _pumpTestAnimation(tester);
 
@@ -501,6 +504,8 @@ void main() {
       await _enterCreateEventText(tester, CreateEventFormKeys.price, '0');
       await _tapPrimaryButton(tester, 'Next');
       await _pumpTestAnimation(tester);
+      await _tapPrimaryButton(tester, 'Review event');
+      await _pumpTestAnimation(tester);
       await _tapPrimaryButton(tester, 'Schedule event');
       await _pumpTestAnimation(tester);
 
@@ -674,16 +679,16 @@ void main() {
 
       expect(find.text('Pinned location'), findsOneWidget);
 
-      await tester.tap(find.byTooltip('Back'));
+      await tester.tap(find.text('Previous'));
       await _pumpTestAnimation(tester);
       expect(find.text('Event basics'), findsOneWidget);
 
-      // Second back — unsaved changes dialog appears since we filled basics.
-      await tester.tap(find.byTooltip('Back'));
+      // The global close action offers a save-on-exit decision from any step.
+      await tester.tap(find.byTooltip('Close'));
       await _pumpTestAnimation(tester);
-      await tester.tap(_dialogAction('Save draft'));
+      expect(find.text('Keep editing'), findsOneWidget);
+      await tester.tap(_dialogAction('Save draft & exit'));
       await _pumpTestAnimation(tester);
-      expect(find.text('Draft saved'), findsOneWidget);
       expect(find.text('Open'), findsOneWidget);
 
       final draftRepository = EventDraftRepository(ErrorLogger());
@@ -693,6 +698,35 @@ void main() {
       );
       expect(drafts.single.id, now.millisecondsSinceEpoch.toString());
       expect(drafts.single.savedAt, now);
+    });
+
+    testWidgets('stays open when save draft and exit fails', (tester) async {
+      await _pumpCreateEventFlow(
+        tester,
+        overrides: [
+          eventDraftRepositoryProvider.overrideWithValue(
+            _FailingEventDraftRepository(),
+          ),
+        ],
+      );
+      await _openCreateEventFlow(tester);
+      await _fillBasicsStep(tester);
+
+      await tester.tap(find.byTooltip('Close'));
+      await _pumpTestAnimation(tester);
+      expect(find.text('Keep editing'), findsOneWidget);
+      expect(find.text('Discard & exit'), findsOneWidget);
+      expect(find.text('Save draft & exit'), findsOneWidget);
+
+      await tester.tap(_dialogAction('Save draft & exit'));
+      await _pumpTestAnimation(tester);
+
+      expect(find.byTooltip('Close'), findsOneWidget);
+      expect(find.text('Open'), findsNothing);
+      expect(
+        find.text('Something went wrong. Please try again.'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('fills the location name from a Google place selection', (
@@ -1395,6 +1429,18 @@ class _FakePlacesRepository implements PlacesRepository {
   }
 }
 
+class _FailingEventDraftRepository extends EventDraftRepository {
+  _FailingEventDraftRepository() : super(ErrorLogger());
+
+  @override
+  Future<void> saveDraft({
+    required String userId,
+    required EventDraft draft,
+  }) async {
+    throw StateError('save draft failed');
+  }
+}
+
 Future<void> _pumpCreateEventFlow(
   WidgetTester tester, {
   Iterable overrides = const [],
@@ -1502,6 +1548,8 @@ Future<void> _submitValidEvent(WidgetTester tester) async {
   await _setEventAgeRange(tester, 21, 35);
   await _pumpTestAnimation(tester);
   await _tapPrimaryButton(tester, 'Next');
+  await _pumpTestAnimation(tester);
+  await _tapPrimaryButton(tester, 'Review event');
   await _pumpTestAnimation(tester);
   await _tapPrimaryButton(tester, 'Schedule event');
   await _pumpTestAnimation(tester);
