@@ -495,6 +495,7 @@ extension _CatchFieldEdit on _CatchFieldState {
                     value: item,
                     label: labelOf(item),
                     selected: item == value,
+                    role: CatchMenuItemRole.choice,
                   ),
               ],
               onSelected: (item, _) {

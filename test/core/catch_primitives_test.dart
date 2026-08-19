@@ -53,6 +53,7 @@ import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_scrim.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
@@ -96,7 +97,9 @@ Widget _wrap(Widget child, {ThemeData? theme, double textScale = 1}) {
   return MaterialApp(
     theme: theme ?? AppTheme.light,
     home: MediaQuery(
-      data: MediaQueryData(textScaler: TextScaler.linear(textScale)),
+      data: MediaQueryData.fromView(
+        WidgetsBinding.instance.platformDispatcher.views.single,
+      ).copyWith(textScaler: TextScaler.linear(textScale)),
       child: Scaffold(body: Center(child: child)),
     ),
   );

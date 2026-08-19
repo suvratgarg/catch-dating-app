@@ -816,7 +816,10 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
                 filters: rosterState.filters,
                 selectedFilter: rosterState.activeFilter,
                 onFilterChanged: onFilterChanged,
-                trailing: hasParticipants
+                trailing:
+                    hasParticipants &&
+                        !mutationState.opsReportExportPending &&
+                        !mutationState.revenueReportExportPending
                     ? CatchActionMenu<_HostReportExportAction>(
                         tooltip: context
                             .l10n
@@ -829,9 +832,6 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
                                 .l10n
                                 .hostsHostEventAttendancePanelLabelOpsCsv,
                             icon: CatchIcons.tableRowsOutlined,
-                            enabled:
-                                !mutationState.opsReportExportPending &&
-                                !mutationState.revenueReportExportPending,
                           ),
                           CatchActionMenuItem(
                             value: _HostReportExportAction.revenue,
@@ -839,9 +839,6 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
                                 .l10n
                                 .hostsHostEventAttendancePanelLabelRevenueCsv,
                             icon: CatchIcons.paymentsOutlined,
-                            enabled:
-                                !mutationState.opsReportExportPending &&
-                                !mutationState.revenueReportExportPending,
                           ),
                         ],
                         onSelected: (action) {

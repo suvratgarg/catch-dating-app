@@ -2195,11 +2195,12 @@ abstract final class CatchLayout {
   static const double toggleTrackHeight = 28.0;
   static const double toggleKnobExtent = 22.0;
   static const double toggleTrackPadding = CatchSpacing.micro3;
-  static const double menuRowVerticalPadding = 13.0;
-  static const double menuRowGap = 10.0;
-  static const double menuRowIconSize = 17.0;
+  static const double menuRowMinHeight = 56.0;
+  static const double menuRowVerticalPadding = 10.0;
+  static const double menuRowGap = 12.0;
+  static const double menuRowIconSize = 20.0;
   static const double menuRowCheckSize = 16.0;
-  static const double menuRowSublabelSize = 8.5;
+  static const double menuViewportInset = CatchSpacing.s4;
   static const double activityChipIconSize = 15.0;
   static const double activityChipIconGap = 7.0;
   static const double buttonLgHeight = CatchSpacing.s12 + CatchSpacing.s2;
@@ -2283,10 +2284,29 @@ abstract final class CatchLayout {
   static const double browseHeaderSearchExtent = 52.0;
   static const double horizontalRailHeight = 92.0;
   static const double horizontalRailDividerHeight = CatchSpacing.s6;
-  static const double actionMenuWidth = 192.0;
+  static const int actionMenuMaxItems = 5;
+  static const double actionMenuWidth = 280.0;
   static const double actionMenuContentWidth =
       actionMenuWidth - CatchSpacing.s16;
-  static const double actionMenuAlignmentX = -160.0;
+  static const double selectionMenuWidth = 360.0;
+
+  static double menuWidthFor({
+    required double preferredWidth,
+    required double viewportWidth,
+  }) => math.min(
+    preferredWidth,
+    math.max(0, viewportWidth - (menuViewportInset * 2)),
+  );
+
+  static double menuMaxHeightFor(double viewportHeight) {
+    final totalInset = menuViewportInset * 2;
+    return viewportHeight > totalInset
+        ? viewportHeight - totalInset
+        : double.infinity;
+  }
+
+  static double actionMenuAlignmentXFor(double menuWidth) =>
+      -(menuWidth - iconButtonSize);
   static const double avatarStatusDotExtent = 9.0;
   static const double eventHeroBackdropIconSize = 220.0;
   static const double eventCardBackdropIconSize =

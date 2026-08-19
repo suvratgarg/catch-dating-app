@@ -698,6 +698,7 @@ void _registerCatchPrimitivesSearchMenuTests() {
               sublabel: 'OWNER',
               icon: CatchIcons.hostBadge,
               selected: true,
+              role: CatchMenuItemRole.choice,
             ),
             CatchMenuItem(
               value: 'delete',
@@ -718,7 +719,7 @@ void _registerCatchPrimitivesSearchMenuTests() {
     expect(find.text('Owner club'), findsOneWidget);
     expect(find.text('OWNER'), findsOneWidget);
     expect(find.byIcon(CatchIcons.check), findsOneWidget);
-    expect(find.byType(CatchDivider), findsOneWidget);
+    expect(find.byType(CatchDivider), findsNothing);
     expect(find.byType(CatchMenuRow<String>), findsNWidgets(2));
 
     await tester.tap(find.text('Delete club'));
@@ -761,10 +762,8 @@ void _registerCatchPrimitivesSearchMenuTests() {
           items: [
             CatchActionMenuItem(
               value: 'active',
-              label: 'Active club',
-              sublabel: 'HOST',
+              label: 'Open active club',
               icon: CatchIcons.hostBadge,
-              selected: true,
             ),
             CatchActionMenuItem(
               value: 'remove',
@@ -782,14 +781,179 @@ void _registerCatchPrimitivesSearchMenuTests() {
     await pumpFeatureUi(tester);
 
     expect(find.byType(CatchMenu<String>), findsOneWidget);
-    expect(find.text('Active club'), findsOneWidget);
-    expect(find.text('HOST'), findsOneWidget);
-    expect(find.byIcon(CatchIcons.check), findsOneWidget);
+    expect(find.text('Open active club'), findsOneWidget);
+    expect(find.byIcon(CatchIcons.check), findsNothing);
 
     await tester.tap(find.text('Remove host'));
     await pumpFeatureUi(tester);
 
     expect(selected, 'remove');
     expect(find.byType(CatchMenu<String>), findsNothing);
+  });
+
+  testWidgets(
+    'CatchActionMenu rejects compound menus with more than five commands',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          CatchActionMenu<int>(
+            tooltip: 'Too many actions',
+            items: [
+              for (var index = 0; index < 6; index++)
+                CatchActionMenuItem(value: index, label: 'Action $index'),
+            ],
+          ),
+        ),
+      );
+
+      expect(
+        tester.takeException(),
+        isA<AssertionError>().having(
+          (error) => error.message,
+          'message',
+          contains('at most five commands'),
+        ),
+      );
+    },
+  );
+
+  testWidgets('disabled action rows require an actionable explanation', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const CatchActionMenu<String>(
+          tooltip: 'More actions',
+          items: [
+            CatchActionMenuItem(
+              value: 'status',
+              label: 'WhatsApp ready',
+              enabled: false,
+            ),
+          ],
+        ),
+      ),
+    );
+
+    expect(
+      tester.takeException(),
+      isA<AssertionError>().having(
+        (error) => error.message,
+        'message',
+        contains('Informational status does not belong in an action menu'),
+      ),
+    );
+  });
+
+  testWidgets('CatchMenu reflows long labels at supported text scale', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 700);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      _wrap(
+        const CatchMenu<String>(
+          width: 280,
+          items: [
+            CatchMenuItem(
+              value: 'review',
+              label: 'Review possible duplicate customer records',
+              sublabel: 'Compare identity evidence before merging anything.',
+            ),
+          ],
+        ),
+        textScale: 2,
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Review possible duplicate customer records'), findsOne);
+    expect(
+      tester
+          .widget<Text>(find.text('Review possible duplicate customer records'))
+          .maxLines,
+      2,
+    );
+  });
+
+  testWidgets('adaptive selection uses a sheet on compact layouts', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    var selected = 'last-seen';
+
+    await tester.pumpWidget(
+      _wrap(
+        StatefulBuilder(
+          builder: (context, setState) => CatchAdaptiveSelectionControl<String>(
+            title: 'Sort customers',
+            subtitle: 'Choose how customers are ordered.',
+            tooltip: 'Sort customers',
+            value: selected,
+            items: const [
+              CatchSelectionMenuItem(value: 'last-seen', label: 'Last seen'),
+              CatchSelectionMenuItem(value: 'name', label: 'Name'),
+            ],
+            triggerLabel: (item) => 'Sort: ${item.label}',
+            onSelected: (value) => setState(() => selected = value),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Sort: Last seen'));
+    await pumpFeatureUi(tester);
+    expect(find.byType(CatchSelectionSheet<String>), findsOneWidget);
+
+    final nameSemantics = tester.widget<Semantics>(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is Semantics &&
+            widget.properties.inMutuallyExclusiveGroup == true &&
+            widget.properties.selected == false,
+      ),
+    );
+    expect(nameSemantics.properties.inMutuallyExclusiveGroup, isTrue);
+
+    await tester.tap(find.text('Name'));
+    await pumpFeatureUi(tester);
+    expect(find.text('Sort: Name'), findsOneWidget);
+  });
+
+  testWidgets('adaptive selection uses an anchored picker on wider layouts', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(800, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      _wrap(
+        CatchAdaptiveSelectionControl<String>(
+          title: 'Sort customers',
+          tooltip: 'Sort customers',
+          value: 'last-seen',
+          items: const [
+            CatchSelectionMenuItem(value: 'last-seen', label: 'Last seen'),
+            CatchSelectionMenuItem(value: 'name', label: 'Name'),
+          ],
+          triggerLabel: (item) => 'Sort: ${item.label}',
+          onSelected: (_) {},
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Sort: Last seen'));
+    await pumpFeatureUi(tester);
+    expect(find.byType(CatchSelectionMenu<String>), findsOneWidget);
+    expect(find.byType(CatchSelectionSheet<String>), findsNothing);
+    expect(find.byType(CatchMenu<String>), findsOneWidget);
   });
 }

@@ -358,10 +358,11 @@ void _registerHostOperationsCustomersTests() {
     expect(find.byType(CatchScreenHeaderTitle), findsOneWidget);
   });
 
-  testWidgets('customer header compresses stats and export into overflow', (
+  testWidgets('customer controls separate sorting, commands, and status', (
     tester,
   ) async {
     final club = buildClub(id: 'header-club', ownerUserId: _hostUid);
+    final requests = <HostCustomersDirectoryRequest>[];
     await _pumpHostScreen(
       tester,
       const HostCustomersScreen(),
@@ -369,7 +370,7 @@ void _registerHostOperationsCustomersTests() {
         ..._hostClubOverrides(owned: [club]),
         hostCustomersDirectoryControllerProvider.overrideWith2(
           (_) => _FixedHostCustomersDirectoryController(
-            [],
+            requests,
             _emptyCustomerDirectoryState(),
           ),
         ),
@@ -387,12 +388,65 @@ void _registerHostOperationsCustomersTests() {
       ),
       findsOneWidget,
     );
-    expect(find.byTooltip('Export this audience'), findsOneWidget);
+    expect(find.text('0 WhatsApp-ready contacts'), findsOneWidget);
+    expect(
+      find.text('0 imported or added by your team · 0 linked Catch accounts'),
+      findsOneWidget,
+    );
+    expect(find.text('Sort: Last seen'), findsOneWidget);
+    expect(find.byTooltip('More customer actions'), findsOneWidget);
+    expect(find.byTooltip('Export this audience'), findsNothing);
 
-    await tester.tap(find.byTooltip('Export this audience'));
+    await tester.tap(find.text('Sort: Last seen'));
+    await pumpFeatureUi(tester);
+    final sortMenu = find.byType(CatchMenu<HostCustomerSort>);
+    expect(sortMenu, findsOneWidget);
+    await tester.tap(
+      find.descendant(of: sortMenu, matching: find.text('Name')),
+    );
+    await pumpFeatureUi(tester);
+    expect(find.text('Sort: Name'), findsOneWidget);
+    expect(requests.last.sort, HostCustomerSort.name);
+
+    await tester.tap(find.byTooltip('More customer actions'));
     await pumpFeatureUi(tester);
     expect(find.text('Export this audience'), findsOneWidget);
-    expect(find.text('WhatsApp ready'), findsOneWidget);
+    expect(find.text('Review applications'), findsOneWidget);
+    expect(find.text('Review possible duplicates'), findsOneWidget);
+    expect(find.text('Last seen'), findsNothing);
+    expect(find.text('Most attended'), findsNothing);
+    expect(find.text('WhatsApp ready'), findsNothing);
+  });
+
+  testWidgets('customer sort opens a bottom sheet on phones', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final club = buildClub(id: 'phone-sort-club', ownerUserId: _hostUid);
+    final requests = <HostCustomersDirectoryRequest>[];
+    await _pumpHostScreen(
+      tester,
+      const HostCustomersScreen(),
+      overrides: [
+        ..._hostClubOverrides(owned: [club]),
+        hostCustomersDirectoryControllerProvider.overrideWith2(
+          (_) => _FixedHostCustomersDirectoryController(
+            requests,
+            _emptyCustomerDirectoryState(),
+          ),
+        ),
+      ],
+    );
+
+    await tester.tap(find.text('Sort: Last seen'));
+    await pumpFeatureUi(tester);
+    expect(find.byType(CatchSelectionSheet<HostCustomerSort>), findsOneWidget);
+
+    await tester.tap(find.text('Most attended'));
+    await pumpFeatureUi(tester);
+    expect(find.text('Sort: Most attended'), findsOneWidget);
+    expect(requests.last.sort, HostCustomerSort.mostAttended);
   });
 
   testWidgets('customer search shows clear only while input is non-empty', (

@@ -12409,17 +12409,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostAudienceRepeat => 'Repeat';
 
   @override
-  String get hostsHostAudienceWhatsappReady => 'WhatsApp ready';
-
-  @override
-  String hostsHostAudienceSources({
-    required int importedCount,
-    required int linkedCount,
-  }) {
-    return '$importedCount came through external or manual rosters · $linkedCount are linked to verified Catch identities';
-  }
-
-  @override
   String get hostsHostAudienceSearch => 'Search by name';
 
   @override
@@ -13867,6 +13856,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersSort => 'Sort customers';
 
   @override
+  String hostCustomersSortControl({required String label}) {
+    return 'Sort: $label';
+  }
+
+  @override
+  String get hostCustomersSortSheetSubtitle =>
+      'Choose how customers are ordered.';
+
+  @override
   String get hostCustomersSortLastSeen => 'Last seen';
 
   @override
@@ -13874,6 +13872,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersSortName => 'Name';
+
+  @override
+  String get hostCustomersMoreActions => 'More customer actions';
+
+  @override
+  String hostCustomersWhatsappReadyCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count WhatsApp-ready contacts',
+      one: '1 WhatsApp-ready contact',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostCustomersSourceSummary({
+    required int importedCount,
+    required int linkedCount,
+  }) {
+    String _temp0 = intl.Intl.pluralLogic(
+      importedCount,
+      locale: localeName,
+      other: '$importedCount imported or added by your team',
+      one: '1 imported or added by your team',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      linkedCount,
+      locale: localeName,
+      other: '$linkedCount linked Catch accounts',
+      one: '1 linked Catch account',
+    );
+    return '$_temp0 · $_temp1';
+  }
 
   @override
   String get eventSuccessAccountabilityTitle => 'Return sweep';
@@ -14034,6 +14066,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostApplicationsImport => 'Import responses';
+
+  @override
+  String get hostApplicationsSort => 'Sort applications';
 
   @override
   String get hostApplicationsImportTitle => 'Import applications';

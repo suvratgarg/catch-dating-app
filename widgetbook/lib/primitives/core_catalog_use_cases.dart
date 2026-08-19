@@ -57,6 +57,7 @@ import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_label.dart';
+import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_footer.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
@@ -177,8 +178,7 @@ Widget catchActionMenuCatalogStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'interactive trigger',
-        description:
-            'Tap the trigger to inspect selected, disabled, and danger rows.',
+        description: 'Tap the trigger to inspect command hierarchy and states.',
         child: CatchActionMenu<String>(
           tooltip: 'Event actions',
           onSelected: _ignoreString,
@@ -190,10 +190,8 @@ Widget catchActionMenuCatalogStates(BuildContext context) {
             ),
             CatchActionMenuItem(
               value: 'saved',
-              label: 'Saved',
-              sublabel: 'Visible in your dashboard',
+              label: 'Save to dashboard',
               icon: CatchIcons.savedOutlined,
-              selected: true,
             ),
             CatchActionMenuItem(
               value: 'disabled',
@@ -213,10 +211,49 @@ Widget catchActionMenuCatalogStates(BuildContext context) {
       ),
       _StateCard(
         label: 'disabled trigger',
-        child: const CatchActionMenu<String>(
+        child: CatchActionMenu<String>(
           tooltip: 'No actions',
           enabled: false,
-          items: [],
+          items: const [],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: CatchSelectionMenu,
+  path: '[Core catalog]/Menus',
+)
+Widget catchSelectionMenuCatalogStates(BuildContext context) {
+  var selected = 'last-seen';
+  final items = [
+    const CatchSelectionMenuItem(value: 'last-seen', label: 'Last seen'),
+    const CatchSelectionMenuItem(
+      value: 'most-attended',
+      label: 'Most attended',
+    ),
+    const CatchSelectionMenuItem(value: 'name', label: 'Name'),
+  ];
+  return _CatalogScreen(
+    title: 'CatchSelectionMenu',
+    catalogId: 'core.widgets.catch_selection_menu',
+    children: [
+      StatefulBuilder(
+        builder: (context, setState) => _StateCard(
+          label: 'adaptive single selection',
+          description:
+              'Uses an anchored picker on wider layouts and a sheet on phones.',
+          child: CatchAdaptiveSelectionControl<String>(
+            title: 'Sort customers',
+            subtitle: 'Choose how customers are ordered.',
+            tooltip: 'Sort customers',
+            items: items,
+            value: selected,
+            triggerLabel: (item) => 'Sort: ${item.label}',
+            onSelected: (value) => setState(() => selected = value),
+          ),
         ),
       ),
     ],
@@ -245,6 +282,7 @@ Widget catchMenuCatalogStates(BuildContext context) {
               sublabel: 'Confirmed attendee view',
               icon: CatchIcons.checkCircle,
               selected: true,
+              role: CatchMenuItemRole.choice,
             ),
             CatchMenuItem(
               value: 'waitlist',
@@ -291,6 +329,7 @@ Widget catchMenuRowCatalogStates(BuildContext context) {
             sublabel: 'Confirmed attendee view',
             icon: CatchIcons.checkCircle,
             selected: true,
+            role: CatchMenuItemRole.choice,
           ),
           onSelected: (value, _) => _ignoreString(value),
         ),

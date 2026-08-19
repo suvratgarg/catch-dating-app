@@ -60,6 +60,7 @@ import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_privacy_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_row_press_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_scrim.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_label.dart';
@@ -4326,12 +4327,17 @@ Widget catchMenuContractStates(BuildContext context) {
     contractId: 'catch.menu',
     states: const [
       'default',
-      'selected-row',
+      'action-row',
+      'choice-row',
+      'choice-row-selected',
       'disabled-row',
       'danger-row',
       'with-icons',
       'with-sublabels',
-      'anchored-action',
+      'sectioned',
+      'scrolling',
+      'compact-selection-sheet',
+      'anchored-selection',
     ],
     children: [
       _StateCard(
@@ -4350,7 +4356,9 @@ Widget catchMenuContractStates(BuildContext context) {
               value: 'going',
               label: 'Going',
               selected: true,
+              role: CatchMenuItemRole.choice,
               icon: CatchIcons.checkCircle,
+              startsSection: true,
             ),
             CatchMenuItem(
               value: 'host-only',
@@ -4368,7 +4376,7 @@ Widget catchMenuContractStates(BuildContext context) {
         ),
       ),
       _StateCard(
-        label: 'anchored-action',
+        label: 'command overflow',
         child: CatchActionMenu<String>(
           tooltip: 'More actions',
           onSelected: _ignoreString,
@@ -4391,6 +4399,27 @@ Widget catchMenuContractStates(BuildContext context) {
               isDestructive: true,
             ),
           ],
+        ),
+      ),
+      _StateCard(
+        label: 'adaptive selection',
+        description:
+            'Open on compact and wider viewports to compare sheet and anchor.',
+        child: CatchAdaptiveSelectionControl<String>(
+          title: 'Sort customers',
+          subtitle: 'Choose how customers are ordered.',
+          tooltip: 'Sort customers',
+          value: 'last-seen',
+          items: const [
+            CatchSelectionMenuItem(value: 'last-seen', label: 'Last seen'),
+            CatchSelectionMenuItem(
+              value: 'most-attended',
+              label: 'Most attended',
+            ),
+            CatchSelectionMenuItem(value: 'name', label: 'Name'),
+          ],
+          triggerLabel: (item) => 'Sort: ${item.label}',
+          onSelected: _ignoreString,
         ),
       ),
     ],

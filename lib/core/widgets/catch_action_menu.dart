@@ -10,7 +10,6 @@ class CatchActionMenuItem<T> {
     required this.label,
     this.icon,
     this.sublabel,
-    this.selected = false,
     this.enabled = true,
     this.isDestructive = false,
   });
@@ -19,7 +18,6 @@ class CatchActionMenuItem<T> {
   final String label;
   final IconData? icon;
   final String? sublabel;
-  final bool selected;
   final bool enabled;
   final bool isDestructive;
 }
@@ -31,19 +29,14 @@ class CatchActionMenu<T> extends StatefulWidget {
     required this.tooltip,
     this.onSelected,
     this.enabled = true,
-    IconData? icon,
-    // Keep the public parameter name as `icon` while storing the optional
-    // override privately.
-    // ignore: prefer_initializing_formals
-  }) : _icon = icon;
+    this.icon,
+  }) : assert(tooltip != '', 'CatchActionMenu requires an accessible tooltip.');
 
   final List<CatchActionMenuItem<T>> items;
   final ValueChanged<T>? onSelected;
   final String tooltip;
   final bool enabled;
-  final IconData? _icon;
-
-  IconData get icon => _icon ?? CatchIcons.moreHorizRounded;
+  final IconData? icon;
 
   @override
   State<CatchActionMenu<T>> createState() => _CatchActionMenuState<T>();
@@ -57,11 +50,27 @@ class _CatchActionMenuState<T> extends State<CatchActionMenu<T>> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    assert(
+      widget.items.length <= CatchLayout.actionMenuMaxItems,
+      'CatchActionMenu is for at most five commands. Use a dedicated '
+      'selection control or sheet for larger collections.',
+    );
+    assert(
+      widget.items.every(
+        (item) => item.enabled || (item.sublabel?.trim().isNotEmpty ?? false),
+      ),
+      'Disabled action-menu rows need a reason. Informational status does not '
+      'belong in an action menu.',
+    );
+    final menuWidth = CatchLayout.menuWidthFor(
+      preferredWidth: CatchLayout.actionMenuWidth,
+      viewportWidth: MediaQuery.sizeOf(context).width,
+    );
 
     return MenuAnchor(
       controller: _controller,
-      alignmentOffset: const Offset(
-        CatchLayout.actionMenuAlignmentX,
+      alignmentOffset: Offset(
+        CatchLayout.actionMenuAlignmentXFor(menuWidth),
         CatchSpacing.s1,
       ),
       style: const MenuStyle(
@@ -73,7 +82,7 @@ class _CatchActionMenuState<T> extends State<CatchActionMenu<T>> {
       ),
       menuChildren: [
         CatchMenu<T>(
-          width: CatchLayout.actionMenuWidth,
+          width: menuWidth,
           items: [
             for (final item in widget.items)
               CatchMenuItem<T>(
@@ -81,7 +90,6 @@ class _CatchActionMenuState<T> extends State<CatchActionMenu<T>> {
                 label: item.label,
                 sublabel: item.sublabel,
                 icon: item.icon,
-                selected: item.selected,
                 danger: item.isDestructive,
                 enabled: item.enabled,
               ),
@@ -93,18 +101,15 @@ class _CatchActionMenuState<T> extends State<CatchActionMenu<T>> {
         ),
       ],
       builder: (context, controller, child) {
-        return Tooltip(
-          message: widget.tooltip,
-          child: CatchIconButton(
-            onTap: _canOpen
-                ? () =>
-                      controller.isOpen ? controller.close() : controller.open()
-                : null,
-            child: Icon(
-              widget.icon,
-              size: CatchIcon.md,
-              color: widget.enabled ? t.ink : t.ink3,
-            ),
+        return CatchIconButton(
+          tooltip: widget.tooltip,
+          onTap: _canOpen
+              ? () => controller.isOpen ? controller.close() : controller.open()
+              : null,
+          child: Icon(
+            widget.icon ?? CatchIcons.moreHorizRounded,
+            size: CatchIcon.md,
+            color: widget.enabled ? t.ink : t.ink3,
           ),
         );
       },

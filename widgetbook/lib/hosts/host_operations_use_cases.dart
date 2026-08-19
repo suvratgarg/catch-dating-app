@@ -6303,7 +6303,6 @@ class _HostTeamHostedClubsFrame extends StatelessWidget {
                     uid: _hostUid,
                     editMode: editMode,
                     creatingProfile: false,
-                    signOutPending: false,
                     profile: HostTeamProfileContent(
                       profile: HostOperationsFixtures.hostProfile,
                     ),

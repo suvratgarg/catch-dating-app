@@ -5076,7 +5076,7 @@
       "name": "CatchMenu",
       "status": "active",
       "kind": "composite",
-      "summary": "Canonical anchored menu family for overflow actions, row selection, disabled rows, destructive actions, and typed callbacks.",
+      "summary": "Canonical menu family with separate command overflow and adaptive mutually-exclusive selection contracts.",
       "dart": {
         "symbol": "CatchMenu",
         "file": "lib/core/widgets/catch_menu.dart",
@@ -5115,20 +5115,25 @@
             "dartType": "void Function(T value, CatchMenuItem<T> item)?"
           },
           {
-            "name": "selected",
-            "type": "object",
+            "name": "width",
+            "type": "number",
             "required": false,
-            "dartType": "T?"
+            "dartType": "double?"
           }
         ],
         "states": [
           "default",
-          "selected-row",
+          "action-row",
+          "choice-row",
+          "choice-row-selected",
           "disabled-row",
           "danger-row",
           "with-icons",
           "with-sublabels",
-          "anchored-action"
+          "sectioned",
+          "scrolling",
+          "compact-selection-sheet",
+          "anchored-selection"
         ],
         "slots": [],
         "tokens": [
@@ -5145,9 +5150,15 @@
         ],
         "dartRoles": [
           "CatchMenuItem",
+          "CatchMenuItemRole",
           "CatchActionMenuItem",
+          "CatchSelectionMenuItem",
           "CatchMenuRow",
           "CatchActionMenu",
+          "CatchSelectionMenu",
+          "CatchSelectionSheet",
+          "CatchAdaptiveSelectionMenu",
+          "CatchAdaptiveSelectionControl",
           "CatchSurface",
           "CatchIconButton",
           "CatchTextStyles.body",
@@ -5159,10 +5170,11 @@
             "id": "catch.menu.row",
             "symbol": "CatchMenuRow",
             "file": "lib/core/widgets/catch_menu.dart",
-            "summary": "Direct menu-row renderer for selected, disabled, danger, icon, sublabel, and checkmark states.",
+            "summary": "Direct menu-row renderer with explicit action or mutually-exclusive choice semantics.",
             "states": [
-              "default",
-              "selected",
+              "action",
+              "choice",
+              "choice-selected",
               "disabled",
               "danger",
               "with-icon",
@@ -5180,12 +5192,12 @@
             "id": "catch.menu.action_menu",
             "symbol": "CatchActionMenu",
             "file": "lib/core/widgets/catch_action_menu.dart",
-            "summary": "Anchored overflow trigger that opens CatchMenu from a CatchIconButton.",
+            "summary": "Anchored overflow trigger for at most five commands; selected or informational status rows are structurally excluded.",
             "states": [
               "closed",
               "open",
               "disabled",
-              "selected-row",
+              "disabled-command-with-reason",
               "danger-row"
             ],
             "governance": {
@@ -5193,6 +5205,64 @@
               "conceptId": "catch.menu",
               "parentConceptId": "catch.menu",
               "qualifier": "layout",
+              "decisionRef": "contract-family:catch.menu"
+            }
+          },
+          {
+            "id": "catch.menu.selection_menu",
+            "symbol": "CatchSelectionMenu",
+            "file": "lib/core/widgets/catch_selection_menu.dart",
+            "summary": "Anchored picker for typed mutually-exclusive choices on medium and expanded layouts.",
+            "states": [
+              "closed",
+              "open",
+              "selected-choice",
+              "disabled-choice"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.menu",
+              "parentConceptId": "catch.menu",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.menu"
+            }
+          },
+          {
+            "id": "catch.menu.selection_sheet",
+            "symbol": "CatchSelectionSheet",
+            "file": "lib/core/widgets/catch_selection_menu.dart",
+            "summary": "Phone-friendly bottom sheet for typed mutually-exclusive choices with title and optional explanatory copy.",
+            "states": [
+              "selected-choice",
+              "disabled-choice",
+              "with-subtitle",
+              "scrolling"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.menu",
+              "parentConceptId": "catch.menu",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.menu"
+            }
+          },
+          {
+            "id": "catch.menu.adaptive_selection",
+            "symbol": "CatchAdaptiveSelectionControl",
+            "file": "lib/core/widgets/catch_selection_menu.dart",
+            "summary": "Visible selection control that opens a sheet on compact windows and an anchored picker on wider windows.",
+            "states": [
+              "compact",
+              "medium",
+              "expanded",
+              "open",
+              "closed"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.menu",
+              "parentConceptId": "catch.menu",
+              "qualifier": "adapter",
               "decisionRef": "contract-family:catch.menu"
             }
           }
@@ -5217,8 +5287,10 @@
           "catch.surface"
         ],
         "notes": [
-          "Use CatchActionMenu for icon-triggered overflow menus and CatchMenu for direct menu panel review.",
-          "Keep selected, disabled, and destructive row states in this family instead of creating feature-local menu rows."
+          "Use CatchActionMenu only for short command lists. Keep sort, filter, and other selected choices out of overflow.",
+          "Use CatchAdaptiveSelectionControl when the current choice should remain visible, or CatchAdaptiveSelectionMenu with a custom trigger.",
+          "Informational status belongs on the owning page, not as a disabled menu row. Disabled commands must explain why they are unavailable.",
+          "Use explicit section boundaries instead of drawing a divider after every row."
         ]
       },
       "governance": {

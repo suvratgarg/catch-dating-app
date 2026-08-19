@@ -528,6 +528,10 @@ void _registerHostOperationsClubWorkspaceTests() {
     expect(find.text('Live event guide'), findsOneWidget);
     expect(find.text('Payments'), findsOneWidget);
     expect(find.text('Host team'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey<String>('host-organizer-sign-out')),
+      findsOneWidget,
+    );
     expect(find.byTooltip('Host team'), findsNothing);
     expect(find.text('Trends · last 12 weeks'), findsNothing);
     expect(find.text('See insights'), findsNothing);
@@ -553,6 +557,9 @@ void _registerHostOperationsClubWorkspaceTests() {
     await pumpFeatureUi(tester);
 
     expect(find.byType(HostClubTeamScreen), findsOneWidget);
-    expect(find.byKey(const ValueKey('host-team-sign-out')), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey<String>('host-organizer-sign-out')),
+      findsNothing,
+    );
   });
 }

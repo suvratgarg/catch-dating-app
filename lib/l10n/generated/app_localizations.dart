@@ -19339,21 +19339,6 @@ abstract class AppLocalizations {
   /// **'Repeat'**
   String get hostsHostAudienceRepeat;
 
-  /// WhatsApp reachable count label.
-  ///
-  /// In en, this message translates to:
-  /// **'WhatsApp ready'**
-  String get hostsHostAudienceWhatsappReady;
-
-  /// Audience source composition.
-  ///
-  /// In en, this message translates to:
-  /// **'{importedCount} came through external or manual rosters · {linkedCount} are linked to verified Catch identities'**
-  String hostsHostAudienceSources({
-    required int importedCount,
-    required int linkedCount,
-  });
-
   /// Audience search field.
   ///
   /// In en, this message translates to:
@@ -21617,6 +21602,18 @@ abstract class AppLocalizations {
   /// **'Sort customers'**
   String get hostCustomersSort;
 
+  /// Visible Customers directory sort control with its current ordering.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort: {label}'**
+  String hostCustomersSortControl({required String label});
+
+  /// Explains the Customers directory sort sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how customers are ordered.'**
+  String get hostCustomersSortSheetSubtitle;
+
   /// Customers directory last-seen ordering.
   ///
   /// In en, this message translates to:
@@ -21634,6 +21631,27 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Name'**
   String get hostCustomersSortName;
+
+  /// Accessible label for the Customers header overflow commands.
+  ///
+  /// In en, this message translates to:
+  /// **'More customer actions'**
+  String get hostCustomersMoreActions;
+
+  /// Number of organizer contacts currently reachable on WhatsApp.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 WhatsApp-ready contact} other{{count} WhatsApp-ready contacts}}'**
+  String hostCustomersWhatsappReadyCount({required int count});
+
+  /// Concise customer source and linked-account summary shown on the page.
+  ///
+  /// In en, this message translates to:
+  /// **'{importedCount, plural, =1{1 imported or added by your team} other{{importedCount} imported or added by your team}} · {linkedCount, plural, =1{1 linked Catch account} other{{linkedCount} linked Catch accounts}}'**
+  String hostCustomersSourceSummary({
+    required int importedCount,
+    required int linkedCount,
+  });
 
   /// Host accountability sweep heading.
   ///
@@ -21871,6 +21889,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Import responses'**
   String get hostApplicationsImport;
+
+  /// Accessible label and compact sheet title for application ordering.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort applications'**
+  String get hostApplicationsSort;
 
   /// Application spreadsheet import sheet title.
   ///

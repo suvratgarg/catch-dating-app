@@ -19,9 +19,11 @@ import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -43,16 +45,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-enum _HostCustomersHeaderAction {
-  applications,
-  sortLastSeen,
-  sortMostAttended,
-  sortName,
-  reviewDuplicates,
-  export,
-  whatsappReady,
-  sources,
-}
+enum _HostCustomersHeaderAction { applications, reviewDuplicates, export }
 
 class HostCustomersScreen extends ConsumerStatefulWidget {
   const HostCustomersScreen({super.key, this.initialOrganizerId});
@@ -174,12 +167,11 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                       onPressed: () => _addCustomer(selectedClub, request),
                     ),
                   CatchTopBarMenuAction<_HostCustomersHeaderAction>(
-                    tooltip: context.l10n.hostsHostAudienceExport,
+                    tooltip: context.l10n.hostCustomersMoreActions,
                     items: _hostCustomersHeaderActions(
                       context,
-                      summary.asData?.value,
-                      selectedSort: _sort,
-                      exportEnabled: !_exporting && _manualTag == null,
+                      includeExport: !_exporting,
+                      exportEnabled: _manualTag == null,
                       exportSublabel: _manualTag == null
                           ? null
                           : context
@@ -187,18 +179,6 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                                 .hostCustomersManualTagExportUnavailable,
                     ),
                     onSelected: (action) {
-                      final selectedSort = switch (action) {
-                        _HostCustomersHeaderAction.sortLastSeen =>
-                          HostCustomerSort.lastSeen,
-                        _HostCustomersHeaderAction.sortMostAttended =>
-                          HostCustomerSort.mostAttended,
-                        _HostCustomersHeaderAction.sortName =>
-                          HostCustomerSort.name,
-                        _ => null,
-                      };
-                      if (selectedSort != null) {
-                        setState(() => _sort = selectedSort);
-                      }
                       if (action ==
                           _HostCustomersHeaderAction.reviewDuplicates) {
                         unawaited(_reviewDuplicates(selectedClub.id));
@@ -231,17 +211,12 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                         ref.invalidate(hostCrmSummaryProvider(selectedClub.id)),
                   ),
                   gapH16,
-                  CatchSearchField(
-                    key: const ValueKey('host-customers-search'),
-                    mode: CatchSearchFieldMode.expanded,
-                    value: _search ?? '',
-                    contract: CatchContractConstraints
-                        .listOrganizerContactsCallablePayloadQuery,
-                    placeholder: context.l10n.hostsHostAudienceSearch,
-                    semanticLabel: context.l10n.hostsHostAudienceSearch,
-                    textInputAction: TextInputAction.search,
-                    onChanged: _scheduleSearch,
-                    onSubmitted: _applySearch,
+                  HostCustomerDirectoryToolbar(
+                    search: _search ?? '',
+                    sort: _sort,
+                    onSearchChanged: _scheduleSearch,
+                    onSearchSubmitted: _applySearch,
+                    onSortChanged: (sort) => setState(() => _sort = sort),
                   ),
                   gapH16,
                   CatchAsyncValueView<HostCustomersDirectoryState>(
@@ -346,9 +321,8 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
 
   List<CatchActionMenuItem<_HostCustomersHeaderAction>>
   _hostCustomersHeaderActions(
-    BuildContext context,
-    HostCrmSummary? summary, {
-    required HostCustomerSort selectedSort,
+    BuildContext context, {
+    required bool includeExport,
     required bool exportEnabled,
     String? exportSublabel,
   }) => [
@@ -358,56 +332,18 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
       icon: CatchIcons.factCheckOutlined,
     ),
     CatchActionMenuItem(
-      value: _HostCustomersHeaderAction.sortLastSeen,
-      label: context.l10n.hostCustomersSortLastSeen,
-      sublabel: context.l10n.hostCustomersSort,
-      icon: CatchIcons.sort,
-      selected: selectedSort == HostCustomerSort.lastSeen,
-    ),
-    CatchActionMenuItem(
-      value: _HostCustomersHeaderAction.sortMostAttended,
-      label: context.l10n.hostCustomersSortMostAttended,
-      sublabel: context.l10n.hostCustomersSort,
-      icon: CatchIcons.sort,
-      selected: selectedSort == HostCustomerSort.mostAttended,
-    ),
-    CatchActionMenuItem(
-      value: _HostCustomersHeaderAction.sortName,
-      label: context.l10n.hostCustomersSortName,
-      sublabel: context.l10n.hostCustomersSort,
-      icon: CatchIcons.sort,
-      selected: selectedSort == HostCustomerSort.name,
-    ),
-    CatchActionMenuItem(
       value: _HostCustomersHeaderAction.reviewDuplicates,
       label: context.l10n.hostCustomersReviewDuplicates,
       icon: CatchIcons.peopleOutlineRounded,
     ),
-    CatchActionMenuItem(
-      value: _HostCustomersHeaderAction.export,
-      label: context.l10n.hostsHostAudienceExport,
-      sublabel: exportSublabel,
-      icon: CatchIcons.downloadRounded,
-      enabled: exportEnabled,
-    ),
-    if (summary != null) ...[
+    if (includeExport)
       CatchActionMenuItem(
-        value: _HostCustomersHeaderAction.whatsappReady,
-        label: context.l10n.hostsHostAudienceWhatsappReady,
-        sublabel: '${summary.whatsappOptInCount}',
-        icon: CatchIcons.tabChats,
-        enabled: false,
+        value: _HostCustomersHeaderAction.export,
+        label: context.l10n.hostsHostAudienceExport,
+        sublabel: exportSublabel,
+        icon: CatchIcons.downloadRounded,
+        enabled: exportEnabled,
       ),
-      CatchActionMenuItem(
-        value: _HostCustomersHeaderAction.sources,
-        label: context.l10n.hostsHostAudienceSources(
-          importedCount: summary.importedContactCount,
-          linkedCount: summary.linkedAccountCount,
-        ),
-        icon: CatchIcons.info,
-        enabled: false,
-      ),
-    ],
   ];
 
   Future<void> _reviewDuplicates(String organizerId) async {
@@ -548,6 +484,77 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
       pathParameters: {'contactId': contactId},
       queryParameters: {'organizerId': club.id},
       extra: HostCustomerDetailRouteArguments(displayName: displayName),
+    );
+  }
+}
+
+class HostCustomerDirectoryToolbar extends StatelessWidget {
+  const HostCustomerDirectoryToolbar({
+    super.key,
+    required this.search,
+    required this.sort,
+    required this.onSearchChanged,
+    required this.onSearchSubmitted,
+    required this.onSortChanged,
+  });
+
+  final String search;
+  final HostCustomerSort sort;
+  final ValueChanged<String> onSearchChanged;
+  final ValueChanged<String> onSearchSubmitted;
+  final ValueChanged<HostCustomerSort> onSortChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final compact = ScreenSize.fromWidth(
+      MediaQuery.sizeOf(context).width,
+    ).isCompact;
+    final searchField = CatchSearchField(
+      key: const ValueKey('host-customers-search'),
+      mode: CatchSearchFieldMode.expanded,
+      value: search,
+      contract:
+          CatchContractConstraints.listOrganizerContactsCallablePayloadQuery,
+      placeholder: context.l10n.hostsHostAudienceSearch,
+      semanticLabel: context.l10n.hostsHostAudienceSearch,
+      textInputAction: TextInputAction.search,
+      onChanged: onSearchChanged,
+      onSubmitted: onSearchSubmitted,
+    );
+    final sortControl = CatchAdaptiveSelectionControl<HostCustomerSort>(
+      buttonKey: const ValueKey('host-customers-sort'),
+      title: context.l10n.hostCustomersSort,
+      subtitle: context.l10n.hostCustomersSortSheetSubtitle,
+      tooltip: context.l10n.hostCustomersSort,
+      value: sort,
+      items: [
+        for (final option in HostCustomerSort.values)
+          CatchSelectionMenuItem(
+            value: option,
+            label: _customerSortLabel(context, option),
+          ),
+      ],
+      triggerLabel: (selected) =>
+          context.l10n.hostCustomersSortControl(label: selected.label),
+      onSelected: onSortChanged,
+    );
+
+    if (compact) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          searchField,
+          gapH12,
+          Align(alignment: AlignmentDirectional.centerEnd, child: sortControl),
+        ],
+      );
+    }
+    return Row(
+      children: [
+        Expanded(child: searchField),
+        gapW12,
+        sortControl,
+      ],
     );
   }
 }
@@ -1550,8 +1557,11 @@ class HostCustomersSummary extends StatelessWidget {
       String countLabel(int count) => value.truncated ? '$count+' : '$count';
       return CatchSurface(
         padding: CatchInsets.cardContent,
-        child: usesLargeText
-            ? Column(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (usesLargeText)
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   CatchStatColumn(
@@ -1573,7 +1583,8 @@ class HostCustomersSummary extends StatelessWidget {
                   ),
                 ],
               )
-            : Row(
+            else
+              Row(
                 children: [
                   Expanded(
                     child: CatchStatColumn(
@@ -1598,6 +1609,27 @@ class HostCustomersSummary extends StatelessWidget {
                   ),
                 ],
               ),
+            gapH16,
+            const CatchDivider.section(),
+            gapH12,
+            CatchMetaRow(
+              icon: CatchIcons.tabChats,
+              label: context.l10n.hostCustomersWhatsappReadyCount(
+                count: value.whatsappOptInCount,
+              ),
+              maxLines: 2,
+            ),
+            gapH8,
+            CatchMetaRow(
+              icon: CatchIcons.infoOutlineRounded,
+              label: context.l10n.hostCustomersSourceSummary(
+                importedCount: value.importedContactCount,
+                linkedCount: value.linkedAccountCount,
+              ),
+              maxLines: 3,
+            ),
+          ],
+        ),
       );
     },
   );
@@ -1624,6 +1656,14 @@ String _customerFilterLabel(
     context.l10n.hostsHostAudienceSegmentWhatsapp,
   HostCustomerFilter.smsReachable => context.l10n.hostsHostAudienceSegmentSms,
 };
+
+String _customerSortLabel(BuildContext context, HostCustomerSort sort) =>
+    switch (sort) {
+      HostCustomerSort.lastSeen => context.l10n.hostCustomersSortLastSeen,
+      HostCustomerSort.mostAttended =>
+        context.l10n.hostCustomersSortMostAttended,
+      HostCustomerSort.name => context.l10n.hostCustomersSortName,
+    };
 
 String _customerFilterGroupLabel(
   BuildContext context,

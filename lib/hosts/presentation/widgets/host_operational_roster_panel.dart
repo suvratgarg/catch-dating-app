@@ -1941,6 +1941,7 @@ class _RosterMappingField extends StatelessWidget {
                 ? context.l10n.hostsOperationalRosterDoNotImport
                 : headers[option],
             selected: option == selectedValue,
+            role: CatchMenuItemRole.choice,
           ),
       ],
       onSelected: (option, _) => onChanged(option == -1 ? null : option),

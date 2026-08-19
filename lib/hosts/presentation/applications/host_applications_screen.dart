@@ -12,10 +12,12 @@ import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -72,18 +74,23 @@ class _HostApplicationsScreenState
             tooltip: context.l10n.hostApplicationsImport,
             onPressed: _importing ? null : _pickImport,
           ),
-          CatchActionMenu<HostApplicationSort>(
-            tooltip: context.l10n.hostApplicationsSortNewest,
-            icon: CatchIcons.sort,
+          CatchAdaptiveSelectionMenu<HostApplicationSort>(
+            title: context.l10n.hostApplicationsSort,
+            value: _sort,
             items: [
               for (final sort in HostApplicationSort.values)
-                CatchActionMenuItem(
+                CatchSelectionMenuItem(
                   value: sort,
                   label: _sortLabel(context, sort),
-                  selected: sort == _sort,
                 ),
             ],
             onSelected: (sort) => setState(() => _sort = sort),
+            builder: (context, selected, open, toggle) => CatchIconButton.icon(
+              icon: CatchIcons.sort,
+              tooltip: context.l10n.hostApplicationsSort,
+              active: open,
+              onTap: toggle,
+            ),
           ),
         ],
       ),
