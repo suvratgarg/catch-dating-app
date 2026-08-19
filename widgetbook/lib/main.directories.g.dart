@@ -8510,6 +8510,21 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
+        name: 'Host organizer',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'HostClubMediaSummary',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Role-sized summary states',
+                builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                    .hostClubMediaSummaryCatalogStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
         name: 'Host shared',
         children: [
           _widgetbook.WidgetbookComponent(

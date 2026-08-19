@@ -803,6 +803,12 @@ abstract final class CatchInsets {
     vertical: CatchSpacing.micro6,
   );
 
+  /// Tight role-badge padding over compact image thumbnails.
+  static const EdgeInsets mediaRoleBadgeContent = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.micro6,
+    vertical: CatchSpacing.micro3,
+  );
+
   /// Balanced small-card/control padding.
   static const EdgeInsets controlContent = EdgeInsets.symmetric(
     horizontal: CatchSpacing.s3,
@@ -2737,6 +2743,11 @@ abstract final class CatchAspectRatio {
   static const double activityCard = 16 / 10;
   static const double roomMap = activityCard;
   static const double standardPhoto = 4 / 3;
+  // Organizer media roles intentionally point at shared ratios so a future
+  // client-display policy change is a one-line edit per role.
+  static const double organizerLogo = square;
+  static const double organizerCover = wide16x9;
+  static const double organizerGallery = standardPhoto;
   static const double portrait4x5 = 4 / 5;
   static const double portrait3x4 = 3 / 4;
   static const double organizerPoster = portrait3x4;

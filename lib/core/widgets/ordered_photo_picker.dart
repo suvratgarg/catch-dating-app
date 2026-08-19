@@ -236,6 +236,7 @@ class OrderedPhotoManagerScreen extends StatefulWidget {
     required this.onRetryPhoto,
     required this.canAdd,
     this.onAddPhotosInManager,
+    this.header,
   });
 
   final List<OrderedPhotoPreview> photos;
@@ -245,6 +246,11 @@ class OrderedPhotoManagerScreen extends StatefulWidget {
   final ValueChanged<int>? onRetryPhoto;
   final bool canAdd;
   final Future<List<OrderedPhotoPreview>> Function()? onAddPhotosInManager;
+
+  /// Optional feature-owned content shown above the gallery controls. This
+  /// lets organizer media management include its independent logo editor
+  /// without moving logo persistence into the shared ordered-gallery widget.
+  final Widget? header;
 
   @override
   State<OrderedPhotoManagerScreen> createState() =>
@@ -351,6 +357,15 @@ class _OrderedPhotoManagerScreenState extends State<OrderedPhotoManagerScreen> {
         top: false,
         child: Column(
           children: [
+            if (widget.header case final header?) ...[
+              Padding(
+                padding: CatchInsets.pageHorizontal.copyWith(
+                  top: CatchSpacing.s2,
+                ),
+                child: header,
+              ),
+              gapH12,
+            ],
             if (_photos.isNotEmpty)
               Padding(
                 padding: CatchInsets.pageHorizontal.copyWith(
@@ -677,10 +692,7 @@ class OrderedPhotoTile extends StatelessWidget {
                     backgroundColor: t.ink.withValues(
                       alpha: CatchOpacity.photoSlotDeleteChrome,
                     ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: CatchSpacing.micro6,
-                      vertical: CatchSpacing.micro3,
-                    ),
+                    padding: CatchInsets.mediaRoleBadgeContent,
                     child: Text(
                       context.l10n.coreOrderedPhotoPickerTextCover,
                       style: CatchTextStyles.monoLabel(

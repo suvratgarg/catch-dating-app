@@ -6101,6 +6101,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostClubProfileTitleMedia => 'Media';
 
   @override
+  String get hostsHostClubEditTabActionManageImages => 'Manage images';
+
+  @override
+  String get hostsHostClubEditTabBadgeLogo => 'LOGO';
+
+  @override
   String get hostsHostClubProfileLabelClubName => 'Organizer name';
 
   @override

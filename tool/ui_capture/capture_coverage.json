@@ -735,9 +735,10 @@
       "status": "captured",
       "priority": "P1",
       "captureIds": [
-        "host_clubs_management"
+        "host_clubs_management",
+        "host_organizer_media_summary"
       ],
-      "reason": "The first-class Host Organizer branch is captured through the real four-branch Host shell and compared against the pinned full-shell Organizer source reference."
+      "reason": "The first-class Host Organizer branch is captured through the real four-branch Host shell and compared against the pinned full-shell Organizer source reference; a deterministic focused capture proves the role-sized media summary with real local image bytes."
     },
     {
       "routeId": "hostOrganizerMessagingScreen",

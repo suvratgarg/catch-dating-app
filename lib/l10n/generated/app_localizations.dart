@@ -9682,6 +9682,18 @@ abstract class AppLocalizations {
   /// **'Media'**
   String get hostsHostClubProfileTitleMedia;
 
+  /// Opens the full-screen organizer logo and gallery manager.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage images'**
+  String get hostsHostClubEditTabActionManageImages;
+
+  /// Role badge shown on the organizer logo in the compact media summary.
+  ///
+  /// In en, this message translates to:
+  /// **'LOGO'**
+  String get hostsHostClubEditTabBadgeLogo;
+
   /// Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (label).
   ///
   /// In en, this message translates to:

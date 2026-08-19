@@ -55,8 +55,10 @@ import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_suggestion.dart';
@@ -161,6 +163,7 @@ import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart
 import 'package:catch_dating_app/image_uploads/domain/image_upload_job.dart';
 import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/launch_access/data/launch_access_repository.dart';
 import 'package:catch_dating_app/launch_access/domain/launch_access_application.dart';
 import 'package:catch_dating_app/launch_access/presentation/launch_access_application_screen.dart';
@@ -6355,6 +6358,41 @@ UploadedPhoto _hostClubDetailPhoto(String id, int position) {
   );
 }
 
+final _hostMediaReviewClub = HostOperationsFixtures.dinnerClub.copyWith(
+  imageUrl: 'assets/branding/catch_host_splash_mark_light.png',
+  profileImageUrl: 'assets/branding/catch_hosts_logo.png',
+  clubPhotos: [
+    _hostMediaReviewPhoto(
+      'host-media-cover',
+      0,
+      'assets/branding/catch_host_splash_mark_light.png',
+    ),
+    _hostMediaReviewPhoto(
+      'host-media-gallery-one',
+      1,
+      'assets/branding/catch_hosts_logo.png',
+    ),
+    _hostMediaReviewPhoto(
+      'host-media-gallery-two',
+      2,
+      'assets/branding/catch_icon_square.png',
+    ),
+  ],
+);
+
+UploadedPhoto _hostMediaReviewPhoto(String id, int position, String assetPath) {
+  return UploadedPhoto(
+    id: id,
+    url: assetPath,
+    storagePath: 'fixtures/$id.jpg',
+    thumbnailUrl: assetPath,
+    thumbnailStoragePath: 'fixtures/$id-thumb.jpg',
+    position: position,
+    createdAt: DateTime(2025, 11, 3),
+    updatedAt: DateTime(2025, 11, 3),
+  );
+}
+
 final _hostCreateSuccessReferenceClub = _dashboardHostClub.copyWith(
   name: 'Sunday sea-face crew',
 );
@@ -9289,12 +9327,66 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.claudePhone390,
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
-      ..._hostOperationsProviderOverrides(),
+      ..._hostOperationsProviderOverrides(
+        hostedClubs: [_hostMediaReviewClub],
+        ownedClubs: [_hostMediaReviewClub],
+      ),
     ],
     builder: (context) => const _HostRoutedShellCapture(
       initialLocation: '/host/organizer',
       activeIndex: 3,
-      child: HostClubsScreen(),
+      child: HostClubsScreen(initialClubId: 'design-host-table-club'),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_organizer_media_summary',
+    routeIds: const <String>['hostOrganizerScreen'],
+    device: CaptureDevice.claudePhone390,
+    precache: _hostMediaCaptureImages,
+    builder: (context) => Scaffold(
+      body: SafeArea(
+        child: CatchPageBody(
+          child: CatchSection.fieldRows(
+            title: context.l10n.hostsHostClubProfileTitleMedia,
+            count: context.l10n.coreOrderedPhotoPickerSubtitlePhotoCount(
+              count: 4,
+            ),
+            trailing: CatchTextButton(
+              label: context.l10n.hostsHostClubEditTabActionManageImages,
+              onPressed: () {},
+              padding: EdgeInsets.zero,
+            ),
+            child: Padding(
+              padding: CatchInsets.fieldSectionChildTop,
+              child: HostClubMediaSummary(
+                logoImageBytes: _profilePortraitBytes,
+                logoImageUrl: null,
+                photos: [
+                  OrderedPhotoPreview(
+                    id: 'summary-cover',
+                    bytes: _clubHeroPortraitBytes,
+                  ),
+                  OrderedPhotoPreview(
+                    id: 'summary-gallery-one',
+                    bytes: _profilePortraitBytes,
+                  ),
+                  OrderedPhotoPreview(
+                    id: 'summary-gallery-two',
+                    bytes: _clubHeroPortraitBytes,
+                  ),
+                ],
+                logoBadgeLabel: context.l10n.hostsHostClubEditTabBadgeLogo,
+                addPhotosLabel: context
+                    .l10n
+                    .hostsCreateClubPhotosPickerVisiblecopyAddPhotos,
+                onPickLogo: () {},
+                onAddPhotos: () {},
+                onRetryPhoto: (_) {},
+              ),
+            ),
+          ),
+        ),
+      ),
     ),
   ),
   ScreenCaptureEntry(

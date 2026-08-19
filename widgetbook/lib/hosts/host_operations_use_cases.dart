@@ -4126,7 +4126,57 @@ Widget orderedPhotoManagerCatalogState(BuildContext context) {
       onReorderPhoto: (_, _) {},
       onRetryPhoto: (_) {},
       canAdd: true,
+      header: CreateClubProfileImagePicker(
+        imageBytes: _createClubPngBytes(),
+        onTap: () {},
+        onRemove: () {},
+        variant: CreateClubProfileImagePickerVariant.editLogo,
+      ),
     ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Role-sized summary states',
+  type: HostClubMediaSummary,
+  path: '[P1 product surfaces]/Host organizer',
+)
+Widget hostClubMediaSummaryCatalogStates(BuildContext context) {
+  return _HostCatalog(
+    title: 'HostClubMediaSummary',
+    contractId: 'component.host.club.photos_picker',
+    children: [
+      _StateCard(
+        label: 'logo, cover, and gallery',
+        child: _DeviceFrame(
+          child: HostClubMediaSummary(
+            logoImageBytes: _createClubPngBytes(),
+            logoImageUrl: null,
+            photos: _orderedPhotoPreviews('summary-photo', 3),
+            logoBadgeLabel: 'LOGO',
+            addPhotosLabel: 'Add photos',
+            onPickLogo: () {},
+            onAddPhotos: () {},
+            onRetryPhoto: (_) {},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'compact empty',
+        child: _DeviceFrame(
+          child: HostClubMediaSummary(
+            logoImageBytes: null,
+            logoImageUrl: null,
+            photos: const [],
+            logoBadgeLabel: 'LOGO',
+            addPhotosLabel: 'Add photos',
+            onPickLogo: () {},
+            onAddPhotos: () {},
+            onRetryPhoto: null,
+          ),
+        ),
+      ),
+    ],
   );
 }
 

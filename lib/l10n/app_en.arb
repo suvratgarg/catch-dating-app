@@ -11318,6 +11318,20 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_club_profile"
   },
+  "hostsHostClubEditTabActionManageImages": "Manage images",
+  "@hostsHostClubEditTabActionManageImages": {
+    "description": "Opens the full-screen organizer logo and gallery manager.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.host_operations.host_club_edit_tab"
+  },
+  "hostsHostClubEditTabBadgeLogo": "LOGO",
+  "@hostsHostClubEditTabBadgeLogo": {
+    "description": "Role badge shown on the organizer logo in the compact media summary.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.host_operations.host_club_edit_tab"
+  },
   "hostsHostClubProfileLabelClubName": "Organizer name",
   "@hostsHostClubProfileLabelClubName": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (label).",

@@ -15,6 +15,11 @@ abstract final class HostClubEditFieldKeys {
   static const cancellationPolicyId = 'cancellationPolicyId';
 }
 
+abstract final class HostClubMediaKeys {
+  static const summaryStrip = ValueKey('host-media-summary-strip');
+  static const logoTile = ValueKey('host-media-logo-tile');
+}
+
 typedef HostClubSettingsNavigation = void Function(Routes route, String clubId);
 
 class HostClubEditTab extends ConsumerStatefulWidget {
@@ -128,9 +133,9 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
     _mediaError = null;
   }
 
-  Future<void> _pickLogo() async {
+  Future<HostPickedClubLogo?> _pickLogo() async {
     final logo = await ref.read(hostClubEditControllerProvider).pickClubLogo();
-    if (!mounted || logo == null) return;
+    if (!mounted || logo == null) return null;
     final previousLogo = _pickedLogo;
     setState(() {
       _pickedLogo = logo;
@@ -145,6 +150,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
             .discardClubMedia(photoInputs: const [], logo: previousLogo),
       );
     }
+    return logo;
   }
 
   Future<void> _pickPhotos() async {
@@ -170,6 +176,43 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
       _showMediaError = false;
     });
     return added;
+  }
+
+  List<OrderedPhotoPreview> get _visibleMediaPreviews => _mediaDrafts.isNotEmpty
+      ? [for (final draft in _mediaDrafts) draft.preview]
+      : [
+          if (widget.club.imageUrl case final imageUrl?)
+            OrderedPhotoPreview(
+              id: 'existing_legacy_club_cover',
+              imageUrl: imageUrl,
+            ),
+        ];
+
+  Future<void> _openMediaManager() {
+    final photos = _visibleMediaPreviews;
+    final hasEditablePhotos = _mediaDrafts.isNotEmpty;
+    return Navigator.of(context, rootNavigator: true).push<void>(
+      MaterialPageRoute<void>(
+        fullscreenDialog: true,
+        builder: (_) => OrderedPhotoManagerScreen(
+          photos: photos,
+          onAddPhotos: _pickPhotos,
+          onRemovePhoto: hasEditablePhotos ? _removePhoto : null,
+          onReorderPhoto: hasEditablePhotos ? _reorderPhoto : null,
+          onRetryPhoto: hasEditablePhotos ? _retryPhoto : null,
+          onAddPhotosInManager: _pickPhotosInManager,
+          canAdd: true,
+          header: _HostClubLogoManagerHeader(
+            imageBytes: _pickedLogo?.bytes,
+            existingImageUrl: _removeLogoOnSave
+                ? null
+                : widget.club.profileImageUrl,
+            onPickLogo: _pickLogo,
+            onRemoveLogo: _removeLogo,
+          ),
+        ),
+      ),
+    );
   }
 
   Future<void> _retryPhoto(int index) async {
@@ -414,6 +457,12 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
     final hostCount = club.displayHostProfiles.length;
     final identityRows = _identityRows(context, club, cityOptions);
     final contactRows = _contactRows(context, club);
+    final visibleMediaPreviews = _visibleMediaPreviews;
+    final hasVisibleLogo =
+        _pickedLogo != null ||
+        (!_removeLogoOnSave && club.profileImageUrl != null);
+    final mediaAssetCount =
+        visibleMediaPreviews.length + (hasVisibleLogo ? 1 : 0);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -493,34 +542,34 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
         CatchSection.fieldRows(
           title: context.l10n.hostsHostClubProfileTitleMedia,
           count: context.l10n.coreOrderedPhotoPickerSubtitlePhotoCount(
-            count: _mediaDrafts.length,
+            count: mediaAssetCount,
+          ),
+          trailing: CatchTextButton(
+            key: OrderedPhotoPickerKeys.manageAction,
+            label: context.l10n.hostsHostClubEditTabActionManageImages,
+            onPressed: mediaPending
+                ? null
+                : () => unawaited(_openMediaManager()),
+            padding: EdgeInsets.zero,
           ),
           child: Padding(
             padding: CatchInsets.fieldSectionChildTop,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                CreateClubProfileImagePicker(
-                  imageBytes: _pickedLogo?.bytes,
-                  existingImageUrl: _removeLogoOnSave
-                      ? null
-                      : club.profileImageUrl,
-                  onTap: mediaPending ? null : _pickLogo,
-                  onRemove: mediaPending ? null : _removeLogo,
-                  variant: CreateClubProfileImagePickerVariant.editLogo,
-                ),
-                gapH20,
-                CreateClubPhotosPicker(
-                  photos: [for (final draft in _mediaDrafts) draft.preview],
-                  existingImageUrl: _mediaDrafts.isEmpty ? club.imageUrl : null,
+                HostClubMediaSummary(
+                  logoImageBytes: _pickedLogo?.bytes,
+                  logoImageUrl: _removeLogoOnSave ? null : club.profileImageUrl,
+                  photos: visibleMediaPreviews,
+                  logoBadgeLabel: context.l10n.hostsHostClubEditTabBadgeLogo,
+                  addPhotosLabel: context
+                      .l10n
+                      .hostsCreateClubPhotosPickerVisiblecopyAddPhotos,
+                  onPickLogo: mediaPending ? null : _pickLogo,
                   onAddPhotos: mediaPending ? null : _pickPhotos,
-                  onAddPhotosInManager: mediaPending
+                  onRetryPhoto: mediaPending || _mediaDrafts.isEmpty
                       ? null
-                      : _pickPhotosInManager,
-                  onRemovePhoto: mediaPending ? null : _removePhoto,
-                  onReorderPhoto: mediaPending ? null : _reorderPhoto,
-                  onRetryPhoto: mediaPending ? null : _retryPhoto,
-                  variant: CreateClubPhotosPickerVariant.editStrip,
+                      : _retryPhoto,
                 ),
                 gapH16,
                 Row(
@@ -870,6 +919,191 @@ class _HostClubPublicationChannelRow extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class HostClubMediaSummary extends StatelessWidget {
+  const HostClubMediaSummary({
+    super.key,
+    required this.logoImageBytes,
+    required this.logoImageUrl,
+    required this.photos,
+    required this.logoBadgeLabel,
+    required this.addPhotosLabel,
+    required this.onPickLogo,
+    required this.onAddPhotos,
+    required this.onRetryPhoto,
+  });
+
+  final Uint8List? logoImageBytes;
+  final String? logoImageUrl;
+  final List<OrderedPhotoPreview> photos;
+  final String logoBadgeLabel;
+  final String addPhotosLabel;
+  final VoidCallback? onPickLogo;
+  final VoidCallback? onAddPhotos;
+  final ValueChanged<int>? onRetryPhoto;
+
+  @override
+  Widget build(BuildContext context) {
+    const extent = CatchLayout.hostMediaThumbnailExtent;
+
+    return SizedBox(
+      key: HostClubMediaKeys.summaryStrip,
+      height: extent,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: photos.length + 2,
+        separatorBuilder: (_, _) => gapW8,
+        itemBuilder: (_, index) {
+          if (index == 0) {
+            return SizedBox.square(
+              dimension: extent,
+              child: Stack(
+                key: HostClubMediaKeys.logoTile,
+                fit: StackFit.expand,
+                children: [
+                  ClubProfileImageTile(
+                    imageBytes: logoImageBytes,
+                    existingImageUrl: logoImageUrl,
+                    onTap: onPickLogo,
+                    size: extent,
+                  ),
+                  Positioned(
+                    top: CatchSpacing.s1,
+                    left: CatchSpacing.s1,
+                    child: IgnorePointer(
+                      child: _HostClubMediaRoleBadge(label: logoBadgeLabel),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+          if (index == photos.length + 1) {
+            return SizedBox.square(
+              dimension: extent,
+              child: OrderedPhotoAddTile(
+                label: addPhotosLabel,
+                onTap: onAddPhotos,
+              ),
+            );
+          }
+
+          final photoIndex = index - 1;
+          final photo = photos[photoIndex];
+          final isCover = photoIndex == 0;
+          return SizedBox(
+            width:
+                extent *
+                (isCover
+                    ? CatchAspectRatio.organizerCover
+                    : CatchAspectRatio.organizerGallery),
+            height: extent,
+            child: OrderedPhotoTile(
+              key: ValueKey('host-media-summary-photo-${photo.id}'),
+              photo: photo,
+              index: photoIndex,
+              canReorder: false,
+              showCoverBadge: isCover,
+              showReorderHandle: false,
+              onRetry:
+                  photo.status == OrderedPhotoStatus.failed &&
+                      onRetryPhoto != null
+                  ? () => onRetryPhoto!(photoIndex)
+                  : null,
+              statusActionKey: isCover
+                  ? OrderedPhotoPickerKeys.coverRetryAction
+                  : null,
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _HostClubMediaRoleBadge extends StatelessWidget {
+  const _HostClubMediaRoleBadge({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return CatchSurface.tinted(
+      radius: CatchRadius.pill,
+      backgroundColor: t.ink.withValues(
+        alpha: CatchOpacity.photoSlotDeleteChrome,
+      ),
+      padding: CatchInsets.mediaRoleBadgeContent,
+      child: Text(
+        label,
+        style: CatchTextStyles.monoLabel(context, color: t.surface),
+      ),
+    );
+  }
+}
+
+class _HostClubLogoManagerHeader extends StatefulWidget {
+  const _HostClubLogoManagerHeader({
+    required this.imageBytes,
+    required this.existingImageUrl,
+    required this.onPickLogo,
+    required this.onRemoveLogo,
+  });
+
+  final Uint8List? imageBytes;
+  final String? existingImageUrl;
+  final Future<HostPickedClubLogo?> Function() onPickLogo;
+  final Future<void> Function() onRemoveLogo;
+
+  @override
+  State<_HostClubLogoManagerHeader> createState() =>
+      _HostClubLogoManagerHeaderState();
+}
+
+class _HostClubLogoManagerHeaderState
+    extends State<_HostClubLogoManagerHeader> {
+  late Uint8List? _imageBytes;
+  late String? _existingImageUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _imageBytes = widget.imageBytes;
+    _existingImageUrl = widget.existingImageUrl;
+  }
+
+  Future<void> _pickLogo() async {
+    final logo = await widget.onPickLogo();
+    if (!mounted || logo == null) return;
+    setState(() {
+      _imageBytes = logo.bytes;
+      _existingImageUrl = null;
+    });
+  }
+
+  Future<void> _removeLogo() async {
+    await widget.onRemoveLogo();
+    if (!mounted) return;
+    setState(() {
+      _imageBytes = null;
+      _existingImageUrl = null;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CreateClubProfileImagePicker(
+      imageBytes: _imageBytes,
+      existingImageUrl: _existingImageUrl,
+      onTap: () => unawaited(_pickLogo()),
+      onRemove: _imageBytes != null || _existingImageUrl != null
+          ? () => unawaited(_removeLogo())
+          : null,
+      variant: CreateClubProfileImagePickerVariant.editLogo,
     );
   }
 }
