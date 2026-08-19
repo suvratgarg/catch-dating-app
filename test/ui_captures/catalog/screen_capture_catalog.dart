@@ -158,7 +158,9 @@ import 'package:catch_dating_app/hosts/presentation/payments/host_payment_accoun
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
+import 'package:catch_dating_app/image_uploads/domain/image_upload_job.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
+import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
 import 'package:catch_dating_app/launch_access/data/launch_access_repository.dart';
 import 'package:catch_dating_app/launch_access/domain/launch_access_application.dart';
 import 'package:catch_dating_app/launch_access/presentation/launch_access_application_screen.dart';
@@ -1817,10 +1819,9 @@ List<Object> _selfProfileProviderOverrides({
       ProfileFixtureUserProfileRepository(profile: effectiveProfile),
     ),
     if (!useRealPhotoUploadController)
-      photoUploadControllerProvider.overrideWithValue((
-        loadingIndices: uploadLoadingIndices,
-        uploadError: null,
-      )),
+      photoUploadControllerProvider.overrideWithValue(
+        PhotoUploadState.fromLegacy(loadingIndices: uploadLoadingIndices),
+      ),
     userAnalyticsRepositoryProvider.overrideWithValue(
       ProfileFixtureUserAnalyticsRepository(
         report: ProfileSurfaceFixtures.analyticsReport,
@@ -1850,10 +1851,7 @@ List<Object> _editableSelfProfileProviderOverrides(
       (ref) => Stream<UserProfile?>.value(repository.profile),
     ),
     userProfileRepositoryProvider.overrideWithValue(repository),
-    photoUploadControllerProvider.overrideWithValue((
-      loadingIndices: <int>{},
-      uploadError: null,
-    )),
+    photoUploadControllerProvider.overrideWithValue(const PhotoUploadState()),
     userAnalyticsRepositoryProvider.overrideWithValue(
       ProfileFixtureUserAnalyticsRepository(
         report: ProfileSurfaceFixtures.analyticsReport,
@@ -1978,6 +1976,8 @@ class _CaptureFailingImageUploadRepository extends Fake
     required String uid,
     required int index,
     required XFile image,
+    ValueChanged<ImageUploadProgress>? onProgress,
+    ImageUploadCancellationToken? cancellationToken,
   }) async {
     throw obviousOfflineException(
       context: const BackendErrorContext(
@@ -2049,7 +2049,7 @@ Widget _selfProfileCapture({SelfProfileTab initialTab = SelfProfileTab.edit}) =>
 
 Widget _editableSelfProfileCapture() => ProfileTab(
   user: ProfileSurfaceFixtures.viewer,
-  uploadState: (loadingIndices: <int>{}, uploadError: null),
+  uploadState: const PhotoUploadState(),
 );
 
 class _SelfProfileUploadFailureCapture extends ConsumerStatefulWidget {
@@ -7541,10 +7541,9 @@ List<Object> _onboardingProviderOverrides({
       _CaptureOnboardingDraftRepository(draft),
     ),
     if (!useRealPhotoUploadController)
-      photoUploadControllerProvider.overrideWithValue((
-        loadingIndices: uploadLoadingIndices,
-        uploadError: null,
-      )),
+      photoUploadControllerProvider.overrideWithValue(
+        PhotoUploadState.fromLegacy(loadingIndices: uploadLoadingIndices),
+      ),
   ];
 }
 

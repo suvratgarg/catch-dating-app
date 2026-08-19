@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
+import 'package:catch_dating_app/image_uploads/domain/image_upload_job.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
@@ -16,9 +17,10 @@ import '../events/events_test_helpers.dart';
 
 class FakePhotoUserProfileRepository extends Fake
     implements UserProfileRepository {
-  FakePhotoUserProfileRepository(this.currentUser);
+  FakePhotoUserProfileRepository(this.currentUser, {this.updateError});
 
   UserProfile currentUser;
+  final Object? updateError;
   final updatedProfilePhotos = <List<ProfilePhoto>>[];
 
   @override
@@ -30,6 +32,7 @@ class FakePhotoUserProfileRepository extends Fake
     required String uid,
     required List<ProfilePhoto> profilePhotos,
   }) async {
+    if (updateError != null) throw updateError!;
     updatedProfilePhotos.add(List<ProfilePhoto>.from(profilePhotos));
     currentUser = currentUser.copyWith(
       profilePhotos: List<ProfilePhoto>.from(profilePhotos),
@@ -41,6 +44,7 @@ class ControlledImageUploadRepository extends Fake
     implements ImageUploadRepository {
   final uploadCompleters = <Completer<UploadedImage>>[];
   final uploadedIndices = <int>[];
+  final deletedPaths = <String>[];
 
   @override
   Future<XFile?> pickImage({
@@ -53,11 +57,18 @@ class ControlledImageUploadRepository extends Fake
     required String uid,
     required int index,
     required XFile image,
+    void Function(ImageUploadProgress)? onProgress,
+    ImageUploadCancellationToken? cancellationToken,
   }) {
     uploadedIndices.add(index);
     final completer = Completer<UploadedImage>();
     uploadCompleters.add(completer);
     return completer.future;
+  }
+
+  @override
+  Future<void> deleteByPath(String storagePath) async {
+    deletedPaths.add(storagePath);
   }
 }
 
@@ -303,6 +314,60 @@ void main() {
     );
 
     await expectLater(upload, completes);
+  });
+
+  test('deletes a new upload when attaching it to the profile fails', () async {
+    final userProfileRepository = FakePhotoUserProfileRepository(
+      buildUser(),
+      updateError: StateError('profile write failed'),
+    );
+    final imageUploadRepository = ControlledImageUploadRepository();
+    final container = ProviderContainer(
+      overrides: [
+        userProfileRepositoryProvider.overrideWith(
+          (ref) => userProfileRepository,
+        ),
+        imageUploadRepositoryProvider.overrideWith(
+          (ref) => imageUploadRepository,
+        ),
+        errorLoggerProvider.overrideWithValue(_SilentErrorLogger()),
+        uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+      ],
+    );
+    addTearDown(container.dispose);
+    final uidSubscription = container.listen(
+      uidProvider,
+      (_, _) {},
+      fireImmediately: true,
+    );
+    addTearDown(uidSubscription.close);
+    final uploadSubscription = container.listen(
+      photoUploadControllerProvider,
+      (_, _) {},
+      fireImmediately: true,
+    );
+    addTearDown(uploadSubscription.close);
+    await container.pump();
+
+    final upload = container
+        .read(photoUploadControllerProvider.notifier)
+        .pickAndUpload(0);
+    await container.pump();
+    imageUploadRepository.uploadCompleters.single.complete(
+      const UploadedImage(
+        url: 'https://img.example/new.jpg',
+        storagePath: 'users/runner-1/photos/0_new.jpg',
+      ),
+    );
+    await upload;
+
+    expect(imageUploadRepository.deletedPaths, [
+      'users/runner-1/photos/0_new.jpg',
+    ]);
+    expect(
+      container.read(photoUploadControllerProvider).jobFor(0)?.stage,
+      ImageUploadJobStage.failed,
+    );
   });
 
   test(

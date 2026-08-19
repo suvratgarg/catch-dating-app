@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
+import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_edit_tab_state.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +25,7 @@ void main() {
       l10n: l10n,
       user: buildUser(uid: 'profile-contract-user'),
       today: DateTime(2026, 7, 18),
-      uploadState: (loadingIndices: <int>{}, uploadError: null),
+      uploadState: const PhotoUploadState(),
     );
 
     expect(

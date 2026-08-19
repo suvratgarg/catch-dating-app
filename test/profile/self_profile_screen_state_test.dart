@@ -5,10 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';
 
-const PhotoUploadState _idleUploadState = (
-  loadingIndices: <int>{},
-  uploadError: null,
-);
+const PhotoUploadState _idleUploadState = PhotoUploadState();
 final _today = DateTime(2026, 6, 24);
 
 void main() {
@@ -67,7 +64,10 @@ void main() {
       email: 'suvrat@example.com',
     ).copyWith(displayName: 'S.');
     final uploadError = StateError('upload failed');
-    final uploadState = (loadingIndices: {1}, uploadError: uploadError);
+    final uploadState = PhotoUploadState.fromLegacy(
+      loadingIndices: {1},
+      uploadError: uploadError,
+    );
 
     final state = SelfProfileScreenState.fromAsync(
       profileState: CatchAsyncState.data(user),

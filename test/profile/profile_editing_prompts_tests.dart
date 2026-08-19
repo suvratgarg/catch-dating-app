@@ -16,10 +16,7 @@ void _registerProfileEditingPromptsTests() {
         child: MaterialApp(
           theme: AppTheme.light,
           home: Scaffold(
-            body: ProfileTab(
-              user: user,
-              uploadState: (loadingIndices: <int>{}, uploadError: null),
-            ),
+            body: ProfileTab(user: user, uploadState: const PhotoUploadState()),
           ),
         ),
       ),

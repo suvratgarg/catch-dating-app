@@ -13,6 +13,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
+import 'package:catch_dating_app/image_uploads/domain/image_upload_job.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_grid_keys.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
@@ -1609,6 +1610,8 @@ class _FailingOnboardingImageUploadRepository extends Fake
     required String uid,
     required int index,
     required XFile image,
+    ValueChanged<ImageUploadProgress>? onProgress,
+    ImageUploadCancellationToken? cancellationToken,
   }) async {
     throw obviousOfflineException();
   }

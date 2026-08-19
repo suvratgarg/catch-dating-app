@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
+import 'package:catch_dating_app/image_uploads/domain/image_upload_job.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
@@ -49,6 +50,12 @@ class TestUploadTask extends Fake implements UploadTask {
   final TaskSnapshot _snapshot = TestTaskSnapshot();
 
   @override
+  Stream<TaskSnapshot> get snapshotEvents => Stream.value(_snapshot);
+
+  @override
+  Future<bool> cancel() async => true;
+
+  @override
   Stream<TaskSnapshot> asStream() => Stream.value(_snapshot);
 
   @override
@@ -78,7 +85,13 @@ class TestUploadTask extends Fake implements UploadTask {
   }
 }
 
-class TestTaskSnapshot extends Fake implements TaskSnapshot {}
+class TestTaskSnapshot extends Fake implements TaskSnapshot {
+  @override
+  int get bytesTransferred => 3;
+
+  @override
+  int get totalBytes => 3;
+}
 
 class RecordingImagePicker extends Fake implements ImagePicker {
   double? maxWidth;
@@ -252,6 +265,50 @@ void main() {
         {'uploaderUid': 'user-1'},
       );
     });
+
+    test('reports preparation, byte progress, and attach stages', () async {
+      final progress = <ImageUploadProgress>[];
+      final repository = ImageUploadRepository(TestFirebaseStorage());
+
+      await repository.uploadWithMetadata(
+        storagePath: 'users/user-1/photos/0_123',
+        image: _xFile(
+          bytes: Uint8List.fromList([1, 2, 3]),
+          name: 'photo.jpg',
+          mimeType: 'image/jpeg',
+        ),
+        onProgress: progress.add,
+      );
+
+      expect(progress.first.stage, ImageUploadJobStage.preparing);
+      expect(
+        progress.where((item) => item.stage == ImageUploadJobStage.uploading),
+        isNotEmpty,
+      );
+      expect(progress.last.stage, ImageUploadJobStage.attaching);
+      expect(progress.last.fraction, 1);
+    });
+
+    test('uses a stable media id instead of encoding gallery order', () async {
+      final storage = TestFirebaseStorage();
+      final repository = ImageUploadRepository(storage);
+
+      await repository.uploadClubPhoto(
+        clubId: 'club-1',
+        position: 24,
+        mediaId: 'abcdefghijklmnopqrstuvwx',
+        image: _xFile(
+          bytes: Uint8List.fromList([1, 2, 3]),
+          name: 'photo.jpg',
+          mimeType: 'image/jpeg',
+        ),
+      );
+
+      expect(
+        storage.refs.keys.single,
+        'organizers/club-1/media/abcdefghijklmnopqrstuvwx/original.jpg',
+      );
+    });
   });
 }
 
@@ -276,7 +333,7 @@ final _uploadCases = <UploadCase>[
   UploadCase(
     name: 'uploadClubCover',
     schemaFileName: 'club_photos.schema.json',
-    expectedPathPrefix: 'organizers/club-1/photos/0_',
+    expectedPathPrefix: 'organizers/club-1/media/',
     invoke: (repository, image) => repository.uploadClubCover(
       uid: 'user-1',
       clubId: 'club-1',
@@ -296,7 +353,7 @@ final _uploadCases = <UploadCase>[
   UploadCase(
     name: 'uploadEventPhoto',
     schemaFileName: 'event_photos.schema.json',
-    expectedPathPrefix: 'events/event-1/photos/0_',
+    expectedPathPrefix: 'events/event-1/media/',
     invoke: (repository, image) => repository.uploadEventPhoto(
       uid: 'user-1',
       clubId: 'club-1',

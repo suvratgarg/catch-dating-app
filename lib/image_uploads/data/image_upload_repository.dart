@@ -1,11 +1,13 @@
+import 'dart:async';
 import 'dart:math' as math;
-import 'dart:typed_data';
 
 import 'package:catch_dating_app/core/app_error_context.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/image_uploads/domain/image_upload_job.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:image/image.dart' as image_lib;
 import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -133,6 +135,17 @@ class ImageUploadRepository {
   final FirebaseStorage _storage;
   final ImagePicker _picker;
 
+  static String createMediaId() {
+    const alphabet =
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-';
+    final random = math.Random.secure();
+    return List.generate(
+      24,
+      (_) => alphabet[random.nextInt(alphabet.length)],
+      growable: false,
+    ).join();
+  }
+
   // ── Picking ───────────────────────────────────────────────────────────────
 
   Future<XFile?> pickImage({
@@ -200,34 +213,80 @@ class ImageUploadRepository {
     required XFile image,
     ImageUploadPurpose purpose = ImageUploadPurpose.profilePhoto,
     Map<String, String>? customMetadata,
+    ValueChanged<ImageUploadProgress>? onProgress,
+    ImageUploadCancellationToken? cancellationToken,
   }) async {
-    return withBackendErrorContext(
-      () async {
-        final prepared = await _prepareUpload(image: image, purpose: purpose);
-        _assertUploadConformsToStorageContract(
-          storagePath: storagePath,
-          byteLength: prepared.bytes.length,
-          reportedContentType: image.mimeType,
-          effectiveContentType: prepared.contentType,
+    final context = _storageContextForPath(storagePath);
+    return withBackendErrorContext(() async {
+      if (cancellationToken?.isCancellationRequested ?? false) {
+        throw _cancelledUpload(context);
+      }
+      onProgress?.call(
+        const ImageUploadProgress(
+          stage: ImageUploadJobStage.preparing,
+          fraction: 0,
+        ),
+      );
+      final prepared = await _prepareUpload(image: image, purpose: purpose);
+      if (cancellationToken?.isCancellationRequested ?? false) {
+        throw _cancelledUpload(context);
+      }
+      _assertUploadConformsToStorageContract(
+        storagePath: storagePath,
+        byteLength: prepared.bytes.length,
+        reportedContentType: image.mimeType,
+        effectiveContentType: prepared.contentType,
+      );
+      final finalStoragePath = '$storagePath.${prepared.extension}';
+      final ref = _storage.ref(finalStoragePath);
+      final task = ref.putData(
+        prepared.bytes,
+        SettableMetadata(
+          contentType: prepared.contentType,
+          customMetadata: customMetadata,
+        ),
+      );
+      await cancellationToken?.bind(task.cancel);
+      onProgress?.call(
+        const ImageUploadProgress(
+          stage: ImageUploadJobStage.uploading,
+          fraction: 0,
+        ),
+      );
+      StreamSubscription<TaskSnapshot>? progressSubscription;
+      if (onProgress != null) {
+        progressSubscription = task.snapshotEvents.listen(
+          (snapshot) {
+            final totalBytes = snapshot.totalBytes;
+            final fraction = totalBytes <= 0
+                ? 0.0
+                : snapshot.bytesTransferred / totalBytes;
+            onProgress(
+              ImageUploadProgress(
+                stage: ImageUploadJobStage.uploading,
+                fraction: fraction.clamp(0, 1),
+              ),
+            );
+          },
+          onError: (_) {
+            // The awaited UploadTask below owns error propagation.
+          },
         );
-        final finalStoragePath = '$storagePath.${prepared.extension}';
-        final ref = _storage.ref(finalStoragePath);
-        await ref.putData(
-          prepared.bytes,
-          SettableMetadata(
-            contentType: prepared.contentType,
-            customMetadata: customMetadata,
-          ),
-        );
-        final url = await ref.getDownloadURL();
-        return UploadedImage(url: url, storagePath: finalStoragePath);
-      },
-      context: BackendErrorContext(
-        service: BackendService.storage,
-        action: 'upload image',
-        resource: _resourceForStoragePath(storagePath),
-      ),
-    );
+      }
+      try {
+        await task;
+      } finally {
+        await progressSubscription?.cancel();
+      }
+      onProgress?.call(
+        const ImageUploadProgress(
+          stage: ImageUploadJobStage.attaching,
+          fraction: 1,
+        ),
+      );
+      final url = await ref.getDownloadURL();
+      return UploadedImage(url: url, storagePath: finalStoragePath);
+    }, context: context);
   }
 
   // ── Path helpers ──────────────────────────────────────────────────────────
@@ -246,11 +305,15 @@ class ImageUploadRepository {
     required String uid,
     required int index,
     required XFile image,
+    ValueChanged<ImageUploadProgress>? onProgress,
+    ImageUploadCancellationToken? cancellationToken,
   }) {
     final millis = DateTime.now().millisecondsSinceEpoch;
     return uploadWithMetadata(
       storagePath: 'users/$uid/photos/${index}_$millis',
       image: image,
+      onProgress: onProgress,
+      cancellationToken: cancellationToken,
     );
   }
 
@@ -259,12 +322,17 @@ class ImageUploadRepository {
     required String clubId,
     required int position,
     required XFile image,
+    String? mediaId,
+    ValueChanged<ImageUploadProgress>? onProgress,
+    ImageUploadCancellationToken? cancellationToken,
   }) {
-    final millis = DateTime.now().millisecondsSinceEpoch;
+    final resolvedMediaId = mediaId ?? createMediaId();
     return uploadWithMetadata(
-      storagePath: 'organizers/$clubId/photos/${position}_$millis',
+      storagePath: 'organizers/$clubId/media/$resolvedMediaId/original',
       image: image,
       purpose: ImageUploadPurpose.clubPhoto,
+      onProgress: onProgress,
+      cancellationToken: cancellationToken,
     );
   }
 
@@ -286,12 +354,17 @@ class ImageUploadRepository {
     String? uid,
     required String clubId,
     required XFile image,
+    String? mediaId,
+    ValueChanged<ImageUploadProgress>? onProgress,
+    ImageUploadCancellationToken? cancellationToken,
   }) {
-    final millis = DateTime.now().millisecondsSinceEpoch;
+    final resolvedMediaId = mediaId ?? createMediaId();
     return uploadWithMetadata(
-      storagePath: 'organizers/$clubId/logo/$millis',
+      storagePath: 'organizers/$clubId/logo/$resolvedMediaId/original',
       image: image,
       purpose: ImageUploadPurpose.clubLogo,
+      onProgress: onProgress,
+      cancellationToken: cancellationToken,
     );
   }
 
@@ -310,25 +383,27 @@ class ImageUploadRepository {
     required String eventId,
     int position = 0,
     required XFile image,
-  }) {
-    final millis = DateTime.now().millisecondsSinceEpoch;
-    return upload(
-      storagePath: 'events/$eventId/photos/${position}_$millis',
-      image: image,
-      purpose: ImageUploadPurpose.eventPhoto,
-    );
-  }
+  }) async => (await uploadEventPhotoWithMetadata(
+    eventId: eventId,
+    position: position,
+    image: image,
+  )).url;
 
   Future<UploadedImage> uploadEventPhotoWithMetadata({
     required String eventId,
     required int position,
     required XFile image,
+    String? mediaId,
+    ValueChanged<ImageUploadProgress>? onProgress,
+    ImageUploadCancellationToken? cancellationToken,
   }) {
-    final millis = DateTime.now().millisecondsSinceEpoch;
+    final resolvedMediaId = mediaId ?? createMediaId();
     return uploadWithMetadata(
-      storagePath: 'events/$eventId/photos/${position}_$millis',
+      storagePath: 'events/$eventId/media/$resolvedMediaId/original',
       image: image,
       purpose: ImageUploadPurpose.eventPhoto,
+      onProgress: onProgress,
+      cancellationToken: cancellationToken,
     );
   }
 
@@ -402,10 +477,13 @@ class ImageUploadRepository {
   }) async {
     final originalBytes = await image.readAsBytes();
     final originalExt = _normalizedExt(image.name);
-    final compressedBytes = _compressedImageBytes(
-      originalBytes,
-      policy: policyForPurpose(purpose),
-    );
+    final policy = policyForPurpose(purpose);
+    final compressedBytes = await compute(_compressedImageBytes, (
+      bytes: originalBytes,
+      maxWidth: policy.maxWidth,
+      maxHeight: policy.maxHeight,
+      quality: policy.quality,
+    ));
     if (compressedBytes == null) {
       return _PreparedUpload(
         bytes: originalBytes,
@@ -420,17 +498,14 @@ class ImageUploadRepository {
     );
   }
 
-  static Uint8List? _compressedImageBytes(
-    Uint8List bytes, {
-    required ImageUploadPolicy policy,
-  }) {
+  static Uint8List? _compressedImageBytes(_CompressionRequest request) {
     try {
-      final decoded = image_lib.decodeImage(bytes);
+      final decoded = image_lib.decodeImage(request.bytes);
       if (decoded == null) return null;
       var normalized = image_lib.bakeOrientation(decoded);
       final scale = math.min(
-        policy.maxWidth / normalized.width,
-        policy.maxHeight / normalized.height,
+        request.maxWidth / normalized.width,
+        request.maxHeight / normalized.height,
       );
       if (scale < 1) {
         normalized = image_lib.copyResize(
@@ -441,7 +516,7 @@ class ImageUploadRepository {
         );
       }
       return Uint8List.fromList(
-        image_lib.encodeJpg(normalized, quality: policy.quality),
+        image_lib.encodeJpg(normalized, quality: request.quality),
       );
     } on Object {
       return null;
@@ -472,6 +547,7 @@ class ImageUploadRepository {
       service: BackendService.storage,
       action: 'upload image',
       resource: contract.resource,
+      metadata: _storageDiagnosticMetadata(storagePath),
     );
     if (byteLength > contract.maxBytes) {
       throw StorageUploadPreflightException(
@@ -518,7 +594,7 @@ class ImageUploadRepository {
     }
     if ((storagePath.startsWith('organizers/') ||
             storagePath.startsWith('clubs/')) &&
-        storagePath.contains('/photos/')) {
+        (storagePath.contains('/photos/') || storagePath.contains('/media/'))) {
       return _clubPhotosContract;
     }
     if ((storagePath.startsWith('organizers/') ||
@@ -526,7 +602,8 @@ class ImageUploadRepository {
         storagePath.contains('/logo/')) {
       return _clubLogoImagesContract;
     }
-    if (storagePath.startsWith('events/') && storagePath.contains('/photos/')) {
+    if (storagePath.startsWith('events/') &&
+        (storagePath.contains('/photos/') || storagePath.contains('/media/'))) {
       return _eventPhotosContract;
     }
     if (storagePath.startsWith('matches/') &&
@@ -535,7 +612,49 @@ class ImageUploadRepository {
     }
     return null;
   }
+
+  static BackendErrorContext _storageContextForPath(String storagePath) =>
+      BackendErrorContext(
+        service: BackendService.storage,
+        action: 'upload image',
+        resource: _resourceForStoragePath(storagePath),
+        metadata: _storageDiagnosticMetadata(storagePath),
+      );
+
+  static Map<String, String> _storageDiagnosticMetadata(String storagePath) {
+    final segments = storagePath.split('/');
+    final family = switch (segments) {
+      ['users', _, 'photos', ...] => 'profile_photo',
+      ['organizers' || 'clubs', _, 'media', ...] => 'organizer_gallery',
+      ['organizers' || 'clubs', _, 'photos', ...] => 'organizer_gallery_legacy',
+      ['organizers' || 'clubs', _, 'logo', ...] => 'organizer_logo',
+      ['events', _, 'media', ...] => 'event_gallery',
+      ['events', _, 'photos', ...] => 'event_gallery_legacy',
+      ['matches', _, 'images', ...] => 'chat_image',
+      _ => 'image',
+    };
+    final pathVersion =
+        storagePath.contains('/media/') ||
+            (segments.length >= 5 && segments.elementAtOrNull(2) == 'logo')
+        ? 'v2'
+        : 'legacy';
+    return {'path_family': family, 'path_version': pathVersion};
+  }
+
+  static StorageException _cancelledUpload(BackendErrorContext context) =>
+      StorageException(
+        'Upload was cancelled.',
+        code: 'canceled',
+        context: context,
+      );
 }
+
+typedef _CompressionRequest = ({
+  Uint8List bytes,
+  double maxWidth,
+  double maxHeight,
+  int quality,
+});
 
 String _formatBytes(int bytes) {
   final mb = bytes / (1024 * 1024);
