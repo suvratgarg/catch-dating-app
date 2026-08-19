@@ -27,6 +27,11 @@ on:
         description: Exact CI-approved source SHA.
         required: true
         type: string
+      require_current_main:
+        description: Require the approved source to remain the exact current main head.
+        required: false
+        default: false
+        type: boolean
       resume_delivery_run_id:
         description: Optional terminal non-success Delivery run id containing the exact recovery authorization/checkpoint.
         required: false
@@ -60,6 +65,7 @@ jobs:
           SOURCE_CI_RUN_ATTEMPT: ${{ inputs.source_ci_run_attempt }}
           SOURCE_CI_RUN_ID: ${{ inputs.source_ci_run_id }}
           SOURCE_SHA: ${{ inputs.source_sha }}
+          REQUIRE_CURRENT_MAIN: ${{ inputs.require_current_main }}
         run: |
           set -euo pipefail
           if (( GITHUB_RUN_ATTEMPT > 1 )); then
@@ -72,6 +78,7 @@ jobs:
           [[ "$SOURCE_CI_RUN_ATTEMPT" =~ ^[1-9][0-9]*$ ]]
           [[ "$SOURCE_CI_RUN_ID" =~ ^[1-9][0-9]*$ ]]
           [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$REQUIRE_CURRENT_MAIN" =~ ^(true|false)$ ]]
 
       - name: Checkout the immutable Delivery control plane
         uses: actions/checkout@v6
@@ -89,6 +96,7 @@ jobs:
       - name: Require the control plane and ordered source to remain exact
         env:
           CONTROL_PLANE_SHA: ${{ inputs.control_plane_sha }}
+          REQUIRE_CURRENT_MAIN: ${{ inputs.require_current_main }}
           SOURCE_CHECKOUT: build/delivery/source-checkout
           SOURCE_SHA: ${{ inputs.source_sha }}
         run: |
@@ -97,6 +105,9 @@ jobs:
           test "$(git -C "$SOURCE_CHECKOUT" rev-parse HEAD)" = "$SOURCE_SHA"
           git -C "$SOURCE_CHECKOUT" fetch origin main:refs/remotes/origin/main --no-tags
           git -C "$SOURCE_CHECKOUT" merge-base --is-ancestor "$SOURCE_SHA" refs/remotes/origin/main
+          if [[ "$REQUIRE_CURRENT_MAIN" == "true" ]]; then
+            test "$(git -C "$SOURCE_CHECKOUT" rev-parse refs/remotes/origin/main)" = "$SOURCE_SHA"
+          fi
 
       - name: Download only the source CI artifact
         uses: actions/download-artifact@v7
