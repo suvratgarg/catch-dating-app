@@ -1,5 +1,8 @@
 import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
+import 'package:catch_dating_app/hosts/data/host_roster_file_parser.dart';
+import 'package:catch_dating_app/hosts/data/host_roster_file_service.dart';
 import 'package:catch_dating_app/hosts/domain/host_application_import.dart';
+import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -86,12 +89,22 @@ class HostApplicationsDirectoryController
 
 @riverpod
 HostApplicationsController hostApplicationsController(Ref ref) =>
-    HostApplicationsController(ref.watch(hostApplicationRepositoryProvider));
+    HostApplicationsController(
+      ref.watch(hostApplicationRepositoryProvider),
+      ref.watch(hostRosterFileServiceProvider),
+    );
 
 class HostApplicationsController {
-  const HostApplicationsController(this._repository);
+  const HostApplicationsController(this._repository, this._fileService);
 
   final HostApplicationRepository _repository;
+  final HostRosterFileService _fileService;
+
+  Future<HostRosterTable?> pickImportFile() async {
+    final file = await _fileService.pickRosterFile();
+    if (file == null) return null;
+    return parseHostRosterFile(fileName: file.name, bytes: file.bytes);
+  }
 
   Future<HostApplicationImportResult> importDraft({
     required String organizerId,

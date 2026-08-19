@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/host_event_create.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:46e7ca7858271939943f2bfb108c040406ec5d2eb0d5ddf6cf0aa2ec2c247997",
+  "sourceDigest": "sha256:401717db58c0e473d4f18c2c86e4db9efd16507c92f836c5e375875e8e8bc41c",
   "resolvedDigest": "sha256:5d9c037e61c22ba851368612ddbfdfdb6d603674414c5b7f5706ca5cd5d43d48",
   "feature": {
     "id": "feature.host_event_create",
@@ -829,7 +829,7 @@
         {
           "id": "discard_and_exit",
           "owner": "create_screen",
-          "codeValue": "_showUnsavedChangesDialog",
+          "codeValue": "discardAndExit",
           "cardinality": "singleton",
           "scopeKeys": [
             "routeInstanceId",

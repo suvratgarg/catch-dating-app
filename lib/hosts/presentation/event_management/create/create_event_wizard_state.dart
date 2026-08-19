@@ -151,11 +151,13 @@ class CreateEventWizardReviewState {
     required PaceLevel? pace,
     required bool externalBookingMode,
     required String externalEventUrl,
+    bool rosterAttachmentRequired = false,
     required bool hasStartingPoint,
     required String meetingPoint,
     required CreateEventScheduleState scheduleState,
     required DateTime now,
     required String capacity,
+    int? rosterReadyCount,
     required String price,
     required String currencyCode,
     required EventAdmissionPreset admissionPreset,
@@ -179,11 +181,13 @@ class CreateEventWizardReviewState {
         pace: pace,
         externalBookingMode: externalBookingMode,
         externalEventUrl: externalEventUrl,
+        rosterAttachmentRequired: rosterAttachmentRequired,
       ),
       hasStartingPoint && meetingPoint.trim().isNotEmpty,
       scheduleState.selectedStartDateTime?.isAfter(now) == true,
       _eventPolicyReady(
         capacity: capacity,
+        rosterReadyCount: rosterReadyCount,
         price: price,
         currencyCode: currencyCode,
         admissionPreset: admissionPreset,
@@ -231,7 +235,9 @@ class CreateEventWizardReviewState {
     required PaceLevel? pace,
     required bool externalBookingMode,
     required String externalEventUrl,
+    required bool rosterAttachmentRequired,
   }) {
+    if (rosterAttachmentRequired) return false;
     if (externalBookingMode && externalEventUrl.trim().isNotEmpty) {
       final uri = Uri.tryParse(externalEventUrl.trim());
       if (uri == null || uri.scheme != 'https' || uri.host.isEmpty) {
@@ -249,6 +255,7 @@ class CreateEventWizardReviewState {
 
   static bool _eventPolicyReady({
     required String capacity,
+    int? rosterReadyCount,
     required String price,
     required String currencyCode,
     required EventAdmissionPreset admissionPreset,
@@ -266,6 +273,9 @@ class CreateEventWizardReviewState {
   }) {
     final parsedCapacity = int.tryParse(capacity.trim());
     if (parsedCapacity == null || parsedCapacity < 1) return false;
+    if (rosterReadyCount != null && parsedCapacity < rosterReadyCount) {
+      return false;
+    }
     if (parseMajorCurrencyAmountToMinorUnits(
           price,
           currencyCode: currencyCode,

@@ -5970,6 +5970,8 @@ Widget catchStepHeaderContractStates(BuildContext context) {
       'with-progress',
       'without-progress',
       'with-back',
+      'with-close',
+      'interactive-step-overview',
       'no-back',
       'custom-trailing',
       'no-gutter',
@@ -5995,6 +5997,28 @@ Widget catchStepHeaderContractStates(BuildContext context) {
         label: 'with-back',
         child: _TopBarFrame(
           child: CatchStepHeader(title: 'Guest list', onBack: _noop),
+        ),
+      ),
+      _StateCard(
+        label: 'with-close',
+        child: _TopBarFrame(
+          child: CatchStepHeader(
+            title: 'Create event',
+            leadingType: CatchTopBarLeading.close,
+            onBack: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'interactive-step-overview',
+        child: _TopBarFrame(
+          child: CatchStepHeader(
+            title: 'Create event',
+            step: 3,
+            total: 5,
+            onStepOverview: _noop,
+            stepOverviewSemanticsLabel: 'Review all event sections',
+          ),
         ),
       ),
       const _StateCard(

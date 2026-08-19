@@ -45,7 +45,10 @@ export interface UpdateEventCallablePayload {
       maxWomen?: number | null;
     };
     eventPolicy?: {
-      version: 1;
+      /**
+       * Version 2 models cancellation as notApplicable for free events. Version 1 remains readable for legacy snapshots.
+       */
+      version: 1 | 2;
       admission: {
         format:
           | "open"
@@ -109,7 +112,7 @@ export interface UpdateEventCallablePayload {
         }[];
       };
       cancellation: {
-        policyId: "flexible" | "standard" | "strict";
+        policyId: "notApplicable" | "flexible" | "standard" | "strict";
       };
       settlement: {
         hostPayoutTiming: "afterEventCompletion";

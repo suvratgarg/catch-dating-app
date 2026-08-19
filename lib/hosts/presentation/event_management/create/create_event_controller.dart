@@ -6,10 +6,15 @@ import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
+import 'package:catch_dating_app/events/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/hosts/data/host_roster_file_parser.dart';
+import 'package:catch_dating_app/hosts/data/host_roster_file_service.dart';
+import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:image_picker/image_picker.dart';
@@ -35,6 +40,31 @@ class CreateEventController extends _$CreateEventController {
 
   @override
   void build() {}
+
+  Future<HostRosterTable?> pickRosterFile({
+    ExternalBookingProvider? providerHint,
+  }) async {
+    final file = await ref.read(hostRosterFileServiceProvider).pickRosterFile();
+    if (file == null) return null;
+    return parseHostRosterFile(
+      fileName: file.name,
+      bytes: file.bytes,
+      providerHint: providerHint,
+    );
+  }
+
+  Future<EventAttendeeImportResult> importRoster({
+    required String eventId,
+    required HostRosterImportPlan plan,
+  }) => ref
+      .read(eventAttendeeRepositoryProvider)
+      .importAttendees(
+        eventId: eventId,
+        importKey: hostRosterImportKey(format: plan.format, rows: plan.rows),
+        fileName: plan.fileName,
+        format: plan.format,
+        rows: plan.rows,
+      );
 
   Future<PickedEventPhoto?> pickEventPhoto({int imageQuality = 82}) async {
     final image = await ref

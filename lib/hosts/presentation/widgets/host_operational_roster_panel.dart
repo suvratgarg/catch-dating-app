@@ -35,7 +35,6 @@ import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operational_roster_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_roster_insight_filter.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -567,34 +566,23 @@ class _HostOperationalRosterPanelState
       _mutationError = null;
     });
     try {
-      final result = await FilePicker.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: const ['csv', 'xlsx'],
-        withData: true,
-      );
-      if (result == null || !mounted) return;
-      final file = result.files.single;
-      final bytes = file.bytes;
-      if (bytes == null) {
-        throw const HostRosterImportException(
-          HostRosterImportIssue.unreadableXlsx,
-        );
-      }
-      final table = parseHostRosterFile(
-        fileName: file.name,
-        bytes: bytes,
-        providerHint: widget.bookingProvider,
-      );
-      final selection = await _showRosterMapping(context, table);
-      if (selection == null || !mounted) return;
+      final table = await ref
+          .read(hostOperationalRosterControllerProvider)
+          .pickRosterFile(providerHint: widget.bookingProvider);
+      if (table == null || !mounted) return;
+      final plan = await showHostRosterMapping(context, table);
+      if (plan == null || !mounted) return;
       await _importRows(
         fileName: table.fileName,
         format: table.format,
-        rows: selection.rows,
+        rows: plan.rows,
       );
     } on HostRosterImportException catch (error) {
       if (mounted) {
-        showCatchSnackBar(context, _importIssueCopy(context, error.issue));
+        showCatchSnackBar(
+          context,
+          hostRosterImportIssueCopy(context, error.issue),
+        );
       }
     } catch (error) {
       if (mounted) showCatchErrorSnackBar(context, error);
@@ -693,7 +681,7 @@ class _HostOperationalRosterPanelState
   }) async {
     final importKey = format == EventAttendeeImportFormat.manual
         ? _newImportKey()
-        : hostRosterImportKey(fileName: fileName, format: format, rows: rows);
+        : hostRosterImportKey(format: format, rows: rows);
     try {
       final result = await ref
           .read(hostOperationalRosterControllerProvider)
@@ -707,14 +695,49 @@ class _HostOperationalRosterPanelState
       ref.invalidate(watchEventAttendeesProvider(widget.eventId));
       ref.invalidate(hostEventRosterInsightsProvider(widget.eventId));
       if (!mounted) return;
-      showCatchSnackBar(
-        context,
-        context.l10n.hostsOperationalRosterImportSuccess(
-          created: result.createdCount,
-          updated: result.updatedCount,
-          skipped: result.skippedCount,
-        ),
-      );
+      if (result.errors.isEmpty) {
+        showCatchSnackBar(
+          context,
+          context.l10n.hostsOperationalRosterImportSuccess(
+            created: result.createdCount,
+            updated: result.updatedCount,
+            skipped: result.skippedCount,
+          ),
+        );
+      } else {
+        await showCatchBottomSheet<void>(
+          context: context,
+          builder: (context) => CatchBottomSheetScaffold(
+            title: context.l10n.hostsOperationalRosterImportPartialTitle,
+            subtitle: context.l10n.hostsOperationalRosterImportPartialBody(
+              created: result.createdCount,
+              updated: result.updatedCount,
+              count: result.errors.length,
+            ),
+            action: CatchButton(
+              label: context.l10n.hostsOperationalRosterImportResultDone,
+              fullWidth: true,
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            child: SingleChildScrollView(
+              child: CatchSection.fieldRows(
+                first: true,
+                showTopDivider: false,
+                children: [
+                  for (final error in result.errors)
+                    CatchField.read(
+                      title: context.l10n.hostsOperationalRosterImportRowError(
+                        row: error.rowId,
+                      ),
+                      body: error.message,
+                      bodyMaxLines: 5,
+                    ),
+                ],
+              ),
+            ),
+          ),
+        );
+      }
     } catch (error) {
       if (mounted) setState(() => _mutationError = error);
       rethrow;
@@ -1723,30 +1746,24 @@ class _RosterAttendanceAction extends StatelessWidget {
   }
 }
 
-class _HostRosterImportSelection {
-  const _HostRosterImportSelection(this.rows);
-
-  final List<EventAttendeeImportRow> rows;
-}
-
-Future<_HostRosterImportSelection?> _showRosterMapping(
+Future<HostRosterImportPlan?> showHostRosterMapping(
   BuildContext context,
   HostRosterTable table,
-) => showCatchBottomSheet<_HostRosterImportSelection>(
+) => showCatchBottomSheet<HostRosterImportPlan>(
   context: context,
-  builder: (context) => _HostRosterImportSheet(table: table),
+  builder: (context) => HostRosterImportSheet(table: table),
 );
 
-class _HostRosterImportSheet extends StatefulWidget {
-  const _HostRosterImportSheet({required this.table});
+class HostRosterImportSheet extends StatefulWidget {
+  const HostRosterImportSheet({super.key, required this.table});
 
   final HostRosterTable table;
 
   @override
-  State<_HostRosterImportSheet> createState() => _HostRosterImportSheetState();
+  State<HostRosterImportSheet> createState() => _HostRosterImportSheetState();
 }
 
-class _HostRosterImportSheetState extends State<_HostRosterImportSheet> {
+class _HostRosterImportSheetState extends State<HostRosterImportSheet> {
   late final Map<HostRosterField, int?> _mapping = {
     ...widget.table.suggestedMapping,
   };
@@ -1754,11 +1771,7 @@ class _HostRosterImportSheetState extends State<_HostRosterImportSheet> {
   @override
   Widget build(BuildContext context) {
     final mapped = widget.table.mapRows(_mapping);
-    final canImport =
-        mapped.rows.isNotEmpty &&
-        !mapped.issues.any(
-          (issue) => issue.type == HostRosterRowIssueType.missingNameColumn,
-        );
+    final canImport = mapped.rows.isNotEmpty && !mapped.hasBlockingMappingIssue;
     return CatchBottomSheetScaffold(
       title: context.l10n.hostsOperationalRosterImportTitle,
       subtitle: context.l10n.hostsOperationalRosterImportSubtitle,
@@ -1767,85 +1780,123 @@ class _HostRosterImportSheetState extends State<_HostRosterImportSheet> {
           count: mapped.rows.length,
         ),
         onPressed: canImport
-            ? () => Navigator.of(
-                context,
-              ).pop(_HostRosterImportSelection(mapped.rows))
+            ? () => Navigator.of(context).pop(
+                HostRosterImportPlan.fromMappedRows(
+                  table: widget.table,
+                  mapped: mapped,
+                ),
+              )
             : null,
         fullWidth: true,
       ),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.sizeOf(context).height * 0.58,
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              CatchBadge.functional(
-                label: widget.table.adapter.adapterId.label,
-                tone:
-                    widget.table.adapter.support ==
-                        HostRosterAdapterSupport.sampleRequired
-                    ? CatchBadgeTone.warning
-                    : CatchBadgeTone.brand,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            CatchBadge.functional(
+              label: widget.table.adapter.adapterId.label,
+              tone:
+                  widget.table.adapter.support ==
+                      HostRosterAdapterSupport.sampleRequired
+                  ? CatchBadgeTone.warning
+                  : CatchBadgeTone.brand,
+            ),
+            if (widget.table.adapter.support ==
+                HostRosterAdapterSupport.sampleRequired) ...[
+              gapH8,
+              CatchErrorBanner(
+                message:
+                    context.l10n.hostsOperationalRosterAdapterSampleRequired,
               ),
-              if (widget.table.adapter.support ==
-                  HostRosterAdapterSupport.sampleRequired) ...[
-                gapH8,
-                CatchErrorBanner(
-                  message:
-                      context.l10n.hostsOperationalRosterAdapterSampleRequired,
-                ),
-              ],
-              gapH12,
-              CatchFieldLanes.divided(
-                children: [
-                  for (final field in HostRosterField.values)
-                    _RosterMappingField(
-                      field: field,
-                      headers: widget.table.headers,
-                      value: _mapping[field],
-                      onChanged: (value) => setState(() {
-                        _mapping[field] = value;
-                      }),
-                    ),
-                ],
-              ),
-              gapH12,
-              CatchBadge(
-                label: context.l10n.hostsOperationalRosterPreviewCount(
-                  count: mapped.rows.length,
-                ),
-                tone: CatchBadgeTone.brand,
-              ),
-              if (mapped.truncatedCount > 0) ...[
-                gapH8,
-                CatchErrorBanner(
-                  message: context.l10n.hostsOperationalRosterLimit(
-                    count: mapped.truncatedCount,
-                  ),
-                ),
-              ],
-              for (final issue in mapped.issues.take(5)) ...[
-                gapH8,
-                CatchErrorBanner(message: _rowIssueCopy(context, issue)),
-              ],
-              if (mapped.rows.isNotEmpty) ...[
-                gapH12,
-                for (final row in mapped.rows.take(3).indexed)
-                  CatchPersonRow(
-                    data: CatchPersonRowData(
-                      name: row.$2.displayName,
-                      metaLine: [
-                        row.$2.phone,
-                        row.$2.email,
-                      ].whereType<String>().join(' · '),
-                    ),
-                    divider: row.$1 > 0,
-                  ),
-              ],
             ],
-          ),
+            if (widget.table.adapter.providerMismatch) ...[
+              gapH8,
+              CatchErrorBanner(
+                message: context.l10n.hostsOperationalRosterProviderMismatch,
+              ),
+            ],
+            if (widget.table.usedLegacyEncoding) ...[
+              gapH8,
+              CatchErrorBanner(
+                message: context.l10n.hostsOperationalRosterLegacyEncoding,
+              ),
+            ],
+            if (widget.table.worksheetCount > 1) ...[
+              gapH8,
+              CatchErrorBanner(
+                message: context.l10n.hostsOperationalRosterMultipleWorksheets(
+                  count: widget.table.worksheetCount,
+                ),
+              ),
+            ],
+            gapH12,
+            CatchFieldLanes.divided(
+              children: [
+                for (final field in HostRosterField.values)
+                  _RosterMappingField(
+                    field: field,
+                    headers: widget.table.headers,
+                    rows: widget.table.rows,
+                    value: _mapping[field],
+                    onChanged: (value) => setState(() {
+                      _mapping[field] = value;
+                    }),
+                  ),
+              ],
+            ),
+            gapH12,
+            Wrap(
+              spacing: CatchSpacing.s2,
+              runSpacing: CatchSpacing.s2,
+              children: [
+                CatchBadge(
+                  label: context.l10n.hostsOperationalRosterPreviewCount(
+                    count: mapped.readyCount,
+                  ),
+                  tone: CatchBadgeTone.brand,
+                ),
+                CatchBadge(
+                  label: context.l10n.hostsOperationalRosterNeedsReviewCount(
+                    count: mapped.needsReviewCount,
+                  ),
+                  tone: mapped.needsReviewCount == 0
+                      ? CatchBadgeTone.neutral
+                      : CatchBadgeTone.warning,
+                ),
+                CatchBadge(
+                  label: context.l10n.hostsOperationalRosterExcludedCount(
+                    count: mapped.excludedCount,
+                  ),
+                ),
+              ],
+            ),
+            if (mapped.truncatedCount > 0) ...[
+              gapH8,
+              CatchErrorBanner(
+                message: context.l10n.hostsOperationalRosterLimit(
+                  count: mapped.truncatedCount,
+                ),
+              ),
+            ],
+            for (final issue in mapped.issues) ...[
+              gapH8,
+              CatchErrorBanner(message: _rowIssueCopy(context, issue)),
+            ],
+            if (mapped.rows.isNotEmpty) ...[
+              gapH12,
+              for (final row in mapped.rows.take(3).indexed)
+                CatchPersonRow(
+                  data: CatchPersonRowData(
+                    name: row.$2.displayName,
+                    metaLine: [
+                      row.$2.phone,
+                      row.$2.email,
+                    ].whereType<String>().join(' · '),
+                  ),
+                  divider: row.$1 > 0,
+                ),
+            ],
+          ],
         ),
       ),
     );
@@ -1856,12 +1907,14 @@ class _RosterMappingField extends StatelessWidget {
   const _RosterMappingField({
     required this.field,
     required this.headers,
+    required this.rows,
     required this.value,
     required this.onChanged,
   });
 
   final HostRosterField field;
   final List<String> headers;
+  final List<List<String>> rows;
   final int? value;
   final ValueChanged<int?> onChanged;
 
@@ -1869,6 +1922,16 @@ class _RosterMappingField extends StatelessWidget {
   Widget build(BuildContext context) {
     final selectedValue = value ?? -1;
     final options = [-1, ...List.generate(headers.length, (index) => index)];
+    final samples = selectedValue < 0
+        ? const <String>[]
+        : rows
+              .map(
+                (row) =>
+                    selectedValue < row.length ? row[selectedValue].trim() : '',
+              )
+              .where((sample) => sample.isNotEmpty)
+              .take(2)
+              .toList(growable: false);
     return CatchMenuAnchor<int>(
       items: [
         for (final option in options)
@@ -1884,6 +1947,7 @@ class _RosterMappingField extends StatelessWidget {
       builder: (context, controller, _) => CatchFieldLanes.single(
         child: CatchField.nav(
           title: _fieldCopy(context, field),
+          body: samples.isEmpty ? null : samples.join(' · '),
           valueText: selectedValue == -1
               ? context.l10n.hostsOperationalRosterDoNotImport
               : headers[selectedValue],
@@ -2107,27 +2171,61 @@ String _fieldCopy(
   HostRosterField.status => context.l10n.hostsOperationalRosterFieldStatus,
 };
 
-String _importIssueCopy(BuildContext context, HostRosterImportIssue issue) =>
-    switch (issue) {
-      HostRosterImportIssue.unsupportedFile =>
-        context.l10n.hostsOperationalRosterIssueUnsupported,
-      HostRosterImportIssue.missingRows =>
-        context.l10n.hostsOperationalRosterIssueMissingRows,
-      HostRosterImportIssue.tooManyColumns =>
-        context.l10n.hostsOperationalRosterIssueTooManyColumns,
-      HostRosterImportIssue.malformedCsv =>
-        context.l10n.hostsOperationalRosterIssueMalformedCsv,
-      HostRosterImportIssue.unreadableXlsx ||
-      HostRosterImportIssue.missingWorksheet =>
-        context.l10n.hostsOperationalRosterIssueUnreadableXlsx,
-    };
+String hostRosterImportIssueCopy(
+  BuildContext context,
+  HostRosterImportIssue issue,
+) => switch (issue) {
+  HostRosterImportIssue.unsupportedFile =>
+    context.l10n.hostsOperationalRosterIssueUnsupported,
+  HostRosterImportIssue.fileTooLarge =>
+    context.l10n.hostsOperationalRosterIssueFileTooLarge,
+  HostRosterImportIssue.expandedFileTooLarge =>
+    context.l10n.hostsOperationalRosterIssueExpandedFileTooLarge,
+  HostRosterImportIssue.missingRows =>
+    context.l10n.hostsOperationalRosterIssueMissingRows,
+  HostRosterImportIssue.tooManyColumns =>
+    context.l10n.hostsOperationalRosterIssueTooManyColumns,
+  HostRosterImportIssue.malformedCsv =>
+    context.l10n.hostsOperationalRosterIssueMalformedCsv,
+  HostRosterImportIssue.unreadableXlsx ||
+  HostRosterImportIssue.missingWorksheet =>
+    context.l10n.hostsOperationalRosterIssueUnreadableXlsx,
+};
 
 String _rowIssueCopy(BuildContext context, HostRosterRowIssue issue) =>
     switch (issue.type) {
       HostRosterRowIssueType.missingNameColumn =>
         context.l10n.hostsOperationalRosterIssueMissingNameColumn,
+      HostRosterRowIssueType.duplicateMappedColumn =>
+        context.l10n.hostsOperationalRosterIssueDuplicateMappedColumn,
       HostRosterRowIssueType.missingName =>
         context.l10n.hostsOperationalRosterIssueMissingName(
           row: issue.rowNumber ?? 0,
+        ),
+      HostRosterRowIssueType.missingStableIdentity =>
+        context.l10n.hostsOperationalRosterIssueMissingStableIdentity(
+          row: issue.rowNumber ?? 0,
+        ),
+      HostRosterRowIssueType.invalidPhone =>
+        context.l10n.hostsOperationalRosterIssueInvalidPhone(
+          row: issue.rowNumber ?? 0,
+        ),
+      HostRosterRowIssueType.invalidEmail =>
+        context.l10n.hostsOperationalRosterIssueInvalidEmail(
+          row: issue.rowNumber ?? 0,
+        ),
+      HostRosterRowIssueType.duplicateIdentity =>
+        context.l10n.hostsOperationalRosterIssueDuplicateIdentity(
+          row: issue.rowNumber ?? 0,
+        ),
+      HostRosterRowIssueType.unknownStatus =>
+        context.l10n.hostsOperationalRosterIssueUnknownStatus(
+          row: issue.rowNumber ?? 0,
+          status: issue.value ?? '',
+        ),
+      HostRosterRowIssueType.excludedStatus =>
+        context.l10n.hostsOperationalRosterIssueExcludedStatus(
+          row: issue.rowNumber ?? 0,
+          status: issue.value ?? '',
         ),
     };

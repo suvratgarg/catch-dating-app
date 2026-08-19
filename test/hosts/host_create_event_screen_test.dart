@@ -25,12 +25,14 @@ import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
+import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_schedule_state.dart';
@@ -107,6 +109,60 @@ void main() {
           organizerRect.top - ruleRect.bottom,
           closeTo(CatchSpacing.s3, 0.001),
         );
+      },
+    );
+
+    testWidgets(
+      'external guest-list creation preserves the mapped source and removes Catch payment policy',
+      (tester) async {
+        const rosterPlan = HostRosterImportPlan(
+          fileName: 'luma-guests.csv',
+          fileFingerprint: 'sha256:guest-list',
+          format: EventAttendeeImportFormat.csv,
+          rows: [
+            EventAttendeeImportRow(
+              rowId: '2',
+              displayName: 'Asha Shah',
+              email: 'asha@example.com',
+              status: EventAttendeeStatus.registered,
+            ),
+            EventAttendeeImportRow(
+              rowId: '3',
+              displayName: 'Ravi Rao',
+              email: 'ravi@example.com',
+              status: EventAttendeeStatus.registered,
+            ),
+          ],
+          readyCount: 2,
+          needsReviewCount: 1,
+          excludedCount: 1,
+          adapterId: HostRosterAdapterId.lumaV1,
+        );
+        await _pumpCreateEventFlow(tester, initialRosterImportPlan: rosterPlan);
+        await _openCreateEventFlow(tester);
+
+        expect(find.text('Guest list'), findsOneWidget);
+        expect(
+          find.text('luma-guests.csv · 2 ready · 1 need review · 1 excluded'),
+          findsOneWidget,
+        );
+        expect(find.text('Luma'), findsWidgets);
+
+        for (var step = 0; step < 3; step += 1) {
+          await _tapPrimaryButton(tester, 'Next');
+          await _pumpTestAnimation(tester);
+        }
+
+        expect(find.text('Event policy'), findsOneWidget);
+        expect(find.text('Event price'), findsNothing);
+        expect(find.text('Cancellation policy'), findsNothing);
+        final capacity = tester.widget<EditableText>(
+          find.descendant(
+            of: find.byKey(CreateEventFormKeys.capacity),
+            matching: find.byType(EditableText),
+          ),
+        );
+        expect(capacity.controller.text, '2');
       },
     );
 
@@ -1449,6 +1505,7 @@ Future<void> _pumpCreateEventFlow(
   Club? clubOverride,
   EventDraft? initialDraft,
   CreateEventPrefill? initialPrefill,
+  HostRosterImportPlan? initialRosterImportPlan,
   int initialStep = 0,
 }) async {
   final club = clubOverride ?? buildClub();
@@ -1474,6 +1531,7 @@ Future<void> _pumpCreateEventFlow(
           now: now ?? DateTime.now,
           initialDraft: initialDraft,
           initialPrefill: initialPrefill,
+          initialRosterImportPlan: initialRosterImportPlan,
           initialStep: initialStep,
         ),
       ),

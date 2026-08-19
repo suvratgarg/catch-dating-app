@@ -4,7 +4,9 @@ import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/business_rules.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
+import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/device_location.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
@@ -18,12 +20,15 @@ import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/events/events.dart'
     show LocationPickerResult, LocationPickerScreen;
+import 'package:catch_dating_app/exceptions/error_logger.dart';
+import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_restore_state.dart';
@@ -43,6 +48,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/widgets/eve
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/when_step.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/where_step.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_draft_exit_dialog.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_operational_roster_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -78,6 +84,7 @@ class CreateEventScreen extends ConsumerStatefulWidget {
     this.formAutovalidateMode = AutovalidateMode.disabled,
     this.initialPickedEventPhotos = const <PickedEventPhoto>[],
     this.externalBookingMode = false,
+    this.initialRosterImportPlan,
   }) : assert(
          initialDraft == null || initialPrefill == null,
          'A create flow cannot restore a draft and apply a repeat prefill.',
@@ -91,6 +98,7 @@ class CreateEventScreen extends ConsumerStatefulWidget {
   final AutovalidateMode formAutovalidateMode;
   final List<PickedEventPhoto> initialPickedEventPhotos;
   final bool externalBookingMode;
+  final HostRosterImportPlan? initialRosterImportPlan;
 
   /// Tests can disable network tiles while still exercising map callbacks.
   final bool loadMapTiles;
@@ -106,9 +114,16 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   late final PageController _pageController;
   int _currentStep = 0;
   bool _isReviewing = false;
+  late bool _externalBookingMode;
   bool _allowRoutePop = false;
   bool _showValidationErrors = false;
   Event? _createdEvent;
+  HostRosterImportPlan? _pendingRosterImport;
+  EventAttendeeImportResult? _rosterImportResult;
+  bool _rosterImportFailed = false;
+  String? _rosterFileName;
+  String? _rosterFileFingerprint;
+  int? _rosterReadyCount;
 
   // Draft support
   String? _activeDraftId;
@@ -204,7 +219,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   EventPolicyBundle get _eventPolicy {
     return _policyState.eventPolicyFromFields(
       capacity: _capacityController.text,
-      basePrice: _priceController.text,
+      basePrice: _externalBookingMode ? '0' : _priceController.text,
       inviteCode: _inviteCodeController.text,
       minAge: _minAgeController.text,
       maxAge: _maxAgeController.text,
@@ -244,10 +259,19 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   @override
   void initState() {
     super.initState();
+    _externalBookingMode =
+        widget.initialDraft?.externalBookingMode ??
+        (widget.externalBookingMode || widget.initialRosterImportPlan != null);
     _currentStep = widget.initialStep.clamp(0, _stepSpecs.length - 1).toInt();
     _pageController = PageController(initialPage: _currentStep);
     _applyClubDefaults(widget.club.hostDefaults);
-    if (widget.externalBookingMode && !_eventSuccessDefaults.enabled) {
+    final initialRosterImportPlan = widget.initialRosterImportPlan;
+    if (initialRosterImportPlan != null) {
+      _setRosterPlan(initialRosterImportPlan);
+    } else if (_externalBookingMode) {
+      _priceController.text = '0';
+    }
+    if (_externalBookingMode && !_eventSuccessDefaults.enabled) {
       _eventSuccessDefaults = EventSuccessDefaults.recommendedForFormat(
         _selectedEventFormat,
         targetAttendeeCount: _eventSuccessTargetAttendeeCount,
@@ -395,6 +419,40 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     setState(() => _eventPhotos = _eventPhotos.reorder(fromIndex, toIndex));
   }
 
+  void _setRosterPlan(HostRosterImportPlan plan) {
+    _pendingRosterImport = plan;
+    _rosterFileName = plan.fileName;
+    _rosterFileFingerprint = plan.fileFingerprint;
+    _rosterReadyCount = plan.readyCount;
+    _externalBookingProvider = plan.bookingProvider;
+    final capacity = int.tryParse(_capacityController.text.trim()) ?? 0;
+    if (capacity < plan.readyCount) {
+      _capacityController.text = plan.readyCount.toString();
+    }
+    _priceController.text = '0';
+  }
+
+  Future<void> _pickRoster() async {
+    try {
+      final table = await ref
+          .read(createEventControllerProvider.notifier)
+          .pickRosterFile(providerHint: _externalBookingProvider);
+      if (table == null || !mounted) return;
+      final plan = await showHostRosterMapping(context, table);
+      if (plan == null || !mounted) return;
+      setState(() => _setRosterPlan(plan));
+    } on HostRosterImportException catch (error) {
+      if (mounted) {
+        showCatchSnackBar(
+          context,
+          hostRosterImportIssueCopy(context, error.issue),
+        );
+      }
+    } on Object catch (error) {
+      if (mounted) showCatchErrorSnackBar(context, error);
+    }
+  }
+
   Future<void> _handleCloseIntent(CreateEventWizardCloseIntent intent) async {
     if (_requestPending) return;
     switch (intent) {
@@ -517,7 +575,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     final meetingLocation = _currentMeetingLocation;
     if (meetingLocation == null) return;
 
-    final externalOrigin = widget.externalBookingMode
+    final externalOrigin = _externalBookingMode
         ? ExternalEventOriginInput(
             provider: _externalBookingProvider,
             externalEventId: _trimmedTextOrNull(_externalEventIdController),
@@ -529,7 +587,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
           )
         : null;
     final effectiveEventSuccessDefaults =
-        widget.externalBookingMode && !_eventSuccessDefaults.enabled
+        _externalBookingMode && !_eventSuccessDefaults.enabled
         ? EventSuccessDefaults.recommendedForFormat(
             _selectedEventFormat,
             targetAttendeeCount: _eventSuccessTargetAttendeeCount,
@@ -557,12 +615,37 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                 .toList(),
             eventSuccessDefaults: effectiveEventSuccessDefaults,
             externalOrigin: externalOrigin,
-            runtimeWalkInPolicy: widget.externalBookingMode
+            runtimeWalkInPolicy: _externalBookingMode
                 ? _runtimeWalkInPolicy
                 : null,
           );
+      final rosterPlan = _pendingRosterImport;
+      EventAttendeeImportResult? rosterResult;
+      var rosterFailed = false;
+      if (rosterPlan != null) {
+        try {
+          rosterResult = await tx
+              .get(createEventControllerProvider.notifier)
+              .importRoster(eventId: createdEvent.id, plan: rosterPlan);
+        } on Object catch (error, stackTrace) {
+          // The event already exists. Preserve that success and route the host
+          // to the event roster for a safe, idempotent retry of the same file.
+          ref
+              .read(errorLoggerProvider)
+              .logError(
+                error,
+                stackTrace,
+                reason: 'Create event roster import failed after creation.',
+              );
+          rosterFailed = true;
+        }
+      }
       if (mounted) {
-        setState(() => _createdEvent = createdEvent);
+        setState(() {
+          _createdEvent = createdEvent;
+          _rosterImportResult = rosterResult;
+          _rosterImportFailed = rosterFailed;
+        });
       }
 
       // Delete the restored-from draft after successful submission.
@@ -591,13 +674,16 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
         customActivityLabel: _customActivityLabelController.text,
         distance: _distanceController.text,
         pace: _selectedPace,
-        externalBookingMode: widget.externalBookingMode,
+        externalBookingMode: _externalBookingMode,
         externalEventUrl: _externalEventUrlController.text,
+        rosterAttachmentRequired:
+            _rosterFileFingerprint != null && _pendingRosterImport == null,
         hasStartingPoint: _locationState.hasStartingPoint,
         meetingPoint: _meetingPointController.text,
         scheduleState: _scheduleState,
         now: widget.now(),
         capacity: _capacityController.text,
+        rosterReadyCount: _pendingRosterImport?.readyCount,
         price: _priceController.text,
         currencyCode: _eventCurrencyCode,
         admissionPreset: _policyState.admissionPreset,
@@ -616,6 +702,117 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       );
 
   Object get _currentDraftContentSignature => _currentDraftSnapshot.signature;
+
+  List<CatchFormReviewSummaryItem> get _reviewSummaryItems {
+    final start = _selectedStartDateTime;
+    final end = start?.add(Duration(minutes: _durationMinutes));
+    final capacity = int.tryParse(_capacityController.text.trim());
+    final priceInMinorUnits = parseMajorCurrencyAmountToMinorUnits(
+      _priceController.text,
+      currencyCode: _eventCurrencyCode,
+    );
+    final activity = _selectedEventFormat.label;
+    return [
+      CatchFormReviewSummaryItem(
+        label: context.l10n.hostsCreateEventReviewActivity,
+        value: _selectedEventFormat.isDistanceBased
+            ? '$activity · ${_distanceController.text.trim()} km · ${_selectedPace?.label ?? context.l10n.hostsWizardStatusNeedsInformation}'
+            : activity,
+        icon: CatchIcons.eventAvailableOutlined,
+      ),
+      CatchFormReviewSummaryItem(
+        label: context.l10n.hostsCreateEventReviewBooking,
+        value: _externalBookingMode
+            ? context.l10n.hostsCreateEventReviewExternalBookings(
+                provider: _externalBookingProviderLabel,
+              )
+            : context.l10n.hostsCreateEventReviewCatchBookings,
+        icon: CatchIcons.confirmationNumberOutlined,
+      ),
+      if (_externalBookingMode)
+        CatchFormReviewSummaryItem(
+          label: context.l10n.hostsCreateEventRosterTitle,
+          value: _rosterFileName == null
+              ? context.l10n.hostsCreateEventRosterChoose
+              : _pendingRosterImport == null
+              ? context.l10n.hostsCreateEventRosterReattach(
+                  fileName: _rosterFileName!,
+                )
+              : context.l10n.hostsCreateEventRosterAttached(
+                  fileName: _rosterFileName!,
+                  ready: _pendingRosterImport!.readyCount,
+                  review: _pendingRosterImport!.needsReviewCount,
+                  excluded: _pendingRosterImport!.excludedCount,
+                ),
+          icon: CatchIcons.groupsOutlined,
+        ),
+      CatchFormReviewSummaryItem(
+        label: context.l10n.hostsCreateEventReviewLocation,
+        value: _meetingPointController.text.trim().isEmpty
+            ? context.l10n.hostsWizardStatusNeedsInformation
+            : _meetingPointController.text.trim(),
+        icon: CatchIcons.locationOnOutlined,
+      ),
+      CatchFormReviewSummaryItem(
+        label: context.l10n.hostsCreateEventReviewSchedule,
+        value: start == null || end == null
+            ? context.l10n.hostsWizardStatusNeedsInformation
+            : '${EventFormatters.longDate(start)} · ${EventFormatters.timeRange(start, end)}',
+        icon: CatchIcons.calendarMonthOutlined,
+      ),
+      CatchFormReviewSummaryItem(
+        label: context.l10n.hostsCreateEventReviewCapacity,
+        value: capacity == null
+            ? context.l10n.hostsWizardStatusNeedsInformation
+            : context.l10n.hostsCreateEventReviewCapacityValue(count: capacity),
+        icon: CatchIcons.peopleOutline,
+      ),
+      CatchFormReviewSummaryItem(
+        label: context.l10n.hostsCreateEventReviewPrice,
+        value: _externalBookingMode
+            ? context.l10n.hostsCreateEventReviewExternalPrice
+            : priceInMinorUnits == null
+            ? context.l10n.hostsWizardStatusNeedsInformation
+            : priceInMinorUnits == 0
+            ? context.l10n.hostsCreateEventReviewFree
+            : EventFormatters.priceInPaise(
+                priceInMinorUnits,
+                currencyCode: _eventCurrencyCode,
+              ),
+        icon: CatchIcons.paymentsOutlined,
+      ),
+      if (!_externalBookingMode)
+        CatchFormReviewSummaryItem(
+          label: context.l10n.hostsCreateEventReviewAdmission,
+          value: _policyState.admissionPreset.title(context.l10n),
+          icon: CatchIcons.howToRegOutlined,
+        ),
+    ];
+  }
+
+  String get _externalBookingProviderLabel =>
+      switch (_externalBookingProvider) {
+        ExternalBookingProvider.catchPlatform =>
+          context.l10n.hostsEventDetailsStepExternalProviderCatch,
+        ExternalBookingProvider.generic =>
+          context.l10n.hostsEventDetailsStepExternalProviderOther,
+        ExternalBookingProvider.luma =>
+          context.l10n.hostsEventDetailsStepExternalProviderLuma,
+        ExternalBookingProvider.eventbrite =>
+          context.l10n.hostsEventDetailsStepExternalProviderEventbrite,
+        ExternalBookingProvider.partiful =>
+          context.l10n.hostsEventDetailsStepExternalProviderPartiful,
+        ExternalBookingProvider.posh =>
+          context.l10n.hostsEventDetailsStepExternalProviderPosh,
+        ExternalBookingProvider.bookmyshow =>
+          context.l10n.hostsEventDetailsStepExternalProviderBookMyShow,
+        ExternalBookingProvider.district =>
+          context.l10n.hostsEventDetailsStepExternalProviderDistrict,
+        ExternalBookingProvider.sortmyscene =>
+          context.l10n.hostsEventDetailsStepExternalProviderSortMyScene,
+        ExternalBookingProvider.airbnb =>
+          context.l10n.hostsEventDetailsStepExternalProviderAirbnbExperiences,
+      };
 
   CreateEventDraftSideEffectState get _draftSideEffectState =>
       CreateEventDraftSideEffectState(
@@ -637,6 +834,24 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
         capacity: _trimmedTextOrNull(_capacityController),
         price: _trimmedTextOrNull(_priceController),
         description: _trimmedTextOrNull(_descriptionController),
+        externalBookingMode: _externalBookingMode,
+        externalBookingProvider: _externalBookingMode
+            ? _externalBookingProvider.name
+            : null,
+        externalEventUrl: _externalBookingMode
+            ? _trimmedTextOrNull(_externalEventUrlController)
+            : null,
+        externalEventId: _externalBookingMode
+            ? _trimmedTextOrNull(_externalEventIdController)
+            : null,
+        runtimeWalkInPolicy: _externalBookingMode
+            ? _runtimeWalkInPolicy.name
+            : null,
+        rosterFileName: _externalBookingMode ? _rosterFileName : null,
+        rosterFileFingerprint: _externalBookingMode
+            ? _rosterFileFingerprint
+            : null,
+        rosterReadyCount: _externalBookingMode ? _rosterReadyCount : null,
         activityKind: _selectedActivityKind.name,
         customActivityLabel: _customActivityLabelDraftValue,
         interactionModel: _interactionModelDraftValue,
@@ -702,6 +917,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   }
 
   void _applyDraftValues(EventDraft draft) {
+    _externalBookingMode = draft.externalBookingMode;
     final restore = CreateEventDraftRestoreState.fromDraft(
       draft,
       now: widget.now(),
@@ -720,6 +936,21 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     if (restore.descriptionText != null) {
       _descriptionController.text = restore.descriptionText!;
     }
+    _externalBookingProvider = ExternalBookingProvider.values.firstWhere(
+      (value) => value.name == draft.externalBookingProvider,
+      orElse: () => ExternalBookingProvider.generic,
+    );
+    _externalEventUrlController.text = draft.externalEventUrl ?? '';
+    _externalEventIdController.text = draft.externalEventId ?? '';
+    _runtimeWalkInPolicy = EventRuntimeWalkInPolicy.values.firstWhere(
+      (value) => value.name == draft.runtimeWalkInPolicy,
+      orElse: () => EventRuntimeWalkInPolicy.hostApproval,
+    );
+    _pendingRosterImport = null;
+    _rosterFileName = draft.rosterFileName;
+    _rosterFileFingerprint = draft.rosterFileFingerprint;
+    _rosterReadyCount = draft.rosterReadyCount;
+    if (_externalBookingMode) _priceController.text = '0';
     _selectedActivityKind = restore.activityKind;
     _customActivityLabelController.text = restore.customActivityLabelText;
     _selectedInteractionModel = restore.interactionModel;
@@ -961,6 +1192,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
           CreateEventSuccessNavigationIntent.backToClub,
           successNavigation,
         ),
+        rosterImportResult: _rosterImportResult,
+        rosterImportFailed: _rosterImportFailed,
       );
     }
 
@@ -1010,6 +1243,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                       ? CatchFormReviewBody(
                           message: context.l10n.hostsWizardReviewBody,
                           items: reviewState.items,
+                          summaryItems: _reviewSummaryItems,
                           onStepSelected: _showStep,
                         )
                       : PageView(
@@ -1071,7 +1305,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                               routePlan: _routePlan,
                               onRoutePlanChanged: (plan) =>
                                   setState(() => _routePlan = plan),
-                              externalBookingMode: widget.externalBookingMode,
+                              externalBookingMode: _externalBookingMode,
                               externalBookingProvider: _externalBookingProvider,
                               externalEventUrlController:
                                   _externalEventUrlController,
@@ -1084,6 +1318,14 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                                   ),
                               onRuntimeWalkInPolicyChanged: (policy) =>
                                   setState(() => _runtimeWalkInPolicy = policy),
+                              rosterFileName: _rosterFileName,
+                              rosterReadyCount: _rosterReadyCount,
+                              rosterNeedsReviewCount:
+                                  _pendingRosterImport?.needsReviewCount ?? 0,
+                              rosterExcludedCount:
+                                  _pendingRosterImport?.excludedCount ?? 0,
+                              rosterAttached: _pendingRosterImport != null,
+                              onPickRoster: _pickRoster,
                             ),
                             WhereStep(
                               formKey: _whereFormKey,
@@ -1160,6 +1402,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                                     () => _policyState = _policyState
                                         .setCancellationPolicy(policyId),
                                   ),
+                              externalBookingMode: _externalBookingMode,
+                              minimumCapacity: _pendingRosterImport?.readyCount,
                             ),
                             EventSuccessStep(
                               organizerId: widget.club.id,

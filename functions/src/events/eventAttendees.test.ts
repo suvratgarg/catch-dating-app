@@ -244,6 +244,50 @@ test(
   }
 );
 
+test("spreadsheet rows without stable identity are rejected", () => {
+  const result = prepareImportRows({
+    eventId: "event-1",
+    importKey: "csv-import",
+    format: "csv",
+    rows: [{
+      rowId: "2",
+      displayName: "Name only",
+      phone: null,
+      email: null,
+      externalReference: null,
+      arrivalGroup: null,
+      ticketType: null,
+      status: "registered",
+    }],
+  });
+
+  assert.equal(result.prepared.length, 0);
+  assert.deepEqual(result.errors.map((error) => error.code), [
+    "missing-stable-identity",
+  ]);
+});
+
+test("manual rows may use an import-scoped row identity", () => {
+  const result = prepareImportRows({
+    eventId: "event-1",
+    importKey: "manual-import",
+    format: "manual",
+    rows: [{
+      rowId: "manual",
+      displayName: "Walk in",
+      phone: null,
+      email: null,
+      externalReference: null,
+      arrivalGroup: null,
+      ticketType: null,
+      status: "registered",
+    }],
+  });
+
+  assert.equal(result.errors.length, 0);
+  assert.equal(result.prepared.length, 1);
+});
+
 test("eventAttendeeId is stable and event-isolated", () => {
   const stable = eventAttendeeId("event-1", "email:asha@example.com");
   assert.equal(stable, eventAttendeeId("event-1", "email:asha@example.com"));

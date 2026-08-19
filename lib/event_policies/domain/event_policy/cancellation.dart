@@ -3,7 +3,11 @@
 
 part of '../event_policy.dart';
 
-enum EventCancellationPolicyId { flexible, standard, strict }
+enum EventCancellationPolicyId { notApplicable, flexible, standard, strict }
+
+extension EventCancellationPolicyIdX on EventCancellationPolicyId {
+  bool get isApplicable => this != EventCancellationPolicyId.notApplicable;
+}
 
 enum EventCancellationActor { attendee, host, platform }
 
@@ -27,6 +31,19 @@ class EventCancellationPolicy {
     required this.creditUntilBeforeStart,
     required this.lateCreditPercent,
   });
+
+  const EventCancellationPolicy.notApplicable()
+    : this(
+        id: EventCancellationPolicyId.notApplicable,
+        title: 'No cancellation policy',
+        attendeeSummary:
+            'No payment was collected, so attendees can leave without a refund policy.',
+        hostCancellationSummary:
+            'If the host cancels, attendees are notified and no refund is required.',
+        fullRefundUntilBeforeStart: Duration.zero,
+        creditUntilBeforeStart: Duration.zero,
+        lateCreditPercent: 0,
+      );
 
   const EventCancellationPolicy.flexible()
     : this(
@@ -82,6 +99,8 @@ class EventCancellationPolicy {
       EventCancellationPolicyId.standard,
     );
     return switch (id) {
+      EventCancellationPolicyId.notApplicable =>
+        const EventCancellationPolicy.notApplicable(),
       EventCancellationPolicyId.flexible =>
         const EventCancellationPolicy.flexible(),
       EventCancellationPolicyId.standard =>
@@ -92,6 +111,8 @@ class EventCancellationPolicy {
   }
 
   Map<String, Object?> toJson() => {'policyId': id.name};
+
+  bool get isApplicable => id != EventCancellationPolicyId.notApplicable;
 
   EventCancellationQuote quoteFor(EventCancellationRequest request) {
     if (request.isWaitlisted) {

@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/host_organizer_create.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:38c103b03568be338a3d66fe372203d0f37154c828caa79e70b1c88760c21350",
+  "sourceDigest": "sha256:190dd525f390ba74cfc0ab466b7256becfb802634492655902dbaa78647e651f",
   "resolvedDigest": "sha256:de4d9f27febf87db8c9763a5511f739b4c9c87ce7071ebe0b74369d3038d34bc",
   "feature": {
     "id": "feature.host_organizer_create",
@@ -165,7 +165,7 @@
         {
           "id": "navigate_back",
           "owner": "route_intent",
-          "codeValue": "HostClubCreateBackIntent",
+          "codeValue": "HostClubCreatePreviousIntent",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",

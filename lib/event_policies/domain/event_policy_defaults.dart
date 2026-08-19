@@ -46,6 +46,8 @@ abstract class EventPolicyDefaults with _$EventPolicyDefaults {
 
   EventCancellationPolicy get cancellationPolicy =>
       switch (cancellationPolicyId) {
+        EventCancellationPolicyId.notApplicable =>
+          const EventCancellationPolicy.notApplicable(),
         EventCancellationPolicyId.flexible =>
           const EventCancellationPolicy.flexible(),
         EventCancellationPolicyId.standard =>

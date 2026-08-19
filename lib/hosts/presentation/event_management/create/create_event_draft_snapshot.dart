@@ -8,6 +8,14 @@ class CreateEventDraftSnapshot {
     required this.capacity,
     required this.price,
     required this.description,
+    this.externalBookingMode = false,
+    this.externalBookingProvider,
+    this.externalEventUrl,
+    this.externalEventId,
+    this.runtimeWalkInPolicy,
+    this.rosterFileName,
+    this.rosterFileFingerprint,
+    this.rosterReadyCount,
     required this.activityKind,
     required this.customActivityLabel,
     required this.interactionModel,
@@ -44,6 +52,14 @@ class CreateEventDraftSnapshot {
   final String? capacity;
   final String? price;
   final String? description;
+  final bool externalBookingMode;
+  final String? externalBookingProvider;
+  final String? externalEventUrl;
+  final String? externalEventId;
+  final String? runtimeWalkInPolicy;
+  final String? rosterFileName;
+  final String? rosterFileFingerprint;
+  final int? rosterReadyCount;
   final String activityKind;
   final String? customActivityLabel;
   final String? interactionModel;
@@ -80,6 +96,14 @@ class CreateEventDraftSnapshot {
     capacity: capacity,
     price: price,
     description: description,
+    externalBookingMode: externalBookingMode,
+    externalBookingProvider: externalBookingProvider,
+    externalEventUrl: externalEventUrl,
+    externalEventId: externalEventId,
+    runtimeWalkInPolicy: runtimeWalkInPolicy,
+    rosterFileName: rosterFileName,
+    rosterFileFingerprint: rosterFileFingerprint,
+    rosterReadyCount: rosterReadyCount,
     activityKind: activityKind,
     customActivityLabel: customActivityLabel,
     interactionModel: interactionModel,
@@ -125,6 +149,14 @@ class CreateEventDraftSnapshot {
       capacity: capacity,
       price: price,
       description: description,
+      externalBookingMode: externalBookingMode,
+      externalBookingProvider: externalBookingProvider,
+      externalEventUrl: externalEventUrl,
+      externalEventId: externalEventId,
+      runtimeWalkInPolicy: runtimeWalkInPolicy,
+      rosterFileName: rosterFileName,
+      rosterFileFingerprint: rosterFileFingerprint,
+      rosterReadyCount: rosterReadyCount,
       activityKind: activityKind,
       customActivityLabel: customActivityLabel,
       interactionModel: interactionModel,

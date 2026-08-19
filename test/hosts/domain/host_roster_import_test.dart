@@ -125,13 +125,11 @@ void main() {
       status: EventAttendeeStatus.registered,
     );
     final original = hostRosterImportKey(
-      fileName: 'Guests.csv',
       format: EventAttendeeImportFormat.csv,
       rows: const [first],
     );
     expect(
       hostRosterImportKey(
-        fileName: 'guests.csv',
         format: EventAttendeeImportFormat.csv,
         rows: const [first],
       ),
@@ -139,7 +137,6 @@ void main() {
     );
     expect(
       hostRosterImportKey(
-        fileName: 'guests.csv',
         format: EventAttendeeImportFormat.csv,
         rows: const [
           EventAttendeeImportRow(
@@ -153,7 +150,6 @@ void main() {
     );
     expect(
       hostRosterImportKey(
-        fileName: 'guests.csv',
         format: EventAttendeeImportFormat.csv,
         rows: const [
           EventAttendeeImportRow(
@@ -168,13 +164,98 @@ void main() {
     );
   });
 
-  test('XLSX parser reads shared strings from the first worksheet', () {
+  test('verified headers override a conflicting provider hint', () {
+    final table = parseHostRosterFile(
+      fileName: 'eventbrite.csv',
+      providerHint: ExternalBookingProvider.luma,
+      bytes: Uint8List.fromList(
+        utf8.encode(
+          'First Name,Last Name,Email,Order ID,Ticket Type,Attendee Status\n'
+          'Asha,Shah,asha@example.com,12345,General,Attending',
+        ),
+      ),
+    );
+
+    expect(table.adapter.adapterId, HostRosterAdapterId.eventbriteV1);
+    expect(table.adapter.hintedAdapterId, HostRosterAdapterId.lumaV1);
+    expect(table.adapter.providerMismatch, isTrue);
+  });
+
+  test('unknown and cancelled statuses are never silently registered', () {
+    final table = parseHostRosterFile(
+      fileName: 'guests.csv',
+      bytes: Uint8List.fromList(
+        utf8.encode(
+          'Name,Email,Status\n'
+          'Ready Guest,ready@example.com,Confirmed\n'
+          'Mystery Guest,mystery@example.com,Maybe\n'
+          'Cancelled Guest,cancelled@example.com,Refunded',
+        ),
+      ),
+    );
+
+    final mapped = table.mapRows(table.suggestedMapping);
+    expect(mapped.readyCount, 1);
+    expect(mapped.needsReviewCount, 1);
+    expect(mapped.excludedCount, 1);
+    expect(
+      mapped.issues.map((issue) => issue.type),
+      containsAll([
+        HostRosterRowIssueType.unknownStatus,
+        HostRosterRowIssueType.excludedStatus,
+      ]),
+    );
+  });
+
+  test('spreadsheet rows require stable identity and reject duplicates', () {
+    final table = parseHostRosterFile(
+      fileName: 'guests.csv',
+      bytes: Uint8List.fromList(
+        utf8.encode(
+          'Name,Email\n'
+          'No Identity,\n'
+          'First,duplicate@example.com\n'
+          'Second,duplicate@example.com',
+        ),
+      ),
+    );
+
+    final mapped = table.mapRows(table.suggestedMapping);
+    expect(mapped.readyCount, 1);
+    expect(mapped.needsReviewCount, 2);
+    expect(
+      mapped.issues.map((issue) => issue.type),
+      containsAll([
+        HostRosterRowIssueType.missingStableIdentity,
+        HostRosterRowIssueType.duplicateIdentity,
+      ]),
+    );
+  });
+
+  test('file size guard rejects oversized uploads before parsing', () {
+    expect(
+      () => parseHostRosterFile(
+        fileName: 'large.csv',
+        bytes: Uint8List(maxHostRosterFileBytes + 1),
+      ),
+      throwsA(
+        isA<HostRosterImportException>().having(
+          (error) => error.issue,
+          'issue',
+          HostRosterImportIssue.fileTooLarge,
+        ),
+      ),
+    );
+  });
+
+  test('XLSX parser selects the best-matching guest worksheet', () {
     final archive = Archive()
       ..addFile(
         ArchiveFile.string(
           'xl/sharedStrings.xml',
           '<?xml version="1.0"?>'
               '<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+              '<si><t>Instructions</t></si><si><t>Export generated</t></si>'
               '<si><t>Guest Name</t></si><si><t>Phone</t></si>'
               '<si><t>Asha Shah</t></si><si><t>9876543210</t></si>'
               '</sst>',
@@ -188,8 +269,19 @@ void main() {
               '<sheetData>'
               '<row r="1"><c r="A1" t="s"><v>0</v></c>'
               '<c r="B1" t="s"><v>1</v></c></row>'
-              '<row r="2"><c r="A2" t="s"><v>2</v></c>'
-              '<c r="B2" t="s"><v>3</v></c></row>'
+              '</sheetData></worksheet>',
+        ),
+      )
+      ..addFile(
+        ArchiveFile.string(
+          'xl/worksheets/sheet2.xml',
+          '<?xml version="1.0"?>'
+              '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+              '<sheetData>'
+              '<row r="1"><c r="A1" t="s"><v>2</v></c>'
+              '<c r="B1" t="s"><v>3</v></c></row>'
+              '<row r="2"><c r="A2" t="s"><v>4</v></c>'
+              '<c r="B2" t="s"><v>5</v></c></row>'
               '</sheetData></worksheet>',
         ),
       );
@@ -201,6 +293,7 @@ void main() {
     );
     final mapped = table.mapRows(table.suggestedMapping);
 
+    expect(table.worksheetCount, 2);
     expect(mapped.issues, isEmpty);
     expect(mapped.rows.single.displayName, 'Asha Shah');
     expect(mapped.rows.single.phone, '9876543210');

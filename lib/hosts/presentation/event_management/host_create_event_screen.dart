@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
+import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_wizard_state.dart';
@@ -23,6 +24,7 @@ class HostCreateEventRouteArguments {
     this.initialDraft,
     this.initialPrefill,
     this.externalBookingMode = false,
+    this.initialRosterImportPlan,
     this.promptForDrafts = true,
   }) : assert(
          initialDraft == null || initialPrefill == null,
@@ -33,6 +35,7 @@ class HostCreateEventRouteArguments {
   final EventDraft? initialDraft;
   final CreateEventPrefill? initialPrefill;
   final bool externalBookingMode;
+  final HostRosterImportPlan? initialRosterImportPlan;
   final bool promptForDrafts;
 }
 
@@ -44,6 +47,7 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
     this.initialDraft,
     this.initialPrefill,
     this.externalBookingMode = false,
+    this.initialRosterImportPlan,
     this.promptForDrafts = true,
   }) : assert(
          initialDraft == null || initialPrefill == null,
@@ -55,6 +59,7 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
   final EventDraft? initialDraft;
   final CreateEventPrefill? initialPrefill;
   final bool externalBookingMode;
+  final HostRosterImportPlan? initialRosterImportPlan;
   final bool promptForDrafts;
 
   @override
@@ -100,7 +105,9 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
       state: routeState,
       initialDraft: initialDraft,
       initialPrefill: initialPrefill,
-      externalBookingMode: externalBookingMode,
+      initialRosterImportPlan: initialRosterImportPlan,
+      externalBookingMode:
+          initialDraft?.externalBookingMode ?? externalBookingMode,
       promptForDrafts: promptForDrafts,
     );
   }
@@ -114,6 +121,7 @@ class HostCreateEventRouteStateView extends ConsumerWidget {
     this.initialDraft,
     this.initialPrefill,
     this.externalBookingMode = false,
+    this.initialRosterImportPlan,
     this.promptForDrafts = true,
   });
 
@@ -122,6 +130,7 @@ class HostCreateEventRouteStateView extends ConsumerWidget {
   final EventDraft? initialDraft;
   final CreateEventPrefill? initialPrefill;
   final bool externalBookingMode;
+  final HostRosterImportPlan? initialRosterImportPlan;
   final bool promptForDrafts;
 
   @override
@@ -156,6 +165,7 @@ class HostCreateEventRouteStateView extends ConsumerWidget {
         initialDraft: initialDraft,
         initialPrefill: initialPrefill,
         externalBookingMode: externalBookingMode,
+        initialRosterImportPlan: initialRosterImportPlan,
         promptForDraftsOnStart: promptForDrafts,
         initialStep: initialPrefill == null
             ? CreateEventWizardStep.eventDetails.index

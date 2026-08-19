@@ -1825,6 +1825,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Configure who can book, how waitlists open, what attendees pay, and what happens if plans change.';
 
   @override
+  String get hostsEventPolicyStepExternalOperationsIntro =>
+      'Set the operational capacity, age range, and on-site pairing inventory. Bookings, payments, refunds, and cancellations stay with the external provider.';
+
+  @override
   String get hostsEventPolicyStepTitleMaxAttendees => 'Max attendees';
 
   @override
@@ -12040,7 +12044,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsOperationalRosterAdapterSampleRequired =>
-      'We do not have a verified export sample for this platform yet. Review every detected column before importing; Catch will save the mapping for a future adapter.';
+      'We do not have a verified export sample for this platform yet. Review every detected column before importing.';
 
   @override
   String get hostsOperationalRosterFieldName => 'Guest name';
@@ -12072,8 +12076,85 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String hostsOperationalRosterNeedsReviewCount({required int count}) {
+    return '$count need review';
+  }
+
+  @override
+  String hostsOperationalRosterExcludedCount({required int count}) {
+    return '$count excluded';
+  }
+
+  @override
+  String get hostsOperationalRosterProviderMismatch =>
+      'The selected booking source does not match this spreadsheet. Catch used the columns in the file; review the mapping before importing.';
+
+  @override
+  String get hostsOperationalRosterLegacyEncoding =>
+      'This CSV is not UTF-8. Catch read it using a legacy encoding; check names and symbols carefully.';
+
+  @override
+  String hostsOperationalRosterMultipleWorksheets({required int count}) {
+    return 'This workbook has $count worksheets. Catch selected the best-matching guest worksheet; verify the columns before importing.';
+  }
+
+  @override
   String hostsOperationalRosterImportAction({required int count}) {
     return 'Import $count guests';
+  }
+
+  @override
+  String get hostsCreateEventRosterTitle => 'Guest list';
+
+  @override
+  String hostsCreateEventRosterAttached({
+    required String fileName,
+    required int ready,
+    required int review,
+    required int excluded,
+  }) {
+    return '$fileName · $ready ready · $review need review · $excluded excluded';
+  }
+
+  @override
+  String hostsCreateEventRosterReattach({required String fileName}) {
+    return 'Reattach $fileName before publishing. Drafts remember the file fingerprint, not guest data.';
+  }
+
+  @override
+  String get hostsCreateEventRosterChoose => 'Choose CSV or XLSX';
+
+  @override
+  String get hostsCreateEventRosterReplace => 'Replace file';
+
+  @override
+  String hostsCreateEventRosterImportSuccess({
+    required int created,
+    required int updated,
+    required int skipped,
+  }) {
+    return 'Guest list imported: $created added, $updated refreshed, $skipped skipped.';
+  }
+
+  @override
+  String hostsCreateEventRosterImportPartial({required int count}) {
+    return 'The event is live, but $count guest rows need attention. Open Manage event to review the roster and retry the file.';
+  }
+
+  @override
+  String get hostsCreateEventRosterImportFailed =>
+      'The event is live, but the guest list was not imported. Open Manage event and retry the same file.';
+
+  @override
+  String get hostsCreateEventExternalSuccessNote =>
+      'Catch tracks the operational roster, check-in, walk-ins, and event safety. Bookings and payments stay with the external provider.';
+
+  @override
+  String get hostsCreateEventRosterDetailLabel => 'Guest list';
+
+  @override
+  String hostsCreateEventCapacityBelowRoster({required int count}) {
+    return 'Capacity must be at least $count to include every ready guest.';
   }
 
   @override
@@ -12084,6 +12165,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsOperationalRosterIssueUnsupported =>
       'Choose a CSV or XLSX spreadsheet.';
+
+  @override
+  String get hostsOperationalRosterIssueFileTooLarge =>
+      'Choose a spreadsheet smaller than 5 MB.';
+
+  @override
+  String get hostsOperationalRosterIssueExpandedFileTooLarge =>
+      'This workbook expands beyond the 25 MB safety limit. Export only the guest worksheet and try again.';
 
   @override
   String get hostsOperationalRosterIssueMissingRows =>
@@ -12111,6 +12200,46 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get hostsOperationalRosterIssueDuplicateMappedColumn =>
+      'Map each spreadsheet column to only one guest field.';
+
+  @override
+  String hostsOperationalRosterIssueMissingStableIdentity({required int row}) {
+    return 'Row $row: add a phone, email, or booking reference so retries cannot create a duplicate guest.';
+  }
+
+  @override
+  String hostsOperationalRosterIssueInvalidPhone({required int row}) {
+    return 'Row $row: phone number is not valid.';
+  }
+
+  @override
+  String hostsOperationalRosterIssueInvalidEmail({required int row}) {
+    return 'Row $row: email address is not valid.';
+  }
+
+  @override
+  String hostsOperationalRosterIssueDuplicateIdentity({required int row}) {
+    return 'Row $row: this guest has the same identity as an earlier row.';
+  }
+
+  @override
+  String hostsOperationalRosterIssueUnknownStatus({
+    required int row,
+    required String status,
+  }) {
+    return 'Row $row: status {status} needs review and will not be imported.';
+  }
+
+  @override
+  String hostsOperationalRosterIssueExcludedStatus({
+    required int row,
+    required String status,
+  }) {
+    return 'Row $row: status {status} is excluded from the active guest list.';
+  }
+
+  @override
   String hostsOperationalRosterImportSuccess({
     required int created,
     required int updated,
@@ -12118,6 +12247,27 @@ class AppLocalizationsEn extends AppLocalizations {
   }) {
     return 'Roster updated: $created added, $updated refreshed, $skipped skipped.';
   }
+
+  @override
+  String get hostsOperationalRosterImportPartialTitle =>
+      'Some guest rows need attention';
+
+  @override
+  String hostsOperationalRosterImportPartialBody({
+    required int created,
+    required int updated,
+    required int count,
+  }) {
+    return '$created added, $updated refreshed, and $count rows were not imported. Fix those rows in the spreadsheet and import the same file again; Catch will update existing guests instead of duplicating them.';
+  }
+
+  @override
+  String hostsOperationalRosterImportRowError({required String row}) {
+    return 'Row $row';
+  }
+
+  @override
+  String get hostsOperationalRosterImportResultDone => 'Done';
 
   @override
   String get hostsOperationalRosterManualTitle => 'Add a guest';
@@ -15122,6 +15272,47 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsCreateEventOverviewTitle => 'Event setup';
+
+  @override
+  String get hostsCreateEventReviewActivity => 'Event';
+
+  @override
+  String get hostsCreateEventReviewBooking => 'Bookings';
+
+  @override
+  String get hostsCreateEventReviewCatchBookings => 'Catch bookings';
+
+  @override
+  String hostsCreateEventReviewExternalBookings({required String provider}) {
+    return 'External provider: $provider';
+  }
+
+  @override
+  String get hostsCreateEventReviewLocation => 'Meeting location';
+
+  @override
+  String get hostsCreateEventReviewSchedule => 'Schedule';
+
+  @override
+  String get hostsCreateEventReviewCapacity => 'Capacity';
+
+  @override
+  String hostsCreateEventReviewCapacityValue({required int count}) {
+    return '$count attendees';
+  }
+
+  @override
+  String get hostsCreateEventReviewPrice => 'Price';
+
+  @override
+  String get hostsCreateEventReviewExternalPrice =>
+      'Managed by the external provider';
+
+  @override
+  String get hostsCreateEventReviewFree => 'Free';
+
+  @override
+  String get hostsCreateEventReviewAdmission => 'Admission';
 
   @override
   String get hostsCreateClubOverviewTitle => 'Organizer setup';

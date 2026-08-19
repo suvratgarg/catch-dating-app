@@ -10,12 +10,10 @@ import 'package:xml/xml.dart';
 
 /// Produces a retry-safe key for one normalized Host roster upload.
 String hostRosterImportKey({
-  required String fileName,
   required EventAttendeeImportFormat format,
   required List<EventAttendeeImportRow> rows,
 }) {
   final canonical = jsonEncode({
-    'fileName': fileName.trim().toLowerCase(),
     'format': format.name,
     'rows': [
       for (final row in rows)
@@ -34,12 +32,21 @@ String hostRosterImportKey({
   return 'host-${sha256.convert(utf8.encode(canonical))}';
 }
 
+const maxHostRosterFileBytes = 5 * 1024 * 1024;
+const maxHostRosterExpandedBytes = 25 * 1024 * 1024;
+
+String hostRosterFileFingerprint(Uint8List bytes) =>
+    sha256.convert(bytes).toString();
+
 /// Parses a bounded CSV or XLSX upload into the framework-free roster model.
 HostRosterTable parseHostRosterFile({
   required String fileName,
   required Uint8List bytes,
   ExternalBookingProvider? providerHint,
 }) {
+  if (bytes.lengthInBytes > maxHostRosterFileBytes) {
+    throw const HostRosterImportException(HostRosterImportIssue.fileTooLarge);
+  }
   final extension = fileName.split('.').last.toLowerCase();
   final format = switch (extension) {
     'csv' => EventAttendeeImportFormat.csv,
@@ -48,9 +55,23 @@ HostRosterTable parseHostRosterFile({
       HostRosterImportIssue.unsupportedFile,
     ),
   };
-  final matrix = format == EventAttendeeImportFormat.csv
-      ? _parseCsv(utf8.decode(bytes, allowMalformed: false))
-      : _parseXlsx(bytes);
+  var usedLegacyEncoding = false;
+  late final List<List<String>> matrix;
+  var worksheetCount = 1;
+  if (format == EventAttendeeImportFormat.csv) {
+    String source;
+    try {
+      source = utf8.decode(bytes, allowMalformed: false);
+    } on FormatException {
+      source = latin1.decode(bytes);
+      usedLegacyEncoding = true;
+    }
+    matrix = _parseCsv(source);
+  } else {
+    final workbook = _parseXlsx(bytes);
+    matrix = workbook.rows;
+    worksheetCount = workbook.worksheetCount;
+  }
   final nonEmptyRows = matrix
       .map((row) => row.map((value) => value.trim()).toList(growable: false))
       .where((row) => row.any((value) => value.isNotEmpty))
@@ -79,6 +100,9 @@ HostRosterTable parseHostRosterFile({
       adapterId: adapter.adapterId,
     ),
     adapter: adapter,
+    fileFingerprint: hostRosterFileFingerprint(bytes),
+    usedLegacyEncoding: usedLegacyEncoding,
+    worksheetCount: worksheetCount,
   );
 }
 
@@ -86,8 +110,32 @@ HostRosterAdapterDetection detectHostRosterAdapter(
   List<String> headers, {
   ExternalBookingProvider? providerHint,
 }) {
+  final detected = _detectHostRosterAdapterFromHeaders(headers);
   final hinted = _adapterForProvider(providerHint);
-  if (hinted != null) return hinted;
+  if (hinted == null || hinted.adapterId == HostRosterAdapterId.genericV1) {
+    return detected;
+  }
+  if (hinted.adapterId == HostRosterAdapterId.sampleRequired &&
+      detected.support != HostRosterAdapterSupport.verified) {
+    return HostRosterAdapterDetection(
+      adapterId: hinted.adapterId,
+      support: hinted.support,
+      confidence: detected.confidence,
+      hintedAdapterId: hinted.adapterId,
+    );
+  }
+  return HostRosterAdapterDetection(
+    adapterId: detected.adapterId,
+    support: detected.support,
+    confidence: detected.confidence,
+    hintedAdapterId: hinted.adapterId,
+    providerMismatch: detected.adapterId != hinted.adapterId,
+  );
+}
+
+HostRosterAdapterDetection _detectHostRosterAdapterFromHeaders(
+  List<String> headers,
+) {
   final normalized = headers.map(_normalizedHeader).toSet();
 
   double score(Set<String> signatures) =>
@@ -259,7 +307,7 @@ List<List<String>> _parseCsv(String source) {
   return rows;
 }
 
-List<List<String>> _parseXlsx(Uint8List bytes) {
+({List<List<String>> rows, int worksheetCount}) _parseXlsx(Uint8List bytes) {
   Archive archive;
   try {
     archive = ZipDecoder().decodeBytes(bytes, verify: true);
@@ -267,6 +315,15 @@ List<List<String>> _parseXlsx(Uint8List bytes) {
     throw HostRosterImportException(
       HostRosterImportIssue.unreadableXlsx,
       cause: error,
+    );
+  }
+  final expandedBytes = archive.files.fold<int>(
+    0,
+    (total, file) => total + file.size,
+  );
+  if (expandedBytes > maxHostRosterExpandedBytes) {
+    throw const HostRosterImportException(
+      HostRosterImportIssue.expandedFileTooLarge,
     );
   }
   final files = {for (final file in archive.files) file.name: file};
@@ -285,7 +342,39 @@ List<List<String>> _parseXlsx(Uint8List bytes) {
       HostRosterImportIssue.missingWorksheet,
     );
   }
-  final document = _parseXmlFile(worksheetFiles.first.value);
+  final candidates = worksheetFiles
+      .map((entry) => _xlsxRows(entry.value, sharedStrings))
+      .where((rows) => rows.isNotEmpty)
+      .toList(growable: false);
+  if (candidates.isEmpty) {
+    throw const HostRosterImportException(
+      HostRosterImportIssue.missingWorksheet,
+    );
+  }
+  candidates.sort((left, right) {
+    final leftHasName =
+        left.isNotEmpty &&
+        suggestHostRosterMapping(
+              uniqueHostRosterHeaders(left.first),
+            )[HostRosterField.displayName] !=
+            null;
+    final rightHasName =
+        right.isNotEmpty &&
+        suggestHostRosterMapping(
+              uniqueHostRosterHeaders(right.first),
+            )[HostRosterField.displayName] !=
+            null;
+    if (leftHasName != rightHasName) return leftHasName ? -1 : 1;
+    return right.length.compareTo(left.length);
+  });
+  return (rows: candidates.first, worksheetCount: worksheetFiles.length);
+}
+
+List<List<String>> _xlsxRows(
+  ArchiveFile worksheet,
+  List<String> sharedStrings,
+) {
+  final document = _parseXmlFile(worksheet);
   final rows = <List<String>>[];
   for (final rowElement in _elementsNamed(document, 'row')) {
     final values = <int, String>{};

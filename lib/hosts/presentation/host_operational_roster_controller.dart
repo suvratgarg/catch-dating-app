@@ -2,10 +2,14 @@ import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/events/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/events/data/event_runtime_claim_repository.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_runtime_claim_request.dart';
 import 'package:catch_dating_app/hosts/data/host_attendance_outbox.dart';
 import 'package:catch_dating_app/hosts/data/host_provider_repository.dart';
+import 'package:catch_dating_app/hosts/data/host_roster_file_parser.dart';
+import 'package:catch_dating_app/hosts/data/host_roster_file_service.dart';
+import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_operational_roster_controller.g.dart';
@@ -18,6 +22,20 @@ class HostOperationalRosterController {
   const HostOperationalRosterController(this._ref);
 
   final Ref _ref;
+
+  Future<HostRosterTable?> pickRosterFile({
+    ExternalBookingProvider? providerHint,
+  }) async {
+    final file = await _ref
+        .read(hostRosterFileServiceProvider)
+        .pickRosterFile();
+    if (file == null) return null;
+    return parseHostRosterFile(
+      fileName: file.name,
+      bytes: file.bytes,
+      providerHint: providerHint,
+    );
+  }
 
   Future<EventAttendeeImportResult> importAttendees({
     required String eventId,

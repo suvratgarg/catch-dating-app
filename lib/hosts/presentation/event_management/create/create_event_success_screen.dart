@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/celebration/catch_celebration_screen.dart'
 import 'package:catch_dating_app/core/celebration/celebration_effects_controller.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
@@ -17,6 +18,8 @@ class CreateEventSuccessScreen extends StatelessWidget {
     this.eventDisplayName,
     required this.onManageEvent,
     required this.onDone,
+    this.rosterImportResult,
+    this.rosterImportFailed = false,
   });
 
   final Club club;
@@ -25,6 +28,8 @@ class CreateEventSuccessScreen extends StatelessWidget {
   final String? eventDisplayName;
   final VoidCallback onManageEvent;
   final VoidCallback onDone;
+  final EventAttendeeImportResult? rosterImportResult;
+  final bool rosterImportFailed;
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +54,16 @@ class CreateEventSuccessScreen extends StatelessWidget {
                 displayName: displayName,
                 name: club.name,
               );
+    final rosterErrors = rosterImportResult?.errors.length ?? 0;
+    final rosterNote = rosterImportFailed
+        ? context.l10n.hostsCreateEventRosterImportFailed
+        : rosterErrors > 0
+        ? context.l10n.hostsCreateEventRosterImportPartial(count: rosterErrors)
+        : event.isExternalCompanion
+        ? context.l10n.hostsCreateEventExternalSuccessNote
+        : context
+              .l10n
+              .hostsCreateEventSuccessScreenNoteBookingsWaitlistAndAttendance;
 
     return CatchCelebrationScreen(
       kind: CelebrationMomentKind.eventCreated,
@@ -92,10 +107,18 @@ class CreateEventSuccessScreen extends StatelessWidget {
             label: context.l10n.hostsCreateEventSuccessScreenLabelPrivateLink,
             value: inviteLink,
           ),
+        if (rosterImportResult case final result?)
+          CelebrationDetail(
+            icon: CatchIcons.groupsOutlined,
+            label: context.l10n.hostsCreateEventRosterDetailLabel,
+            value: context.l10n.hostsCreateEventRosterImportSuccess(
+              created: result.createdCount,
+              updated: result.updatedCount,
+              skipped: result.skippedCount,
+            ),
+          ),
       ],
-      note: context
-          .l10n
-          .hostsCreateEventSuccessScreenNoteBookingsWaitlistAndAttendance,
+      note: rosterNote,
       primaryAction: CelebrationAction(
         label: context.l10n.hostsCreateEventSuccessScreenLabelManageEvent,
         onPressed: onManageEvent,

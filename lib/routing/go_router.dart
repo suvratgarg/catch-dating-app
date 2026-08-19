@@ -727,6 +727,11 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
                       arguments.externalBookingMode,
                     _ => false,
                   },
+                  initialRosterImportPlan: switch (extra) {
+                    final HostCreateEventRouteArguments arguments =>
+                      arguments.initialRosterImportPlan,
+                    _ => null,
+                  },
                   promptForDrafts: switch (extra) {
                     final HostCreateEventRouteArguments arguments =>
                       arguments.promptForDrafts,

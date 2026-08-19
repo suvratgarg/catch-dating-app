@@ -55,6 +55,7 @@ const _$EventAdmissionDefaultPresetEnumMap = {
 };
 
 const _$EventCancellationPolicyIdEnumMap = {
+  EventCancellationPolicyId.notApplicable: 'notApplicable',
   EventCancellationPolicyId.flexible: 'flexible',
   EventCancellationPolicyId.standard: 'standard',
   EventCancellationPolicyId.strict: 'strict',

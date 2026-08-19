@@ -6,7 +6,26 @@ import {
   assertPolicyAllowsSignup,
   quotePriceInPaise,
   quoteAttendeeCancellation,
+  normalizePolicy,
 } from "./eventPolicy";
+
+test("normalizePolicy derives cancellation applicability from price", () => {
+  assert.equal(normalizePolicy({
+    ...policy("strict"),
+    pricing: {
+      ...policy("strict").pricing,
+      basePriceInPaise: 0,
+    },
+  }).cancellation.policyId, "notApplicable");
+
+  assert.equal(normalizePolicy({
+    ...policy("notApplicable"),
+    pricing: {
+      ...policy("notApplicable").pricing,
+      basePriceInPaise: 25000,
+    },
+  }).cancellation.policyId, "standard");
+});
 
 test("quoteAttendeeCancellation follows attendee policy windows", () => {
   const startTimeMillis = Date.parse("2026-05-02T12:00:00.000Z");

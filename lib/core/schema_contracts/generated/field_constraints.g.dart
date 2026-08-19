@@ -7976,7 +7976,7 @@ abstract final class CatchContractConstraints {
     path: 'createEventCallablePayload.eventPolicy.cancellation.policyId',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['flexible', 'standard', 'strict'],
+    enumValues: <String>['notApplicable', 'flexible', 'standard', 'strict'],
   );
 
   static const createEventCallablePayloadEventPolicyPricingBasePriceInPaise = CatchContractFieldConstraints(
@@ -12929,7 +12929,7 @@ abstract final class CatchContractConstraints {
     path: 'eventDocument.eventPolicy.cancellation.policyId',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['flexible', 'standard', 'strict'],
+    enumValues: <String>['notApplicable', 'flexible', 'standard', 'strict'],
   );
 
   static const eventDocumentEventPolicyPricingBasePriceInPaise = CatchContractFieldConstraints(
@@ -48923,7 +48923,7 @@ abstract final class CatchContractConstraints {
     path: 'updateEventCallablePayload.fields.eventPolicy.cancellation.policyId',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['flexible', 'standard', 'strict'],
+    enumValues: <String>['notApplicable', 'flexible', 'standard', 'strict'],
   );
 
   static const updateEventCallablePayloadFieldsEventPolicyPricingBasePriceInPaise = CatchContractFieldConstraints(

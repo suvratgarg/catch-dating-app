@@ -359,6 +359,45 @@ void main() {
     expect(incomplete.firstIncompleteStep, 0);
   });
 
+  test('external event review requires draft roster reattachment', () {
+    final review = CreateEventWizardReviewState.resolve(
+      activeSteps: steps,
+      activityKind: ActivityKind.dinner,
+      customActivityLabel: '',
+      distance: '',
+      pace: null,
+      externalBookingMode: true,
+      externalEventUrl: 'https://lu.ma/dinner',
+      rosterAttachmentRequired: true,
+      hasStartingPoint: true,
+      meetingPoint: 'Venue',
+      scheduleState: CreateEventScheduleState(
+        selectedDate: DateTime(2026, 8, 20),
+        selectedStartTime: const TimeOfDay(hour: 19, minute: 0),
+      ),
+      now: DateTime(2026, 8, 19),
+      capacity: '20',
+      rosterReadyCount: 20,
+      price: '0',
+      currencyCode: 'INR',
+      admissionPreset: EventAdmissionPreset.openCapacity,
+      inviteCode: '',
+      cohortCapsEnabled: false,
+      maxMen: '',
+      maxWomen: '',
+      crossPathsPairInventoryEnabled: false,
+      crossPathsPairCapacity: '2',
+      dynamicPricingEnabled: false,
+      dynamicPricingStep: '',
+      dynamicPricingMax: '',
+      minAge: '',
+      maxAge: '',
+    );
+
+    expect(review.canSubmit, isFalse);
+    expect(review.firstIncompleteStep, 0);
+  });
+
   test('CreateEventPolicyState maps defaults, transitions, and drafts', () {
     const defaults = EventPolicyDefaults(
       admissionPreset: EventAdmissionDefaultPreset.fixedCohortCaps,
@@ -500,7 +539,7 @@ void main() {
     );
     expect(
       requestPolicy.cancellationPolicy.id,
-      EventCancellationPolicyId.strict,
+      EventCancellationPolicyId.notApplicable,
     );
     expect(
       pairPolicy.admissionPolicy.crossPathsPairInventory.isEnabled,
@@ -903,6 +942,14 @@ void main() {
       capacity: '24',
       price: '10',
       description: 'Sunset social run',
+      externalBookingMode: true,
+      externalBookingProvider: 'luma',
+      externalEventUrl: 'https://lu.ma/sunset',
+      externalEventId: 'sunset',
+      runtimeWalkInPolicy: 'hostApproval',
+      rosterFileName: 'guests.csv',
+      rosterFileFingerprint: 'abc123',
+      rosterReadyCount: 24,
       activityKind: 'socialRun',
       customActivityLabel: 'Trail loop',
       interactionModel: 'paired',
@@ -948,6 +995,14 @@ void main() {
     expect(draft.capacity, '24');
     expect(draft.price, '10');
     expect(draft.description, 'Sunset social run');
+    expect(draft.externalBookingMode, isTrue);
+    expect(draft.externalBookingProvider, 'luma');
+    expect(draft.externalEventUrl, 'https://lu.ma/sunset');
+    expect(draft.externalEventId, 'sunset');
+    expect(draft.runtimeWalkInPolicy, 'hostApproval');
+    expect(draft.rosterFileName, 'guests.csv');
+    expect(draft.rosterFileFingerprint, 'abc123');
+    expect(draft.rosterReadyCount, 24);
     expect(draft.activityKind, 'socialRun');
     expect(draft.customActivityLabel, 'Trail loop');
     expect(draft.interactionModel, 'paired');

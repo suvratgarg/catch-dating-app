@@ -69,11 +69,13 @@ class CatchFormReviewBody extends StatelessWidget {
     required this.message,
     required this.items,
     required this.onStepSelected,
+    this.summaryItems = const [],
   });
 
   final String message;
   final List<CatchFormStepReviewItem> items;
   final ValueChanged<int> onStepSelected;
+  final List<CatchFormReviewSummaryItem> summaryItems;
 
   @override
   Widget build(BuildContext context) {
@@ -87,12 +89,40 @@ class CatchFormReviewBody extends StatelessWidget {
             message,
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
+          if (summaryItems.isNotEmpty) ...[
+            gapH16,
+            CatchSection.fieldRows(
+              first: true,
+              showTopDivider: false,
+              children: [
+                for (final item in summaryItems)
+                  CatchField.read(
+                    title: item.label,
+                    body: item.value,
+                    bodyMaxLines: 5,
+                    icon: item.icon,
+                  ),
+              ],
+            ),
+          ],
           gapH16,
           CatchFormStepOverview(items: items, onStepSelected: onStepSelected),
         ],
       ),
     );
   }
+}
+
+class CatchFormReviewSummaryItem {
+  const CatchFormReviewSummaryItem({
+    required this.label,
+    required this.value,
+    this.icon,
+  });
+
+  final String label;
+  final String value;
+  final IconData? icon;
 }
 
 String _statusLabel(BuildContext context, CatchFormStepStatus status) =>

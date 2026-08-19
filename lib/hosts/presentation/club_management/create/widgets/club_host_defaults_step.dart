@@ -521,7 +521,9 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
             contract: CatchContractConstraints
                 .createClubCallablePayloadHostDefaultsEventPolicyCancellationPolicyId,
             contractValue: (value) => value.name,
-            values: EventCancellationPolicyId.values,
+            values: EventCancellationPolicyId.values
+                .where((value) => value.isApplicable)
+                .toList(growable: false),
             itemTitle: (policyId) => policyFor(policyId).title,
             itemDescription: (policyId) => policyFor(policyId).attendeeSummary,
             selected: defaults.cancellationPolicyId,

@@ -167,6 +167,7 @@ class _HostEventsScaffoldState extends ConsumerState<HostEventsScaffold> {
       extra: HostCreateEventRouteArguments(
         initialClub: club,
         initialDraft: initialDraft,
+        externalBookingMode: initialDraft?.externalBookingMode ?? false,
         promptForDrafts: false,
       ),
     );
@@ -174,12 +175,33 @@ class _HostEventsScaffoldState extends ConsumerState<HostEventsScaffold> {
   }
 
   Future<void> _openExternalEvent(Club club) async {
+    HostRosterTable? table;
+    try {
+      table = await ref
+          .read(createEventControllerProvider.notifier)
+          .pickRosterFile();
+    } on HostRosterImportException catch (error) {
+      if (mounted) {
+        showCatchSnackBar(
+          context,
+          hostRosterImportIssueCopy(context, error.issue),
+        );
+      }
+      return;
+    } on Object catch (error) {
+      if (mounted) showCatchErrorSnackBar(context, error);
+      return;
+    }
+    if (table == null || !mounted) return;
+    final rosterPlan = await showHostRosterMapping(context, table);
+    if (rosterPlan == null || !mounted) return;
     await context.pushNamed(
       Routes.hostCreateEventScreen.name,
       pathParameters: {'clubId': club.id},
       extra: HostCreateEventRouteArguments(
         initialClub: club,
         externalBookingMode: true,
+        initialRosterImportPlan: rosterPlan,
         promptForDrafts: false,
       ),
     );

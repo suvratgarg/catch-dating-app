@@ -1341,6 +1341,21 @@ host locks:
 `clubHostClaims` remains only long enough to support released club callables;
 it is not organizer claim authority.
 
+## Event Policy Applicability
+
+`contracts/shared/event_common.schema.json` owns the versioned event-policy
+bundle invariant. Bundle version 2 couples pricing and cancellation semantics:
+
+- `pricing.basePriceInPaise == 0` requires
+  `cancellation.policyId == notApplicable`;
+- a positive base price requires `flexible`, `standard`, or `strict`;
+- external-companion events remain price-zero inside Catch because the external
+  booking authority owns payments, refunds, and attendee cancellations.
+
+Backend event create/update normalization derives this relationship rather than
+trusting a client-supplied cancellation value. Version 1 remains readable for
+legacy event documents.
+
 ## Event Discovery Projection
 
 Explore queries `events` directly through callable-owned projection fields

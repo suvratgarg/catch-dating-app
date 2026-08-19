@@ -20,13 +20,11 @@ import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
-import 'package:catch_dating_app/hosts/data/host_roster_file_parser.dart';
 import 'package:catch_dating_app/hosts/domain/host_application_import.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -241,20 +239,10 @@ class _HostApplicationsScreenState
   Future<void> _pickImport() async {
     setState(() => _importing = true);
     try {
-      final result = await FilePicker.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: const ['csv', 'xlsx'],
-        withData: true,
-      );
-      if (result == null || !mounted) return;
-      final file = result.files.single;
-      final bytes = file.bytes;
-      if (bytes == null) {
-        throw const HostRosterImportException(
-          HostRosterImportIssue.unreadableXlsx,
-        );
-      }
-      final table = parseHostRosterFile(fileName: file.name, bytes: bytes);
+      final table = await ref
+          .read(hostApplicationsControllerProvider)
+          .pickImportFile();
+      if (table == null || !mounted) return;
       final draft = buildHostApplicationImportDraft(table);
       final confirmed = await showCatchBottomSheet<bool>(
         context: context,
@@ -318,39 +306,34 @@ class _HostApplicationImportSheet extends StatelessWidget {
       fullWidth: true,
       onPressed: () => Navigator.of(context).pop(true),
     ),
-    child: ConstrainedBox(
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.sizeOf(context).height * 0.58,
-      ),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            CatchSection.fieldRows(
-              children: [
-                for (final question in draft.questions)
-                  CatchField.read(
-                    title: question.label,
-                    body: question.canonicalFieldId == null
-                        ? context.l10n.hostApplicationsImportOrganizerField
-                        : context.l10n.hostApplicationsImportReusableField,
-                  ),
-              ],
-            ),
-            if (draft.truncatedRowCount > 0) ...[
-              gapH12,
-              CatchNotice(
-                notice: CatchNoticeData(
-                  id: 'application-import-limit',
-                  title: context.l10n.hostApplicationsImportLimit(
-                    count: draft.truncatedRowCount,
-                  ),
-                  tone: CatchNoticeTone.warning,
+    child: SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CatchSection.fieldRows(
+            children: [
+              for (final question in draft.questions)
+                CatchField.read(
+                  title: question.label,
+                  body: question.canonicalFieldId == null
+                      ? context.l10n.hostApplicationsImportOrganizerField
+                      : context.l10n.hostApplicationsImportReusableField,
                 ),
-              ),
             ],
+          ),
+          if (draft.truncatedRowCount > 0) ...[
+            gapH12,
+            CatchNotice(
+              notice: CatchNoticeData(
+                id: 'application-import-limit',
+                title: context.l10n.hostApplicationsImportLimit(
+                  count: draft.truncatedRowCount,
+                ),
+                tone: CatchNoticeTone.warning,
+              ),
+            ),
           ],
-        ),
+        ],
       ),
     ),
   );
@@ -524,6 +507,10 @@ String _rosterImportIssue(BuildContext context, HostRosterImportIssue issue) =>
     switch (issue) {
       HostRosterImportIssue.unsupportedFile =>
         context.l10n.hostsOperationalRosterIssueUnsupported,
+      HostRosterImportIssue.fileTooLarge =>
+        context.l10n.hostsOperationalRosterIssueFileTooLarge,
+      HostRosterImportIssue.expandedFileTooLarge =>
+        context.l10n.hostsOperationalRosterIssueExpandedFileTooLarge,
       HostRosterImportIssue.missingRows =>
         context.l10n.hostsOperationalRosterIssueMissingRows,
       HostRosterImportIssue.tooManyColumns =>

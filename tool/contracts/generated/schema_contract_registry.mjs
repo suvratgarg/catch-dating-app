@@ -25975,7 +25975,11 @@ export const eventDocumentSchema = {
       "properties": {
         "version": {
           "type": "integer",
-          "const": 1
+          "enum": [
+            1,
+            2
+          ],
+          "description": "Version 2 models cancellation as notApplicable for free events. Version 1 remains readable for legacy snapshots."
         },
         "admission": {
           "type": "object",
@@ -26229,6 +26233,7 @@ export const eventDocumentSchema = {
             "policyId": {
               "type": "string",
               "enum": [
+                "notApplicable",
                 "flexible",
                 "standard",
                 "strict"
@@ -26248,6 +26253,65 @@ export const eventDocumentSchema = {
               "enum": [
                 "afterEventCompletion"
               ]
+            }
+          }
+        }
+      },
+      "if": {
+        "properties": {
+          "version": {
+            "const": 2
+          },
+          "pricing": {
+            "properties": {
+              "basePriceInPaise": {
+                "const": 0
+              }
+            },
+            "required": [
+              "basePriceInPaise"
+            ]
+          }
+        },
+        "required": [
+          "version",
+          "pricing"
+        ]
+      },
+      "then": {
+        "properties": {
+          "cancellation": {
+            "properties": {
+              "policyId": {
+                "const": "notApplicable"
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "if": {
+          "properties": {
+            "version": {
+              "const": 2
+            }
+          },
+          "required": [
+            "version"
+          ]
+        },
+        "then": {
+          "properties": {
+            "cancellation": {
+              "properties": {
+                "policyId": {
+                  "enum": [
+                    "flexible",
+                    "standard",
+                    "strict"
+                  ]
+                }
+              }
             }
           }
         }
@@ -53036,7 +53100,11 @@ export const createEventCallablePayloadSchema = {
       "properties": {
         "version": {
           "type": "integer",
-          "const": 1
+          "enum": [
+            1,
+            2
+          ],
+          "description": "Version 2 models cancellation as notApplicable for free events. Version 1 remains readable for legacy snapshots."
         },
         "admission": {
           "type": "object",
@@ -53290,6 +53358,7 @@ export const createEventCallablePayloadSchema = {
             "policyId": {
               "type": "string",
               "enum": [
+                "notApplicable",
                 "flexible",
                 "standard",
                 "strict"
@@ -53309,6 +53378,65 @@ export const createEventCallablePayloadSchema = {
               "enum": [
                 "afterEventCompletion"
               ]
+            }
+          }
+        }
+      },
+      "if": {
+        "properties": {
+          "version": {
+            "const": 2
+          },
+          "pricing": {
+            "properties": {
+              "basePriceInPaise": {
+                "const": 0
+              }
+            },
+            "required": [
+              "basePriceInPaise"
+            ]
+          }
+        },
+        "required": [
+          "version",
+          "pricing"
+        ]
+      },
+      "then": {
+        "properties": {
+          "cancellation": {
+            "properties": {
+              "policyId": {
+                "const": "notApplicable"
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "if": {
+          "properties": {
+            "version": {
+              "const": 2
+            }
+          },
+          "required": [
+            "version"
+          ]
+        },
+        "then": {
+          "properties": {
+            "cancellation": {
+              "properties": {
+                "policyId": {
+                  "enum": [
+                    "flexible",
+                    "standard",
+                    "strict"
+                  ]
+                }
+              }
             }
           }
         }
@@ -54317,7 +54445,11 @@ export const updateEventCallablePayloadSchema = {
           "properties": {
             "version": {
               "type": "integer",
-              "const": 1
+              "enum": [
+                1,
+                2
+              ],
+              "description": "Version 2 models cancellation as notApplicable for free events. Version 1 remains readable for legacy snapshots."
             },
             "admission": {
               "type": "object",
@@ -54571,6 +54703,7 @@ export const updateEventCallablePayloadSchema = {
                 "policyId": {
                   "type": "string",
                   "enum": [
+                    "notApplicable",
                     "flexible",
                     "standard",
                     "strict"
@@ -54590,6 +54723,65 @@ export const updateEventCallablePayloadSchema = {
                   "enum": [
                     "afterEventCompletion"
                   ]
+                }
+              }
+            }
+          },
+          "if": {
+            "properties": {
+              "version": {
+                "const": 2
+              },
+              "pricing": {
+                "properties": {
+                  "basePriceInPaise": {
+                    "const": 0
+                  }
+                },
+                "required": [
+                  "basePriceInPaise"
+                ]
+              }
+            },
+            "required": [
+              "version",
+              "pricing"
+            ]
+          },
+          "then": {
+            "properties": {
+              "cancellation": {
+                "properties": {
+                  "policyId": {
+                    "const": "notApplicable"
+                  }
+                }
+              }
+            }
+          },
+          "else": {
+            "if": {
+              "properties": {
+                "version": {
+                  "const": 2
+                }
+              },
+              "required": [
+                "version"
+              ]
+            },
+            "then": {
+              "properties": {
+                "cancellation": {
+                  "properties": {
+                    "policyId": {
+                      "enum": [
+                        "flexible",
+                        "standard",
+                        "strict"
+                      ]
+                    }
+                  }
                 }
               }
             }

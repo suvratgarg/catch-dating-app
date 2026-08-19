@@ -3179,6 +3179,12 @@ abstract class AppLocalizations {
   /// **'Configure who can book, how waitlists open, what attendees pay, and what happens if plans change.'**
   String get hostsEventPolicyStepTextConfigureWhoCanBook;
 
+  /// Rules-step intro for externally booked events.
+  ///
+  /// In en, this message translates to:
+  /// **'Set the operational capacity, age range, and on-site pairing inventory. Bookings, payments, refunds, and cancellations stay with the external provider.'**
+  String get hostsEventPolicyStepExternalOperationsIntro;
+
   /// Product copy used by lib/hosts/presentation/event_management/widgets/event_policy_step.dart (title).
   ///
   /// In en, this message translates to:
@@ -18787,7 +18793,7 @@ abstract class AppLocalizations {
   /// Warning shown when a provider-specific roster export has not yet been verified.
   ///
   /// In en, this message translates to:
-  /// **'We do not have a verified export sample for this platform yet. Review every detected column before importing; Catch will save the mapping for a future adapter.'**
+  /// **'We do not have a verified export sample for this platform yet. Review every detected column before importing.'**
   String get hostsOperationalRosterAdapterSampleRequired;
 
   /// Roster mapping field for guest name.
@@ -18844,11 +18850,116 @@ abstract class AppLocalizations {
   /// **'{count} guests ready'**
   String hostsOperationalRosterPreviewCount({required int count});
 
+  /// Roster mapping rows that cannot yet be imported.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} need review'**
+  String hostsOperationalRosterNeedsReviewCount({required int count});
+
+  /// Roster mapping rows intentionally excluded due to status.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} excluded'**
+  String hostsOperationalRosterExcludedCount({required int count});
+
+  /// Warning when provider hint and detected export disagree.
+  ///
+  /// In en, this message translates to:
+  /// **'The selected booking source does not match this spreadsheet. Catch used the columns in the file; review the mapping before importing.'**
+  String get hostsOperationalRosterProviderMismatch;
+
+  /// Warning for legacy encoded CSV files.
+  ///
+  /// In en, this message translates to:
+  /// **'This CSV is not UTF-8. Catch read it using a legacy encoding; check names and symbols carefully.'**
+  String get hostsOperationalRosterLegacyEncoding;
+
+  /// Warning when an XLSX contains multiple worksheets.
+  ///
+  /// In en, this message translates to:
+  /// **'This workbook has {count} worksheets. Catch selected the best-matching guest worksheet; verify the columns before importing.'**
+  String hostsOperationalRosterMultipleWorksheets({required int count});
+
   /// Roster import confirmation CTA.
   ///
   /// In en, this message translates to:
   /// **'Import {count} guests'**
   String hostsOperationalRosterImportAction({required int count});
+
+  /// External event guest list field title.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest list'**
+  String get hostsCreateEventRosterTitle;
+
+  /// Attached external event roster summary.
+  ///
+  /// In en, this message translates to:
+  /// **'{fileName} · {ready} ready · {review} need review · {excluded} excluded'**
+  String hostsCreateEventRosterAttached({
+    required String fileName,
+    required int ready,
+    required int review,
+    required int excluded,
+  });
+
+  /// Roster reattachment guidance after restoring a draft.
+  ///
+  /// In en, this message translates to:
+  /// **'Reattach {fileName} before publishing. Drafts remember the file fingerprint, not guest data.'**
+  String hostsCreateEventRosterReattach({required String fileName});
+
+  /// External event roster picker action.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose CSV or XLSX'**
+  String get hostsCreateEventRosterChoose;
+
+  /// External event roster replacement action.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace file'**
+  String get hostsCreateEventRosterReplace;
+
+  /// Create event guest list import success summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest list imported: {created} added, {updated} refreshed, {skipped} skipped.'**
+  String hostsCreateEventRosterImportSuccess({
+    required int created,
+    required int updated,
+    required int skipped,
+  });
+
+  /// Create event partial roster import guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'The event is live, but {count} guest rows need attention. Open Manage event to review the roster and retry the file.'**
+  String hostsCreateEventRosterImportPartial({required int count});
+
+  /// Create event roster import failure recovery guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'The event is live, but the guest list was not imported. Open Manage event and retry the same file.'**
+  String get hostsCreateEventRosterImportFailed;
+
+  /// Success guidance for externally booked events.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch tracks the operational roster, check-in, walk-ins, and event safety. Bookings and payments stay with the external provider.'**
+  String get hostsCreateEventExternalSuccessNote;
+
+  /// Success detail label for an imported guest list.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest list'**
+  String get hostsCreateEventRosterDetailLabel;
+
+  /// Capacity validation against an attached guest list.
+  ///
+  /// In en, this message translates to:
+  /// **'Capacity must be at least {count} to include every ready guest.'**
+  String hostsCreateEventCapacityBelowRoster({required int count});
 
   /// Roster callable batch limit guidance.
   ///
@@ -18861,6 +18972,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Choose a CSV or XLSX spreadsheet.'**
   String get hostsOperationalRosterIssueUnsupported;
+
+  /// Roster source file size error.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a spreadsheet smaller than 5 MB.'**
+  String get hostsOperationalRosterIssueFileTooLarge;
+
+  /// Roster expanded workbook size error.
+  ///
+  /// In en, this message translates to:
+  /// **'This workbook expands beyond the 25 MB safety limit. Export only the guest worksheet and try again.'**
+  String get hostsOperationalRosterIssueExpandedFileTooLarge;
 
   /// Missing roster rows error.
   ///
@@ -18898,6 +19021,54 @@ abstract class AppLocalizations {
   /// **'Row {row}: guest name is empty.'**
   String hostsOperationalRosterIssueMissingName({required int row});
 
+  /// Duplicate roster column mapping error.
+  ///
+  /// In en, this message translates to:
+  /// **'Map each spreadsheet column to only one guest field.'**
+  String get hostsOperationalRosterIssueDuplicateMappedColumn;
+
+  /// Missing stable roster identity error.
+  ///
+  /// In en, this message translates to:
+  /// **'Row {row}: add a phone, email, or booking reference so retries cannot create a duplicate guest.'**
+  String hostsOperationalRosterIssueMissingStableIdentity({required int row});
+
+  /// Invalid roster phone error.
+  ///
+  /// In en, this message translates to:
+  /// **'Row {row}: phone number is not valid.'**
+  String hostsOperationalRosterIssueInvalidPhone({required int row});
+
+  /// Invalid roster email error.
+  ///
+  /// In en, this message translates to:
+  /// **'Row {row}: email address is not valid.'**
+  String hostsOperationalRosterIssueInvalidEmail({required int row});
+
+  /// Duplicate roster identity error.
+  ///
+  /// In en, this message translates to:
+  /// **'Row {row}: this guest has the same identity as an earlier row.'**
+  String hostsOperationalRosterIssueDuplicateIdentity({required int row});
+
+  /// Unknown roster status error.
+  ///
+  /// In en, this message translates to:
+  /// **'Row {row}: status \'{status}\' needs review and will not be imported.'**
+  String hostsOperationalRosterIssueUnknownStatus({
+    required int row,
+    required String status,
+  });
+
+  /// Excluded roster status explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Row {row}: status \'{status}\' is excluded from the active guest list.'**
+  String hostsOperationalRosterIssueExcludedStatus({
+    required int row,
+    required String status,
+  });
+
   /// Completed roster import summary.
   ///
   /// In en, this message translates to:
@@ -18907,6 +19078,34 @@ abstract class AppLocalizations {
     required int updated,
     required int skipped,
   });
+
+  /// Partial roster import result title.
+  ///
+  /// In en, this message translates to:
+  /// **'Some guest rows need attention'**
+  String get hostsOperationalRosterImportPartialTitle;
+
+  /// Partial roster import recovery guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'{created} added, {updated} refreshed, and {count} rows were not imported. Fix those rows in the spreadsheet and import the same file again; Catch will update existing guests instead of duplicating them.'**
+  String hostsOperationalRosterImportPartialBody({
+    required int created,
+    required int updated,
+    required int count,
+  });
+
+  /// Roster import row error label.
+  ///
+  /// In en, this message translates to:
+  /// **'Row {row}'**
+  String hostsOperationalRosterImportRowError({required String row});
+
+  /// Roster import result dismissal action.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get hostsOperationalRosterImportResultDone;
 
   /// Manual roster entry sheet title.
   ///
@@ -23843,6 +24042,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Event setup'**
   String get hostsCreateEventOverviewTitle;
+
+  /// Create event review activity label.
+  ///
+  /// In en, this message translates to:
+  /// **'Event'**
+  String get hostsCreateEventReviewActivity;
+
+  /// Create event review booking authority label.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings'**
+  String get hostsCreateEventReviewBooking;
+
+  /// Create event review Catch booking authority value.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch bookings'**
+  String get hostsCreateEventReviewCatchBookings;
+
+  /// Create event review external booking authority value.
+  ///
+  /// In en, this message translates to:
+  /// **'External provider: {provider}'**
+  String hostsCreateEventReviewExternalBookings({required String provider});
+
+  /// Create event review location label.
+  ///
+  /// In en, this message translates to:
+  /// **'Meeting location'**
+  String get hostsCreateEventReviewLocation;
+
+  /// Create event review schedule label.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule'**
+  String get hostsCreateEventReviewSchedule;
+
+  /// Create event review capacity label.
+  ///
+  /// In en, this message translates to:
+  /// **'Capacity'**
+  String get hostsCreateEventReviewCapacity;
+
+  /// Create event review capacity value.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} attendees'**
+  String hostsCreateEventReviewCapacityValue({required int count});
+
+  /// Create event review price label.
+  ///
+  /// In en, this message translates to:
+  /// **'Price'**
+  String get hostsCreateEventReviewPrice;
+
+  /// Create event review external price value.
+  ///
+  /// In en, this message translates to:
+  /// **'Managed by the external provider'**
+  String get hostsCreateEventReviewExternalPrice;
+
+  /// Create event review free price value.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get hostsCreateEventReviewFree;
+
+  /// Create event review admission label.
+  ///
+  /// In en, this message translates to:
+  /// **'Admission'**
+  String get hostsCreateEventReviewAdmission;
 
   /// Section overview title in organizer creation.
   ///

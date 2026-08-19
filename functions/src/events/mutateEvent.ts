@@ -854,7 +854,7 @@ function buildCreateEventDoc(
   const maxMen = data.constraints?.maxMen;
   const maxWomen = data.constraints?.maxWomen;
   const hasLegacyCaps = maxMen != null || maxWomen != null;
-  const eventPolicy = normalizePolicy(
+  const normalizedPolicy = normalizePolicy(
     (data as CreateEventPayloadWithPolicy).eventPolicy ?? {
       version: 1,
       admission: {
@@ -877,10 +877,21 @@ function buildCreateEventDoc(
       pricing: {
         basePriceInPaise: data.priceInPaise,
       },
-      cancellation: {policyId: "standard"},
+      cancellation: {
+        policyId: data.priceInPaise === 0 ? "notApplicable" : "standard",
+      },
       settlement: {hostPayoutTiming: "afterEventCompletion"},
     }
   );
+  // External companion events may charge on their booking provider, but Catch
+  // never owns that price, payment, refund, or cancellation policy.
+  const eventPolicy = data.externalOrigin ? normalizePolicy({
+    ...normalizedPolicy,
+    pricing: {
+      ...normalizedPolicy.pricing,
+      basePriceInPaise: 0,
+    },
+  }) : normalizedPolicy;
   return {
     eventOrigin: data.externalOrigin ? {
       mode: "externalCompanion",

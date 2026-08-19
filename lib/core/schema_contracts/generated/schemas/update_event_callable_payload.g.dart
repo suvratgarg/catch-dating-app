@@ -359,7 +359,11 @@ const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
           'properties': <String, Object?>{
             'version': <String, Object?>{
               'type': 'integer',
-              'const': 1,
+              'enum': <Object?>[
+                1,
+                2,
+              ],
+              'description': 'Version 2 models cancellation as notApplicable for free events. Version 1 remains readable for legacy snapshots.',
             },
             'admission': <String, Object?>{
               'type': 'object',
@@ -613,6 +617,7 @@ const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
                 'policyId': <String, Object?>{
                   'type': 'string',
                   'enum': <Object?>[
+                    'notApplicable',
                     'flexible',
                     'standard',
                     'strict',
@@ -632,6 +637,65 @@ const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
                   'enum': <Object?>[
                     'afterEventCompletion',
                   ],
+                },
+              },
+            },
+          },
+          'if': <String, Object?>{
+            'properties': <String, Object?>{
+              'version': <String, Object?>{
+                'const': 2,
+              },
+              'pricing': <String, Object?>{
+                'properties': <String, Object?>{
+                  'basePriceInPaise': <String, Object?>{
+                    'const': 0,
+                  },
+                },
+                'required': <Object?>[
+                  'basePriceInPaise',
+                ],
+              },
+            },
+            'required': <Object?>[
+              'version',
+              'pricing',
+            ],
+          },
+          'then': <String, Object?>{
+            'properties': <String, Object?>{
+              'cancellation': <String, Object?>{
+                'properties': <String, Object?>{
+                  'policyId': <String, Object?>{
+                    'const': 'notApplicable',
+                  },
+                },
+              },
+            },
+          },
+          'else': <String, Object?>{
+            'if': <String, Object?>{
+              'properties': <String, Object?>{
+                'version': <String, Object?>{
+                  'const': 2,
+                },
+              },
+              'required': <Object?>[
+                'version',
+              ],
+            },
+            'then': <String, Object?>{
+              'properties': <String, Object?>{
+                'cancellation': <String, Object?>{
+                  'properties': <String, Object?>{
+                    'policyId': <String, Object?>{
+                      'enum': <Object?>[
+                        'flexible',
+                        'standard',
+                        'strict',
+                      ],
+                    },
+                  },
                 },
               },
             },

@@ -429,7 +429,7 @@ export interface EventPolicyBundleDocument {
   admission: EventPolicyAdmissionDocument;
   pricing: EventPolicyPricingDocument;
   cancellation: {
-    policyId: "flexible" | "standard" | "strict";
+    policyId: "notApplicable" | "flexible" | "standard" | "strict";
   };
   settlement: {
     hostPayoutTiming: "afterEventCompletion";

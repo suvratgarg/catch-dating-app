@@ -446,7 +446,7 @@ test("createEventHandler creates a server-owned event for the club host",
       cancellationReason: null,
       constraints: {minAge: 21, maxAge: 35, maxMen: 10, maxWomen: null},
       eventPolicy: {
-        version: 1,
+        version: 2,
         admission: {
           format: "fixedCohortCaps",
           capacityLimit: 20,
@@ -472,7 +472,7 @@ test("createEventHandler creates a server-owned event for the club host",
           cohortAdjustmentsInPaise: {},
           demandPricingRules: [],
         },
-        cancellation: {policyId: "standard"},
+        cancellation: {policyId: "notApplicable"},
         settlement: {hostPayoutTiming: "afterEventCompletion"},
       },
       genderCounts: {},
@@ -533,7 +533,10 @@ test("createEventHandler accepts client event-policy snapshots", async () => {
   );
 
   assert.deepEqual(result, {eventId: "event-1"});
-  assert.deepEqual(h.firestore.get("events/event-1")?.eventPolicy, eventPolicy);
+  assert.deepEqual(h.firestore.get("events/event-1")?.eventPolicy, {
+    ...eventPolicy,
+    version: 2,
+  });
   assert.equal(h.firestore.get("events/event-1")?.priceInPaise, 40000);
   assert.equal(h.firestore.get("events/event-1")?.capacityLimit, 20);
 });
@@ -604,6 +607,32 @@ test("createEventHandler creates companion-only external events", async () => {
   const h = harness({"clubs/club-1": club()});
 
   await createEventHandler(request("host-1", payload({
+    priceInPaise: 40000,
+    eventPolicy: {
+      version: 1,
+      admission: {
+        format: "open",
+        capacityLimit: 20,
+        waitlistPolicy: {mode: "rankedOffer", offerWindowMinutes: 20},
+        inviteRequired: false,
+        membershipRequired: false,
+        manualApprovalRequired: false,
+        privateAccessPolicy: {
+          mode: "none",
+          inviteCodeHint: null,
+          privateLinkEnabled: false,
+        },
+        cohortCapacityLimits: {},
+        balancedRatioPolicy: null,
+      },
+      pricing: {
+        basePriceInPaise: 40000,
+        cohortAdjustmentsInPaise: {},
+        demandPricingRules: [],
+      },
+      cancellation: {policyId: "strict"},
+      settlement: {hostPayoutTiming: "afterEventCompletion"},
+    },
     externalOrigin: {
       provider: "luma",
       externalEventId: "evt_luma_123",
@@ -632,6 +661,15 @@ test("createEventHandler creates companion-only external events", async () => {
   assert.equal(
     (created?.runtimeAccess as FakeData).walkInPolicy,
     "hostApproval"
+  );
+  assert.equal(created?.priceInPaise, 0);
+  assert.equal(
+    ((created?.eventPolicy as FakeData).pricing as FakeData).basePriceInPaise,
+    0
+  );
+  assert.equal(
+    ((created?.eventPolicy as FakeData).cancellation as FakeData).policyId,
+    "notApplicable"
   );
 });
 
@@ -859,7 +897,11 @@ test("createEventHandler stores invite codes in host-private access docs",
     const createdEvent = h.firestore.get("events/event-1");
     const privateAccess = h.firestore.get("eventPrivateAccess/event-1");
     assert.deepEqual(result, {eventId: "event-1"});
-    assert.deepEqual(createdEvent?.eventPolicy, eventPolicy);
+    assert.deepEqual(createdEvent?.eventPolicy, {
+      ...eventPolicy,
+      version: 2,
+      cancellation: {policyId: "notApplicable"},
+    });
     assert.equal(JSON.stringify(createdEvent).includes("CATCH-DELHI"), false);
     assert.equal(privateAccess?.eventId, "event-1");
     assert.equal(privateAccess?.clubId, "club-1");
