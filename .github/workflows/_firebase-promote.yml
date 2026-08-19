@@ -375,11 +375,26 @@ jobs:
             esac
             stage_status=0
             failure_detail="Firebase CLI stage failed; safe to resume this stage."
+            deploy_args=(--config "$PACKAGE_DIR/firebase.json")
+            if [[ "$stage" == "functions" ]]; then
+              IFS=',' read -r -a explicit_function_targets <<< "$target"
+              (( "${#explicit_function_targets[@]}" > 0 ))
+              for function_target in "${explicit_function_targets[@]}"; do
+                if [[ ! "$function_target" =~ ^functions:[A-Za-z][A-Za-z0-9_-]*$ ]]; then
+                  echo "Refusing --force without an exact named Function target: $function_target"
+                  exit 64
+                fi
+              done
+              # Firebase requires this acknowledgement when an exact target
+              # newly enables retry-on-failure. Exact selectors keep unrelated
+              # and environment-only Functions outside the mutation set.
+              deploy_args+=(--force)
+            fi
             CATCH_DELIVERY_FUNCTIONS_DIR="$DELIVERY_FUNCTIONS_DIR" \
               CATCH_FIREBASE_SOURCE_ROOT="$SOURCE_CHECKOUT" \
               ./tool/deploy_firebase_targets.sh \
                 "$DEPLOY_ENVIRONMENT" "$target" \
-                --config "$PACKAGE_DIR/firebase.json" || stage_status=$?
+                "${deploy_args[@]}" || stage_status=$?
             if [[ "$stage_status" == "0" && "$stage" == "firestore-indexes" ]]; then
               node tool/firebase/wait_firestore_indexes_ready.mjs \
                 --indexes "$PACKAGE_DIR/firestore.indexes.json" \

@@ -133,6 +133,19 @@ test("Delivery keeps the current immutable control plane separate from an older 
   assert.match(promotion, /CATCH_FIREBASE_SOURCE_ROOT="\$SOURCE_CHECKOUT"/);
   assert.match(promotion, /\.\/tool\/deploy_firebase_targets\.sh/);
   assert.doesNotMatch(promotion, /build\/delivery\/source-checkout\/tool\/deploy_firebase_targets\.sh/);
+  const exactFunctionGuard = promotion.indexOf(
+    '[[ ! "$function_target" =~ ^functions:[A-Za-z][A-Za-z0-9_-]*$ ]]',
+  );
+  const forceAcknowledgement = promotion.indexOf('deploy_args+=(--force)');
+  assert.ok(
+    exactFunctionGuard >= 0 &&
+      exactFunctionGuard < forceAcknowledgement,
+    "retry-policy acknowledgement must follow the exact Function selector guard",
+  );
+  assert.match(
+    promotion,
+    /"\$DEPLOY_ENVIRONMENT" "\$target" \\\n+\s+"\$\{deploy_args\[@\]\}"/u,
+  );
   const executor = fs.readFileSync(
     path.join(repoRoot, "tool/deploy_firebase_targets.sh"),
     "utf8",
