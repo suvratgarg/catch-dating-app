@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/storage/organizer_logo_media_objects.schema.json",
+  "title": "OrganizerLogoMediaObjectsStoragePath",
+  "description": "Stable organizer logo media stored at organizers/{organizerId}/logo/{mediaId}/{fileName}.",
+  "type": "object",
+  "x-storage-rules-match": "match /organizers/{organizerId}/logo/{mediaId}/{fileName}",
+  "x-storage-read": "public for original and thumbnail objects",
+  "x-storage-write": "active organizer owner or manager may create/delete original images; updates denied; thumbnails server only",
+  "x-storage-content-type-pattern": "image/.*",
+  "x-storage-file-name-pattern": "(original\\.(jpg|jpeg|png)|thumbnail\\.jpg)",
+  "x-storage-max-bytes": 8388608,
+  "x-storage-rules-test-file": "functions/test/storage.rules.test.cjs",
+  "x-storage-related-collection": "organizers",
+  "x-storage-known-consumers": [
+    "lib/image_uploads/data/image_upload_repository.dart",
+    "functions/src/media/generateAttachedMediaThumbnails.ts",
+    "functions/src/organizers/generateOrganizerLogoThumbnail.ts"
+  ],
+  "properties": {
+    "organizerId": {"type": "string", "description": "Organizer document id; path segment."},
+    "mediaId": {"type": "string", "pattern": "^[A-Za-z0-9_-]{16,64}$", "description": "Stable random logo identity."},
+    "fileName": {"type": "string", "enum": ["original.jpg", "original.jpeg", "original.png", "thumbnail.jpg"]}
+  }
+}

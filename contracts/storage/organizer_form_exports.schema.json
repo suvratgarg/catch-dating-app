@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/storage/organizer_form_exports.schema.json",
+  "title": "OrganizerFormExportsStoragePath",
+  "description": "Private organizer response exports stored at organizer-form-exports/{organizerId}/{fileName} and surfaced only through short-lived manager-authorized signed URLs.",
+  "type": "object",
+  "x-storage-rules-match": "match /organizer-form-exports/{organizerId}/{fileName}",
+  "x-storage-read": "server-signed access only; direct client reads denied",
+  "x-storage-write": "server only; direct client writes denied",
+  "x-storage-rules-test-file": "functions/test/storage.rules.test.cjs",
+  "x-storage-related-collection": "organizers",
+  "x-storage-known-consumers": ["functions/src/organizers/organizerFormResponses.ts"],
+  "properties": {
+    "organizerId": {"type": "string"},
+    "fileName": {"type": "string"}
+  }
+}

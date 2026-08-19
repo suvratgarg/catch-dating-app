@@ -1584,6 +1584,36 @@ and edit them through a virtualized/scrolling manager rather than an expanding
 inline grid. Consumer dating-profile media retains its independent six-photo
 policy and grouped `profilePhotos` contract.
 
+Firebase Storage owns immutable image bytes by stable media identity; Firestore
+owns presentation order, cover selection, captions, and the active references.
+The canonical object layout is:
+
+```text
+organizers/{organizerId}/media/{mediaId}/original.jpg
+organizers/{organizerId}/media/{mediaId}/thumbnail.jpg
+organizers/{organizerId}/logo/{mediaId}/original.jpg
+organizers/{organizerId}/logo/{mediaId}/thumbnail.jpg
+events/{eventId}/media/{mediaId}/original.jpg
+events/{eventId}/media/{mediaId}/thumbnail.jpg
+```
+
+Clients may create and compensation-delete only `original` objects for an
+organizer owner or active manager. Replacing an object in place is denied;
+editing media creates a new stable `mediaId`. Backend Firestore triggers create
+the responsive thumbnails only after the URL is attached to the canonical
+document, and organizer/event update and delete operations remove originals and
+derived thumbnails after the Firestore commit. This separates unordered object
+storage from the ordered gallery contract and prevents gallery reordering from
+renaming or re-uploading bytes.
+
+Released-client paths such as `organizers/{organizerId}/photos/{position}_{time}.jpg`,
+`organizers/{organizerId}/logo/{time}.jpg`, and the equivalent `clubs` and
+`events/{eventId}/photos` paths stay accepted during the compatibility window;
+their six-slot filename bound is not the canonical gallery policy. Private form
+assets remain separate: `organizerForms/...` and `organizer-form-exports/...`
+deny direct SDK access and are exposed only through short-lived backend-signed
+requests.
+
 Remote organizer backfill is complete in staging and production; legacy
 cleanup is intentionally not complete. Follow
 `docs/migrations/clubs_to_organizers.md`. Do not delete or reset Firestore data

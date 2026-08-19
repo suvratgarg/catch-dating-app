@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/storage/organizer_form_uploads.schema.json",
+  "title": "OrganizerFormUploadsStoragePath",
+  "description": "Private organizer form response assets stored at organizerForms/{formId}/{draftId}/{assetId}; clients use backend-signed upload policies rather than Firebase Storage SDK rules.",
+  "type": "object",
+  "x-storage-rules-match": "match /organizerForms/{formId}/{draftId}/{assetId}",
+  "x-storage-read": "server-signed access only; direct client reads denied",
+  "x-storage-write": "server-signed upload only; direct client writes denied",
+  "x-storage-rules-test-file": "functions/test/storage.rules.test.cjs",
+  "x-storage-related-collection": "organizerForms",
+  "x-storage-known-consumers": ["functions/src/organizers/organizerFormResponses.ts"],
+  "properties": {
+    "formId": {"type": "string"},
+    "draftId": {"type": "string"},
+    "assetId": {"type": "string"}
+  }
+}
