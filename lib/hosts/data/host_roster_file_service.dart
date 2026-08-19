@@ -2,7 +2,9 @@ import 'dart:typed_data';
 
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'host_roster_file_service.g.dart';
 
 class PickedHostRosterFile {
   const PickedHostRosterFile({required this.name, required this.bytes});
@@ -37,6 +39,7 @@ class PluginHostRosterFileService implements HostRosterFileService {
   }
 }
 
-final hostRosterFileServiceProvider = Provider<HostRosterFileService>(
-  (ref) => const PluginHostRosterFileService(),
-);
+// keepalive: Host workflows share one process-wide file-picker boundary.
+@Riverpod(keepAlive: true)
+HostRosterFileService hostRosterFileService(Ref ref) =>
+    const PluginHostRosterFileService();
