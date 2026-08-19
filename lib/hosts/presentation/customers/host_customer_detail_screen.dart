@@ -89,6 +89,8 @@ class _HostCustomerDetailScreenState
                 organizerId: widget.organizerId,
                 contactId: widget.contactId,
                 displayName: displayName,
+                manualTagLabel: context.l10n.hostCustomersManualTags,
+                noteBody: context.l10n.hostCustomersMemoryHelp,
               ),
               currentUid: currentUid,
               openingConversation: false,
@@ -554,6 +556,8 @@ HostAudienceContactDetail _hostCustomerSkeletonDetail({
   required String organizerId,
   required String contactId,
   required String displayName,
+  required String manualTagLabel,
+  required String noteBody,
 }) {
   final now = DateTime(2026, 8, 17);
   return HostAudienceContactDetail(
@@ -602,13 +606,11 @@ HostAudienceContactDetail _hostCustomerSkeletonDetail({
       ),
     ],
     eventsTruncated: false,
-    manualTags: const [
-      HostManualTag(tagId: 'loading-tag', label: 'Community regular'),
-    ],
+    manualTags: [HostManualTag(tagId: 'loading-tag', label: manualTagLabel)],
     notes: [
       HostCustomerNote(
         noteId: 'loading-note',
-        body: 'Private organizer note about this customer.',
+        body: noteBody,
         authorUid: 'loading-author',
         createdAt: now,
         updatedAt: now,
