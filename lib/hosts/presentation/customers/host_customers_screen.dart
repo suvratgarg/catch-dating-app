@@ -1384,6 +1384,8 @@ class HostCustomerConversationCard extends StatelessWidget {
         CatchField.toggle(
           key: const ValueKey('host-customer-organizer-messages'),
           title: context.l10n.hostCustomersOrganizerMessages,
+          contract: CatchContractConstraints
+              .mutateOrganizerContactCallablePayloadWhatsappAdminSuppressed,
           body: customer.whatsappAdminSuppressed
               ? context.l10n.hostsHostAudienceContactConsentPaused
               : context.l10n.hostsHostAudienceContactConsentActive,
