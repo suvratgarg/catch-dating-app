@@ -1253,6 +1253,7 @@ class HostCustomerIdentityCard extends StatelessWidget {
       customer.contactDetailsEditable
           ? context.l10n.hostCustomersUnverifiedContactDetails
           : context.l10n.hostCustomersVerifiedDetailsManagedByCatch,
+      style: CatchTextStyles.supporting(context),
     ),
     children: [
       CatchField.read(
@@ -1364,17 +1365,22 @@ class HostCustomerConversationCard extends StatelessWidget {
             icon: CatchIcons.peopleOutlineRounded,
             onTap: onReview,
           ),
-        CatchField.action(
-          key: const ValueKey('host-customer-open-whatsapp'),
-          title: context.l10n.hostCustomersWhatsappAppChannel,
-          body: whatsappMessage,
-          icon: CatchIcons.sendRounded,
-          onTap:
-              whatsappAvailability ==
-                  HostPersonalWhatsappHandoffAvailability.ready
-              ? onOpenWhatsapp
-              : null,
-        ),
+        if (whatsappAvailability ==
+            HostPersonalWhatsappHandoffAvailability.ready)
+          CatchField.action(
+            key: const ValueKey('host-customer-open-whatsapp'),
+            title: context.l10n.hostCustomersWhatsappAppChannel,
+            body: whatsappMessage,
+            icon: CatchIcons.sendRounded,
+            onTap: onOpenWhatsapp,
+          )
+        else
+          CatchField.read(
+            key: const ValueKey('host-customer-whatsapp-status'),
+            title: context.l10n.hostCustomersWhatsappAppChannel,
+            body: whatsappMessage,
+            icon: CatchIcons.sendRounded,
+          ),
         CatchField.toggle(
           key: const ValueKey('host-customer-organizer-messages'),
           title: context.l10n.hostCustomersOrganizerMessages,

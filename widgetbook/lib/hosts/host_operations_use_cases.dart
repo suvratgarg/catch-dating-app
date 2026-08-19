@@ -828,6 +828,7 @@ Widget hostCustomersStates(BuildContext context) {
             onEditNote: (_) {},
             onReviewDuplicates: () {},
             onStartConversation: () {},
+            onOpenWhatsapp: () {},
             onMessagingEnabledChanged: (_) {},
             onRemove: () {},
             onUndoMerge: (_) {},

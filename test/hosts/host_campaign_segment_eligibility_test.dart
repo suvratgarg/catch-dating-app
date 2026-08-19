@@ -30,6 +30,7 @@ void main() {
         segment: HostAudienceSegment.lapsedRegular,
         smsReadiness: HostCrmChannelReadiness.providerAndDltSetupRequired,
         messagingSetup: _messagingSetup(),
+        audienceCoverageComplete: true,
       ),
       isNull,
     );
@@ -38,6 +39,7 @@ void main() {
         segment: HostAudienceSegment.newToOrganizer,
         smsReadiness: HostCrmChannelReadiness.currentEventOnly,
         messagingSetup: _messagingSetup(),
+        audienceCoverageComplete: true,
       ),
       HostCampaignBlockers.noReachableRecipients,
     );
@@ -46,6 +48,7 @@ void main() {
         segment: HostAudienceSegment.lapsedRegular,
         smsReadiness: HostCrmChannelReadiness.currentEventOnly,
         messagingSetup: _messagingSetup(providerConfigured: false),
+        audienceCoverageComplete: true,
       ),
       HostCampaignBlockers.providerSetupRequired,
     );
@@ -54,6 +57,7 @@ void main() {
         segment: HostAudienceSegment.lapsedRegular,
         smsReadiness: HostCrmChannelReadiness.currentEventOnly,
         messagingSetup: _messagingSetup(connectionStatus: 'pending'),
+        audienceCoverageComplete: true,
       ),
       HostCampaignBlockers.senderInactive,
     );

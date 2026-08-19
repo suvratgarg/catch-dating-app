@@ -88,6 +88,7 @@ class _HostEventRehearsalStartScreenState
                             scenario,
                           ),
                           selected: scenario == _scenario,
+                          role: CatchMenuItemRole.choice,
                         ),
                     ],
                     onSelected: (scenario, _) {
@@ -132,6 +133,7 @@ class _HostEventRehearsalStartScreenState
                             count: count,
                           ),
                           selected: count == _actorCount,
+                          role: CatchMenuItemRole.choice,
                         ),
                     ],
                     onSelected: (count, _) =>

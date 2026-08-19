@@ -54,7 +54,10 @@ class HostCustomerMemorySection extends StatelessWidget {
                   size: CatchButtonSize.sm,
                   onPressed: onAddNote,
                 ),
-          footer: Text(context.l10n.hostCustomersMemoryHelp),
+          footer: Text(
+            context.l10n.hostCustomersMemoryHelp,
+            style: CatchTextStyles.supporting(context),
+          ),
           children: [
             CatchField.nav(
               key: const ValueKey('host-customer-edit-tags'),
