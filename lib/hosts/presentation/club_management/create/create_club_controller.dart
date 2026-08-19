@@ -167,45 +167,63 @@ class CreateClubController extends _$CreateClubController {
       hostDefaults: hostDefaults,
     );
 
-    String? uploadedPrimaryPhoto;
-    String? uploadedProfile;
-    var clubPhotos = <UploadedPhoto>[];
-    UploadedPhoto? logoPhoto;
-    if (selectedClubPhotoInputs.isNotEmpty) {
-      clubPhotos = await _resolveClubPhotoInputs(
-        uid: uid,
-        clubId: createdClubId,
-        inputs: selectedClubPhotoInputs,
-      );
-      uploadedPrimaryPhoto = _primaryPhotoUrl(clubPhotos);
-    }
-    if (profileImage != null) {
-      final upload = await ref
-          .read(imageUploadRepositoryProvider)
-          .uploadClubLogo(uid: uid, clubId: createdClubId, image: profileImage);
-      logoPhoto = UploadedPhoto.fromUpload(
-        url: upload.url,
-        storagePath: upload.storagePath,
-        position: 0,
-      );
-      uploadedProfile = logoPhoto.url;
-    }
-    if (uploadedPrimaryPhoto != null || uploadedProfile != null) {
-      final patch = <String, Object?>{};
-      if (uploadedPrimaryPhoto != null) {
-        patch['imageUrl'] = uploadedPrimaryPhoto;
-        patch['clubPhotos'] = clubPhotos
-            .map((photo) => photo.toJson())
-            .toList(growable: false);
+    final newStoragePaths = <String>[];
+    try {
+      String? uploadedPrimaryPhoto;
+      String? uploadedProfile;
+      var clubPhotos = <UploadedPhoto>[];
+      UploadedPhoto? logoPhoto;
+      if (selectedClubPhotoInputs.isNotEmpty) {
+        clubPhotos = await _resolveClubPhotoInputs(
+          uid: uid,
+          clubId: createdClubId,
+          inputs: selectedClubPhotoInputs,
+          newStoragePaths: newStoragePaths,
+        );
+        uploadedPrimaryPhoto = _primaryPhotoUrl(clubPhotos);
       }
-      if (uploadedProfile != null) {
-        patch['profileImageUrl'] = uploadedProfile;
-        patch['logoPhoto'] = logoPhoto?.toJson();
+      if (profileImage != null) {
+        final upload = await ref
+            .read(imageUploadRepositoryProvider)
+            .uploadClubLogo(
+              uid: uid,
+              clubId: createdClubId,
+              image: profileImage,
+            );
+        newStoragePaths.add(upload.storagePath);
+        logoPhoto = UploadedPhoto.fromUpload(
+          url: upload.url,
+          storagePath: upload.storagePath,
+          position: 0,
+        );
+        uploadedProfile = logoPhoto.url;
       }
-      await clubsRepo.updateClub(
-        clubId: createdClubId,
-        patch: UpdateClubPatch.raw(patch),
-      );
+      if (uploadedPrimaryPhoto != null || uploadedProfile != null) {
+        final patch = <String, Object?>{};
+        if (uploadedPrimaryPhoto != null) {
+          patch['imageUrl'] = uploadedPrimaryPhoto;
+          patch['clubPhotos'] = clubPhotos
+              .map((photo) => photo.toJson())
+              .toList(growable: false);
+        }
+        if (uploadedProfile != null) {
+          patch['profileImageUrl'] = uploadedProfile;
+          patch['logoPhoto'] = logoPhoto?.toJson();
+        }
+        await clubsRepo.updateClub(
+          clubId: createdClubId,
+          patch: UpdateClubPatch.raw(patch),
+        );
+      }
+    } catch (_) {
+      for (final path in newStoragePaths) {
+        try {
+          await ref.read(imageUploadRepositoryProvider).deleteByPath(path);
+        } catch (_) {
+          // Preserve the create failure; cleanup is best effort.
+        }
+      }
+      rethrow;
     }
   }
 
@@ -213,6 +231,7 @@ class CreateClubController extends _$CreateClubController {
     required String uid,
     required String clubId,
     required List<ClubPhotoInput> inputs,
+    required List<String> newStoragePaths,
   }) async {
     final photos = <UploadedPhoto>[];
     for (final indexedInput in inputs.indexed) {
@@ -231,6 +250,7 @@ class CreateClubController extends _$CreateClubController {
                 position: position,
                 image: image,
               );
+          newStoragePaths.add(upload.storagePath);
           photos.add(
             UploadedPhoto.fromUpload(
               url: upload.url,

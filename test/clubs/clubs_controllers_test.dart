@@ -918,6 +918,51 @@ void main() {
       );
     });
 
+    test(
+      'create cleanup removes uploads when media attachment fails',
+      () async {
+        final fakeRepository = FakeClubsRepository()
+          ..generatedId = 'club-42'
+          ..updateError = StateError('attach failed');
+        final image = XFile('/tmp/club-a.jpg');
+        final uploads = FakeImageUploadRepository();
+        final container = ProviderContainer(
+          overrides: [
+            clubsRepositoryProvider.overrideWith((ref) => fakeRepository),
+            imageUploadRepositoryProvider.overrideWith((ref) => uploads),
+            uidProvider.overrideWith((ref) => Stream.value('host-1')),
+          ],
+        );
+        addTearDown(container.dispose);
+        final uidSubscription = container.listen(
+          uidProvider,
+          (_, _) {},
+          fireImmediately: true,
+        );
+        addTearDown(uidSubscription.close);
+        await container.pump();
+
+        await expectLater(
+          container
+              .read(createClubControllerProvider.notifier)
+              .submit(
+                name: 'Sunset Striders',
+                location: buildClub().location,
+                area: 'Bandra',
+                description: 'Easy social club',
+                clubPhotoInputs: [NewClubPhotoInput(image)],
+              ),
+          throwsStateError,
+        );
+
+        expect(uploads.deletedStoragePaths, hasLength(1));
+        expect(
+          uploads.deletedStoragePaths.single,
+          startsWith('organizers/club-42/media/'),
+        );
+      },
+    );
+
     test('creates a club without requiring profile state', () async {
       final fakeRepository = FakeClubsRepository();
       final fakeImageUploadRepository = FakeImageUploadRepository();

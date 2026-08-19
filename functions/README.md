@@ -166,6 +166,7 @@ options when specific functions need higher or lower limits.
 |----------|------|---------|
 | `generateProfilePhotoThumbnail` | `src/profiles/` | Profile photo finalize — creates avatar thumbnails |
 | `generateOrganizerLogoThumbnail` | `src/organizers/` | Organizer logo finalize — creates canonical organizer thumbnails |
+| `generateOrganizerMediaThumbnails`, `generateEventMediaThumbnails` | `src/media/` | Attached organizer and event media writes — creates and safely attaches responsive thumbnails |
 | `moderatePhotoOnUpload` | `src/moderation/` | `onObjectFinalized` — SafeSearch analysis |
 
 ### HTTP

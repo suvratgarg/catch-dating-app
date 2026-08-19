@@ -1,5 +1,6 @@
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
+import * as logger from "firebase-functions/logger";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
 import {OrganizerDocument} from "../shared/generated/firestoreAdminTypes";
@@ -31,6 +32,10 @@ import {
   normalizeOrganizerIdPayload,
   normalizeUpdateOrganizerPayload,
 } from "./organizerPayloadNormalization";
+import {
+  deleteMediaStoragePaths,
+  removedMediaStoragePaths,
+} from "../shared/mediaStorageLifecycle";
 
 interface OrganizerLifecycleDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -41,6 +46,7 @@ interface OrganizerLifecycleDeps {
     action: string
   ) => Promise<void>;
   reserveCanonicalRoute?: typeof reserveOrganizerCanonicalRoute;
+  deleteStoragePaths?: (paths: string[]) => Promise<void>;
 }
 
 const defaultDeps: OrganizerLifecycleDeps = {
@@ -48,6 +54,7 @@ const defaultDeps: OrganizerLifecycleDeps = {
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
   checkRateLimit: defaultCheckRateLimit,
   reserveCanonicalRoute: reserveOrganizerCanonicalRoute,
+  deleteStoragePaths: deleteMediaStoragePaths,
 };
 
 export async function updateOrganizerHandler(
@@ -65,6 +72,7 @@ export async function updateOrganizerHandler(
   const organizerRef = db.collection("organizers").doc(data.organizerId);
   const legacyClubRef = db.collection("clubs").doc(data.organizerId);
   const deletedUserRef = db.collection("deletedUsers").doc(actorUid);
+  let removedStoragePaths: string[] = [];
 
   await db.runTransaction(async (tx) => {
     const [organizerSnap, legacyClubSnap, deletedUserSnap] = await Promise.all([
@@ -110,11 +118,21 @@ export async function updateOrganizerHandler(
     }
     const patch = organizerPatch(data.fields, actorUid, timestamp);
     Object.assign(patch, publicationIdentityPatch);
+    removedStoragePaths = removedMediaStoragePaths({
+      before: organizer,
+      after: {...organizer, ...patch},
+      owner: {kind: "organizer", id: data.organizerId},
+    });
     tx.update(organizerRef, patch);
     if (legacyClubSnap.exists) {
       tx.update(legacyClubRef, legacyClubPatch(patch));
     }
   });
+  await cleanupRemovedOrganizerMedia(
+    deps,
+    data.organizerId,
+    removedStoragePaths
+  );
   return {updated: true};
 }
 
@@ -171,6 +189,7 @@ export async function deleteOrganizerHandler(
   const organizerRef = db.collection("organizers").doc(data.organizerId);
   const legacyClubRef = db.collection("clubs").doc(data.organizerId);
   const deletedUserRef = db.collection("deletedUsers").doc(actorUid);
+  let removedStoragePaths: string[] = [];
 
   await db.runTransaction(async (tx) => {
     const [
@@ -207,6 +226,11 @@ export async function deleteOrganizerHandler(
         .where("organizerId", "==", data.organizerId).limit(1)),
     ]);
     assertCanMutateOrganizer(organizerSnap, deletedUserSnap, actorUid);
+    removedStoragePaths = removedMediaStoragePaths({
+      before: organizerSnap.data(),
+      after: {},
+      owner: {kind: "organizer", id: data.organizerId},
+    });
     const team = teamSnap.docs.map((doc) => doc.data());
     const onlyOwner = team.length <= 1 && team.every((membership) =>
       membership.uid === actorUid && membership.role === "owner"
@@ -227,7 +251,29 @@ export async function deleteOrganizerHandler(
     if (legacyClubSnap.exists) tx.delete(legacyClubRef);
     tx.delete(organizerRef);
   });
+  await cleanupRemovedOrganizerMedia(
+    deps,
+    data.organizerId,
+    removedStoragePaths
+  );
   return {deleted: true};
+}
+
+async function cleanupRemovedOrganizerMedia(
+  deps: OrganizerLifecycleDeps,
+  organizerId: string,
+  paths: string[]
+) {
+  if (paths.length === 0) return;
+  try {
+    await deps.deleteStoragePaths?.(paths);
+  } catch (error) {
+    logger.error("Organizer media cleanup failed", {
+      organizerId,
+      paths,
+      error,
+    });
+  }
 }
 
 function assertCanMutateOrganizer(

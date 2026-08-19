@@ -222,10 +222,12 @@ function harness(initialDocs: Record<string, FakeData | undefined>) {
   const firestore = new FakeFirestore(initialDocs);
   const rateLimitCalls: string[] = [];
   const notifications: FcmParams[] = [];
+  const deletedStoragePaths: string[] = [];
   return {
     firestore,
     rateLimitCalls,
     notifications,
+    deletedStoragePaths,
     deps: {
       firestore: () =>
         firestore as unknown as FirebaseFirestore.Firestore,
@@ -244,6 +246,9 @@ function harness(initialDocs: Record<string, FakeData | undefined>) {
       },
       serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
       runtimePublicId: () => "runtime_123456789012345678901234",
+      deleteStoragePaths: async (paths: string[]) => {
+        deletedStoragePaths.push(...paths);
+      },
     },
   };
 }
@@ -300,6 +305,19 @@ function event(overrides: FakeData = {}): FakeData {
     cohortCounts: {},
     waitlistedCohortCounts: {},
     ...overrides,
+  };
+}
+
+function uploadedEventPhoto(id: string, position: number): FakeData {
+  return {
+    id,
+    url: `https://example.com/${id}.jpg`,
+    storagePath: `events/event-1/media/${id}/original.jpg`,
+    thumbnailUrl: `https://example.com/${id}-thumb.jpg`,
+    thumbnailStoragePath: `events/event-1/media/${id}/thumbnail.jpg`,
+    position,
+    createdAt: {_seconds: 1, _nanoseconds: 0},
+    updatedAt: {_seconds: 1, _nanoseconds: 0},
   };
 }
 
@@ -1039,6 +1057,25 @@ test("updateEventHandler updates only host-editable event fields", async () => {
   assert.equal(updated?.capacityLimit, 12);
 });
 
+test("updateEventHandler cleans removed event media after commit", async () => {
+  const kept = uploadedEventPhoto("keep", 0);
+  const removed = uploadedEventPhoto("remove", 1);
+  const h = harness({
+    "clubs/club-1": club(),
+    "events/event-1": event({eventPhotos: [kept, removed]}),
+  });
+
+  await updateEventHandler(request("host-1", {
+    eventId: "event-1",
+    fields: {eventPhotos: [kept]},
+  }), h.deps);
+
+  assert.deepEqual(h.deletedStoragePaths, [
+    "events/event-1/media/remove/original.jpg",
+    "events/event-1/media/remove/thumbnail.jpg",
+  ]);
+});
+
 test(
   "updateEventHandler limits web registration to free open events",
   async () => {
@@ -1291,9 +1328,10 @@ test("cancelEventHandler marks the event cancelled and notifies participants",
 );
 
 test("deleteEventHandler hard-deletes only unused events", async () => {
+  const photo = uploadedEventPhoto("delete", 0);
   const h = harness({
     "clubs/club-1": club(),
-    "events/event-1": event(),
+    "events/event-1": event({eventPhotos: [photo]}),
   });
 
   const result = await deleteEventHandler(
@@ -1304,6 +1342,10 @@ test("deleteEventHandler hard-deletes only unused events", async () => {
   assert.deepEqual(result, {deleted: true});
   assert.deepEqual(h.rateLimitCalls, ["host-1:deleteEvent"]);
   assert.equal(h.firestore.get("events/event-1"), undefined);
+  assert.deepEqual(h.deletedStoragePaths, [
+    "events/event-1/media/delete/original.jpg",
+    "events/event-1/media/delete/thumbnail.jpg",
+  ]);
 });
 
 test("deleteEventHandler rejects events with user activity", async () => {

@@ -346,6 +346,10 @@ export {
 export {
   generateOrganizerLogoThumbnail,
 } from "./organizers/generateOrganizerLogoThumbnail";
+export {
+  generateEventMediaThumbnails,
+  generateOrganizerMediaThumbnails,
+} from "./media/generateAttachedMediaThumbnails";
 export {joinWaitlist} from "./waitlist/joinWaitlist";
 export {blockUser, unblockUser, onBlockCreated} from "./safety/blocking";
 export {requestAccountDeletion} from "./safety/accountDeletion";
