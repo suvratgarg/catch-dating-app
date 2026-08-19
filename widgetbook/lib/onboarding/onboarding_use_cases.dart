@@ -7,10 +7,11 @@ import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/design_fixtures/profile_surface_fixtures.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/image_uploads/domain/image_upload_job.dart';
 import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
-import 'package:catch_dating_app/design_fixtures/profile_surface_fixtures.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/data/onboarding_draft_repository.dart';
 import 'package:catch_dating_app/onboarding/domain/onboarding_draft.dart';
@@ -173,7 +174,7 @@ Widget onboardingScreenRouteStates(BuildContext context) {
           child: _OnboardingScope(
             mode: _OnboardingPreviewMode.photos,
             profile: _profileOnePhoto,
-            uploadState: (loadingIndices: {1}, uploadError: null),
+            uploadState: _secondPhotoUploadingState,
             child: OnboardingScreen(profileCompletionOnly: true),
           ),
         ),
@@ -772,7 +773,7 @@ Widget photosPageStates(BuildContext context) {
         child: _DeviceFrame(
           child: _OnboardingScope(
             profile: _profileOnePhoto,
-            uploadState: (loadingIndices: {1}, uploadError: null),
+            uploadState: _secondPhotoUploadingState,
             child: PhotosPage(profileCompletionOnly: true),
           ),
         ),
@@ -1023,9 +1024,9 @@ class _OnboardingScope extends StatelessWidget {
   }
 }
 
-const PhotoUploadState _idlePhotoUploadState = (
-  loadingIndices: <int>{},
-  uploadError: null,
+const PhotoUploadState _idlePhotoUploadState = PhotoUploadState();
+const PhotoUploadState _secondPhotoUploadingState = PhotoUploadState(
+  jobs: {1: ImageUploadJobState(stage: ImageUploadJobStage.uploading)},
 );
 
 class _OnboardingPreviewSeeder extends ConsumerStatefulWidget {

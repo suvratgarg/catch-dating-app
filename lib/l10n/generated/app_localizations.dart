@@ -901,12 +901,6 @@ abstract class AppLocalizations {
   /// **'Done'**
   String get coreOrderedPhotoPickerActionDone;
 
-  /// Title for the selected cover photo.
-  ///
-  /// In en, this message translates to:
-  /// **'Cover photo'**
-  String get coreOrderedPhotoPickerTitleCoverPhoto;
-
   /// Explains cover-photo semantics in the gallery manager.
   ///
   /// In en, this message translates to:

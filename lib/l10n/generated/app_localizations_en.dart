@@ -470,9 +470,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get coreOrderedPhotoPickerActionDone => 'Done';
 
   @override
-  String get coreOrderedPhotoPickerTitleCoverPhoto => 'Cover photo';
-
-  @override
   String get coreOrderedPhotoPickerBodyCoverPhoto =>
       'This is the first image guests see. Choose any gallery photo as the cover.';
 

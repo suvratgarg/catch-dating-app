@@ -1020,13 +1020,6 @@
     "x-owner": "product",
     "x-surface": "core.widgets.ordered_photo_picker"
   },
-  "coreOrderedPhotoPickerTitleCoverPhoto": "Cover photo",
-  "@coreOrderedPhotoPickerTitleCoverPhoto": {
-    "description": "Title for the selected cover photo.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "core.widgets.ordered_photo_picker"
-  },
   "coreOrderedPhotoPickerBodyCoverPhoto": "This is the first image guests see. Choose any gallery photo as the cover.",
   "@coreOrderedPhotoPickerBodyCoverPhoto": {
     "description": "Explains cover-photo semantics in the gallery manager.",

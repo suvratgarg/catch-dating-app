@@ -159,8 +159,8 @@ import 'package:catch_dating_app/hosts/presentation/payments/host_payment_accoun
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/image_uploads/domain/image_upload_job.dart';
-import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
+import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/launch_access/data/launch_access_repository.dart';
 import 'package:catch_dating_app/launch_access/domain/launch_access_application.dart';
 import 'package:catch_dating_app/launch_access/presentation/launch_access_application_screen.dart';
@@ -3061,11 +3061,23 @@ final class _CaptureNoopHostClubEditActions implements HostClubEditActions {
   Future<HostPickedClubLogo?> pickClubLogo() async => null;
 
   @override
-  Future<void> updateClubMedia({
+  Future<HostClubMediaSaveResult> updateClubMedia({
     required Club club,
     List<HostClubMediaInput>? photoInputs,
     HostPickedClubLogo? logo,
     bool removeLogo = false,
+    ValueChanged<HostClubMediaProgress>? onProgress,
+  }) async => HostClubMediaSaveResult(
+    photoInputs: photoInputs,
+    logo: logo,
+    failures: const {},
+    attached: true,
+  );
+
+  @override
+  Future<void> discardClubMedia({
+    required List<HostClubMediaInput> photoInputs,
+    HostPickedClubLogo? logo,
   }) async {}
 }
 

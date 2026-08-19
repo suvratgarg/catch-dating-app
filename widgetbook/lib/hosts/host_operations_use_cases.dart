@@ -6767,11 +6767,23 @@ final class _NoopHostClubEditActions implements HostClubEditActions {
   Future<HostPickedClubLogo?> pickClubLogo() async => null;
 
   @override
-  Future<void> updateClubMedia({
+  Future<HostClubMediaSaveResult> updateClubMedia({
     required Club club,
     List<HostClubMediaInput>? photoInputs,
     HostPickedClubLogo? logo,
     bool removeLogo = false,
+    ValueChanged<HostClubMediaProgress>? onProgress,
+  }) async => HostClubMediaSaveResult(
+    photoInputs: photoInputs,
+    logo: logo,
+    failures: const {},
+    attached: true,
+  );
+
+  @override
+  Future<void> discardClubMedia({
+    required List<HostClubMediaInput> photoInputs,
+    HostPickedClubLogo? logo,
   }) async {}
 }
 

@@ -40,7 +40,6 @@ class HostClubEditTab extends ConsumerStatefulWidget {
 class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
   late final CatchFieldAccordion _fieldAccordion;
   late List<_HostClubMediaDraft> _mediaDrafts;
-  late List<_HostClubMediaDraft> _committedMediaDrafts;
   HostPickedClubLogo? _pickedLogo;
   bool _removeLogoOnSave = false;
   bool _mediaDirty = false;
@@ -121,7 +120,6 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
         _HostExistingClubMediaDraft(photo),
     ];
     _mediaDrafts = drafts;
-    _committedMediaDrafts = [...drafts];
     _pickedLogo = null;
     _removeLogoOnSave = false;
     _mediaDirty = false;
@@ -272,7 +270,6 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
           _mediaError = result.failures.values.first;
           return;
         }
-        _committedMediaDrafts = [..._mediaDrafts];
         _mediaDirty = false;
         _removeLogoOnSave = false;
         _mediaAwaitingSnapshot = _mediaSourceRevision == sourceRevision;

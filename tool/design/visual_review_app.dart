@@ -11,6 +11,7 @@ import 'package:catch_dating_app/events/presentation/calendar/calendar_screen.da
 import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_success_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
+import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
@@ -159,7 +160,7 @@ class VisualReviewApp extends StatelessWidget {
                   child: Scaffold(
                     body: ProfileTab(
                       user: user,
-                      uploadState: (loadingIndices: <int>{}, uploadError: null),
+                      uploadState: const PhotoUploadState(),
                     ),
                   ),
                 ),
