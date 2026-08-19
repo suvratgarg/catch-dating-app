@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   ensureStorageRulesBinding,
+  functionsDependencyDirectory,
   parseArgs,
   parseFirebaseWebConfig,
   policyHasStorageRulesBinding,
@@ -105,3 +106,23 @@ test("Firebase config parser returns checked project identity", () => {
   assert.equal(config.projectId, "catchdates-dev");
   assert.equal(config.projectNumber, "123456789");
 });
+
+test("IAM dependencies use the verified delivery Functions tree when set", () => {
+  assert.equal(
+    functionsDependencyDirectory({
+      env: {
+        CATCH_DELIVERY_FUNCTIONS_DIR:
+          "build/delivery/deploy-tree/functions",
+      },
+      cwd: "/workspace",
+    }),
+    "/workspace/build/delivery/deploy-tree/functions"
+  );
+});
+
+test(
+  "IAM dependencies keep the repository Functions tree as the local default",
+  () => {
+    assert.match(functionsDependencyDirectory({env: {}}), /\/functions$/u);
+  },
+);
