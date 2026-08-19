@@ -399,6 +399,7 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
     this.contentPadding,
     this.height = CatchLayout.topBarHeight,
     this.largeHeight = CatchLayout.topBarLargeHeight,
+    this.allowContentHeightExpansion = false,
     this.contentCrossAxisAlignment = CrossAxisAlignment.center,
     this.bottom,
     this.trailing,
@@ -426,6 +427,7 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
     this.contentPadding,
     this.height = CatchLayout.topBarHeight,
     this.largeHeight = CatchLayout.topBarLargeHeight,
+    this.allowContentHeightExpansion = false,
     this.contentCrossAxisAlignment = CrossAxisAlignment.center,
     this.bottom,
     this.trailing,
@@ -458,6 +460,7 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
   final EdgeInsetsGeometry? contentPadding;
   final double height;
   final double largeHeight;
+  final bool allowContentHeightExpansion;
   final CrossAxisAlignment contentCrossAxisAlignment;
   final PreferredSizeWidget? bottom;
   final Widget? trailing;
@@ -504,6 +507,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
           _buildLargeTopBarFrame(
             context,
             height: widget.largeHeight,
+            allowContentHeightExpansion: widget.allowContentHeightExpansion,
             gutter: widget.gutter,
             contentPadding: widget.contentPadding,
             showDivider: showDivider && widget.bottom == null,
@@ -519,6 +523,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
           _buildCompactTopBarFrame(
             context,
             height: widget.height,
+            allowContentHeightExpansion: widget.allowContentHeightExpansion,
             contentCrossAxisAlignment: widget.contentCrossAxisAlignment,
             gutter: widget.gutter,
             contentPadding: widget.contentPadding,
@@ -677,6 +682,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
 Widget _buildCompactTopBarFrame(
   BuildContext context, {
   required double height,
+  required bool allowContentHeightExpansion,
   required CrossAxisAlignment contentCrossAxisAlignment,
   required bool gutter,
   required EdgeInsetsGeometry? contentPadding,
@@ -690,7 +696,10 @@ Widget _buildCompactTopBarFrame(
 }) {
   final t = CatchTokens.of(context);
   return Container(
-    height: height,
+    height: allowContentHeightExpansion ? null : height,
+    constraints: allowContentHeightExpansion
+        ? BoxConstraints(minHeight: height)
+        : null,
     padding:
         contentPadding ??
         EdgeInsets.symmetric(
@@ -733,6 +742,7 @@ Widget _buildCompactTopBarFrame(
 Widget _buildLargeTopBarFrame(
   BuildContext context, {
   required double height,
+  required bool allowContentHeightExpansion,
   required bool gutter,
   required EdgeInsetsGeometry? contentPadding,
   required bool showDivider,
@@ -745,7 +755,10 @@ Widget _buildLargeTopBarFrame(
 }) {
   final t = CatchTokens.of(context);
   return Container(
-    height: height,
+    height: allowContentHeightExpansion ? null : height,
+    constraints: allowContentHeightExpansion
+        ? BoxConstraints(minHeight: height)
+        : null,
     padding:
         contentPadding ??
         EdgeInsets.fromLTRB(

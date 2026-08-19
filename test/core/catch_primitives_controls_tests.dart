@@ -661,10 +661,44 @@ void _registerCatchPrimitivesControlsTests() {
     expect(find.text('STEP 1 OF 3'), findsOneWidget);
     final titleRect = tester.getRect(find.text('Schedule'));
     final counterRect = tester.getRect(find.text('STEP 1 OF 3'));
+    final topBarSize = tester.getSize(
+      find.descendant(
+        of: find.byType(CatchStepHeader),
+        matching: find.byType(CatchTopBar),
+      ),
+    );
+    expect(topBarSize.height, CatchLayout.stepHeaderTopBarHeight);
     expect(
       counterRect.top - titleRect.top,
       closeTo(CatchLayout.stepHeaderCounterTopPadding, 0.001),
     );
+  });
+
+  testWidgets('CatchStepHeader expands for long supplemental copy', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const SizedBox(
+          width: 350,
+          child: CatchStepHeader(
+            title: "What's your number?",
+            subtitle: "We'll send you a one-time code to verify.",
+            showBack: false,
+            gutter: false,
+          ),
+        ),
+      ),
+    );
+
+    final topBarSize = tester.getSize(
+      find.descendant(
+        of: find.byType(CatchStepHeader),
+        matching: find.byType(CatchTopBar),
+      ),
+    );
+    expect(topBarSize.height, greaterThan(CatchLayout.stepHeaderTopBarHeight));
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('CatchStepHeader exposes its step overview as a 44px action', (

@@ -113,6 +113,7 @@ class CatchStepHeader extends StatelessWidget {
           trailing: topRight,
           gutter: gutter,
           largeHeight: CatchLayout.stepHeaderTopBarHeight,
+          allowContentHeightExpansion: true,
         ),
         if (hasProgress)
           Padding(

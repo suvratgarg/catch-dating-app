@@ -21281,12 +21281,6 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{1 paid order} other{{count} paid orders}}'**
   String hostCustomersDetailPaidOrders({required int count});
 
-  /// Explicit channel and sender label for a direct in-app customer conversation.
-  ///
-  /// In en, this message translates to:
-  /// **'Catch chat · Organizer'**
-  String get hostCustomersCatchChatChannel;
-
   /// Starts a direct Catch chat with a linked customer.
   ///
   /// In en, this message translates to:
@@ -21322,12 +21316,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This customer has opted out of WhatsApp messages.'**
   String get hostCustomersWhatsappContactOptedOut;
-
-  /// Opens the editable personal WhatsApp handoff composer.
-  ///
-  /// In en, this message translates to:
-  /// **'Write in WhatsApp'**
-  String get hostCustomersWriteInWhatsapp;
 
   /// Title for the personal WhatsApp handoff composer.
   ///

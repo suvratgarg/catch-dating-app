@@ -13654,9 +13654,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostCustomersCatchChatChannel => 'Catch chat · Organizer';
-
-  @override
   String get hostCustomersStartCatchChat => 'Start Catch chat';
 
   @override
@@ -13677,9 +13674,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostCustomersWhatsappContactOptedOut =>
       'This customer has opted out of WhatsApp messages.';
-
-  @override
-  String get hostCustomersWriteInWhatsapp => 'Write in WhatsApp';
 
   @override
   String get hostCustomersWhatsappHandoffTitle => 'WhatsApp app';
