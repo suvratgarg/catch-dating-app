@@ -268,6 +268,8 @@ class HostClubEditController implements HostClubEditActions {
             ),
           );
         } catch (error) {
+          // The returned failure map and failed progress state are the
+          // caller-visible error surface; preserve the upload for retry.
           failures[logo.id] = error;
           onProgress?.call(
             HostClubMediaProgress(
@@ -380,6 +382,8 @@ class HostClubEditController implements HostClubEditActions {
               ),
             );
           } catch (error) {
+            // The returned failure map and failed progress state are the
+            // caller-visible error surface; preserve the input for retry.
             failures[id] = error;
             resolved[index] = input;
             onProgress?.call(

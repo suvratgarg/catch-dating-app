@@ -87,6 +87,7 @@ void main() {
 
     await tester.tap(find.text('Reminder'));
     await pumpFeatureUi(tester);
+    await tester.ensureVisible(find.text('Send to 24 people'));
     await tester.tap(find.text('Send to 24 people'));
     await pumpFeatureUi(tester);
 
