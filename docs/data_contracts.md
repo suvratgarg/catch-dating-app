@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.32.0
-updated: 2026-08-18
+version: 1.33.0
+updated: 2026-08-19
 owner: recursive_audit_loop
 status: active
 ---
@@ -47,6 +47,40 @@ Read this before changing:
 
 Do not hand-edit generated outputs. Change the contract source, run the schema
 generator, and commit the generated diff.
+
+### Event Dress Rehearsal Isolation Contract
+
+Event rehearsal is a separate bounded domain with four callable-owned,
+server-only collections:
+
+| Collection | Purpose | Limits and authority |
+|---|---|---|
+| `eventRehearsals/{sessionId}` | Frozen source snapshot, editable pre-start setup, scenario/seed, virtual clock, lifecycle and revisions | Organizer manager reads through Host callables only; 24-hour expiry; at most five active sessions per owner |
+| `eventRehearsalActors/{sessionId_actorId}` | Deterministically generated synthetic people, status, guest moment, opt-out/help/prompt flags and keep-apart ids | At most 50 actors; no UID, phone, email, booking, payment, match, chat, or production attendee id |
+| `eventRehearsalActions/{sessionId_actionKey}` | Idempotent Host/guest controls and deterministic replay history | At most 500 actions; a stable hash of session plus client action id deduplicates delivery |
+| `eventRehearsalGuestViews/{sessionId_slotId}` | One browser-instance-to-actor lease with hashed bearer token state | Created only by the public guest bootstrap callable; link rotation invalidates prior slots |
+
+The schemas under `contracts/firestore/event_rehearsal_*.schema.json` and
+`contracts/callables/*event_rehearsal*.schema.json` are authoritative.
+Functions may read `events/{sourceEventId}` exactly once during creation to
+copy a bounded title, location, duration, and supported playbook shape after
+verifying organizer authority. No rehearsal handler may write a production
+collection. Firestore rules deny every direct client read and write to the four
+collections; App-Check-protected callables own all Host access.
+
+Host writes carry the expected setup or runtime revision. Mutating controls and
+guest actions carry a bounded client action id, exact replays return the same
+projection, and stale revisions fail closed. Setup freezes at start. Reset
+regenerates actors from the same seed and clears action count; fork creates a
+new session. The scheduled expiry handler deletes the bounded child set after
+24 hours. Advanced latency/failure/disconnect/stale/duplicate/legacy/reduced-
+motion/low-bandwidth faults require internal/admin authorization; behavioral
+scenarios remain available to an ordinary organizer manager.
+
+The public guest response contains only a practice banner, safe session fields,
+one synthetic actor, and a slot token. `clientInstanceId` stabilizes retries in
+one browser; the server derives and stores only deterministic hashes. It never
+uses Firebase Auth, OTP, attendee claims, or a production roster.
 
 ### Event Success Moment Presentation Contract
 

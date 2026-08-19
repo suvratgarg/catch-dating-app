@@ -514,6 +514,101 @@
       ]
     },
     {
+      "id": "eventRehearsals",
+      "path": "eventRehearsals/{sessionId}",
+      "rulesMatch": "/eventRehearsals/{sessionId}",
+      "typescriptInterface": "EventRehearsalDocument",
+      "dartModel": "lib/event_rehearsal/domain/event_rehearsal.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": ["keeps all dress rehearsal collections callable-only"],
+      "owner": "event rehearsal callables and hourly expiry",
+      "read": "server only; organizer managers and public guest slots receive bounded callable projections",
+      "write": "server only",
+      "exportedFunctions": [
+        "createEventRehearsal",
+        "getEventRehearsalBootstrap",
+        "updateEventRehearsalSetup",
+        "controlEventRehearsal",
+        "injectEventRehearsalBehavior",
+        "resetEventRehearsal",
+        "rotateEventRehearsalGuestLink",
+        "getEventRehearsalGuestBootstrap",
+        "submitEventRehearsalGuestAction",
+        "completeEventRehearsal",
+        "exportEventRehearsalReproduction",
+        "expireEventRehearsals"
+      ],
+      "migrationNotes": [
+        "A real event is a bounded read-only source at creation; every later mutation remains inside the rehearsal domain.",
+        "Sessions expire after 24 hours and are capped at five active sessions per owner, 50 actors, and 500 actions."
+      ]
+    },
+    {
+      "id": "eventRehearsalActors",
+      "path": "eventRehearsalActors/{actorId}",
+      "rulesMatch": "/eventRehearsalActors/{actorId}",
+      "typescriptInterface": "EventRehearsalActorDocument",
+      "dartModel": "lib/event_rehearsal/domain/event_rehearsal.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": ["keeps all dress rehearsal collections callable-only"],
+      "owner": "event rehearsal callables",
+      "read": "server only; bounded callable projections only",
+      "write": "server only",
+      "exportedFunctions": [
+        "createEventRehearsal",
+        "updateEventRehearsalSetup",
+        "controlEventRehearsal",
+        "injectEventRehearsalBehavior",
+        "resetEventRehearsal",
+        "getEventRehearsalGuestBootstrap",
+        "submitEventRehearsalGuestAction",
+        "completeEventRehearsal",
+        "expireEventRehearsals"
+      ],
+      "migrationNotes": [
+        "Actors are seed-derived synthetic identities with no UID, phone, email, booking, payment, match, message, or production attendee reference."
+      ]
+    },
+    {
+      "id": "eventRehearsalActions",
+      "path": "eventRehearsalActions/{actionId}",
+      "rulesMatch": "/eventRehearsalActions/{actionId}",
+      "typescriptInterface": "EventRehearsalActionDocument",
+      "dartModel": "lib/event_rehearsal/domain/event_rehearsal.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": ["keeps all dress rehearsal collections callable-only"],
+      "owner": "event rehearsal callables",
+      "read": "server only; Host bootstrap and reproduction export return bounded history",
+      "write": "server only with deterministic client-action deduplication",
+      "exportedFunctions": [
+        "controlEventRehearsal",
+        "injectEventRehearsalBehavior",
+        "submitEventRehearsalGuestAction",
+        "completeEventRehearsal",
+        "exportEventRehearsalReproduction",
+        "expireEventRehearsals"
+      ]
+    },
+    {
+      "id": "eventRehearsalGuestViews",
+      "path": "eventRehearsalGuestViews/{viewId}",
+      "rulesMatch": "/eventRehearsalGuestViews/{viewId}",
+      "typescriptInterface": "EventRehearsalGuestViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": ["keeps all dress rehearsal collections callable-only"],
+      "owner": "public event rehearsal guest callables",
+      "read": "server only",
+      "write": "server only; hashed slot tokens bind one browser instance to one synthetic actor",
+      "exportedFunctions": [
+        "getEventRehearsalGuestBootstrap",
+        "submitEventRehearsalGuestAction",
+        "rotateEventRehearsalGuestLink",
+        "resetEventRehearsal",
+        "expireEventRehearsals"
+      ]
+    },
+    {
       "id": "eventAttendees",
       "path": "eventAttendees/{attendeeId}",
       "rulesMatch": "/eventAttendees/{attendeeId}",

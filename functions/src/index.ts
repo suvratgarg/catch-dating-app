@@ -67,6 +67,20 @@ export {
   submitEventRuntimeProfile,
 } from "./eventSuccess/eventRuntime";
 export {
+  completeEventRehearsal,
+  controlEventRehearsal,
+  createEventRehearsal,
+  expireEventRehearsals,
+  exportEventRehearsalReproduction,
+  getEventRehearsalBootstrap,
+  getEventRehearsalGuestBootstrap,
+  injectEventRehearsalBehavior,
+  resetEventRehearsal,
+  rotateEventRehearsalGuestLink,
+  submitEventRehearsalGuestAction,
+  updateEventRehearsalSetup,
+} from "./eventRehearsal/handlers";
+export {
   onEventParticipationRosterProjected,
 } from "./events/eventAttendeeProjection";
 export {selfCheckInAttendance} from "./events/selfCheckInAttendance";

@@ -17,6 +17,9 @@ import type {CreatePublicOrganizerReviewCallableResponse} from "../../functions/
 import type {EventSuccessAssignmentDocument} from "../../functions/src/shared/generated/eventSuccessAssignmentDocument";
 import type {EventSuccessLateArrivalDocument} from "../../functions/src/shared/generated/eventSuccessLateArrivalDocument";
 import type {EventSuccessStandingsDocument} from "../../functions/src/shared/generated/eventSuccessStandingsDocument";
+import type {EventRehearsalGuestBootstrapCallableResponse} from "../../functions/src/shared/generated/eventRehearsalGuestBootstrapCallableResponse";
+import type {GetEventRehearsalGuestBootstrapCallablePayload} from "../../functions/src/shared/generated/getEventRehearsalGuestBootstrapCallablePayload";
+import type {SubmitEventRehearsalGuestActionCallablePayload} from "../../functions/src/shared/generated/submitEventRehearsalGuestActionCallablePayload";
 export {
   deriveEventSuccessMomentSeed,
   eventSuccessMomentPresentationCatalog,
@@ -99,6 +102,10 @@ export type RecordOrganizerAnalyticsEventResponse =
 export type RegisterPublicEventPayload = RegisterPublicEventCallablePayload;
 export type RegisterPublicEventResponse = RegisterPublicEventCallableResponse;
 export type EventRuntimeBootstrap = GetEventRuntimeBootstrapCallableResponse;
+export type EventRehearsalGuestBootstrap =
+  EventRehearsalGuestBootstrapCallableResponse;
+export type EventRehearsalGuestAction =
+  SubmitEventRehearsalGuestActionCallablePayload["action"];
 export type EventSuccessConversationGraph =
   GetEventSuccessConversationGraphCallableResponse;
 export type EventInviteLanding = ResolveEventInviteLandingCallableResponse;
@@ -874,6 +881,28 @@ export async function resolveEventInviteLanding(
     "resolveEventInviteLanding",
     payload,
     publicEventRegistrationFirebaseConfigured || eventRuntimeFirebaseConfigured
+  );
+}
+
+export async function getEventRehearsalGuestBootstrap(
+  payload: GetEventRehearsalGuestBootstrapCallablePayload
+): Promise<EventRehearsalGuestBootstrapCallableResponse> {
+  return invokeWebsiteCallable(
+    "getEventRehearsalGuestBootstrap",
+    payload,
+    eventRuntimeFirebaseConfigured,
+    "Event rehearsal"
+  );
+}
+
+export async function submitEventRehearsalGuestAction(
+  payload: SubmitEventRehearsalGuestActionCallablePayload
+): Promise<EventRehearsalGuestBootstrapCallableResponse> {
+  return invokeWebsiteCallable(
+    "submitEventRehearsalGuestAction",
+    payload,
+    eventRuntimeFirebaseConfigured,
+    "Event rehearsal"
   );
 }
 

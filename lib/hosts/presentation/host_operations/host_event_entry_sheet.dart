@@ -92,6 +92,8 @@ class _HostEventEntryRow extends StatelessWidget {
       context.l10n.hostsHostEventEntrySheetTitleContinueDraft,
     HostEventEntryIntent.repeatLastEvent =>
       context.l10n.hostsHostEventEntrySheetTitleRepeatLastEvent,
+    HostEventEntryIntent.dressRehearsal =>
+      context.l10n.hostEventRehearsalEntryTitle,
     HostEventEntryIntent.createWithCatchBookings =>
       context.l10n.hostsHostEventEntrySheetTitleSellTicketsWithCatch,
     HostEventEntryIntent.createFromGuestList =>
@@ -108,6 +110,8 @@ class _HostEventEntryRow extends StatelessWidget {
       context.l10n.hostsHostEventEntrySheetBodyReuseEventSetup(
         eventTitle: state.repeatSource?.title ?? '',
       ),
+    HostEventEntryIntent.dressRehearsal =>
+      context.l10n.hostEventRehearsalEntryBody,
     HostEventEntryIntent.createWithCatchBookings =>
       context.l10n.hostsHostEventEntrySheetBodyTicketsWaitlistAndPayments,
     HostEventEntryIntent.createFromGuestList =>
@@ -117,6 +121,7 @@ class _HostEventEntryRow extends StatelessWidget {
   IconData get _icon => switch (intent) {
     HostEventEntryIntent.resumeDraft => CatchIcons.editNoteRounded,
     HostEventEntryIntent.repeatLastEvent => CatchIcons.refresh,
+    HostEventEntryIntent.dressRehearsal => CatchIcons.scienceOutlined,
     HostEventEntryIntent.createWithCatchBookings =>
       CatchIcons.confirmationNumberOutlined,
     HostEventEntryIntent.createFromGuestList => CatchIcons.cloudUploadOutlined,

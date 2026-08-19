@@ -1,7 +1,7 @@
 {
   "$schema": "./website.components.schema.json",
-  "version": 94,
-  "updated": "2026-08-18",
+  "version": 95,
+  "updated": "2026-08-19",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/marketing_website_architecture.md",
@@ -15,6 +15,7 @@
       "home",
       "host",
       "event_runtime",
+      "event_rehearsal",
       "public_form",
       "claim",
       "claim_lookup",
@@ -41,6 +42,7 @@
         "home",
         "host",
         "event_runtime",
+        "event_rehearsal",
         "public_form",
         "claim",
         "claim_lookup",
@@ -3048,7 +3050,8 @@
       "id": "shared_event_runtime_shells",
       "kind": "supporting-component",
       "routeIds": [
-        "event_runtime"
+        "event_runtime",
+        "event_rehearsal"
       ],
       "owner": "shared/ui/primitives",
       "source": "website/src/shared/ui/primitives/eventRuntime.tsx",
@@ -3065,7 +3068,58 @@
           "live-module-shell"
         ]
       },
-      "notes": "Governed visual ownership for attendee runtime frame, panels, forms, consents, live header, and module cards."
+      "notes": "Governed visual ownership for attendee and rehearsal runtime frames, practice banner, panels, forms, consents, live header, action grid, notices, and module cards."
+    },
+    {
+      "id": "route_event_rehearsal",
+      "kind": "route",
+      "routeIds": [
+        "event_rehearsal"
+      ],
+      "owner": "features/eventRehearsal",
+      "source": "website/src/features/eventRehearsal/EventRehearsalPage.tsx",
+      "exportName": "EventRehearsalPage",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "story": "website/src/stories/EventRehearsal.stories.tsx",
+        "exportName": "EventRehearsalLive",
+        "states": [
+          "loading",
+          "welcome",
+          "live-moment",
+          "fault",
+          "complete",
+          "unavailable"
+        ]
+      },
+      "notes": "Noindex anonymous synthetic-guest route with deterministic browser slot redemption, virtual event updates, guest actions, persistent practice identity, and fault-aware recovery. The deterministic story is implemented; visual promotion remains planned until reviewed Darwin and pinned Linux baselines exist."
+    },
+    {
+      "id": "event_rehearsal_preview",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_rehearsal"
+      ],
+      "owner": "features/eventRehearsal",
+      "source": "website/src/features/eventRehearsal/EventRehearsalPage.tsx",
+      "exportName": "EventRehearsalPreview",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "story": "website/src/stories/EventRehearsal.stories.tsx",
+        "exportName": "EventRehearsalPreviewShell",
+        "states": [
+          "live-moment",
+          "fault",
+          "complete"
+        ]
+      },
+      "notes": "Pure guest-phone presentation used by the route and deterministic Storybook fixtures; all remote state remains in the feature controller. Visual promotion remains planned until reviewed Darwin and pinned Linux baselines exist."
     },
     {
       "id": "route_event_invite",

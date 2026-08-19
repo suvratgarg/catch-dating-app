@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.7.0
-updated: 2026-08-18
+version: 0.8.0
+updated: 2026-08-19
 owner: marketing_website
 status: active
 ---
@@ -22,6 +22,15 @@ The website is already split out of the old monolithic shell:
 - `website/src/app/App.tsx` owns the React Router shell, metadata selection,
   page-level lifecycle hooks, and route-level lazy loading.
 - `website/src/app/routeRegistry.ts` owns runtime route patterns.
+- `website/src/features/eventRehearsal/` owns the no-login
+  `/rehearse/:publicRehearsalId` synthetic guest phone. TanStack Query redeems
+  and persists one deterministic browser slot, polls the Host virtual clock,
+  caches returned guest mutations, and slows its cadence under the explicit
+  low-bandwidth fault. `EventRehearsalPreview` is the provider-free Storybook
+  and unit-test seam; it composes shared Event Runtime primitives with a
+  persistent practice banner, bounded guest actions, fault notices, and a
+  read-only completion state. Auth, OTP, production registration and private
+  Host data are deliberately absent.
 - `website/src/content/meta.json`, validated by
   `website/src/content/meta.schema.json` and
   the browser-safe `website/src/content/metaContract.ts`, owns static page

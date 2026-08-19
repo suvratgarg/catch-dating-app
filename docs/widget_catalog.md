@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 3.5.1
-updated: 2026-08-18
+version: 3.6.0
+updated: 2026-08-19
 owner: recursive_audit_loop
 status: active
 ---
@@ -355,6 +355,8 @@ Widgetbook callers.
 | `HostEventToolsCarousel` | `lib/hosts/presentation/widgets/host_event_tools.dart:22` | Shared full-width host-event carousel for unbounded hosted events, including closed past hosted events retained for host operations. It renders self-contained cards with swipe snapping and no external section header, event-count badge, or footer chrome. |
 | `HostEventsScaffold` | `lib/hosts/presentation/host_operations/host_events_scaffold.dart:3` | Canonical Host Events selected-organizer shell. Composes from `HostHomeScreenState`, owns the minute-refreshing clock and New/guest-list/Repeat/lifecycle-aware Manage/task route callbacks, and supplies the selected organizer plus typed callbacks to the single Events provider adapter. |
 | `HostClubsScaffold` | `lib/hosts/presentation/host_operations/host_clubs_scaffold.dart:3` | Host Clubs selected-club operations shell. Composes from `HostClubsScreenState`, preserves Edit / Insights / Preview tabs, owns club switching and tab callbacks, and keeps payout/team mutation capability explicit for owner and co-host selections. Host team is reached only through the canonical Club settings row; the former top-bar Settings shortcut is deleted. |
+| `EventRehearsalSetupSection` | `lib/event_rehearsal/presentation/widgets/event_rehearsal_setup_section.dart:10` | Stateful preflight editor for practice title, location, duration, Host goal, attendee prompt, scenario, actor count, and module selection. It freezes every field once the rehearsal starts and submits one explicit setup snapshot. |
+| `EventRehearsalSimulator` | `lib/event_rehearsal/presentation/widgets/event_rehearsal_simulator.dart:12` | Bounded issue-simulation console for synthetic actor behaviors and server-gated internal faults. It exposes late/no-show/early-exit/return/walk-in/claim/opt-out/keep-apart/disconnect recovery without touching a production roster. |
 
 ### State Adapters
 
@@ -383,6 +385,7 @@ Widgetbook callers.
 |---|---|---|
 | `HostClubEditController` | `lib/hosts/presentation/club_management/host_club_edit_controller.dart:18` | Host Clubs inline edit action controller. Owns `updateClubMutation`, validates signed-in host context, delegates `UpdateClubPatch` writes to `ClubsRepository.updateClub`, and lets Widgetbook/captures seed pending, generic error, and offline save states against the real expanded editor UI. |
 | `HostEventManageController` | `lib/hosts/presentation/host_event_manage_controller.dart:62` | Host Manage action controller for private invite-link, report export, and destructive host operations. Owns create/copy/disable/share/export mutation state, delegates named-link writes to `EventRepository`, routes clipboard writes through `ClipboardController`, launches private-link sharing and report CSV export through `ExternalShareController`, delegates cancel/delete to `EventBookingController`, and invalidates event, roster, and invite-link streams after mutations. |
+| `EventRehearsalController` | `lib/event_rehearsal/presentation/event_rehearsal_controller.dart:13` | Single Host rehearsal mutation owner. Delegates isolated callable actions to `EventRehearsalRepository`, supplies idempotency ids, invalidates the exact session projection, and routes guest-link/reproduction copy and share through shared side-effect controllers. |
 | `HostPaymentAccountController` | `lib/hosts/presentation/payments/host_payment_account_controller.dart:22` | Host Clubs payout action controller. Owns Stripe onboarding and refresh mutations, validates signed-in host context, delegates account link/status work to `HostPaymentAccountRepository`, opens Stripe through `ExternalLinkController`, and invalidates payout account state after refresh. |
 | `HostProfileController` | `lib/hosts/presentation/host_profile_controller.dart:9` | Host team profile action controller. Owns `ensureProfileMutation` and `saveProfileMutation`, reads the signed-in uid at the controller boundary, and delegates profile create/save writes to `HostProfileRepository`. |
 
@@ -392,6 +395,8 @@ Widgetbook callers.
 |---|---|---|
 | `HostOperationsTopBar` | `lib/hosts/presentation/host_operations/host_operations_top_bar.dart:3` | Host app top bar used by the explicit Events branch and Host Clubs. Wraps `CatchTopBar` with a mono kicker, title, optional shared action slots, and optional bottom content so host tabs can expose club pickers and tab rails without custom chrome. Widgetbook exposes standalone top-bar states under Host operations sections. |
 | `HostEventsOverviewSection` | `lib/hosts/presentation/host_operations/host_events_overview.dart:3` | Provider-free operational overview inside Host Events. Renders the live-or-next detail-rich spotlight with countdown, going/waiting/needs-you metrics, and lifecycle-aware setup/run-of-show action, followed by every truthful event-identified attention card. Organizer identity switching is shell-owned through the Organizer navigation avatar. |
+| `EventRehearsalGuestLinkSection` / `EventRehearsalRunSection` | `lib/event_rehearsal/presentation/widgets/event_rehearsal_link_and_run.dart:14` | Provider-free live guest-phone handoff and virtual-event controls. The link section copies, shares, or explicitly rotates the opaque URL; the run section derives only lifecycle-legal ready/start/pause/resume/step/time/complete actions. |
+| `EventRehearsalRosterSection` / `EventRehearsalRecapSection` | `lib/event_rehearsal/presentation/widgets/event_rehearsal_simulator.dart:173` | Provider-free synthetic room and deterministic recap. Roster rows expose statuses and help/opt-out/prompt signals; recap exposes bounded action history, seed/revision identity, reset, fork, and reproduction export. |
 | `HostEventsOverviewContent` | `lib/hosts/presentation/host_operations/host_events_overview.dart:34` | Provider-free content branch behind `HostEventsOverviewSection`; composes the selected operational spotlight and all event-identified attention work once route state confirms content is available. |
 | `HostEventOperationalSpotlight` | `lib/hosts/presentation/host_operations/host_events_overview.dart:235` | Detail-rich live-or-next event hero migrated from the former Today screen. Owns event timing, capacity and attention metrics plus the lifecycle-aware setup or run-of-show action without reading providers or routes. |
 | `HostEventOperationalMetric` | `lib/hosts/presentation/host_operations/host_events_overview.dart:364` | Small provider-free labeled metric used by the operational spotlight for going, waiting, and needs-you counts. |
@@ -455,6 +460,7 @@ Widgetbook callers.
 | `HostClubTeamScreen` | `lib/hosts/presentation/host_operations/host_club_team_screen.dart:3` | Canonical club-scoped Host team workspace registered as `screen.host.clubs`. It resolves uid/profile/hosted-club waves into `HostTeamWorkspaceState`, owns Edit / Preview and profile form controllers, composes professional profile, selected-club team management, and hosted-club navigation, keeps owner-only team mutations in Edit, places sign out in a separate terminal Edit row, and preserves explicit back navigation with an Organizer fallback. |
 | `HostClubInsightsState` | `lib/hosts/presentation/host_operations_screen_state.dart:122` | Immutable Host Clubs analytics query state. Owns only selected club id and the 30-day, 90-day, or 12-month preset; bucket granularity is derived and event-scoping/custom-date state has been retired. |
 | `HostClubInsightsPane` | `lib/hosts/presentation/host_operations/host_analytics.dart:17` | Canonical Host Clubs Insights-tab adapter. Derives the timezone-aware query, watches the timed keep-alive provider, owns preset selection and exact retry/refresh invalidation, threads club currency into the report, and supplies default navigation to an event Report or the Host Events workspace. |
+| `HostEventRehearsalStartScreen` / `HostEventRehearsalScreen` | `lib/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart:21` | First-class Host dress-rehearsal routes registered as `screen.host.event.rehearsal`. The start route chooses a safe sample or source-event snapshot, scenario, and actor count; the console owns async projection/error state and composes frozen setup, guest phone, virtual controls, simulation, synthetic roster, and recap with persistent practice identity. |
 
 ---
 

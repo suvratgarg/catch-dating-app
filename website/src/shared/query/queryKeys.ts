@@ -13,6 +13,14 @@ export const websiteQueryKeys = {
       [...websiteQueryKeys.all, "event-runtime", "conversation-graph",
         eventId ?? "none"] as const,
   },
+  eventRehearsal: {
+    guest: (publicRehearsalId: string) =>
+      [...websiteQueryKeys.all, "event-rehearsal", "guest",
+        publicRehearsalId] as const,
+    action: (publicRehearsalId: string) =>
+      [...websiteQueryKeys.all, "event-rehearsal", "action",
+        publicRehearsalId] as const,
+  },
   hostApplications: {
     submit: () => [...websiteQueryKeys.all, "host-applications", "submit"] as const,
   },

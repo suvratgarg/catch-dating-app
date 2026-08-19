@@ -41,6 +41,7 @@ options when specific functions need higher or lower limits.
 | `registerPublicEvent` | `src/events/eventAttendees.ts` | Phone-OTP public registration for profile-optional, free, open-admission events |
 | `createEventRosterHandoff` | `src/events/eventRosterHandoffs.ts` | Create a short-lived, capability-bound email or WhatsApp roster-forwarding handoff for a Host event |
 | `getEventRuntimeBootstrap` / `claimEventRuntimeAccess` / `submitEventRuntimeProfile` / `checkInEventRuntime` / `approveEventRuntimeClaim` | `src/eventSuccess/eventRuntime.ts` | Run the no-download attendee bootstrap, verified roster claim or Host approval, event-scoped intake, and check-in workflow |
+| `createEventRehearsal` / `getEventRehearsalBootstrap` / `updateEventRehearsalSetup` / `controlEventRehearsal` / `injectEventRehearsalBehavior` / `resetEventRehearsal` / `rotateEventRehearsalGuestLink` / `getEventRehearsalGuestBootstrap` / `submitEventRehearsalGuestAction` / `completeEventRehearsal` / `exportEventRehearsalReproduction` | `src/eventRehearsal/` | Create and operate an isolated, deterministic Host dress rehearsal plus its anonymous synthetic-guest phone view |
 | `createEventVenueSession` | `src/events/venueSessions.ts` | Create a short-lived signed venue session for attendee self-check-in |
 | `getEventSuccessPresenceSummary` / `heartbeatEventSuccessPresence` | `src/eventSuccess/presence.ts` | Maintain private attendee liveness and return the Host-safe presence summary |
 | `resolveEventSuccessLateArrival` | `src/eventSuccess/lateArrivals.ts` | Record a revision-fenced Host resolution for a late or returning attendee |
@@ -159,6 +160,7 @@ options when specific functions need higher or lower limits.
 | `expireCrossPathsPairHolds` | `src/crossPaths/` | Every 5 minutes — releases expired companion reservations and invalidates their invitation receipt |
 | `dispatchScheduledOrganizerCampaigns` | `src/organizers/organizerCampaignDispatcher.ts` | Dispatches due, approved organizer campaign snapshots |
 | `dispatchPendingOrganizerFollowerUpdates` | `src/organizers/organizerPostDelivery.ts` | Every 5 minutes — resumes pending or expired-lease follower Activity delivery without duplicate push attempts |
+| `expireEventRehearsals` | `src/eventRehearsal/` | Hourly deletion of expired rehearsal sessions and isolated child projections |
 
 ### Storage-triggered
 

@@ -4,13 +4,13 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "05c296bee40471f1b81989c202403f2894caa54fb1852acc76366d068e9c858e",
-    "routeContractSha256": "491053db2e29a29a72916127a46782ef3fef2a167fbea9d10640e6b20075b581",
-    "goRouteCount": 65,
+    "normalizedFileSha256": "3a9ebb19dae374bc6ee3aec93549f8c892138c39822e79f993c2309d9dbdc789",
+    "routeContractSha256": "486722d1b6620224138fd7ee4ef8dc72c11c46ef18e6f6f3e56c7236c5b74a00",
+    "goRouteCount": 67,
     "shellBranchCount": 9,
-    "enumRouteCount": 64,
-    "referencedRouteCount": 64,
-    "runtimeRouteCount": 64,
+    "enumRouteCount": 66,
+    "referencedRouteCount": 66,
+    "runtimeRouteCount": 66,
     "routeHelperCount": 2,
     "routeHelpers": [
       "_hostUtilityRoutes",
@@ -758,6 +758,35 @@
       "referencedByGoRouter": true
     },
     {
+      "id": "hostEventRehearsalStartScreen",
+      "path": "/host/organizers/:clubId/rehearsals/new",
+      "pathParameters": [
+        "clubId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/organizers/:clubId/rehearsals/new",
+      "runtimeParentId": "hostClubDetailScreen",
+      "runtimePathExpression": "'rehearsals/new'",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostEventRehearsalScreen",
+      "path": "/host/organizers/:clubId/rehearsals/:sessionId",
+      "pathParameters": [
+        "clubId",
+        "sessionId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/organizers/:clubId/rehearsals/:sessionId",
+      "runtimeParentId": "hostClubDetailScreen",
+      "runtimePathExpression": "'rehearsals/:sessionId'",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
       "id": "hostAppEventDetailScreen",
       "path": "/host/organizers/:clubId/events/:eventId",
       "pathParameters": [
@@ -894,6 +923,8 @@
     "hostCustomerDetailScreen",
     "hostCustomersScreen",
     "hostEditClubScreen",
+    "hostEventRehearsalScreen",
+    "hostEventRehearsalStartScreen",
     "hostEventsScreen",
     "hostFormAnalyticsScreen",
     "hostFormAutomationsScreen",

@@ -1,7 +1,7 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.26.0
-updated: 2026-08-18
+version: 1.27.0
+updated: 2026-08-19
 owner: recursive_audit_loop
 status: active
 ---
@@ -154,6 +154,11 @@ is `docs/migrations/clubs_to_organizers.md`.
 | Function | Type | Initiator | Writes | Notes |
 |---|---|---|---|---|
 | `updateUserProfile` | Callable | `UserProfileRepository.updateUserProfile` | `users/{uid}` | Validates profile patches with generated Ajv contract validators; owns complex profile edits after initial create; rate-limited at 60/minute. Verified phone is excluded from the patch contract and initial profile creation must match the Firebase Auth phone claim. |
+| `createEventRehearsal` / `getEventRehearsalBootstrap` / `updateEventRehearsalSetup` | Callable | Flutter `EventRehearsalRepository` | `eventRehearsals`, synthetic `eventRehearsalActors`; creation may read one authorized `events` source | App-Check-protected organizer-manager boundary. Creation enforces five active sessions and 50 actors, snapshots only safe source fields or a sample, and initializes a 24-hour deterministic room. Setup is revision-fenced and freezes after start. No production collection is written. |
+| `controlEventRehearsal` / `injectEventRehearsalBehavior` / `completeEventRehearsal` | Callable | Flutter Host rehearsal console | Rehearsal session, synthetic actors, idempotent `eventRehearsalActions` | Revision-fenced virtual-clock reducer with 500-action cap and stable client-action deduplication. It covers lifecycle/step/time controls plus late/no-show/leave/return/walk-in/claim/opt-out/keep-apart/disconnect behavior. Advanced transport/data faults require internal/admin authorization. |
+| `resetEventRehearsal` / `rotateEventRehearsalGuestLink` / `exportEventRehearsalReproduction` | Callable | Flutter Host rehearsal recap and guest-link controls | Rehearsal-only reset/fork/link generation; bounded read-only reproduction export | Reset reproduces the current seed, fork creates a new room without changing the source, link rotation invalidates prior browser slots, and export returns only bounded rehearsal setup, actor, revision, and action evidence. |
+| `getEventRehearsalGuestBootstrap` / `submitEventRehearsalGuestAction` | Public callable | React `/rehearse/:publicRehearsalId` | One `eventRehearsalGuestViews` browser lease and its synthetic actor/action | No Auth or OTP. A high-entropy public id plus stable browser instance redeems one deterministic actor; hashed slot tokens authorize only bounded arrival, opt-out, help, and prompt-completion changes in the rehearsal domain. |
+| `expireEventRehearsals` | Hourly scheduled function | Backend | Deletes expired rehearsal sessions and bounded actor/action/guest-view children | Enforces the 24-hour retention boundary; collection caps keep one expiry batch bounded. |
 | `onEventParticipationRosterProjected` | Firestore trigger on `eventParticipations/{participationId}` writes | Backend | `eventAttendees/{attendeeId}` | Uses Firebase Auth phone only as an event-scoped convergence key for a row the organizer already supplied. A Catch booking projects public display identity and operational status but never copies private-profile phone or email into Host data. |
 | `syncPublicProfile` | Firestore trigger on `users/{uid}` writes | Backend | `publicProfiles/{uid}` set/delete, authored `reviews/{reviewId}.reviewerName` updates | Sole owner of dating/user-identity projections. Uses `displayName`, then first name, then legacy fallback; projects grouped `profilePhotos` and nested `activityPreferences.running`. It must not update organizer-manager identity. Existing stale public profiles can be repaired with `node tool/data/recompute_public_profiles.mjs --env dev --apply`; existing stale review author names can be repaired with `node tool/data/recompute_review_author_profiles.mjs --env dev --apply` after `npm --prefix functions run build`. |
 | `syncHostProfile` | Firestore trigger on `hostProfiles/{uid}` writes | Backend | hosted `organizers/{organizerId}.hostName`, `hostAvatarUrl`, `hostProfiles[]` plus legacy club shadow | Sole owner of professional host display projections. Uses `hostProfiles/{uid}` only, never the dating public/private profile. |

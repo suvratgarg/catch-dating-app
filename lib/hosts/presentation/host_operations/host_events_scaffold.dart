@@ -136,6 +136,11 @@ class _HostEventsScaffoldState extends ConsumerState<HostEventsScaffold> {
         final source = state.repeatSource;
         if (source == null) return;
         await _openRepeatEvent(club, source);
+      case HostEventEntryIntent.dressRehearsal:
+        await context.pushNamed(
+          Routes.hostEventRehearsalStartScreen.name,
+          pathParameters: {'clubId': club.id},
+        );
       case HostEventEntryIntent.createWithCatchBookings:
         await _openCreateEvent(club);
       case HostEventEntryIntent.createFromGuestList:

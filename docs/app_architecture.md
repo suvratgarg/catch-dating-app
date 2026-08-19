@@ -196,6 +196,33 @@ Allowed exceptions:
 - Intentional in-development feature folders documented by audit rules, such
   as `event_policies` and `event_success`.
 
+### Event Dress Rehearsal Boundary
+
+`lib/event_rehearsal/` is the first-class Host practice capability. Its two
+Host routes create a room and operate preparation, virtual live controls,
+synthetic guest behavior, issue simulation, and recap. The feature follows the
+ordinary domain/data/presentation split, owns one Functions repository and one
+Riverpod action controller, and is registered as
+`screen.host.event.rehearsal` plus `feature.event_rehearsal`.
+
+The rehearsal may copy bounded descriptive fields from a real event once at
+creation, or use a safe sample. After that snapshot it must not call an Event,
+participation, CRM, messaging, payment, matching, or Event Success mutation
+repository. Setup becomes immutable after start. Runtime changes are
+revision-fenced, carry client action ids, advance a virtual clock, and operate
+only on seeded synthetic actors. Internal transport/data faults require the
+server's internal/admin capability; normal Hosts always retain the product
+behavior scenarios.
+
+The Host console receives only the rehearsal projection and an opaque public
+guest URL. `/rehearse/:publicRehearsalId` is a separate React surface that
+redeems a deterministic browser slot without Auth or OTP and can mutate only
+that slot's synthetic actor. A persistent practice banner is content, not an
+unavailable menu row. Reset preserves the seed, fork preserves the original,
+and reproduction export contains bounded setup, actor, revision, and action
+history rather than production identifiers or PII. Direct Firestore access to
+all rehearsal collections remains denied.
+
 ### Exhibit ARCH-ROUTER-LIFECYCLE-001: App Router And Integration-Test Lifecycle
 
 `goRouterProvider` owns both its `GoRouter` disposal and a fresh set of
@@ -1963,7 +1990,7 @@ Current roles:
 | Role | Owns | Must not own |
 |---|---|---|
 | `consumer` | dating profile, discovery, booking, attendance, post-event reactions, matching, consumer chats, settings | host event creation/editing/manage tools, host-only club operations, professional host account setup |
-| `host` | phone-OTP host shell on mobile and web, private organizer/event quick start, external roster import/manual entry, unified event operations, Event Success host tooling, reviews, analytics, publishing/payment readiness, host inbox and professional host identity | dating browse/match surfaces, dating-profile editing as a prerequisite for host work, consumer-only social readiness gates, a dependency on Catch owning event registration |
+| `host` | phone-OTP host shell on mobile and web, private organizer/event quick start, event dress rehearsal, external roster import/manual entry, unified event operations, Event Success host tooling, reviews, analytics, publishing/payment readiness, host inbox and professional host identity | dating browse/match surfaces, dating-profile editing as a prerequisite for host work, consumer-only social readiness gates, a dependency on Catch owning event registration |
 
 Rules:
 

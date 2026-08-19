@@ -4216,6 +4216,25 @@ describe("firestore.rules", () => {
       }
     });
 
+    it("keeps all dress rehearsal collections callable-only", async () => {
+      const collections = [
+        "eventRehearsals",
+        "eventRehearsalActors",
+        "eventRehearsalActions",
+        "eventRehearsalGuestViews",
+      ];
+      for (const collectionName of collections) {
+        await seed([collectionName, "practice-1"], {sessionId: "practice-1"});
+        const reference = doc(
+          authedDb("host-1", {admin: true}),
+          collectionName,
+          "practice-1",
+        );
+        await assertFails(getDoc(reference));
+        await assertFails(setDoc(reference, {sessionId: "practice-1"}));
+      }
+    });
+
     it("hides blocked matches from participants", async () => {
       await seed(["matches", "match-1"], {
         user1Id: "user-1",

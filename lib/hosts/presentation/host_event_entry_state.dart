@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 enum HostEventEntryIntent {
   resumeDraft,
   repeatLastEvent,
+  dressRehearsal,
   createWithCatchBookings,
   createFromGuestList,
 }
@@ -64,6 +65,7 @@ class HostEventEntryState {
         if (matchingRepeatSource != null) HostEventEntryIntent.repeatLastEvent,
       ]),
       startIntents: const <HostEventEntryIntent>[
+        HostEventEntryIntent.dressRehearsal,
         HostEventEntryIntent.createWithCatchBookings,
         HostEventEntryIntent.createFromGuestList,
       ],

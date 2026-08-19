@@ -20,6 +20,13 @@
       "twitterDescription": "No-download live event tools for a Catch-powered room.",
       "robots": "noindex, follow"
     },
+    "event_rehearsal": {
+      "title": "Event dress rehearsal | Catch",
+      "description": "Open a synthetic guest phone for a Catch event dress rehearsal. Practice activity never changes a real event or guest.",
+      "canonicalPath": "/rehearse/",
+      "twitterDescription": "A safe, no-download guest view for a Catch event dress rehearsal.",
+      "robots": "noindex, follow"
+    },
     "event_invite": {
       "title": "Event invitation | Catch",
       "description": "Open a private event invitation and continue to its verified registration or event-mode destination.",

@@ -1288,6 +1288,25 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Dress rehearsal is a separate callable-only product domain. Hosts and
+    // anonymous guests receive bounded projections from Functions; no client
+    // can use rehearsal state as a path into live event or attendee data.
+    match /eventRehearsals/{sessionId} {
+      allow read, write: if false;
+    }
+
+    match /eventRehearsalActors/{actorId} {
+      allow read, write: if false;
+    }
+
+    match /eventRehearsalActions/{actionId} {
+      allow read, write: if false;
+    }
+
+    match /eventRehearsalGuestViews/{viewId} {
+      allow read, write: if false;
+    }
+
     // Hosts review only the claim queue for events they manage. Claimants get
     // their sanitized state through the bootstrap callable, not roster clues.
     match /eventRuntimeClaimRequests/{requestId} {

@@ -159,6 +159,23 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   checkInEventRuntime: {maxRequests: 20, windowMs: 60 * 1000},
   createEventVenueSession: {maxRequests: 30, windowMs: 60 * 1000},
   approveEventRuntimeClaim: {maxRequests: 60, windowMs: 60 * 1000},
+  createEventRehearsal: {maxRequests: 10, windowMs: 60 * 60 * 1000},
+  getEventRehearsalBootstrap: {maxRequests: 90, windowMs: 60 * 1000},
+  updateEventRehearsalSetup: {maxRequests: 30, windowMs: 60 * 1000},
+  controlEventRehearsal: {maxRequests: 120, windowMs: 60 * 1000},
+  injectEventRehearsalBehavior: {maxRequests: 120, windowMs: 60 * 1000},
+  resetEventRehearsal: {maxRequests: 10, windowMs: 60 * 1000},
+  rotateEventRehearsalGuestLink: {maxRequests: 10, windowMs: 60 * 1000},
+  getEventRehearsalGuestBootstrap: {
+    maxRequests: 90,
+    windowMs: 60 * 1000,
+  },
+  submitEventRehearsalGuestAction: {maxRequests: 60, windowMs: 60 * 1000},
+  completeEventRehearsal: {maxRequests: 10, windowMs: 60 * 1000},
+  exportEventRehearsalReproduction: {
+    maxRequests: 30,
+    windowMs: 60 * 1000,
+  },
   // Broadcasts can fan out to hundreds of people, so cap them per host rather
   // than inheriting the loose default callable limit.
   sendEventBroadcast: {maxRequests: 3, windowMs: 60 * 60 * 1000},

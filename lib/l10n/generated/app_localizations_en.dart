@@ -15355,4 +15355,471 @@ class AppLocalizationsEn extends AppLocalizations {
   }) {
     return 'Step $step of $total. Open section overview.';
   }
+
+  @override
+  String get hostEventRehearsalEntryTitle => 'Run a dress rehearsal';
+
+  @override
+  String get hostEventRehearsalEntryBody =>
+      'Practice the Host and guest experience with synthetic people. Nothing touches a real event.';
+
+  @override
+  String get hostEventRehearsalTitle => 'Dress rehearsal';
+
+  @override
+  String get hostEventRehearsalPracticeBanner =>
+      'Practice mode · No real guests, messages, payments, matches, or event records are changed';
+
+  @override
+  String get hostEventRehearsalStartSubtitle =>
+      'Choose a room to practice. You can change the rehearsal copy and playbook before starting.';
+
+  @override
+  String get hostEventRehearsalSourceEvent => 'Practice this event';
+
+  @override
+  String get hostEventRehearsalSourceSample => 'Catch sample event';
+
+  @override
+  String get hostEventRehearsalScenario => 'Practice scenario';
+
+  @override
+  String hostEventRehearsalActorCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count synthetic guests',
+      one: '1 synthetic guest',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostEventRehearsalActorCountBody =>
+      'Use a realistic roster. Rehearsals are capped at 50 synthetic guests.';
+
+  @override
+  String get hostEventRehearsalCreate => 'Create rehearsal';
+
+  @override
+  String get hostEventRehearsalExpiry =>
+      'This rehearsal and its guest link expire after 24 hours.';
+
+  @override
+  String get hostEventRehearsalScenarioSmoothRun => 'Smooth run';
+
+  @override
+  String get hostEventRehearsalScenarioSmoothRunBody =>
+      'A cooperative room for learning the normal Host and guest flow.';
+
+  @override
+  String get hostEventRehearsalScenarioLateAndNoShow =>
+      'Late arrivals and no-shows';
+
+  @override
+  String get hostEventRehearsalScenarioLateAndNoShowBody =>
+      'Recover when expected guests are missing or arrive after groups begin.';
+
+  @override
+  String get hostEventRehearsalScenarioEarlyExitAndReturn =>
+      'Early exit and return';
+
+  @override
+  String get hostEventRehearsalScenarioEarlyExitAndReturnBody =>
+      'Rebalance when a guest leaves early and another returns later.';
+
+  @override
+  String get hostEventRehearsalScenarioRosterAndCapacity =>
+      'Odd roster and capacity';
+
+  @override
+  String get hostEventRehearsalScenarioRosterAndCapacityBody =>
+      'Expose odd-sized groups, tight capacity, and unassigned guests.';
+
+  @override
+  String get hostEventRehearsalScenarioWalkInAndAmbiguousClaim =>
+      'Walk-in and ambiguous claim';
+
+  @override
+  String get hostEventRehearsalScenarioWalkInAndAmbiguousClaimBody =>
+      'Admit a walk-in and resolve two similar roster identities.';
+
+  @override
+  String get hostEventRehearsalScenarioPrivacyAndKeepApart =>
+      'Privacy and keep-apart';
+
+  @override
+  String get hostEventRehearsalScenarioPrivacyAndKeepApartBody =>
+      'Respect an opt-out and a safety keep-apart constraint while preserving flow.';
+
+  @override
+  String get hostEventRehearsalScenarioLowConnectivity => 'Low connectivity';
+
+  @override
+  String get hostEventRehearsalScenarioLowConnectivityBody =>
+      'Continue through disconnects, delayed updates, and reconnection.';
+
+  @override
+  String get hostEventRehearsalScenarioConcurrentHosts =>
+      'Two hosts, one revision';
+
+  @override
+  String get hostEventRehearsalScenarioConcurrentHostsBody =>
+      'See how stale Host actions are rejected and recovered safely.';
+
+  @override
+  String get hostEventRehearsalScenarioRevealInterrupted =>
+      'Reveal interrupted';
+
+  @override
+  String get hostEventRehearsalScenarioRevealInterruptedBody =>
+      'Pause and recover around a reveal or round transition.';
+
+  @override
+  String get hostEventRehearsalScenarioExternalProfiles =>
+      'External and incomplete profiles';
+
+  @override
+  String get hostEventRehearsalScenarioExternalProfilesBody =>
+      'Exercise no-download guests and deliberately sparse participant data.';
+
+  @override
+  String get hostEventRehearsalScenarioAccountabilitySweep =>
+      'Accountability sweep';
+
+  @override
+  String get hostEventRehearsalScenarioAccountabilitySweepBody =>
+      'Finish with unresolved checked-in, departed, and disconnected guests.';
+
+  @override
+  String get hostEventRehearsalGuestLinkTitle => 'Live guest phone';
+
+  @override
+  String get hostEventRehearsalGuestLinkBody =>
+      'Open this link on another phone. It gets an anonymous synthetic guest and follows the virtual event live.';
+
+  @override
+  String get hostEventRehearsalCopyLink => 'Copy link';
+
+  @override
+  String get hostEventRehearsalShareLink => 'Share link';
+
+  @override
+  String get hostEventRehearsalRotateLink => 'Replace link';
+
+  @override
+  String get hostEventRehearsalSetupTitle => 'Practice setup';
+
+  @override
+  String get hostEventRehearsalSetupFrozen =>
+      'Setup is frozen after Start. Reset or fork to change it.';
+
+  @override
+  String get hostEventRehearsalFieldTitle => 'Practice event name';
+
+  @override
+  String get hostEventRehearsalFieldLocation => 'Practice location';
+
+  @override
+  String get hostEventRehearsalFieldGoal => 'Host goal';
+
+  @override
+  String get hostEventRehearsalFieldPrompt => 'Guest prompt';
+
+  @override
+  String get hostEventRehearsalRunTitle => 'Virtual event';
+
+  @override
+  String get hostEventRehearsalStart => 'Start';
+
+  @override
+  String get hostEventRehearsalPause => 'Pause';
+
+  @override
+  String get hostEventRehearsalResume => 'Resume';
+
+  @override
+  String get hostEventRehearsalPrevious => 'Previous';
+
+  @override
+  String get hostEventRehearsalNext => 'Next moment';
+
+  @override
+  String get hostEventRehearsalAdvanceFive => '+5 min';
+
+  @override
+  String get hostEventRehearsalAdvanceFifteen => '+15 min';
+
+  @override
+  String get hostEventRehearsalComplete => 'Complete run';
+
+  @override
+  String get hostEventRehearsalSimulationTitle => 'Issue simulator';
+
+  @override
+  String get hostEventRehearsalSimulationBody =>
+      'Choose a synthetic guest, then inject a realistic behavior. Automatic scenario cues also fire when the virtual clock crosses them.';
+
+  @override
+  String get hostEventRehearsalSimulationUnavailable =>
+      'Start the virtual event to inject guest behavior. Completed runs can be reset or forked.';
+
+  @override
+  String get hostEventRehearsalChooseGuest => 'Synthetic guest';
+
+  @override
+  String get hostEventRehearsalChooseIssue => 'Inject issue';
+
+  @override
+  String get hostEventRehearsalRosterTitle => 'Synthetic room';
+
+  @override
+  String hostEventRehearsalRoomSummary({
+    required int present,
+    required int total,
+    required int unresolved,
+  }) {
+    return '$present present · $total expected · $unresolved unresolved';
+  }
+
+  @override
+  String get hostEventRehearsalQaFaultsTitle => 'Internal QA faults';
+
+  @override
+  String get hostEventRehearsalQaFaultsBody =>
+      'Inject transport, revision, duplicate-delivery, legacy, motion, and bandwidth failures without touching production entities.';
+
+  @override
+  String get hostEventRehearsalRecapTitle => 'Practice recap';
+
+  @override
+  String hostEventRehearsalRecapBody({
+    required int actions,
+    required int seed,
+    required int revision,
+  }) {
+    return '$actions actions recorded · seed $seed · revision $revision';
+  }
+
+  @override
+  String get hostEventRehearsalReset => 'Reset run';
+
+  @override
+  String get hostEventRehearsalFork => 'Fork setup';
+
+  @override
+  String get hostEventRehearsalExport => 'Copy reproduction';
+
+  @override
+  String get hostEventRehearsalRecentActions => 'Recent simulated actions';
+
+  @override
+  String get hostEventRehearsalBehaviorArrive => 'Arrives now';
+
+  @override
+  String get hostEventRehearsalBehaviorArriveLate => 'Arrives late';
+
+  @override
+  String get hostEventRehearsalBehaviorNoShow => 'Becomes a no-show';
+
+  @override
+  String get hostEventRehearsalBehaviorLeaves => 'Leaves early';
+
+  @override
+  String get hostEventRehearsalBehaviorReturns => 'Returns';
+
+  @override
+  String get hostEventRehearsalBehaviorWalkIn => 'Walks in';
+
+  @override
+  String get hostEventRehearsalBehaviorAmbiguous => 'Claims an ambiguous name';
+
+  @override
+  String get hostEventRehearsalBehaviorResolve => 'Resolve claim';
+
+  @override
+  String get hostEventRehearsalBehaviorOptOut => 'Opts out';
+
+  @override
+  String get hostEventRehearsalBehaviorOptIn => 'Opts back in';
+
+  @override
+  String get hostEventRehearsalBehaviorKeepApart => 'Adds keep-apart';
+
+  @override
+  String get hostEventRehearsalBehaviorDisconnect => 'Loses connection';
+
+  @override
+  String get hostEventRehearsalBehaviorReconnect => 'Reconnects';
+
+  @override
+  String get hostEventRehearsalFaultNone => 'No injected fault';
+
+  @override
+  String get hostEventRehearsalFaultLatency => 'Artificial latency';
+
+  @override
+  String get hostEventRehearsalFaultOneShot => 'One-shot failure';
+
+  @override
+  String get hostEventRehearsalFaultDisconnect => 'Listener disconnect';
+
+  @override
+  String get hostEventRehearsalFaultStaleRevision => 'Stale revision';
+
+  @override
+  String get hostEventRehearsalFaultDuplicate => 'Duplicate delivery';
+
+  @override
+  String get hostEventRehearsalFaultLegacy => 'Legacy fixture';
+
+  @override
+  String get hostEventRehearsalFaultReducedMotion => 'Reduced motion';
+
+  @override
+  String get hostEventRehearsalFaultLowBandwidth => 'Low bandwidth';
+
+  @override
+  String get hostEventRehearsalStatusExpected => 'Expected';
+
+  @override
+  String get hostEventRehearsalStatusPresent => 'Present';
+
+  @override
+  String get hostEventRehearsalStatusLate => 'Late';
+
+  @override
+  String get hostEventRehearsalStatusNoShow => 'No-show';
+
+  @override
+  String get hostEventRehearsalStatusDeparted => 'Departed';
+
+  @override
+  String get hostEventRehearsalStatusReturned => 'Returned';
+
+  @override
+  String get hostEventRehearsalStatusDisconnected => 'Disconnected';
+
+  @override
+  String get hostEventRehearsalStatusWalkIn => 'Walk-in';
+
+  @override
+  String get hostEventRehearsalStatusAmbiguous => 'Claim needs review';
+
+  @override
+  String get hostEventRehearsalSignalHelp => 'Help requested';
+
+  @override
+  String get hostEventRehearsalSignalPromptComplete => 'Prompt complete';
+
+  @override
+  String get hostEventRehearsalModules => 'Event Success playbook';
+
+  @override
+  String get hostEventRehearsalModuleArrival => 'Arrival';
+
+  @override
+  String get hostEventRehearsalModuleFirstHello => 'First Hello';
+
+  @override
+  String get hostEventRehearsalModulePods => 'Pods';
+
+  @override
+  String get hostEventRehearsalModuleRotations => 'Rotations';
+
+  @override
+  String get hostEventRehearsalModuleCues => 'Conversation cues';
+
+  @override
+  String get hostEventRehearsalModuleReveal => 'Reveal';
+
+  @override
+  String get hostEventRehearsalModuleAfterglow => 'Afterglow';
+
+  @override
+  String get hostEventRehearsalModuleAccountability => 'Accountability';
+
+  @override
+  String get hostEventRehearsalDuration => 'Practice duration';
+
+  @override
+  String hostEventRehearsalMoment({required int current, required int total}) {
+    return 'Moment $current of $total';
+  }
+
+  @override
+  String hostEventRehearsalClock({required String time}) {
+    return 'Virtual time · $time';
+  }
+
+  @override
+  String get hostEventRehearsalApplyIssue => 'Apply issue';
+
+  @override
+  String get hostEventRehearsalChooseFault => 'Injected fault';
+
+  @override
+  String get hostEventRehearsalLinkCopied => 'Practice guest link copied';
+
+  @override
+  String get hostEventRehearsalRotateLinkBody =>
+      'The current link and every connected practice phone will stop working.';
+
+  @override
+  String get hostEventRehearsalResetBody =>
+      'This clears the simulated room and action history, then rebuilds the same deterministic roster.';
+
+  @override
+  String get hostEventRehearsalReproductionCopied =>
+      'Deterministic reproduction copied';
+
+  @override
+  String get hostEventRehearsalActionMarkReady => 'Marks room ready';
+
+  @override
+  String get hostEventRehearsalActionAdvance => 'Advances moment';
+
+  @override
+  String get hostEventRehearsalActionPrevious => 'Returns to previous moment';
+
+  @override
+  String get hostEventRehearsalActionAdvanceClock => 'Advances virtual time';
+
+  @override
+  String get hostEventRehearsalActionCheckIn => 'Checks in';
+
+  @override
+  String get hostEventRehearsalActionConfirmArrival => 'Confirms arrival';
+
+  @override
+  String get hostEventRehearsalActionAskForHelp => 'Requests Host help';
+
+  @override
+  String get hostEventRehearsalActionCompletePrompt => 'Completes prompt';
+
+  @override
+  String get hostEventRehearsalActionUnknown => 'Simulated action';
+
+  @override
+  String get hostEventRehearsalActionKindControl => 'Host control';
+
+  @override
+  String get hostEventRehearsalActionKindBehavior => 'Simulated issue';
+
+  @override
+  String get hostEventRehearsalActionKindGuest => 'Guest phone';
+
+  @override
+  String get hostEventRehearsalActionKindSetup => 'Practice setup';
+
+  @override
+  String get hostEventRehearsalActionKindSystem => 'Practice system';
+
+  @override
+  String hostEventRehearsalActionRevision({
+    required String kind,
+    required int revision,
+  }) {
+    return '$kind · revision $revision';
+  }
 }

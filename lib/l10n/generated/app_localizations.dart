@@ -24189,6 +24189,827 @@ abstract class AppLocalizations {
     required int step,
     required int total,
   });
+
+  /// Starts a safe rehearsal from the Host event entry sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Run a dress rehearsal'**
+  String get hostEventRehearsalEntryTitle;
+
+  /// Explains rehearsal isolation in the Host entry sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice the Host and guest experience with synthetic people. Nothing touches a real event.'**
+  String get hostEventRehearsalEntryBody;
+
+  /// Event rehearsal route title.
+  ///
+  /// In en, this message translates to:
+  /// **'Dress rehearsal'**
+  String get hostEventRehearsalTitle;
+
+  /// Persistent rehearsal safety banner.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice mode · No real guests, messages, payments, matches, or event records are changed'**
+  String get hostEventRehearsalPracticeBanner;
+
+  /// Rehearsal creation guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a room to practice. You can change the rehearsal copy and playbook before starting.'**
+  String get hostEventRehearsalStartSubtitle;
+
+  /// Existing-event rehearsal source label.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice this event'**
+  String get hostEventRehearsalSourceEvent;
+
+  /// Sample-template rehearsal source label.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch sample event'**
+  String get hostEventRehearsalSourceSample;
+
+  /// Rehearsal scenario field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice scenario'**
+  String get hostEventRehearsalScenario;
+
+  /// Synthetic rehearsal guest count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 synthetic guest} other{{count} synthetic guests}}'**
+  String hostEventRehearsalActorCount({required int count});
+
+  /// Explains actor-count bounds.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a realistic roster. Rehearsals are capped at 50 synthetic guests.'**
+  String get hostEventRehearsalActorCountBody;
+
+  /// Creates an isolated rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Create rehearsal'**
+  String get hostEventRehearsalCreate;
+
+  /// Rehearsal retention notice.
+  ///
+  /// In en, this message translates to:
+  /// **'This rehearsal and its guest link expire after 24 hours.'**
+  String get hostEventRehearsalExpiry;
+
+  /// Happy-path rehearsal scenario title.
+  ///
+  /// In en, this message translates to:
+  /// **'Smooth run'**
+  String get hostEventRehearsalScenarioSmoothRun;
+
+  /// Happy-path rehearsal scenario summary.
+  ///
+  /// In en, this message translates to:
+  /// **'A cooperative room for learning the normal Host and guest flow.'**
+  String get hostEventRehearsalScenarioSmoothRunBody;
+
+  /// Late arrival scenario title.
+  ///
+  /// In en, this message translates to:
+  /// **'Late arrivals and no-shows'**
+  String get hostEventRehearsalScenarioLateAndNoShow;
+
+  /// Late arrival scenario summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Recover when expected guests are missing or arrive after groups begin.'**
+  String get hostEventRehearsalScenarioLateAndNoShowBody;
+
+  /// Early exit scenario title.
+  ///
+  /// In en, this message translates to:
+  /// **'Early exit and return'**
+  String get hostEventRehearsalScenarioEarlyExitAndReturn;
+
+  /// Early exit scenario summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Rebalance when a guest leaves early and another returns later.'**
+  String get hostEventRehearsalScenarioEarlyExitAndReturnBody;
+
+  /// Roster capacity scenario title.
+  ///
+  /// In en, this message translates to:
+  /// **'Odd roster and capacity'**
+  String get hostEventRehearsalScenarioRosterAndCapacity;
+
+  /// Roster capacity scenario summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Expose odd-sized groups, tight capacity, and unassigned guests.'**
+  String get hostEventRehearsalScenarioRosterAndCapacityBody;
+
+  /// Walk-in scenario title.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk-in and ambiguous claim'**
+  String get hostEventRehearsalScenarioWalkInAndAmbiguousClaim;
+
+  /// Walk-in scenario summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Admit a walk-in and resolve two similar roster identities.'**
+  String get hostEventRehearsalScenarioWalkInAndAmbiguousClaimBody;
+
+  /// Privacy scenario title.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy and keep-apart'**
+  String get hostEventRehearsalScenarioPrivacyAndKeepApart;
+
+  /// Privacy scenario summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Respect an opt-out and a safety keep-apart constraint while preserving flow.'**
+  String get hostEventRehearsalScenarioPrivacyAndKeepApartBody;
+
+  /// Connectivity scenario title.
+  ///
+  /// In en, this message translates to:
+  /// **'Low connectivity'**
+  String get hostEventRehearsalScenarioLowConnectivity;
+
+  /// Connectivity scenario summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue through disconnects, delayed updates, and reconnection.'**
+  String get hostEventRehearsalScenarioLowConnectivityBody;
+
+  /// Concurrent Host scenario title.
+  ///
+  /// In en, this message translates to:
+  /// **'Two hosts, one revision'**
+  String get hostEventRehearsalScenarioConcurrentHosts;
+
+  /// Concurrent Host scenario summary.
+  ///
+  /// In en, this message translates to:
+  /// **'See how stale Host actions are rejected and recovered safely.'**
+  String get hostEventRehearsalScenarioConcurrentHostsBody;
+
+  /// Reveal interruption scenario title.
+  ///
+  /// In en, this message translates to:
+  /// **'Reveal interrupted'**
+  String get hostEventRehearsalScenarioRevealInterrupted;
+
+  /// Reveal interruption scenario summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause and recover around a reveal or round transition.'**
+  String get hostEventRehearsalScenarioRevealInterruptedBody;
+
+  /// External profile scenario title.
+  ///
+  /// In en, this message translates to:
+  /// **'External and incomplete profiles'**
+  String get hostEventRehearsalScenarioExternalProfiles;
+
+  /// External profile scenario summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise no-download guests and deliberately sparse participant data.'**
+  String get hostEventRehearsalScenarioExternalProfilesBody;
+
+  /// Accountability scenario title.
+  ///
+  /// In en, this message translates to:
+  /// **'Accountability sweep'**
+  String get hostEventRehearsalScenarioAccountabilitySweep;
+
+  /// Accountability scenario summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish with unresolved checked-in, departed, and disconnected guests.'**
+  String get hostEventRehearsalScenarioAccountabilitySweepBody;
+
+  /// Guest rehearsal link section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Live guest phone'**
+  String get hostEventRehearsalGuestLinkTitle;
+
+  /// Guest rehearsal link guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Open this link on another phone. It gets an anonymous synthetic guest and follows the virtual event live.'**
+  String get hostEventRehearsalGuestLinkBody;
+
+  /// Copies a rehearsal guest link.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy link'**
+  String get hostEventRehearsalCopyLink;
+
+  /// Shares a rehearsal guest link.
+  ///
+  /// In en, this message translates to:
+  /// **'Share link'**
+  String get hostEventRehearsalShareLink;
+
+  /// Rotates a rehearsal guest link.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace link'**
+  String get hostEventRehearsalRotateLink;
+
+  /// Rehearsal setup section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice setup'**
+  String get hostEventRehearsalSetupTitle;
+
+  /// Rehearsal setup freeze guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Setup is frozen after Start. Reset or fork to change it.'**
+  String get hostEventRehearsalSetupFrozen;
+
+  /// Rehearsal title input.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice event name'**
+  String get hostEventRehearsalFieldTitle;
+
+  /// Rehearsal location input.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice location'**
+  String get hostEventRehearsalFieldLocation;
+
+  /// Rehearsal Host goal input.
+  ///
+  /// In en, this message translates to:
+  /// **'Host goal'**
+  String get hostEventRehearsalFieldGoal;
+
+  /// Rehearsal guest prompt input.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest prompt'**
+  String get hostEventRehearsalFieldPrompt;
+
+  /// Rehearsal run-control section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Virtual event'**
+  String get hostEventRehearsalRunTitle;
+
+  /// Starts a rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get hostEventRehearsalStart;
+
+  /// Pauses a rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get hostEventRehearsalPause;
+
+  /// Resumes a rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get hostEventRehearsalResume;
+
+  /// Moves to the prior rehearsal moment.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous'**
+  String get hostEventRehearsalPrevious;
+
+  /// Moves to the next rehearsal moment.
+  ///
+  /// In en, this message translates to:
+  /// **'Next moment'**
+  String get hostEventRehearsalNext;
+
+  /// Advances rehearsal clock five minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'+5 min'**
+  String get hostEventRehearsalAdvanceFive;
+
+  /// Advances rehearsal clock fifteen minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'+15 min'**
+  String get hostEventRehearsalAdvanceFifteen;
+
+  /// Completes a rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete run'**
+  String get hostEventRehearsalComplete;
+
+  /// Synthetic behavior simulator title.
+  ///
+  /// In en, this message translates to:
+  /// **'Issue simulator'**
+  String get hostEventRehearsalSimulationTitle;
+
+  /// Synthetic behavior simulator guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a synthetic guest, then inject a realistic behavior. Automatic scenario cues also fire when the virtual clock crosses them.'**
+  String get hostEventRehearsalSimulationBody;
+
+  /// Explains when synthetic behavior controls are available.
+  ///
+  /// In en, this message translates to:
+  /// **'Start the virtual event to inject guest behavior. Completed runs can be reset or forked.'**
+  String get hostEventRehearsalSimulationUnavailable;
+
+  /// Synthetic guest picker label.
+  ///
+  /// In en, this message translates to:
+  /// **'Synthetic guest'**
+  String get hostEventRehearsalChooseGuest;
+
+  /// Synthetic issue picker label.
+  ///
+  /// In en, this message translates to:
+  /// **'Inject issue'**
+  String get hostEventRehearsalChooseIssue;
+
+  /// Synthetic rehearsal roster title.
+  ///
+  /// In en, this message translates to:
+  /// **'Synthetic room'**
+  String get hostEventRehearsalRosterTitle;
+
+  /// Synthetic room status summary.
+  ///
+  /// In en, this message translates to:
+  /// **'{present} present · {total} expected · {unresolved} unresolved'**
+  String hostEventRehearsalRoomSummary({
+    required int present,
+    required int total,
+    required int unresolved,
+  });
+
+  /// Internal rehearsal fault panel title.
+  ///
+  /// In en, this message translates to:
+  /// **'Internal QA faults'**
+  String get hostEventRehearsalQaFaultsTitle;
+
+  /// Internal fault panel guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Inject transport, revision, duplicate-delivery, legacy, motion, and bandwidth failures without touching production entities.'**
+  String get hostEventRehearsalQaFaultsBody;
+
+  /// Completed rehearsal recap title.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice recap'**
+  String get hostEventRehearsalRecapTitle;
+
+  /// Rehearsal reproducibility summary.
+  ///
+  /// In en, this message translates to:
+  /// **'{actions} actions recorded · seed {seed} · revision {revision}'**
+  String hostEventRehearsalRecapBody({
+    required int actions,
+    required int seed,
+    required int revision,
+  });
+
+  /// Resets a rehearsal with the same seed.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset run'**
+  String get hostEventRehearsalReset;
+
+  /// Forks a rehearsal into a fresh session.
+  ///
+  /// In en, this message translates to:
+  /// **'Fork setup'**
+  String get hostEventRehearsalFork;
+
+  /// Copies a deterministic rehearsal reproduction.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy reproduction'**
+  String get hostEventRehearsalExport;
+
+  /// Rehearsal action history title.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent simulated actions'**
+  String get hostEventRehearsalRecentActions;
+
+  /// Synthetic arrival action.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrives now'**
+  String get hostEventRehearsalBehaviorArrive;
+
+  /// Synthetic late arrival action.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrives late'**
+  String get hostEventRehearsalBehaviorArriveLate;
+
+  /// Synthetic no-show action.
+  ///
+  /// In en, this message translates to:
+  /// **'Becomes a no-show'**
+  String get hostEventRehearsalBehaviorNoShow;
+
+  /// Synthetic departure action.
+  ///
+  /// In en, this message translates to:
+  /// **'Leaves early'**
+  String get hostEventRehearsalBehaviorLeaves;
+
+  /// Synthetic return action.
+  ///
+  /// In en, this message translates to:
+  /// **'Returns'**
+  String get hostEventRehearsalBehaviorReturns;
+
+  /// Synthetic walk-in action.
+  ///
+  /// In en, this message translates to:
+  /// **'Walks in'**
+  String get hostEventRehearsalBehaviorWalkIn;
+
+  /// Synthetic ambiguous claim action.
+  ///
+  /// In en, this message translates to:
+  /// **'Claims an ambiguous name'**
+  String get hostEventRehearsalBehaviorAmbiguous;
+
+  /// Resolves a synthetic claim.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolve claim'**
+  String get hostEventRehearsalBehaviorResolve;
+
+  /// Synthetic privacy opt-out action.
+  ///
+  /// In en, this message translates to:
+  /// **'Opts out'**
+  String get hostEventRehearsalBehaviorOptOut;
+
+  /// Synthetic privacy opt-in action.
+  ///
+  /// In en, this message translates to:
+  /// **'Opts back in'**
+  String get hostEventRehearsalBehaviorOptIn;
+
+  /// Synthetic safety keep-apart action.
+  ///
+  /// In en, this message translates to:
+  /// **'Adds keep-apart'**
+  String get hostEventRehearsalBehaviorKeepApart;
+
+  /// Synthetic disconnect action.
+  ///
+  /// In en, this message translates to:
+  /// **'Loses connection'**
+  String get hostEventRehearsalBehaviorDisconnect;
+
+  /// Synthetic reconnect action.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnects'**
+  String get hostEventRehearsalBehaviorReconnect;
+
+  /// Clears rehearsal fault injection.
+  ///
+  /// In en, this message translates to:
+  /// **'No injected fault'**
+  String get hostEventRehearsalFaultNone;
+
+  /// Latency fault label.
+  ///
+  /// In en, this message translates to:
+  /// **'Artificial latency'**
+  String get hostEventRehearsalFaultLatency;
+
+  /// One-shot failure fault label.
+  ///
+  /// In en, this message translates to:
+  /// **'One-shot failure'**
+  String get hostEventRehearsalFaultOneShot;
+
+  /// Listener disconnect fault label.
+  ///
+  /// In en, this message translates to:
+  /// **'Listener disconnect'**
+  String get hostEventRehearsalFaultDisconnect;
+
+  /// Stale revision fault label.
+  ///
+  /// In en, this message translates to:
+  /// **'Stale revision'**
+  String get hostEventRehearsalFaultStaleRevision;
+
+  /// Duplicate delivery fault label.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate delivery'**
+  String get hostEventRehearsalFaultDuplicate;
+
+  /// Legacy fixture fault label.
+  ///
+  /// In en, this message translates to:
+  /// **'Legacy fixture'**
+  String get hostEventRehearsalFaultLegacy;
+
+  /// Reduced motion fault label.
+  ///
+  /// In en, this message translates to:
+  /// **'Reduced motion'**
+  String get hostEventRehearsalFaultReducedMotion;
+
+  /// Low bandwidth fault label.
+  ///
+  /// In en, this message translates to:
+  /// **'Low bandwidth'**
+  String get hostEventRehearsalFaultLowBandwidth;
+
+  /// Synthetic expected guest status.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected'**
+  String get hostEventRehearsalStatusExpected;
+
+  /// Synthetic present guest status.
+  ///
+  /// In en, this message translates to:
+  /// **'Present'**
+  String get hostEventRehearsalStatusPresent;
+
+  /// Synthetic late guest status.
+  ///
+  /// In en, this message translates to:
+  /// **'Late'**
+  String get hostEventRehearsalStatusLate;
+
+  /// Synthetic no-show status.
+  ///
+  /// In en, this message translates to:
+  /// **'No-show'**
+  String get hostEventRehearsalStatusNoShow;
+
+  /// Synthetic departed status.
+  ///
+  /// In en, this message translates to:
+  /// **'Departed'**
+  String get hostEventRehearsalStatusDeparted;
+
+  /// Synthetic returned status.
+  ///
+  /// In en, this message translates to:
+  /// **'Returned'**
+  String get hostEventRehearsalStatusReturned;
+
+  /// Synthetic disconnected status.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnected'**
+  String get hostEventRehearsalStatusDisconnected;
+
+  /// Synthetic walk-in status.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk-in'**
+  String get hostEventRehearsalStatusWalkIn;
+
+  /// Synthetic ambiguous claim status.
+  ///
+  /// In en, this message translates to:
+  /// **'Claim needs review'**
+  String get hostEventRehearsalStatusAmbiguous;
+
+  /// Synthetic guest help signal.
+  ///
+  /// In en, this message translates to:
+  /// **'Help requested'**
+  String get hostEventRehearsalSignalHelp;
+
+  /// Synthetic guest prompt-completion signal.
+  ///
+  /// In en, this message translates to:
+  /// **'Prompt complete'**
+  String get hostEventRehearsalSignalPromptComplete;
+
+  /// Rehearsal playbook module selector.
+  ///
+  /// In en, this message translates to:
+  /// **'Event Success playbook'**
+  String get hostEventRehearsalModules;
+
+  /// Arrival playbook module.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrival'**
+  String get hostEventRehearsalModuleArrival;
+
+  /// First Hello playbook module.
+  ///
+  /// In en, this message translates to:
+  /// **'First Hello'**
+  String get hostEventRehearsalModuleFirstHello;
+
+  /// Pods playbook module.
+  ///
+  /// In en, this message translates to:
+  /// **'Pods'**
+  String get hostEventRehearsalModulePods;
+
+  /// Rotations playbook module.
+  ///
+  /// In en, this message translates to:
+  /// **'Rotations'**
+  String get hostEventRehearsalModuleRotations;
+
+  /// Conversation cue playbook module.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation cues'**
+  String get hostEventRehearsalModuleCues;
+
+  /// Reveal playbook module.
+  ///
+  /// In en, this message translates to:
+  /// **'Reveal'**
+  String get hostEventRehearsalModuleReveal;
+
+  /// Afterglow playbook module.
+  ///
+  /// In en, this message translates to:
+  /// **'Afterglow'**
+  String get hostEventRehearsalModuleAfterglow;
+
+  /// Accountability playbook module.
+  ///
+  /// In en, this message translates to:
+  /// **'Accountability'**
+  String get hostEventRehearsalModuleAccountability;
+
+  /// Rehearsal duration input.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice duration'**
+  String get hostEventRehearsalDuration;
+
+  /// Current rehearsal run position.
+  ///
+  /// In en, this message translates to:
+  /// **'Moment {current} of {total}'**
+  String hostEventRehearsalMoment({required int current, required int total});
+
+  /// Rehearsal virtual clock label.
+  ///
+  /// In en, this message translates to:
+  /// **'Virtual time · {time}'**
+  String hostEventRehearsalClock({required String time});
+
+  /// Applies a synthetic issue.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply issue'**
+  String get hostEventRehearsalApplyIssue;
+
+  /// QA fault picker label.
+  ///
+  /// In en, this message translates to:
+  /// **'Injected fault'**
+  String get hostEventRehearsalChooseFault;
+
+  /// Guest link copy confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice guest link copied'**
+  String get hostEventRehearsalLinkCopied;
+
+  /// Guest link rotation warning.
+  ///
+  /// In en, this message translates to:
+  /// **'The current link and every connected practice phone will stop working.'**
+  String get hostEventRehearsalRotateLinkBody;
+
+  /// Rehearsal reset warning.
+  ///
+  /// In en, this message translates to:
+  /// **'This clears the simulated room and action history, then rebuilds the same deterministic roster.'**
+  String get hostEventRehearsalResetBody;
+
+  /// Reproduction copy confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Deterministic reproduction copied'**
+  String get hostEventRehearsalReproductionCopied;
+
+  /// Rehearsal ready action history label.
+  ///
+  /// In en, this message translates to:
+  /// **'Marks room ready'**
+  String get hostEventRehearsalActionMarkReady;
+
+  /// Rehearsal moment advance action history label.
+  ///
+  /// In en, this message translates to:
+  /// **'Advances moment'**
+  String get hostEventRehearsalActionAdvance;
+
+  /// Rehearsal previous action history label.
+  ///
+  /// In en, this message translates to:
+  /// **'Returns to previous moment'**
+  String get hostEventRehearsalActionPrevious;
+
+  /// Rehearsal clock advance action history label.
+  ///
+  /// In en, this message translates to:
+  /// **'Advances virtual time'**
+  String get hostEventRehearsalActionAdvanceClock;
+
+  /// Synthetic guest check-in history label.
+  ///
+  /// In en, this message translates to:
+  /// **'Checks in'**
+  String get hostEventRehearsalActionCheckIn;
+
+  /// Synthetic guest arrival-confirmation history label.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirms arrival'**
+  String get hostEventRehearsalActionConfirmArrival;
+
+  /// Synthetic guest help action history label.
+  ///
+  /// In en, this message translates to:
+  /// **'Requests Host help'**
+  String get hostEventRehearsalActionAskForHelp;
+
+  /// Synthetic guest prompt action history label.
+  ///
+  /// In en, this message translates to:
+  /// **'Completes prompt'**
+  String get hostEventRehearsalActionCompletePrompt;
+
+  /// Safe fallback for a newer rehearsal action history label.
+  ///
+  /// In en, this message translates to:
+  /// **'Simulated action'**
+  String get hostEventRehearsalActionUnknown;
+
+  /// Host rehearsal action kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Host control'**
+  String get hostEventRehearsalActionKindControl;
+
+  /// Behavior rehearsal action kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Simulated issue'**
+  String get hostEventRehearsalActionKindBehavior;
+
+  /// Guest rehearsal action kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest phone'**
+  String get hostEventRehearsalActionKindGuest;
+
+  /// Setup rehearsal action kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice setup'**
+  String get hostEventRehearsalActionKindSetup;
+
+  /// System rehearsal action kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice system'**
+  String get hostEventRehearsalActionKindSystem;
+
+  /// Rehearsal action kind and revision metadata.
+  ///
+  /// In en, this message translates to:
+  /// **'{kind} · revision {revision}'**
+  String hostEventRehearsalActionRevision({
+    required String kind,
+    required int revision,
+  });
 }
 
 class _AppLocalizationsDelegate

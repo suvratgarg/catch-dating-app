@@ -1,7 +1,7 @@
 {
   "$schema": "./state_matrix.schema.json",
   "version": 1,
-  "updated": "2026-08-18",
+  "updated": "2026-08-20",
   "requiredStateKinds": [
     "loading",
     "populated",
@@ -8354,6 +8354,138 @@
               "id": "DP-HOST-EVENT-MANAGE-005",
               "status": "blocked",
               "nextAction": "Blocked/reference-only until canonical edge-state exports exist: setup/private-access, attendance roster, live console, post-event report, private-access missing-code, invite-link disabled-row, and invite-link long-label/source states have deterministic captures. Remaining work is masks for additional dynamic host data once canonical exports exist."
+            }
+          ]
+        },
+        {
+          "id": "host.event.rehearsal",
+          "routeId": "hostEventRehearsalStartScreen",
+          "routeIds": [
+            "hostEventRehearsalStartScreen",
+            "hostEventRehearsalScreen"
+          ],
+          "implementationPaths": [
+            "lib/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart",
+            "lib/event_rehearsal/presentation/host_event_rehearsal_screen.dart",
+            "lib/event_rehearsal/presentation/event_rehearsal_controller.dart",
+            "lib/event_rehearsal/data/event_rehearsal_repository.dart",
+            "lib/event_rehearsal/domain/event_rehearsal.dart"
+          ],
+          "componentIds": [
+            "catch.badge",
+            "catch.button",
+            "catch.chip",
+            "catch.error_state",
+            "catch.field",
+            "catch.menu",
+            "catch.notice",
+            "catch.section",
+            "catch.skeleton",
+            "catch.surface",
+            "catch.top_bar"
+          ],
+          "captureIds": [],
+          "designRefs": [
+            {
+              "id": "host-event-rehearsal-feature-contract",
+              "kind": "repo",
+              "status": "available",
+              "path": "design/features/event_rehearsal.feature.json",
+              "notes": "Typed Host console and synthetic guest-phone orchestration contract, including isolation, lifecycle, scenario, fault, replay, and retention boundaries."
+            },
+            {
+              "id": "host-event-rehearsal-screen-contract",
+              "kind": "repo",
+              "status": "available",
+              "path": "design/screens/catch.screens.json",
+              "notes": "Canonical route, state, component, and composition ownership for the two authenticated Host rehearsal routes."
+            }
+          ],
+          "states": [
+            {
+              "id": "host_event_rehearsal_start",
+              "kind": "populated",
+              "status": "tested",
+              "tests": [
+                "test/event_rehearsal/host_event_rehearsal_screen_test.dart"
+              ],
+              "notes": "The setup route offers a safe sample event or an immutable snapshot of an existing event and labels the entire workspace as practice."
+            },
+            {
+              "id": "host_event_rehearsal_loading",
+              "kind": "loading",
+              "status": "implemented",
+              "tests": [
+                "test/event_rehearsal/host_event_rehearsal_screen_test.dart"
+              ],
+              "notes": "The route-owned skeleton remains inside the Host shell while the isolated callable projection loads."
+            },
+            {
+              "id": "host_event_rehearsal_error",
+              "kind": "error",
+              "status": "implemented",
+              "tests": [
+                "test/event_rehearsal/host_event_rehearsal_screen_test.dart"
+              ],
+              "notes": "Expired, unauthorized, and backend failures fail closed through the shared error state and route-scoped retry invalidation."
+            },
+            {
+              "id": "host_event_rehearsal_setup",
+              "kind": "populated",
+              "status": "tested",
+              "tests": [
+                "test/event_rehearsal/event_rehearsal_domain_test.dart"
+              ],
+              "notes": "Event details, playbook, actor count, and deterministic seed remain editable only before the virtual event starts."
+            },
+            {
+              "id": "host_event_rehearsal_running",
+              "kind": "populated",
+              "status": "tested",
+              "tests": [
+                "test/event_rehearsal/host_event_rehearsal_screen_test.dart",
+                "test/event_rehearsal/event_rehearsal_domain_test.dart"
+              ],
+              "notes": "The console combines the virtual clock, guest-phone link, synthetic roster, scenario injection, internal faults, and deterministic action history without production writes."
+            },
+            {
+              "id": "host_event_rehearsal_paused",
+              "kind": "populated",
+              "status": "implemented",
+              "tests": [
+                "test/event_rehearsal/event_rehearsal_domain_test.dart"
+              ],
+              "notes": "Pause freezes virtual time and keeps resume plus previous-step recovery available without reopening setup."
+            },
+            {
+              "id": "host_event_rehearsal_complete",
+              "kind": "populated",
+              "status": "implemented",
+              "tests": [
+                "test/event_rehearsal/event_rehearsal_domain_test.dart"
+              ],
+              "notes": "The recap preserves the deterministic timeline, QA observations, reset, fork, and reproduction export tools after completion."
+            },
+            {
+              "id": "host_event_rehearsal_mutation",
+              "kind": "mutation",
+              "status": "implemented",
+              "tests": [
+                "test/event_rehearsal/host_event_rehearsal_screen_test.dart"
+              ],
+              "notes": "Shared mutation listeners cover bounded, idempotent lifecycle, scenario, fault, link, setup, reset, fork, and export commands with stale-revision recovery."
+            }
+          ],
+          "gaps": [
+            {
+              "id": "DP-HOST-EVENT-REHEARSAL-001",
+              "status": "open",
+              "nextAction": "Admit a truthful authenticated organizer rehearsal fixture to the canonical route capture catalog, then capture setup, running, paused, complete, error, accessibility, and theme variants."
+            },
+            {
+              "id": "DP-HOST-EVENT-REHEARSAL-002",
+              "status": "closed",
+              "nextAction": "Keep the first-class rehearsal domain isolated behind rehearsal-only callable repositories; do not reuse production event, guest, match, payment, message, or participation mutation paths."
             }
           ]
         },

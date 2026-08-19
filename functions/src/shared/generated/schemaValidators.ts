@@ -103,6 +103,10 @@ import {EventVenueSessionDocument} from "./eventVenueSessionDocument";
 import {EventVenueSessionRedemptionDocument} from "./eventVenueSessionRedemptionDocument";
 import {EventSuccessPresenceDocument} from "./eventSuccessPresenceDocument";
 import {EventSuccessLateArrivalDocument} from "./eventSuccessLateArrivalDocument";
+import {EventRehearsalDocument} from "./eventRehearsalDocument";
+import {EventRehearsalActorDocument} from "./eventRehearsalActorDocument";
+import {EventRehearsalActionDocument} from "./eventRehearsalActionDocument";
+import {EventRehearsalGuestViewDocument} from "./eventRehearsalGuestViewDocument";
 import {EventRuntimeClaimRequestDocument} from "./eventRuntimeClaimRequestDocument";
 import {EventCrossPathsConsentDocument} from "./eventCrossPathsConsentDocument";
 import {CrossPathsShowcaseEligibilityDocument} from "./crossPathsShowcaseEligibilityDocument";
@@ -268,6 +272,19 @@ import {EventStaffListCallableResponse} from "./eventStaffListCallableResponse";
 import {RegisterPublicEventCallablePayload} from "./registerPublicEventCallablePayload";
 import {RegisterPublicEventCallableResponse} from "./registerPublicEventCallableResponse";
 import {GetEventRuntimeBootstrapCallablePayload} from "./getEventRuntimeBootstrapCallablePayload";
+import {CreateEventRehearsalCallablePayload} from "./createEventRehearsalCallablePayload";
+import {CreateEventRehearsalCallableResponse} from "./createEventRehearsalCallableResponse";
+import {GetEventRehearsalBootstrapCallablePayload} from "./getEventRehearsalBootstrapCallablePayload";
+import {EventRehearsalBootstrapCallableResponse} from "./eventRehearsalBootstrapCallableResponse";
+import {UpdateEventRehearsalSetupCallablePayload} from "./updateEventRehearsalSetupCallablePayload";
+import {ControlEventRehearsalCallablePayload} from "./controlEventRehearsalCallablePayload";
+import {InjectEventRehearsalBehaviorCallablePayload} from "./injectEventRehearsalBehaviorCallablePayload";
+import {ResetEventRehearsalCallablePayload} from "./resetEventRehearsalCallablePayload";
+import {RotateEventRehearsalGuestLinkCallablePayload} from "./rotateEventRehearsalGuestLinkCallablePayload";
+import {GetEventRehearsalGuestBootstrapCallablePayload} from "./getEventRehearsalGuestBootstrapCallablePayload";
+import {EventRehearsalGuestBootstrapCallableResponse} from "./eventRehearsalGuestBootstrapCallableResponse";
+import {SubmitEventRehearsalGuestActionCallablePayload} from "./submitEventRehearsalGuestActionCallablePayload";
+import {EventRehearsalReproductionCallableResponse} from "./eventRehearsalReproductionCallableResponse";
 import {UpsertEventSuccessLayoutCallablePayload} from "./upsertEventSuccessLayoutCallablePayload";
 import {UpsertEventSuccessLayoutCallableResponse} from "./upsertEventSuccessLayoutCallableResponse";
 import {GetEventSuccessSpatialLayoutCallablePayload} from "./getEventSuccessSpatialLayoutCallablePayload";
@@ -579,6 +596,10 @@ import {
   eventVenueSessionRedemptionDocumentSchema,
   eventSuccessPresenceDocumentSchema,
   eventSuccessLateArrivalDocumentSchema,
+  eventRehearsalDocumentSchema,
+  eventRehearsalActorDocumentSchema,
+  eventRehearsalActionDocumentSchema,
+  eventRehearsalGuestViewDocumentSchema,
   eventRuntimeClaimRequestDocumentSchema,
   eventCrossPathsConsentDocumentSchema,
   crossPathsShowcaseEligibilityDocumentSchema,
@@ -744,6 +765,19 @@ import {
   registerPublicEventCallablePayloadSchema,
   registerPublicEventCallableResponseSchema,
   getEventRuntimeBootstrapCallablePayloadSchema,
+  createEventRehearsalCallablePayloadSchema,
+  createEventRehearsalCallableResponseSchema,
+  getEventRehearsalBootstrapCallablePayloadSchema,
+  eventRehearsalBootstrapCallableResponseSchema,
+  updateEventRehearsalSetupCallablePayloadSchema,
+  controlEventRehearsalCallablePayloadSchema,
+  injectEventRehearsalBehaviorCallablePayloadSchema,
+  resetEventRehearsalCallablePayloadSchema,
+  rotateEventRehearsalGuestLinkCallablePayloadSchema,
+  getEventRehearsalGuestBootstrapCallablePayloadSchema,
+  eventRehearsalGuestBootstrapCallableResponseSchema,
+  submitEventRehearsalGuestActionCallablePayloadSchema,
+  eventRehearsalReproductionCallableResponseSchema,
   upsertEventSuccessLayoutCallablePayloadSchema,
   upsertEventSuccessLayoutCallableResponseSchema,
   getEventSuccessSpatialLayoutCallablePayloadSchema,
@@ -1356,6 +1390,22 @@ export const validateEventSuccessLateArrivalDocument:
   ValidateFunction<EventSuccessLateArrivalDocument> =
     ajv.compile(eventSuccessLateArrivalDocumentSchema) as
       ValidateFunction<EventSuccessLateArrivalDocument>;
+export const validateEventRehearsalDocument:
+  ValidateFunction<EventRehearsalDocument> =
+    ajv.compile(eventRehearsalDocumentSchema) as
+      ValidateFunction<EventRehearsalDocument>;
+export const validateEventRehearsalActorDocument:
+  ValidateFunction<EventRehearsalActorDocument> =
+    ajv.compile(eventRehearsalActorDocumentSchema) as
+      ValidateFunction<EventRehearsalActorDocument>;
+export const validateEventRehearsalActionDocument:
+  ValidateFunction<EventRehearsalActionDocument> =
+    ajv.compile(eventRehearsalActionDocumentSchema) as
+      ValidateFunction<EventRehearsalActionDocument>;
+export const validateEventRehearsalGuestViewDocument:
+  ValidateFunction<EventRehearsalGuestViewDocument> =
+    ajv.compile(eventRehearsalGuestViewDocumentSchema) as
+      ValidateFunction<EventRehearsalGuestViewDocument>;
 export const validateEventRuntimeClaimRequestDocument:
   ValidateFunction<EventRuntimeClaimRequestDocument> =
     ajv.compile(eventRuntimeClaimRequestDocumentSchema) as
@@ -2016,6 +2066,58 @@ export const validateGetEventRuntimeBootstrapCallablePayload:
   ValidateFunction<GetEventRuntimeBootstrapCallablePayload> =
     ajv.compile(getEventRuntimeBootstrapCallablePayloadSchema) as
       ValidateFunction<GetEventRuntimeBootstrapCallablePayload>;
+export const validateCreateEventRehearsalCallablePayload:
+  ValidateFunction<CreateEventRehearsalCallablePayload> =
+    ajv.compile(createEventRehearsalCallablePayloadSchema) as
+      ValidateFunction<CreateEventRehearsalCallablePayload>;
+export const validateCreateEventRehearsalCallableResponse:
+  ValidateFunction<CreateEventRehearsalCallableResponse> =
+    ajv.compile(createEventRehearsalCallableResponseSchema) as
+      ValidateFunction<CreateEventRehearsalCallableResponse>;
+export const validateGetEventRehearsalBootstrapCallablePayload:
+  ValidateFunction<GetEventRehearsalBootstrapCallablePayload> =
+    ajv.compile(getEventRehearsalBootstrapCallablePayloadSchema) as
+      ValidateFunction<GetEventRehearsalBootstrapCallablePayload>;
+export const validateEventRehearsalBootstrapCallableResponse:
+  ValidateFunction<EventRehearsalBootstrapCallableResponse> =
+    ajv.compile(eventRehearsalBootstrapCallableResponseSchema) as
+      ValidateFunction<EventRehearsalBootstrapCallableResponse>;
+export const validateUpdateEventRehearsalSetupCallablePayload:
+  ValidateFunction<UpdateEventRehearsalSetupCallablePayload> =
+    ajv.compile(updateEventRehearsalSetupCallablePayloadSchema) as
+      ValidateFunction<UpdateEventRehearsalSetupCallablePayload>;
+export const validateControlEventRehearsalCallablePayload:
+  ValidateFunction<ControlEventRehearsalCallablePayload> =
+    ajv.compile(controlEventRehearsalCallablePayloadSchema) as
+      ValidateFunction<ControlEventRehearsalCallablePayload>;
+export const validateInjectEventRehearsalBehaviorCallablePayload:
+  ValidateFunction<InjectEventRehearsalBehaviorCallablePayload> =
+    ajv.compile(injectEventRehearsalBehaviorCallablePayloadSchema) as
+      ValidateFunction<InjectEventRehearsalBehaviorCallablePayload>;
+export const validateResetEventRehearsalCallablePayload:
+  ValidateFunction<ResetEventRehearsalCallablePayload> =
+    ajv.compile(resetEventRehearsalCallablePayloadSchema) as
+      ValidateFunction<ResetEventRehearsalCallablePayload>;
+export const validateRotateEventRehearsalGuestLinkCallablePayload:
+  ValidateFunction<RotateEventRehearsalGuestLinkCallablePayload> =
+    ajv.compile(rotateEventRehearsalGuestLinkCallablePayloadSchema) as
+      ValidateFunction<RotateEventRehearsalGuestLinkCallablePayload>;
+export const validateGetEventRehearsalGuestBootstrapCallablePayload:
+  ValidateFunction<GetEventRehearsalGuestBootstrapCallablePayload> =
+    ajv.compile(getEventRehearsalGuestBootstrapCallablePayloadSchema) as
+      ValidateFunction<GetEventRehearsalGuestBootstrapCallablePayload>;
+export const validateEventRehearsalGuestBootstrapCallableResponse:
+  ValidateFunction<EventRehearsalGuestBootstrapCallableResponse> =
+    ajv.compile(eventRehearsalGuestBootstrapCallableResponseSchema) as
+      ValidateFunction<EventRehearsalGuestBootstrapCallableResponse>;
+export const validateSubmitEventRehearsalGuestActionCallablePayload:
+  ValidateFunction<SubmitEventRehearsalGuestActionCallablePayload> =
+    ajv.compile(submitEventRehearsalGuestActionCallablePayloadSchema) as
+      ValidateFunction<SubmitEventRehearsalGuestActionCallablePayload>;
+export const validateEventRehearsalReproductionCallableResponse:
+  ValidateFunction<EventRehearsalReproductionCallableResponse> =
+    ajv.compile(eventRehearsalReproductionCallableResponseSchema) as
+      ValidateFunction<EventRehearsalReproductionCallableResponse>;
 export const validateUpsertEventSuccessLayoutCallablePayload:
   ValidateFunction<UpsertEventSuccessLayoutCallablePayload> =
     ajv.compile(upsertEventSuccessLayoutCallablePayloadSchema) as

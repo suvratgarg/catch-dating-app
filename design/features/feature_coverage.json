@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_coverage.schema.json",
   "version": 1,
-  "updated": "2026-08-18",
+  "updated": "2026-08-19",
   "owner": "product_design_parity",
   "sourceOfTruth": "Exhaustive migration ledger for feature orchestration contracts across registered Flutter screens, marketing routes, and admin route components. A planned entry names its intended shared feature identity; grouped entries are secondary route projections, not independent features.",
   "authorities": [
@@ -87,6 +87,14 @@
       "priority": "P1",
       "reason": "Compiled Event Success contract covers route gates, attendee moments, arrival actions, assignments, reveal, wingman, feedback, opt-outs, auto-launch evidence, and an explicit known questionnaire wiring gap.",
       "featureContract": "feature.event_success"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.host.event.rehearsal",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Event Dress Rehearsal contract covers safe setup, virtual lifecycle controls, issue simulation, synthetic guest handoff, deterministic recap, reset, fork, and export.",
+      "featureContract": "feature.event_rehearsal"
     },
     {
       "authority": "flutter_screens",
@@ -352,6 +360,14 @@
       "priority": "P1",
       "reason": "The no-download attendee runtime is a public-web projection of Event Success with phone OTP, roster claim or approval, event-scoped intake, verified check-in, live modules, and private feedback.",
       "featureContract": "feature.event_success"
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "event_rehearsal",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "The Event Dress Rehearsal guest projection binds one anonymous browser slot to a synthetic actor, follows virtual time, exposes practice-safe actions and faults, and never enters production attendee or authentication flows.",
+      "featureContract": "feature.event_rehearsal"
     },
     {
       "authority": "marketing_routes",

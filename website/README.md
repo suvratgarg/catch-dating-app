@@ -17,7 +17,7 @@ media, screenshot design-context drift, route-contract drift, unit/a11y tests,
 registry-backed Storybook visual baselines, and the Vite production build.
 
 The marketing target serves generated static routes and keeps only explicit
-dynamic-family rewrites (`/host/**`, `/join/**`, `/invite/**`, `/f/**`, and
+dynamic-family rewrites (`/host/**`, `/join/**`, `/rehearse/**`, `/invite/**`, `/f/**`, and
 `/claim/**`) plus API rewrites. It deliberately has no catch-all rewrite,
 allowing the generated `dist/404.html` to retain Firebase's HTTP 404 status.
 The route checker requires every `spa-rewrite` contract to have both a
