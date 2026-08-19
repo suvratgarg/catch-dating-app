@@ -15,6 +15,10 @@ export function relativeToRepo(filePath) {
   return path.relative(repoRoot, filePath);
 }
 
-export function createFunctionsRequire() {
-  return createRequire(fromRepo("functions/package.json"));
+export function createFunctionsRequire(
+  functionsDirectory = fromRepo("functions"),
+) {
+  return createRequire(
+    path.join(path.resolve(functionsDirectory), "package.json"),
+  );
 }

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import fs from "node:fs";
+import path from "node:path";
 import {pathToFileURL} from "node:url";
 import {
   createFunctionsRequire,
@@ -20,6 +21,14 @@ export function storageServiceAgentMember(projectNumber) {
     `serviceAccount:service-${projectNumber}` +
     "@gcp-sa-firebasestorage.iam.gserviceaccount.com"
   );
+}
+
+export function functionsDependencyDirectory({
+  env = process.env,
+  cwd = process.cwd(),
+} = {}) {
+  const configured = env.CATCH_DELIVERY_FUNCTIONS_DIR?.trim();
+  return configured ? path.resolve(cwd, configured) : fromRepo("functions");
 }
 
 export function parseFirebaseWebConfig(contents) {
@@ -223,7 +232,9 @@ async function main() {
 }
 
 async function googleRequest() {
-  const requireFromFunctions = createFunctionsRequire();
+  const requireFromFunctions = createFunctionsRequire(
+    functionsDependencyDirectory(),
+  );
   const {GoogleAuth} = requireFromFunctions("google-auth-library");
   const client = await new GoogleAuth({
     scopes: ["https://www.googleapis.com/auth/cloud-platform"],
