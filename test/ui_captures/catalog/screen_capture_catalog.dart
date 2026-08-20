@@ -75,6 +75,9 @@ import 'package:catch_dating_app/design_fixtures/matches_chat_surface_fixtures.d
 import 'package:catch_dating_app/design_fixtures/profile_surface_fixtures.dart';
 import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
+import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_screen.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_arrival_mission.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
@@ -8310,6 +8313,100 @@ class _LaunchAccessSubmitPendingCaptureState
   Widget build(BuildContext context) => widget.child;
 }
 
+EventRehearsalBootstrap _eventRehearsalRuntimeCaptureBootstrap() {
+  const names = <String>[
+    'Jordan Ellis',
+    'Sofia Martinez',
+    'Ethan Brooks',
+    'Aisha Williams',
+    'Daniel Kim',
+    'Priya Nair',
+    'Noah Wilson',
+    'Zara Khan',
+    'Lucas Chen',
+    'Emma Davis',
+    'Arjun Mehta',
+    'Olivia Moore',
+    'Liam Brown',
+    'Ananya Rao',
+    'Mateo Garcia',
+    'Isla Taylor',
+    'Kabir Singh',
+    'Ava Johnson',
+    'Leo Martin',
+    'Mia Thompson',
+    'Maya Shah',
+    'Aarav Patel',
+    'Nina Clark',
+    'Sam Rivera',
+  ];
+  final virtualNow = DateTime(2026, 8, 21, 19, 42);
+  return EventRehearsalBootstrap(
+    session: EventRehearsalSession(
+      id: 'capture-rehearsal',
+      organizerId: 'capture-club',
+      sourceEventId: 'capture-source-event',
+      scenario: EventRehearsalScenario.lateAndNoShow,
+      seed: 42,
+      actorCount: names.length,
+      actionCount: 3,
+      status: EventRehearsalStatus.running,
+      setup: const EventRehearsalSetup(
+        title: 'Sunday Morning Singles Mixer',
+        locationName: 'Courtyard Room',
+        durationMinutes: 120,
+        hostGoal: 'Learn the real Host runtime before event day',
+        attendeePrompt: 'Meet someone new at your table',
+        modules: [
+          EventRehearsalModule.arrival,
+          EventRehearsalModule.firstHello,
+          EventRehearsalModule.pods,
+          EventRehearsalModule.rotations,
+          EventRehearsalModule.conversationCues,
+          EventRehearsalModule.reveal,
+        ],
+      ),
+      setupRevision: 2,
+      runtimeRevision: 4,
+      activeStepIndex: 1,
+      virtualNow: virtualNow,
+      fault: EventRehearsalFault.none,
+      expiresAt: virtualNow.add(const Duration(hours: 20)),
+    ),
+    actors: [
+      for (final indexed in names.indexed)
+        EventRehearsalActor(
+          actorId: 'capture-actor-${indexed.$1 + 1}',
+          displayName: indexed.$2,
+          persona: indexed.$1 == 20 ? 'lateArrival' : 'socialRegular',
+          status: switch (indexed.$1) {
+            < 20 => EventRehearsalActorStatus.present,
+            20 => EventRehearsalActorStatus.late,
+            21 || 22 => EventRehearsalActorStatus.expected,
+            _ => EventRehearsalActorStatus.noShow,
+          },
+          guestMoment: EventRehearsalGuestMoment.assignment,
+          optedOut: false,
+          keepApartActorIds: const [],
+          helpRequested: false,
+          promptCompleted: indexed.$1 < 16,
+        ),
+    ],
+    actions: [
+      EventRehearsalActionRecord(
+        clientActionId: 'capture-action-1',
+        actorId: 'capture-actor-21',
+        kind: 'behavior',
+        name: 'arriveLate',
+        runtimeRevision: 4,
+        virtualNow: virtualNow,
+      ),
+    ],
+    guestUrl: 'https://catchdates.com/rehearse/capture-companion',
+    canUseInternalFaults: true,
+  );
+}
+
 final screenCaptureCatalog = <ScreenCaptureEntry>[
   ScreenCaptureEntry(
     id: 'profile_self',
@@ -12083,6 +12180,45 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       loadMapTiles: false,
       now: () => _captureNow,
     ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_event_rehearsal_runtime_room',
+    routeIds: const <String>['hostEventRehearsalScreen'],
+    device: CaptureDevice.iphone17Pro,
+    disableAnimations: true,
+    providerOverrides: [
+      eventRehearsalProvider('capture-rehearsal').overrideWith(
+        (ref) => Stream.value(_eventRehearsalRuntimeCaptureBootstrap()),
+      ),
+    ],
+    builder: (context) => const HostEventRehearsalScreen(
+      clubId: 'capture-club',
+      sessionId: 'capture-rehearsal',
+    ),
+    drive: (tester) async {
+      await tester.tap(find.text('Room'));
+      await pumpFeatureUi(tester);
+    },
+  ),
+  ScreenCaptureEntry(
+    id: 'host_event_rehearsal_practice_tools',
+    routeIds: const <String>['hostEventRehearsalScreen'],
+    device: CaptureDevice.iphone17Pro,
+    disableAnimations: true,
+    includeOverlays: true,
+    providerOverrides: [
+      eventRehearsalProvider('capture-rehearsal').overrideWith(
+        (ref) => Stream.value(_eventRehearsalRuntimeCaptureBootstrap()),
+      ),
+    ],
+    builder: (context) => const HostEventRehearsalScreen(
+      clubId: 'capture-club',
+      sessionId: 'capture-rehearsal',
+    ),
+    drive: (tester) async {
+      await tester.tap(find.byIcon(CatchIcons.more));
+      await pumpFeatureUi(tester);
+    },
   ),
   ScreenCaptureEntry(
     id: 'host_manage_route_loading',

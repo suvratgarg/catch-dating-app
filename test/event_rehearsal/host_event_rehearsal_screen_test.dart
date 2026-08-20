@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_screen.dart';
@@ -13,6 +14,8 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../test_pump_helpers.dart';
 
 void main() {
   testWidgets('start screen makes the practice boundary and choices explicit', (
@@ -58,7 +61,19 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    expect(find.text('Dress rehearsal'), findsWidgets);
+    expect(find.text('Courtyard practice'), findsOneWidget);
+    expect(find.text('REHEARSAL'), findsOneWidget);
+    expect(find.text('Synthetic guests'), findsOneWidget);
+    expect(find.text('Setup'), findsOneWidget);
+    expect(find.text('Live'), findsWidgets);
+    expect(find.text('Report'), findsOneWidget);
+    expect(find.text('Live guest phone'), findsNothing);
+    expect(find.textContaining('Task 3 of 8'), findsOneWidget);
+
+    await tester.tap(find.byIcon(CatchIcons.more));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Practice tools'), findsOneWidget);
     expect(find.text('Movement simulation'), findsOneWidget);
     expect(find.textContaining('1 itinerary steps'), findsOneWidget);
     expect(find.text('Meet the group at Courtyard stop.'), findsOneWidget);

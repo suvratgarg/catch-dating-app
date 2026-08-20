@@ -15655,6 +15655,110 @@ class AppLocalizationsEn extends AppLocalizations {
       'Practice mode · No real guests, messages, payments, matches, or event records are changed';
 
   @override
+  String get hostEventRehearsalManageSubtitle => 'Host · Manage';
+
+  @override
+  String get hostEventRehearsalBadge => 'Rehearsal';
+
+  @override
+  String get hostEventRehearsalSyntheticGuests => 'Synthetic guests';
+
+  @override
+  String get hostEventRehearsalPracticeGuest => 'Practice guest';
+
+  @override
+  String get hostEventRehearsalLatePracticeGuest =>
+      'Late arrival · Practice guest';
+
+  @override
+  String hostEventRehearsalClockPill({required String time}) {
+    return 'Virtual $time';
+  }
+
+  @override
+  String get hostEventRehearsalPracticeTools => 'Practice tools';
+
+  @override
+  String get hostEventRehearsalPracticeToolsBody =>
+      'Control synthetic guests, the companion phone, faults, time, and deterministic replays.';
+
+  @override
+  String get hostEventRehearsalRunSheetBody =>
+      'Change only the simulated clock and rehearsal lifecycle.';
+
+  @override
+  String hostEventRehearsalCoachProgress({
+    required int current,
+    required int total,
+  }) {
+    return 'Task $current of $total';
+  }
+
+  @override
+  String get hostEventRehearsalCoachWhy => 'Why?';
+
+  @override
+  String get hostEventRehearsalCoachGotIt => 'Got it';
+
+  @override
+  String get hostEventRehearsalCoachCollapsed =>
+      'Coach is ready when you need the next practice task.';
+
+  @override
+  String get hostEventRehearsalCoachShow => 'Show Coach';
+
+  @override
+  String hostEventRehearsalCoachResolveLate({required String name}) {
+    return 'Resolve $name\'s late arrival';
+  }
+
+  @override
+  String hostEventRehearsalCoachResolveHelp({required String name}) {
+    return 'Resolve $name\'s help request';
+  }
+
+  @override
+  String get hostEventRehearsalCoachSameControl =>
+      'Use the same control you will use on event day.';
+
+  @override
+  String get hostEventRehearsalCoachStart => 'Start the virtual event';
+
+  @override
+  String get hostEventRehearsalCoachStartBody =>
+      'Open the virtual clock to start, then operate the real Host runtime.';
+
+  @override
+  String get hostEventRehearsalCoachResume => 'Resume the virtual event';
+
+  @override
+  String get hostEventRehearsalCoachAdvance => 'Run the current Host step';
+
+  @override
+  String get hostEventRehearsalCoachComplete => 'Review your rehearsal';
+
+  @override
+  String get hostEventRehearsalCoachCompleteBody =>
+      'Open Practice tools to replay, fork, or export the deterministic run.';
+
+  @override
+  String get hostEventRehearsalCoachWhyTitle => 'Why this task?';
+
+  @override
+  String get hostEventRehearsalCoachWhyBody =>
+      'The Coach highlights a real Host control, but synthetic state proves the outcome. Dismissing guidance never completes a task.';
+
+  @override
+  String get hostEventRehearsalLeaveTitle => 'Leave rehearsal?';
+
+  @override
+  String get hostEventRehearsalLeaveBody =>
+      'Your practice session stays available until it expires.';
+
+  @override
+  String get hostEventRehearsalLeaveAction => 'Leave rehearsal';
+
+  @override
   String get hostEventRehearsalStartSubtitle =>
       'Choose a room to practice. You can change the rehearsal copy and playbook before starting.';
 
