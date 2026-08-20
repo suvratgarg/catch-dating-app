@@ -14593,6 +14593,96 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormBuilderTitle => 'Form builder';
 
   @override
+  String get hostFormBuildTab => 'Build';
+
+  @override
+  String hostFormResponsesTab({required int count}) {
+    return 'Responses $count';
+  }
+
+  @override
+  String hostFormBuilderSummary({required String status, required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count questions',
+      one: '1 question',
+      zero: 'No questions',
+    );
+    return '$status · $_temp0';
+  }
+
+  @override
+  String get hostFormQuestionsTitle => 'Questions';
+
+  @override
+  String get hostFormQuestionsHelp => 'Open a question to edit or reorder it.';
+
+  @override
+  String get hostFormSettingsSummary =>
+      'Access, availability, confirmation, and privacy';
+
+  @override
+  String get hostFormSectionActions => 'Section actions';
+
+  @override
+  String get hostFormEditSection => 'Edit section';
+
+  @override
+  String hostFormQuestionSummary({
+    required String type,
+    required String requirement,
+  }) {
+    return '$type · $requirement';
+  }
+
+  @override
+  String get hostFormRequiredShort => 'Required';
+
+  @override
+  String get hostFormOptionalShort => 'Optional';
+
+  @override
+  String get hostFormAvailabilityAlwaysOpen =>
+      'Accepting responses until you close it';
+
+  @override
+  String hostFormAvailabilityOpens({required String date}) {
+    return 'Opens $date';
+  }
+
+  @override
+  String hostFormAvailabilityCloses({required String date}) {
+    return 'Closes $date';
+  }
+
+  @override
+  String get hostFormReviewPublish => 'Review & publish';
+
+  @override
+  String get hostFormReviewPublishChanges => 'Review & publish changes';
+
+  @override
+  String get hostFormReviewPublishTitle => 'Review before publishing';
+
+  @override
+  String get hostFormReviewChangesTitle => 'Review your changes';
+
+  @override
+  String get hostFormReviewPublishSubtitle =>
+      'Check the respondent experience and the essentials that control who can respond.';
+
+  @override
+  String get hostFormChooseQuestionTypeHelp =>
+      'Start with the answer shape you need. You can adjust the details next.';
+
+  @override
+  String get hostFormRecommendedQuestionTypes => 'Recommended';
+
+  @override
+  String get hostFormMoreQuestionTypes => 'More answer types';
+
+  @override
   String get hostFormPreview => 'Preview';
 
   @override
@@ -14620,10 +14710,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostFormPublishChanges => 'Publish changes';
-
-  @override
-  String get hostFormPublishHelp =>
-      'Publishing validates the draft and creates an immutable respondent version.';
 
   @override
   String get hostFormPublished => 'Form published';

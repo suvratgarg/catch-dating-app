@@ -22745,6 +22745,141 @@ abstract class AppLocalizations {
   /// **'Form builder'**
   String get hostFormBuilderTitle;
 
+  /// Form-level tab for editing the form.
+  ///
+  /// In en, this message translates to:
+  /// **'Build'**
+  String get hostFormBuildTab;
+
+  /// Form-level responses tab with submission count.
+  ///
+  /// In en, this message translates to:
+  /// **'Responses {count}'**
+  String hostFormResponsesTab({required int count});
+
+  /// Compact builder lifecycle and question-count summary.
+  ///
+  /// In en, this message translates to:
+  /// **'{status} · {count, plural, =0{No questions} =1{1 question} other{{count} questions}}'**
+  String hostFormBuilderSummary({required String status, required int count});
+
+  /// Primary heading for the compact form builder outline.
+  ///
+  /// In en, this message translates to:
+  /// **'Questions'**
+  String get hostFormQuestionsTitle;
+
+  /// Guidance for editing questions from the compact outline.
+  ///
+  /// In en, this message translates to:
+  /// **'Open a question to edit or reorder it.'**
+  String get hostFormQuestionsHelp;
+
+  /// Compact summary of advanced form settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Access, availability, confirmation, and privacy'**
+  String get hostFormSettingsSummary;
+
+  /// Accessible label for section edit and reorder actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Section actions'**
+  String get hostFormSectionActions;
+
+  /// Opens the focused form-section editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit section'**
+  String get hostFormEditSection;
+
+  /// Question answer type and requiredness summary.
+  ///
+  /// In en, this message translates to:
+  /// **'{type} · {requirement}'**
+  String hostFormQuestionSummary({
+    required String type,
+    required String requirement,
+  });
+
+  /// Compact required-question status.
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get hostFormRequiredShort;
+
+  /// Compact optional-question status.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional'**
+  String get hostFormOptionalShort;
+
+  /// Readiness summary when a form has no open or close date.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepting responses until you close it'**
+  String get hostFormAvailabilityAlwaysOpen;
+
+  /// Readiness summary for a form open date.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens {date}'**
+  String hostFormAvailabilityOpens({required String date});
+
+  /// Readiness summary for a form close date.
+  ///
+  /// In en, this message translates to:
+  /// **'Closes {date}'**
+  String hostFormAvailabilityCloses({required String date});
+
+  /// Opens the publication readiness review for a draft form.
+  ///
+  /// In en, this message translates to:
+  /// **'Review & publish'**
+  String get hostFormReviewPublish;
+
+  /// Opens publication readiness review for changes to a live form.
+  ///
+  /// In en, this message translates to:
+  /// **'Review & publish changes'**
+  String get hostFormReviewPublishChanges;
+
+  /// Draft form publication review sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'Review before publishing'**
+  String get hostFormReviewPublishTitle;
+
+  /// Published form version review sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'Review your changes'**
+  String get hostFormReviewChangesTitle;
+
+  /// Guidance shown before publishing a form version.
+  ///
+  /// In en, this message translates to:
+  /// **'Check the respondent experience and the essentials that control who can respond.'**
+  String get hostFormReviewPublishSubtitle;
+
+  /// Guidance for the progressive question-type picker.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with the answer shape you need. You can adjust the details next.'**
+  String get hostFormChooseQuestionTypeHelp;
+
+  /// Recommended question types group label.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended'**
+  String get hostFormRecommendedQuestionTypes;
+
+  /// Additional question types group label.
+  ///
+  /// In en, this message translates to:
+  /// **'More answer types'**
+  String get hostFormMoreQuestionTypes;
+
   /// Opens or titles a form preview.
   ///
   /// In en, this message translates to:
@@ -22798,12 +22933,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Publish changes'**
   String get hostFormPublishChanges;
-
-  /// Explains versioned form publishing.
-  ///
-  /// In en, this message translates to:
-  /// **'Publishing validates the draft and creates an immutable respondent version.'**
-  String get hostFormPublishHelp;
 
   /// Successful form publication message.
   ///
