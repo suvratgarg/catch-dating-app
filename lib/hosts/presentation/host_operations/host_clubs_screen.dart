@@ -15,21 +15,22 @@ class HostClubsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final uidAsync = ref.watch(uidProvider);
-    if (uidAsync.isLoading) {
+    final uidState = catchAsyncStateFromAsyncValue(uidAsync);
+    if (uidState.hasError) {
+      return CatchErrorScaffold.fromError(
+        uidState.error!,
+        context: AppErrorContext.auth,
+        onRetry: () => ref.invalidate(uidProvider),
+      );
+    }
+    if (uidState.isLoading) {
       return HostLoadingScreen(
         title: context.l10n.hostsHostClubsScreenTitleClubs,
         showTabRail: true,
       );
     }
-    if (uidAsync.hasError) {
-      return CatchErrorScaffold.fromError(
-        uidAsync.error!,
-        context: AppErrorContext.auth,
-        onRetry: () => ref.invalidate(uidProvider),
-      );
-    }
 
-    final uid = uidAsync.asData?.value;
+    final uid = uidState.value;
     if (uid == null) return const HostAuthRequiredScreen();
 
     final clubsAsync = ref.watch(_hostClubsForUserProvider(uid));

@@ -81,6 +81,12 @@ interface PreparedRow {
   externalReference: string | null;
   arrivalGroup: string | null;
   ticketType: string | null;
+  revenueAmountMinor: number | null;
+  revenueCurrency: string | null;
+  revenueSource: "hostImport" | "hostEstimate" | null;
+  revenueAllocation: "perAttendee" | "sharedOrder" | null;
+  revenueOrderReference: string | null;
+  revenueOrderAmountMinor: number | null;
   status: "invited" | "registered" | "waitlisted";
 }
 
@@ -195,6 +201,18 @@ export async function importEventAttendeesForHost(
         row.externalReference ?? existing?.externalReference ?? null,
       arrivalGroup: row.arrivalGroup ?? existing?.arrivalGroup ?? null,
       ticketType: row.ticketType ?? existing?.ticketType ?? null,
+      revenueAmountMinor:
+        row.revenueAmountMinor ?? existing?.revenueAmountMinor ?? null,
+      revenueCurrency:
+        row.revenueCurrency ?? existing?.revenueCurrency ?? null,
+      revenueSource: row.revenueSource ?? existing?.revenueSource ?? null,
+      revenueAllocation:
+        row.revenueAllocation ?? existing?.revenueAllocation ?? null,
+      revenueOrderReference:
+        row.revenueOrderReference ?? existing?.revenueOrderReference ?? null,
+      revenueOrderAmountMinor:
+        row.revenueOrderAmountMinor ??
+        existing?.revenueOrderAmountMinor ?? null,
       importId,
       sourceRowId: row.rowId,
       createdAt: existing?.createdAt ?? now,
@@ -823,6 +841,26 @@ export function prepareImportRows(params: {
       continue;
     }
     seenAttendeeIds.add(attendeeId);
+    const revenueAmountMinor = row.revenueAmountMinor ?? null;
+    const revenueCurrency = stringOrNull(row.revenueCurrency)?.toUpperCase() ??
+      null;
+    const revenueSource = row.revenueSource ?? null;
+    const hasRevenue = revenueAmountMinor !== null ||
+      revenueCurrency !== null || revenueSource !== null;
+    if (hasRevenue &&
+        (!Number.isSafeInteger(revenueAmountMinor) ||
+          revenueAmountMinor! < 0 ||
+          revenueCurrency === null ||
+          !/^[A-Z]{3}$/.test(revenueCurrency) ||
+          revenueSource === null)) {
+      errors.push({
+        rowId: row.rowId,
+        code: "invalid-revenue",
+        message: "Revenue needs a non-negative amount, three-letter " +
+          "currency, and reported or estimated source.",
+      });
+      continue;
+    }
     prepared.push({
       attendeeId,
       rowId: row.rowId,
@@ -833,10 +871,46 @@ export function prepareImportRows(params: {
       externalReference,
       arrivalGroup,
       ticketType: stringOrNull(row.ticketType),
+      revenueAmountMinor,
+      revenueCurrency,
+      revenueSource,
+      revenueAllocation: hasRevenue ? "perAttendee" : null,
+      revenueOrderReference: null,
+      revenueOrderAmountMinor: null,
       status: row.status,
     });
   }
+  allocateSharedOrderRevenue(prepared);
   return {prepared, errors};
+}
+
+/**
+ * A repeated imported order total is divided across its attendee rows once.
+ * Host-entered fallbacks are explicitly per attendee and are never divided.
+ */
+export function allocateSharedOrderRevenue(rows: PreparedRow[]): void {
+  const groups = new Map<string, PreparedRow[]>();
+  for (const row of rows) {
+    if (row.arrivalGroup === null || row.revenueSource !== "hostImport" ||
+        row.revenueAmountMinor === null || row.revenueCurrency === null) {
+      continue;
+    }
+    const key = `${row.arrivalGroup}|${row.revenueCurrency}|` +
+      `${row.revenueAmountMinor}`;
+    groups.set(key, [...(groups.get(key) ?? []), row]);
+  }
+  for (const group of groups.values()) {
+    if (group.length < 2) continue;
+    const orderAmount = group[0].revenueAmountMinor!;
+    const baseShare = Math.floor(orderAmount / group.length);
+    const remainder = orderAmount % group.length;
+    group.forEach((row, index) => {
+      row.revenueAmountMinor = baseShare + (index < remainder ? 1 : 0);
+      row.revenueAllocation = "sharedOrder";
+      row.revenueOrderReference = row.arrivalGroup;
+      row.revenueOrderAmountMinor = orderAmount;
+    });
+  }
 }
 
 export function normalizeRosterPhone(
@@ -889,6 +963,9 @@ function canonicalImportPayload(
       externalReference: row.externalReference ?? null,
       arrivalGroup: row.arrivalGroup ?? null,
       ticketType: row.ticketType ?? null,
+      revenueAmountMinor: row.revenueAmountMinor ?? null,
+      revenueCurrency: row.revenueCurrency ?? null,
+      revenueSource: row.revenueSource ?? null,
       status: row.status,
     })),
   };
@@ -912,6 +989,7 @@ function normalizeImportPayload(data: unknown): unknown {
       for (const field of [
         "rowId", "displayName", "phone", "email", "externalReference",
         "arrivalGroup", "ticketType",
+        "revenueCurrency",
       ]) {
         if (typeof row[field] === "string") row[field] = row[field].trim();
       }

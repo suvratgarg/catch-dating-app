@@ -60,7 +60,19 @@ export interface GetOrganizerContactDetailCallableResponse {
     amounts: {
       currency: string;
       amountMinor: number;
-      paidOrderCount: number;
+      factCount: number;
+      /**
+       * @maxItems 4
+       */
+      sources: {
+        source:
+          | "catchPayment"
+          | "hostImport"
+          | "hostEstimate"
+          | "providerOrder";
+        amountMinor: number;
+        factCount: number;
+      }[];
     }[];
   };
   /**
@@ -70,6 +82,19 @@ export interface GetOrganizerContactDetailCallableResponse {
     eventId: string;
     attendeeId: string;
     displayName: string;
+    eventOriginMode: "catchNative" | "externalCompanion" | "unknown";
+    eventProvider:
+      | "catch"
+      | "generic"
+      | "luma"
+      | "eventbrite"
+      | "partiful"
+      | "posh"
+      | "bookmyshow"
+      | "district"
+      | "sortmyscene"
+      | "airbnb"
+      | null;
     source:
       | "catchBooking"
       | "hostImport"
@@ -86,6 +111,16 @@ export interface GetOrganizerContactDetailCallableResponse {
     registeredAtMillis: number | null;
     cancelledAtMillis: number | null;
     checkedInAtMillis: number | null;
+    /**
+     * @maxItems 8
+     */
+    revenues: {
+      currency: string;
+      amountMinor: number;
+      source: "catchPayment" | "hostImport" | "hostEstimate" | "providerOrder";
+      factCount: number;
+      allocation: "perAttendee" | "sharedOrder";
+    }[];
   }[];
   eventsTruncated: boolean;
   /**

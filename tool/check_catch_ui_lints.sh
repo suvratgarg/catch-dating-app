@@ -384,6 +384,35 @@ expect_code_count \
   "catch_no_shell_local_measurement" \
   1
 
+probe_path="$probe_root/lib/hosts/presentation/host_async_state_lint_probe.dart"
+run_analyze_probe "Host route-edge async-state violation" <<'DART'
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+final hostAsyncProvider = FutureProvider<int>((ref) async => 1);
+
+class HostAsyncStateLintProbe extends ConsumerWidget {
+  const HostAsyncStateLintProbe({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final hostAsync = ref.watch(hostAsyncProvider);
+    return Text(
+      hostAsync.isLoading ? 'Loading' : 'Ready',
+      style: CatchTextStyles.bodyM(context),
+    );
+  }
+}
+DART
+
+expect_code_count \
+  "Host route-edge async-state violation" \
+  "catch_async_requires_state_surface" \
+  1
+
+probe_path="$probe_root/lib/events/presentation/widgets/event_detail_lint_probe.dart"
+
 run_analyze_probe "generated steering corpus" <"$generated_probe_path"
 while IFS=$'\t' read -r code minimum; do
   expect_code_count "generated steering corpus" "$code" "$minimum"

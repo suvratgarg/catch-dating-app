@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.33.0
-updated: 2026-08-19
+version: 1.34.0
+updated: 2026-08-20
 owner: recursive_audit_loop
 status: active
 ---
@@ -664,6 +664,12 @@ replaces `eventParticipations`:
   ticket-buyer key shared by guests expected to arrive together. Adapters keep
   it separate from attendee-level external references, imports include it in
   their canonical payload hash, and it remains private roster data;
+- optional attendee revenue fields retain organizer-reported CSV amounts,
+  explicit organizer-entered per-guest estimates, or financially complete
+  provider facts with their currency and allocation provenance. Repeated equal
+  imported totals in one `arrivalGroup` are treated as one shared order and
+  allocated across its guest rows exactly once. These facts never become
+  verified Catch payments by inference;
 - `eventAttendeeImports` records actor, event, client idempotency key, format,
   canonical payload hash, counts, bounded row errors and terminal state. It is
   not a copy of the uploaded file.
@@ -800,13 +806,17 @@ phone/email evidence, an optional first private note, and its zero-history
 trait. Organizer-entered endpoints remain `proposed`, organizer-scoped evidence:
 they create no attendee, verified identity, UID, Consumer profile, opt-in, or
 messaging grant. Only unlinked contacts whose primary source is `hostManual`
-may later edit or clear those endpoints. The Customer detail revenue block
-joins only a verified linked UID to
-completed, non-refunded Catch payments whose event ids already occur in that
-contact's organizer event edges. It reports partial coverage when either the
-bounded event timeline or linked-UID payment scan truncates, and unavailable
-coverage for unlinked or ambiguous contacts. External-provider revenue remains
-absent until a provider supplies financially complete reconciled facts.
+may later edit or clear those endpoints. Customer detail unifies event-scoped
+revenue from completed, non-refunded Catch payments, financially complete
+provider orders, organizer-imported amounts, and explicit organizer estimates.
+Every amount retains its source; reported and estimated values are never
+presented as verified payments. A Catch payment takes precedence over a
+reported fact for the same customer event so the sale is not counted twice.
+Imported and estimated revenue does not require a linked Catch UID. Event rows
+hydrate the bounded canonical event set so legacy edges immediately receive an
+event label and Catch-native, external-companion, or unknown origin; new edge
+projections also retain that snapshot. Revenue reports partial coverage when
+the bounded event timeline or an eligible linked-UID payment scan truncates.
 Hosts currently retain event-scoped roster access through the existing
 authorized roster boundary. The Host Audience client consumes the directory,
 detail, export and contact-mutation callables; it never reads these collections

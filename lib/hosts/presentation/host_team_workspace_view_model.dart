@@ -1,12 +1,12 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
 import 'package:catch_dating_app/hosts/presentation/host_team_workspace_state.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 HostTeamWorkspaceState buildHostTeamWorkspaceState({
   required String? uid,
-  required AsyncValue<HostProfile?> profile,
-  required AsyncValue<List<Club>> clubs,
+  required CatchAsyncState<HostProfile?> profile,
+  required CatchAsyncState<List<Club>> clubs,
   bool editMode = true,
   bool creatingProfile = false,
 }) {
@@ -29,39 +29,35 @@ HostTeamWorkspaceState buildHostTeamWorkspaceState({
 
 HostTeamProfileState buildHostTeamProfileState({
   required String? uid,
-  required AsyncValue<HostProfile?> profile,
-  required AsyncValue<List<Club>> clubs,
+  required CatchAsyncState<HostProfile?> profile,
+  required CatchAsyncState<List<Club>> clubs,
 }) {
-  final loadedProfile = profile.asData?.value;
+  final loadedProfile = profile.value;
   if (loadedProfile != null) {
     return HostTeamProfileContent(profile: loadedProfile);
   }
 
   final fallbackProfile = uid == null
       ? null
-      : _fallbackHostProfileFromClubs(uid, clubs.asData?.value);
+      : _fallbackHostProfileFromClubs(uid, clubs.value);
   if (fallbackProfile != null) {
     return HostTeamProfileContent(profile: fallbackProfile, isFallback: true);
   }
 
-  return switch (profile) {
-    AsyncError(:final error) => HostTeamProfileError(error: error),
-    AsyncLoading() => const HostTeamProfileLoading(),
-    AsyncData() => const HostTeamProfileMissing(),
-  };
+  if (profile.hasError) return HostTeamProfileError(error: profile.error!);
+  if (profile.isLoading) return const HostTeamProfileLoading();
+  return const HostTeamProfileMissing();
 }
 
 HostTeamHostedClubsState buildHostTeamHostedClubsState(
-  AsyncValue<List<Club>> clubs,
+  CatchAsyncState<List<Club>> clubs,
 ) {
-  return switch (clubs) {
-    AsyncError(:final error) => HostTeamHostedClubsError(error: error),
-    AsyncData(:final value) =>
-      value.isEmpty
-          ? const HostTeamHostedClubsEmpty()
-          : HostTeamHostedClubsContent(clubs: value),
-    _ => const HostTeamHostedClubsLoading(),
-  };
+  if (clubs.hasError) return HostTeamHostedClubsError(error: clubs.error!);
+  if (clubs.isLoading) return const HostTeamHostedClubsLoading();
+  final value = clubs.value ?? const <Club>[];
+  return value.isEmpty
+      ? const HostTeamHostedClubsEmpty()
+      : HostTeamHostedClubsContent(clubs: value);
 }
 
 HostProfile? _fallbackHostProfileFromClubs(String uid, List<Club>? clubs) {

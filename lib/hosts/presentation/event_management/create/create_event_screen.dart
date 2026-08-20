@@ -438,7 +438,14 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
           .read(createEventControllerProvider.notifier)
           .pickRosterFile(providerHint: _externalBookingProvider);
       if (table == null || !mounted) return;
-      final plan = await showHostRosterMapping(context, table);
+      final plan = await showHostRosterMapping(
+        context,
+        table,
+        suggestedRevenueAmountMinor:
+            ((double.tryParse(_priceController.text.trim()) ?? 0) * 100)
+                .round(),
+        defaultRevenueCurrency: _eventCurrencyCode,
+      );
       if (plan == null || !mounted) return;
       setState(() => _setRosterPlan(plan));
     } on HostRosterImportException catch (error) {

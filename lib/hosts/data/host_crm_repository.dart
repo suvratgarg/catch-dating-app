@@ -24,6 +24,17 @@ enum HostAudiencePermissionStatus { unknown, optedIn, optedOut }
 
 enum HostCustomerRevenueCoverage { exact, partial, unavailable }
 
+enum HostCustomerRevenueSource {
+  catchPayment,
+  hostImport,
+  hostEstimate,
+  providerOrder,
+}
+
+enum HostCustomerEventOrigin { catchNative, externalCompanion, unknown }
+
+enum HostCustomerRevenueAllocation { perAttendee, sharedOrder }
+
 enum HostCustomerHistoryCoverage { exact, unavailable }
 
 enum HostContactMergeMatchKind {
@@ -377,28 +388,77 @@ class HostAudienceEventFact {
   const HostAudienceEventFact({
     required this.eventId,
     required this.displayName,
+    this.eventOrigin = HostCustomerEventOrigin.unknown,
+    this.eventProvider,
     required this.source,
     required this.status,
     required this.checkedIn,
     required this.eventStartAt,
+    this.revenues = const [],
   });
 
   factory HostAudienceEventFact.fromMap(Map<Object?, Object?> map) =>
       HostAudienceEventFact(
         eventId: _requiredString(map, 'eventId'),
         displayName: _requiredString(map, 'displayName'),
+        eventOrigin: _enumByName(
+          HostCustomerEventOrigin.values,
+          _requiredString(map, 'eventOriginMode'),
+          'event origin',
+        ),
+        eventProvider: _nullableString(map['eventProvider']),
         source: _requiredString(map, 'source'),
         status: _requiredString(map, 'status'),
         checkedIn: _requiredBool(map, 'checkedIn'),
         eventStartAt: _dateTimeFromMillis(map['eventStartAtMillis']),
+        revenues: _mapList(
+          map['revenues'],
+          'event revenue',
+        ).map(HostCustomerEventRevenue.fromMap).toList(growable: false),
       );
 
   final String eventId;
   final String displayName;
+  final HostCustomerEventOrigin eventOrigin;
+  final String? eventProvider;
   final String source;
   final String status;
   final bool checkedIn;
   final DateTime? eventStartAt;
+  final List<HostCustomerEventRevenue> revenues;
+}
+
+class HostCustomerEventRevenue {
+  const HostCustomerEventRevenue({
+    required this.currency,
+    required this.amountMinor,
+    required this.source,
+    required this.factCount,
+    required this.allocation,
+  });
+
+  factory HostCustomerEventRevenue.fromMap(Map<Object?, Object?> map) =>
+      HostCustomerEventRevenue(
+        currency: _requiredString(map, 'currency'),
+        amountMinor: _requiredInt(map, 'amountMinor'),
+        source: _enumByName(
+          HostCustomerRevenueSource.values,
+          _requiredString(map, 'source'),
+          'event revenue source',
+        ),
+        factCount: _requiredInt(map, 'factCount'),
+        allocation: _enumByName(
+          HostCustomerRevenueAllocation.values,
+          _requiredString(map, 'allocation'),
+          'event revenue allocation',
+        ),
+      );
+
+  final String currency;
+  final int amountMinor;
+  final HostCustomerRevenueSource source;
+  final int factCount;
+  final HostCustomerRevenueAllocation allocation;
 }
 
 class HostCustomerTraits {
@@ -453,19 +513,49 @@ class HostCustomerRevenueAmount {
   const HostCustomerRevenueAmount({
     required this.currency,
     required this.amountMinor,
-    required this.paidOrderCount,
-  });
+    int? factCount,
+    int? paidOrderCount,
+    this.sources = const [],
+  }) : factCount = factCount ?? paidOrderCount ?? 0;
 
   factory HostCustomerRevenueAmount.fromMap(Map<Object?, Object?> map) =>
       HostCustomerRevenueAmount(
         currency: _requiredString(map, 'currency'),
         amountMinor: _requiredInt(map, 'amountMinor'),
-        paidOrderCount: _requiredInt(map, 'paidOrderCount'),
+        factCount: _requiredInt(map, 'factCount'),
+        sources: _mapList(
+          map['sources'],
+          'customer revenue sources',
+        ).map(HostCustomerRevenueSourceAmount.fromMap).toList(growable: false),
       );
 
   final String currency;
   final int amountMinor;
-  final int paidOrderCount;
+  final int factCount;
+  final List<HostCustomerRevenueSourceAmount> sources;
+}
+
+class HostCustomerRevenueSourceAmount {
+  const HostCustomerRevenueSourceAmount({
+    required this.source,
+    required this.amountMinor,
+    required this.factCount,
+  });
+
+  factory HostCustomerRevenueSourceAmount.fromMap(Map<Object?, Object?> map) =>
+      HostCustomerRevenueSourceAmount(
+        source: _enumByName(
+          HostCustomerRevenueSource.values,
+          _requiredString(map, 'source'),
+          'revenue source',
+        ),
+        amountMinor: _requiredInt(map, 'amountMinor'),
+        factCount: _requiredInt(map, 'factCount'),
+      );
+
+  final HostCustomerRevenueSource source;
+  final int amountMinor;
+  final int factCount;
 }
 
 class HostCustomerRevenue {

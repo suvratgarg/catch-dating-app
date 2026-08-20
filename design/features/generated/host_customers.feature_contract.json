@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/host_customers.feature.json",
   "generatedFor": "2026-08-18",
-  "sourceDigest": "sha256:75ee39619562a802dd1640a31632c81c53718082d5332b698996748bccc2f3d7",
-  "resolvedDigest": "sha256:09e3abaed179891770bd6f1347474d46927684419055e04d5e4bbc245160c07b",
+  "sourceDigest": "sha256:24970efda9c8c07f4256fcc72227f304b8b1a3ca0175175848e15835bc6d8bd2",
+  "resolvedDigest": "sha256:da56e3e287e62004f81cf67810899e2b9d2697e3a15d6acddcaf63979a8a2dfd",
   "feature": {
     "id": "feature.host_customers",
     "name": "Host Customers",
@@ -650,7 +650,7 @@
               "id": "host_customers.contact_updated"
             }
           ],
-          "description": "Renames, pauses or resumes WhatsApp, or removes a customer using revision-checked server mutations.",
+          "description": "Saves organizer-owned customer identity fields from the inline details editor, pauses or resumes WhatsApp, or removes a customer using revision-checked server mutations.",
           "implementationStatus": "implemented"
         },
         {
@@ -2101,7 +2101,7 @@
           "id": "customer_manage",
           "stateId": "customer_manage",
           "kind": "mutation",
-          "status": "implemented",
+          "status": "tested",
           "dimensions": {
             "load": "ready",
             "directory": "populated",
@@ -2122,6 +2122,7 @@
             "captureIds": [],
             "previewIds": [],
             "tests": [
+              "test/hosts/host_operations_screen_test.dart",
               "test/hosts/host_customers_screen_state_test.dart"
             ]
           },

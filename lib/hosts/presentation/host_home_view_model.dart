@@ -1,13 +1,13 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 HostHomeRouteState buildHostHomeRouteState({
-  required AsyncValue<String?> uid,
-  AsyncValue<List<Club>>? clubs,
+  required CatchAsyncState<String?> uid,
+  CatchAsyncState<List<Club>>? clubs,
 }) {
   if (uid.hasError) {
     return HostHomeRouteState(
@@ -18,7 +18,7 @@ HostHomeRouteState buildHostHomeRouteState({
     );
   }
 
-  final currentUid = uid.asData?.value;
+  final currentUid = uid.value;
   if (currentUid == null) {
     return uid.isLoading
         ? const HostHomeRouteState(status: HostHomeRouteStatus.loading)
@@ -26,7 +26,7 @@ HostHomeRouteState buildHostHomeRouteState({
   }
 
   final clubValue = clubs;
-  if (clubValue == null || clubValue.isLoading) {
+  if (clubValue == null) {
     return HostHomeRouteState(
       status: HostHomeRouteStatus.loading,
       uid: currentUid,
@@ -40,9 +40,15 @@ HostHomeRouteState buildHostHomeRouteState({
       stackTrace: clubValue.stackTrace,
     );
   }
+  if (clubValue.isLoading) {
+    return HostHomeRouteState(
+      status: HostHomeRouteStatus.loading,
+      uid: currentUid,
+    );
+  }
 
   final resolvedClubs = List<Club>.unmodifiable(
-    clubValue.asData?.value ?? const <Club>[],
+    clubValue.value ?? const <Club>[],
   );
   return HostHomeRouteState(
     status: resolvedClubs.isEmpty
@@ -54,7 +60,7 @@ HostHomeRouteState buildHostHomeRouteState({
 }
 
 HostEventsWorkspaceState buildHostEventsWorkspaceState(
-  AsyncValue<List<Event>> events, {
+  CatchAsyncState<List<Event>> events, {
   required DateTime now,
   String? featuredEventId,
   bool hasMoreActive = false,
@@ -65,11 +71,6 @@ HostEventsWorkspaceState buildHostEventsWorkspaceState(
   Object? pastError,
   StackTrace? pastStackTrace,
 }) {
-  if (events.isLoading) {
-    return const HostEventsWorkspaceState(
-      status: HostEventsWorkspaceStatus.loading,
-    );
-  }
   if (events.hasError) {
     return HostEventsWorkspaceState(
       status: HostEventsWorkspaceStatus.error,
@@ -77,9 +78,14 @@ HostEventsWorkspaceState buildHostEventsWorkspaceState(
       stackTrace: events.stackTrace,
     );
   }
+  if (events.isLoading) {
+    return const HostEventsWorkspaceState(
+      status: HostEventsWorkspaceStatus.loading,
+    );
+  }
 
   return HostEventsWorkspaceState.fromEvents(
-    events: events.asData?.value ?? const <Event>[],
+    events: events.value ?? const <Event>[],
     now: now,
     featuredEventId: featuredEventId,
     hasMoreActive: hasMoreActive,
@@ -93,15 +99,10 @@ HostEventsWorkspaceState buildHostEventsWorkspaceState(
 }
 
 HostEventsOverviewState buildHostEventsOverviewState(
-  AsyncValue<List<Event>> events, {
+  CatchAsyncState<List<Event>> events, {
   required DateTime now,
   required AppLocalizations l10n,
 }) {
-  if (events.isLoading) {
-    return const HostEventsOverviewState(
-      status: HostEventsOverviewStatus.loading,
-    );
-  }
   if (events.hasError) {
     return HostEventsOverviewState(
       status: HostEventsOverviewStatus.error,
@@ -109,17 +110,22 @@ HostEventsOverviewState buildHostEventsOverviewState(
       stackTrace: events.stackTrace,
     );
   }
+  if (events.isLoading) {
+    return const HostEventsOverviewState(
+      status: HostEventsOverviewStatus.loading,
+    );
+  }
 
-  final activeEvents = events.asData?.value
+  final activeEvents = (events.value ?? const <Event>[])
       .where((event) => !event.isCancelled && event.endTime.isAfter(now))
       .toList();
-  activeEvents?.sort((a, b) {
+  activeEvents.sort((a, b) {
     final aIsLive = !a.startTime.isAfter(now) && a.endTime.isAfter(now);
     final bIsLive = !b.startTime.isAfter(now) && b.endTime.isAfter(now);
     if (aIsLive != bIsLive) return aIsLive ? -1 : 1;
     return a.startTime.compareTo(b.startTime);
   });
-  final event = activeEvents?.firstOrNull;
+  final event = activeEvents.firstOrNull;
   if (event == null) {
     return const HostEventsOverviewState(
       status: HostEventsOverviewStatus.empty,
@@ -127,7 +133,7 @@ HostEventsOverviewState buildHostEventsOverviewState(
   }
 
   final tasks = HostEventAttentionData.forEvents(
-    activeEvents!,
+    activeEvents,
     l10n,
   ).toList(growable: false);
 

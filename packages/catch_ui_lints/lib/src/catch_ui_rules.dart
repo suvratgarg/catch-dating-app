@@ -107,6 +107,14 @@ const _platformPackages = <String>{
   'url_launcher',
 };
 
+const _manualAsyncSnapshotMembers = <String>{
+  'asData',
+  'hasError',
+  'hasValue',
+  'isLoading',
+  'valueOrNull',
+};
+
 const _lowLevelTypographyRoles = <String>{'bodyS', 'bodyM', 'titleS'};
 
 const _lowLevelTypographyOwnerPaths = <String>{
@@ -561,6 +569,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
       isEventDetailPath: _isEventDetailPath(path),
       isColorExemptPath: false,
       isFeaturePresentationPath: _isFeaturePresentationPath(path),
+      isHostPresentationPath: _isHostPresentationPath(path),
       isPresentationPath: _isPresentationPath(path),
       isSizingScannerPath: _isSizingScannerPath(path),
       isUiSystemScannerPath: _isUiSystemScannerPath(path),
@@ -615,6 +624,10 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     return path.contains('/lib/') && path.contains('/presentation/');
   }
 
+  bool _isHostPresentationPath(String path) {
+    return path.contains('/lib/hosts/presentation/');
+  }
+
   bool _isSizingScannerPath(String path) {
     return !path.contains('/lib/design_fixtures/');
   }
@@ -648,6 +661,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     required this.isEventDetailPath,
     required this.isColorExemptPath,
     required this.isFeaturePresentationPath,
+    required this.isHostPresentationPath,
     required this.isPresentationPath,
     required this.isSizingScannerPath,
     required this.isUiSystemScannerPath,
@@ -660,6 +674,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   final bool isEventDetailPath;
   final bool isColorExemptPath;
   final bool isFeaturePresentationPath;
+  final bool isHostPresentationPath;
   final bool isPresentationPath;
   final bool isSizingScannerPath;
   final bool isUiSystemScannerPath;
@@ -667,6 +682,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   final List<int> _lineStarts;
   Set<String> _locallyShadowedTokenNames = const <String>{};
   final Set<String> _watchedProviderVariables = <String>{};
+  final Set<String> _watchedMutationVariables = <String>{};
 
   @override
   void visitCompilationUnit(CompilationUnit node) {
@@ -687,6 +703,12 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
       );
       for (final declaration in watchedVariablePattern.allMatches(source)) {
         final variable = declaration.group(1)!;
+        final declarationSource = declaration.group(0)!;
+        _watchedProviderVariables.add(variable);
+        if (variable.toLowerCase().contains('mutation') ||
+            declarationSource.contains('Mutation')) {
+          _watchedMutationVariables.add(variable);
+        }
         final forcedValuePattern = RegExp(
           '${RegExp.escape(variable)}\\s*\\.(?:value\\s*!|requireValue)\\b',
         );
@@ -708,6 +730,10 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
       if (initializer != null &&
           RegExp(r'\bref\.watch\s*\(').hasMatch(initializer.toSource())) {
         _watchedProviderVariables.add(node.name.lexeme);
+        if (node.name.lexeme.toLowerCase().contains('mutation') ||
+            initializer.toSource().contains('Mutation')) {
+          _watchedMutationVariables.add(node.name.lexeme);
+        }
       }
       if (initializer != null &&
           _screenGutterNamePattern.hasMatch(node.name.lexeme) &&
@@ -1031,6 +1057,9 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
   @override
   void visitPrefixedIdentifier(PrefixedIdentifier node) {
+    if (_isManualHostAsyncInspection(node.prefix, node.identifier.name)) {
+      _reportAtNode(node, CatchUiLayoutRules.asyncRequiresStateSurface);
+    }
     if (node.prefix.name == 'Sizes' &&
         _legacySpacingNamePattern.hasMatch(node.identifier.name)) {
       _reportAtNode(node, CatchUiLayoutRules.noLegacySpacingToken);
@@ -1051,6 +1080,9 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
   @override
   void visitPropertyAccess(PropertyAccess node) {
+    if (_isManualHostAsyncInspection(node.target, node.propertyName.name)) {
+      _reportAtNode(node, CatchUiLayoutRules.asyncRequiresStateSurface);
+    }
     if (isFeaturePresentationPath && node.propertyName.name == 'requireValue') {
       _reportAtNode(node, CatchUiLayoutRules.asyncRequiresStateSurface);
     }
@@ -1225,6 +1257,19 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
         if (argument is NamedExpression) argument.name.label.name,
     };
     return !names.contains('loading') || !names.contains('error');
+  }
+
+  bool _isManualHostAsyncInspection(Expression? target, String member) {
+    if (!isHostPresentationPath ||
+        !_manualAsyncSnapshotMembers.contains(member) ||
+        target == null) {
+      return false;
+    }
+    if (target is SimpleIdentifier) {
+      return _watchedProviderVariables.contains(target.name) &&
+          !_watchedMutationVariables.contains(target.name);
+    }
+    return target.toSource().contains('ref.watch(');
   }
 
   bool _isMediaQuerySizeRead(MethodInvocation node) {
