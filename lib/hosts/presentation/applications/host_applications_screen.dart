@@ -111,9 +111,8 @@ class _HostApplicationsScreenState
                 ),
               ),
               gapH16,
-              CatchSearchField(
+              CatchSearchField.expanded(
                 key: const ValueKey('host-applications-search'),
-                mode: CatchSearchFieldMode.expanded,
                 value: _query ?? '',
                 contract: CatchContractConstraints
                     .listOrganizerApplicationsCallablePayloadQuery,
@@ -126,7 +125,6 @@ class _HostApplicationsScreenState
                 onSubmitted: (value) => setState(
                   () => _query = value.trim().isEmpty ? null : value.trim(),
                 ),
-                onCloseSearch: () => setState(() => _query = null),
               ),
               gapH12,
               SingleChildScrollView(

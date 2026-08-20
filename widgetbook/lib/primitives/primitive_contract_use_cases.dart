@@ -5796,8 +5796,7 @@ Widget catchSearchFieldContractStates(BuildContext context) {
       _StateCard(
         label: 'expanding-collapsed',
         child: _FieldWidth(
-          child: CatchSearchField(
-            mode: CatchSearchFieldMode.expanding,
+          child: CatchSearchField.expanding(
             expanded: false,
             maxWidth: 420,
             onOpenSearch: _noop,
@@ -5807,12 +5806,9 @@ Widget catchSearchFieldContractStates(BuildContext context) {
       _StateCard(
         label: 'expanding-expanded',
         child: _FieldWidth(
-          child: CatchSearchField(
-            mode: CatchSearchFieldMode.expanded,
+          child: CatchSearchField.expanded(
             value: 'run club',
-            maxWidth: 420,
             onChanged: _ignoreString,
-            onCloseSearch: _noop,
           ),
         ),
       ),

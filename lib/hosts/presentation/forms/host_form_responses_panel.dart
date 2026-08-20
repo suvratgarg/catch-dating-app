@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -11,7 +9,6 @@ import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
@@ -26,12 +23,14 @@ class HostFormResponsesPanel extends ConsumerStatefulWidget {
   const HostFormResponsesPanel({
     super.key,
     required this.organizerId,
+    this.query,
     this.formId,
     this.formTitle,
     this.onClearFormFilter,
   });
 
   final String organizerId;
+  final String? query;
   final String? formId;
   final String? formTitle;
   final VoidCallback? onClearFormFilter;
@@ -43,15 +42,7 @@ class HostFormResponsesPanel extends ConsumerStatefulWidget {
 
 class _HostFormResponsesPanelState
     extends ConsumerState<HostFormResponsesPanel> {
-  Timer? _searchDebounce;
-  String? _query;
   HostFormResponseStatus? _status;
-
-  @override
-  void dispose() {
-    _searchDebounce?.cancel();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +50,7 @@ class _HostFormResponsesPanelState
       organizerId: widget.organizerId,
       formId: widget.formId,
       statuses: _status == null ? const {} : {_status!},
-      query: _query,
+      query: widget.query,
     );
     final responses = ref.watch(hostFormResponsesControllerProvider(request));
     return Column(
@@ -91,20 +82,6 @@ class _HostFormResponsesPanelState
           ),
           gapH16,
         ],
-        CatchSearchField(
-          key: const ValueKey('host-form-responses-search'),
-          mode: CatchSearchFieldMode.expanded,
-          value: _query ?? '',
-          contract: CatchContractConstraints
-              .listOrganizerFormResponsesCallablePayloadQuery,
-          placeholder: context.l10n.hostFormResponsesSearch,
-          semanticLabel: context.l10n.hostFormResponsesSearch,
-          textInputAction: TextInputAction.search,
-          onChanged: _scheduleSearch,
-          onSubmitted: _applySearch,
-          onCloseSearch: () => _applySearch(''),
-        ),
-        gapH12,
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
@@ -155,7 +132,7 @@ class _HostFormResponsesPanelState
           ),
           builder: (context, state) {
             if (state.responses.isEmpty) {
-              final filtered = _query != null || _status != null;
+              final filtered = widget.query != null || _status != null;
               return CatchEmptyState(
                 icon: CatchIcons.descriptionOutlined,
                 title: filtered
@@ -233,19 +210,5 @@ class _HostFormResponsesPanelState
         ),
       ],
     );
-  }
-
-  void _scheduleSearch(String value) {
-    _searchDebounce?.cancel();
-    _searchDebounce = Timer(
-      CatchMotion.searchDebounce,
-      () => _applySearch(value),
-    );
-  }
-
-  void _applySearch(String value) {
-    if (!mounted) return;
-    final normalized = value.trim();
-    setState(() => _query = normalized.isEmpty ? null : normalized);
   }
 }
