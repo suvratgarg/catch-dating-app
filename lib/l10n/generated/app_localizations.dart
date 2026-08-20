@@ -22595,29 +22595,95 @@ abstract class AppLocalizations {
   /// **'Responses {count}'**
   String hostFormResponsesTab({required int count});
 
-  /// Compact builder lifecycle and question-count summary.
-  ///
-  /// In en, this message translates to:
-  /// **'{status} · {count, plural, =0{No questions} =1{1 question} other{{count} questions}}'**
-  String hostFormBuilderSummary({required String status, required int count});
-
   /// Primary heading for the compact form builder outline.
   ///
   /// In en, this message translates to:
   /// **'Questions'**
   String get hostFormQuestionsTitle;
 
-  /// Guidance for editing questions from the compact outline.
+  /// Settings label in the compact builder progress rail.
   ///
   /// In en, this message translates to:
-  /// **'Open a question to edit or reorder it.'**
-  String get hostFormQuestionsHelp;
+  /// **'Settings'**
+  String get hostFormSettingsStep;
 
-  /// Compact summary of advanced form settings.
+  /// Publish label in the compact builder progress rail.
   ///
   /// In en, this message translates to:
-  /// **'Access, availability, confirmation, and privacy'**
-  String get hostFormSettingsSummary;
+  /// **'Publish'**
+  String get hostFormPublishStep;
+
+  /// Accessible label for compact form builder steps.
+  ///
+  /// In en, this message translates to:
+  /// **'Form builder progress'**
+  String get hostFormBuilderProgress;
+
+  /// Question-selection step heading for application forms.
+  ///
+  /// In en, this message translates to:
+  /// **'What do you need to know?'**
+  String get hostFormQuestionsPrompt;
+
+  /// Question-selection guidance for application forms.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the questions that will help you decide who to call.'**
+  String get hostFormQuestionsPromptHelp;
+
+  /// Compact form settings step heading.
+  ///
+  /// In en, this message translates to:
+  /// **'How should this form work?'**
+  String get hostFormSettingsPrompt;
+
+  /// Compact form settings step guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Set access, availability, confirmation, and privacy.'**
+  String get hostFormSettingsPromptHelp;
+
+  /// Compact publish review step heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to publish?'**
+  String get hostFormPublishPrompt;
+
+  /// Advances from compact questions to form settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue to settings'**
+  String get hostFormContinueToSettings;
+
+  /// Advances from compact settings to publish review.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue to publish'**
+  String get hostFormContinueToPublish;
+
+  /// Opens direct question reordering controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Reorder questions'**
+  String get hostFormReorderQuestions;
+
+  /// Guidance for direct question reordering.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag questions to change their order within each section.'**
+  String get hostFormReorderQuestionsHelp;
+
+  /// Accessible label for a question drag handle.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to reorder question'**
+  String get hostFormReorderQuestion;
+
+  /// Moves a form question to another section.
+  ///
+  /// In en, this message translates to:
+  /// **'Move to section'**
+  String get hostFormMoveToSection;
 
   /// Accessible label for section edit and reorder actions.
   ///
@@ -22723,6 +22789,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Preview'**
   String get hostFormPreview;
+
+  /// Guidance for previewing from the publish step.
+  ///
+  /// In en, this message translates to:
+  /// **'Check the exact respondent experience before publishing.'**
+  String get hostFormPreviewHelp;
 
   /// Explains preview fidelity.
   ///

@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -32,6 +33,8 @@ import 'package:go_router/go_router.dart';
 
 enum _BuilderView { build, responses }
 
+enum _CompactBuilderStep { questions, settings, publish }
+
 enum _BuilderAction { undo, redo, share, pause, resume, archive }
 
 enum _SectionAction { edit, moveUp, moveDown, remove }
@@ -55,6 +58,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
   int? _selectedSection;
   int? _selectedQuestion;
   _BuilderView _view = _BuilderView.build;
+  _CompactBuilderStep _compactStep = _CompactBuilderStep.questions;
 
   @override
   Widget build(BuildContext context) {
@@ -71,10 +75,21 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
         widget.formId,
       ).notifier,
     );
+    final compact =
+        MediaQuery.sizeOf(context).width <
+        CatchLayout.formBuilderExpandedBreakpoint;
 
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
-        title: title,
+        title: compact ? null : title,
+        titleWidget: compact
+            ? Text(
+                title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: CatchTextStyles.sectionTitle(context),
+              )
+            : null,
         subtitle: editorValue == null ? null : _saveLabel(context, editorValue),
         leadingType: CatchTopBarLeading.back,
         divider: scrolledUnder,
@@ -111,22 +126,17 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
             ),
         ],
       ),
-      bottomNavigationBar:
-          editorValue == null ||
-              _view != _BuilderView.build ||
-              editorValue.editor.form.status == HostFormLifecycleStatus.archived
-          ? null
-          : CatchBottomAction(
-              label:
-                  editorValue.editor.form.status ==
-                      HostFormLifecycleStatus.published
-                  ? context.l10n.hostFormReviewPublishChanges
-                  : context.l10n.hostFormReviewPublish,
-              isLoading: editorValue.operationInProgress,
-              onPressed: editorValue.operationInProgress
-                  ? null
-                  : () => _reviewAndPublish(notifier, editorValue),
-            ),
+      bottomNavigationBar: _HostFormBuilderBottomAction(
+        state: editorValue,
+        visible: _view == _BuilderView.build,
+        compact: compact,
+        step: _compactStep,
+        onStepChanged: (step) => setState(() => _compactStep = step),
+        onReviewAndPublish: editorValue == null
+            ? null
+            : () => _reviewAndPublish(notifier, editorValue),
+        onPublish: () => _publish(notifier),
+      ),
       body: SafeArea(
         top: false,
         bottom: false,
@@ -164,6 +174,11 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                       formId: widget.formId,
                       state: value,
                       notifier: notifier,
+                      step: _compactStep,
+                      onStepChanged: (step) => setState(() {
+                        _compactStep = step;
+                      }),
+                      onPreview: _openPreview,
                       onSelectionChanged: (section, question) => setState(() {
                         _selectedSection = section;
                         _selectedQuestion = question;
@@ -388,12 +403,79 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
   }
 }
 
+class _HostFormBuilderBottomAction extends StatelessWidget {
+  const _HostFormBuilderBottomAction({
+    required this.state,
+    required this.visible,
+    required this.compact,
+    required this.step,
+    required this.onStepChanged,
+    required this.onReviewAndPublish,
+    required this.onPublish,
+  });
+
+  final HostFormEditorState? state;
+  final bool visible;
+  final bool compact;
+  final _CompactBuilderStep step;
+  final ValueChanged<_CompactBuilderStep> onStepChanged;
+  final VoidCallback? onReviewAndPublish;
+  final VoidCallback onPublish;
+
+  @override
+  Widget build(BuildContext context) {
+    final current = state;
+    if (current == null ||
+        !visible ||
+        current.editor.form.status == HostFormLifecycleStatus.archived) {
+      return const SizedBox.shrink();
+    }
+    final isLoading = current.operationInProgress;
+    if (!compact) {
+      return CatchBottomAction(
+        label: current.editor.form.status == HostFormLifecycleStatus.published
+            ? context.l10n.hostFormReviewPublishChanges
+            : context.l10n.hostFormReviewPublish,
+        isLoading: isLoading,
+        onPressed: isLoading ? null : onReviewAndPublish,
+      );
+    }
+    final label = switch (step) {
+      _CompactBuilderStep.questions => context.l10n.hostFormContinueToSettings,
+      _CompactBuilderStep.settings => context.l10n.hostFormContinueToPublish,
+      _CompactBuilderStep.publish =>
+        current.editor.form.status == HostFormLifecycleStatus.published
+            ? context.l10n.hostFormPublishChanges
+            : context.l10n.hostFormPublish,
+    };
+    return CatchBottomAction(
+      label: label,
+      isLoading: isLoading,
+      onPressed: isLoading
+          ? null
+          : () {
+              switch (step) {
+                case _CompactBuilderStep.questions:
+                  onStepChanged(_CompactBuilderStep.settings);
+                case _CompactBuilderStep.settings:
+                  onStepChanged(_CompactBuilderStep.publish);
+                case _CompactBuilderStep.publish:
+                  onPublish();
+              }
+            },
+    );
+  }
+}
+
 class _CompactFormEditor extends StatelessWidget {
   const _CompactFormEditor({
     required this.organizerId,
     required this.formId,
     required this.state,
     required this.notifier,
+    required this.step,
+    required this.onStepChanged,
+    required this.onPreview,
     required this.onSelectionChanged,
   });
 
@@ -401,37 +483,153 @@ class _CompactFormEditor extends StatelessWidget {
   final String formId;
   final HostFormEditorState state;
   final HostFormEditorController notifier;
+  final _CompactBuilderStep step;
+  final ValueChanged<_CompactBuilderStep> onStepChanged;
+  final VoidCallback onPreview;
   final void Function(int section, int? question) onSelectionChanged;
 
   @override
   Widget build(BuildContext context) {
     final definition = state.editor.definition;
-    final questionCount = definition.sections.fold<int>(
-      0,
-      (count, section) => count + section.questions.length,
-    );
-    final t = CatchTokens.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _FormStatusNotices(state: state, notifier: notifier),
+        _CompactBuilderProgress(step: step, onStepChanged: onStepChanged),
+        gapH24,
+        switch (step) {
+          _CompactBuilderStep.questions => _CompactQuestionsStep(
+            organizerId: organizerId,
+            formId: formId,
+            definition: definition,
+            notifier: notifier,
+            onSelectionChanged: onSelectionChanged,
+          ),
+          _CompactBuilderStep.settings => _CompactSettingsStep(
+            definition: definition,
+            notifier: notifier,
+          ),
+          _CompactBuilderStep.publish => _CompactPublishStep(
+            state: state,
+            onPreview: onPreview,
+          ),
+        },
+      ],
+    );
+  }
+}
+
+class _CompactBuilderProgress extends StatelessWidget {
+  const _CompactBuilderProgress({
+    required this.step,
+    required this.onStepChanged,
+  });
+
+  final _CompactBuilderStep step;
+  final ValueChanged<_CompactBuilderStep> onStepChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final steps = [
+      (
+        step: _CompactBuilderStep.questions,
+        label: context.l10n.hostFormQuestionsTitle,
+      ),
+      (
+        step: _CompactBuilderStep.settings,
+        label: context.l10n.hostFormSettingsStep,
+      ),
+      (
+        step: _CompactBuilderStep.publish,
+        label: context.l10n.hostFormPublishStep,
+      ),
+    ];
+    return Semantics(
+      label: context.l10n.hostFormBuilderProgress,
+      child: Row(
+        children: [
+          for (final entry in steps.indexed) ...[
+            Expanded(
+              child: InkWell(
+                key: ValueKey('host-form-step-${entry.$2.step.name}'),
+                borderRadius: BorderRadius.circular(CatchRadius.md),
+                onTap: () => onStepChanged(entry.$2.step),
+                child: Padding(
+                  padding: CatchInsets.contentVerticalCompact,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (entry.$1 <= step.index)
+                        CatchBadge.solid(label: '${entry.$1 + 1}')
+                      else
+                        CatchBadge(
+                          label: '${entry.$1 + 1}',
+                          size: CatchBadgeSize.md,
+                          backgroundColor: Colors.transparent,
+                          foregroundColor: t.ink2,
+                          borderColor: t.ink2,
+                        ),
+                      gapW8,
+                      Flexible(
+                        child: Text(
+                          entry.$2.label,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: CatchTextStyles.labelL(
+                            context,
+                            color: entry.$2.step == step ? t.ink : t.ink2,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            if (entry.$1 < steps.length - 1)
+              SizedBox(
+                width: CatchSpacing.s4,
+                child: Divider(
+                  color: entry.$1 < step.index ? t.ink : t.line,
+                  height: 1,
+                ),
+              ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _CompactQuestionsStep extends StatelessWidget {
+  const _CompactQuestionsStep({
+    required this.organizerId,
+    required this.formId,
+    required this.definition,
+    required this.notifier,
+    required this.onSelectionChanged,
+  });
+
+  final String organizerId;
+  final String formId;
+  final HostFormDefinition definition;
+  final HostFormEditorController notifier;
+  final void Function(int section, int? question) onSelectionChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
         Text(
-          context.l10n
-              .hostFormBuilderSummary(
-                status: hostFormStatusLabel(context, state.editor.form.status),
-                count: questionCount,
-              )
-              .toUpperCase(),
-          style: CatchTextStyles.monoLabel(context, color: t.ink2),
+          context.l10n.hostFormQuestionsPrompt,
+          style: CatchTextStyles.titleL(context),
         ),
         gapH8,
         Text(
-          context.l10n.hostFormQuestionsTitle,
-          style: CatchTextStyles.headline(context),
-        ),
-        gapH8,
-        Text(
-          context.l10n.hostFormQuestionsHelp,
+          context.l10n.hostFormQuestionsPromptHelp,
           style: CatchTextStyles.supporting(context, color: t.ink2),
         ),
         gapH24,
@@ -439,6 +637,7 @@ class _CompactFormEditor extends StatelessWidget {
           _CompactSectionOutline(
             organizerId: organizerId,
             formId: formId,
+            definition: definition,
             sectionIndex: sectionEntry.$1,
             section: sectionEntry.$2,
             sectionCount: definition.sections.length,
@@ -447,22 +646,18 @@ class _CompactFormEditor extends StatelessWidget {
           ),
           gapH20,
         ],
-        CatchButton(
-          label: context.l10n.hostFormAddSection,
-          icon: Icon(CatchIcons.addRounded, size: CatchIcon.sm),
-          variant: CatchButtonVariant.secondary,
-          fullWidth: true,
-          onPressed: notifier.addSection,
-        ),
-        gapH24,
         CatchSection.fieldRows(
           children: [
-            CatchField.nav(
-              key: const ValueKey('host-form-settings-row'),
-              title: context.l10n.hostFormSettings,
-              body: context.l10n.hostFormSettingsSummary,
-              icon: CatchIcons.settingsOutlined,
-              onTap: () => _showFormSettingsSheet(
+            CatchField.add(
+              title: context.l10n.hostFormAddSection,
+              icon: CatchIcons.addRounded,
+              onTap: notifier.addSection,
+            ),
+            CatchField.action(
+              key: const ValueKey('host-form-reorder-questions'),
+              title: context.l10n.hostFormReorderQuestions,
+              icon: CatchIcons.dragIndicatorRounded,
+              onTap: () => _showQuestionReorderSheet(
                 context,
                 organizerId: organizerId,
                 formId: formId,
@@ -477,10 +672,97 @@ class _CompactFormEditor extends StatelessWidget {
   }
 }
 
+class _CompactSettingsStep extends StatelessWidget {
+  const _CompactSettingsStep({
+    required this.definition,
+    required this.notifier,
+  });
+
+  final HostFormDefinition definition;
+  final HostFormEditorController notifier;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          context.l10n.hostFormSettingsPrompt,
+          style: CatchTextStyles.titleL(context),
+        ),
+        gapH8,
+        Text(
+          context.l10n.hostFormSettingsPromptHelp,
+          style: CatchTextStyles.supporting(context, color: t.ink2),
+        ),
+        gapH24,
+        _FormSettings(definition: definition, notifier: notifier),
+      ],
+    );
+  }
+}
+
+class _CompactPublishStep extends StatelessWidget {
+  const _CompactPublishStep({required this.state, required this.onPreview});
+
+  final HostFormEditorState state;
+  final VoidCallback onPreview;
+
+  @override
+  Widget build(BuildContext context) {
+    final definition = state.editor.definition;
+    final questionCount = definition.sections.fold<int>(
+      0,
+      (count, section) => count + section.questions.length,
+    );
+    final t = CatchTokens.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          context.l10n.hostFormPublishPrompt,
+          style: CatchTextStyles.titleL(context),
+        ),
+        gapH8,
+        Text(
+          context.l10n.hostFormReviewPublishSubtitle,
+          style: CatchTextStyles.supporting(context, color: t.ink2),
+        ),
+        gapH24,
+        CatchSection.fieldRows(
+          children: [
+            CatchField.read(
+              title: context.l10n.hostFormQuestionsTitle,
+              body: context.l10n.hostFormQuestionCount(count: questionCount),
+            ),
+            CatchField.read(
+              title: context.l10n.hostFormIdentityLabel,
+              body: hostFormIdentityLabel(context, definition.identityPolicy),
+            ),
+            CatchField.read(
+              title: context.l10n.hostFormAvailability,
+              body: _availabilitySummary(context, definition),
+            ),
+            CatchField.nav(
+              key: const ValueKey('host-form-publish-preview'),
+              title: context.l10n.hostFormPreview,
+              body: context.l10n.hostFormPreviewHelp,
+              icon: CatchIcons.visibilityOutlined,
+              onTap: onPreview,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
 class _CompactSectionOutline extends StatelessWidget {
   const _CompactSectionOutline({
     required this.organizerId,
     required this.formId,
+    required this.definition,
     required this.sectionIndex,
     required this.section,
     required this.sectionCount,
@@ -490,6 +772,7 @@ class _CompactSectionOutline extends StatelessWidget {
 
   final String organizerId;
   final String formId;
+  final HostFormDefinition definition;
   final int sectionIndex;
   final HostFormSection section;
   final int sectionCount;
@@ -555,6 +838,7 @@ class _CompactSectionOutline extends StatelessWidget {
           key: ValueKey('form-question-${questionEntry.$2.questionId}'),
           title: questionEntry.$2.label,
           body: _questionSummary(context, questionEntry.$2),
+          emphasis: CatchFieldEmphasis.title,
           onTap: () {
             onSelectionChanged(sectionIndex, questionEntry.$1);
             _showQuestionEditorSheet(
@@ -565,6 +849,7 @@ class _CompactSectionOutline extends StatelessWidget {
               questionIndex: questionEntry.$1,
               question: questionEntry.$2,
               questionCount: section.questions.length,
+              sections: definition.sections,
               notifier: notifier,
             );
           },
@@ -582,43 +867,6 @@ class _CompactSectionOutline extends StatelessWidget {
   );
 }
 
-Future<void> _showFormSettingsSheet(
-  BuildContext context, {
-  required String organizerId,
-  required String formId,
-  required HostFormDefinition definition,
-  required HostFormEditorController notifier,
-}) => showCatchBottomSheet<void>(
-  context: context,
-  builder: (sheetContext) => Consumer(
-    builder: (sheetContext, ref, _) {
-      final liveDefinition = ref
-          .watch(hostFormEditorControllerProvider(organizerId, formId))
-          .asData
-          ?.value
-          .editor
-          .definition;
-      return CatchBottomSheetScaffold(
-        title: context.l10n.hostFormSettings,
-        subtitle: context.l10n.hostFormSettingsSummary,
-        keyboardSafe: true,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.sizeOf(sheetContext).height * 0.72,
-          ),
-          child: SingleChildScrollView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            child: _FormSettings(
-              definition: liveDefinition ?? definition,
-              notifier: notifier,
-            ),
-          ),
-        ),
-      );
-    },
-  ),
-);
-
 Future<void> _showSectionEditorSheet(
   BuildContext context, {
   required String organizerId,
@@ -630,12 +878,9 @@ Future<void> _showSectionEditorSheet(
   context: context,
   builder: (sheetContext) => Consumer(
     builder: (sheetContext, ref, _) {
-      final liveDefinition = ref
-          .watch(hostFormEditorControllerProvider(organizerId, formId))
-          .asData
-          ?.value
-          .editor
-          .definition;
+      final liveDefinition = catchAsyncStateFromAsyncValue(
+        ref.watch(hostFormEditorControllerProvider(organizerId, formId)),
+      ).value?.editor.definition;
       final liveSectionIndex =
           liveDefinition?.sections.indexWhere(
             (candidate) => candidate.sectionId == section.sectionId,
@@ -684,17 +929,15 @@ Future<void> _showQuestionEditorSheet(
   required int questionIndex,
   required HostFormQuestion question,
   required int questionCount,
+  required List<HostFormSection> sections,
   required HostFormEditorController notifier,
 }) => showCatchBottomSheet<void>(
   context: context,
   builder: (sheetContext) => Consumer(
     builder: (sheetContext, ref, _) {
-      final liveDefinition = ref
-          .watch(hostFormEditorControllerProvider(organizerId, formId))
-          .asData
-          ?.value
-          .editor
-          .definition;
+      final liveDefinition = catchAsyncStateFromAsyncValue(
+        ref.watch(hostFormEditorControllerProvider(organizerId, formId)),
+      ).value?.editor.definition;
       var currentSectionIndex = sectionIndex;
       var currentQuestionIndex = questionIndex;
       var currentQuestion = question;
@@ -730,6 +973,7 @@ Future<void> _showQuestionEditorSheet(
               questionIndex: currentQuestionIndex,
               question: currentQuestion,
               questionCount: currentQuestionCount,
+              sections: liveDefinition?.sections ?? sections,
               notifier: notifier,
               onRemoved: () => Navigator.of(sheetContext).pop(),
             ),
@@ -739,6 +983,104 @@ Future<void> _showQuestionEditorSheet(
     },
   ),
 );
+
+Future<void> _showQuestionReorderSheet(
+  BuildContext context, {
+  required String organizerId,
+  required String formId,
+  required HostFormDefinition definition,
+  required HostFormEditorController notifier,
+}) => showCatchBottomSheet<void>(
+  context: context,
+  builder: (sheetContext) => Consumer(
+    builder: (sheetContext, ref, _) {
+      final liveDefinition = catchAsyncStateFromAsyncValue(
+        ref.watch(hostFormEditorControllerProvider(organizerId, formId)),
+      ).value?.editor.definition;
+      return CatchBottomSheetScaffold(
+        title: context.l10n.hostFormReorderQuestions,
+        subtitle: context.l10n.hostFormReorderQuestionsHelp,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.sizeOf(sheetContext).height * 0.72,
+          ),
+          child: SingleChildScrollView(
+            child: _QuestionReorderList(
+              definition: liveDefinition ?? definition,
+              notifier: notifier,
+            ),
+          ),
+        ),
+      );
+    },
+  ),
+);
+
+class _QuestionReorderList extends StatelessWidget {
+  const _QuestionReorderList({
+    required this.definition,
+    required this.notifier,
+  });
+
+  final HostFormDefinition definition;
+  final HostFormEditorController notifier;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      for (final sectionEntry in definition.sections.indexed) ...[
+        Text(
+          sectionEntry.$2.title.toUpperCase(),
+          style: CatchTextStyles.monoLabel(context),
+        ),
+        gapH8,
+        ReorderableListView.builder(
+          key: ValueKey('question-reorder-${sectionEntry.$2.sectionId}'),
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          buildDefaultDragHandles: false,
+          itemCount: sectionEntry.$2.questions.length,
+          onReorderItem: (oldIndex, newIndex) {
+            notifier.moveQuestion(
+              sectionEntry.$1,
+              oldIndex,
+              newIndex - oldIndex,
+            );
+          },
+          itemBuilder: (context, questionIndex) {
+            final question = sectionEntry.$2.questions[questionIndex];
+            return CatchSection.fieldRows(
+              key: ValueKey('reorder-question-${question.questionId}'),
+              first: questionIndex == 0,
+              showTopDivider: questionIndex == 0,
+              children: [
+                CatchField.action(
+                  title: question.label,
+                  body: _questionSummary(context, question),
+                  emphasis: CatchFieldEmphasis.title,
+                  divider: questionIndex < sectionEntry.$2.questions.length - 1,
+                  action: ReorderableDragStartListener(
+                    index: questionIndex,
+                    child: Tooltip(
+                      message: context.l10n.hostFormReorderQuestion,
+                      child: Padding(
+                        padding: CatchInsets.iconChipContent,
+                        child: Icon(CatchIcons.dragIndicatorRounded),
+                      ),
+                    ),
+                  ),
+                  onTap: null,
+                ),
+              ],
+            );
+          },
+        ),
+        if (sectionEntry.$1 < definition.sections.length - 1) gapH20,
+      ],
+    ],
+  );
+}
 
 String _questionSummary(BuildContext context, HostFormQuestion question) =>
     context.l10n.hostFormQuestionSummary(
@@ -1264,6 +1606,7 @@ class _QuestionEditFields extends StatelessWidget {
     required this.questionIndex,
     required this.question,
     required this.questionCount,
+    required this.sections,
     required this.notifier,
     this.onRemoved,
   });
@@ -1272,6 +1615,7 @@ class _QuestionEditFields extends StatelessWidget {
   final int questionIndex;
   final HostFormQuestion question;
   final int questionCount;
+  final List<HostFormSection> sections;
   final HostFormEditorController notifier;
   final VoidCallback? onRemoved;
 
@@ -1303,6 +1647,26 @@ class _QuestionEditFields extends StatelessWidget {
         onChanged: (value) =>
             notifier.updateQuestion(sectionIndex, questionIndex, kind: value),
       ),
+      if (sections.length > 1)
+        CatchField.select<int>(
+          key: ValueKey(
+            'question-section-${question.questionId}-$sectionIndex',
+          ),
+          title: context.l10n.hostFormMoveToSection,
+          values: List<int>.generate(sections.length, (index) => index),
+          value: sectionIndex,
+          itemLabel: (index) => sections[index].title,
+          onChanged: (targetSectionIndex) {
+            if (targetSectionIndex == null ||
+                targetSectionIndex == sectionIndex) {
+              return;
+            }
+            notifier.moveQuestionToSection(
+              questionId: question.questionId,
+              targetSectionIndex: targetSectionIndex,
+            );
+          },
+        ),
       CatchField.input(
         key: ValueKey(
           'question-help-${question.questionId}-${question.helpText}',
@@ -1779,6 +2143,7 @@ class _Inspector extends StatelessWidget {
       questionIndex: questionIndex!,
       question: question,
       questionCount: section.questions.length,
+      sections: definition.sections,
       notifier: notifier,
     );
   }
