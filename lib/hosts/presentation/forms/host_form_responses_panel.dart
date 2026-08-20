@@ -29,12 +29,14 @@ class HostFormResponsesPanel extends ConsumerStatefulWidget {
     this.formId,
     this.formTitle,
     this.onClearFormFilter,
+    this.showFormContext = true,
   });
 
   final String organizerId;
   final String? formId;
   final String? formTitle;
   final VoidCallback? onClearFormFilter;
+  final bool showFormContext;
 
   @override
   ConsumerState<HostFormResponsesPanel> createState() =>
@@ -72,7 +74,7 @@ class _HostFormResponsesPanelState
           ).textTheme.bodyMedium?.copyWith(color: CatchTokens.of(context).ink2),
         ),
         gapH16,
-        if (widget.formId != null) ...[
+        if (widget.formId != null && widget.showFormContext) ...[
           CatchSection.containedFieldRows(
             children: [
               CatchField.content(
