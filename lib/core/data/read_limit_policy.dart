@@ -34,4 +34,7 @@ abstract final class ReadLimitPolicy {
 
   /// Deterministic edge and latest-record lookups.
   static const int lookup = 1;
+
+  /// The fixed provider-account set for one Host organizer.
+  static const int hostPaymentProviders = 2;
 }

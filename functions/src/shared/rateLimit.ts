@@ -66,6 +66,8 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   createStripeCheckoutSession: {maxRequests: 10, windowMs: 60 * 1000},
   createStripeHostOnboardingLink: {maxRequests: 5, windowMs: 60 * 1000},
   refreshStripeHostPaymentAccount: {maxRequests: 20, windowMs: 60 * 1000},
+  createRazorpayHostPaymentAccount: {maxRequests: 5, windowMs: 60 * 1000},
+  refreshRazorpayHostPaymentAccount: {maxRequests: 20, windowMs: 60 * 1000},
   createEvent: {maxRequests: 10, windowMs: 60 * 1000},
   updateEvent: {maxRequests: 30, windowMs: 60 * 1000},
   cancelEvent: {maxRequests: 10, windowMs: 60 * 1000},

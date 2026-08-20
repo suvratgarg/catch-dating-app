@@ -8,19 +8,21 @@ const schemaHostPaymentAccountDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/firestore/host_payment_accounts.schema.json',
   'title': 'HostPaymentAccountDocument',
-  'description': 'Server-owned payment provider account state for a host. Stored at hostPaymentAccounts/{uid}.',
+  'description': 'Server-owned payout-provider account state. New documents use hostPaymentAccounts/{uid}_{provider}; legacy Stripe documents at {uid} remain readable during migration.',
   'type': 'object',
   'additionalProperties': false,
   'x-firestore-collection': 'hostPaymentAccounts',
-  'x-firestore-path': 'hostPaymentAccounts/{uid}',
+  'x-firestore-path': 'hostPaymentAccounts/{accountId}',
   'x-document-id-field': 'id',
-  'x-owner': 'Stripe Connect onboarding and webhook callables',
+  'x-owner': 'Stripe Connect and Razorpay Route onboarding, refresh, and webhook callables',
   'required': <Object?>[
     'userId',
     'provider',
     'country',
     'defaultCurrency',
+    'providerAccountId',
     'stripeAccountId',
+    'razorpayAccountId',
     'chargesEnabled',
     'payoutsEnabled',
     'detailsSubmitted',
@@ -41,6 +43,7 @@ const schemaHostPaymentAccountDocumentSchema = <String, Object?>{
     'provider': <String, Object?>{
       'type': 'string',
       'enum': <Object?>[
+        'razorpay',
         'stripe',
       ],
       'x-catch-ownership': 'callable-owned',
@@ -57,9 +60,27 @@ const schemaHostPaymentAccountDocumentSchema = <String, Object?>{
       'maxLength': 3,
       'x-catch-ownership': 'callable-owned',
     },
-    'stripeAccountId': <String, Object?>{
+    'providerAccountId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
+      'maxLength': 120,
+      'x-catch-ownership': 'callable-owned',
+    },
+    'stripeAccountId': <String, Object?>{
+      'type': 'string',
+      'maxLength': 120,
+      'x-catch-ownership': 'callable-owned',
+    },
+    'razorpayAccountId': <String, Object?>{
+      'type': 'string',
+      'maxLength': 120,
+      'x-catch-ownership': 'callable-owned',
+    },
+    'razorpayProductId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'maxLength': 120,
       'x-catch-ownership': 'callable-owned',
     },

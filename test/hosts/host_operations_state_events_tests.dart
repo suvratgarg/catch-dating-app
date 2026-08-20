@@ -325,9 +325,11 @@ void _registerHostOperationsStateEventsTests() {
       String? disabledReason,
     }) => HostPaymentAccount(
       userId: _hostUid,
+      provider: HostPaymentProvider.razorpay,
       country: 'IN',
       defaultCurrency: 'INR',
-      stripeAccountId: 'acct_test',
+      providerAccountId: 'acc_test',
+      razorpayAccountId: 'acc_test',
       chargesEnabled: chargesEnabled,
       payoutsEnabled: payoutsEnabled,
       detailsSubmitted: status != HostPaymentOnboardingStatus.notStarted,
@@ -391,8 +393,45 @@ void _registerHostOperationsStateEventsTests() {
     expect(find.byType(CatchSectionHeader), findsNothing);
     expect(find.byType(CatchField), findsWidgets);
     expect(find.text('Set up international payouts'), findsOneWidget);
-    expect(find.text('Stripe onboarding is in progress'), findsOneWidget);
-    expect(find.text('Stripe needs more information'), findsOneWidget);
-    expect(find.text('International checkout is ready'), findsOneWidget);
+    expect(find.text('Razorpay'), findsWidgets);
+    expect(find.text('Stripe'), findsWidgets);
+    expect(find.textContaining('Recommended'), findsWidgets);
+    expect(find.text('Identity document required'), findsOneWidget);
+    expect(find.text('Razorpay payout account is ready'), findsOneWidget);
+  });
+
+  testWidgets('India payout setup recommends Razorpay and exposes Route form', (
+    tester,
+  ) async {
+    final club = buildClub(
+      id: 'owned-club',
+      ownerUserId: _hostUid,
+      location: 'mumbai',
+    );
+
+    await _pumpHostScreen(
+      tester,
+      HostPaymentAccountCard(club: club),
+      settle: false,
+    );
+    await tester.pump();
+
+    final razorpay = find.text('Razorpay').first;
+    final stripe = find.text('Stripe').first;
+    expect(
+      tester.getTopLeft(razorpay).dy,
+      lessThan(tester.getTopLeft(stripe).dy),
+    );
+    expect(find.textContaining('Recommended'), findsOneWidget);
+
+    await tester.tap(razorpay);
+    await tester.pumpAndSettle();
+    expect(find.text('Powered by Razorpay Route'), findsOneWidget);
+    await tester.tap(find.text('Set up Razorpay'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Legal business name'), findsOneWidget);
+    expect(find.text('Business type'), findsOneWidget);
+    expect(find.text('Submit to Razorpay'), findsOneWidget);
   });
 }

@@ -2054,11 +2054,14 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    // Server-owned Stripe Connect account state for club owners. Hosts can read
-    // their own onboarding/payout readiness but all mutations stay callable- or
-    // webhook-owned.
-    match /hostPaymentAccounts/{uid} {
-      allow read: if isAuthed() && request.auth.uid == uid;
+    // Server-owned Stripe Connect and Razorpay Route account state. New ids are
+    // {uid}_{provider}; resource ownership keeps both direct reads and the
+    // host's provider-list query scoped to the signed-in user. Legacy Stripe
+    // documents keyed by uid remain readable during migration.
+    match /hostPaymentAccounts/{accountId} {
+      allow read: if isAuthed() &&
+        (resource.data.userId == request.auth.uid ||
+          accountId == request.auth.uid);
       allow write: if false;
     }
 

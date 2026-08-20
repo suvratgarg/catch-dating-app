@@ -10388,6 +10388,137 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const createRazorpayHostPaymentAccountCallablePayloadBankAccountNumber = CatchContractFieldConstraints(
+    path: 'createRazorpayHostPaymentAccountCallablePayload.bankAccountNumber',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{5,20}\$',
+  );
+
+  static const createRazorpayHostPaymentAccountCallablePayloadBeneficiaryName = CatchContractFieldConstraints(
+    path: 'createRazorpayHostPaymentAccountCallablePayload.beneficiaryName',
+    maxLength: 120,
+    minLength: 2,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createRazorpayHostPaymentAccountCallablePayloadBusinessModel = CatchContractFieldConstraints(
+    path: 'createRazorpayHostPaymentAccountCallablePayload.businessModel',
+    maxLength: 255,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createRazorpayHostPaymentAccountCallablePayloadBusinessPan = CatchContractFieldConstraints(
+    path: 'createRazorpayHostPaymentAccountCallablePayload.businessPan',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{5}[0-9]{4}[A-Z]\$',
+  );
+
+  static const createRazorpayHostPaymentAccountCallablePayloadBusinessType = CatchContractFieldConstraints(
+    path: 'createRazorpayHostPaymentAccountCallablePayload.businessType',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['individual', 'proprietorship', 'partnership', 'private_limited', 'public_limited', 'llp', 'trust', 'society', 'ngo'],
+  );
+
+  static const createRazorpayHostPaymentAccountCallablePayloadContactName = CatchContractFieldConstraints(
+    path: 'createRazorpayHostPaymentAccountCallablePayload.contactName',
+    maxLength: 255,
+    minLength: 4,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createRazorpayHostPaymentAccountCallablePayloadEmail = CatchContractFieldConstraints(
+    path: 'createRazorpayHostPaymentAccountCallablePayload.email',
+    maxLength: 132,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'email',
+  );
+
+  static const createRazorpayHostPaymentAccountCallablePayloadIfscCode = CatchContractFieldConstraints(
+    path: 'createRazorpayHostPaymentAccountCallablePayload.ifscCode',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{4}0[A-Z0-9]{6}\$',
+  );
+
+  static const createRazorpayHostPaymentAccountCallablePayloadLegalBusinessName = CatchContractFieldConstraints(
+    path: 'createRazorpayHostPaymentAccountCallablePayload.legalBusinessName',
+    maxLength: 200,
+    minLength: 4,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createRazorpayHostPaymentAccountCallablePayloadPhone = CatchContractFieldConstraints(
+    path: 'createRazorpayHostPaymentAccountCallablePayload.phone',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[+]?[0-9]{8,15}\$',
+  );
+
+  static const createRazorpayHostPaymentAccountCallablePayloadStakeholderEmail = CatchContractFieldConstraints(
+    path: 'createRazorpayHostPaymentAccountCallablePayload.stakeholderEmail',
+    maxLength: 132,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'email',
+  );
+
+  static const createRazorpayHostPaymentAccountCallablePayloadStakeholderIsDirector = CatchContractFieldConstraints(
+    path: 'createRazorpayHostPaymentAccountCallablePayload.stakeholderIsDirector',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const createRazorpayHostPaymentAccountCallablePayloadStakeholderIsExecutive = CatchContractFieldConstraints(
+    path: 'createRazorpayHostPaymentAccountCallablePayload.stakeholderIsExecutive',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const createRazorpayHostPaymentAccountCallablePayloadStakeholderName = CatchContractFieldConstraints(
+    path: 'createRazorpayHostPaymentAccountCallablePayload.stakeholderName',
+    maxLength: 255,
+    minLength: 2,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createRazorpayHostPaymentAccountCallablePayloadStakeholderOwnershipPercent = CatchContractFieldConstraints(
+    path: 'createRazorpayHostPaymentAccountCallablePayload.stakeholderOwnershipPercent',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const createRazorpayHostPaymentAccountCallablePayloadStakeholderPan = CatchContractFieldConstraints(
+    path: 'createRazorpayHostPaymentAccountCallablePayload.stakeholderPan',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{5}[0-9]{4}[A-Z]\$',
+  );
+
+  static const createRazorpayHostPaymentAccountCallablePayloadStakeholderPhone = CatchContractFieldConstraints(
+    path: 'createRazorpayHostPaymentAccountCallablePayload.stakeholderPhone',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[+]?[0-9]{8,15}\$',
+  );
+
+  static const createRazorpayHostPaymentAccountCallablePayloadTermsAccepted = CatchContractFieldConstraints(
+    path: 'createRazorpayHostPaymentAccountCallablePayload.termsAccepted',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
   static const createRazorpayOrderCallablePayloadCrossPathsPairHoldId = CatchContractFieldConstraints(
     path: 'createRazorpayOrderCallablePayload.crossPathsPairHoldId',
     maxLength: 180,
@@ -26504,7 +26635,28 @@ abstract final class CatchContractConstraints {
     path: 'hostPaymentAccountDocument.provider',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['stripe'],
+    enumValues: <String>['razorpay', 'stripe'],
+  );
+
+  static const hostPaymentAccountDocumentProviderAccountId = CatchContractFieldConstraints(
+    path: 'hostPaymentAccountDocument.providerAccountId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostPaymentAccountDocumentRazorpayAccountId = CatchContractFieldConstraints(
+    path: 'hostPaymentAccountDocument.razorpayAccountId',
+    maxLength: 120,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostPaymentAccountDocumentRazorpayProductId = CatchContractFieldConstraints(
+    path: 'hostPaymentAccountDocument.razorpayProductId',
+    maxLength: 120,
+    valueTypes: <String>['string'],
   );
 
   static const hostPaymentAccountDocumentRequirementsCurrentlyDue = CatchContractFieldConstraints(
@@ -26558,7 +26710,6 @@ abstract final class CatchContractConstraints {
   static const hostPaymentAccountDocumentStripeAccountId = CatchContractFieldConstraints(
     path: 'hostPaymentAccountDocument.stripeAccountId',
     maxLength: 120,
-    minLength: 1,
     required: true,
     valueTypes: <String>['string'],
   );
@@ -56847,6 +56998,24 @@ abstract final class CatchContractConstraints {
     'createPublicOrganizerReviewCallableResponse.review.source': createPublicOrganizerReviewCallableResponseReviewSource,
     'createPublicOrganizerReviewCallableResponse.review.verificationStatus': createPublicOrganizerReviewCallableResponseReviewVerificationStatus,
     'createPublicOrganizerReviewCallableResponse.reviewId': createPublicOrganizerReviewCallableResponseReviewIdAtReviewId,
+    'createRazorpayHostPaymentAccountCallablePayload.bankAccountNumber': createRazorpayHostPaymentAccountCallablePayloadBankAccountNumber,
+    'createRazorpayHostPaymentAccountCallablePayload.beneficiaryName': createRazorpayHostPaymentAccountCallablePayloadBeneficiaryName,
+    'createRazorpayHostPaymentAccountCallablePayload.businessModel': createRazorpayHostPaymentAccountCallablePayloadBusinessModel,
+    'createRazorpayHostPaymentAccountCallablePayload.businessPan': createRazorpayHostPaymentAccountCallablePayloadBusinessPan,
+    'createRazorpayHostPaymentAccountCallablePayload.businessType': createRazorpayHostPaymentAccountCallablePayloadBusinessType,
+    'createRazorpayHostPaymentAccountCallablePayload.contactName': createRazorpayHostPaymentAccountCallablePayloadContactName,
+    'createRazorpayHostPaymentAccountCallablePayload.email': createRazorpayHostPaymentAccountCallablePayloadEmail,
+    'createRazorpayHostPaymentAccountCallablePayload.ifscCode': createRazorpayHostPaymentAccountCallablePayloadIfscCode,
+    'createRazorpayHostPaymentAccountCallablePayload.legalBusinessName': createRazorpayHostPaymentAccountCallablePayloadLegalBusinessName,
+    'createRazorpayHostPaymentAccountCallablePayload.phone': createRazorpayHostPaymentAccountCallablePayloadPhone,
+    'createRazorpayHostPaymentAccountCallablePayload.stakeholderEmail': createRazorpayHostPaymentAccountCallablePayloadStakeholderEmail,
+    'createRazorpayHostPaymentAccountCallablePayload.stakeholderIsDirector': createRazorpayHostPaymentAccountCallablePayloadStakeholderIsDirector,
+    'createRazorpayHostPaymentAccountCallablePayload.stakeholderIsExecutive': createRazorpayHostPaymentAccountCallablePayloadStakeholderIsExecutive,
+    'createRazorpayHostPaymentAccountCallablePayload.stakeholderName': createRazorpayHostPaymentAccountCallablePayloadStakeholderName,
+    'createRazorpayHostPaymentAccountCallablePayload.stakeholderOwnershipPercent': createRazorpayHostPaymentAccountCallablePayloadStakeholderOwnershipPercent,
+    'createRazorpayHostPaymentAccountCallablePayload.stakeholderPan': createRazorpayHostPaymentAccountCallablePayloadStakeholderPan,
+    'createRazorpayHostPaymentAccountCallablePayload.stakeholderPhone': createRazorpayHostPaymentAccountCallablePayloadStakeholderPhone,
+    'createRazorpayHostPaymentAccountCallablePayload.termsAccepted': createRazorpayHostPaymentAccountCallablePayloadTermsAccepted,
     'createRazorpayOrderCallablePayload.crossPathsPairHoldId': createRazorpayOrderCallablePayloadCrossPathsPairHoldId,
     'createRazorpayOrderCallablePayload.eventId': createRazorpayOrderCallablePayloadEventId,
     'createRazorpayOrderCallablePayload.inviteCode': createRazorpayOrderCallablePayloadInviteCode,
@@ -59065,6 +59234,9 @@ abstract final class CatchContractConstraints {
     'hostPaymentAccountDocument.onboardingStatus': hostPaymentAccountDocumentOnboardingStatus,
     'hostPaymentAccountDocument.payoutsEnabled': hostPaymentAccountDocumentPayoutsEnabled,
     'hostPaymentAccountDocument.provider': hostPaymentAccountDocumentProvider,
+    'hostPaymentAccountDocument.providerAccountId': hostPaymentAccountDocumentProviderAccountId,
+    'hostPaymentAccountDocument.razorpayAccountId': hostPaymentAccountDocumentRazorpayAccountId,
+    'hostPaymentAccountDocument.razorpayProductId': hostPaymentAccountDocumentRazorpayProductId,
     'hostPaymentAccountDocument.requirementsCurrentlyDue': hostPaymentAccountDocumentRequirementsCurrentlyDue,
     'hostPaymentAccountDocument.requirementsCurrentlyDue.items': hostPaymentAccountDocumentRequirementsCurrentlyDueItems,
     'hostPaymentAccountDocument.requirementsPastDue': hostPaymentAccountDocumentRequirementsPastDue,

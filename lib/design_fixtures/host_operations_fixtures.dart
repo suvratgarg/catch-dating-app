@@ -59,9 +59,11 @@ final class HostOperationsFixtures {
 
   static const pendingPaymentAccount = HostPaymentAccount(
     userId: hostUid,
+    provider: HostPaymentProvider.razorpay,
     country: 'IN',
     defaultCurrency: 'INR',
-    stripeAccountId: 'acct_design_pending',
+    providerAccountId: 'acc_design_pending',
+    razorpayAccountId: 'acc_design_pending',
     chargesEnabled: false,
     payoutsEnabled: false,
     detailsSubmitted: true,
@@ -71,9 +73,11 @@ final class HostOperationsFixtures {
 
   static const readyPaymentAccount = HostPaymentAccount(
     userId: hostUid,
+    provider: HostPaymentProvider.razorpay,
     country: 'IN',
     defaultCurrency: 'INR',
-    stripeAccountId: 'acct_design_ready',
+    providerAccountId: 'acc_design_ready',
+    razorpayAccountId: 'acc_design_ready',
     chargesEnabled: true,
     payoutsEnabled: true,
     detailsSubmitted: true,
@@ -82,14 +86,17 @@ final class HostOperationsFixtures {
 
   static const restrictedPaymentAccount = HostPaymentAccount(
     userId: hostUid,
+    provider: HostPaymentProvider.razorpay,
     country: 'IN',
     defaultCurrency: 'INR',
-    stripeAccountId: 'acct_design_restricted',
+    providerAccountId: 'acc_design_restricted',
+    razorpayAccountId: 'acc_design_restricted',
     chargesEnabled: false,
     payoutsEnabled: false,
     detailsSubmitted: true,
     onboardingStatus: HostPaymentOnboardingStatus.restricted,
-    disabledReason: 'Stripe needs director verification before payouts resume.',
+    disabledReason:
+        'Razorpay needs director verification before payouts resume.',
     requirementsCurrentlyDue: ['company.directors_provided'],
   );
 

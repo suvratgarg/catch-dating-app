@@ -289,11 +289,7 @@ void _registerHostOperationsClubWorkspaceTests() {
       closeTo(tester.getTopRight(maySection).dx, 0.5),
     );
 
-    await tester.fling(
-      _hostEventsScrollable(),
-      const Offset(0, 1200),
-      10000,
-    );
+    await tester.fling(_hostEventsScrollable(), const Offset(0, 1200), 10000);
     await pumpFeatureUi(tester);
     final createButton = find.byKey(
       const ValueKey<String>('host-events-create-event'),
@@ -479,9 +475,9 @@ void _registerHostOperationsClubWorkspaceTests() {
       const HostClubsScreen(),
       overrides: [
         ..._hostClubOverrides(owned: [ownedClub]),
-        watchHostPaymentAccountProvider(
+        watchHostPaymentAccountsProvider(
           _hostUid,
-        ).overrideWithValue(const AsyncData<HostPaymentAccount?>(null)),
+        ).overrideWithValue(const AsyncData<List<HostPaymentAccount>>([])),
       ],
     );
 

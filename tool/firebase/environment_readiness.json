@@ -130,9 +130,11 @@
         "anyDeployTarget": [
           "functions:cancelEvent",
           "functions:cancelEventSignUp",
+          "functions:createRazorpayHostPaymentAccount",
           "functions:createRazorpayOrder",
           "functions:razorpayWebhook",
           "functions:reconcileRazorpayOrders",
+          "functions:refreshRazorpayHostPaymentAccount",
           "functions:verifyRazorpayPayment"
         ]
       },
@@ -157,9 +159,11 @@
         "anyDeployTarget": [
           "functions:cancelEvent",
           "functions:cancelEventSignUp",
+          "functions:createRazorpayHostPaymentAccount",
           "functions:createRazorpayOrder",
           "functions:razorpayWebhook",
           "functions:reconcileRazorpayOrders",
+          "functions:refreshRazorpayHostPaymentAccount",
           "functions:verifyRazorpayPayment"
         ]
       },

@@ -1257,6 +1257,14 @@ complete for each target environment (`dev`, `staging`, and `prod`):
   not read a local Razorpay `.env` value or embed a generated key. The
   `RAZORPAY_KEY_SECRET` remains server-only and must never enter a client
   contract or artifact.
+- [ ] Enable Razorpay Route for each target account before exposing India host
+  payout setup, and verify linked-account, stakeholder, Route product, bank
+  settlement, and activation-status APIs with that environment's credentials.
+  A deployed callable and enabled secrets do not prove Route account approval.
+- [ ] Smoke test India host setup with an organizer owner: verify Razorpay is
+  recommended while Stripe remains available, KYC and bank fields are absent
+  from Firestore, a failed retry continues the same linked account/product, and
+  refresh moves pending/clarification/activated states into the matching Host UI.
 - [ ] Replace the temporary `RAZORPAY_WEBHOOK_SECRET` values before enabling
   real Razorpay webhooks. As of 2026-06-26, `dev`, `staging`, and `prod` each
   have an enabled placeholder Secret Manager version so unrelated Functions

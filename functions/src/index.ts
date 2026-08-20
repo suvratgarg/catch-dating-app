@@ -17,6 +17,10 @@ export {
   createStripeHostOnboardingLink,
   refreshStripeHostPaymentAccount,
 } from "./payments/stripeHostAccounts";
+export {
+  createRazorpayHostPaymentAccount,
+  refreshRazorpayHostPaymentAccount,
+} from "./payments/razorpayHostAccounts";
 export {stripeWebhook} from "./payments/stripeWebhook";
 export {signUpForFreeEvent} from "./events/signUpForFreeEvent";
 export {cancelEventSignUp} from "./events/cancelEventSignUp";

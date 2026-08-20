@@ -455,6 +455,8 @@ import {CreateStripeCheckoutSessionCallablePayload} from "./createStripeCheckout
 import {StripeCheckoutSessionCallableResponse} from "./stripeCheckoutSessionCallableResponse";
 import {CreateStripeHostOnboardingLinkCallablePayload} from "./createStripeHostOnboardingLinkCallablePayload";
 import {RefreshStripeHostPaymentAccountCallablePayload} from "./refreshStripeHostPaymentAccountCallablePayload";
+import {CreateRazorpayHostPaymentAccountCallablePayload} from "./createRazorpayHostPaymentAccountCallablePayload";
+import {RefreshRazorpayHostPaymentAccountCallablePayload} from "./refreshRazorpayHostPaymentAccountCallablePayload";
 import {StripeHostOnboardingLinkCallableResponse} from "./stripeHostOnboardingLinkCallableResponse";
 import {PlacesAutocompleteCallablePayload} from "./placesAutocompleteCallablePayload";
 import {PlacesAutocompleteCallableResponse} from "./placesAutocompleteCallableResponse";
@@ -948,6 +950,8 @@ import {
   stripeCheckoutSessionCallableResponseSchema,
   createStripeHostOnboardingLinkCallablePayloadSchema,
   refreshStripeHostPaymentAccountCallablePayloadSchema,
+  createRazorpayHostPaymentAccountCallablePayloadSchema,
+  refreshRazorpayHostPaymentAccountCallablePayloadSchema,
   stripeHostOnboardingLinkCallableResponseSchema,
   placesAutocompleteCallablePayloadSchema,
   placesAutocompleteCallableResponseSchema,
@@ -2798,6 +2802,14 @@ export const validateRefreshStripeHostPaymentAccountCallablePayload:
   ValidateFunction<RefreshStripeHostPaymentAccountCallablePayload> =
     ajv.compile(refreshStripeHostPaymentAccountCallablePayloadSchema) as
       ValidateFunction<RefreshStripeHostPaymentAccountCallablePayload>;
+export const validateCreateRazorpayHostPaymentAccountCallablePayload:
+  ValidateFunction<CreateRazorpayHostPaymentAccountCallablePayload> =
+    ajv.compile(createRazorpayHostPaymentAccountCallablePayloadSchema) as
+      ValidateFunction<CreateRazorpayHostPaymentAccountCallablePayload>;
+export const validateRefreshRazorpayHostPaymentAccountCallablePayload:
+  ValidateFunction<RefreshRazorpayHostPaymentAccountCallablePayload> =
+    ajv.compile(refreshRazorpayHostPaymentAccountCallablePayloadSchema) as
+      ValidateFunction<RefreshRazorpayHostPaymentAccountCallablePayload>;
 export const validateStripeHostOnboardingLinkCallableResponse:
   ValidateFunction<StripeHostOnboardingLinkCallableResponse> =
     ajv.compile(stripeHostOnboardingLinkCallableResponseSchema) as

@@ -5882,7 +5882,7 @@
               "tests": [
                 "test/hosts/host_operations_screen_test.dart"
               ],
-              "notes": "HostPaymentAccountCard renders Not set up payout state when watchHostPaymentAccountProvider returns null. Captures now cover not-set-up baseline through management plus provider loading/error/offline and action setup pending/error/offline states.",
+              "notes": "HostPaymentAccountCard renders provider-specific not-set-up payout states when watchHostPaymentAccountsProvider returns no account for that provider. Captures cover the not-set-up baseline through management plus provider loading/error/offline and action setup pending/error/offline states.",
               "previewIds": [
                 "HostClubsScreen/Route states"
               ],

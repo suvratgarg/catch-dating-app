@@ -463,6 +463,8 @@ Do not edit it by hand.
 | StripeCheckoutSessionCallableResponse | `callable_responses/stripe_checkout_session_response.schema.json` | `functions/src/shared/generated/stripeCheckoutSessionCallableResponse.ts` |
 | CreateStripeHostOnboardingLinkCallablePayload | `callables/create_stripe_host_onboarding_link_payload.schema.json` | `functions/src/shared/generated/createStripeHostOnboardingLinkCallablePayload.ts` |
 | RefreshStripeHostPaymentAccountCallablePayload | `callables/refresh_stripe_host_payment_account_payload.schema.json` | `functions/src/shared/generated/refreshStripeHostPaymentAccountCallablePayload.ts` |
+| CreateRazorpayHostPaymentAccountCallablePayload | `callables/create_razorpay_host_payment_account_payload.schema.json` | `functions/src/shared/generated/createRazorpayHostPaymentAccountCallablePayload.ts` |
+| RefreshRazorpayHostPaymentAccountCallablePayload | `callables/refresh_razorpay_host_payment_account_payload.schema.json` | `functions/src/shared/generated/refreshRazorpayHostPaymentAccountCallablePayload.ts` |
 | StripeHostOnboardingLinkCallableResponse | `callable_responses/stripe_host_onboarding_link_response.schema.json` | `functions/src/shared/generated/stripeHostOnboardingLinkCallableResponse.ts` |
 | PlacesAutocompleteCallablePayload | `callables/places_autocomplete_payload.schema.json` | `functions/src/shared/generated/placesAutocompleteCallablePayload.ts` |
 | PlacesAutocompleteCallableResponse | `callable_responses/places_autocomplete_response.schema.json` | `functions/src/shared/generated/placesAutocompleteCallableResponse.ts` |
@@ -960,6 +962,8 @@ Do not edit it by hand.
 | `schemaStripeCheckoutSessionCallableResponseSchema` | StripeCheckoutSessionCallableResponse | `callable_responses/stripe_checkout_session_response.schema.json` | `lib/core/schema_contracts/generated/schemas/stripe_checkout_session_callable_response.g.dart` |
 | `schemaCreateStripeHostOnboardingLinkCallablePayloadSchema` | CreateStripeHostOnboardingLinkCallablePayload | `callables/create_stripe_host_onboarding_link_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/create_stripe_host_onboarding_link_callable_payload.g.dart` |
 | `schemaRefreshStripeHostPaymentAccountCallablePayloadSchema` | RefreshStripeHostPaymentAccountCallablePayload | `callables/refresh_stripe_host_payment_account_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/refresh_stripe_host_payment_account_callable_payload.g.dart` |
+| `schemaCreateRazorpayHostPaymentAccountCallablePayloadSchema` | CreateRazorpayHostPaymentAccountCallablePayload | `callables/create_razorpay_host_payment_account_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/create_razorpay_host_payment_account_callable_payload.g.dart` |
+| `schemaRefreshRazorpayHostPaymentAccountCallablePayloadSchema` | RefreshRazorpayHostPaymentAccountCallablePayload | `callables/refresh_razorpay_host_payment_account_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/refresh_razorpay_host_payment_account_callable_payload.g.dart` |
 | `schemaStripeHostOnboardingLinkCallableResponseSchema` | StripeHostOnboardingLinkCallableResponse | `callable_responses/stripe_host_onboarding_link_response.schema.json` | `lib/core/schema_contracts/generated/schemas/stripe_host_onboarding_link_callable_response.g.dart` |
 | `schemaPlacesAutocompleteCallablePayloadSchema` | PlacesAutocompleteCallablePayload | `callables/places_autocomplete_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/places_autocomplete_callable_payload.g.dart` |
 | `schemaPlacesAutocompleteCallableResponseSchema` | PlacesAutocompleteCallableResponse | `callable_responses/places_autocomplete_response.schema.json` | `lib/core/schema_contracts/generated/schemas/places_autocomplete_callable_response.g.dart` |
@@ -1195,6 +1199,7 @@ Do not edit it by hand.
 | VerifyRazorpayPaymentCallableRequest | VerifyRazorpayPaymentCallablePayload | `callables/verify_razorpay_payment_payload.schema.json` | `lib/core/schema_contracts/generated/callables/verify_razorpay_payment_callable_request.g.dart` |
 | CreateStripeCheckoutSessionCallableRequest | CreateStripeCheckoutSessionCallablePayload | `callables/create_stripe_checkout_session_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_stripe_checkout_session_callable_request.g.dart` |
 | CreateStripeHostOnboardingLinkCallableRequest | CreateStripeHostOnboardingLinkCallablePayload | `callables/create_stripe_host_onboarding_link_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_stripe_host_onboarding_link_callable_request.g.dart` |
+| CreateRazorpayHostPaymentAccountCallableRequest | CreateRazorpayHostPaymentAccountCallablePayload | `callables/create_razorpay_host_payment_account_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_razorpay_host_payment_account_callable_request.g.dart` |
 | PlacesAutocompleteCallableRequest | PlacesAutocompleteCallablePayload | `callables/places_autocomplete_payload.schema.json` | `lib/core/schema_contracts/generated/callables/places_autocomplete_callable_request.g.dart` |
 | PlaceDetailsCallableRequest | PlaceDetailsCallablePayload | `callables/place_details_payload.schema.json` | `lib/core/schema_contracts/generated/callables/place_details_callable_request.g.dart` |
 | ExploreSearchCallableRequest | ExploreSearchCallablePayload | `callables/explore_search_payload.schema.json` | `lib/core/schema_contracts/generated/callables/explore_search_callable_request.g.dart` |
@@ -1217,6 +1222,7 @@ Do not edit it by hand.
 | AdminUpdateEventDetailsCallablePayloadPatch | no Dart patch config |
 | RecordEventSuccessUnitOutcomesCallablePayload | cannot map field "entries" (type=array) |
 | RefreshStripeHostPaymentAccountCallablePayload | no properties |
+| RefreshRazorpayHostPaymentAccountCallablePayload | no properties |
 | AdminGetOverviewCallablePayload | not an object schema |
 
 ## Registry And Validator Outputs

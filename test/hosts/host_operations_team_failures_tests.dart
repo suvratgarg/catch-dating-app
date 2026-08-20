@@ -40,9 +40,9 @@ void _registerHostOperationsTeamFailuresTests() {
         clubDetailViewModelProvider(cohostClub.id).overrideWithValue(
           AsyncData<ClubDetailViewModel?>(_previewViewModel(cohostClub)),
         ),
-        watchHostPaymentAccountProvider(
+        watchHostPaymentAccountsProvider(
           _hostUid,
-        ).overrideWithValue(const AsyncData<HostPaymentAccount?>(null)),
+        ).overrideWithValue(const AsyncData<List<HostPaymentAccount>>([])),
       ],
     );
 
@@ -171,9 +171,9 @@ void _registerHostOperationsTeamFailuresTests() {
       overrides: [
         ..._hostClubOverrides(owned: [ownedClub]),
         clubsRepositoryProvider.overrideWith((ref) => repository),
-        watchHostPaymentAccountProvider(
+        watchHostPaymentAccountsProvider(
           _hostUid,
-        ).overrideWithValue(const AsyncData<HostPaymentAccount?>(null)),
+        ).overrideWithValue(const AsyncData<List<HostPaymentAccount>>([])),
       ],
     );
 
@@ -226,9 +226,9 @@ void _registerHostOperationsTeamFailuresTests() {
       overrides: [
         ..._hostClubOverrides(owned: [ownedClub]),
         clubsRepositoryProvider.overrideWith((ref) => repository),
-        watchHostPaymentAccountProvider(
+        watchHostPaymentAccountsProvider(
           _hostUid,
-        ).overrideWithValue(const AsyncData<HostPaymentAccount?>(null)),
+        ).overrideWithValue(const AsyncData<List<HostPaymentAccount>>([])),
       ],
     );
 
@@ -294,9 +294,9 @@ void _registerHostOperationsTeamFailuresTests() {
         HostClubEventDefaultsScreen(clubId: ownedClub.id),
         overrides: [
           ..._hostClubOverrides(owned: [ownedClub]),
-          watchHostPaymentAccountProvider(
+          watchHostPaymentAccountsProvider(
             _hostUid,
-          ).overrideWithValue(const AsyncData<HostPaymentAccount?>(null)),
+          ).overrideWithValue(const AsyncData<List<HostPaymentAccount>>([])),
         ],
       );
 
@@ -323,9 +323,9 @@ void _registerHostOperationsTeamFailuresTests() {
       overrides: [
         ..._hostClubOverrides(owned: [ownedClub]),
         clubsRepositoryProvider.overrideWith((ref) => repository),
-        watchHostPaymentAccountProvider(
+        watchHostPaymentAccountsProvider(
           _hostUid,
-        ).overrideWithValue(const AsyncData<HostPaymentAccount?>(null)),
+        ).overrideWithValue(const AsyncData<List<HostPaymentAccount>>([])),
       ],
     );
 
@@ -658,9 +658,9 @@ void _registerHostOperationsTeamFailuresTests() {
       overrides: [
         ..._hostClubOverrides(owned: [club]),
         authRepositoryProvider.overrideWithValue(authRepository),
-        watchHostPaymentAccountProvider(
+        watchHostPaymentAccountsProvider(
           _hostUid,
-        ).overrideWithValue(const AsyncData<HostPaymentAccount?>(null)),
+        ).overrideWithValue(const AsyncData<List<HostPaymentAccount>>([])),
       ],
     );
 

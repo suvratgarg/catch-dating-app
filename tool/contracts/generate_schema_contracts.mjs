@@ -2978,6 +2978,22 @@ const schemaSpecs = [
       "refreshStripeHostPaymentAccountCallablePayload.ts",
   },
   {
+    name: "CreateRazorpayHostPaymentAccountCallablePayload",
+    source:
+      "callables/create_razorpay_host_payment_account_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "createRazorpayHostPaymentAccountCallablePayload.ts",
+  },
+  {
+    name: "RefreshRazorpayHostPaymentAccountCallablePayload",
+    source:
+      "callables/refresh_razorpay_host_payment_account_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "refreshRazorpayHostPaymentAccountCallablePayload.ts",
+  },
+  {
     name: "StripeHostOnboardingLinkCallableResponse",
     source:
       "callable_responses/stripe_host_onboarding_link_response.schema.json",

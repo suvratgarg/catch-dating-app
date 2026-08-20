@@ -3698,20 +3698,182 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Set up payouts'**
-  String get hostsHostPaymentAccountCardLabelSetUpPayouts;
-
-  /// Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Continue setup'**
-  String get hostsHostPaymentAccountCardLabelContinueSetup;
-
-  /// Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (label).
-  ///
-  /// In en, this message translates to:
   /// **'Refresh'**
   String get hostsHostPaymentAccountCardLabelRefresh;
+
+  /// Razorpay Route provider subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Powered by Razorpay Route'**
+  String get hostsHostPaymentAccountCardSubtitlePoweredByRazorpay;
+
+  /// Starts Razorpay Route setup.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up Razorpay'**
+  String get hostsHostPaymentAccountCardLabelContinueToRazorpay;
+
+  /// Explains Razorpay Route setup.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch uses Razorpay Route for INR payouts. Provide the legal, stakeholder, and bank details Razorpay needs to review your linked account.'**
+  String get hostsHostPaymentAccountCardTextCatchPaysIndiaHostsThrough;
+
+  /// Marks the recommended payout provider.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended'**
+  String get hostsHostPaymentAccountCardLabelRecommended;
+
+  /// Razorpay provider name.
+  ///
+  /// In en, this message translates to:
+  /// **'Razorpay'**
+  String get hostsHostPaymentAccountCardTitleRazorpay;
+
+  /// Confirms provider-side Razorpay Route account activation without claiming settlement release.
+  ///
+  /// In en, this message translates to:
+  /// **'Razorpay payout account is ready'**
+  String get hostsHostPaymentAccountCardTitleRazorpayPayoutAccountReady;
+
+  /// Stripe provider name.
+  ///
+  /// In en, this message translates to:
+  /// **'Stripe'**
+  String get hostsHostPaymentAccountCardTitleStripe;
+
+  /// Razorpay provider summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Razorpay Route account setup for INR payouts in India.'**
+  String get hostsHostPaymentAccountCardBodyRazorpayInr;
+
+  /// Stripe provider summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Non-INR checkout and international payouts.'**
+  String get hostsHostPaymentAccountCardBodyStripeInternational;
+
+  /// Razorpay legal business name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal business name'**
+  String get hostsHostPaymentAccountCardTitleLegalBusinessName;
+
+  /// Razorpay business type field.
+  ///
+  /// In en, this message translates to:
+  /// **'Business type'**
+  String get hostsHostPaymentAccountCardTitleBusinessType;
+
+  /// Razorpay contact name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact name'**
+  String get hostsHostPaymentAccountCardTitleContactName;
+
+  /// Razorpay business email field.
+  ///
+  /// In en, this message translates to:
+  /// **'Business email'**
+  String get hostsHostPaymentAccountCardTitleEmail;
+
+  /// Razorpay business phone field.
+  ///
+  /// In en, this message translates to:
+  /// **'Business phone'**
+  String get hostsHostPaymentAccountCardTitlePhone;
+
+  /// Razorpay business description field.
+  ///
+  /// In en, this message translates to:
+  /// **'Business description'**
+  String get hostsHostPaymentAccountCardTitleBusinessModel;
+
+  /// Razorpay business PAN field.
+  ///
+  /// In en, this message translates to:
+  /// **'Business PAN'**
+  String get hostsHostPaymentAccountCardTitleBusinessPan;
+
+  /// Razorpay settlement account field.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank account number'**
+  String get hostsHostPaymentAccountCardTitleBankAccountNumber;
+
+  /// Razorpay IFSC field.
+  ///
+  /// In en, this message translates to:
+  /// **'IFSC code'**
+  String get hostsHostPaymentAccountCardTitleIfscCode;
+
+  /// Razorpay beneficiary field.
+  ///
+  /// In en, this message translates to:
+  /// **'Beneficiary name'**
+  String get hostsHostPaymentAccountCardTitleBeneficiaryName;
+
+  /// Razorpay stakeholder name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Stakeholder name'**
+  String get hostsHostPaymentAccountCardTitleStakeholderName;
+
+  /// Razorpay stakeholder email field.
+  ///
+  /// In en, this message translates to:
+  /// **'Stakeholder email'**
+  String get hostsHostPaymentAccountCardTitleStakeholderEmail;
+
+  /// Razorpay stakeholder phone field.
+  ///
+  /// In en, this message translates to:
+  /// **'Stakeholder phone'**
+  String get hostsHostPaymentAccountCardTitleStakeholderPhone;
+
+  /// Razorpay stakeholder PAN field.
+  ///
+  /// In en, this message translates to:
+  /// **'Stakeholder PAN'**
+  String get hostsHostPaymentAccountCardTitleStakeholderPan;
+
+  /// Razorpay ownership percentage field.
+  ///
+  /// In en, this message translates to:
+  /// **'Ownership percentage'**
+  String get hostsHostPaymentAccountCardTitleOwnershipPercent;
+
+  /// Razorpay stakeholder director toggle.
+  ///
+  /// In en, this message translates to:
+  /// **'This stakeholder is a director'**
+  String get hostsHostPaymentAccountCardTitleStakeholderDirector;
+
+  /// Razorpay stakeholder executive toggle.
+  ///
+  /// In en, this message translates to:
+  /// **'This stakeholder is an executive'**
+  String get hostsHostPaymentAccountCardTitleStakeholderExecutive;
+
+  /// Razorpay terms acceptance toggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept Razorpay Route terms'**
+  String get hostsHostPaymentAccountCardTitleAcceptRazorpayTerms;
+
+  /// Razorpay terms explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'You confirm these details are accurate and authorize Catch to submit them to Razorpay for linked-account review.'**
+  String get hostsHostPaymentAccountCardBodyRazorpayTerms;
+
+  /// Submits Razorpay setup details.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit to Razorpay'**
+  String get hostsHostPaymentAccountCardLabelSubmitRazorpay;
 
   /// Product copy used by lib/hosts/presentation/widgets/catch_roster_board.dart (label).
   ///

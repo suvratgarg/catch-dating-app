@@ -1088,6 +1088,66 @@ describe("firestore.rules", () => {
       );
     });
 
+    it("scopes provider payment accounts to their owning host", async () => {
+      await seed(["hostPaymentAccounts", "host-1_razorpay"], {
+        userId: "host-1",
+        provider: "razorpay",
+      });
+      await seed(["hostPaymentAccounts", "host-1_stripe"], {
+        userId: "host-1",
+        provider: "stripe",
+      });
+      await seed(["hostPaymentAccounts", "host-2_razorpay"], {
+        userId: "host-2",
+        provider: "razorpay",
+      });
+
+      await assertSucceeds(
+        getDoc(
+          doc(
+            authedDb("host-1"),
+            "hostPaymentAccounts",
+            "host-1_razorpay",
+          ),
+        ),
+      );
+      await assertSucceeds(
+        getDocs(
+          query(
+            collection(authedDb("host-1"), "hostPaymentAccounts"),
+            where("userId", "==", "host-1"),
+          ),
+        ),
+      );
+      await assertFails(
+        getDoc(
+          doc(
+            authedDb("host-2"),
+            "hostPaymentAccounts",
+            "host-1_stripe",
+          ),
+        ),
+      );
+      await assertFails(
+        getDocs(
+          query(
+            collection(authedDb("host-2"), "hostPaymentAccounts"),
+            where("userId", "==", "host-1"),
+          ),
+        ),
+      );
+      await assertFails(
+        setDoc(
+          doc(
+            authedDb("host-1"),
+            "hostPaymentAccounts",
+            "host-1_razorpay",
+          ),
+          {userId: "host-1", provider: "razorpay"},
+        ),
+      );
+    });
+
     it("allows active club membership reads but keeps writes callable-owned", async () => {
       await seed(
         ["clubMemberships", "club-1_runner-1"],

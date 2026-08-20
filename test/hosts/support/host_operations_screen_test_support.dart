@@ -146,9 +146,9 @@ void registerHostWorkspacePagingTest() {
         clubDetailViewModelProvider(ownedClub.id).overrideWithValue(
           AsyncData<ClubDetailViewModel?>(_previewViewModel(ownedClub)),
         ),
-        watchHostPaymentAccountProvider(
+        watchHostPaymentAccountsProvider(
           _hostUid,
-        ).overrideWithValue(const AsyncData<HostPaymentAccount?>(null)),
+        ).overrideWithValue(const AsyncData<List<HostPaymentAccount>>([])),
         hostAnalyticsRepositoryProvider.overrideWithValue(
           const _EmptyHostAnalyticsRepository(),
         ),

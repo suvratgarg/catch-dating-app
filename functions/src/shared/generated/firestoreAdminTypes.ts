@@ -5511,14 +5511,17 @@ export interface PaymentDocument {
 }
 
 /**
- * Server-owned payment provider account state for a host. Stored at hostPaymentAccounts/{uid}.
+ * Server-owned payout-provider account state. New documents use hostPaymentAccounts/{uid}_{provider}; legacy Stripe documents at {uid} remain readable during migration.
  */
 export interface HostPaymentAccountDocument {
   userId: string;
-  provider: "stripe";
+  provider: "razorpay" | "stripe";
   country: string;
   defaultCurrency: string;
+  providerAccountId: string;
   stripeAccountId: string;
+  razorpayAccountId: string;
+  razorpayProductId?: string | null;
   chargesEnabled: boolean;
   payoutsEnabled: boolean;
   detailsSubmitted: boolean;

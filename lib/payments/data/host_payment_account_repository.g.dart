@@ -58,55 +58,55 @@ final class HostPaymentAccountRepositoryProvider
 String _$hostPaymentAccountRepositoryHash() =>
     r'c3f84498968d318c993f04ff28098ba27bd60d06';
 
-@ProviderFor(watchHostPaymentAccount)
-final watchHostPaymentAccountProvider = WatchHostPaymentAccountFamily._();
+@ProviderFor(watchHostPaymentAccounts)
+final watchHostPaymentAccountsProvider = WatchHostPaymentAccountsFamily._();
 
-final class WatchHostPaymentAccountProvider
+final class WatchHostPaymentAccountsProvider
     extends
         $FunctionalProvider<
-          AsyncValue<HostPaymentAccount?>,
-          HostPaymentAccount?,
-          Stream<HostPaymentAccount?>
+          AsyncValue<List<HostPaymentAccount>>,
+          List<HostPaymentAccount>,
+          Stream<List<HostPaymentAccount>>
         >
     with
-        $FutureModifier<HostPaymentAccount?>,
-        $StreamProvider<HostPaymentAccount?> {
-  WatchHostPaymentAccountProvider._({
-    required WatchHostPaymentAccountFamily super.from,
+        $FutureModifier<List<HostPaymentAccount>>,
+        $StreamProvider<List<HostPaymentAccount>> {
+  WatchHostPaymentAccountsProvider._({
+    required WatchHostPaymentAccountsFamily super.from,
     required String super.argument,
   }) : super(
          retry: null,
-         name: r'watchHostPaymentAccountProvider',
+         name: r'watchHostPaymentAccountsProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$watchHostPaymentAccountHash();
+  String debugGetCreateSourceHash() => _$watchHostPaymentAccountsHash();
 
   @override
   String toString() {
-    return r'watchHostPaymentAccountProvider'
+    return r'watchHostPaymentAccountsProvider'
         ''
         '($argument)';
   }
 
   @$internal
   @override
-  $StreamProviderElement<HostPaymentAccount?> $createElement(
+  $StreamProviderElement<List<HostPaymentAccount>> $createElement(
     $ProviderPointer pointer,
   ) => $StreamProviderElement(pointer);
 
   @override
-  Stream<HostPaymentAccount?> create(Ref ref) {
+  Stream<List<HostPaymentAccount>> create(Ref ref) {
     final argument = this.argument as String;
-    return watchHostPaymentAccount(ref, argument);
+    return watchHostPaymentAccounts(ref, argument);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is WatchHostPaymentAccountProvider &&
+    return other is WatchHostPaymentAccountsProvider &&
         other.argument == argument;
   }
 
@@ -116,23 +116,23 @@ final class WatchHostPaymentAccountProvider
   }
 }
 
-String _$watchHostPaymentAccountHash() =>
-    r'232413775af7966205a8594091cc0d1dce2c79ec';
+String _$watchHostPaymentAccountsHash() =>
+    r'98076c1378c9606dc3ea3c267d18432ae9f84726';
 
-final class WatchHostPaymentAccountFamily extends $Family
-    with $FunctionalFamilyOverride<Stream<HostPaymentAccount?>, String> {
-  WatchHostPaymentAccountFamily._()
+final class WatchHostPaymentAccountsFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<List<HostPaymentAccount>>, String> {
+  WatchHostPaymentAccountsFamily._()
     : super(
         retry: null,
-        name: r'watchHostPaymentAccountProvider',
+        name: r'watchHostPaymentAccountsProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  WatchHostPaymentAccountProvider call(String uid) =>
-      WatchHostPaymentAccountProvider._(argument: uid, from: this);
+  WatchHostPaymentAccountsProvider call(String uid) =>
+      WatchHostPaymentAccountsProvider._(argument: uid, from: this);
 
   @override
-  String toString() => r'watchHostPaymentAccountProvider';
+  String toString() => r'watchHostPaymentAccountsProvider';
 }

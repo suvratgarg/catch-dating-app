@@ -7,7 +7,6 @@ import * as admin from "firebase-admin";
 import {
   ClubDocument,
   EventDocument,
-  HostPaymentAccountDocument,
   OrganizerDocument,
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
@@ -50,6 +49,8 @@ import {
   StripeClient,
   stripeSecretKey,
 } from "./stripe";
+import {findHostPaymentAccount, providerAccountId} from
+  "./hostPaymentAccounts";
 
 interface CreateStripeCheckoutSessionDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -243,20 +244,18 @@ export async function createStripeCheckoutSessionHandler(
       "This organizer has not claimed payouts yet."
     );
   }
-  const hostAccountSnap = await db
-    .collection("hostPaymentAccounts")
-    .doc(hostUserId)
-    .get();
-  if (!hostAccountSnap.exists) {
+  const hostPaymentAccount = await findHostPaymentAccount(
+    db,
+    hostUserId,
+    "stripe"
+  );
+  if (!hostPaymentAccount.account) {
     throw new HttpsError(
       "failed-precondition",
       "This host has not set up international payouts yet."
     );
   }
-  const hostAccount = requireDoc<HostPaymentAccountDocument>(
-    hostAccountSnap,
-    "HostPaymentAccountDocument"
-  );
+  const hostAccount = hostPaymentAccount.account;
   if (
     hostAccount.provider !== "stripe" ||
     !hostAccount.chargesEnabled ||
@@ -284,7 +283,7 @@ export async function createStripeCheckoutSessionHandler(
     organizerId: event.organizerId ?? event.clubId,
     userId: uid,
     hostUserId,
-    stripeAccountId: hostAccount.stripeAccountId,
+    stripeAccountId: providerAccountId(hostAccount),
     eventTitle: checkoutEventTitle(event),
     amountMinor,
     currency,
@@ -316,7 +315,7 @@ export async function createStripeCheckoutSessionHandler(
     providerPaymentId: session.paymentIntentId,
     checkoutSessionId: session.id,
     hostUserId,
-    stripeAccountId: hostAccount.stripeAccountId,
+    stripeAccountId: providerAccountId(hostAccount),
     applicationFeeAmount,
     status: "pending",
     ...(pairHold && crossPathsPairHoldId ? {crossPathsPairHoldId} : {}),
