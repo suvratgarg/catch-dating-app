@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
@@ -136,6 +137,7 @@ void main() {
         event,
         now: event.startTime,
       ).copyWith(status: EventSuccessPlanStatus.live, activeStepIndex: 1);
+      var guestDrawerOpenCount = 0;
 
       await tester.pumpWidget(
         ProviderScope(
@@ -160,7 +162,7 @@ void main() {
                   onNextStep: () {},
                   onCompletePlan: () {},
                 ),
-                onOpenGuests: () {},
+                onOpenGuests: () => guestDrawerOpenCount += 1,
               ),
             ),
           ),
@@ -171,13 +173,78 @@ void main() {
       expect(find.textContaining('SYNCED'), findsOneWidget);
       expect(find.textContaining('Step 2 of 4'), findsOneWidget);
       expect(find.text('18 checked in · 24 expected'), findsOneWidget);
-      expect(find.text('Guests'), findsOneWidget);
+      expect(find.text('Guests'), findsNWidgets(2));
       expect(find.text('Help & fallback'), findsOneWidget);
       expect(find.byType(CatchBottomAction), findsOneWidget);
       expect(
         tester.getBottomRight(find.byType(CatchBottomAction)).dy,
         lessThanOrEqualTo(812),
       );
+
+      await tester.tap(
+        find.descendant(
+          of: find.byType(EventSuccessLiveWorkspacePicker),
+          matching: find.text('Guests'),
+        ),
+      );
+      await tester.pump();
+      expect(guestDrawerOpenCount, 1);
+
+      await tester.tap(find.text('Room'));
+      await tester.pump();
+      expect(find.text('One shared room'), findsOneWidget);
+      expect(find.byType(CatchBottomAction), findsNothing);
     },
   );
+
+  testWidgets('Room workspace renders the saved map before placements exist', (
+    tester,
+  ) async {
+    final event = buildEvent(
+      id: 'saved-room-control-room',
+      eventFormat: EventFormatSnapshot.custom(
+        label: 'Table mixer',
+        interactionModel: EventInteractionModel.pairedRotations,
+      ),
+    );
+    final layout = EventSuccessLayout.parametric(
+      layoutId: 'room-a',
+      label: 'Room A',
+      shape: EventSuccessLayoutShape.round,
+      unitCount: 6,
+      unitCapacity: 4,
+      columnCount: 2,
+    );
+    final plan = EventSuccessPlan.defaultForEvent(
+      event,
+      now: event.startTime,
+    ).copyWith(status: EventSuccessPlanStatus.live, layoutId: layout.layoutId);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: EventSuccessHostPanel(
+              event: event,
+              plan: plan,
+              planIsPersisted: true,
+              roster: EventParticipationRoster.empty(),
+              initialTab: EventSuccessHostTab.live,
+              showTabs: false,
+              compactLiveControls: true,
+              spatialLayout: layout,
+              spatialLayoutState: EventSuccessSpatialLayoutState.ready(layout),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Room'));
+    await tester.pump();
+
+    expect(find.text('Room map'), findsOneWidget);
+    expect(find.text('Waiting for placements'), findsOneWidget);
+  });
 }

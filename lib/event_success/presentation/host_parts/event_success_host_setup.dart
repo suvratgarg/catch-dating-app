@@ -6,18 +6,29 @@ class SetupTab extends StatefulWidget {
     required this.event,
     required this.plan,
     required this.planIsPersisted,
+    required this.organizerLayoutsState,
+    required this.layoutSavePending,
+    required this.layoutSaveError,
+    required this.onSaveLayout,
     required this.actionState,
     required this.onSaveSetup,
     required this.embedded,
+    this.referenceNow,
   });
 
   final Event event;
   final EventSuccessPlan plan;
   final bool planIsPersisted;
+  final CatchAsyncState<List<EventSuccessLayout>> organizerLayoutsState;
+  final bool layoutSavePending;
+  final Object? layoutSaveError;
+  final Future<EventSuccessLayout> Function(EventSuccessLayout layout)?
+  onSaveLayout;
   final EventSuccessSetupActionState actionState;
   final Future<void> Function(EventSuccessSetupSaveRequest request)?
   onSaveSetup;
   final bool embedded;
+  final DateTime? referenceNow;
 
   @override
   State<SetupTab> createState() => _SetupTabState();
@@ -29,6 +40,7 @@ class _SetupTabState extends State<SetupTab> {
   );
   late int _targetAttendeeCount = widget.plan.targetAttendeeCount;
   late String _attendeePromptText = widget.plan.attendeePrompt ?? '';
+  late String? _layoutId = widget.plan.layoutId;
   bool _remotePlanChanged = false;
 
   @override
@@ -47,6 +59,7 @@ class _SetupTabState extends State<SetupTab> {
     _draft = plan.hostDraft.normalizeForFormat(widget.event.eventFormat);
     _targetAttendeeCount = plan.targetAttendeeCount;
     _attendeePromptText = plan.attendeePrompt ?? '';
+    _layoutId = plan.layoutId;
     _remotePlanChanged = false;
   }
 
@@ -74,6 +87,7 @@ class _SetupTabState extends State<SetupTab> {
     if (_attendeePromptText.trim() != (plan.attendeePrompt ?? '').trim()) {
       return true;
     }
+    if (_layoutId != plan.layoutId) return true;
     if (resolved.playbook.id != saved.playbook.id) return true;
     if (resolved.hostGoal != saved.hostGoal) return true;
     if (resolved.compatibilityAffectsRanking !=
@@ -95,7 +109,9 @@ class _SetupTabState extends State<SetupTab> {
         widget.event.signedUpCount > 0 ||
         widget.event.waitlistCount > 0 ||
         widget.event.attendedCount > 0;
-    final eventHasStarted = !widget.event.startTime.isAfter(DateTime.now());
+    final eventHasStarted = !widget.event.startTime.isAfter(
+      widget.referenceNow ?? DateTime.now(),
+    );
     final planFrozen =
         widget.plan.status != EventSuccessPlanStatus.setup ||
         widget.plan.frozenAt != null;
@@ -223,6 +239,21 @@ class _SetupTabState extends State<SetupTab> {
               setState(() => _attendeePromptText = value);
             },
           ),
+        gapH16,
+        EventSuccessRoomSetupSection(
+          layoutsState: widget.organizerLayoutsState,
+          selectedLayoutId: _layoutId,
+          usesWholeGroup:
+              presentedDraft.structureConfig.unitKind ==
+              EventSuccessUnitKind.wholeGroup,
+          enabled: !setupFrozen && widget.onSaveLayout != null,
+          isSavingLayout: widget.layoutSavePending,
+          saveError: widget.layoutSaveError,
+          onSelected: (layoutId) => setState(() => _layoutId = layoutId),
+          onSaveLayout:
+              widget.onSaveLayout ??
+              (_) => throw StateError('Room layout saving is unavailable.'),
+        ),
         if (_isDirty && !setupFrozen) ...[
           gapH16,
           CatchInlineStatus(
@@ -261,6 +292,11 @@ class _SetupTabState extends State<SetupTab> {
                         planIsPersisted: widget.planIsPersisted,
                         draft: _resolvedDraft,
                         attendeePrompt: _attendeePromptText,
+                        layoutId:
+                            _resolvedDraft.structureConfig.unitKind ==
+                                EventSuccessUnitKind.wholeGroup
+                            ? null
+                            : _layoutId,
                       ),
                     ),
                   ),

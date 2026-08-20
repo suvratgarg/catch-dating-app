@@ -1,5 +1,38 @@
 part of '../event_success_host_screen.dart';
 
+class EventSuccessLiveWorkspacePicker extends StatelessWidget {
+  const EventSuccessLiveWorkspacePicker({
+    super.key,
+    required this.selected,
+    required this.onChanged,
+  });
+
+  final EventSuccessLiveWorkspace selected;
+  final ValueChanged<EventSuccessLiveWorkspace> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchTabRail<EventSuccessLiveWorkspace>(
+      options: [
+        CatchOption(
+          value: EventSuccessLiveWorkspace.now,
+          label: context.l10n.eventSuccessLiveWorkspaceNow,
+        ),
+        CatchOption(
+          value: EventSuccessLiveWorkspace.guests,
+          label: context.l10n.eventSuccessLiveWorkspaceGuests,
+        ),
+        CatchOption(
+          value: EventSuccessLiveWorkspace.room,
+          label: context.l10n.eventSuccessLiveWorkspaceRoom,
+        ),
+      ],
+      selected: selected,
+      onChanged: onChanged,
+    );
+  }
+}
+
 class EventSuccessTabPicker extends StatelessWidget {
   const EventSuccessTabPicker({
     super.key,

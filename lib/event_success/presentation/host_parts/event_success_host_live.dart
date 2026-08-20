@@ -15,6 +15,8 @@ class LiveTab extends StatelessWidget {
     required this.plan,
     required this.planIsPersisted,
     required this.spatialLayout,
+    required this.spatialLayoutState,
+    required this.showRoomWorkspace,
     required this.roster,
     required this.assignments,
     required this.assignmentParticipantProfiles,
@@ -65,12 +67,15 @@ class LiveTab extends StatelessWidget {
     required this.exclusionAlertThreshold,
     this.exclusionReferenceNow,
     required this.embedded,
+    this.referenceNow,
   });
 
   final Event event;
   final EventSuccessPlan plan;
   final bool planIsPersisted;
   final EventSuccessLayout? spatialLayout;
+  final EventSuccessSpatialLayoutState spatialLayoutState;
+  final bool showRoomWorkspace;
   final EventParticipationRoster roster;
   final List<EventSuccessAssignment> assignments;
   final List<PublicProfile> assignmentParticipantProfiles;
@@ -135,11 +140,14 @@ class LiveTab extends StatelessWidget {
   final Duration exclusionAlertThreshold;
   final DateTime? exclusionReferenceNow;
   final bool embedded;
+  final DateTime? referenceNow;
 
   @override
   Widget build(BuildContext context) {
     if (!planIsPersisted) {
-      final isPreEvent = event.startTime.isAfter(DateTime.now());
+      final isPreEvent = event.startTime.isAfter(
+        referenceNow ?? DateTime.now(),
+      );
       final body = EventSuccessHostTabBody(
         embedded: embedded,
         children: [
@@ -172,7 +180,7 @@ class LiveTab extends StatelessWidget {
     final runtime = EventSuccessRuntime(
       plan: plan,
       event: event,
-      now: DateTime.now(),
+      now: referenceNow ?? DateTime.now(),
     );
     final eventSuccessProfile = EventSuccessActivityProfile.forFormat(
       event.eventFormat,
@@ -384,7 +392,7 @@ class LiveTab extends StatelessWidget {
       trackingStartedAt: event.startTime,
       trackingStartedAtByUid: roster.checkedInAtByUid,
       trackingEndedAt: event.endTime,
-      now: exclusionReferenceNow ?? DateTime.now(),
+      now: exclusionReferenceNow ?? referenceNow ?? DateTime.now(),
       alertThreshold: exclusionAlertThreshold,
     );
     Widget? spatialMapCard() =>
@@ -402,6 +410,83 @@ class LiveTab extends StatelessWidget {
             onConfirmPosition: onConfirmSpatial,
             onReleasePinned: onReleaseSpatial,
           );
+
+    if (showRoomWorkspace) {
+      final effectiveSpatialLayoutState =
+          spatialLayoutState.status ==
+                  EventSuccessSpatialLayoutStatus.notApplicable &&
+              plan.structureConfig.unitKind != EventSuccessUnitKind.wholeGroup
+          ? spatialLayout == null
+                ? const EventSuccessSpatialLayoutState.unconfigured()
+                : EventSuccessSpatialLayoutState.ready(spatialLayout!)
+          : spatialLayoutState;
+      final roomBody = switch (effectiveSpatialLayoutState.status) {
+        EventSuccessSpatialLayoutStatus.notApplicable => CatchSurface.message(
+          messageIcon: CatchIcons.gridViewRounded,
+          title: context.l10n.eventSuccessRoomWorkspaceWholeGroupTitle,
+          message: context.l10n.eventSuccessRoomWorkspaceWholeGroupBody,
+        ),
+        EventSuccessSpatialLayoutStatus.unconfigured => CatchSurface.message(
+          messageIcon: CatchIcons.gridViewRounded,
+          messageTone: CatchSurfaceMessageTone.warning,
+          title: context.l10n.eventSuccessRoomWorkspaceUnconfiguredTitle,
+          message: context.l10n.eventSuccessRoomWorkspaceUnconfiguredBody,
+        ),
+        EventSuccessSpatialLayoutStatus.loading => CatchSurface.message(
+          messageIcon: CatchIcons.syncRounded,
+          title: context.l10n.eventSuccessRoomWorkspaceLoadingTitle,
+          message: context.l10n.eventSuccessRoomWorkspaceLoadingBody,
+        ),
+        EventSuccessSpatialLayoutStatus.error => EventSuccessHostResourceError(
+          failure: EventSuccessHostResourceFailure(
+            retryIntent: EventSuccessHostRetryIntent.spatialLayout,
+            error: effectiveSpatialLayoutState.error!,
+          ),
+          onRetry: onRetryResource == null
+              ? null
+              : () =>
+                    onRetryResource!(EventSuccessHostRetryIntent.spatialLayout),
+        ),
+        EventSuccessSpatialLayoutStatus.ready => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _EventSuccessRoomWorkspaceSummary(
+              layout: effectiveSpatialLayoutState.layout!,
+              assignments: spatialAssignments,
+              attentionCount: exclusionSnapshot.alertEntries.length,
+            ),
+            gapH16,
+            EventSuccessRoomMap(
+              layout: effectiveSpatialLayoutState.layout!,
+              assignments: spatialAssignments,
+              profiles: spatialProfiles,
+              exclusionAlertUids: exclusionSnapshot.alertEntries
+                  .map((entry) => entry.uid)
+                  .toSet(),
+              onPreview: onPreviewSpatial,
+              onReassign: onReassignSpatial,
+              onConfirmPosition: onConfirmSpatial,
+              onReleasePinned: onReleaseSpatial,
+            ),
+            if (spatialAssignments.isEmpty) ...[
+              gapH16,
+              CatchSurface.message(
+                messageIcon: CatchIcons.groupsOutlined,
+                title: context.l10n.eventSuccessRoomWorkspaceWaitingTitle,
+                message: context.l10n.eventSuccessRoomWorkspaceWaitingBody,
+              ),
+            ],
+          ],
+        ),
+      };
+      return ColoredBox(
+        color: CatchTokens.of(context).surface,
+        child: SingleChildScrollView(
+          padding: CatchInsets.pageBody,
+          child: roomBody,
+        ),
+      );
+    }
 
     final outcomeUsesStandings =
         eventSuccessProfile.unitOutcome == EventSuccessUnitOutcome.score ||
@@ -578,6 +663,85 @@ class LiveTab extends StatelessWidget {
           ),
         ],
       ],
+    );
+  }
+}
+
+class _EventSuccessRoomWorkspaceSummary extends StatelessWidget {
+  const _EventSuccessRoomWorkspaceSummary({
+    required this.layout,
+    required this.assignments,
+    required this.attentionCount,
+  });
+
+  final EventSuccessLayout layout;
+  final List<EventSuccessAssignment> assignments;
+  final int attentionCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final placedCount = assignments
+        .where((assignment) => assignment.layoutUnitId != null)
+        .length;
+    final confirmedCount = assignments
+        .where((assignment) => assignment.confirmedLayoutUnitId != null)
+        .length;
+    final unconfirmedCount = math.max(0, placedCount - confirmedCount);
+    final seatCount = layout.units.fold<int>(
+      0,
+      (total, unit) => total + unit.capacity,
+    );
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      padding: CatchInsets.content,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            context.l10n.eventSuccessLiveWorkspaceRoom,
+            style: CatchTextStyles.headlineS(context, color: t.ink),
+          ),
+          gapH4,
+          Text(
+            context.l10n.eventSuccessRoomWorkspaceCapacitySummary(
+              units: layout.units.length,
+              seats: seatCount,
+            ),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
+          ),
+          gapH16,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: CatchStatColumn(
+                  value: '$placedCount',
+                  label: context.l10n.eventSuccessRoomWorkspacePlaced,
+                  center: true,
+                ),
+              ),
+              VerticalDivider(color: t.line, width: CatchSpacing.s3),
+              Expanded(
+                child: CatchStatColumn(
+                  value: '$unconfirmedCount',
+                  label: context.l10n.eventSuccessRoomWorkspaceUnconfirmed,
+                  center: true,
+                  highlight: unconfirmedCount > 0,
+                ),
+              ),
+              VerticalDivider(color: t.line, width: CatchSpacing.s3),
+              Expanded(
+                child: CatchStatColumn(
+                  value: '$attentionCount',
+                  label: context.l10n.eventSuccessRoomWorkspaceNeedsAttention,
+                  center: true,
+                  highlight: attentionCount > 0,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

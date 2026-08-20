@@ -21,3 +21,4 @@ export 'presentation/event_success_host_screen.dart'; // public-api: route entry
 export 'presentation/event_success_live_reveal_card.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/event_success_questionnaire_config_editor.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/event_success_room_map.dart'; // public-api: shared host and attendee spatial projection
+export 'presentation/event_success_room_setup_section.dart'; // public-api: shared create and post-creation room setup

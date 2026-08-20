@@ -27,6 +27,7 @@ import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
+import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -52,6 +53,7 @@ import 'package:catch_dating_app/event_success/presentation/event_success_host_s
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_room_map.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_room_setup_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_setup_body.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_skeletons.dart';
 import 'package:catch_dating_app/events/data/event_attendee_repository.dart';
@@ -89,6 +91,30 @@ Object? _mutationError(MutationState<dynamic> state) {
   return state.hasError ? (state as MutationError).error : null;
 }
 
+EventSuccessSpatialLayoutState _eventSuccessSpatialLayoutState({
+  required EventSuccessPlan? plan,
+  required AsyncValue<EventSuccessLayout?> value,
+}) {
+  if (plan == null ||
+      plan.structureConfig.unitKind == EventSuccessUnitKind.wholeGroup) {
+    return const EventSuccessSpatialLayoutState.notApplicable();
+  }
+  if (plan.layoutId == null) {
+    return const EventSuccessSpatialLayoutState.unconfigured();
+  }
+  if (value.isLoading) {
+    return const EventSuccessSpatialLayoutState.loading();
+  }
+  if (value.hasError) {
+    return EventSuccessSpatialLayoutState.error(value.error!);
+  }
+  final layout = value.asData?.value;
+  if (layout == null) {
+    return const EventSuccessSpatialLayoutState.unconfigured();
+  }
+  return EventSuccessSpatialLayoutState.ready(layout);
+}
+
 class EventSuccessHostSection extends ConsumerStatefulWidget {
   const EventSuccessHostSection({
     super.key,
@@ -99,6 +125,7 @@ class EventSuccessHostSection extends ConsumerStatefulWidget {
     this.operationalRosterSummary,
     this.onOpenGuests,
     this.fixtureActions,
+    this.referenceNow,
     this.exclusionAlertThreshold = defaultEventSuccessExclusionAlertThreshold,
   }) : assert(exclusionAlertThreshold > Duration.zero);
 
@@ -109,6 +136,7 @@ class EventSuccessHostSection extends ConsumerStatefulWidget {
   final EventSuccessOperationalRosterSummary? operationalRosterSummary;
   final VoidCallback? onOpenGuests;
   final EventSuccessHostFixtureActions? fixtureActions;
+  final DateTime? referenceNow;
   final Duration exclusionAlertThreshold;
 
   @override
@@ -127,10 +155,14 @@ class _EventSuccessHostSectionState
     final operationalRosterSummary = widget.operationalRosterSummary;
     final onOpenGuests = widget.onOpenGuests;
     final fixtureActions = widget.fixtureActions;
+    final referenceNow = widget.referenceNow ?? DateTime.now();
     final planAsync = ref.watch(watchEventSuccessPlanProvider(event.id));
     final ensureMutation = ref.watch(EventSuccessController.ensurePlanMutation);
     final saveSetupMutation = ref.watch(
       EventSuccessController.saveSetupMutation,
+    );
+    final upsertLayoutMutation = ref.watch(
+      EventSuccessController.upsertLayoutMutation,
     );
     final updateStepMutation = ref.watch(
       EventSuccessController.updateStepMutation,
@@ -167,7 +199,13 @@ class _EventSuccessHostSectionState
     );
     final persistedPlan = planAsync.asData?.value;
     final hasSavedGuide = persistedPlan != null;
-    final eventEnded = !event.endTime.isAfter(DateTime.now());
+    final shouldLoadSetupResources =
+        showTabs || initialTab == EventSuccessHostTab.setup;
+    final AsyncValue<List<EventSuccessLayout>> organizerLayoutsAsync =
+        shouldLoadSetupResources
+        ? ref.watch(watchOrganizerEventSuccessLayoutsProvider(event.clubId))
+        : const AsyncData(<EventSuccessLayout>[]);
+    final eventEnded = !event.endTime.isAfter(referenceNow);
     final shouldLoadLiveResources =
         hasSavedGuide &&
         !eventEnded &&
@@ -212,6 +250,10 @@ class _EventSuccessHostSectionState
                 EventSuccessUnitKind.wholeGroup
         ? ref.watch(eventSuccessSpatialLayoutProvider(event.id))
         : const AsyncData<EventSuccessLayout?>(null);
+    final spatialLayoutState = _eventSuccessSpatialLayoutState(
+      plan: persistedPlan,
+      value: spatialLayoutAsync,
+    );
     final AsyncValue<EventParticipationRoster> rosterAsync = shouldLoadRoster
         ? ref.watch(watchEventParticipationRosterProvider(event.id))
         : AsyncData(EventParticipationRoster.empty());
@@ -310,7 +352,7 @@ class _EventSuccessHostSectionState
 
     final state = EventSuccessHostSectionState.resolve(
       event: event,
-      now: DateTime.now(),
+      now: referenceNow,
       planState: _catchAsyncState(planAsync),
       rosterState: _catchAsyncState(rosterAsync),
       scorecardState: _catchAsyncState(scorecardAsync),
@@ -366,6 +408,18 @@ class _EventSuccessHostSectionState
       plan: state.plan,
       planIsPersisted: state.planIsPersisted,
       spatialLayout: spatialLayoutAsync.asData?.value,
+      spatialLayoutState: spatialLayoutState,
+      organizerLayoutsState: _catchAsyncState(organizerLayoutsAsync),
+      layoutSavePending: upsertLayoutMutation.isPending,
+      layoutSaveError: upsertLayoutMutation.hasError
+          ? _mutationError(upsertLayoutMutation)
+          : null,
+      onSaveLayout: (layout) => EventSuccessController.upsertLayoutMutation.run(
+        ref,
+        (tx) => tx
+            .get(eventSuccessControllerProvider.notifier)
+            .upsertLayout(organizerId: event.clubId, layout: layout),
+      ),
       roster: state.roster,
       scorecard: state.scorecard,
       assignments: state.assignments,
@@ -574,6 +628,7 @@ class _EventSuccessHostSectionState
           ),
       fixtureActions: fixtureActions,
       exclusionAlertThreshold: widget.exclusionAlertThreshold,
+      referenceNow: referenceNow,
     );
   }
 
@@ -589,6 +644,7 @@ class _EventSuccessHostSectionState
           .saveSetup(
             plan: basePlan,
             draft: request.draft,
+            layoutId: request.layoutId,
             attendeePrompt: request.attendeePrompt,
           );
     });
@@ -841,6 +897,8 @@ class _EventSuccessHostSectionState
         );
       case EventSuccessHostRetryIntent.scorecard:
         ref.invalidate(watchEventSuccessScorecardProvider(eventId));
+      case EventSuccessHostRetryIntent.spatialLayout:
+        ref.invalidate(eventSuccessSpatialLayoutProvider(eventId));
     }
   }
 }
@@ -859,7 +917,8 @@ AppErrorContext _eventSuccessHostRetryContext(
     EventSuccessHostRetryIntent.rotationDrafts ||
     EventSuccessHostRetryIntent.preferences ||
     EventSuccessHostRetryIntent.wingmanRequests ||
-    EventSuccessHostRetryIntent.scorecard => AppErrorContext.event,
+    EventSuccessHostRetryIntent.scorecard ||
+    EventSuccessHostRetryIntent.spatialLayout => AppErrorContext.event,
   };
 }
 
@@ -906,6 +965,8 @@ class EventSuccessHostResourceError extends StatelessWidget {
         context.l10n.eventSuccessHostResourceHostHelpProfiles,
       EventSuccessHostRetryIntent.scorecard =>
         context.l10n.eventSuccessHostResourceEventReport,
+      EventSuccessHostRetryIntent.spatialLayout =>
+        context.l10n.eventSuccessHostResourceRoomLayout,
     };
     return CatchInlineErrorState(
       title: context.l10n.eventSuccessHostResourceUnavailableTitle(
@@ -1110,6 +1171,12 @@ class EventSuccessHostPanel extends StatefulWidget {
     required this.plan,
     required this.planIsPersisted,
     this.spatialLayout,
+    this.spatialLayoutState =
+        const EventSuccessSpatialLayoutState.notApplicable(),
+    this.organizerLayoutsState = const CatchAsyncState.data([]),
+    this.layoutSavePending = false,
+    this.layoutSaveError,
+    this.onSaveLayout,
     required this.roster,
     this.scorecard,
     this.assignments = const [],
@@ -1168,12 +1235,19 @@ class EventSuccessHostPanel extends StatefulWidget {
     this.fixtureActions,
     this.exclusionAlertThreshold = defaultEventSuccessExclusionAlertThreshold,
     this.exclusionReferenceNow,
+    this.referenceNow,
   }) : assert(exclusionAlertThreshold > Duration.zero);
 
   final Event event;
   final EventSuccessPlan plan;
   final bool planIsPersisted;
   final EventSuccessLayout? spatialLayout;
+  final EventSuccessSpatialLayoutState spatialLayoutState;
+  final CatchAsyncState<List<EventSuccessLayout>> organizerLayoutsState;
+  final bool layoutSavePending;
+  final Object? layoutSaveError;
+  final Future<EventSuccessLayout> Function(EventSuccessLayout layout)?
+  onSaveLayout;
   final EventParticipationRoster roster;
   final EventSuccessScorecard? scorecard;
   final List<EventSuccessAssignment> assignments;
@@ -1247,6 +1321,7 @@ class EventSuccessHostPanel extends StatefulWidget {
   final EventSuccessHostFixtureActions? fixtureActions;
   final Duration exclusionAlertThreshold;
   final DateTime? exclusionReferenceNow;
+  final DateTime? referenceNow;
 
   @override
   State<EventSuccessHostPanel> createState() => _EventSuccessHostPanelState();
@@ -1256,6 +1331,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
   static const _liveActionDebounce = CatchMotion.eventSuccessActionDebounce;
 
   late EventSuccessHostTab _selectedTab = widget.initialTab;
+  var _liveWorkspace = EventSuccessLiveWorkspace.now;
   var _liveActionPending = false;
   String? _lastLiveActionKey;
   DateTime? _lastLiveActionAt;
@@ -1275,8 +1351,13 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         event: widget.event,
         plan: widget.plan,
         planIsPersisted: widget.planIsPersisted,
+        organizerLayoutsState: widget.organizerLayoutsState,
+        layoutSavePending: widget.layoutSavePending,
+        layoutSaveError: widget.layoutSaveError,
+        onSaveLayout: widget.onSaveLayout,
         actionState: widget.setupActionState,
         onSaveSetup: _setupSaveCallback(),
+        referenceNow: widget.referenceNow,
         embedded: widget.embedded,
       ),
       EventSuccessHostTab.live => LiveTab(
@@ -1284,6 +1365,8 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         plan: widget.plan,
         planIsPersisted: widget.planIsPersisted,
         spatialLayout: widget.spatialLayout,
+        spatialLayoutState: widget.spatialLayoutState,
+        showRoomWorkspace: _liveWorkspace == EventSuccessLiveWorkspace.room,
         roster: widget.roster,
         assignments: widget.assignments,
         assignmentParticipantProfiles: widget.assignmentParticipantProfiles,
@@ -1348,6 +1431,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         fixtureActions: widget.fixtureActions,
         exclusionAlertThreshold: widget.exclusionAlertThreshold,
         exclusionReferenceNow: widget.exclusionReferenceNow,
+        referenceNow: widget.referenceNow,
         embedded: widget.embedded,
       ),
       EventSuccessHostTab.report => ReportTab(
@@ -1368,7 +1452,32 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         embedded: widget.embedded,
       ),
     };
-    if (!widget.showTabs) return body;
+    final workspaceBody =
+        widget.compactLiveControls && _selectedTab == EventSuccessHostTab.live
+        ? Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: CatchInsets.pageHorizontal.copyWith(
+                  top: CatchSpacing.s3,
+                  bottom: CatchSpacing.s2,
+                ),
+                child: EventSuccessLiveWorkspacePicker(
+                  selected: _liveWorkspace,
+                  onChanged: (workspace) {
+                    if (workspace == EventSuccessLiveWorkspace.guests) {
+                      widget.onOpenGuests?.call();
+                      return;
+                    }
+                    setState(() => _liveWorkspace = workspace);
+                  },
+                ),
+              ),
+              Expanded(child: body),
+            ],
+          )
+        : body;
+    if (!widget.showTabs) return workspaceBody;
 
     final tabs = EventSuccessTabPicker(
       selectedTab: _selectedTab,
@@ -1378,7 +1487,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
     if (widget.embedded) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [tabs, gapH16, body],
+        children: [tabs, gapH16, workspaceBody],
       );
     }
 
@@ -1386,7 +1495,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         tabs,
-        Expanded(child: body),
+        Expanded(child: workspaceBody),
       ],
     );
   }

@@ -80,6 +80,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_arrival_miss
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks/modules.dart';
@@ -6603,6 +6604,30 @@ final _hostLiveReferencePlan =
       status: EventSuccessPlanStatus.live,
       frozenAt: _captureNow,
     );
+final _hostLiveRoomReferenceEvent = _hostLiveReferenceEvent.copyWith(
+  eventFormat: EventFormatSnapshot.custom(
+    label: 'Singles table mixer',
+    interactionModel: EventInteractionModel.pairedRotations,
+  ),
+);
+final _hostLiveRoomReferenceLayout = EventSuccessLayout.parametric(
+  layoutId: 'host-live-room-six-rounds',
+  label: 'Six round tables',
+  shape: EventSuccessLayoutShape.round,
+  unitCount: 6,
+  unitCapacity: 4,
+  columnCount: 2,
+);
+final _hostLiveRoomReferencePlan =
+    EventSuccessPlan.defaultForEvent(
+      _hostLiveRoomReferenceEvent,
+      now: _captureNow,
+    ).copyWith(
+      activeStepIndex: 1,
+      status: EventSuccessPlanStatus.live,
+      frozenAt: _captureNow,
+      layoutId: _hostLiveRoomReferenceLayout.layoutId,
+    );
 final _hostLiveWindowPlan =
     EventSuccessPlan.defaultForEvent(
       _hostLiveWindowEvent,
@@ -12694,6 +12719,52 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         const Duration(minutes: 30),
       ),
     ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_live_room_workspace',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: [
+      uidProvider.overrideWith((ref) => Stream.value(_captureViewerUid)),
+      watchUserProfileProvider.overrideWith(
+        (ref) => Stream.value(_captureViewer),
+      ),
+      watchEventProvider(
+        _hostLiveRoomReferenceEvent.id,
+      ).overrideWith((ref) => Stream.value(_hostLiveRoomReferenceEvent)),
+      eventParticipationRepositoryProvider.overrideWithValue(
+        _hostLiveReferenceParticipationRepository,
+      ),
+      watchEventAttendeesProvider(_hostLiveRoomReferenceEvent.id).overrideWith(
+        (ref) => Stream.value(_hostLiveReferenceOperationalAttendees),
+      ),
+      publicProfileRepositoryProvider.overrideWithValue(
+        _hostLiveReferencePublicProfileRepository,
+      ),
+      watchEventSuccessPlanProvider(
+        _hostLiveRoomReferenceEvent.id,
+      ).overrideWith((ref) => Stream.value(_hostLiveRoomReferencePlan)),
+      watchEventSuccessScorecardProvider(
+        _hostLiveRoomReferenceEvent.id,
+      ).overrideWith((ref) => Stream.value(null)),
+      eventSuccessSpatialLayoutProvider(
+        _hostLiveRoomReferenceEvent.id,
+      ).overrideWith((ref) async => _hostLiveRoomReferenceLayout),
+      ..._hostEventSuccessProviderOverrides,
+    ],
+    builder: (context) => HostEventManageScreen(
+      club: _hostLiveReferenceClub,
+      event: _hostLiveRoomReferenceEvent,
+      onBackToSuccess: () {},
+      initialSection: HostEventManageSection.live,
+      referenceNow: _hostLiveRoomReferenceEvent.startTime.add(
+        const Duration(minutes: 30),
+      ),
+    ),
+    drive: (tester) async {
+      await tester.tap(find.text('Room'));
+      await pumpFeatureUi(tester);
+    },
   ),
   ScreenCaptureEntry(
     id: 'host_post_event_report',

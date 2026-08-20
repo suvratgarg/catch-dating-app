@@ -249,6 +249,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
     );
     final eventSuccessSetup = EventSuccessHostSection(
       event: event,
+      referenceNow: now,
       showTabs: false,
       fixtureActions: widget.eventSuccessFixtureActions,
     );
@@ -357,6 +358,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         ],
         EventSuccessHostSection(
           event: event,
+          referenceNow: now,
           initialTab: EventSuccessHostTab.live,
           showTabs: false,
           compactLiveControls: true,
@@ -370,6 +372,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         gapH20,
         EventSuccessHostSection(
           event: event,
+          referenceNow: now,
           initialTab: EventSuccessHostTab.report,
           showTabs: false,
           fixtureActions: widget.eventSuccessFixtureActions,
@@ -474,6 +477,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         body: HostEventRosterDrawer(
           open: _rosterOpen,
           bookedCount: hostManageBookedCount(event, roster),
+          showHandle: screenState.phase != HostEventWorkspacePhase.runtime,
           onOpenChanged: (open) => _setRosterOpen(open, screenState.phase),
           body: workspaceBody,
           roster: ListView(

@@ -982,6 +982,7 @@
         "host_manage_attendance_mutation_pending",
         "host_manage_attendance_mutation_error",
         "host_live_console",
+        "host_live_room_workspace",
         "host_manage_live_unavailable",
         "host_manage_live_plan_loading",
         "host_manage_live_plan_error",

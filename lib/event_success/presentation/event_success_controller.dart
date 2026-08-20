@@ -94,6 +94,7 @@ class EventSuccessController extends _$EventSuccessController {
   Future<void> saveSetup({
     required EventSuccessPlan plan,
     required EventSuccessHostDraft draft,
+    required String? layoutId,
     String? attendeePrompt,
   }) async {
     requireSignedInUid(ref, action: 'save the live event guide');
@@ -101,6 +102,7 @@ class EventSuccessController extends _$EventSuccessController {
     final nextPlan = plan
         .copyWithDraft(draft, updatedAt: DateTime.now())
         .copyWith(
+          layoutId: layoutId,
           attendeePrompt: normalizedPrompt == null || normalizedPrompt.isEmpty
               ? null
               : normalizedPrompt,
