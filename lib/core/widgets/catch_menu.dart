@@ -1,3 +1,6 @@
+import 'dart:math' as math;
+
+import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -44,7 +47,7 @@ class CatchMenuItem<T> {
 }
 
 /// Anchors a Catch menu and matches its panel to the local trigger lane.
-class CatchMenuAnchor<T> extends StatelessWidget {
+class CatchMenuAnchor<T> extends StatefulWidget {
   const CatchMenuAnchor({
     super.key,
     required this.items,
@@ -61,30 +64,178 @@ class CatchMenuAnchor<T> extends StatelessWidget {
   final Offset alignmentOffset;
 
   @override
+  State<CatchMenuAnchor<T>> createState() => _CatchMenuAnchorState<T>();
+}
+
+class _CatchMenuAnchorState<T> extends State<CatchMenuAnchor<T>> {
+  final _anchorKey = GlobalKey();
+
+  @override
   Widget build(BuildContext context) {
+    final viewport = CatchMenuViewport.from(context);
     return LayoutBuilder(
       builder: (context, constraints) => MenuAnchor(
-        controller: controller,
-        alignmentOffset: alignmentOffset,
-        style: const MenuStyle(
-          backgroundColor: WidgetStatePropertyAll(Colors.transparent),
-          elevation: WidgetStatePropertyAll(0),
-          shadowColor: WidgetStatePropertyAll(Colors.transparent),
-          surfaceTintColor: WidgetStatePropertyAll(Colors.transparent),
-          padding: WidgetStatePropertyAll(EdgeInsets.zero),
-        ),
+        controller: widget.controller,
+        alignmentOffset: widget.alignmentOffset,
+        style: catchMenuAnchorStyle,
         menuChildren: [
-          CatchMenu<T>(
-            width: constraints.maxWidth,
-            items: items,
-            onSelected: onSelected,
+          CatchMenuViewportBoundary(
+            anchorKey: _anchorKey,
+            viewport: viewport,
+            child: CatchMenu<T>(
+              width: constraints.maxWidth,
+              items: widget.items,
+              onSelected: widget.onSelected,
+            ),
           ),
         ],
-        builder: builder,
+        builder: (context, controller, child) => KeyedSubtree(
+          key: _anchorKey,
+          child: widget.builder(context, controller, child),
+        ),
       ),
     );
   }
 }
+
+/// The physical viewport available to an anchored Catch menu.
+@immutable
+class CatchMenuViewport {
+  const CatchMenuViewport({
+    required this.usableRect,
+    required this.overlayBottomClearance,
+  });
+
+  factory CatchMenuViewport.from(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final shellBottom = AppShellActiveTab.bottomOverlayInsetOf(context);
+    final physicalBottom = math.max(mediaQuery.padding.bottom, shellBottom);
+    final inset = CatchLayout.menuViewportInset;
+    final left = mediaQuery.padding.left + inset;
+    final top = mediaQuery.padding.top + inset;
+    final right = math.max(
+      left,
+      mediaQuery.size.width - mediaQuery.padding.right - inset,
+    );
+    final bottom = math.max(
+      top,
+      mediaQuery.size.height - physicalBottom - inset,
+    );
+    return CatchMenuViewport(
+      usableRect: Rect.fromLTRB(left, top, right, bottom),
+      // Flutter's overlay already understands the platform safe area. Add
+      // only the remaining shell obstruction plus Catch's viewport inset.
+      overlayBottomClearance:
+          math.max(0, physicalBottom - mediaQuery.padding.bottom) + inset,
+    );
+  }
+
+  final Rect usableRect;
+  final double overlayBottomClearance;
+}
+
+enum _CatchMenuClearancePlacement { none, above, below }
+
+/// Keeps an anchored menu inside the usable viewport, including Catch's
+/// floating shell navigation.
+///
+/// Material's menu overlay is owned by the navigator and therefore cannot see
+/// shell-local inherited padding. The boundary carries the measured obstruction
+/// into the overlay. It uses trailing clearance when the menu must scroll,
+/// leading clearance when Material flips a shorter menu above its trigger, and
+/// removes the spacer when the menu already fits below the trigger.
+class CatchMenuViewportBoundary extends StatefulWidget {
+  const CatchMenuViewportBoundary({
+    super.key,
+    required this.anchorKey,
+    required this.viewport,
+    required this.child,
+  });
+
+  final GlobalKey anchorKey;
+  final CatchMenuViewport viewport;
+  final Widget child;
+
+  @override
+  State<CatchMenuViewportBoundary> createState() =>
+      _CatchMenuViewportBoundaryState();
+}
+
+class _CatchMenuViewportBoundaryState extends State<CatchMenuViewportBoundary> {
+  final _menuKey = GlobalKey();
+  _CatchMenuClearancePlacement _placement = _CatchMenuClearancePlacement.below;
+  double _lastChildMaxHeight = double.infinity;
+
+  @override
+  Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) => _resolvePlacement());
+    final clearance = widget.viewport.overlayBottomClearance;
+    final mediaQuery = MediaQuery.of(context);
+    _lastChildMaxHeight = CatchLayout.menuOverlayChildMaxHeightFor(
+      viewportHeight: mediaQuery.size.height,
+      verticalSafePadding: mediaQuery.padding.vertical,
+      overlayBottomClearance: clearance,
+    );
+    return Padding(
+      padding: EdgeInsets.only(
+        top: _placement == _CatchMenuClearancePlacement.above ? clearance : 0,
+        bottom: _placement == _CatchMenuClearancePlacement.below
+            ? clearance
+            : 0,
+      ),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: widget.viewport.usableRect.height > 0
+              ? widget.viewport.usableRect.height
+              : double.infinity,
+        ),
+        child: KeyedSubtree(key: _menuKey, child: widget.child),
+      ),
+    );
+  }
+
+  void _resolvePlacement() {
+    if (!mounted) return;
+    final anchorBox =
+        widget.anchorKey.currentContext?.findRenderObject() as RenderBox?;
+    final menuBox = _menuKey.currentContext?.findRenderObject() as RenderBox?;
+    if (anchorBox == null || menuBox == null || !anchorBox.hasSize) return;
+
+    final anchorOrigin = anchorBox.localToGlobal(Offset.zero);
+    final anchorRect = anchorOrigin & anchorBox.size;
+    final menuHeight = menuBox.size.height;
+    final menuWasConstrained = menuHeight >= _lastChildMaxHeight - 0.5;
+    final next =
+        !menuWasConstrained &&
+            anchorRect.bottom + menuHeight <= widget.viewport.usableRect.bottom
+        ? _CatchMenuClearancePlacement.none
+        : anchorRect.top - menuHeight >= widget.viewport.usableRect.top
+        ? _CatchMenuClearancePlacement.above
+        : _CatchMenuClearancePlacement.below;
+    if (next == _placement) return;
+    setState(() => _placement = next);
+  }
+}
+
+Widget catchMenuWithViewportBoundary({
+  required BuildContext context,
+  required GlobalKey anchorKey,
+  required Widget child,
+}) {
+  return CatchMenuViewportBoundary(
+    anchorKey: anchorKey,
+    viewport: CatchMenuViewport.from(context),
+    child: child,
+  );
+}
+
+const catchMenuAnchorStyle = MenuStyle(
+  backgroundColor: WidgetStatePropertyAll(Colors.transparent),
+  elevation: WidgetStatePropertyAll(0),
+  shadowColor: WidgetStatePropertyAll(Colors.transparent),
+  surfaceTintColor: WidgetStatePropertyAll(Colors.transparent),
+  padding: WidgetStatePropertyAll(EdgeInsets.zero),
+);
 
 /// Handoff `Menu`: anchored surface panel of selectable rows.
 class CatchMenu<T> extends StatelessWidget {
@@ -102,7 +253,11 @@ class CatchMenu<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final viewportHeight = MediaQuery.sizeOf(context).height;
+    final mediaQuery = MediaQuery.of(context);
+    final viewportHeight = math.max(
+      0.0,
+      mediaQuery.size.height - mediaQuery.padding.vertical,
+    );
     final maxHeight = CatchLayout.menuMaxHeightFor(viewportHeight);
 
     return CatchSurface(

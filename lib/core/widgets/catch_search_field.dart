@@ -30,10 +30,66 @@ class CatchSearchField extends StatefulWidget {
     this.onSubmitted,
     this.onFocusChanged,
     this.semanticLabel,
-    this.emptyTrailingIcon,
-    this.emptyTrailingTooltip,
-    this.onEmptyTrailingPressed,
-    this.mode = CatchSearchFieldMode.field,
+    this.backgroundColor,
+    this.borderColor,
+    this.foregroundColor,
+    this.mutedForegroundColor,
+  }) : mode = CatchSearchFieldMode.field,
+       expanded = true,
+       progress = null,
+       maxWidth = null,
+       onOpenSearch = null,
+       onCloseSearch = null,
+       tooltip = null,
+       collapsedExtent = CatchIconButton.navSize;
+
+  /// A permanently visible browse search.
+  ///
+  /// This mode deliberately has no empty trailing action: an empty field has
+  /// nothing to clear and cannot be closed because it is not transient chrome.
+  const CatchSearchField.expanded({
+    super.key,
+    this.value = '',
+    this.contract,
+    this.contractExemption,
+    this.placeholder,
+    this.onChanged,
+    this.autofocus = false,
+    this.enabled = true,
+    this.textInputAction = TextInputAction.done,
+    this.onSubmitted,
+    this.onFocusChanged,
+    this.semanticLabel,
+    this.backgroundColor,
+    this.borderColor,
+    this.foregroundColor,
+    this.mutedForegroundColor,
+  }) : mode = CatchSearchFieldMode.expanded,
+       expanded = true,
+       progress = null,
+       maxWidth = null,
+       onOpenSearch = null,
+       onCloseSearch = null,
+       tooltip = null,
+       collapsedExtent = CatchIconButton.navSize;
+
+  /// Search chrome that morphs between a compact trigger and a full field.
+  ///
+  /// [onCloseSearch] belongs only to this transient mode, so fixed browse
+  /// fields cannot accidentally render a close icon while empty.
+  const CatchSearchField.expanding({
+    super.key,
+    this.value = '',
+    this.contract,
+    this.contractExemption,
+    this.placeholder,
+    this.onChanged,
+    this.autofocus = false,
+    this.enabled = true,
+    this.textInputAction = TextInputAction.done,
+    this.onSubmitted,
+    this.onFocusChanged,
+    this.semanticLabel,
     this.expanded = true,
     this.progress,
     this.maxWidth,
@@ -45,7 +101,7 @@ class CatchSearchField extends StatefulWidget {
     this.borderColor,
     this.foregroundColor,
     this.mutedForegroundColor,
-  });
+  }) : mode = CatchSearchFieldMode.expanding;
 
   final String value;
   final CatchContractFieldConstraints? contract;
@@ -58,9 +114,6 @@ class CatchSearchField extends StatefulWidget {
   final ValueChanged<String>? onSubmitted;
   final ValueChanged<bool>? onFocusChanged;
   final String? semanticLabel;
-  final IconData? emptyTrailingIcon;
-  final String? emptyTrailingTooltip;
-  final VoidCallback? onEmptyTrailingPressed;
   final CatchSearchFieldMode mode;
   final bool expanded;
   final double? progress;
@@ -199,29 +252,6 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
               valueListenable: _controller,
               builder: (context, value, _) {
                 if (value.text.isEmpty) {
-                  if (widget.emptyTrailingIcon != null &&
-                      widget.onEmptyTrailingPressed != null) {
-                    return SizedBox.square(
-                      dimension: CatchLayout.searchFieldClearSize,
-                      child: IconButton(
-                        tooltip: widget.emptyTrailingTooltip ?? placeholder,
-                        padding: EdgeInsets.zero,
-                        style: IconButton.styleFrom(
-                          minimumSize: Size.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        icon: Icon(
-                          widget.emptyTrailingIcon,
-                          size: CatchLayout.searchFieldClearIconSize,
-                          color: mutedForeground,
-                        ),
-                        onPressed: widget.enabled
-                            ? widget.onEmptyTrailingPressed
-                            : null,
-                      ),
-                    );
-                  }
-
                   return const SizedBox(
                     width: CatchLayout.searchFieldClearSize,
                   );
@@ -399,9 +429,7 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
                                   .coreCatchSearchFieldVisiblecopyCloseSearch,
                               foregroundColor: mutedForeground,
                               onClear: _clear,
-                              onEmptyPressed:
-                                  widget.onCloseSearch ??
-                                  widget.onEmptyTrailingPressed,
+                              onEmptyPressed: widget.onCloseSearch,
                             ),
                           ],
                         ),

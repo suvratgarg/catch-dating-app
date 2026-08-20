@@ -256,6 +256,14 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   compact action strips, not a second CTA family.
 - Top-bar action grouping routes through `CatchTopBarActionGroup`; callers do
   not compose parallel header rows.
+- Screen hierarchy follows one control per level. Shell destinations express
+  product-level navigation; pinned `CatchTabRail` / `CatchTabbedScreenScaffold`
+  tabs switch peer views within one destination; chips and adaptive selection
+  controls filter the active view. A query that searches the whole active view
+  belongs to that screen's top bar through expanding `CatchTopBarSearch`, while
+  a permanently visible `CatchSearchField.expanded` is reserved for a
+  search-first browse toolbar. Feature-local pill groups do not substitute for
+  peer-view tabs.
 - Pushed utility/list and identity chrome routes through
   `CatchRouteScaffold`; it owns the page surface and shows a divider only when
   vertical content has actually scrolled beneath the compact bar. Root tab

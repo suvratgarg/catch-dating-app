@@ -2305,6 +2305,21 @@ abstract final class CatchLayout {
         : double.infinity;
   }
 
+  static double menuOverlayChildMaxHeightFor({
+    required double viewportHeight,
+    required double verticalSafePadding,
+    required double overlayBottomClearance,
+  }) {
+    final totalInset = menuViewportInset * 2;
+    return math.max(
+      0,
+      viewportHeight -
+          verticalSafePadding -
+          overlayBottomClearance -
+          totalInset,
+    );
+  }
+
   static double actionMenuAlignmentXFor(double menuWidth) =>
       -(menuWidth - iconButtonSize);
   static const double avatarStatusDotExtent = 9.0;

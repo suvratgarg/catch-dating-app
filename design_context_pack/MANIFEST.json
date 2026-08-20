@@ -15,18 +15,18 @@
     },
     {
       "path": "design_system/claude_design_handoff_request.json",
-      "sha256": "23bb7bb3576f095a0646d95ad0bc611f0883f64f85b8b1a24707238d5afc1bd8",
+      "sha256": "b5e6aee2b703c93f7616db95eba70784d9c50e7a13b035f2fe95496b1069d8dd",
       "bytes": 4596
     },
     {
       "path": "design_system/components.json",
-      "sha256": "6e6828f53a29a0e3068f54b014c6a306953ab3792b821b9d96de0fa6a059cea1",
-      "bytes": 456670
+      "sha256": "f4e51e2e23872ebbd8083baeb92409f34323dd913d0e16860f431fa3c1b1a2d8",
+      "bytes": 456635
     },
     {
       "path": "design_system/design_language.txt",
-      "sha256": "9c465b6d38ef8a081142080d9d616cf118dec9afcc66a0197cae1c41a1eb265a",
-      "bytes": 23240
+      "sha256": "de2cece06d93a6eac9b77e3b702eaaaef9a6a8c4950349ed4033c4c1ccd23da8",
+      "bytes": 23801
     },
     {
       "path": "design_system/specimens/catch_design_system.html",

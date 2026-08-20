@@ -646,8 +646,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
   Widget? _buildSearch(double maxWidth) {
     if (!_searchEnabled) return null;
     final search = widget.search!;
-    return CatchSearchField(
-      mode: CatchSearchFieldMode.expanding,
+    return CatchSearchField.expanding(
       expanded: _searchOpenEffective,
       maxWidth: maxWidth,
       value: search.value,
