@@ -1611,6 +1611,9 @@ class _QuestionEditFields extends StatelessWidget {
             'question-section-${question.questionId}-$sectionIndex',
           ),
           title: context.l10n.hostFormMoveToSection,
+          contractExemption:
+              'Moves an existing question between sections without changing '
+              'a schema-backed field value.',
           values: List<int>.generate(sections.length, (index) => index),
           value: sectionIndex,
           itemLabel: (index) => sections[index].title,

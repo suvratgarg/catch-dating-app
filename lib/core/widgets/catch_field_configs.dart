@@ -557,6 +557,7 @@ final class _SelectConfig extends _CatchFieldConfig {
     Key? key,
     required String title,
     CatchContractFieldConstraints? contract,
+    this.contractExemption,
     required this.values,
     required this.itemLabel,
     required this.value,
@@ -572,6 +573,7 @@ final class _SelectConfig extends _CatchFieldConfig {
   }) : super(key: key, title: title, contract: contract, enabled: enabled);
 
   final List<Object?> values;
+  final String? contractExemption;
   final String Function(Object? item) itemLabel;
   final Object? value;
   final ValueChanged<Object?>? onSelectChanged;
