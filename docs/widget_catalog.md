@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 3.7.0
-updated: 2026-08-20
+version: 3.7.1
+updated: 2026-08-21
 owner: recursive_audit_loop
 status: active
 ---
@@ -124,7 +124,7 @@ Widgetbook callers.
 | `CatchFieldStatusIndicator` | `lib/core/widgets/catch_field.dart` | Public `catch.field` member behind `CatchFieldTrailing.status` and `.toggle`. It cross-fades saving feedback, scales saved confirmation, and becomes a plain swap under reduced motion. Product surfaces should request it through `CatchFieldTrailing`; the direct seam exists for contract tests and Widgetbook evidence. |
 | `CatchButton` | `lib/core/widgets/catch_button.dart:13` | Canonical button. Supports `primary`, `secondary`, `ghost`, `danger`, and `light` variants; activity-accent primary fills via `accentColor`; `sm`, `md`, `lg` sizes; loading state with animated dots; hover/press feedback; optional leading icons; and `isInteractive: false` for button-looking labels inside an already tappable parent. Button height is fixed to the selected token size so full-width footer buttons do not expand in unconstrained bottom bars. Use `light` for solid-white pill CTAs so foreground/background colors stay paired across light and dark themes. |
 | `CatchActionMenu<T>` | `lib/core/widgets/catch_action_menu.dart` | Anchored overflow trigger for a short list of commands. It opens the shared `CatchMenu` panel from a `CatchIconButton`, supports icons, explanatory sublabels, disabled commands with reasons, destructive commands, and typed callbacks. Selected state is intentionally absent: sorting, filtering, and other mutually exclusive choices use the adaptive selection family instead. Menus are capped at five commands. |
-| `CatchField.select<T>` | `lib/core/widgets/catch_field.dart` | Canonical select-mode factory on `CatchField`. Supports token-driven flat trigger/menu composition, compact/md heights, optional prefix icons, disabled/error states, controlled value syncing, and validation messaging without a separate dropdown/select primitive. |
+| `CatchField.select<T>` | `lib/core/widgets/catch_field.dart` | Canonical select-mode factory on `CatchField`. Supports token-driven flat trigger/menu composition, compact/md heights, optional prefix icons, disabled/error states, controlled value syncing, and validation messaging without a separate dropdown/select primitive. Editable selections bind a generated field contract; UI-only selections declare an explicit `contractExemption`. |
 | `CatchRowPressSurface` | `lib/core/widgets/catch_row_press_surface.dart:8` | Shared full-row interaction layer for flat field, notification, and person/chat rows. It owns the full-width hover/focus/pressed overlay and tap semantics while the child row owns content padding, dividers, avatars/icons, text lanes, and trailing layout. |
 | `CatchSearchField` | `lib/core/widgets/catch_search_field.dart:8` | Handoff `SearchField`: raised pill browse input with search glyph, controlled value sync, quiet clear target when non-empty, platform Done submit, focus callbacks, transparent platform text-entry fill inside the pill, and semantic labeling. The default and `.expanded` constructors are fixed browse fields and structurally cannot accept open/close chrome, so their trailing slot stays empty until there is input. `.expanding` exclusively owns the transient app-bar search lifecycle and its empty close target. Use instead of `CatchField` for label-less browse/search affordances. |
 

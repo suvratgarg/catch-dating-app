@@ -593,6 +593,27 @@ class HostFormDefinition {
     return HostFormDefinition._(next);
   }
 
+  HostFormDefinition moveQuestionToSection({
+    required int sourceSectionIndex,
+    required int questionIndex,
+    required int targetSectionIndex,
+  }) {
+    if (sourceSectionIndex == targetSectionIndex) return this;
+    final currentSections = sections;
+    final question =
+        currentSections[sourceSectionIndex].questions[questionIndex];
+    final sourceSection = currentSections[sourceSectionIndex].removeQuestion(
+      questionIndex,
+    );
+    final targetSection = currentSections[targetSectionIndex].addQuestion(
+      question,
+    );
+    return replaceSection(
+      sourceSectionIndex,
+      sourceSection,
+    ).replaceSection(targetSectionIndex, targetSection);
+  }
+
   HostFormDefinition addLogicRule(HostFormLogicRule rule) {
     final next = toJson();
     final rules = _jsonList(next['logicRules'])..add(rule.toJson());

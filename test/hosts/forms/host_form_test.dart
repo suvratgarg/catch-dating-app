@@ -46,6 +46,30 @@ void main() {
       expect(definition.sections.single.sectionId, 'section_1');
     });
 
+    test('moves a stable question between sections without data loss', () {
+      final definition = HostFormDefinition.fromMap(_definitionMap())
+          .addSection(
+            HostFormSection.create(
+              sectionId: 'section_2',
+              title: 'Availability',
+            ),
+          );
+
+      final moved = definition.moveQuestionToSection(
+        sourceSectionIndex: 0,
+        questionIndex: 0,
+        targetSectionIndex: 1,
+      );
+
+      expect(moved.sections.first.questions, isEmpty);
+      expect(moved.sections.last.questions.single.questionId, 'question_1');
+      expect(moved.sections.last.questions.single.label, 'Full name');
+      expect(
+        definition.sections.first.questions.single.questionId,
+        'question_1',
+      );
+    });
+
     test(
       'edits advanced settings, validation, and logic without data loss',
       () {
