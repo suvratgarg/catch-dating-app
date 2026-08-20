@@ -2144,11 +2144,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostPaymentAccountCardTitleRazorpay => 'Razorpay';
 
   @override
+  String get hostsHostPaymentAccountCardTitleRazorpayPayoutAccountReady =>
+      'Razorpay payout account is ready';
+
+  @override
   String get hostsHostPaymentAccountCardTitleStripe => 'Stripe';
 
   @override
   String get hostsHostPaymentAccountCardBodyRazorpayInr =>
-      'INR checkout and payouts for India-based organizers.';
+      'Razorpay Route account setup for INR payouts in India.';
 
   @override
   String get hostsHostPaymentAccountCardBodyStripeInternational =>

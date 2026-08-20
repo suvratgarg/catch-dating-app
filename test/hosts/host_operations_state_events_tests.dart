@@ -397,7 +397,7 @@ void _registerHostOperationsStateEventsTests() {
     expect(find.text('Stripe'), findsWidgets);
     expect(find.textContaining('Recommended'), findsWidgets);
     expect(find.text('Identity document required'), findsOneWidget);
-    expect(find.text('International checkout is ready'), findsOneWidget);
+    expect(find.text('Razorpay payout account is ready'), findsOneWidget);
   });
 
   testWidgets('India payout setup recommends Razorpay and exposes Route form', (

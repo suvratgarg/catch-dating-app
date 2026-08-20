@@ -350,8 +350,9 @@ class HostPaymentAccountContentCard extends StatelessWidget {
       return HostPaymentPresentation(
         badge: l10n.hostsHostPaymentAccountCardVisiblecopyReady,
         tone: CatchBadgeTone.success,
-        title:
-            l10n.hostsHostPaymentAccountCardTitleInternationalCheckoutIsReady,
+        title: account.provider == HostPaymentProvider.razorpay
+            ? l10n.hostsHostPaymentAccountCardTitleRazorpayPayoutAccountReady
+            : l10n.hostsHostPaymentAccountCardTitleInternationalCheckoutIsReady,
         body: account.provider == HostPaymentProvider.razorpay
             ? l10n.hostsHostPaymentAccountCardBodyRazorpayInr
             : l10n.hostsHostPaymentAccountCardBodyNonInrPaidBookings,

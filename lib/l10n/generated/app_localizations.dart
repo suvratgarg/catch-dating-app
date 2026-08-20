@@ -3731,6 +3731,12 @@ abstract class AppLocalizations {
   /// **'Razorpay'**
   String get hostsHostPaymentAccountCardTitleRazorpay;
 
+  /// Confirms provider-side Razorpay Route account activation without claiming settlement release.
+  ///
+  /// In en, this message translates to:
+  /// **'Razorpay payout account is ready'**
+  String get hostsHostPaymentAccountCardTitleRazorpayPayoutAccountReady;
+
   /// Stripe provider name.
   ///
   /// In en, this message translates to:
@@ -3740,7 +3746,7 @@ abstract class AppLocalizations {
   /// Razorpay provider summary.
   ///
   /// In en, this message translates to:
-  /// **'INR checkout and payouts for India-based organizers.'**
+  /// **'Razorpay Route account setup for INR payouts in India.'**
   String get hostsHostPaymentAccountCardBodyRazorpayInr;
 
   /// Stripe provider summary.
