@@ -111,13 +111,18 @@ class CatchMenuViewport {
     final shellBottom = AppShellActiveTab.bottomOverlayInsetOf(context);
     final physicalBottom = math.max(mediaQuery.padding.bottom, shellBottom);
     final inset = CatchLayout.menuViewportInset;
+    final left = mediaQuery.padding.left + inset;
+    final top = mediaQuery.padding.top + inset;
+    final right = math.max(
+      left,
+      mediaQuery.size.width - mediaQuery.padding.right - inset,
+    );
+    final bottom = math.max(
+      top,
+      mediaQuery.size.height - physicalBottom - inset,
+    );
     return CatchMenuViewport(
-      usableRect: Rect.fromLTRB(
-        mediaQuery.padding.left + inset,
-        mediaQuery.padding.top + inset,
-        mediaQuery.size.width - mediaQuery.padding.right - inset,
-        mediaQuery.size.height - physicalBottom - inset,
-      ),
+      usableRect: Rect.fromLTRB(left, top, right, bottom),
       // Flutter's overlay already understands the platform safe area. Add
       // only the remaining shell obstruction plus Catch's viewport inset.
       overlayBottomClearance:
@@ -180,7 +185,9 @@ class _CatchMenuViewportBoundaryState extends State<CatchMenuViewportBoundary> {
       ),
       child: ConstrainedBox(
         constraints: BoxConstraints(
-          maxHeight: widget.viewport.usableRect.height,
+          maxHeight: widget.viewport.usableRect.height > 0
+              ? widget.viewport.usableRect.height
+              : double.infinity,
         ),
         child: KeyedSubtree(key: _menuKey, child: widget.child),
       ),
