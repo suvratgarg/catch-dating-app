@@ -10,6 +10,8 @@ import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_sliver_h
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -17,6 +19,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
@@ -106,11 +109,13 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
     final t = CatchTokens.of(context);
     final now = widget.now ?? DateTime.now();
     final uidAsync = ref.watch(uidProvider);
-    final uid = uidAsync.asData?.value;
+    final uidState = catchAsyncStateFromAsyncValue(uidAsync);
+    final uid = uidState.value;
     final clubsAsync = uid == null
         ? const AsyncLoading<List<Club>>()
         : ref.watch(hostOperableClubsProvider(uid));
-    final clubs = clubsAsync.asData?.value;
+    final clubsState = catchAsyncStateFromAsyncValue(clubsAsync);
+    final clubs = clubsState.value;
     final selectedOrganizerId = uid == null
         ? null
         : ref.watch(hostOrganizerSelectionProvider(uid));
@@ -127,9 +132,9 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
     final isInbox = _workspace == HostMessagingWorkspace.inbox;
     final workspaceSliver = isInbox
         ? _HostInboxWorkspaceGroup(
-            uidAsync: uidAsync,
+            uidState: uidState,
             uid: uid,
-            clubsAsync: clubsAsync,
+            clubsState: clubsState,
             selectedClub: selectedClub,
             query: query,
             now: now,
@@ -143,9 +148,9 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
             onBroadcastSelected: _openBroadcast,
           )
         : _HostCampaignWorkspaceSliver(
-            uidAsync: uidAsync,
+            uidState: uidState,
             uid: uid,
-            clubsAsync: clubsAsync,
+            clubsState: clubsState,
             selectedClub: selectedClub,
             initialSegments: widget.initialCampaignSegments,
             initialSearch: widget.initialCampaignSearch,
@@ -154,7 +159,9 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
             onOpenInbox: () => _selectWorkspace(HostMessagingWorkspace.inbox),
           );
     final inbox = isInbox
-        ? ref.watch(chatsListViewModelProvider).asData?.value
+        ? catchAsyncStateFromAsyncValue(
+            ref.watch(chatsListViewModelProvider),
+          ).value
         : null;
     final selectedThreadCount = selectedClub == null || inbox == null
         ? 0
@@ -278,9 +285,9 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
 
 class _HostInboxWorkspaceGroup extends ConsumerWidget {
   const _HostInboxWorkspaceGroup({
-    required this.uidAsync,
+    required this.uidState,
     required this.uid,
-    required this.clubsAsync,
+    required this.clubsState,
     required this.selectedClub,
     required this.query,
     required this.now,
@@ -294,9 +301,9 @@ class _HostInboxWorkspaceGroup extends ConsumerWidget {
     required this.onBroadcastSelected,
   });
 
-  final AsyncValue<String?> uidAsync;
+  final CatchAsyncState<String?> uidState;
   final String? uid;
-  final AsyncValue<List<Club>> clubsAsync;
+  final CatchAsyncState<List<Club>> clubsState;
   final Club? selectedClub;
   final String query;
   final DateTime now;
@@ -311,24 +318,27 @@ class _HostInboxWorkspaceGroup extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (uidAsync.hasError || clubsAsync.hasError) {
-      final failed = uidAsync.hasError ? uidAsync : clubsAsync;
+    if (uidState.hasError || clubsState.hasError) {
+      final failed = uidState.hasError ? uidState : clubsState;
       return CatchSliverErrorState.fromError(
         failed.error!,
         context: AppErrorContext.chat,
         onRetry: () => onRetry(selectedClub?.id),
       );
     }
-    if (uid == null || clubsAsync.isLoading || !clubsAsync.hasValue) {
-      return const ChatsListSkeleton();
-    }
+    if (uidState.isLoading) return const ChatsListSkeleton();
+    if (uid == null) return const _HostAuthRequiredSliver();
+    if (clubsState.isLoading) return const ChatsListSkeleton();
     final club = selectedClub;
     if (club == null) return const _HostNoOrganizerSliver();
 
     final eventsAsync = ref.watch(watchEventsForClubProvider(club.id));
     final inboxAsync = ref.watch(chatsListViewModelProvider);
     final whatsappAsync = ref.watch(hostWhatsappThreadsProvider(club.id));
-    final events = eventsAsync.asData?.value;
+    final eventsState = catchAsyncStateFromAsyncValue(eventsAsync);
+    final inboxState = catchAsyncStateFromAsyncValue(inboxAsync);
+    final whatsappState = catchAsyncStateFromAsyncValue(whatsappAsync);
+    final events = eventsState.value;
     final scope = events == null
         ? const HostInboxScope.general()
         : resolveHostInboxScope(
@@ -340,12 +350,12 @@ class _HostInboxWorkspaceGroup extends ConsumerWidget {
     final participationsAsync = eventId == null
         ? const AsyncData<List<EventParticipation>>([])
         : ref.watch(watchEventParticipationsForEventProvider(eventId));
-    final asyncValues = <AsyncValue<dynamic>>[
-      eventsAsync,
-      inboxAsync,
-      participationsAsync,
+    final asyncStates = <CatchAsyncState<dynamic>>[
+      eventsState,
+      inboxState,
+      catchAsyncStateFromAsyncValue(participationsAsync),
     ];
-    final failed = asyncValues.where((value) => value.hasError).firstOrNull;
+    final failed = asyncStates.where((value) => value.hasError).firstOrNull;
     if (failed != null) {
       return CatchSliverErrorState.fromError(
         failed.error!,
@@ -353,12 +363,10 @@ class _HostInboxWorkspaceGroup extends ConsumerWidget {
         onRetry: () => onRetry(club.id),
       );
     }
-    final loading = asyncValues.any(
-      (value) => value.isLoading || !value.hasValue,
-    );
-    final inbox = inboxAsync.asData?.value;
-    final participations = participationsAsync.asData?.value;
-    final whatsappPage = whatsappAsync.asData?.value;
+    final loading = asyncStates.any((value) => value.isLoading);
+    final inbox = inboxState.value;
+    final participations = asyncStates[2].value as List<EventParticipation>?;
+    final whatsappPage = whatsappState.value;
     final workspace = events == null || inbox == null || participations == null
         ? null
         : HostInboxViewModel.compose(
@@ -422,9 +430,9 @@ class _HostInboxWorkspaceGroup extends ConsumerWidget {
 
 class _HostCampaignWorkspaceSliver extends StatelessWidget {
   const _HostCampaignWorkspaceSliver({
-    required this.uidAsync,
+    required this.uidState,
     required this.uid,
-    required this.clubsAsync,
+    required this.clubsState,
     required this.selectedClub,
     required this.initialSegments,
     required this.initialSearch,
@@ -433,9 +441,9 @@ class _HostCampaignWorkspaceSliver extends StatelessWidget {
     required this.onOpenInbox,
   });
 
-  final AsyncValue<String?> uidAsync;
+  final CatchAsyncState<String?> uidState;
   final String? uid;
-  final AsyncValue<List<Club>> clubsAsync;
+  final CatchAsyncState<List<Club>> clubsState;
   final Club? selectedClub;
   final Set<HostAudienceSegment> initialSegments;
   final String? initialSearch;
@@ -445,17 +453,17 @@ class _HostCampaignWorkspaceSliver extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (uidAsync.hasError || clubsAsync.hasError) {
-      final failed = uidAsync.hasError ? uidAsync : clubsAsync;
+    if (uidState.hasError || clubsState.hasError) {
+      final failed = uidState.hasError ? uidState : clubsState;
       return CatchSliverErrorState.fromError(
         failed.error!,
         context: AppErrorContext.club,
         onRetry: () => onRetry(selectedClub?.id),
       );
     }
-    if (uid == null || clubsAsync.isLoading || !clubsAsync.hasValue) {
-      return const ChatsListSkeleton();
-    }
+    if (uidState.isLoading) return const ChatsListSkeleton();
+    if (uid == null) return const _HostAuthRequiredSliver();
+    if (clubsState.isLoading) return const ChatsListSkeleton();
     final club = selectedClub;
     if (club == null) return const _HostNoOrganizerSliver();
     return HostSendsWorkspaceSliver(
@@ -477,6 +485,23 @@ class _HostNoOrganizerSliver extends StatelessWidget {
       icon: CatchIcons.groupsOutlined,
       title: context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstClub,
       message: context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
+    ),
+  );
+}
+
+class _HostAuthRequiredSliver extends StatelessWidget {
+  const _HostAuthRequiredSliver();
+
+  @override
+  Widget build(BuildContext context) => CatchSliverStateViewport(
+    child: CatchEmptyState(
+      icon: CatchIcons.lockOutlineRounded,
+      title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
+      message: context.l10n.hostsHostAuthRequiredScreenMessageSignInToManage,
+      action: CatchButton(
+        label: context.l10n.hostsHostAuthRequiredScreenVisiblecopySignIn,
+        onPressed: () => context.go(Routes.authScreen.path),
+      ),
     ),
   );
 }

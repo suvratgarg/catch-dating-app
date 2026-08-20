@@ -1847,7 +1847,10 @@ Widget _hostHomePreviewFor(BuildContext context, String focus) {
   final club = HostOperationsFixtures.primaryClub;
   final event = HostOperationsFixtures.upcomingEvent;
   final state = buildHostEventsOverviewState(
-    AsyncData<List<Event>>([event, HostOperationsFixtures.privateEvent]),
+    CatchAsyncState<List<Event>>.data([
+      event,
+      HostOperationsFixtures.privateEvent,
+    ]),
     now: event.startTime.subtract(const Duration(hours: 2)),
     l10n: context.l10n,
   );
@@ -6311,7 +6314,7 @@ class _HostTeamHostedClubsFrame extends StatelessWidget {
                       : loading
                       ? const HostTeamHostedClubsLoading()
                       : buildHostTeamHostedClubsState(
-                          AsyncData<List<Club>>(
+                          CatchAsyncState<List<Club>>.data(
                             clubs ?? HostOperationsFixtures.clubs,
                           ),
                         ),

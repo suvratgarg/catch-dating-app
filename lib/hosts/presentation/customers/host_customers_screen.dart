@@ -5,6 +5,7 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_share.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/responsive/breakpoints.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -74,31 +75,33 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
   @override
   Widget build(BuildContext context) {
     final uidAsync = ref.watch(uidProvider);
-    final uid = uidAsync.asData?.value;
-    if (uidAsync.isLoading || uid == null && !uidAsync.hasError) {
-      return HostLoadingScreen(title: context.l10n.hostNavigationCustomers);
-    }
-    if (uidAsync.hasError) {
+    final uidState = catchAsyncStateFromAsyncValue(uidAsync);
+    final uid = uidState.value;
+    if (uidState.hasError) {
       return CatchErrorScaffold.fromError(
-        uidAsync.error!,
+        uidState.error!,
         context: AppErrorContext.auth,
         onRetry: () => ref.invalidate(uidProvider),
       );
     }
+    if (uidState.isLoading) {
+      return HostLoadingScreen(title: context.l10n.hostNavigationCustomers);
+    }
     if (uid == null) return const HostAuthRequiredScreen();
 
     final clubsAsync = ref.watch(hostOperableClubsProvider(uid));
-    if (clubsAsync.isLoading) {
-      return HostLoadingScreen(title: context.l10n.hostNavigationCustomers);
-    }
-    if (clubsAsync.hasError) {
+    final clubsState = catchAsyncStateFromAsyncValue(clubsAsync);
+    if (clubsState.hasError) {
       return CatchErrorScaffold.fromError(
-        clubsAsync.error!,
+        clubsState.error!,
         context: AppErrorContext.club,
         onRetry: () => ref.invalidate(hostOperableClubsProvider(uid)),
       );
     }
-    final clubs = clubsAsync.asData?.value ?? const <Club>[];
+    if (clubsState.isLoading) {
+      return HostLoadingScreen(title: context.l10n.hostNavigationCustomers);
+    }
+    final clubs = clubsState.value ?? const <Club>[];
     if (clubs.isEmpty) return const HostCustomersNoOrganizer();
     final selectedOrganizerId = ref.watch(hostOrganizerSelectionProvider(uid));
     final selectedClub = resolveSelectedHostOrganizer(
@@ -112,8 +115,10 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     final messagingSetup = ref.watch(
       hostMessagingSetupProvider(selectedClub.id),
     );
+    final summaryState = catchAsyncStateFromAsyncValue(summary);
+    final messagingSetupState = catchAsyncStateFromAsyncValue(messagingSetup);
     final visibleFilters = hostCustomerFiltersForSmsReadiness(
-      summary.asData?.value.smsReadiness,
+      summaryState.value?.smsReadiness,
     );
     final effectiveFilter = visibleFilters.contains(_filter)
         ? _filter
@@ -228,7 +233,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                     loadingBuilder: (_) => const CatchSkeletonRows(count: 5),
                     errorBuilder: (_, error, _) => CatchErrorState.fromError(
                       error,
-                      context: AppErrorContext.customer,
+                      context: AppErrorContext.customers,
                       mode: CatchErrorStateMode.compact,
                       onRetry: () => ref.invalidate(
                         hostCustomersDirectoryControllerProvider(request),
@@ -237,8 +242,8 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                     builder: (context, state) {
                       final campaignBridgeBlocker = hostCampaignBridgeBlocker(
                         segment: activeSegment,
-                        smsReadiness: summary.asData?.value.smsReadiness,
-                        messagingSetup: messagingSetup.asData?.value,
+                        smsReadiness: summaryState.value?.smsReadiness,
+                        messagingSetup: messagingSetupState.value,
                         audienceCoverageComplete:
                             state.sourceCoverage ==
                             HostCustomerDirectoryCoverage.exact,
@@ -264,7 +269,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                               effectiveFilter,
                               _manualTag,
                               state,
-                              summary.asData?.value.smsReadiness,
+                              summaryState.value?.smsReadiness,
                             ),
                             onClear:
                                 effectiveFilter == HostCustomerFilter.all &&
@@ -1684,7 +1689,7 @@ class HostCustomersSummary extends StatelessWidget {
     loadingBuilder: (_) => const CatchSkeletonRows(count: 1),
     errorBuilder: (_, error, _) => CatchErrorState.fromError(
       error,
-      context: AppErrorContext.club,
+      context: AppErrorContext.customers,
       mode: CatchErrorStateMode.compact,
       onRetry: onRetry,
     ),

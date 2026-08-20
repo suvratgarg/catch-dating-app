@@ -20980,6 +20980,18 @@ abstract class AppLocalizations {
   /// **'Added by your team · not verified by Catch'**
   String get hostCustomersUnverifiedContactDetails;
 
+  /// Customer-directory load failure title.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers unavailable'**
+  String get hostCustomersUnavailable;
+
+  /// Customer-directory retry action.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload customers'**
+  String get hostCustomersReload;
+
   /// Customer-detail load failure title.
   ///
   /// In en, this message translates to:
@@ -21951,6 +21963,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Applications'**
   String get hostApplicationsTitle;
+
+  /// Application-list or detail load failure title.
+  ///
+  /// In en, this message translates to:
+  /// **'Applications unavailable'**
+  String get hostApplicationsUnavailable;
+
+  /// Application-list or detail retry action.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload applications'**
+  String get hostApplicationsReload;
+
+  /// Application detail missing-state title.
+  ///
+  /// In en, this message translates to:
+  /// **'Application not found'**
+  String get hostApplicationNotFound;
 
   /// Customers header action opening the application review queue.
   ///

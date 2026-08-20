@@ -9,13 +9,16 @@ class HostOperationsHomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final uidAsync = ref.watch(uidProvider);
-    final uid = uidAsync.asData?.value;
+    final uidState = catchAsyncStateFromAsyncValue(uidAsync);
+    final uid = uidState.value;
     final clubsAsync = uid == null
         ? null
         : ref.watch(_hostClubsForUserProvider(uid));
     final routeState = buildHostHomeRouteState(
-      uid: uidAsync,
-      clubs: clubsAsync,
+      uid: uidState,
+      clubs: clubsAsync == null
+          ? null
+          : catchAsyncStateFromAsyncValue(clubsAsync),
     );
 
     return switch (routeState.status) {

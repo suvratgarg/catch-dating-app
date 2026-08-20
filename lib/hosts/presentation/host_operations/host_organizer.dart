@@ -9,22 +9,24 @@ class HostClubOrganizerOverviewController extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final eventsAsync = ref.watch(watchEventsForClubProvider(club.id));
     final crmAsync = ref.watch(hostCrmSummaryProvider(club.id));
-    final events = eventsAsync.asData?.value ?? const <Event>[];
+    final eventsState = catchAsyncStateFromAsyncValue(eventsAsync);
+    final crmState = catchAsyncStateFromAsyncValue(crmAsync);
+    final events = eventsState.value ?? const <Event>[];
     final activeEventCount = events.where((event) => !event.isCancelled).length;
 
     return Column(
       children: [
         HostClubOrganizerOverview(
           club: club,
-          eventsLoaded: eventsAsync.hasValue,
+          eventsLoaded: eventsState.hasData,
           eventCount: events.length,
           activeEventCount: activeEventCount,
         ),
         gapH12,
         _HostCrmAudienceCard(
-          summary: crmAsync.asData?.value,
-          loading: crmAsync.isLoading,
-          hasError: crmAsync.hasError,
+          summary: crmState.value,
+          loading: crmState.isLoading,
+          hasError: crmState.hasError,
           onRetry: () => ref.invalidate(hostCrmSummaryProvider(club.id)),
         ),
       ],

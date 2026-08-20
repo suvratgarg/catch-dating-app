@@ -36,6 +36,27 @@ void main() {
   setUp(() => AppConfig.configureEntrypointRole(AppRole.host));
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
 
+  testWidgets('resolved signed-out state is not shown as loading', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream<String?>.value(null)),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: HostInboxScreen(now: now, syncSelectionToRoute: false),
+        ),
+      ),
+    );
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Sign in required'), findsOneWidget);
+    expect(find.text('Sign in'), findsOneWidget);
+    expect(find.text('Create your first organizer'), findsNothing);
+  });
+
   testWidgets('renders selected-event segments and roster-backed broadcast', (
     tester,
   ) async {

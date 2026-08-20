@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
@@ -48,6 +49,7 @@ class EventSuccessStep extends ConsumerWidget {
     final layoutMutation = ref.watch(
       EventSuccessController.upsertLayoutMutation,
     );
+    final layoutsState = catchAsyncStateFromAsyncValue(layoutsAsync);
     Future<EventSuccessLayout> saveLayout(EventSuccessLayout layout) =>
         EventSuccessController.upsertLayoutMutation.run(
           ref,
@@ -55,7 +57,7 @@ class EventSuccessStep extends ConsumerWidget {
               .get(eventSuccessControllerProvider.notifier)
               .upsertLayout(organizerId: organizerId, layout: layout),
         );
-    final layouts = layoutsAsync.asData?.value ?? const <EventSuccessLayout>[];
+    final layouts = layoutsState.value ?? const <EventSuccessLayout>[];
     final usesWholeGroup =
         eventSuccessDefaults.structureConfig.unitKind ==
         EventSuccessUnitKind.wholeGroup;
@@ -91,9 +93,9 @@ class EventSuccessStep extends ConsumerWidget {
                   style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
                 children: [
-                  if (layoutsAsync.hasError)
+                  if (layoutsState.hasError)
                     CatchErrorBanner.fromError(
-                      layoutsAsync.error!,
+                      layoutsState.error!,
                       context: AppErrorContext.event,
                     ),
                   for (final layout in layouts)

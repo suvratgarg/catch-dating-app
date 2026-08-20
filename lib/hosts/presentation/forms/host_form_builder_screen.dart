@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -52,7 +53,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
     final editor = ref.watch(
       hostFormEditorControllerProvider(widget.organizerId, widget.formId),
     );
-    final editorValue = editor.asData?.value;
+    final editorValue = catchAsyncStateFromAsyncValue(editor).value;
     final title =
         editorValue?.editor.definition.title ??
         context.l10n.hostFormBuilderTitle;

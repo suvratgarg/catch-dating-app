@@ -13452,6 +13452,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'Added by your team · not verified by Catch';
 
   @override
+  String get hostCustomersUnavailable => 'Customers unavailable';
+
+  @override
+  String get hostCustomersReload => 'Reload customers';
+
+  @override
   String get hostCustomersDetailUnavailable => 'Customer details unavailable';
 
   @override
@@ -14106,6 +14112,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostApplicationsTitle => 'Applications';
+
+  @override
+  String get hostApplicationsUnavailable => 'Applications unavailable';
+
+  @override
+  String get hostApplicationsReload => 'Reload applications';
+
+  @override
+  String get hostApplicationNotFound => 'Application not found';
 
   @override
   String get hostApplicationsOpen => 'Review applications';

@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/clipboard.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -281,6 +282,7 @@ class _HostOperationalRosterPanelState
     final attendeesAsync = ref.watch(
       watchEventAttendeesProvider(widget.eventId),
     );
+    final attendeesState = catchAsyncStateFromAsyncValue(attendeesAsync);
     final insightsAsync = widget.showAudienceInsights
         ? ref.watch(hostEventRosterInsightsProvider(widget.eventId))
         : null;
@@ -340,7 +342,7 @@ class _HostOperationalRosterPanelState
                 padding: CatchInsets.sectionItemBottomGap,
                 child: _HostRuntimeClaimQueue(
                   claims: claims,
-                  attendees: attendeesAsync.asData?.value ?? const [],
+                  attendees: attendeesState.value ?? const [],
                   pendingUid: _pendingClaimUid,
                   onApprove: (claim, attendeeId) => unawaited(
                     _reviewClaim(
@@ -370,7 +372,9 @@ class _HostOperationalRosterPanelState
                   message: context.l10n.hostsOperationalRosterEmptyMessage,
                 );
               }
-              final insights = insightsAsync?.asData?.value;
+              final insights = insightsAsync == null
+                  ? null
+                  : catchAsyncStateFromAsyncValue(insightsAsync).value;
               final insightByAttendeeId = insights?.byAttendeeId ?? const {};
               final effectiveFilter = insights == null
                   ? HostRosterInsightFilter.all

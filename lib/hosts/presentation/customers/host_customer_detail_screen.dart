@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -55,13 +56,16 @@ class _HostCustomerDetailScreenState
 
   @override
   Widget build(BuildContext context) {
-    final currentUid = ref.watch(uidProvider).asData?.value;
+    final currentUid = catchAsyncStateFromAsyncValue(
+      ref.watch(uidProvider),
+    ).value;
     final detail = ref.watch(
       hostAudienceContactDetailProvider(widget.organizerId, widget.contactId),
     );
+    final detailState = catchAsyncStateFromAsyncValue(detail);
     final initialDisplayName = widget.initialDisplayName?.trim();
     final displayName =
-        detail.asData?.value.displayName ??
+        detailState.value?.displayName ??
         (initialDisplayName?.isNotEmpty ?? false ? initialDisplayName : null) ??
         context.l10n.hostNavigationCustomers;
     return CatchRouteScaffold(
