@@ -9299,7 +9299,7 @@
         "symbol": "HostClubsScreen"
       },
       "stateController": {
-        "primary": "uidProvider + _hostClubsForUserProvider + HostClubsScreenState + HostClubEditController (identity, contact, media, policy defaults, and Event Success defaults) + HostPaymentAccountController + watchHostPaymentAccountProvider + hostAnalyticsProvider + HostTeamWorkspaceState + HostProfileController",
+        "primary": "uidProvider + _hostClubsForUserProvider + HostClubsScreenState + HostClubEditController (identity, contact, media, policy defaults, and Event Success defaults) + HostPaymentAccountController + watchHostPaymentAccountsProvider + hostAnalyticsProvider + HostTeamWorkspaceState + HostProfileController",
         "files": [
           {
             "file": "lib/hosts/presentation/host_operations/host_clubs_screen.dart",
@@ -9327,7 +9327,7 @@
           },
           {
             "file": "lib/payments/data/host_payment_account_repository.dart",
-            "symbol": "watchHostPaymentAccount"
+            "symbol": "watchHostPaymentAccounts"
           },
           {
             "file": "lib/hosts/data/host_analytics_repository.dart",
