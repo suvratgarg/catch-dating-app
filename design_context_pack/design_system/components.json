@@ -8768,7 +8768,6 @@
           "focused",
           "disabled",
           "clearable",
-          "empty-trailing-action",
           "expanding-collapsed",
           "expanding-expanded"
         ],
