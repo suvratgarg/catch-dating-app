@@ -1,6 +1,9 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -49,6 +52,41 @@ void main() {
       );
     },
   );
+
+  testWidgets('CatchTabbedScreenScaffold composes expanding header search', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: const CatchTabbedScreenScaffold(
+          title: 'Forms',
+          search: CatchTopBarSearch(
+            placeholder: 'Search forms',
+            tooltip: 'Search forms',
+          ),
+          tabRail: PreferredSize(
+            preferredSize: Size.fromHeight(1),
+            child: SizedBox(height: 1),
+          ),
+          body: SizedBox.shrink(),
+        ),
+      ),
+    );
+
+    expect(find.text('Forms'), findsOneWidget);
+    expect(find.byType(CatchScreenTopBar), findsOneWidget);
+    await tester.tap(find.byIcon(CatchIcons.search));
+    await tester.pump(CatchMotion.base);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchSearchField &&
+            widget.mode == CatchSearchFieldMode.expanding,
+      ),
+      findsOneWidget,
+    );
+  });
 }
 
 Widget _wrap({required bool constrainToContentWidth}) {

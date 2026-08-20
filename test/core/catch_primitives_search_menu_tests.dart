@@ -583,6 +583,36 @@ void _registerCatchPrimitivesSearchMenuTests() {
     );
   });
 
+  testWidgets('CatchSearchField expanded mode has no empty trailing control', (
+    tester,
+  ) async {
+    var query = '';
+    await tester.pumpWidget(
+      _wrap(
+        StatefulBuilder(
+          builder: (context, setState) => CatchSearchField.expanded(
+            value: query,
+            placeholder: 'Search forms',
+            onChanged: (value) => setState(() => query = value),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byIcon(CatchIcons.close), findsNothing);
+    expect(find.byIcon(CatchIcons.clearCircle), findsNothing);
+
+    await tester.enterText(find.byType(TextField), 'waiver');
+    await tester.pump();
+    expect(find.byIcon(CatchIcons.clearCircle), findsOneWidget);
+
+    await tester.tap(find.byIcon(CatchIcons.clearCircle));
+    await tester.pump();
+    expect(query, isEmpty);
+    expect(find.byIcon(CatchIcons.close), findsNothing);
+    expect(find.byIcon(CatchIcons.clearCircle), findsNothing);
+  });
+
   testWidgets(
     'CatchSearchField expanding mode opens, clears, and closes from the app bar slot',
     (tester) async {
@@ -596,9 +626,8 @@ void _registerCatchPrimitivesSearchMenuTests() {
           StatefulBuilder(
             builder: (context, setState) => SizedBox(
               width: 280,
-              child: CatchSearchField(
+              child: CatchSearchField.expanding(
                 key: searchFieldKey,
-                mode: CatchSearchFieldMode.expanding,
                 progress: 0,
                 maxWidth: 280,
                 value: query,
@@ -625,9 +654,8 @@ void _registerCatchPrimitivesSearchMenuTests() {
           StatefulBuilder(
             builder: (context, setState) => SizedBox(
               width: 280,
-              child: CatchSearchField(
+              child: CatchSearchField.expanding(
                 key: searchFieldKey,
-                mode: CatchSearchFieldMode.expanding,
                 progress: 0.5,
                 maxWidth: 280,
                 value: query,
@@ -650,9 +678,8 @@ void _registerCatchPrimitivesSearchMenuTests() {
           StatefulBuilder(
             builder: (context, setState) => SizedBox(
               width: 280,
-              child: CatchSearchField(
+              child: CatchSearchField.expanding(
                 key: searchFieldKey,
-                mode: CatchSearchFieldMode.expanding,
                 progress: 1,
                 maxWidth: 280,
                 value: query,
@@ -726,6 +753,118 @@ void _registerCatchPrimitivesSearchMenuTests() {
     await tester.pump();
 
     expect(selected, 'delete');
+  });
+
+  testWidgets(
+    'CatchMenuAnchor keeps long menus above floating shell navigation',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(400, 800);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: AppShellActiveTab(
+            index: 0,
+            bottomBarPlacement: AppShellBottomBarPlacement.floating,
+            bottomOverlayInset: 100,
+            child: Scaffold(
+              body: Align(
+                alignment: Alignment.topCenter,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 40),
+                  child: SizedBox(
+                    width: 320,
+                    child: CatchMenuAnchor<int>(
+                      items: [
+                        for (var index = 0; index < 20; index++)
+                          CatchMenuItem(value: index, label: 'Option $index'),
+                      ],
+                      builder: (context, controller, child) => ElevatedButton(
+                        onPressed: controller.open,
+                        child: const Text('Open menu'),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Open menu'));
+      await tester.pumpAndSettle();
+
+      final menu = find.byType(CatchMenu<int>);
+      expect(menu, findsOneWidget);
+      expect(tester.getRect(menu).bottom, lessThanOrEqualTo(700));
+      final scrollable = find.descendant(
+        of: menu,
+        matching: find.byType(Scrollable),
+      );
+      expect(scrollable, findsOneWidget);
+      expect(
+        tester.state<ScrollableState>(scrollable).position.maxScrollExtent,
+        greaterThan(0),
+      );
+    },
+  );
+
+  testWidgets('CatchMenuAnchor flips short menus flush above their trigger', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(400, 800);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: AppShellActiveTab(
+          index: 0,
+          bottomBarPlacement: AppShellBottomBarPlacement.floating,
+          bottomOverlayInset: 100,
+          child: Scaffold(
+            body: Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 120),
+                child: SizedBox(
+                  width: 240,
+                  child: CatchMenuAnchor<int>(
+                    items: const [
+                      CatchMenuItem(value: 1, label: 'First option'),
+                      CatchMenuItem(value: 2, label: 'Second option'),
+                    ],
+                    builder: (context, controller, child) => ElevatedButton(
+                      onPressed: controller.open,
+                      child: const Text('Open short menu'),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final trigger = find.text('Open short menu');
+    final triggerTop = tester
+        .getRect(
+          find.ancestor(of: trigger, matching: find.byType(ElevatedButton)),
+        )
+        .top;
+    await tester.tap(trigger);
+    await tester.pumpAndSettle();
+
+    final menuRect = tester.getRect(find.byType(CatchMenu<int>));
+    expect(menuRect.bottom, closeTo(triggerTop, 1));
+    expect(menuRect.bottom, lessThanOrEqualTo(700));
   });
 
   testWidgets('CatchMenuRow disables selection when item is disabled', (

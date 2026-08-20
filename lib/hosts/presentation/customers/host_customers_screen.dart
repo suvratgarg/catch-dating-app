@@ -513,9 +513,8 @@ class HostCustomerDirectoryToolbar extends StatelessWidget {
     final compact = ScreenSize.fromWidth(
       MediaQuery.sizeOf(context).width,
     ).isCompact;
-    final searchField = CatchSearchField(
+    final searchField = CatchSearchField.expanded(
       key: const ValueKey('host-customers-search'),
-      mode: CatchSearchFieldMode.expanded,
       value: search,
       contract:
           CatchContractConstraints.listOrganizerContactsCallablePayloadQuery,

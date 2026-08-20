@@ -17,6 +17,7 @@ class _CatchFieldState extends State<CatchField>
   final _disclosureRevealTargetKey = GlobalKey();
   final _actionBarRevealTargetKey = GlobalKey();
   final _menuController = MenuController();
+  final _selectMenuAnchorKey = GlobalKey();
   final Object _tapRegionGroup = Object();
   final FocusNode _rowFocusNode = FocusNode(debugLabel: 'CatchField row');
   late FocusNode _focusNode;
