@@ -305,6 +305,11 @@ void _registerHostOperationsAnalyticsTeamTests() {
     await Scrollable.ensureVisible(tester.element(add));
     await tester.tap(add);
     await pumpFeatureUi(tester);
+    expect(find.byKey(OrderedPhotoPickerKeys.managerScreen), findsOneWidget);
+    await tester.tap(
+      find.byKey(OrderedPhotoPickerKeys.addAction('Add photos')),
+    );
+    await pumpFeatureUi(tester);
 
     expect(actions.mediaWrites, isEmpty);
     expect(find.text('Ready to upload'), findsWidgets);
@@ -342,6 +347,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
       expect(find.text('COVER'), findsOneWidget);
       expect(find.text('Manage images'), findsOneWidget);
       expect(find.text('3 photos'), findsOneWidget);
+      expect(find.text('Save media'), findsNothing);
 
       final logoSize = tester.getSize(find.byKey(HostClubMediaKeys.logoTile));
       final coverSize = tester.getSize(
@@ -360,8 +366,50 @@ void _registerHostOperationsAnalyticsTeamTests() {
         gallerySize.width / gallerySize.height,
         closeTo(CatchAspectRatio.organizerGallery, 0.001),
       );
+
+      await tester.tap(find.byKey(HostClubMediaKeys.logoTile));
+      await pumpFeatureUi(tester);
+      expect(find.byKey(OrderedPhotoPickerKeys.managerScreen), findsOneWidget);
+      expect(find.byType(CreateClubProfileImagePicker), findsOneWidget);
+      expect(find.text('Save media'), findsOneWidget);
+      expect(find.text('Discard'), findsOneWidget);
     },
   );
+
+  testWidgets('Host image manager discards its staged draft in place', (
+    tester,
+  ) async {
+    final photoBytes = _testPngBytes();
+    final actions = _RecordingHostClubEditActions(
+      pickedPhotos: [
+        HostPickedClubPhoto(
+          id: 'discarded-photo',
+          image: XFile.fromData(photoBytes, name: 'discarded.jpg'),
+          bytes: photoBytes,
+        ),
+      ],
+    );
+    final club = buildClub(id: 'media-discard', ownerUserId: _hostUid);
+
+    await _pumpHostClubEditTab(tester, club: club, actions: actions);
+    final add = find.byKey(OrderedPhotoPickerKeys.addAction('Add photos'));
+    await Scrollable.ensureVisible(tester.element(add));
+    await tester.tap(add);
+    await pumpFeatureUi(tester);
+    await tester.tap(
+      find.byKey(OrderedPhotoPickerKeys.addAction('Add photos')),
+    );
+    await pumpFeatureUi(tester);
+    expect(find.text('Ready to upload'), findsWidgets);
+
+    await tester.tap(find.byKey(const ValueKey('host-media-discard')));
+    await pumpFeatureUi(tester);
+
+    expect(find.byKey(OrderedPhotoPickerKeys.managerScreen), findsNothing);
+    expect(find.text('Ready to upload'), findsNothing);
+    expect(find.text('Save media'), findsNothing);
+    expect(actions.mediaWrites, isEmpty);
+  });
 
   testWidgets('Host organizer empty media summary stays compact', (
     tester,
@@ -401,12 +449,8 @@ void _registerHostOperationsAnalyticsTeamTests() {
       await pumpFeatureUi(tester);
       await tester.tap(find.text('Remove'));
       await pumpFeatureUi(tester);
-      await tester.tap(find.text('Done'));
-      await pumpFeatureUi(tester);
-
       expect(actions.mediaWrites, isEmpty);
       final save = find.byKey(const ValueKey('host-media-save'));
-      await Scrollable.ensureVisible(tester.element(save));
       await tester.tap(save);
       await pumpFeatureUi(tester);
 
@@ -435,6 +479,10 @@ void _registerHostOperationsAnalyticsTeamTests() {
     await Scrollable.ensureVisible(tester.element(add));
     await tester.tap(add);
     await pumpFeatureUi(tester);
+    await tester.tap(
+      find.byKey(OrderedPhotoPickerKeys.addAction('Add photos')),
+    );
+    await pumpFeatureUi(tester);
 
     final save = find.byKey(const ValueKey('host-media-save'));
     await Scrollable.ensureVisible(tester.element(save));
@@ -442,9 +490,12 @@ void _registerHostOperationsAnalyticsTeamTests() {
     await pumpFeatureUi(tester);
 
     expect(actions.mediaUpdateCalls, 1);
-    expect(find.byKey(OrderedPhotoPickerKeys.coverRetryAction), findsOneWidget);
+    expect(
+      find.byKey(OrderedPhotoPickerKeys.managerRetryAction(0)),
+      findsOneWidget,
+    );
 
-    final retry = find.byKey(OrderedPhotoPickerKeys.coverRetryAction);
+    final retry = find.byKey(OrderedPhotoPickerKeys.managerRetryAction(0));
     await Scrollable.ensureVisible(tester.element(retry));
     await tester.tap(retry);
     await pumpFeatureUi(tester);
@@ -594,10 +645,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
     await pumpFeatureUi(tester);
 
     expect(actions.mediaWrites, isEmpty);
-    await tester.tap(find.text('Done'));
-    await pumpFeatureUi(tester);
     final save = find.byKey(const ValueKey('host-media-save'));
-    await Scrollable.ensureVisible(tester.element(save));
     await tester.tap(save);
     await pumpFeatureUi(tester);
 
@@ -628,10 +676,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
     await tester.tap(find.text('Set as cover'));
     await pumpFeatureUi(tester);
     expect(actions.mediaWrites, isEmpty);
-    await tester.tap(find.text('Done'));
-    await pumpFeatureUi(tester);
     final save = find.byKey(const ValueKey('host-media-save'));
-    await Scrollable.ensureVisible(tester.element(save));
     await tester.tap(save);
     await pumpFeatureUi(tester);
 

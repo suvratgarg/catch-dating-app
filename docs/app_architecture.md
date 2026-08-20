@@ -64,10 +64,16 @@ the label for the `club` subtype or as specific real-world content.
 Host organizer/event galleries use one scalable ordered-media editor in create
 and edit flows. The inline surface previews the explicit cover and a short
 thumbnail rail; the full-screen manager owns long-list scrolling, set-cover,
-reorder, remove, and add-more actions. Host code must not reuse the Consumer
-profile six-slot cap. Organizer logo state is a separate optional mutation, and
-event creation displays that inherited identity without treating it as event
-gallery media.
+reorder, remove, add-more, and the organizer media transaction's explicit
+Save/Discard actions. Edit Organizer's compact logo and add tiles only enter
+that manager; closing it without saving rolls the caller-owned draft back.
+Host code must not reuse the Consumer profile six-slot cap. Organizer logo
+state is a separate optional mutation, and event creation displays that
+inherited identity without treating it as event gallery media.
+
+The Host team Preview tab projects `HostProfile` plus the host's organizer
+memberships. It must not query or render the consumer dating profile: a valid
+professional host identity can exist without a discoverable consumer profile.
 
 Organizer and external-event action rendering consumes
 `OrganizerSupplyCapabilities`; claim state or provenance alone never enables

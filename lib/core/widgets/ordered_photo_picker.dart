@@ -13,6 +13,7 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/material.dart';
 import 'package:flutter_reorderable_grid_view/entities/reorderable_animation_config.dart';
 import 'package:flutter_reorderable_grid_view/widgets/widgets.dart';
@@ -236,7 +237,10 @@ class OrderedPhotoManagerScreen extends StatefulWidget {
     required this.onRetryPhoto,
     required this.canAdd,
     this.onAddPhotosInManager,
+    this.photosListenable,
     this.header,
+    this.footer,
+    this.showDoneAction = true,
   });
 
   final List<OrderedPhotoPreview> photos;
@@ -247,10 +251,24 @@ class OrderedPhotoManagerScreen extends StatefulWidget {
   final bool canAdd;
   final Future<List<OrderedPhotoPreview>> Function()? onAddPhotosInManager;
 
+  /// Optional caller-owned draft stream. Features with asynchronous upload
+  /// state can keep the open manager synchronized with controller progress and
+  /// failures while the manager retains local drag interactions.
+  final ValueListenable<List<OrderedPhotoPreview>>? photosListenable;
+
   /// Optional feature-owned content shown above the gallery controls. This
   /// lets organizer media management include its independent logo editor
   /// without moving logo persistence into the shared ordered-gallery widget.
   final Widget? header;
+
+  /// Optional feature-owned transaction controls shown below the gallery.
+  /// Persistence remains caller-owned; the shared manager only places the
+  /// controls inside the full-screen media workspace.
+  final Widget? footer;
+
+  /// Generic galleries close with Done. Feature-owned transactional managers
+  /// can hide it when their footer owns explicit Save and Discard actions.
+  final bool showDoneAction;
 
   @override
   State<OrderedPhotoManagerScreen> createState() =>
@@ -266,12 +284,30 @@ class _OrderedPhotoManagerScreenState extends State<OrderedPhotoManagerScreen> {
   void initState() {
     super.initState();
     _photos = [...widget.photos];
+    widget.photosListenable?.addListener(_syncCallerPhotos);
   }
 
   @override
   void didUpdateWidget(covariant OrderedPhotoManagerScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.photos != widget.photos) _photos = [...widget.photos];
+    if (oldWidget.photosListenable != widget.photosListenable) {
+      oldWidget.photosListenable?.removeListener(_syncCallerPhotos);
+      widget.photosListenable?.addListener(_syncCallerPhotos);
+      _syncCallerPhotos();
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.photosListenable?.removeListener(_syncCallerPhotos);
+    super.dispose();
+  }
+
+  void _syncCallerPhotos() {
+    final photos = widget.photosListenable?.value;
+    if (!mounted || photos == null) return;
+    setState(() => _photos = [...photos]);
   }
 
   bool get _canReorder => widget.onReorderPhoto != null && _photos.length > 1;
@@ -328,7 +364,9 @@ class _OrderedPhotoManagerScreenState extends State<OrderedPhotoManagerScreen> {
     setState(() => _adding = true);
     try {
       final added = await addInManager();
-      if (mounted && added.isNotEmpty) setState(() => _photos.addAll(added));
+      if (mounted && added.isNotEmpty && widget.photosListenable == null) {
+        setState(() => _photos.addAll(added));
+      }
     } finally {
       if (mounted) setState(() => _adding = false);
     }
@@ -346,13 +384,16 @@ class _OrderedPhotoManagerScreenState extends State<OrderedPhotoManagerScreen> {
           count: _photos.length,
         ),
         leadingType: CatchTopBarLeading.close,
-        actions: [
-          CatchTextButton(
-            label: context.l10n.coreOrderedPhotoPickerActionDone,
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ],
+        actions: widget.showDoneAction
+            ? [
+                CatchTextButton(
+                  label: context.l10n.coreOrderedPhotoPickerActionDone,
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ]
+            : const [],
       ),
+      bottomNavigationBar: widget.footer,
       body: SafeArea(
         top: false,
         child: Column(

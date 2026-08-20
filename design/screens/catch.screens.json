@@ -9741,7 +9741,7 @@
           "id": "club_media_edit",
           "kind": "mutation",
           "status": "tested",
-          "source": "The organizer Edit surface owns ordered club-photo and logo editing through HostClubEditController's media-only patch.",
+          "source": "The compact organizer Edit surface routes logo, gallery, and add interactions into one full-screen manager. That manager owns staged Save/Discard controls and persists through HostClubEditController's media-only patch; closing without saving rolls the draft back.",
           "tests": [
             "test/clubs/clubs_controllers_test.dart",
             "test/hosts/host_operations_screen_test.dart"
@@ -10204,7 +10204,7 @@
           "id": "edit_preview_tabs",
           "kind": "populated",
           "status": "implemented",
-          "source": "The top tab rail toggles Edit and Preview account modes for profile and club rows.",
+          "source": "The top tab rail toggles Edit and Preview modes. Preview projects HostTeamProfileState and hosted organizers without reading the consumer public-profile collection.",
           "nextAction": "Compare tab rail placement against the canonical Host team reference once exported.",
           "previewIds": [
             "HostClubTeamScreen/Route states",

@@ -53,6 +53,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
   int _mediaSourceRevision = 0;
   bool _showMediaError = false;
   Object? _mediaError;
+  ValueNotifier<List<OrderedPhotoPreview>>? _mediaManagerPhotos;
 
   Future<void> _setPublicListingEnabled(bool enabled) async {
     try {
@@ -77,6 +78,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
       initialExpanded: widget.initialExpandedField,
     )..addListener(_handleAccordionChanged);
     _resetMediaFromClub();
+    _mediaManagerPhotos = ValueNotifier(_visibleMediaPreviews);
   }
 
   @override
@@ -102,6 +104,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
     _fieldAccordion
       ..removeListener(_handleAccordionChanged)
       ..dispose();
+    _mediaManagerPhotos?.dispose();
     super.dispose();
   }
 
@@ -131,6 +134,11 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
     _mediaAwaitingSnapshot = false;
     _showMediaError = false;
     _mediaError = null;
+    _syncMediaManagerPhotos();
+  }
+
+  void _syncMediaManagerPhotos() {
+    _mediaManagerPhotos?.value = _visibleMediaPreviews;
   }
 
   Future<HostPickedClubLogo?> _pickLogo() async {
@@ -143,6 +151,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
       _mediaDirty = true;
       _showMediaError = false;
     });
+    _syncMediaManagerPhotos();
     if (previousLogo?.uploadedPhoto != null) {
       unawaited(
         ref
@@ -175,6 +184,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
       _mediaDirty = true;
       _showMediaError = false;
     });
+    _syncMediaManagerPhotos();
     return added;
   }
 
@@ -188,19 +198,19 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
             ),
         ];
 
-  Future<void> _openMediaManager() {
+  Future<void> _openMediaManager() async {
     final photos = _visibleMediaPreviews;
-    final hasEditablePhotos = _mediaDrafts.isNotEmpty;
-    return Navigator.of(context, rootNavigator: true).push<void>(
-      MaterialPageRoute<void>(
+    final saved = await Navigator.of(context, rootNavigator: true).push<bool>(
+      MaterialPageRoute<bool>(
         fullscreenDialog: true,
         builder: (_) => OrderedPhotoManagerScreen(
           photos: photos,
           onAddPhotos: _pickPhotos,
-          onRemovePhoto: hasEditablePhotos ? _removePhoto : null,
-          onReorderPhoto: hasEditablePhotos ? _reorderPhoto : null,
-          onRetryPhoto: hasEditablePhotos ? _retryPhoto : null,
+          onRemovePhoto: _removePhoto,
+          onReorderPhoto: _reorderPhoto,
+          onRetryPhoto: _retryPhoto,
           onAddPhotosInManager: _pickPhotosInManager,
+          photosListenable: _mediaManagerPhotos,
           canAdd: true,
           header: _HostClubLogoManagerHeader(
             imageBytes: _pickedLogo?.bytes,
@@ -210,9 +220,16 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
             onPickLogo: _pickLogo,
             onRemoveLogo: _removeLogo,
           ),
+          footer: _HostClubMediaManagerActions(
+            onSave: _saveMedia,
+            errorText: _mediaErrorText,
+          ),
+          showDoneAction: false,
         ),
       ),
     );
+    if (!mounted || saved == true || !_mediaDirty) return;
+    await _discardMedia();
   }
 
   Future<void> _retryPhoto(int index) async {
@@ -225,6 +242,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
       _mediaDrafts[index] = draft.withJob(const ImageUploadJobState.queued());
       _mediaDirty = true;
     });
+    _syncMediaManagerPhotos();
     await _saveMedia();
   }
 
@@ -236,6 +254,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
       _mediaDirty = true;
       _showMediaError = false;
     });
+    _syncMediaManagerPhotos();
     if (stagedLogo?.uploadedPhoto != null) {
       await ref
           .read(hostClubEditControllerProvider)
@@ -251,6 +270,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
       _mediaDirty = true;
       _showMediaError = false;
     });
+    _syncMediaManagerPhotos();
     if (removed is _HostPickedClubMediaDraft && removed.input.isUploaded) {
       unawaited(
         ref
@@ -274,10 +294,12 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
       _mediaDirty = true;
       _showMediaError = false;
     });
+    _syncMediaManagerPhotos();
   }
 
-  Future<void> _saveMedia() async {
-    if (!_mediaDirty || _mediaCommitInFlight) return;
+  Future<bool> _saveMedia() async {
+    if (!_mediaDirty) return true;
+    if (_mediaCommitInFlight) return false;
     final sourceRevision = _mediaSourceRevision;
     _mediaCommitInFlight = true;
     setState(() {
@@ -304,7 +326,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
               onProgress: _updateMediaProgress,
             ),
       );
-      if (!mounted) return;
+      if (!mounted) return !result.hasFailures;
       setState(() {
         _applyResolvedInputs(result);
         if (result.hasFailures) {
@@ -318,8 +340,10 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
         _mediaAwaitingSnapshot = _mediaSourceRevision == sourceRevision;
         _showMediaError = false;
       });
+      _syncMediaManagerPhotos();
+      return !result.hasFailures;
     } catch (error) {
-      if (!mounted) return;
+      if (!mounted) return false;
       setState(() {
         _mediaDrafts = [
           for (final draft in _mediaDrafts)
@@ -339,10 +363,21 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
         _showMediaError = true;
         _mediaError = error;
       });
+      _syncMediaManagerPhotos();
+      return false;
     } finally {
       _mediaCommitInFlight = false;
       if (mounted) setState(() {});
     }
+  }
+
+  String? _mediaErrorText(BuildContext context) {
+    if (!_showMediaError || _mediaError == null) return null;
+    return appErrorMessage(
+      _mediaError!,
+      l10n: context.l10n,
+      context: AppErrorContext.club,
+    );
   }
 
   void _updateMediaProgress(HostClubMediaProgress progress) {
@@ -352,6 +387,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
     final draft = _mediaDrafts[index];
     if (draft is! _HostPickedClubMediaDraft) return;
     setState(() => _mediaDrafts[index] = draft.withJob(progress.state));
+    _syncMediaManagerPhotos();
   }
 
   void _applyResolvedInputs(HostClubMediaSaveResult result) {
@@ -396,26 +432,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
     final updateClubMutation = ref.watch(
       HostClubEditController.updateClubMutation,
     );
-    final mediaMutation = ref.watch(HostClubEditController.updateMediaMutation);
-    final mediaPending =
-        mediaMutation.isPending ||
-        _mediaCommitInFlight ||
-        _mediaAwaitingSnapshot;
-    final mediaError = !_showMediaError
-        ? null
-        : _mediaError != null
-        ? appErrorMessage(
-            _mediaError!,
-            l10n: context.l10n,
-            context: AppErrorContext.club,
-          )
-        : mediaMutation.hasError
-        ? mutationErrorMessage(
-            mediaMutation,
-            l10n: context.l10n,
-            context: AppErrorContext.club,
-          )
-        : null;
+    final mediaPending = _mediaCommitInFlight || _mediaAwaitingSnapshot;
     final publicationMutation = ref.watch(
       HostClubEditController.publicationMutation,
     );
@@ -565,50 +582,10 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
                   addPhotosLabel: context
                       .l10n
                       .hostsCreateClubPhotosPickerVisiblecopyAddPhotos,
-                  onPickLogo: mediaPending ? null : _pickLogo,
-                  onAddPhotos: mediaPending ? null : _pickPhotos,
-                  onRetryPhoto: mediaPending || _mediaDrafts.isEmpty
+                  onManageMedia: mediaPending
                       ? null
-                      : _retryPhoto,
+                      : () => unawaited(_openMediaManager()),
                 ),
-                gapH16,
-                Row(
-                  key: const ValueKey('host-media-action-bar'),
-                  children: [
-                    Expanded(
-                      child: CatchButton(
-                        key: const ValueKey('host-media-discard'),
-                        label:
-                            context.l10n.hostsHostClubEditTabActionDiscardMedia,
-                        onPressed: _mediaDirty && !mediaPending
-                            ? () => unawaited(_discardMedia())
-                            : null,
-                        variant: CatchButtonVariant.secondary,
-                        fullWidth: true,
-                      ),
-                    ),
-                    gapW8,
-                    Expanded(
-                      child: CatchButton(
-                        key: const ValueKey('host-media-save'),
-                        label: context.l10n.hostsHostClubEditTabActionSaveMedia,
-                        onPressed: _mediaDirty && !mediaPending
-                            ? () => unawaited(_saveMedia())
-                            : null,
-                        isLoading: mediaPending && _mediaCommitInFlight,
-                        fullWidth: true,
-                      ),
-                    ),
-                  ],
-                ),
-                if (mediaError != null) ...[
-                  gapH12,
-                  CatchFieldSupportRow(
-                    text: mediaError,
-                    color: CatchTokens.of(context).danger,
-                    showErrorIcon: true,
-                  ),
-                ],
               ],
             ),
           ),
@@ -931,9 +908,7 @@ class HostClubMediaSummary extends StatelessWidget {
     required this.photos,
     required this.logoBadgeLabel,
     required this.addPhotosLabel,
-    required this.onPickLogo,
-    required this.onAddPhotos,
-    required this.onRetryPhoto,
+    required this.onManageMedia,
   });
 
   final Uint8List? logoImageBytes;
@@ -941,9 +916,7 @@ class HostClubMediaSummary extends StatelessWidget {
   final List<OrderedPhotoPreview> photos;
   final String logoBadgeLabel;
   final String addPhotosLabel;
-  final VoidCallback? onPickLogo;
-  final VoidCallback? onAddPhotos;
-  final ValueChanged<int>? onRetryPhoto;
+  final VoidCallback? onManageMedia;
 
   @override
   Widget build(BuildContext context) {
@@ -967,7 +940,7 @@ class HostClubMediaSummary extends StatelessWidget {
                   ClubProfileImageTile(
                     imageBytes: logoImageBytes,
                     existingImageUrl: logoImageUrl,
-                    onTap: onPickLogo,
+                    onTap: onManageMedia,
                     size: extent,
                   ),
                   Positioned(
@@ -986,7 +959,7 @@ class HostClubMediaSummary extends StatelessWidget {
               dimension: extent,
               child: OrderedPhotoAddTile(
                 label: addPhotosLabel,
-                onTap: onAddPhotos,
+                onTap: onManageMedia,
               ),
             );
           }
@@ -1008,11 +981,6 @@ class HostClubMediaSummary extends StatelessWidget {
               canReorder: false,
               showCoverBadge: isCover,
               showReorderHandle: false,
-              onRetry:
-                  photo.status == OrderedPhotoStatus.failed &&
-                      onRetryPhoto != null
-                  ? () => onRetryPhoto!(photoIndex)
-                  : null,
               statusActionKey: isCover
                   ? OrderedPhotoPickerKeys.coverRetryAction
                   : null,
@@ -1104,6 +1072,105 @@ class _HostClubLogoManagerHeaderState
           ? () => unawaited(_removeLogo())
           : null,
       variant: CreateClubProfileImagePickerVariant.editLogo,
+    );
+  }
+}
+
+class _HostClubMediaManagerActions extends StatefulWidget {
+  const _HostClubMediaManagerActions({
+    required this.onSave,
+    required this.errorText,
+  });
+
+  final Future<bool> Function() onSave;
+  final String? Function(BuildContext context) errorText;
+
+  @override
+  State<_HostClubMediaManagerActions> createState() =>
+      _HostClubMediaManagerActionsState();
+}
+
+class _HostClubMediaManagerActionsState
+    extends State<_HostClubMediaManagerActions> {
+  bool _saving = false;
+  bool _showError = false;
+
+  Future<void> _save() async {
+    if (_saving) return;
+    setState(() {
+      _saving = true;
+      _showError = false;
+    });
+    final saved = await widget.onSave();
+    if (!mounted) return;
+    if (saved) {
+      Navigator.of(context).pop(true);
+      return;
+    }
+    setState(() {
+      _saving = false;
+      _showError = true;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final error = _showError ? widget.errorText(context) : null;
+    return SafeArea(
+      top: false,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: CatchTokens.of(context).bg,
+          border: Border(top: BorderSide(color: CatchTokens.of(context).line)),
+        ),
+        child: Padding(
+          padding: CatchInsets.pageHorizontal.copyWith(
+            top: CatchSpacing.s2,
+            bottom: CatchSpacing.s2,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                key: const ValueKey('host-media-action-bar'),
+                children: [
+                  Expanded(
+                    child: CatchButton(
+                      key: const ValueKey('host-media-discard'),
+                      label:
+                          context.l10n.hostsHostClubEditTabActionDiscardMedia,
+                      onPressed: _saving
+                          ? null
+                          : () => Navigator.of(context).pop(false),
+                      variant: CatchButtonVariant.secondary,
+                      fullWidth: true,
+                    ),
+                  ),
+                  gapW8,
+                  Expanded(
+                    child: CatchButton(
+                      key: const ValueKey('host-media-save'),
+                      label: context.l10n.hostsHostClubEditTabActionSaveMedia,
+                      onPressed: _saving ? null : () => unawaited(_save()),
+                      isLoading: _saving,
+                      fullWidth: true,
+                    ),
+                  ),
+                ],
+              ),
+              if (error != null) ...[
+                gapH8,
+                CatchFieldSupportRow(
+                  text: error,
+                  color: CatchTokens.of(context).danger,
+                  showErrorIcon: true,
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

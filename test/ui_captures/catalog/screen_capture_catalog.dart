@@ -9379,9 +9379,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
                 addPhotosLabel: context
                     .l10n
                     .hostsCreateClubPhotosPickerVisiblecopyAddPhotos,
-                onPickLogo: () {},
-                onAddPhotos: () {},
-                onRetryPhoto: (_) {},
+                onManageMedia: () {},
               ),
             ),
           ),
