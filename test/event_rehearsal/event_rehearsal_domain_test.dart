@@ -1,4 +1,6 @@
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_runtime_adapter.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -72,5 +74,77 @@ void main() {
   test('maps reserved behavior wire values explicitly', () {
     expect(EventRehearsalBehavior.returnActor.wireValue, 'return');
     expect(EventRehearsalBehavior.arriveLate.wireValue, 'arriveLate');
+  });
+
+  test('projects rehearsal state into the canonical Host runtime', () {
+    final rehearsal = EventRehearsalBootstrap.fromCallableData({
+      'session': {
+        'id': 'session-runtime',
+        'organizerId': 'organizer-1',
+        'sourceEventId': null,
+        'scenarioId': 'lateAndNoShow',
+        'seed': 7,
+        'actorCount': 8,
+        'actionCount': 1,
+        'status': 'running',
+        'setup': {
+          'title': 'Sunday mixer',
+          'locationName': 'Courtyard',
+          'durationMinutes': 90,
+          'hostGoal': 'Learn the runtime',
+          'attendeePrompt': 'Meet someone new',
+          'moduleIds': ['arrival', 'rotations'],
+        },
+        'setupRevision': 1,
+        'runtimeRevision': 4,
+        'activeStepIndex': 1,
+        'virtualNowMillis': 100000,
+        'faultId': 'none',
+        'expiresAtMillis': 900000,
+      },
+      'actors': [
+        {
+          'actorId': 'actor-present',
+          'displayName': 'Maya',
+          'persona': 'firstTimer',
+          'status': 'present',
+          'guestMoment': 'assignment',
+          'optedOut': false,
+          'keepApartActorIds': <String>[],
+          'helpRequested': false,
+          'promptCompleted': false,
+        },
+        {
+          'actorId': 'actor-late',
+          'displayName': 'Jordan',
+          'persona': 'lateArrival',
+          'status': 'late',
+          'guestMoment': 'assignment',
+          'optedOut': false,
+          'keepApartActorIds': <String>[],
+          'helpRequested': false,
+          'promptCompleted': false,
+        },
+      ],
+      'actions': <Map<String, Object?>>[],
+      'guestUrl': 'https://catchdates.com/rehearse/public-runtime',
+      'canUseInternalFaults': true,
+    });
+
+    final runtime = buildEventRehearsalRuntimeProjection(
+      rehearsal,
+      practiceGuestLabel: 'Practice guest',
+      latePracticeGuestLabel: 'Late arrival · Practice guest',
+    );
+
+    expect(runtime.event.synthetic, isTrue);
+    expect(runtime.plan.status, EventSuccessPlanStatus.live);
+    expect(runtime.plan.liveControlRevision, 4);
+    expect(runtime.roster.checkedInIds, ['actor-present', 'actor-late']);
+    expect(runtime.layout.units, hasLength(2));
+    expect(runtime.assignments, hasLength(2));
+    expect(runtime.assignments.first.confirmedLayoutUnitId, isNotNull);
+    expect(runtime.assignments.last.confirmedLayoutUnitId, isNull);
+    expect(runtime.presence.lateArrivals.single.uid, 'actor-late');
   });
 }

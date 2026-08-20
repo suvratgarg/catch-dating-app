@@ -24413,6 +24413,177 @@ abstract class AppLocalizations {
   /// **'Practice mode · No real guests, messages, payments, matches, or event records are changed'**
   String get hostEventRehearsalPracticeBanner;
 
+  /// Canonical Host Manage route subtitle while rehearsing.
+  ///
+  /// In en, this message translates to:
+  /// **'Host · Manage'**
+  String get hostEventRehearsalManageSubtitle;
+
+  /// Persistent rehearsal mode badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Rehearsal'**
+  String get hostEventRehearsalBadge;
+
+  /// Rehearsal data identity shown beside the mode badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Synthetic guests'**
+  String get hostEventRehearsalSyntheticGuests;
+
+  /// Synthetic guest subtitle in the canonical Host runtime.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice guest'**
+  String get hostEventRehearsalPracticeGuest;
+
+  /// Synthetic late-arrival subtitle in the canonical Host runtime.
+  ///
+  /// In en, this message translates to:
+  /// **'Late arrival · Practice guest'**
+  String get hostEventRehearsalLatePracticeGuest;
+
+  /// Compact virtual-clock control in the rehearsal band.
+  ///
+  /// In en, this message translates to:
+  /// **'Virtual {time}'**
+  String hostEventRehearsalClockPill({required String time});
+
+  /// Opens advanced rehearsal controls without replacing the real runtime.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice tools'**
+  String get hostEventRehearsalPracticeTools;
+
+  /// Explains the advanced rehearsal tool sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Control synthetic guests, the companion phone, faults, time, and deterministic replays.'**
+  String get hostEventRehearsalPracticeToolsBody;
+
+  /// Explains virtual run controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Change only the simulated clock and rehearsal lifecycle.'**
+  String get hostEventRehearsalRunSheetBody;
+
+  /// Coach task progress in the rehearsal dock.
+  ///
+  /// In en, this message translates to:
+  /// **'Task {current} of {total}'**
+  String hostEventRehearsalCoachProgress({
+    required int current,
+    required int total,
+  });
+
+  /// Explains why the current practice task matters.
+  ///
+  /// In en, this message translates to:
+  /// **'Why?'**
+  String get hostEventRehearsalCoachWhy;
+
+  /// Collapses the rehearsal Coach without completing the task.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get hostEventRehearsalCoachGotIt;
+
+  /// Collapsed rehearsal Coach message.
+  ///
+  /// In en, this message translates to:
+  /// **'Coach is ready when you need the next practice task.'**
+  String get hostEventRehearsalCoachCollapsed;
+
+  /// Expands the rehearsal Coach.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Coach'**
+  String get hostEventRehearsalCoachShow;
+
+  /// Coach task for a synthetic late arrival.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolve {name}\'\'s late arrival'**
+  String hostEventRehearsalCoachResolveLate({required String name});
+
+  /// Coach task for a synthetic help request.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolve {name}\'\'s help request'**
+  String hostEventRehearsalCoachResolveHelp({required String name});
+
+  /// Reinforces that Coach points to production runtime controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the same control you will use on event day.'**
+  String get hostEventRehearsalCoachSameControl;
+
+  /// Coach task before a rehearsal begins.
+  ///
+  /// In en, this message translates to:
+  /// **'Start the virtual event'**
+  String get hostEventRehearsalCoachStart;
+
+  /// Guidance for beginning a rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the virtual clock to start, then operate the real Host runtime.'**
+  String get hostEventRehearsalCoachStartBody;
+
+  /// Coach task for a paused rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume the virtual event'**
+  String get hostEventRehearsalCoachResume;
+
+  /// Default Coach task during a running rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Run the current Host step'**
+  String get hostEventRehearsalCoachAdvance;
+
+  /// Coach task after a rehearsal completes.
+  ///
+  /// In en, this message translates to:
+  /// **'Review your rehearsal'**
+  String get hostEventRehearsalCoachComplete;
+
+  /// Coach guidance after rehearsal completion.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Practice tools to replay, fork, or export the deterministic run.'**
+  String get hostEventRehearsalCoachCompleteBody;
+
+  /// Title for the rehearsal Coach explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Why this task?'**
+  String get hostEventRehearsalCoachWhyTitle;
+
+  /// Explains Coach truth and completion semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'The Coach highlights a real Host control, but synthetic state proves the outcome. Dismissing guidance never completes a task.'**
+  String get hostEventRehearsalCoachWhyBody;
+
+  /// Confirms leaving an active rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave rehearsal?'**
+  String get hostEventRehearsalLeaveTitle;
+
+  /// Explains rehearsal persistence when leaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Your practice session stays available until it expires.'**
+  String get hostEventRehearsalLeaveBody;
+
+  /// Leaves an active rehearsal after confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave rehearsal'**
+  String get hostEventRehearsalLeaveAction;
+
   /// Rehearsal creation guidance.
   ///
   /// In en, this message translates to:

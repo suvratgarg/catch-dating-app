@@ -931,9 +931,13 @@
     },
     {
       "routeId": "hostEventRehearsalScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "The authenticated rehearsal control room is implemented with deterministic controller and widget coverage across setup, live simulation, fault injection, roster signals, and recap; routed narrow and expanded captures remain planned until a truthful organizer rehearsal fixture is admitted to the canonical capture catalog."
+      "captureIds": [
+        "host_event_rehearsal_runtime_room",
+        "host_event_rehearsal_practice_tools"
+      ],
+      "reason": "The rehearsal route now has deterministic authenticated captures showing the production Setup/Live/Report shell, synthetic session boundary, virtual clock, Coach dock, canonical Room workspace, and the advanced Practice tools sheet. Theme pairs are emitted by the capture harness; accessibility and companion-state captures remain planned variants."
     },
     {
       "routeId": "hostAppEventDetailScreen",
