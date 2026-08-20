@@ -715,6 +715,8 @@ class _RazorpaySetupSheetState extends State<_RazorpaySetupSheet> {
                 CatchField.toggle(
                   title:
                       l10n.hostsHostPaymentAccountCardTitleStakeholderDirector,
+                  contract: CatchContractConstraints
+                      .createRazorpayHostPaymentAccountCallablePayloadStakeholderIsDirector,
                   value: _isDirector,
                   onChanged: widget.pending
                       ? null
@@ -723,6 +725,8 @@ class _RazorpaySetupSheetState extends State<_RazorpaySetupSheet> {
                 CatchField.toggle(
                   title:
                       l10n.hostsHostPaymentAccountCardTitleStakeholderExecutive,
+                  contract: CatchContractConstraints
+                      .createRazorpayHostPaymentAccountCallablePayloadStakeholderIsExecutive,
                   value: _isExecutive,
                   onChanged: widget.pending
                       ? null
@@ -732,6 +736,8 @@ class _RazorpaySetupSheetState extends State<_RazorpaySetupSheet> {
                   title:
                       l10n.hostsHostPaymentAccountCardTitleAcceptRazorpayTerms,
                   body: l10n.hostsHostPaymentAccountCardBodyRazorpayTerms,
+                  contract: CatchContractConstraints
+                      .createRazorpayHostPaymentAccountCallablePayloadTermsAccepted,
                   value: _termsAccepted,
                   onChanged: widget.pending
                       ? null
