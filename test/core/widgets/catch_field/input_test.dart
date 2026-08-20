@@ -803,6 +803,7 @@ void main() {
           key: formKey,
           child: CatchField.select<CityOption>(
             title: 'City',
+            contractExemption: 'Fixture selection is not persisted.',
             values: defaultCityOptions,
             itemLabel: (city) => city.label,
             value: selected,
