@@ -30,14 +30,15 @@ class HostEventsClubCard extends ConsumerWidget {
     final eventsAsync = timelineAsync.whenData(
       (timeline) => timeline.allEvents,
     );
-    final timeline = timelineAsync.asData?.value;
+    final eventsState = catchAsyncStateFromAsyncValue(eventsAsync);
+    final timeline = catchAsyncStateFromAsyncValue(timelineAsync).value;
     final overviewState = buildHostEventsOverviewState(
-      eventsAsync,
+      eventsState,
       now: now,
       l10n: context.l10n,
     );
     final workspaceState = buildHostEventsWorkspaceState(
-      eventsAsync,
+      eventsState,
       now: now,
       featuredEventId: overviewState.event?.id,
       hasMoreActive: timeline?.hasMoreActive ?? false,

@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -49,11 +50,12 @@ class _HostFormResponseDetailScreenState
       responseId: widget.responseId,
     );
     final detail = ref.watch(provider);
-    final title = detail.asData?.value.response.identity.primaryLabel;
+    final detailState = catchAsyncStateFromAsyncValue(detail);
+    final title = detailState.value?.response.identity.primaryLabel;
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: title ?? context.l10n.hostFormResponseTitle,
-        subtitle: detail.asData?.value.response.formTitle,
+        subtitle: detailState.value?.response.formTitle,
         leadingType: CatchTopBarLeading.back,
         divider: scrolledUnder,
       ),

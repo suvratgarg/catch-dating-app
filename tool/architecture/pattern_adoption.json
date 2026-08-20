@@ -474,6 +474,18 @@
           "status": "aligned"
         },
         {
+          "path": "lib/hosts/presentation/host_home_view_model.dart",
+          "role": "provider-free Host route and Events workspace builders consuming CatchAsyncState with error-before-loading precedence",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/host_team_workspace_view_model.dart",
+          "role": "provider-free Host team workspace builders consuming CatchAsyncState instead of Riverpod snapshots",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
           "path": "test/core/catch_primitives_test.dart",
           "role": "floating-shell optical-center parity coverage for box, sliver empty, and sliver error states",
           "status": "aligned"

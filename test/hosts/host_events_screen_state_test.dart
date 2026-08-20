@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
@@ -5,7 +6,6 @@ import 'package:catch_dating_app/hosts/presentation/host_event_entry_state.dart'
 import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_home_view_model.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../clubs/clubs_test_helpers.dart' show buildEvent;
@@ -170,21 +170,21 @@ void main() {
 
       expect(
         buildHostEventsWorkspaceState(
-          const AsyncLoading<List<Event>>(),
+          const CatchAsyncState<List<Event>>.loading(),
           now: now,
         ).status,
         HostEventsWorkspaceStatus.loading,
       );
 
       final errorState = buildHostEventsWorkspaceState(
-        AsyncError<List<Event>>(error, stackTrace),
+        CatchAsyncState<List<Event>>.error(error, stackTrace),
         now: now,
       );
       expect(errorState.status, HostEventsWorkspaceStatus.error);
       expect(errorState.error, error);
 
       final emptyState = buildHostEventsWorkspaceState(
-        AsyncData<List<Event>>([cancelled]),
+        CatchAsyncState<List<Event>>.data([cancelled]),
         now: now,
       );
       expect(emptyState.status, HostEventsWorkspaceStatus.empty);
@@ -217,7 +217,7 @@ void main() {
 
     expect(
       buildHostEventsOverviewState(
-        const AsyncLoading<List<Event>>(),
+        const CatchAsyncState<List<Event>>.loading(),
         now: now,
         l10n: _l10n,
       ).status,
@@ -225,14 +225,14 @@ void main() {
     );
 
     final emptyState = buildHostEventsOverviewState(
-      AsyncData<List<Event>>([cancelled]),
+      CatchAsyncState<List<Event>>.data([cancelled]),
       now: now,
       l10n: _l10n,
     );
     expect(emptyState.status, HostEventsOverviewStatus.empty);
 
     final contentState = buildHostEventsOverviewState(
-      AsyncData<List<Event>>([late, early, cancelled]),
+      CatchAsyncState<List<Event>>.data([late, early, cancelled]),
       now: now,
       l10n: _l10n,
     );
@@ -288,7 +288,7 @@ void main() {
           );
 
       final state = buildHostEventsOverviewState(
-        AsyncData<List<Event>>([approval, overlapping, hero]),
+        CatchAsyncState<List<Event>>.data([approval, overlapping, hero]),
         now: now,
         l10n: _l10n,
       );
@@ -312,7 +312,7 @@ void main() {
       );
 
       final state = buildHostEventsOverviewState(
-        AsyncData<List<Event>>(events),
+        CatchAsyncState<List<Event>>.data(events),
         now: now,
         l10n: _l10n,
       );

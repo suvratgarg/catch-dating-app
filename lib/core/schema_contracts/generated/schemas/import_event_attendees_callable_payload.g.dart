@@ -100,6 +100,32 @@ const schemaImportEventAttendeesCallablePayloadSchema = <String, Object?>{
             ],
             'maxLength': 120,
           },
+          'revenueAmountMinor': <String, Object?>{
+            'type': <Object?>[
+              'integer',
+              'null',
+            ],
+            'minimum': 0,
+            'maximum': 9007199254740991,
+          },
+          'revenueCurrency': <String, Object?>{
+            'type': <Object?>[
+              'string',
+              'null',
+            ],
+            'pattern': '^[A-Z]{3}\$',
+          },
+          'revenueSource': <String, Object?>{
+            'type': <Object?>[
+              'string',
+              'null',
+            ],
+            'enum': <Object?>[
+              'hostImport',
+              'hostEstimate',
+              null,
+            ],
+          },
           'status': <String, Object?>{
             'type': 'string',
             'enum': <Object?>[

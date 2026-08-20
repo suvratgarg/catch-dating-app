@@ -155,6 +155,22 @@ void main() {
           EventAttendeeImportRow(
             rowId: '2',
             displayName: 'Asha Shah',
+            revenueAmountMinor: 125000,
+            revenueCurrency: 'INR',
+            revenueSource: EventAttendeeRevenueSource.hostEstimate,
+            status: EventAttendeeStatus.registered,
+          ),
+        ],
+      ),
+      isNot(original),
+    );
+    expect(
+      hostRosterImportKey(
+        format: EventAttendeeImportFormat.csv,
+        rows: const [
+          EventAttendeeImportRow(
+            rowId: '2',
+            displayName: 'Asha Shah',
             arrivalGroup: 'order-7',
             status: EventAttendeeStatus.registered,
           ),
@@ -162,6 +178,39 @@ void main() {
       ),
       isNot(original),
     );
+  });
+
+  test('maps imported revenue and applies an explicit per-guest fallback', () {
+    final table = parseHostRosterFile(
+      fileName: 'revenue.csv',
+      bytes: Uint8List.fromList(
+        utf8.encode(
+          'Name,Email,Amount Paid,Currency\n'
+          'Asha,asha@example.com,"1,250.50",INR\n'
+          'Ravi,ravi@example.com,,',
+        ),
+      ),
+    );
+
+    final mapped = table.mapRows(
+      table.suggestedMapping,
+      fallbackRevenueAmountMinor: 90000,
+      fallbackRevenueCurrency: 'INR',
+    );
+
+    expect(mapped.issues, isEmpty);
+    expect(mapped.rows.first.revenueAmountMinor, 125050);
+    expect(
+      mapped.rows.first.revenueSource,
+      EventAttendeeRevenueSource.hostImport,
+    );
+    expect(mapped.rows.last.revenueAmountMinor, 90000);
+    expect(
+      mapped.rows.last.revenueSource,
+      EventAttendeeRevenueSource.hostEstimate,
+    );
+    expect(parseHostRosterRevenueAmountMinor('₹2,500'), 250000);
+    expect(parseHostRosterRevenueAmountMinor('-5'), isNull);
   });
 
   test('verified headers override a conflicting provider hint', () {

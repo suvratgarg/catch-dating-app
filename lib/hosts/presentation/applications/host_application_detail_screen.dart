@@ -32,10 +32,11 @@ class _HostApplicationDetailScreenState
     final detail = ref.watch(
       hostApplicationDetailProvider(widget.organizerId, widget.applicationId),
     );
+    final detailState = catchAsyncStateFromAsyncValue(detail);
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title:
-            detail.asData?.value.applicantDisplayName ??
+            detailState.value?.applicantDisplayName ??
             context.l10n.hostApplicationsTitle,
         leadingType: CatchTopBarLeading.back,
         divider: scrolledUnder,
@@ -52,7 +53,7 @@ class _HostApplicationDetailScreenState
           errorBuilder: (_, error, _) => CatchPageBody(
             child: CatchErrorState.fromError(
               error,
-              context: AppErrorContext.customer,
+              context: AppErrorContext.applications,
               onRetry: _invalidateDetail,
             ),
           ),
@@ -240,7 +241,7 @@ class _HostApplicationDetailScreenState
         showCatchErrorSnackBar(
           context,
           error,
-          errorContext: AppErrorContext.customer,
+          errorContext: AppErrorContext.applications,
         );
       }
     } finally {

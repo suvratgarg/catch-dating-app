@@ -18832,6 +18832,44 @@ abstract class AppLocalizations {
   /// **'Ticket type'**
   String get hostsOperationalRosterFieldTicket;
 
+  /// Roster mapping field for organizer-reported event revenue.
+  ///
+  /// In en, this message translates to:
+  /// **'Order or ticket revenue'**
+  String get hostsOperationalRosterFieldRevenue;
+
+  /// Roster mapping or fallback currency field.
+  ///
+  /// In en, this message translates to:
+  /// **'Revenue currency'**
+  String get hostsOperationalRosterFieldCurrency;
+
+  /// Optional organizer-entered per-guest revenue fallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Revenue per guest when missing'**
+  String get hostsOperationalRosterRevenueFallbackAmount;
+
+  /// Provenance disclosure for an organizer-entered revenue fallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional. This is recorded as your estimate, not a verified payment.'**
+  String get hostsOperationalRosterRevenueFallbackHelp;
+
+  /// Event price suggestion without automatically claiming it as paid revenue.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional. The event price is {amount}; enter it here only if it is a reasonable per-guest estimate.'**
+  String hostsOperationalRosterRevenueFallbackEventPrice({
+    required String amount,
+  });
+
+  /// Validation for the organizer-entered revenue fallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a non-negative amount and a three-letter currency code.'**
+  String get hostsOperationalRosterRevenueFallbackInvalid;
+
   /// Roster mapping field for attendee status.
   ///
   /// In en, this message translates to:
@@ -19044,6 +19082,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Row {row}: email address is not valid.'**
   String hostsOperationalRosterIssueInvalidEmail({required int row});
+
+  /// Invalid imported roster revenue error.
+  ///
+  /// In en, this message translates to:
+  /// **'Row {row}: revenue is not a valid non-negative amount.'**
+  String hostsOperationalRosterIssueInvalidRevenue({required int row});
+
+  /// Missing imported roster revenue currency error.
+  ///
+  /// In en, this message translates to:
+  /// **'Row {row}: choose a three-letter currency for this revenue amount.'**
+  String hostsOperationalRosterIssueMissingRevenueCurrency({required int row});
 
   /// Duplicate roster identity error.
   ///
@@ -19612,12 +19662,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove customer'**
   String get hostsHostAudienceRemoveAction;
-
-  /// Audience contact sheet privacy subtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Private to your organizer team'**
-  String get hostsHostAudienceContactSubtitle;
 
   /// Organizer-local audience contact name field.
   ///
@@ -20924,12 +20968,6 @@ abstract class AppLocalizations {
   /// **'Private note'**
   String get hostCustomersInitialNote;
 
-  /// Saves the organizer-owned customer name and editable contact details.
-  ///
-  /// In en, this message translates to:
-  /// **'Save details'**
-  String get hostCustomersSaveDetails;
-
   /// Boundary between organizer-owned contact details and a linked Catch profile.
   ///
   /// In en, this message translates to:
@@ -20941,6 +20979,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Added by your team · not verified by Catch'**
   String get hostCustomersUnverifiedContactDetails;
+
+  /// Customer-directory load failure title.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers unavailable'**
+  String get hostCustomersUnavailable;
+
+  /// Customer-directory retry action.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload customers'**
+  String get hostCustomersReload;
 
   /// Customer-detail load failure title.
   ///
@@ -21251,35 +21301,83 @@ abstract class AppLocalizations {
   /// **'Attendance rate'**
   String get hostCustomersAttendanceRate;
 
-  /// Authoritative Catch revenue stats heading.
+  /// Unified customer revenue heading with explicit provenance.
   ///
   /// In en, this message translates to:
   /// **'Revenue'**
   String get hostCustomersDetailRevenue;
 
-  /// Zero authoritative Catch revenue state.
+  /// Zero unified customer revenue state.
   ///
   /// In en, this message translates to:
-  /// **'No completed Catch payments for this organizer.'**
+  /// **'No revenue has been recorded for this customer.'**
   String get hostCustomersDetailNoRevenue;
 
-  /// Revenue identity coverage boundary.
+  /// Revenue data availability boundary.
   ///
   /// In en, this message translates to:
-  /// **'Revenue is unavailable until this customer has an unambiguous linked Catch account.'**
+  /// **'Revenue facts are unavailable right now.'**
   String get hostCustomersDetailRevenueUnavailable;
 
   /// Partial revenue coverage warning.
   ///
   /// In en, this message translates to:
-  /// **'Revenue includes known completed Catch payments only; some history may be outside this bounded result.'**
+  /// **'This total includes the available event and payment facts, but some bounded history may be missing.'**
   String get hostCustomersDetailRevenuePartial;
 
-  /// Completed order count for one currency.
+  /// Number of payment, imported, provider, or estimated facts for one currency.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{1 paid order} other{{count} paid orders}}'**
-  String hostCustomersDetailPaidOrders({required int count});
+  /// **'{count, plural, =1{1 revenue fact} other{{count} revenue facts}}'**
+  String hostCustomersDetailRevenueFacts({required int count});
+
+  /// Catch-completed payment provenance label.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch confirmed'**
+  String get hostCustomersRevenueSourceCatch;
+
+  /// Financially complete external provider provenance label.
+  ///
+  /// In en, this message translates to:
+  /// **'Provider confirmed'**
+  String get hostCustomersRevenueSourceProvider;
+
+  /// Organizer-imported revenue provenance label.
+  ///
+  /// In en, this message translates to:
+  /// **'Imported by your team'**
+  String get hostCustomersRevenueSourceImport;
+
+  /// Organizer-entered unverified revenue provenance label.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated by your team'**
+  String get hostCustomersRevenueSourceEstimate;
+
+  /// Shared-order allocation note on one customer event.
+  ///
+  /// In en, this message translates to:
+  /// **'allocated from a shared order'**
+  String get hostCustomersRevenueSharedOrder;
+
+  /// Catch-native event origin label.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch-hosted'**
+  String get hostCustomersEventOriginCatch;
+
+  /// External companion event origin label.
+  ///
+  /// In en, this message translates to:
+  /// **'Externally hosted'**
+  String get hostCustomersEventOriginExternal;
+
+  /// Legacy event origin label when no provenance snapshot exists.
+  ///
+  /// In en, this message translates to:
+  /// **'Event origin unavailable'**
+  String get hostCustomersEventOriginUnknown;
 
   /// Starts a direct Catch chat with a linked customer.
   ///
@@ -21865,6 +21963,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Applications'**
   String get hostApplicationsTitle;
+
+  /// Application-list or detail load failure title.
+  ///
+  /// In en, this message translates to:
+  /// **'Applications unavailable'**
+  String get hostApplicationsUnavailable;
+
+  /// Application-list or detail retry action.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload applications'**
+  String get hostApplicationsReload;
+
+  /// Application detail missing-state title.
+  ///
+  /// In en, this message translates to:
+  /// **'Application not found'**
+  String get hostApplicationNotFound;
 
   /// Customers header action opening the application review queue.
   ///

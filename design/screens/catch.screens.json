@@ -15014,7 +15014,7 @@
         {"id": "personal_whatsapp_unavailable", "kind": "permission", "status": "tested", "source": "HostPersonalWhatsappHandoffAvailability + HostCustomerConversationCard", "tests": ["test/hosts/host_operations_screen_test.dart", "test/hosts/host_crm_repository_test.dart"], "nextAction": "Keep the exact missing-phone, organizer-suppression, or contact-opt-out reason visible without exposing an executable action."},
         {"id": "personal_whatsapp_handoff", "kind": "mutation", "status": "tested", "source": "HostCustomerDetailScreen _openWhatsapp + _HostWhatsappHandoffSheet + ExternalLinks.openWhatsappHandoff", "tests": ["test/hosts/host_operations_screen_test.dart", "test/core/external_links_test.dart", "test/communications/communication_route_test.dart"], "nextAction": "Add a deterministic Widgetbook variant for the editable handoff sheet; never present external app launch as message delivery."},
         {"id": "customer_export_pending", "kind": "mutation", "status": "implemented", "source": "HostCustomersScreen export lifecycle", "nextAction": "Add native-share controller widget coverage."},
-        {"id": "customer_manage", "kind": "mutation", "status": "implemented", "source": "HostCustomerManageSheet", "tests": ["test/hosts/host_customers_screen_state_test.dart"], "nextAction": "Add rendered rename, suppression, and remove coverage."},
+        {"id": "customer_manage", "kind": "mutation", "status": "tested", "source": "HostCustomerIdentityCard inline editor + HostCustomerDetailScreen _saveCustomerDetails", "tests": ["test/hosts/host_operations_screen_test.dart", "test/hosts/host_customers_screen_state_test.dart"], "nextAction": "Keep organizer-owned identity edits inline while verified Catch endpoints remain read-only."},
         {"id": "customer_manage_pending", "kind": "mutation", "status": "implemented", "source": "HostCustomerManageSheet submit lifecycle", "nextAction": "Add revision-conflict widget coverage."},
         {"id": "offline", "kind": "offline", "status": "implemented", "source": "CatchErrorState AppException mapping", "nextAction": "Add deterministic offline capture."},
         {"id": "text_scale_2", "kind": "accessibility", "status": "planned", "source": "Host Customers screen contract", "nextAction": "Verify directory and detail at 2x text scale."},
@@ -15060,9 +15060,9 @@
             "flutter": {"file": "lib/hosts/presentation/customers/host_customers_screen.dart", "symbol": "HostCustomerIdentityCard"},
             "currentOwner": "hosts.presentation.customers",
             "targetOwner": "hosts.presentation.customers",
-            "dependencies": ["catch.button", "catch.person_row", "catch.surface"],
+            "dependencies": ["catch.button", "catch.field", "catch.section", "catch.surface"],
             "states": ["customer_detail_linked", "customer_detail_unlinked", "customer_detail_ambiguous", "conversation_available", "conversation_unavailable", "personal_whatsapp_unavailable", "personal_whatsapp_handoff"],
-            "migration": "Identity confidence remains visible and the callable independently re-authorizes every Catch chat attempt. Personal WhatsApp remains visible with its exact blocker or becomes a separate editable external handoff whose final Send and delivery state remain outside Catch."
+            "migration": "Organizer-owned identity fields edit inline with one Cancel/Done boundary, while verified Catch endpoints remain read-only. Identity confidence stays visible and the callable independently re-authorizes every Catch chat attempt. Personal WhatsApp remains a separate editable external handoff whose final Send and delivery state remain outside Catch."
           },
           {
             "id": "section.host.customers.detail_memory",

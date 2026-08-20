@@ -244,6 +244,58 @@ test(
   }
 );
 
+test("shared imported order totals are allocated once across guests", () => {
+  const result = prepareImportRows({
+    eventId: "event-1",
+    importKey: "order-revenue-import",
+    rows: [
+      {
+        rowId: "2",
+        displayName: "Asha Shah",
+        phone: null,
+        email: "asha@example.com",
+        externalReference: "attendee-a",
+        arrivalGroup: "order-7",
+        ticketType: "General",
+        revenueAmountMinor: 10001,
+        revenueCurrency: "INR",
+        revenueSource: "hostImport",
+        status: "registered",
+      },
+      {
+        rowId: "3",
+        displayName: "Ravi Rao",
+        phone: null,
+        email: "ravi@example.com",
+        externalReference: "attendee-b",
+        arrivalGroup: "order-7",
+        ticketType: "General",
+        revenueAmountMinor: 10001,
+        revenueCurrency: "INR",
+        revenueSource: "hostImport",
+        status: "registered",
+      },
+    ],
+  });
+
+  assert.equal(result.errors.length, 0);
+  assert.deepEqual(
+    result.prepared.map((row) => row.revenueAmountMinor),
+    [5001, 5000]
+  );
+  assert.deepEqual(
+    result.prepared.map((row) => row.revenueAllocation),
+    ["sharedOrder", "sharedOrder"]
+  );
+  assert.equal(
+    result.prepared.reduce(
+      (total, row) => total + (row.revenueAmountMinor ?? 0),
+      0
+    ),
+    10001
+  );
+});
+
 test("spreadsheet rows without stable identity are rejected", () => {
   const result = prepareImportRows({
     eventId: "event-1",

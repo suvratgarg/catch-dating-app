@@ -4,6 +4,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -88,31 +89,33 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
   @override
   Widget build(BuildContext context) {
     final uidAsync = ref.watch(uidProvider);
-    final uid = uidAsync.asData?.value;
-    if (uidAsync.isLoading || uid == null && !uidAsync.hasError) {
-      return HostLoadingScreen(title: context.l10n.hostNavigationForms);
-    }
-    if (uidAsync.hasError) {
+    final uidState = catchAsyncStateFromAsyncValue(uidAsync);
+    final uid = uidState.value;
+    if (uidState.hasError) {
       return CatchErrorScaffold.fromError(
-        uidAsync.error!,
+        uidState.error!,
         context: AppErrorContext.auth,
         onRetry: () => ref.invalidate(uidProvider),
       );
     }
+    if (uidState.isLoading) {
+      return HostLoadingScreen(title: context.l10n.hostNavigationForms);
+    }
     if (uid == null) return const HostAuthRequiredScreen();
 
     final clubsAsync = ref.watch(hostOperableClubsProvider(uid));
-    if (clubsAsync.isLoading) {
-      return HostLoadingScreen(title: context.l10n.hostNavigationForms);
-    }
-    if (clubsAsync.hasError) {
+    final clubsState = catchAsyncStateFromAsyncValue(clubsAsync);
+    if (clubsState.hasError) {
       return CatchErrorScaffold.fromError(
-        clubsAsync.error!,
+        clubsState.error!,
         context: AppErrorContext.club,
         onRetry: () => ref.invalidate(hostOperableClubsProvider(uid)),
       );
     }
-    final clubs = clubsAsync.asData?.value ?? const <Club>[];
+    if (clubsState.isLoading) {
+      return HostLoadingScreen(title: context.l10n.hostNavigationForms);
+    }
+    final clubs = clubsState.value ?? const <Club>[];
     if (clubs.isEmpty) {
       return const HostFormsNoOrganizer();
     }

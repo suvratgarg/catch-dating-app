@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -170,7 +171,7 @@ class _HostApplicationsScreenState
                   loadingBuilder: (_) => const CatchSkeletonRows(count: 6),
                   errorBuilder: (_, error, _) => CatchErrorState.fromError(
                     error,
-                    context: AppErrorContext.customer,
+                    context: AppErrorContext.applications,
                     onRetry: () => ref.invalidate(
                       hostApplicationsDirectoryControllerProvider(request),
                     ),
@@ -220,7 +221,7 @@ class _HostApplicationsScreenState
                           gapH12,
                           CatchErrorState.fromError(
                             state.loadMoreError!,
-                            context: AppErrorContext.customer,
+                            context: AppErrorContext.applications,
                             mode: CatchErrorStateMode.compact,
                             onRetry: () => ref
                                 .read(
@@ -288,7 +289,7 @@ class _HostApplicationsScreenState
         showCatchErrorSnackBar(
           context,
           error,
-          errorContext: AppErrorContext.customer,
+          errorContext: AppErrorContext.applications,
         );
       }
     } finally {

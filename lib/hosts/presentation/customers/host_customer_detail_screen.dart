@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -55,13 +56,16 @@ class _HostCustomerDetailScreenState
 
   @override
   Widget build(BuildContext context) {
-    final currentUid = ref.watch(uidProvider).asData?.value;
+    final currentUid = catchAsyncStateFromAsyncValue(
+      ref.watch(uidProvider),
+    ).value;
     final detail = ref.watch(
       hostAudienceContactDetailProvider(widget.organizerId, widget.contactId),
     );
+    final detailState = catchAsyncStateFromAsyncValue(detail);
     final initialDisplayName = widget.initialDisplayName?.trim();
     final displayName =
-        detail.asData?.value.displayName ??
+        detailState.value?.displayName ??
         (initialDisplayName?.isNotEmpty ?? false ? initialDisplayName : null) ??
         context.l10n.hostNavigationCustomers;
     return CatchRouteScaffold(
@@ -95,7 +99,7 @@ class _HostCustomerDetailScreenState
               currentUid: currentUid,
               openingConversation: false,
               updatingCustomer: false,
-              onEditDetails: _noop,
+              onSaveDetails: _noopSaveCustomerDetails,
               onEditTags: _noop,
               onAddNote: _noop,
               onEditNote: (_) {},
@@ -124,7 +128,13 @@ class _HostCustomerDetailScreenState
             currentUid: currentUid,
             openingConversation: _openingConversation,
             updatingCustomer: _updatingCustomer,
-            onEditDetails: () => _editCustomerDetails(customer),
+            onSaveDetails: ({required displayName, phoneE164, email}) =>
+                _saveCustomerDetails(
+                  customer,
+                  displayName: displayName,
+                  phoneE164: phoneE164,
+                  email: email,
+                ),
             onEditTags: () => _editTags(customer),
             onAddNote: () => _editNote(customer),
             onEditNote: (note) => _editNote(customer, note: note),
@@ -213,12 +223,28 @@ class _HostCustomerDetailScreenState
     }
   }
 
-  Future<void> _editCustomerDetails(HostAudienceContactDetail customer) async {
-    final result = await showCatchBottomSheet<HostCustomerEditDetailsResult>(
-      context: context,
-      builder: (context) => HostCustomerEditDetailsSheet(customer: customer),
-    );
-    if (!mounted || result == null) return;
+  Future<void> _saveCustomerDetails(
+    HostAudienceContactDetail customer, {
+    required String displayName,
+    String? phoneE164,
+    String? email,
+  }) async {
+    await ref
+        .read(hostCustomersControllerProvider)
+        .mutateCustomer(
+          organizerId: customer.organizerId,
+          contactId: customer.contactId,
+          expectedRevision: customer.revision,
+          displayNameOverride: displayName == customer.sourceDisplayName
+              ? null
+              : displayName,
+          clearDisplayNameOverride: displayName == customer.sourceDisplayName,
+          phoneE164: phoneE164,
+          updatePhoneE164: customer.contactDetailsEditable,
+          email: email,
+          updateEmail: customer.contactDetailsEditable,
+        );
+    if (!mounted) return;
     ref.invalidate(hostCustomersDirectoryControllerProvider);
     ref.invalidate(hostCrmSummaryProvider(widget.organizerId));
     _refreshDetail();
@@ -445,6 +471,12 @@ class _HostWhatsappHandoffSheetState
 
 void _noop() {}
 
+Future<void> _noopSaveCustomerDetails({
+  required String displayName,
+  String? phoneE164,
+  String? email,
+}) async {}
+
 class HostCustomerDetailBody extends StatelessWidget {
   const HostCustomerDetailBody({
     super.key,
@@ -452,7 +484,7 @@ class HostCustomerDetailBody extends StatelessWidget {
     required this.currentUid,
     required this.openingConversation,
     required this.updatingCustomer,
-    required this.onEditDetails,
+    required this.onSaveDetails,
     required this.onEditTags,
     required this.onAddNote,
     required this.onEditNote,
@@ -468,7 +500,7 @@ class HostCustomerDetailBody extends StatelessWidget {
   final String? currentUid;
   final bool openingConversation;
   final bool updatingCustomer;
-  final VoidCallback onEditDetails;
+  final HostCustomerDetailsSaveCallback onSaveDetails;
   final VoidCallback onEditTags;
   final VoidCallback onAddNote;
   final ValueChanged<HostCustomerNote> onEditNote;
@@ -495,10 +527,7 @@ class HostCustomerDetailBody extends StatelessWidget {
         CatchSectionList(
           emptyStateOmitted: true,
           children: [
-            HostCustomerIdentityCard(
-              customer: customer,
-              onManage: onEditDetails,
-            ),
+            HostCustomerIdentityCard(customer: customer, onSave: onSaveDetails),
             HostCustomerMemorySection(
               customer: customer,
               currentUid: currentUid,

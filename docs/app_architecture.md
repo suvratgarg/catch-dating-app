@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.13.0
+version: 1.14.0
 updated: 2026-08-20
 owner: app_architecture
 status: active
@@ -3175,6 +3175,15 @@ Riverpod translation remains at that route edge. Use
 `AsyncError` can also report `isLoading`, so the shared adapter intentionally
 selects error, then available data, then loading. `CatchAsyncState` itself stays
 provider-free.
+
+Host presentation code must not branch directly on `isLoading`, `hasError`,
+`hasValue`, `asData`, or `valueOrNull` from a watched `AsyncValue`. The
+`catch_async_requires_state_surface` analyzer diagnostic enforces this route
+edge throughout `lib/hosts/presentation/`. Convert the snapshot once, then let
+a feature-owned display state decide whether the result is a full-screen load,
+empty success, missing resource, primary failure, or optional enrichment. This
+keeps Riverpod refresh semantics out of widgets and prevents a refresh-time
+error from being mislabeled as loading or successful absence.
 
 This is a narrow state-boundary exhibit. The first full route/controller
 migration still needs its own reference exhibit before a broad rollout.

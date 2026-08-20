@@ -22,6 +22,9 @@ export interface ImportEventAttendeesCallablePayload {
     externalReference?: string | null;
     arrivalGroup?: string | null;
     ticketType?: string | null;
+    revenueAmountMinor?: number | null;
+    revenueCurrency?: string | null;
+    revenueSource?: "hostImport" | "hostEstimate" | null;
     status: "invited" | "registered" | "waitlisted";
   }[];
 }

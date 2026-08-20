@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
@@ -20,7 +21,7 @@ class HostPaymentAccountControllerCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final uidAsync = ref.watch(uidProvider);
-    final uid = uidAsync.asData?.value;
+    final uid = catchAsyncStateFromAsyncValue(uidAsync).value;
     final accountAsync = switch (uidAsync) {
       AsyncData(:final value) =>
         value == null
