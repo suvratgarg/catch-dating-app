@@ -244,7 +244,7 @@ void main() {
     await tester.tap(find.text('Room'));
     await tester.pump();
 
-    expect(find.text('Room map'), findsOneWidget);
+    expect(find.text('6 tables · 24 seats'), findsOneWidget);
     expect(find.text('Waiting for placements'), findsOneWidget);
   });
 }

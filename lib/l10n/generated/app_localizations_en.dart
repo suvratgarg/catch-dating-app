@@ -13150,14 +13150,50 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventSuccessRoomMapConfirmed => 'Host confirmed';
 
   @override
-  String eventSuccessRoomMapPeopleCount({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count people',
-      one: '1 person',
-    );
-    return '$_temp0';
+  String get eventSuccessRoomMapConfirmedShort => 'Confirmed';
+
+  @override
+  String get eventSuccessRoomMapOpen => 'Open';
+
+  @override
+  String get eventSuccessRoomMapUnavailable => 'Unavailable';
+
+  @override
+  String get eventSuccessRoomMapNeedsAttention => 'Needs attention';
+
+  @override
+  String get eventSuccessRoomMapAvailable => 'Available destination';
+
+  @override
+  String get eventSuccessRoomMapSelectedDestination => 'Selected destination';
+
+  @override
+  String eventSuccessRoomMapUnitSemantics({
+    required String unitLabel,
+    required int occupied,
+    required int capacity,
+    required String status,
+  }) {
+    return '$unitLabel, $occupied of $capacity occupied, $status';
+  }
+
+  @override
+  String get eventSuccessRoomMapSelectedGuestTitle => 'Selected guest';
+
+  @override
+  String get eventSuccessRoomMapNotPlaced => 'Not placed';
+
+  @override
+  String eventSuccessRoomMapCurrentPosition({required String unitLabel}) {
+    return 'At $unitLabel';
+  }
+
+  @override
+  String get eventSuccessRoomMapChooseDestinationShort => 'Choose destination';
+
+  @override
+  String eventSuccessRoomMapMoveToUnit({required String unitLabel}) {
+    return 'Move to $unitLabel';
   }
 
   @override
@@ -13165,10 +13201,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Select an attendee, then choose a destination.';
 
   @override
-  String get eventSuccessRoomMapScopeThisRound => 'This round only';
+  String get eventSuccessRoomMapScopeThisRoundShort => 'This round';
 
   @override
-  String get eventSuccessRoomMapScopePinned => 'Pinned until released';
+  String get eventSuccessRoomMapScopePinnedShort => 'Pinned';
 
   @override
   String get eventSuccessRoomMapReasonCapacity => 'This unit is at capacity.';
@@ -15969,10 +16005,65 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String eventSuccessRoomWorkspaceCapacitySummary({
-    required int units,
+    required String units,
     required int seats,
   }) {
-    return '$units units · $seats seats';
+    return '$units · $seats seats';
+  }
+
+  @override
+  String eventSuccessRoomWorkspaceTableCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tables',
+      one: '1 table',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String eventSuccessRoomWorkspaceRowCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count rows',
+      one: '1 row',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String eventSuccessRoomWorkspaceCourtCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count courts',
+      one: '1 court',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String eventSuccessRoomWorkspaceZoneCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count zones',
+      one: '1 zone',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String eventSuccessRoomWorkspaceAreaCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count areas',
+      one: '1 area',
+    );
+    return '$_temp0';
   }
 
   @override
