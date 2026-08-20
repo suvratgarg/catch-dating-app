@@ -296,6 +296,30 @@ class HostFormEditorController extends _$HostFormEditorController {
         );
       });
 
+  void moveQuestionToSection({
+    required String questionId,
+    required int targetSectionIndex,
+  }) => _mutate((definition) {
+    final sourceSectionIndex = definition.sections.indexWhere(
+      (section) => section.questions.any(
+        (question) => question.questionId == questionId,
+      ),
+    );
+    if (sourceSectionIndex < 0 ||
+        sourceSectionIndex == targetSectionIndex ||
+        targetSectionIndex < 0 ||
+        targetSectionIndex >= definition.sections.length) {
+      return definition;
+    }
+    final questionIndex = definition.sections[sourceSectionIndex].questions
+        .indexWhere((question) => question.questionId == questionId);
+    return definition.moveQuestionToSection(
+      sourceSectionIndex: sourceSectionIndex,
+      questionIndex: questionIndex,
+      targetSectionIndex: targetSectionIndex,
+    );
+  });
+
   void updateOption(
     int sectionIndex,
     int questionIndex,

@@ -19,42 +19,94 @@ void main() {
 
     expect(find.text('Build'), findsOneWidget);
     expect(find.text('Responses 2'), findsOneWidget);
-    expect(find.text('Questions'), findsOneWidget);
+    expect(find.text('What do you need to know?'), findsOneWidget);
+    expect(
+      find.text('Choose the questions that will help you decide who to call.'),
+      findsOneWidget,
+    );
     expect(find.text('Full name'), findsOneWidget);
     expect(find.text('Short text · Required'), findsOneWidget);
     expect(find.text('Add question'), findsOneWidget);
-    expect(find.text('Form settings'), findsOneWidget);
-    expect(find.text('Review & publish'), findsOneWidget);
+    expect(find.text('Reorder questions'), findsOneWidget);
+    expect(find.text('Continue to settings'), findsOneWidget);
     expect(find.text('Form title'), findsNothing);
-    expect(
-      find.text(
-        'Publishing validates the draft and creates an immutable respondent version.',
-      ),
-      findsNothing,
-    );
   });
 
-  testWidgets('question and form settings open focused edit sheets', (
+  testWidgets(
+    'question editor stays focused and settings are a distinct step',
+    (tester) async {
+      await _pumpBuilder(tester);
+
+      await tester.tap(find.text('Full name'));
+      await pumpFeatureUi(tester);
+
+      expect(find.text('Question'), findsOneWidget);
+      expect(find.text('Answer type'), findsOneWidget);
+      expect(find.text('Response required'), findsOneWidget);
+
+      Navigator.of(tester.element(find.text('Question'))).pop();
+      await pumpFeatureUi(tester);
+
+      await tester.tap(find.text('Continue to settings'));
+      await pumpFeatureUi(tester);
+
+      expect(find.text('How should this form work?'), findsOneWidget);
+      expect(find.text('Form title'), findsOneWidget);
+      expect(find.text('Who can respond'), findsOneWidget);
+      expect(find.text('Continue to publish'), findsOneWidget);
+    },
+  );
+
+  testWidgets('publish step summarizes readiness and keeps preview explicit', (
     tester,
   ) async {
     await _pumpBuilder(tester);
 
-    await tester.tap(find.text('Full name'));
+    await tester.tap(find.text('Continue to settings'));
+    await pumpFeatureUi(tester);
+    await ensureCentered(tester, find.text('Continue to publish'));
+    await tester.tap(find.text('Continue to publish'));
     await pumpFeatureUi(tester);
 
-    expect(find.text('Question'), findsOneWidget);
-    expect(find.text('Answer type'), findsOneWidget);
-    expect(find.text('Response required'), findsOneWidget);
+    expect(find.text('Ready to publish?'), findsOneWidget);
+    expect(find.text('Verified phone required'), findsOneWidget);
+    expect(find.text('2 questions'), findsOneWidget);
+    expect(find.text('Preview'), findsWidgets);
+    expect(find.text('Publish form'), findsOneWidget);
+  });
 
-    Navigator.of(tester.element(find.text('Question'))).pop();
+  testWidgets('reorder action changes the persisted question order', (
+    tester,
+  ) async {
+    await _pumpBuilder(tester);
+
+    await tester.tap(find.text('Reorder questions'));
     await pumpFeatureUi(tester);
 
-    await ensureCentered(tester, find.text('Form settings'));
-    await tester.tap(find.text('Form settings'));
-    await pumpFeatureUi(tester);
+    expect(
+      find.text('Drag questions to change their order within each section.'),
+      findsOneWidget,
+    );
+    expect(find.byIcon(Icons.drag_indicator_rounded), findsWidgets);
 
-    expect(find.text('Form title'), findsOneWidget);
-    expect(find.text('Who can respond'), findsOneWidget);
+    final reorderList = tester.widget<ReorderableListView>(
+      find.byType(ReorderableListView),
+    );
+    reorderList.onReorderItem!(0, 1);
+    await tester.pump();
+
+    final phoneRow = find.descendant(
+      of: find.byKey(const ValueKey('reorder-question-question_2')),
+      matching: find.text('Phone number'),
+    );
+    final nameRow = find.descendant(
+      of: find.byKey(const ValueKey('reorder-question-question_1')),
+      matching: find.text('Full name'),
+    );
+    expect(
+      tester.getTopLeft(phoneRow).dy,
+      lessThan(tester.getTopLeft(nameRow).dy),
+    );
   });
 }
 
@@ -100,6 +152,22 @@ class _FakeHostFormEditorController extends HostFormEditorController {
   @override
   Future<HostFormEditorState> build(String organizerId, String formId) async =>
       initialState;
+
+  @override
+  void moveQuestion(int sectionIndex, int questionIndex, int delta) {
+    final current = state.requireValue;
+    final currentSection = current.editor.definition.sections[sectionIndex];
+    final target = (questionIndex + delta)
+        .clamp(0, currentSection.questions.length - 1)
+        .toInt();
+    final definition = current.editor.definition.replaceSection(
+      sectionIndex,
+      currentSection.moveQuestion(questionIndex, target),
+    );
+    state = AsyncData(
+      current.copyWith(editor: current.editor.copyWith(definition: definition)),
+    );
+  }
 }
 
 Map<String, Object?> _summaryMap() => {
@@ -144,6 +212,20 @@ Map<String, Object?> _definitionMap() => {
           'required': true,
           'options': <Object?>[],
           'canonicalFieldId': 'fullName',
+          'privacyClass': 'contact',
+          'prefillPolicy': 'never',
+          'hostPresentation': 'detailOnly',
+          'validation': _validationMap(),
+        },
+        {
+          'questionId': 'question_2',
+          'key': 'phone_number',
+          'label': 'Phone number',
+          'helpText': null,
+          'kind': 'phone',
+          'required': true,
+          'options': <Object?>[],
+          'canonicalFieldId': 'phoneNumber',
           'privacyClass': 'contact',
           'prefillPolicy': 'never',
           'hostPresentation': 'detailOnly',
