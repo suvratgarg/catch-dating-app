@@ -166,12 +166,10 @@ class _CatchMenuViewportBoundaryState extends State<CatchMenuViewportBoundary> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _resolvePlacement());
     final clearance = widget.viewport.overlayBottomClearance;
     final mediaQuery = MediaQuery.of(context);
-    _lastChildMaxHeight = math.max(
-      0,
-      mediaQuery.size.height -
-          mediaQuery.padding.vertical -
-          clearance -
-          (CatchLayout.menuViewportInset * 2),
+    _lastChildMaxHeight = CatchLayout.menuOverlayChildMaxHeightFor(
+      viewportHeight: mediaQuery.size.height,
+      verticalSafePadding: mediaQuery.padding.vertical,
+      overlayBottomClearance: clearance,
     );
     return Padding(
       padding: EdgeInsets.only(
