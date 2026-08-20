@@ -1257,47 +1257,34 @@ class HostCustomerIdentityCard extends StatelessWidget {
     ),
     children: [
       CatchField.read(
+        key: const ValueKey('host-customer-name-field'),
         title: context.l10n.hostsHostAudienceContactName,
         body: customer.displayName,
       ),
-      if (customer.contactDetailsEditable)
-        CatchField.nav(
-          key: const ValueKey('host-customer-phone-field'),
-          title: context.l10n.hostCustomersPhone,
-          body: customer.phoneE164,
-          placeholder: CatchField.defaultEmptyValueText(
-            context,
-            context.l10n.hostCustomersPhone,
-          ),
-          onTap: onManage,
-        )
-      else
-        CatchField.read(
-          key: const ValueKey('host-customer-phone-field'),
-          title: customer.isIdentityVerified
-              ? context.l10n.hostsHostAudienceContactVerifiedPhone
-              : context.l10n.hostCustomersPhone,
-          body: customer.phoneE164,
-          placeholder: context.l10n.hostCustomersNotSaved,
-        ),
-      if (customer.contactDetailsEditable)
-        CatchField.nav(
-          key: const ValueKey('host-customer-email-field'),
-          title: context.l10n.hostCustomersEmail,
-          body: customer.email,
-          placeholder: CatchField.defaultEmptyValueText(
-            context,
-            context.l10n.hostCustomersEmail,
-          ),
-          onTap: onManage,
-        )
-      else
-        CatchField.read(
-          key: const ValueKey('host-customer-email-field'),
-          title: context.l10n.hostsHostAudienceContactEmail,
-          body: customer.email,
-          placeholder: context.l10n.hostCustomersNotSaved,
-        ),
+      CatchField.read(
+        key: const ValueKey('host-customer-phone-field'),
+        title: customer.isIdentityVerified
+            ? context.l10n.hostsHostAudienceContactVerifiedPhone
+            : context.l10n.hostCustomersPhone,
+        body: customer.phoneE164,
+        placeholder: customer.contactDetailsEditable
+            ? CatchField.defaultEmptyValueText(
+                context,
+                context.l10n.hostCustomersPhone,
+              )
+            : context.l10n.hostCustomersNotSaved,
+      ),
+      CatchField.read(
+        key: const ValueKey('host-customer-email-field'),
+        title: context.l10n.hostsHostAudienceContactEmail,
+        body: customer.email,
+        placeholder: customer.contactDetailsEditable
+            ? CatchField.defaultEmptyValueText(
+                context,
+                context.l10n.hostCustomersEmail,
+              )
+            : context.l10n.hostCustomersNotSaved,
+      ),
     ],
   );
 }

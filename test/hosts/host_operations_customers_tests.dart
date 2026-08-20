@@ -639,7 +639,7 @@ void _registerHostOperationsCustomersTests() {
     );
   });
 
-  testWidgets('editable customer endpoints are explicit field actions', (
+  testWidgets('customer identity summary has one edit entry point', (
     tester,
   ) async {
     var edits = 0;
@@ -662,8 +662,23 @@ void _registerHostOperationsCustomersTests() {
     expect(find.text('Add mobile number'), findsOneWidget);
     expect(find.text('Add email'), findsOneWidget);
     expect(find.text('Added by your team · not verified by Catch'), findsOne);
+    expect(
+      find.descendant(
+        of: find.byType(HostCustomerIdentityCard),
+        matching: find.byIcon(CatchIcons.chevronRightRounded),
+      ),
+      findsNothing,
+    );
 
-    await tester.tap(find.byKey(const ValueKey('host-customer-phone-field')));
+    for (final key in const [
+      ValueKey('host-customer-name-field'),
+      ValueKey('host-customer-phone-field'),
+      ValueKey('host-customer-email-field'),
+    ]) {
+      expect(tester.widget<CatchField>(find.byKey(key)).onTap, isNull);
+    }
+
+    await tester.tap(find.byKey(const ValueKey('host-customer-edit-details')));
     expect(edits, 1);
   });
 
