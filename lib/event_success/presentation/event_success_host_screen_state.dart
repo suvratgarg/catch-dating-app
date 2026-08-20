@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_preference.dart';
@@ -10,6 +11,8 @@ import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 
 enum EventSuccessHostTab { setup, live, report }
+
+enum EventSuccessLiveWorkspace { now, guests, room }
 
 enum EventSuccessHostSectionStatus { loading, error, ready }
 
@@ -25,6 +28,7 @@ enum EventSuccessHostRetryIntent {
   wingmanRequests,
   wingmanProfiles,
   scorecard,
+  spatialLayout,
 }
 
 class EventSuccessHostResourceFailure {
@@ -65,6 +69,7 @@ class EventSuccessSetupSaveRequest {
     required this.planIsPersisted,
     required this.draft,
     required this.attendeePrompt,
+    required this.layoutId,
   });
 
   final Event event;
@@ -72,6 +77,42 @@ class EventSuccessSetupSaveRequest {
   final bool planIsPersisted;
   final EventSuccessHostDraft draft;
   final String attendeePrompt;
+  final String? layoutId;
+}
+
+enum EventSuccessSpatialLayoutStatus {
+  notApplicable,
+  unconfigured,
+  loading,
+  error,
+  ready,
+}
+
+class EventSuccessSpatialLayoutState {
+  const EventSuccessSpatialLayoutState._({
+    required this.status,
+    this.layout,
+    this.error,
+  });
+
+  const EventSuccessSpatialLayoutState.notApplicable()
+    : this._(status: EventSuccessSpatialLayoutStatus.notApplicable);
+
+  const EventSuccessSpatialLayoutState.unconfigured()
+    : this._(status: EventSuccessSpatialLayoutStatus.unconfigured);
+
+  const EventSuccessSpatialLayoutState.loading()
+    : this._(status: EventSuccessSpatialLayoutStatus.loading);
+
+  const EventSuccessSpatialLayoutState.error(Object error)
+    : this._(status: EventSuccessSpatialLayoutStatus.error, error: error);
+
+  const EventSuccessSpatialLayoutState.ready(EventSuccessLayout layout)
+    : this._(status: EventSuccessSpatialLayoutStatus.ready, layout: layout);
+
+  final EventSuccessSpatialLayoutStatus status;
+  final EventSuccessLayout? layout;
+  final Object? error;
 }
 
 class EventSuccessLiveActionState {

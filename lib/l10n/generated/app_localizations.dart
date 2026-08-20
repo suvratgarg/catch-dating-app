@@ -25138,6 +25138,117 @@ abstract class AppLocalizations {
     required String kind,
     required int revision,
   });
+
+  /// Room setup loading-state title.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading room layouts'**
+  String get eventSuccessRoomSetupLoadingTitle;
+
+  /// Room setup loading-state body.
+  ///
+  /// In en, this message translates to:
+  /// **'Your reusable layouts will appear here.'**
+  String get eventSuccessRoomSetupLoadingBody;
+
+  /// Current live moment workspace label.
+  ///
+  /// In en, this message translates to:
+  /// **'Now'**
+  String get eventSuccessLiveWorkspaceNow;
+
+  /// Guest drawer action in the live workspace picker.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests'**
+  String get eventSuccessLiveWorkspaceGuests;
+
+  /// Room map workspace label.
+  ///
+  /// In en, this message translates to:
+  /// **'Room'**
+  String get eventSuccessLiveWorkspaceRoom;
+
+  /// Room layout resource name used in retry copy.
+  ///
+  /// In en, this message translates to:
+  /// **'room layout'**
+  String get eventSuccessHostResourceRoomLayout;
+
+  /// Whole-group room workspace title.
+  ///
+  /// In en, this message translates to:
+  /// **'One shared room'**
+  String get eventSuccessRoomWorkspaceWholeGroupTitle;
+
+  /// Whole-group room workspace explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'This format runs as one group, so it does not need assigned tables or zones.'**
+  String get eventSuccessRoomWorkspaceWholeGroupBody;
+
+  /// Missing room layout runtime title.
+  ///
+  /// In en, this message translates to:
+  /// **'Room layout not configured'**
+  String get eventSuccessRoomWorkspaceUnconfiguredTitle;
+
+  /// Missing room layout runtime guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose or create a room layout in Preparation before the event starts. Live controls remain available in Now.'**
+  String get eventSuccessRoomWorkspaceUnconfiguredBody;
+
+  /// Room map loading title.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening the room map'**
+  String get eventSuccessRoomWorkspaceLoadingTitle;
+
+  /// Room map loading body.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading placements and room geometry.'**
+  String get eventSuccessRoomWorkspaceLoadingBody;
+
+  /// Empty room placement title.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for placements'**
+  String get eventSuccessRoomWorkspaceWaitingTitle;
+
+  /// Empty room placement guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'The saved room is ready. Placements appear here after the event guide generates groups or rotations.'**
+  String get eventSuccessRoomWorkspaceWaitingBody;
+
+  /// Configured room unit and seat summary.
+  ///
+  /// In en, this message translates to:
+  /// **'{units} units · {seats} seats'**
+  String eventSuccessRoomWorkspaceCapacitySummary({
+    required int units,
+    required int seats,
+  });
+
+  /// Placed attendee count label.
+  ///
+  /// In en, this message translates to:
+  /// **'Placed'**
+  String get eventSuccessRoomWorkspacePlaced;
+
+  /// Unconfirmed placement count label.
+  ///
+  /// In en, this message translates to:
+  /// **'Unconfirmed'**
+  String get eventSuccessRoomWorkspaceUnconfirmed;
+
+  /// Room placement attention count label.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs attention'**
+  String get eventSuccessRoomWorkspaceNeedsAttention;
 }
 
 class _AppLocalizationsDelegate

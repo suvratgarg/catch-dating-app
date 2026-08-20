@@ -9,9 +9,11 @@ import "package:catch_dating_app/core/theme/catch_tokens.dart";
 import "package:catch_dating_app/core/widgets/catch_badge.dart";
 import "package:catch_dating_app/core/widgets/catch_progress_cue.dart";
 import "package:catch_dating_app/core/widgets/catch_surface.dart";
+import "package:catch_dating_app/core/presentation/catch_async_state.dart";
 import "package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart";
 import "package:catch_dating_app/event_success/domain/event_success_defaults.dart";
 import "package:catch_dating_app/event_success/domain/event_success_feature_state.dart";
+import "package:catch_dating_app/event_success/domain/event_success_layout.dart";
 import "package:catch_dating_app/event_success/domain/event_success_playbooks.dart";
 import "package:catch_dating_app/event_success/domain/event_success_structure.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart";
@@ -21,6 +23,7 @@ import "package:catch_dating_app/event_success/presentation/event_success_hero_s
 import "package:catch_dating_app/event_success/presentation/event_success_host_screen.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_questionnaire_config_editor.dart";
+import "package:catch_dating_app/event_success/presentation/event_success_room_setup_section.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_setup_body.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_skeletons.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_structure_config_editor.dart";
@@ -1139,6 +1142,19 @@ Widget eventSuccessStrictEventSuccessHostPanel(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: "EventSuccessRoomSetupSection",
+  type: EventSuccessRoomSetupSection,
+  path:
+      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
+)
+Widget eventSuccessStrictEventSuccessRoomSetupSection(BuildContext context) {
+  return const _StrictCoverageScaffold(
+    componentName: "EventSuccessRoomSetupSection",
+    child: _RoomSetupCoverageState(),
+  );
+}
+
+@widgetbook.UseCase(
   name: "EventSuccessHostTabBody",
   type: EventSuccessHostTabBody,
   path:
@@ -2206,6 +2222,39 @@ Widget _eventSuccessStrictPreview(
       ),
     ),
   };
+}
+
+class _RoomSetupCoverageState extends StatefulWidget {
+  const _RoomSetupCoverageState();
+
+  @override
+  State<_RoomSetupCoverageState> createState() =>
+      _RoomSetupCoverageStateState();
+}
+
+class _RoomSetupCoverageStateState extends State<_RoomSetupCoverageState> {
+  static final _layout = EventSuccessLayout.parametric(
+    layoutId: "six-rounds",
+    label: "Six round tables",
+    shape: EventSuccessLayoutShape.round,
+    unitCount: 6,
+    unitCapacity: 4,
+    columnCount: 2,
+  );
+  String? _selectedLayoutId = _layout.layoutId;
+
+  @override
+  Widget build(BuildContext context) {
+    return EventSuccessRoomSetupSection(
+      layoutsState: CatchAsyncState.data([_layout]),
+      selectedLayoutId: _selectedLayoutId,
+      usesWholeGroup: false,
+      enabled: true,
+      isSavingLayout: false,
+      onSelected: (layoutId) => setState(() => _selectedLayoutId = layoutId),
+      onSaveLayout: (layout) async => layout,
+    );
+  }
 }
 
 class _HostCoverageStates extends StatelessWidget {

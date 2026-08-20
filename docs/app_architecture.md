@@ -571,7 +571,7 @@ system.
 | Inbox | event scope and conversation list, pushed thread | conversation list plus selected thread | event/audience navigation, conversation list, and thread/detail at sufficiently wide local width |
 | Organizer | top tabs and one form lane | rail plus secondary organizer navigation and one content pane | secondary navigation, editor, and preview or insights pane |
 | Create Event | current paged wizard and bottom actions | step rail plus focused form; optional summary pane in landscape | step rail, approximately 640 px form lane, live cover/summary preview, compact sticky actions |
-| Manage Event | one lifecycle-owned Preparation, Live Operations, or Recap workspace plus an overlay guest-roster drawer | the same lifecycle workspace with a wider overlay roster | lifecycle workspace, wide overlay roster, and context-appropriate commands without persistent mode navigation |
+| Manage Event | one lifecycle-owned Preparation, Live Operations, or Recap workspace plus an overlay guest-roster drawer; Live may switch locally between Now and Room while Guests opens that drawer | the same lifecycle workspace with a wider overlay roster | lifecycle workspace, wide overlay roster, and context-appropriate commands without persistent top-level mode navigation |
 
 The consolidated Events route remains canonical. Responsive work must not
 recreate the retired Today destination or split operational shortcuts away from

@@ -89,4 +89,42 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+
+  testWidgets('contextual roster entry can hide the legacy edge handle', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(390, 844);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    bool? nextOpen;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: HostEventRosterDrawer(
+            open: true,
+            bookedCount: 3,
+            showHandle: false,
+            onOpenChanged: (next) => nextOpen = next,
+            body: const Text('Live controls'),
+            roster: const Text('Roster content'),
+          ),
+        ),
+      ),
+    );
+
+    expect(
+      find.byKey(const ValueKey<String>('host_event_roster_drawer.handle')),
+      findsNothing,
+    );
+    expect(find.text('Roster content'), findsOneWidget);
+
+    await tester.tap(find.bySemanticsLabel('Close guest roster'));
+    await tester.pump();
+    expect(nextOpen, isFalse);
+  });
 }

@@ -15918,4 +15918,69 @@ class AppLocalizationsEn extends AppLocalizations {
   }) {
     return '$kind · revision $revision';
   }
+
+  @override
+  String get eventSuccessRoomSetupLoadingTitle => 'Loading room layouts';
+
+  @override
+  String get eventSuccessRoomSetupLoadingBody =>
+      'Your reusable layouts will appear here.';
+
+  @override
+  String get eventSuccessLiveWorkspaceNow => 'Now';
+
+  @override
+  String get eventSuccessLiveWorkspaceGuests => 'Guests';
+
+  @override
+  String get eventSuccessLiveWorkspaceRoom => 'Room';
+
+  @override
+  String get eventSuccessHostResourceRoomLayout => 'room layout';
+
+  @override
+  String get eventSuccessRoomWorkspaceWholeGroupTitle => 'One shared room';
+
+  @override
+  String get eventSuccessRoomWorkspaceWholeGroupBody =>
+      'This format runs as one group, so it does not need assigned tables or zones.';
+
+  @override
+  String get eventSuccessRoomWorkspaceUnconfiguredTitle =>
+      'Room layout not configured';
+
+  @override
+  String get eventSuccessRoomWorkspaceUnconfiguredBody =>
+      'Choose or create a room layout in Preparation before the event starts. Live controls remain available in Now.';
+
+  @override
+  String get eventSuccessRoomWorkspaceLoadingTitle => 'Opening the room map';
+
+  @override
+  String get eventSuccessRoomWorkspaceLoadingBody =>
+      'Loading placements and room geometry.';
+
+  @override
+  String get eventSuccessRoomWorkspaceWaitingTitle => 'Waiting for placements';
+
+  @override
+  String get eventSuccessRoomWorkspaceWaitingBody =>
+      'The saved room is ready. Placements appear here after the event guide generates groups or rotations.';
+
+  @override
+  String eventSuccessRoomWorkspaceCapacitySummary({
+    required int units,
+    required int seats,
+  }) {
+    return '$units units · $seats seats';
+  }
+
+  @override
+  String get eventSuccessRoomWorkspacePlaced => 'Placed';
+
+  @override
+  String get eventSuccessRoomWorkspaceUnconfirmed => 'Unconfirmed';
+
+  @override
+  String get eventSuccessRoomWorkspaceNeedsAttention => 'Needs attention';
 }
