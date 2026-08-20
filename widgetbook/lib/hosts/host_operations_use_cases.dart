@@ -822,7 +822,7 @@ Widget hostCustomersStates(BuildContext context) {
             currentUid: HostOperationsFixtures.hostUid,
             openingConversation: false,
             updatingCustomer: false,
-            onEditDetails: () {},
+            onSaveDetails: ({required displayName, phoneE164, email}) async {},
             onEditTags: () {},
             onAddNote: () {},
             onEditNote: (_) {},
@@ -836,9 +836,15 @@ Widget hostCustomersStates(BuildContext context) {
         ),
       ),
       _StateCard(
-        label: 'edit linked customer details',
+        label: 'inline edit linked customer details',
         child: _DeviceFrame(
-          child: Scaffold(body: HostCustomerEditDetailsSheet(customer: detail)),
+          child: Scaffold(
+            body: HostCustomerIdentityCard(
+              customer: detail,
+              initiallyEditing: true,
+              onSave: ({required displayName, phoneE164, email}) async {},
+            ),
+          ),
         ),
       ),
     ],
@@ -883,14 +889,6 @@ Widget hostCustomerDetailStates(BuildContext context) =>
   path: '[P1 product surfaces]/Host operations/Customers',
 )
 Widget hostCustomerDetailBodyStates(BuildContext context) =>
-    hostCustomersStates(context);
-
-@widgetbook.UseCase(
-  name: 'Edit details states',
-  type: HostCustomerEditDetailsSheet,
-  path: '[P1 product surfaces]/Host operations/Customers',
-)
-Widget hostCustomerEditDetailsStates(BuildContext context) =>
     hostCustomersStates(context);
 
 @widgetbook.UseCase(

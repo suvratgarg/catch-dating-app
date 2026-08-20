@@ -639,10 +639,10 @@ void _registerHostOperationsCustomersTests() {
     );
   });
 
-  testWidgets('customer identity summary has one edit entry point', (
-    tester,
-  ) async {
-    var edits = 0;
+  testWidgets('customer identity edits and saves in place', (tester) async {
+    String? savedDisplayName;
+    String? savedPhone;
+    String? savedEmail;
     final customer = _customerDetail(
       contactDetailsEditable: true,
       linkedAccount: false,
@@ -654,7 +654,11 @@ void _registerHostOperationsCustomersTests() {
       Scaffold(
         body: HostCustomerIdentityCard(
           customer: customer,
-          onManage: () => edits += 1,
+          onSave: ({required displayName, phoneE164, email}) async {
+            savedDisplayName = displayName;
+            savedPhone = phoneE164;
+            savedEmail = email;
+          },
         ),
       ),
     );
@@ -679,10 +683,99 @@ void _registerHostOperationsCustomersTests() {
     }
 
     await tester.tap(find.byKey(const ValueKey('host-customer-edit-details')));
-    expect(edits, 1);
+    await tester.pump();
+
+    expect(find.byKey(const ValueKey('host-customer-edit-name')), findsOne);
+    expect(find.byKey(const ValueKey('host-customer-edit-phone')), findsOne);
+    expect(find.byKey(const ValueKey('host-customer-edit-email')), findsOne);
+    expect(
+      find.byKey(const ValueKey('host-customer-edit-details')),
+      findsNothing,
+    );
+    expect(find.byKey(const ValueKey('catch-field-action-bar')), findsOne);
+
+    await tester.enterText(
+      find.descendant(
+        of: find.byKey(const ValueKey('host-customer-edit-name')),
+        matching: find.byType(TextField),
+      ),
+      'Ananya Kapoor',
+    );
+    await tester.enterText(
+      find.descendant(
+        of: find.byKey(const ValueKey('host-customer-edit-phone')),
+        matching: find.byType(TextField),
+      ),
+      '+919999999999',
+    );
+    await tester.enterText(
+      find.descendant(
+        of: find.byKey(const ValueKey('host-customer-edit-email')),
+        matching: find.byType(TextField),
+      ),
+      'NEW@Example.COM',
+    );
+    await tester.tap(find.byKey(const ValueKey('catch-field-done')));
+    await tester.pumpAndSettle();
+
+    expect(savedDisplayName, 'Ananya Kapoor');
+    expect(savedPhone, '+919999999999');
+    expect(savedEmail, 'new@example.com');
+    expect(find.text('Ananya Kapoor'), findsOneWidget);
+    expect(find.text('+919999999999'), findsOneWidget);
+    expect(find.text('new@example.com'), findsOneWidget);
+    expect(find.byKey(const ValueKey('catch-field-action-bar')), findsNothing);
   });
 
-  testWidgets('verified customer endpoints stay visibly read-only', (
+  testWidgets('cancel restores customer details without saving', (
+    tester,
+  ) async {
+    var saves = 0;
+    final customer = _customerDetail(
+      contactDetailsEditable: true,
+      linkedAccount: false,
+      identityState: HostAudienceIdentityState.unlinked,
+      identityConfidence: 'unverified',
+    );
+    await _pumpHostScreen(
+      tester,
+      Scaffold(
+        body: HostCustomerIdentityCard(
+          customer: customer,
+          onSave: ({required displayName, phoneE164, email}) async {
+            saves += 1;
+          },
+        ),
+      ),
+    );
+
+    await tester.tap(find.byKey(const ValueKey('host-customer-edit-details')));
+    await tester.pump();
+    await tester.tap(find.byKey(const ValueKey('catch-field-done')));
+    await tester.pump();
+
+    expect(saves, 0);
+    expect(find.byKey(const ValueKey('host-customer-edit-name')), findsNothing);
+
+    await tester.tap(find.byKey(const ValueKey('host-customer-edit-details')));
+    await tester.pump();
+    await tester.enterText(
+      find.descendant(
+        of: find.byKey(const ValueKey('host-customer-edit-name')),
+        matching: find.byType(TextField),
+      ),
+      'Discarded name',
+    );
+    await tester.tap(find.byKey(const ValueKey('catch-field-cancel')));
+    await tester.pump();
+
+    expect(saves, 0);
+    expect(find.text('Ananya Rao'), findsOneWidget);
+    expect(find.text('Discarded name'), findsNothing);
+    expect(find.byKey(const ValueKey('host-customer-edit-name')), findsNothing);
+  });
+
+  testWidgets('verified customer edits name while endpoints stay read-only', (
     tester,
   ) async {
     await _pumpHostScreen(
@@ -690,12 +783,24 @@ void _registerHostOperationsCustomersTests() {
       Scaffold(
         body: HostCustomerIdentityCard(
           customer: _customerDetail(),
-          onManage: () {},
+          onSave: ({required displayName, phoneE164, email}) async {},
         ),
       ),
     );
 
     expect(find.text('Not saved'), findsNWidgets(2));
+    await tester.tap(find.byKey(const ValueKey('host-customer-edit-details')));
+    await tester.pump();
+
+    expect(find.byKey(const ValueKey('host-customer-edit-name')), findsOne);
+    expect(
+      find.byKey(const ValueKey('host-customer-edit-phone')),
+      findsNothing,
+    );
+    expect(
+      find.byKey(const ValueKey('host-customer-edit-email')),
+      findsNothing,
+    );
     expect(
       tester
           .widget<CatchField>(
@@ -720,9 +825,10 @@ void _registerHostOperationsCustomersTests() {
     );
   });
 
-  testWidgets('edit details sheet separates fields from delivery controls', (
+  testWidgets('inline customer details keep invalid drafts open', (
     tester,
   ) async {
+    var saves = 0;
     final customer = _customerDetail(
       contactDetailsEditable: true,
       linkedAccount: false,
@@ -731,14 +837,31 @@ void _registerHostOperationsCustomersTests() {
     );
     await _pumpHostScreen(
       tester,
-      Scaffold(body: HostCustomerEditDetailsSheet(customer: customer)),
+      Scaffold(
+        body: HostCustomerIdentityCard(
+          customer: customer,
+          onSave: ({required displayName, phoneE164, email}) async {
+            saves += 1;
+          },
+        ),
+      ),
     );
 
+    await tester.tap(find.byKey(const ValueKey('host-customer-edit-details')));
+    await tester.pump();
+    await tester.enterText(
+      find.descendant(
+        of: find.byKey(const ValueKey('host-customer-edit-name')),
+        matching: find.byType(TextField),
+      ),
+      '   ',
+    );
+    await tester.tap(find.byKey(const ValueKey('catch-field-done')));
+    await tester.pump();
+
+    expect(saves, 0);
+    expect(find.text('Enter the customer’s name.'), findsOneWidget);
     expect(find.byKey(const ValueKey('host-customer-edit-name')), findsOne);
-    expect(find.byKey(const ValueKey('host-customer-edit-phone')), findsOne);
-    expect(find.byKey(const ValueKey('host-customer-edit-email')), findsOne);
-    expect(find.text('Organizer messages'), findsNothing);
-    expect(find.text('Remove customer'), findsNothing);
   });
 
   testWidgets('organizer messaging control exposes the requested state', (

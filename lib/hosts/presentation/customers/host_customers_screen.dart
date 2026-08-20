@@ -1059,33 +1059,64 @@ class _HostAddCustomerSheetState extends ConsumerState<HostAddCustomerSheet> {
   }
 }
 
-enum HostCustomerEditDetailsResult { updated }
+typedef HostCustomerDetailsSaveCallback =
+    Future<void> Function({
+      required String displayName,
+      String? phoneE164,
+      String? email,
+    });
 
-class HostCustomerEditDetailsSheet extends ConsumerStatefulWidget {
-  const HostCustomerEditDetailsSheet({super.key, required this.customer});
+class HostCustomerIdentityCard extends StatefulWidget {
+  const HostCustomerIdentityCard({
+    super.key,
+    required this.customer,
+    required this.onSave,
+    this.initiallyEditing = false,
+  });
 
   final HostAudienceContactDetail customer;
+  final HostCustomerDetailsSaveCallback onSave;
+  final bool initiallyEditing;
 
   @override
-  ConsumerState<HostCustomerEditDetailsSheet> createState() =>
-      _HostCustomerEditDetailsSheetState();
+  State<HostCustomerIdentityCard> createState() =>
+      _HostCustomerIdentityCardState();
 }
 
-class _HostCustomerEditDetailsSheetState
-    extends ConsumerState<HostCustomerEditDetailsSheet> {
+class _HostCustomerIdentityCardState extends State<HostCustomerIdentityCard> {
   final _formKey = GlobalKey<FormState>();
-  late final TextEditingController _nameController = TextEditingController(
-    text:
-        widget.customer.displayNameOverride ??
-        widget.customer.sourceDisplayName,
-  );
-  late final TextEditingController _phoneController = TextEditingController(
-    text: widget.customer.phoneE164,
-  );
-  late final TextEditingController _emailController = TextEditingController(
-    text: widget.customer.email,
-  );
+  final _nameController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _emailController = TextEditingController();
+  late bool _editing;
   bool _saving = false;
+  bool _hasOptimisticDetails = false;
+  String _optimisticDisplayName = '';
+  String? _optimisticPhoneE164;
+  String? _optimisticEmail;
+
+  @override
+  void initState() {
+    super.initState();
+    _editing = widget.initiallyEditing;
+    _resetDraft();
+  }
+
+  @override
+  void didUpdateWidget(covariant HostCustomerIdentityCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final customerChanged =
+        oldWidget.customer.contactId != widget.customer.contactId ||
+        oldWidget.customer.revision != widget.customer.revision;
+    if (customerChanged) {
+      _hasOptimisticDetails = false;
+      if (!_editing) _resetDraft();
+    }
+    if (!oldWidget.initiallyEditing && widget.initiallyEditing && !_editing) {
+      _resetDraft();
+      _editing = true;
+    }
+  }
 
   @override
   void dispose() {
@@ -1095,20 +1126,74 @@ class _HostCustomerEditDetailsSheetState
     super.dispose();
   }
 
+  String get _displayName => _hasOptimisticDetails
+      ? _optimisticDisplayName
+      : widget.customer.displayName;
+
+  String get _editableDisplayName => _hasOptimisticDetails
+      ? _optimisticDisplayName
+      : widget.customer.displayNameOverride ??
+            widget.customer.sourceDisplayName;
+
+  String? get _phoneE164 =>
+      _hasOptimisticDetails ? _optimisticPhoneE164 : widget.customer.phoneE164;
+
+  String? get _email =>
+      _hasOptimisticDetails ? _optimisticEmail : widget.customer.email;
+
   @override
-  Widget build(BuildContext context) => CatchBottomSheetScaffold(
-    title: context.l10n.hostCustomersEditDetails,
-    subtitle: context.l10n.hostsHostAudienceContactSubtitle,
-    keyboardSafe: true,
-    child: SingleChildScrollView(
-      child: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+  Widget build(BuildContext context) {
+    final phoneTitle = widget.customer.isIdentityVerified
+        ? context.l10n.hostsHostAudienceContactVerifiedPhone
+        : context.l10n.hostCustomersPhone;
+    final phonePlaceholder = widget.customer.contactDetailsEditable
+        ? CatchField.defaultEmptyValueText(
+            context,
+            context.l10n.hostCustomersPhone,
+          )
+        : context.l10n.hostCustomersNotSaved;
+    final emailPlaceholder = widget.customer.contactDetailsEditable
+        ? CatchField.defaultEmptyValueText(
+            context,
+            context.l10n.hostCustomersEmail,
+          )
+        : context.l10n.hostCustomersNotSaved;
+    return Form(
+      key: _formKey,
+      child: CatchSection.containedFieldRows(
+        key: const ValueKey('host-customer-contact-details'),
+        title: context.l10n.hostCustomersContactDetails,
+        focused: _editing,
+        trailing: _editing
+            ? null
+            : CatchButton(
+                key: const ValueKey('host-customer-edit-details'),
+                label: context.l10n.hostCustomersEditDetails,
+                variant: CatchButtonVariant.ghost,
+                size: CatchButtonSize.sm,
+                onPressed: _beginEditing,
+              ),
+        footer: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            CatchSection.containedFieldRows(
-              children: [
+            Text(
+              widget.customer.contactDetailsEditable
+                  ? context.l10n.hostCustomersUnverifiedContactDetails
+                  : context.l10n.hostCustomersVerifiedDetailsManagedByCatch,
+              style: CatchTextStyles.supporting(context),
+            ),
+            if (_editing) ...[
+              gapH12,
+              CatchFieldActionBar(
+                loading: _saving,
+                onCancel: _cancelEditing,
+                onSubmit: () => unawaited(_saveDetails()),
+              ),
+            ],
+          ],
+        ),
+        children: _editing
+            ? [
                 CatchField.input(
                   key: const ValueKey('host-customer-edit-name'),
                   title: context.l10n.hostsHostAudienceContactName,
@@ -1118,11 +1203,13 @@ class _HostCustomerEditDetailsSheetState
                   helperText: context.l10n.hostsHostAudienceContactNameHelp,
                   textCapitalization: TextCapitalization.words,
                   textInputAction: TextInputAction.next,
+                  autofocus: true,
+                  enabled: !_saving,
                   validator: (value) => (value ?? '').trim().isEmpty
                       ? context.l10n.hostCustomersNameRequired
                       : null,
                 ),
-                if (_canEditContactDetails) ...[
+                if (widget.customer.contactDetailsEditable) ...[
                   CatchField.input(
                     key: const ValueKey('host-customer-edit-phone'),
                     title: context.l10n.hostCustomersPhone,
@@ -1134,6 +1221,7 @@ class _HostCustomerEditDetailsSheetState
                     textInputAction: TextInputAction.next,
                     placeholder: '+919876543210',
                     helperText: context.l10n.hostCustomersPhoneHelp,
+                    enabled: !_saving,
                     validator: (value) => _manualPhoneError(context, value),
                   ),
                   CatchField.input(
@@ -1145,75 +1233,107 @@ class _HostCustomerEditDetailsSheetState
                     isOptional: true,
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.done,
+                    enabled: !_saving,
                     validator: (value) => _manualEmailError(context, value),
+                    onSubmitted: (_) => unawaited(_saveDetails()),
+                  ),
+                ] else ...[
+                  CatchField.read(
+                    key: const ValueKey('host-customer-phone-field'),
+                    title: phoneTitle,
+                    body: _phoneE164,
+                    placeholder: phonePlaceholder,
+                  ),
+                  CatchField.read(
+                    key: const ValueKey('host-customer-email-field'),
+                    title: context.l10n.hostsHostAudienceContactEmail,
+                    body: _email,
+                    placeholder: emailPlaceholder,
                   ),
                 ],
+              ]
+            : [
+                CatchField.read(
+                  key: const ValueKey('host-customer-name-field'),
+                  title: context.l10n.hostsHostAudienceContactName,
+                  body: _displayName,
+                ),
+                CatchField.read(
+                  key: const ValueKey('host-customer-phone-field'),
+                  title: phoneTitle,
+                  body: _phoneE164,
+                  placeholder: phonePlaceholder,
+                ),
+                CatchField.read(
+                  key: const ValueKey('host-customer-email-field'),
+                  title: context.l10n.hostsHostAudienceContactEmail,
+                  body: _email,
+                  placeholder: emailPlaceholder,
+                ),
               ],
-            ),
-            if (!_canEditContactDetails) ...[
-              gapH12,
-              Text(
-                context.l10n.hostCustomersVerifiedDetailsManagedByCatch,
-                style: CatchTextStyles.supporting(context),
-              ),
-            ],
-            gapH16,
-            CatchButton(
-              key: const ValueKey('host-customer-save-details'),
-              label: context.l10n.hostCustomersSaveDetails,
-              isLoading: _saving,
-              onPressed: _saving ? null : _saveDetails,
-            ),
-          ],
-        ),
       ),
-    ),
-  );
-
-  bool get _canEditContactDetails => widget.customer.contactDetailsEditable;
-
-  Future<void> _saveDetails() async {
-    if (!(_formKey.currentState?.validate() ?? false)) return;
-    final value = _nameController.text.trim();
-    await _mutate(
-      displayNameOverride: value == widget.customer.sourceDisplayName
-          ? null
-          : value,
-      clearDisplayNameOverride: value == widget.customer.sourceDisplayName,
-      phoneE164: _optionalManualPhone(_phoneController.text),
-      updatePhoneE164: _canEditContactDetails,
-      email: _optionalNormalizedEmail(_emailController.text),
-      updateEmail: _canEditContactDetails,
     );
   }
 
-  Future<void> _mutate({
-    String? displayNameOverride,
-    bool clearDisplayNameOverride = false,
-    String? phoneE164,
-    bool updatePhoneE164 = false,
-    String? email,
-    bool updateEmail = false,
-  }) async {
+  void _beginEditing() {
+    _resetDraft();
+    setState(() => _editing = true);
+  }
+
+  void _cancelEditing() {
     if (_saving) return;
+    _resetDraft();
+    setState(() => _editing = false);
+  }
+
+  void _resetDraft() {
+    _nameController.text = _editableDisplayName;
+    _phoneController.text = _phoneE164 ?? '';
+    _emailController.text = _email ?? '';
+  }
+
+  bool _draftChanged({
+    required String displayName,
+    required String? phoneE164,
+    required String? email,
+  }) =>
+      displayName != _editableDisplayName ||
+      (widget.customer.contactDetailsEditable &&
+          (phoneE164 != _phoneE164 || email != _email));
+
+  Future<void> _saveDetails() async {
+    if (_saving || !(_formKey.currentState?.validate() ?? false)) return;
+    final displayName = _nameController.text.trim();
+    final phoneE164 = _optionalManualPhone(_phoneController.text);
+    final email = _optionalNormalizedEmail(_emailController.text);
+    if (!_draftChanged(
+      displayName: displayName,
+      phoneE164: phoneE164,
+      email: email,
+    )) {
+      _cancelEditing();
+      return;
+    }
+
     setState(() => _saving = true);
     try {
-      await ref
-          .read(hostCustomersControllerProvider)
-          .mutateCustomer(
-            organizerId: widget.customer.organizerId,
-            contactId: widget.customer.contactId,
-            expectedRevision: widget.customer.revision,
-            displayNameOverride: displayNameOverride,
-            clearDisplayNameOverride: clearDisplayNameOverride,
-            phoneE164: phoneE164,
-            updatePhoneE164: updatePhoneE164,
-            email: email,
-            updateEmail: updateEmail,
-          );
-      if (mounted) {
-        Navigator.of(context).pop(HostCustomerEditDetailsResult.updated);
-      }
+      await widget.onSave(
+        displayName: displayName,
+        phoneE164: phoneE164,
+        email: email,
+      );
+      if (!mounted) return;
+      setState(() {
+        _hasOptimisticDetails = true;
+        _optimisticDisplayName = displayName;
+        _optimisticPhoneE164 = widget.customer.contactDetailsEditable
+            ? phoneE164
+            : widget.customer.phoneE164;
+        _optimisticEmail = widget.customer.contactDetailsEditable
+            ? email
+            : widget.customer.email;
+        _editing = false;
+      });
     } on Object catch (error) {
       if (mounted) {
         showCatchErrorSnackBar(
@@ -1226,67 +1346,6 @@ class _HostCustomerEditDetailsSheetState
       if (mounted) setState(() => _saving = false);
     }
   }
-}
-
-class HostCustomerIdentityCard extends StatelessWidget {
-  const HostCustomerIdentityCard({
-    super.key,
-    required this.customer,
-    required this.onManage,
-  });
-
-  final HostAudienceContactDetail customer;
-  final VoidCallback onManage;
-
-  @override
-  Widget build(BuildContext context) => CatchSection.containedFieldRows(
-    key: const ValueKey('host-customer-contact-details'),
-    title: context.l10n.hostCustomersContactDetails,
-    trailing: CatchButton(
-      key: const ValueKey('host-customer-edit-details'),
-      label: context.l10n.hostCustomersEditDetails,
-      variant: CatchButtonVariant.ghost,
-      size: CatchButtonSize.sm,
-      onPressed: onManage,
-    ),
-    footer: Text(
-      customer.contactDetailsEditable
-          ? context.l10n.hostCustomersUnverifiedContactDetails
-          : context.l10n.hostCustomersVerifiedDetailsManagedByCatch,
-      style: CatchTextStyles.supporting(context),
-    ),
-    children: [
-      CatchField.read(
-        key: const ValueKey('host-customer-name-field'),
-        title: context.l10n.hostsHostAudienceContactName,
-        body: customer.displayName,
-      ),
-      CatchField.read(
-        key: const ValueKey('host-customer-phone-field'),
-        title: customer.isIdentityVerified
-            ? context.l10n.hostsHostAudienceContactVerifiedPhone
-            : context.l10n.hostCustomersPhone,
-        body: customer.phoneE164,
-        placeholder: customer.contactDetailsEditable
-            ? CatchField.defaultEmptyValueText(
-                context,
-                context.l10n.hostCustomersPhone,
-              )
-            : context.l10n.hostCustomersNotSaved,
-      ),
-      CatchField.read(
-        key: const ValueKey('host-customer-email-field'),
-        title: context.l10n.hostsHostAudienceContactEmail,
-        body: customer.email,
-        placeholder: customer.contactDetailsEditable
-            ? CatchField.defaultEmptyValueText(
-                context,
-                context.l10n.hostCustomersEmail,
-              )
-            : context.l10n.hostCustomersNotSaved,
-      ),
-    ],
-  );
 }
 
 class HostCustomerConversationCard extends StatelessWidget {

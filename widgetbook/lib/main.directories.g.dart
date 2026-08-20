@@ -7828,17 +7828,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostCustomerEditDetailsSheet',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Edit details states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostCustomerEditDetailsStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostCustomerIdentityCard',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
