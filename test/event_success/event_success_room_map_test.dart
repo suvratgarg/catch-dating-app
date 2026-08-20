@@ -13,7 +13,7 @@ void main() {
 
     expect(find.text('Room map'), findsOneWidget);
     expect(find.text('Assigned'), findsOneWidget);
-    expect(find.text('Host confirmed'), findsOneWidget);
+    expect(find.text('Confirmed'), findsOneWidget);
     expect(
       find.text('Select an attendee, then choose a destination.'),
       findsNothing,
@@ -95,6 +95,11 @@ void main() {
     expect(released, isTrue);
 
     await tester.tap(find.text('5'));
+    await tester.pump();
+    expect(reassignedUnitId, isNull);
+    expect(find.text('Move to 5'), findsOneWidget);
+
+    await tester.tap(find.text('Move to 5'));
     await tester.pump();
     expect(reassignedUnitId, 'zone');
     expect(reassignedScope, EventSuccessSpatialScope.pinned);

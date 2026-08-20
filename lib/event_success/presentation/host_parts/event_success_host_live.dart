@@ -409,6 +409,7 @@ class LiveTab extends StatelessWidget {
             onReassign: onReassignSpatial,
             onConfirmPosition: onConfirmSpatial,
             onReleasePinned: onReleaseSpatial,
+            initialSelectedUid: fixtureActions?.initialSpatialSelectionUid,
           );
 
     if (showRoomWorkspace) {
@@ -467,6 +468,8 @@ class LiveTab extends StatelessWidget {
               onReassign: onReassignSpatial,
               onConfirmPosition: onConfirmSpatial,
               onReleasePinned: onReleaseSpatial,
+              initialSelectedUid: fixtureActions?.initialSpatialSelectionUid,
+              showHeader: false,
             ),
             if (spatialAssignments.isEmpty) ...[
               gapH16,
@@ -704,7 +707,7 @@ class _EventSuccessRoomWorkspaceSummary extends StatelessWidget {
           gapH4,
           Text(
             context.l10n.eventSuccessRoomWorkspaceCapacitySummary(
-              units: layout.units.length,
+              units: _eventSuccessRoomUnitCountLabel(context, layout),
               seats: seatCount,
             ),
             style: CatchTextStyles.supporting(context, color: t.ink2),
@@ -744,6 +747,34 @@ class _EventSuccessRoomWorkspaceSummary extends StatelessWidget {
       ),
     );
   }
+}
+
+String _eventSuccessRoomUnitCountLabel(
+  BuildContext context,
+  EventSuccessLayout layout,
+) {
+  final count = layout.units.length;
+  final shapes = layout.units.map((unit) => unit.shape).toSet();
+  if (shapes.every(
+    (shape) =>
+        shape == EventSuccessLayoutShape.round ||
+        shape == EventSuccessLayoutShape.rect,
+  )) {
+    return context.l10n.eventSuccessRoomWorkspaceTableCount(count: count);
+  }
+  if (shapes.length == 1) {
+    return switch (shapes.single) {
+      EventSuccessLayoutShape.row =>
+        context.l10n.eventSuccessRoomWorkspaceRowCount(count: count),
+      EventSuccessLayoutShape.court =>
+        context.l10n.eventSuccessRoomWorkspaceCourtCount(count: count),
+      EventSuccessLayoutShape.zone =>
+        context.l10n.eventSuccessRoomWorkspaceZoneCount(count: count),
+      EventSuccessLayoutShape.round || EventSuccessLayoutShape.rect =>
+        context.l10n.eventSuccessRoomWorkspaceTableCount(count: count),
+    };
+  }
+  return context.l10n.eventSuccessRoomWorkspaceAreaCount(count: count);
 }
 
 enum _EventSuccessAccountabilitySelection { unresolved, returned, departed }

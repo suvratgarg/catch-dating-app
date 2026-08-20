@@ -6610,13 +6610,21 @@ final _hostLiveRoomReferenceEvent = _hostLiveReferenceEvent.copyWith(
     interactionModel: EventInteractionModel.pairedRotations,
   ),
 );
-final _hostLiveRoomReferenceLayout = EventSuccessLayout.parametric(
+final _hostLiveRoomReferenceLayout = EventSuccessLayout(
   layoutId: 'host-live-room-six-rounds',
   label: 'Six round tables',
-  shape: EventSuccessLayoutShape.round,
-  unitCount: 6,
-  unitCapacity: 4,
-  columnCount: 2,
+  units: [
+    for (var index = 0; index < 6; index += 1)
+      EventSuccessLayoutUnit(
+        id: 'round-${index + 1}',
+        label: 'Table ${index + 1}',
+        shape: EventSuccessLayoutShape.round,
+        capacity: 4,
+        gridX: index % 2,
+        gridY: index ~/ 2,
+        order: index + 1,
+      ),
+  ],
 );
 final _hostLiveRoomReferencePlan =
     EventSuccessPlan.defaultForEvent(
@@ -6628,6 +6636,116 @@ final _hostLiveRoomReferencePlan =
       frozenAt: _captureNow,
       layoutId: _hostLiveRoomReferenceLayout.layoutId,
     );
+const _hostLiveRoomAssignmentUnitIds = <String>[
+  'round-1',
+  'round-1',
+  'round-1',
+  'round-1',
+  'round-2',
+  'round-2',
+  'round-2',
+  'round-2',
+  'round-3',
+  'round-3',
+  'round-3',
+  'round-3',
+  'round-4',
+  'round-4',
+  'round-4',
+  'round-5',
+  'round-5',
+  'round-5',
+  'round-6',
+  'round-6',
+];
+const _hostLiveRoomUnconfirmedIndexes = <int>{0, 8, 15};
+final _hostLiveRoomAssignments = <EventSuccessAssignment>[
+  for (final indexed in _hostLiveReferenceProfiles.take(20).indexed)
+    EventSuccessAssignment(
+      id: '${_hostLiveRoomReferenceEvent.id}_micro_pods_${indexed.$2.uid}',
+      eventId: _hostLiveRoomReferenceEvent.id,
+      clubId: _hostLiveRoomReferenceEvent.clubId,
+      uid: indexed.$2.uid,
+      moduleId: EventSuccessModuleCatalog.microPods.id,
+      label:
+          'Table ${(_hostLiveRoomAssignmentUnitIds[indexed.$1].split('-').last)}',
+      displayTitle: indexed.$2.name,
+      displaySubtitle: indexed.$1 == 0 ? 'Late arrival' : null,
+      peerUids: indexed.$1 == 0
+          ? const []
+          : [
+              _hostLiveReferenceProfiles[indexed.$1 == 19 ? 1 : indexed.$1 + 1]
+                  .uid,
+            ],
+      unitKind: 'pods',
+      unitIndex: indexed.$1,
+      unitLabel:
+          'Table ${_hostLiveRoomAssignmentUnitIds[indexed.$1].split('-').last}',
+      layoutUnitId: _hostLiveRoomAssignmentUnitIds[indexed.$1],
+      confirmedLayoutUnitId:
+          _hostLiveRoomUnconfirmedIndexes.contains(indexed.$1)
+          ? null
+          : _hostLiveRoomAssignmentUnitIds[indexed.$1],
+      source: 'capture_room_runtime_v1',
+      createdAt: _hostLiveRoomReferenceEvent.startTime,
+      updatedAt: _hostLiveRoomReferenceEvent.startTime,
+    ),
+];
+final _hostLiveRoomRoster = EventParticipationRoster(
+  bookedIds: [for (final profile in _hostLiveReferenceProfiles) profile.uid],
+  checkedInIds: [
+    for (final profile in _hostLiveReferenceProfiles.take(20)) profile.uid,
+  ],
+  waitlistedIds: const [],
+  checkedInAtByUid: {
+    for (final profile in _hostLiveReferenceProfiles.take(20))
+      profile.uid: _hostLiveRoomReferenceEvent.startTime,
+  },
+);
+final _hostLiveRoomFixtureActions = EventSuccessHostFixtureActions(
+  initialSpatialSelectionUid: _hostLiveReferenceProfiles.first.uid,
+  onPreviewSpatial: (_) async => const [
+    EventSuccessSpatialDestination(
+      unitId: 'round-1',
+      valid: false,
+      reason: EventSuccessSpatialDestinationReason.declaredConstraint,
+      recommendedScope: null,
+    ),
+    EventSuccessSpatialDestination(
+      unitId: 'round-2',
+      valid: false,
+      reason: EventSuccessSpatialDestinationReason.capacity,
+      recommendedScope: null,
+    ),
+    EventSuccessSpatialDestination(
+      unitId: 'round-3',
+      valid: false,
+      reason: EventSuccessSpatialDestinationReason.capacity,
+      recommendedScope: null,
+    ),
+    EventSuccessSpatialDestination(
+      unitId: 'round-4',
+      valid: true,
+      reason: null,
+      recommendedScope: EventSuccessSpatialScope.thisRound,
+    ),
+    EventSuccessSpatialDestination(
+      unitId: 'round-5',
+      valid: true,
+      reason: null,
+      recommendedScope: EventSuccessSpatialScope.pinned,
+    ),
+    EventSuccessSpatialDestination(
+      unitId: 'round-6',
+      valid: true,
+      reason: null,
+      recommendedScope: EventSuccessSpatialScope.thisRound,
+    ),
+  ],
+  onReassignSpatial: (_, _, _) async {},
+  onConfirmSpatial: (_) async {},
+  onReleaseSpatial: (_) async {},
+);
 final _hostLiveWindowPlan =
     EventSuccessPlan.defaultForEvent(
       _hostLiveWindowEvent,
@@ -12750,19 +12868,46 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       eventSuccessSpatialLayoutProvider(
         _hostLiveRoomReferenceEvent.id,
       ).overrideWith((ref) async => _hostLiveRoomReferenceLayout),
-      ..._hostEventSuccessProviderOverrides,
+      watchEventParticipationRosterProvider(
+        _hostLiveRoomReferenceEvent.id,
+      ).overrideWith((ref) => Stream.value(_hostLiveRoomRoster)),
+      watchEventSuccessAssignmentsProvider(
+        _hostLiveRoomReferenceEvent.id,
+      ).overrideWith((ref) => Stream.value(_hostLiveRoomAssignments)),
+      watchEventSuccessRotationAssignmentsProvider(
+        _hostLiveRoomReferenceEvent.id,
+      ).overrideWith((ref) => Stream.value(const <EventSuccessAssignment>[])),
+      watchEventSuccessPreferencesProvider(
+        _hostLiveRoomReferenceEvent.id,
+      ).overrideWith((ref) => Stream.value(const <EventSuccessPreference>[])),
+      watchEventSuccessWingmanRequestsProvider(
+        _hostLiveRoomReferenceEvent.id,
+      ).overrideWith(
+        (ref) => Stream.value(const <EventSuccessWingmanRequest>[]),
+      ),
+      attendanceSheetViewModelProvider(
+        _hostLiveRoomReferenceEvent.id,
+      ).overrideWithValue(AsyncData(_hostAttendanceViewModel)),
+      attendeeProfilesProvider(
+        _hostProfileIds,
+      ).overrideWith((ref) async => _hostProfileRows),
     ],
     builder: (context) => HostEventManageScreen(
       club: _hostLiveReferenceClub,
       event: _hostLiveRoomReferenceEvent,
       onBackToSuccess: () {},
       initialSection: HostEventManageSection.live,
+      eventSuccessFixtureActions: _hostLiveRoomFixtureActions,
       referenceNow: _hostLiveRoomReferenceEvent.startTime.add(
-        const Duration(minutes: 30),
+        const Duration(minutes: 55),
       ),
     ),
     drive: (tester) async {
       await tester.tap(find.text('Room'));
+      await pumpFeatureUi(tester);
+      await tester.tap(
+        find.byKey(const ValueKey<String>('event_success.room.unit.round-4')),
+      );
       await pumpFeatureUi(tester);
     },
   ),

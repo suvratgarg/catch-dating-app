@@ -1418,10 +1418,15 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         onPublishGuidedRotationRound: widget.onPublishGuidedRotationRound,
         onOverrideGroupAssignments: _groupOverrideCallback(),
         onOverrideGuidedRotations: _rotationOverrideCallback(),
-        onPreviewSpatial: widget.onPreviewSpatial,
-        onReassignSpatial: widget.onReassignSpatial,
-        onConfirmSpatial: widget.onConfirmSpatial,
-        onReleaseSpatial: widget.onReleaseSpatial,
+        onPreviewSpatial:
+            widget.fixtureActions?.onPreviewSpatial ?? widget.onPreviewSpatial,
+        onReassignSpatial:
+            widget.fixtureActions?.onReassignSpatial ??
+            widget.onReassignSpatial,
+        onConfirmSpatial:
+            widget.fixtureActions?.onConfirmSpatial ?? widget.onConfirmSpatial,
+        onReleaseSpatial:
+            widget.fixtureActions?.onReleaseSpatial ?? widget.onReleaseSpatial,
         revealActionState: widget.revealActionState,
         onStartRevealCountdown: _startRevealCountdownCallback(),
         onRevealRound: _revealRoundCallback(),
@@ -1676,6 +1681,11 @@ class EventSuccessHostFixtureActions {
     this.onStartRevealCountdown,
     this.onRevealRound,
     this.onResetReveal,
+    this.onPreviewSpatial,
+    this.onReassignSpatial,
+    this.onConfirmSpatial,
+    this.onReleaseSpatial,
+    this.initialSpatialSelectionUid,
   });
 
   final VoidCallback? onSaveSetup;
@@ -1692,4 +1702,11 @@ class EventSuccessHostFixtureActions {
   onStartRevealCountdown;
   final ValueChanged<int>? onRevealRound;
   final VoidCallback? onResetReveal;
+  final EventSuccessSpatialPreview? onPreviewSpatial;
+  final EventSuccessSpatialReassign? onReassignSpatial;
+  final Future<void> Function(EventSuccessAssignment assignment)?
+  onConfirmSpatial;
+  final Future<void> Function(EventSuccessAssignment assignment)?
+  onReleaseSpatial;
+  final String? initialSpatialSelectionUid;
 }

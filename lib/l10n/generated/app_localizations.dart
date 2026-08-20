@@ -20591,11 +20591,82 @@ abstract class AppLocalizations {
   /// **'Host confirmed'**
   String get eventSuccessRoomMapConfirmed;
 
-  /// People count for a map unit.
+  /// Compact confirmed placement legend.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{1 person} other{{count} people}}'**
-  String eventSuccessRoomMapPeopleCount({required int count});
+  /// **'Confirmed'**
+  String get eventSuccessRoomMapConfirmedShort;
+
+  /// Open capacity-position legend.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get eventSuccessRoomMapOpen;
+
+  /// Unavailable destination legend.
+  ///
+  /// In en, this message translates to:
+  /// **'Unavailable'**
+  String get eventSuccessRoomMapUnavailable;
+
+  /// Placement requiring Host attention.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs attention'**
+  String get eventSuccessRoomMapNeedsAttention;
+
+  /// Available unit semantics status.
+  ///
+  /// In en, this message translates to:
+  /// **'Available destination'**
+  String get eventSuccessRoomMapAvailable;
+
+  /// Selected unit semantics status.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected destination'**
+  String get eventSuccessRoomMapSelectedDestination;
+
+  /// Accessible room-unit occupancy and destination state.
+  ///
+  /// In en, this message translates to:
+  /// **'{unitLabel}, {occupied} of {capacity} occupied, {status}'**
+  String eventSuccessRoomMapUnitSemantics({
+    required String unitLabel,
+    required int occupied,
+    required int capacity,
+    required String status,
+  });
+
+  /// Selected placement card eyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected guest'**
+  String get eventSuccessRoomMapSelectedGuestTitle;
+
+  /// Attendee has no current room unit.
+  ///
+  /// In en, this message translates to:
+  /// **'Not placed'**
+  String get eventSuccessRoomMapNotPlaced;
+
+  /// Selected attendee current room unit.
+  ///
+  /// In en, this message translates to:
+  /// **'At {unitLabel}'**
+  String eventSuccessRoomMapCurrentPosition({required String unitLabel});
+
+  /// Compact disabled move action before destination selection.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose destination'**
+  String get eventSuccessRoomMapChooseDestinationShort;
+
+  /// Confirms moving the selected attendee to a room unit.
+  ///
+  /// In en, this message translates to:
+  /// **'Move to {unitLabel}'**
+  String eventSuccessRoomMapMoveToUnit({required String unitLabel});
 
   /// Tap placement instruction.
   ///
@@ -20603,17 +20674,17 @@ abstract class AppLocalizations {
   /// **'Select an attendee, then choose a destination.'**
   String get eventSuccessRoomMapSelectAttendee;
 
-  /// Temporary spatial constraint scope.
+  /// Compact temporary placement scope.
   ///
   /// In en, this message translates to:
-  /// **'This round only'**
-  String get eventSuccessRoomMapScopeThisRound;
+  /// **'This round'**
+  String get eventSuccessRoomMapScopeThisRoundShort;
 
-  /// Durable spatial constraint scope.
+  /// Compact durable placement scope.
   ///
   /// In en, this message translates to:
-  /// **'Pinned until released'**
-  String get eventSuccessRoomMapScopePinned;
+  /// **'Pinned'**
+  String get eventSuccessRoomMapScopePinnedShort;
 
   /// Invalid destination capacity reason.
   ///
@@ -25864,11 +25935,41 @@ abstract class AppLocalizations {
   /// Configured room unit and seat summary.
   ///
   /// In en, this message translates to:
-  /// **'{units} units · {seats} seats'**
+  /// **'{units} · {seats} seats'**
   String eventSuccessRoomWorkspaceCapacitySummary({
-    required int units,
+    required String units,
     required int seats,
   });
+
+  /// Round or rectangular table count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 table} other{{count} tables}}'**
+  String eventSuccessRoomWorkspaceTableCount({required int count});
+
+  /// Row layout unit count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 row} other{{count} rows}}'**
+  String eventSuccessRoomWorkspaceRowCount({required int count});
+
+  /// Court layout unit count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 court} other{{count} courts}}'**
+  String eventSuccessRoomWorkspaceCourtCount({required int count});
+
+  /// Zone layout unit count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 zone} other{{count} zones}}'**
+  String eventSuccessRoomWorkspaceZoneCount({required int count});
+
+  /// Mixed room-layout unit count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 area} other{{count} areas}}'**
+  String eventSuccessRoomWorkspaceAreaCount({required int count});
 
   /// Placed attendee count label.
   ///

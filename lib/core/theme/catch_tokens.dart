@@ -1999,6 +1999,10 @@ abstract final class CatchLayout {
   /// Content max-width clamp for large phones / foldables.
   /// Wrap full-bleed page bodies in [ConstrainedBox] with this maxWidth, centered.
   static const double maxContentWidth = 600;
+  static const int roomMapMaxVisiblePositions = 8;
+  static const double roomMapPositionExtent = CatchSpacing.s6;
+  static const double roomMapUnitWidthFactor = 0.52;
+  static const double roomMapUnitHeightFactor = 0.48;
   static const double maxContentWithDockHeight =
       maxContentWidth + CatchSpacing.s16;
   static const double pageBodyHorizontalGutters = CatchSpacing.screenPx * 2;
@@ -2792,7 +2796,7 @@ abstract final class CatchAspectRatio {
   static const double square = 1.0;
   static const double wide16x9 = 16 / 9;
   static const double activityCard = 16 / 10;
-  static const double roomMap = activityCard;
+  static const double roomMap = 6 / 5;
   static const double standardPhoto = 4 / 3;
   // Organizer media roles intentionally point at shared ratios so a future
   // client-display policy change is a one-line edit per role.
