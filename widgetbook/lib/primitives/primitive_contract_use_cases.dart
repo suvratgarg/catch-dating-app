@@ -5758,7 +5758,6 @@ Widget catchSearchFieldContractStates(BuildContext context) {
       'focused',
       'disabled',
       'clearable',
-      'empty-trailing-action',
       'expanding-collapsed',
       'expanding-expanded',
     ],
@@ -5782,16 +5781,6 @@ Widget catchSearchFieldContractStates(BuildContext context) {
       const _StateCard(
         label: 'clearable',
         child: _FieldWidth(child: CatchSearchField(value: 'dinner')),
-      ),
-      _StateCard(
-        label: 'empty-trailing-action',
-        child: _FieldWidth(
-          child: CatchSearchField(
-            emptyTrailingIcon: CatchIcons.tuneRounded,
-            emptyTrailingTooltip: 'Filters',
-            onEmptyTrailingPressed: _noop,
-          ),
-        ),
       ),
       _StateCard(
         label: 'expanding-collapsed',

@@ -4029,9 +4029,6 @@ class _SearchFieldDemoState extends State<_SearchFieldDemo> {
           value: _value,
           placeholder: 'Search events',
           onChanged: (value) => setState(() => _value = value),
-          emptyTrailingIcon: CatchIcons.tuneRounded,
-          emptyTrailingTooltip: 'Open filters',
-          onEmptyTrailingPressed: _noop,
         ),
         gapH12,
         CatchSearchField(
