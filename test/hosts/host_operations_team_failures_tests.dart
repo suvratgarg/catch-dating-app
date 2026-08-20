@@ -71,8 +71,8 @@ void _registerHostOperationsTeamFailuresTests() {
       ),
       findsOneWidget,
     );
-    expect(find.text('Save media'), findsOneWidget);
-    expect(find.byKey(const ValueKey('host-media-action-bar')), findsOneWidget);
+    expect(find.text('Save media'), findsNothing);
+    expect(find.byKey(const ValueKey('host-media-action-bar')), findsNothing);
     expect(find.text('Live event guide'), findsOneWidget);
     expect(find.text('Save defaults'), findsNothing);
     expect(
@@ -132,7 +132,7 @@ void _registerHostOperationsTeamFailuresTests() {
       ),
       findsOneWidget,
     );
-    expect(find.text('Save media'), findsOneWidget);
+    expect(find.text('Save media'), findsNothing);
     expect(find.text('Advanced event defaults'), findsNothing);
     expect(find.text('Save defaults'), findsNothing);
 
@@ -679,27 +679,30 @@ void _registerHostOperationsTeamFailuresTests() {
   });
 
   testWidgets(
-    'Host team Preview renders the consumer profile instead of management',
+    'Host team Preview renders the professional host profile projection',
     (tester) async {
       tester.view.devicePixelRatio = 1;
       tester.view.physicalSize = const Size(390, 844);
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
 
-      final user = buildUser(uid: _hostUid, name: 'Asha Consumer');
-      final publicProfile = publicProfileFromUserProfile(
-        user,
-        today: DateTime(2026, 8, 19),
-      ).copyWith(name: 'Asha Consumer');
+      final profile = HostProfile(
+        uid: _hostUid,
+        displayName: 'Asha Host',
+        roleTitle: 'Run club founder',
+        bio: 'Hosts welcoming community runs across Delhi.',
+        status: HostProfileStatus.active,
+        createdAt: DateTime(2026),
+        updatedAt: DateTime(2026),
+      );
       await _pumpHostScreen(
         tester,
         const HostClubTeamScreen(clubId: 'owned-club'),
         overrides: [
           ..._hostClubOverrides(owned: [_hostTeamClub()]),
-          watchPublicProfileProvider(
+          watchHostProfileProvider(
             _hostUid,
-          ).overrideWithValue(AsyncData<PublicProfile?>(publicProfile)),
-          watchUserProfileProvider.overrideWithValue(AsyncData(user)),
+          ).overrideWithValue(AsyncData<HostProfile?>(profile)),
         ],
       );
 
@@ -715,18 +718,29 @@ void _registerHostOperationsTeamFailuresTests() {
       await pumpFeatureUi(tester);
 
       expect(find.text('Add host'), findsNothing);
-      expect(find.text('ORGANIZERS YOU HOST'), findsNothing);
-      expect(find.textContaining('Asha Consumer'), findsWidgets);
+      expect(find.text('ORGANIZERS YOU HOST'), findsOneWidget);
+      expect(find.text('Asha Host'), findsOneWidget);
+      expect(find.text('Run club founder'), findsOneWidget);
       expect(
-        find.byKey(
-          const ValueKey<String>('host-team-consumer-profile-preview'),
+        find.text('Hosts welcoming community runs across Delhi.'),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(
+            const ValueKey<String>('host-team-professional-profile-preview'),
+          ),
+          matching: find.text('Saket Run Club'),
         ),
         findsOneWidget,
       );
-      final surface = tester.widget<ProfileSurface>(
-        find.byType(ProfileSurface),
+      expect(
+        find.byKey(
+          const ValueKey<String>('host-team-professional-profile-preview'),
+        ),
+        findsOneWidget,
       );
-      expect(surface.mode, ProfileSurfaceMode.publicProfile);
+      expect(find.byType(ProfileSurface), findsNothing);
     },
   );
 

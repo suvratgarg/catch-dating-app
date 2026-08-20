@@ -184,7 +184,11 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
             SafeArea(
               top: false,
               bottom: false,
-              child: HostTeamConsumerProfilePreview(uid: uid),
+              child: HostTeamProfessionalProfilePreview(
+                state: state.profile,
+                clubs: clubs,
+                onRetry: () => ref.invalidate(watchHostProfileProvider(uid)),
+              ),
             ),
           ],
         ),
@@ -283,31 +287,144 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
   }
 }
 
-/// Read-only host profile preview rendered through the same consumer profile
-/// body used by [PublicProfileScreen].
-class HostTeamConsumerProfilePreview extends ConsumerWidget {
-  const HostTeamConsumerProfilePreview({super.key, required this.uid});
+/// Read-only projection of the professional identity edited in Host team.
+/// This intentionally consumes [HostTeamProfileState] rather than the dating
+/// profile collection: a host can have a valid organizer identity without a
+/// discoverable consumer profile.
+class HostTeamProfessionalProfilePreview extends StatelessWidget {
+  const HostTeamProfessionalProfilePreview({
+    super.key,
+    required this.state,
+    required this.clubs,
+    required this.onRetry,
+  });
 
-  final String uid;
+  final HostTeamProfileState state;
+  final List<Club> clubs;
+  final VoidCallback? onRetry;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(
-      publicProfileScreenStateProvider(
-        PublicProfileScreenStateArgs(
-          uid: uid,
-          initialProfile: null,
-          sharedRunTitle: null,
-        ),
+  Widget build(BuildContext context) {
+    return switch (state) {
+      HostTeamProfileLoading() => ListView(
+        padding: CatchInsets.pageBody,
+        children: const [CatchSkeletonRows(count: 4, divided: true)],
       ),
-    );
+      HostTeamProfileError(:final error) => CatchErrorState.fromError(
+        error,
+        context: AppErrorContext.profile,
+        onRetry: onRetry,
+      ),
+      HostTeamProfileMissing() => CatchEmptyState(
+        icon: CatchIcons.personOutlineRounded,
+        title: context.l10n.hostsHostClubTeamScreenVisiblecopyCreateHostProfile,
+        message: context.l10n.hostsHostClubTeamScreenVisiblecopyAddAHostBio,
+      ),
+      HostTeamProfileContent(:final profile) =>
+        _HostTeamProfessionalProfileContent(profile: profile, clubs: clubs),
+    };
+  }
+}
 
-    return PublicProfileScreenBody(
-      key: const ValueKey<String>('host-team-consumer-profile-preview'),
-      state: state,
-      onRetry: state.retryIntent == PublicProfileRetryIntent.reloadProfile
-          ? () => ref.invalidate(watchPublicProfileProvider(uid))
-          : null,
+class _HostTeamProfessionalProfileContent extends StatelessWidget {
+  const _HostTeamProfessionalProfileContent({
+    required this.profile,
+    required this.clubs,
+  });
+
+  final HostProfile profile;
+  final List<Club> clubs;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final hostedClubs = clubs
+        .where((club) => club.isHostedBy(profile.uid))
+        .toList(growable: false);
+    final roleTitle = profile.roleTitle?.trim();
+    final bio = profile.bio?.trim();
+
+    return ListView(
+      key: const ValueKey<String>('host-team-professional-profile-preview'),
+      padding: CatchInsets.pageBody.copyWith(bottom: 0),
+      children: [
+        Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: CatchLayout.maxContentWidth,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                CatchSurface(
+                  borderColor: t.line,
+                  padding: CatchInsets.cardContent,
+                  child: Column(
+                    children: [
+                      CatchPersonAvatar(
+                        size: CatchSpacing.s16,
+                        name: profile.displayName,
+                        imageUrl: profile.avatarUrl,
+                        borderWidth: 2,
+                        borderColor: t.primarySoft,
+                      ),
+                      gapH16,
+                      Text(
+                        profile.displayName,
+                        textAlign: TextAlign.center,
+                        style: CatchTextStyles.headlineS(context),
+                      ),
+                      if (roleTitle?.isNotEmpty == true) ...[
+                        gapH8,
+                        Text(
+                          roleTitle!,
+                          textAlign: TextAlign.center,
+                          style: CatchTextStyles.fieldRowTitle(
+                            context,
+                            color: t.ink2,
+                          ),
+                        ),
+                      ],
+                      gapH12,
+                      CatchBadge.functional(
+                        label: hostProfileStatusLabel(
+                          profile.status,
+                          context.l10n,
+                        ),
+                        tone: profile.isActive
+                            ? CatchBadgeTone.success
+                            : CatchBadgeTone.neutral,
+                      ),
+                      if (bio?.isNotEmpty == true) ...[
+                        gapH16,
+                        Text(
+                          bio!,
+                          textAlign: TextAlign.center,
+                          style: CatchTextStyles.proseM(context, color: t.ink2),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                CatchSection.fieldRows(
+                  title: context.l10n.hostsHostClubTeamScreenTitleClubsYouHost,
+                  children: [
+                    for (final club in hostedClubs)
+                      CatchField.read(
+                        title: club.name,
+                        valueText: club.isOwnedBy(profile.uid)
+                            ? context.l10n.clubsClubHostRoleOwner
+                            : context.l10n.clubsClubHostRoleHost,
+                        icon: CatchIcons.groupOutlined,
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+        const CatchScrollTerminalPadding(),
+      ],
     );
   }
 }
