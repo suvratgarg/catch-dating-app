@@ -26,6 +26,7 @@ import {
   organizerIdentityClaimId,
   organizerIdentityEvidenceId,
 } from "./organizerAudienceModel";
+import {eventTitleLabel} from "../shared/eventLabels";
 import {organizerContactIdentityKey} from "./organizerAudienceSecrets";
 
 const projectionReceiptTtlMillis = 30 * 24 * 60 * 60 * 1000;
@@ -195,6 +196,9 @@ export async function projectEventAttendeeToOrganizerAudience(
     contactId,
     eventStartAt: event?.startTime ?? null,
     eventEndAt: event?.endTime ?? null,
+    eventDisplayName: event ? eventTitleLabel(event) : null,
+    eventOriginMode: event?.eventOrigin?.mode ?? null,
+    eventProvider: event?.eventOrigin?.provider ?? null,
     now,
     existing: existingEdge?.contactId === contactId ? existingEdge : undefined,
   });

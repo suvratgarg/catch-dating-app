@@ -105,6 +105,9 @@ export function organizerContactEventEdge(params: {
   contactId: string;
   eventStartAt: FirebaseFirestore.Timestamp | null;
   eventEndAt: FirebaseFirestore.Timestamp | null;
+  eventDisplayName: string | null;
+  eventOriginMode: "catchNative" | "externalCompanion" | null;
+  eventProvider: OrganizerContactEventEdgeDocument["eventProvider"];
   now: FirebaseFirestore.Timestamp;
   existing?: OrganizerContactEventEdgeDocument;
 }): OrganizerContactEventEdgeDocument {
@@ -118,6 +121,9 @@ export function organizerContactEventEdge(params: {
     eventId: attendee.eventId,
     attendeeId: params.attendeeId,
     displayName: attendee.displayName,
+    eventDisplayName: params.eventDisplayName,
+    eventOriginMode: params.eventOriginMode,
+    eventProvider: params.eventProvider,
     linkedUid: attendee.linkedUid,
     phoneE164: attendee.phoneE164,
     email: normalizeEmail(attendee.email),
@@ -133,6 +139,11 @@ export function organizerContactEventEdge(params: {
     registeredAt: attendee.registeredAt,
     cancelledAt: attendee.cancelledAt,
     checkedInAt: attendee.checkedInAt,
+    revenueAmountMinor: attendee.revenueAmountMinor ?? null,
+    revenueCurrency: attendee.revenueCurrency ?? null,
+    revenueSource: attendee.revenueSource ?? null,
+    revenueAllocation: attendee.revenueAllocation ?? null,
+    revenueOrderReference: attendee.revenueOrderReference ?? null,
     inviteLinkId: attendee.inviteLinkId ?? null,
     inviteCapturedAt: attendee.inviteCapturedAt ?? null,
     sourceCreatedAt: attendee.createdAt,

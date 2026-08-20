@@ -276,6 +276,8 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
               eventId: event.id,
               organizerId: event.clubId,
               bookingProvider: event.eventOrigin?.provider,
+              suggestedRevenueAmountMinor: event.priceInPaise,
+              revenueCurrency: event.currency,
             ),
           ],
         ),

@@ -232,7 +232,8 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
             'required': <Object?>[
               'currency',
               'amountMinor',
-              'paidOrderCount',
+              'factCount',
+              'sources',
             ],
             'properties': <String, Object?>{
               'currency': <String, Object?>{
@@ -244,10 +245,44 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
                 'minimum': 0,
                 'maximum': 9007199254740991,
               },
-              'paidOrderCount': <String, Object?>{
+              'factCount': <String, Object?>{
                 'type': 'integer',
                 'minimum': 0,
                 'maximum': 1000000,
+              },
+              'sources': <String, Object?>{
+                'type': 'array',
+                'maxItems': 4,
+                'items': <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'source',
+                    'amountMinor',
+                    'factCount',
+                  ],
+                  'properties': <String, Object?>{
+                    'source': <String, Object?>{
+                      'type': 'string',
+                      'enum': <Object?>[
+                        'catchPayment',
+                        'hostImport',
+                        'hostEstimate',
+                        'providerOrder',
+                      ],
+                    },
+                    'amountMinor': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 9007199254740991,
+                    },
+                    'factCount': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 1000000,
+                    },
+                  },
+                },
               },
             },
           },
@@ -264,6 +299,8 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
           'eventId',
           'attendeeId',
           'displayName',
+          'eventOriginMode',
+          'eventProvider',
           'source',
           'status',
           'expected',
@@ -275,6 +312,7 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
           'registeredAtMillis',
           'cancelledAtMillis',
           'checkedInAtMillis',
+          'revenues',
         ],
         'properties': <String, Object?>{
           'eventId': <String, Object?>{
@@ -291,6 +329,33 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
             'type': 'string',
             'minLength': 1,
             'maxLength': 120,
+          },
+          'eventOriginMode': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'catchNative',
+              'externalCompanion',
+              'unknown',
+            ],
+          },
+          'eventProvider': <String, Object?>{
+            'type': <Object?>[
+              'string',
+              'null',
+            ],
+            'enum': <Object?>[
+              'catch',
+              'generic',
+              'luma',
+              'eventbrite',
+              'partiful',
+              'posh',
+              'bookmyshow',
+              'district',
+              'sortmyscene',
+              'airbnb',
+              null,
+            ],
           },
           'source': <String, Object?>{
             'type': 'string',
@@ -358,6 +423,53 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
               'null',
             ],
             'minimum': 0,
+          },
+          'revenues': <String, Object?>{
+            'type': 'array',
+            'maxItems': 8,
+            'items': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'currency',
+                'amountMinor',
+                'source',
+                'factCount',
+                'allocation',
+              ],
+              'properties': <String, Object?>{
+                'currency': <String, Object?>{
+                  'type': 'string',
+                  'pattern': '^[A-Z]{3}\$',
+                },
+                'amountMinor': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 9007199254740991,
+                },
+                'source': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'catchPayment',
+                    'hostImport',
+                    'hostEstimate',
+                    'providerOrder',
+                  ],
+                },
+                'factCount': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 1,
+                  'maximum': 1000000,
+                },
+                'allocation': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'perAttendee',
+                    'sharedOrder',
+                  ],
+                },
+              },
+            },
           },
         },
       },
@@ -1083,7 +1195,8 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
             'required': <Object?>[
               'currency',
               'amountMinor',
-              'paidOrderCount',
+              'factCount',
+              'sources',
             ],
             'properties': <String, Object?>{
               'currency': <String, Object?>{
@@ -1095,10 +1208,44 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
                 'minimum': 0,
                 'maximum': 9007199254740991,
               },
-              'paidOrderCount': <String, Object?>{
+              'factCount': <String, Object?>{
                 'type': 'integer',
                 'minimum': 0,
                 'maximum': 1000000,
+              },
+              'sources': <String, Object?>{
+                'type': 'array',
+                'maxItems': 4,
+                'items': <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'source',
+                    'amountMinor',
+                    'factCount',
+                  ],
+                  'properties': <String, Object?>{
+                    'source': <String, Object?>{
+                      'type': 'string',
+                      'enum': <Object?>[
+                        'catchPayment',
+                        'hostImport',
+                        'hostEstimate',
+                        'providerOrder',
+                      ],
+                    },
+                    'amountMinor': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 9007199254740991,
+                    },
+                    'factCount': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 1000000,
+                    },
+                  },
+                },
               },
             },
           },
@@ -1111,7 +1258,8 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
       'required': <Object?>[
         'currency',
         'amountMinor',
-        'paidOrderCount',
+        'factCount',
+        'sources',
       ],
       'properties': <String, Object?>{
         'currency': <String, Object?>{
@@ -1123,7 +1271,71 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
           'minimum': 0,
           'maximum': 9007199254740991,
         },
-        'paidOrderCount': <String, Object?>{
+        'factCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 1000000,
+        },
+        'sources': <String, Object?>{
+          'type': 'array',
+          'maxItems': 4,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'source',
+              'amountMinor',
+              'factCount',
+            ],
+            'properties': <String, Object?>{
+              'source': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'catchPayment',
+                  'hostImport',
+                  'hostEstimate',
+                  'providerOrder',
+                ],
+              },
+              'amountMinor': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+                'maximum': 9007199254740991,
+              },
+              'factCount': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+                'maximum': 1000000,
+              },
+            },
+          },
+        },
+      },
+    },
+    'revenueSourceAmount': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'source',
+        'amountMinor',
+        'factCount',
+      ],
+      'properties': <String, Object?>{
+        'source': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'catchPayment',
+            'hostImport',
+            'hostEstimate',
+            'providerOrder',
+          ],
+        },
+        'amountMinor': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 9007199254740991,
+        },
+        'factCount': <String, Object?>{
           'type': 'integer',
           'minimum': 0,
           'maximum': 1000000,
@@ -1233,6 +1445,8 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
         'eventId',
         'attendeeId',
         'displayName',
+        'eventOriginMode',
+        'eventProvider',
         'source',
         'status',
         'expected',
@@ -1244,6 +1458,7 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
         'registeredAtMillis',
         'cancelledAtMillis',
         'checkedInAtMillis',
+        'revenues',
       ],
       'properties': <String, Object?>{
         'eventId': <String, Object?>{
@@ -1260,6 +1475,33 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
           'type': 'string',
           'minLength': 1,
           'maxLength': 120,
+        },
+        'eventOriginMode': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'catchNative',
+            'externalCompanion',
+            'unknown',
+          ],
+        },
+        'eventProvider': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'enum': <Object?>[
+            'catch',
+            'generic',
+            'luma',
+            'eventbrite',
+            'partiful',
+            'posh',
+            'bookmyshow',
+            'district',
+            'sortmyscene',
+            'airbnb',
+            null,
+          ],
         },
         'source': <String, Object?>{
           'type': 'string',
@@ -1327,6 +1569,96 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
             'null',
           ],
           'minimum': 0,
+        },
+        'revenues': <String, Object?>{
+          'type': 'array',
+          'maxItems': 8,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'currency',
+              'amountMinor',
+              'source',
+              'factCount',
+              'allocation',
+            ],
+            'properties': <String, Object?>{
+              'currency': <String, Object?>{
+                'type': 'string',
+                'pattern': '^[A-Z]{3}\$',
+              },
+              'amountMinor': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+                'maximum': 9007199254740991,
+              },
+              'source': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'catchPayment',
+                  'hostImport',
+                  'hostEstimate',
+                  'providerOrder',
+                ],
+              },
+              'factCount': <String, Object?>{
+                'type': 'integer',
+                'minimum': 1,
+                'maximum': 1000000,
+              },
+              'allocation': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'perAttendee',
+                  'sharedOrder',
+                ],
+              },
+            },
+          },
+        },
+      },
+    },
+    'eventRevenue': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'currency',
+        'amountMinor',
+        'source',
+        'factCount',
+        'allocation',
+      ],
+      'properties': <String, Object?>{
+        'currency': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[A-Z]{3}\$',
+        },
+        'amountMinor': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 9007199254740991,
+        },
+        'source': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'catchPayment',
+            'hostImport',
+            'hostEstimate',
+            'providerOrder',
+          ],
+        },
+        'factCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+          'maximum': 1000000,
+        },
+        'allocation': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'perAttendee',
+            'sharedOrder',
+          ],
         },
       },
     },

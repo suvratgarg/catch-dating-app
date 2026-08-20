@@ -1,7 +1,7 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.27.0
-updated: 2026-08-19
+version: 1.28.0
+updated: 2026-08-20
 owner: recursive_audit_loop
 status: active
 ---
@@ -212,7 +212,7 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `joinEventWaitlist` | Callable | `EventRepository.joinWaitlistViaFunction` | `eventParticipations/{eventId_uid}`, `events/{eventId}.waitlistedCount` | Rate-limited before transaction work; server checks block boundary without exposing block state in rules. |
 | `leaveEventWaitlist` | Callable | `EventRepository.leaveWaitlist` | `eventParticipations/{eventId_uid}`, `events/{eventId}.waitlistedCount` | Rate-limited before transaction work; marks the caller's waitlist edge cancelled. |
 | `markEventAttendance` | Callable | `EventRepository.markAttendance` | `eventParticipations/{eventId_uid}`, `events/{eventId}.checkedInCount` | Host-only attendance toggle. |
-| `importEventAttendees` | Callable | `EventAttendeeRepository.importAttendees` from Host Guests | `eventAttendees/{attendeeId}`, `eventAttendeeImports/{importId}` | App-Check-protected and rate-limited. Organizer-manager-only bounded import (250 rows/request); normalizes contact data, keeps attendee-level provider references distinct from optional shared `arrivalGroup` booking/order data, deduplicates event-scoped identity, preserves checked-in/Catch-linked state, and includes the group value in the client import key and canonical payload hash for safe retry. |
+| `importEventAttendees` | Callable | `EventAttendeeRepository.importAttendees` from Host Guests | `eventAttendees/{attendeeId}`, `eventAttendeeImports/{importId}` | App-Check-protected and rate-limited. Organizer-manager-only bounded import (250 rows/request); normalizes contact data, keeps attendee-level provider references distinct from optional shared `arrivalGroup` booking/order data, deduplicates event-scoped identity, preserves checked-in/Catch-linked state, and includes financial fields in the client import key and canonical payload hash. Optional CSV revenue remains organizer-reported; an explicit per-guest fallback remains an organizer estimate. Repeated equal imported totals within one arrival group are allocated across those guests once. |
 | `markEventAttendeeAttendance` | Callable | Released Host clients only | `eventAttendees/{attendeeId}` | Compatibility-only replay-unsafe toggle retained while installed clients migrate. New Host code must not call it. |
 | `setEventAttendeeAttendance` | Callable | `EventAttendeeRepository.setAttendance` from Host Guests | `eventAttendees/{attendeeId}`, event checked-in aggregate and `eventAttendeeAttendanceReceipts/{receiptId}` | App-Check-protected and rate-limited organizer-manager absolute mutation. It compares an expected attendance revision, preserves the pre-check-in roster state for undo, stores a 30-day idempotency receipt, returns exact replay/conflict state, and never synthesizes a Consumer participation or profile. |
 | `setEventSuccessAccountabilityResolution` | Callable | Host Event Success return sweep | One `eventAttendees/{attendeeId}` accountability resolution | App-Check-protected, rate-limited organizer-manager mutation for a `sweep` event. It accepts only a currently checked-in attendee, binds returned/departed to that exact check-in timestamp, and can explicitly reopen the row. Imported and unlinked operational guests use the same path. |

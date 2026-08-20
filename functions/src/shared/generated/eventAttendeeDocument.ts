@@ -27,6 +27,18 @@ export interface EventAttendeeDocument {
    */
   arrivalGroup: string | null;
   ticketType: string | null;
+  /**
+   * Revenue allocated to this attendee in minor currency units. Organizer-reported and estimated values are not payment verification.
+   */
+  revenueAmountMinor?: number | null;
+  revenueCurrency?: string | null;
+  revenueSource?: "hostImport" | "hostEstimate" | "providerOrder" | null;
+  revenueAllocation?: "perAttendee" | "sharedOrder" | null;
+  revenueOrderReference?: string | null;
+  /**
+   * Original shared-order total before deterministic attendee allocation.
+   */
+  revenueOrderAmountMinor?: number | null;
   importId: string | null;
   sourceRowId: string | null;
   /**

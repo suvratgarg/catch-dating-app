@@ -134,6 +134,62 @@ const schemaEventAttendeeDocumentSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 120,
     },
+    'revenueAmountMinor': <String, Object?>{
+      'type': <Object?>[
+        'integer',
+        'null',
+      ],
+      'minimum': 0,
+      'maximum': 9007199254740991,
+      'description': 'Revenue allocated to this attendee in minor currency units. Organizer-reported and estimated values are not payment verification.',
+    },
+    'revenueCurrency': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'pattern': '^[A-Z]{3}\$',
+    },
+    'revenueSource': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'enum': <Object?>[
+        'hostImport',
+        'hostEstimate',
+        'providerOrder',
+        null,
+      ],
+    },
+    'revenueAllocation': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'enum': <Object?>[
+        'perAttendee',
+        'sharedOrder',
+        null,
+      ],
+    },
+    'revenueOrderReference': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'revenueOrderAmountMinor': <String, Object?>{
+      'type': <Object?>[
+        'integer',
+        'null',
+      ],
+      'minimum': 0,
+      'maximum': 9007199254740991,
+      'description': 'Original shared-order total before deterministic attendee allocation.',
+    },
     'importId': <String, Object?>{
       'type': <Object?>[
         'string',

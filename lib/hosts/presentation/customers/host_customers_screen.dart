@@ -1515,9 +1515,18 @@ class HostCustomerRevenueCard extends StatelessWidget {
                     title: NumberFormat.simpleCurrency(
                       name: amount.currency,
                     ).format(amount.amountMinor / 100),
-                    body: context.l10n.hostCustomersDetailPaidOrders(
-                      count: amount.paidOrderCount,
-                    ),
+                    body: [
+                      context.l10n.hostCustomersDetailRevenueFacts(
+                        count: amount.factCount,
+                      ),
+                      ...amount.sources.map(
+                        (source) => _customerRevenueSourceSummary(
+                          context,
+                          source,
+                          amount.currency,
+                        ),
+                      ),
+                    ].join(' · '),
                     valueText: amount.currency,
                     divider: index < revenue.amounts.length - 1,
                   ),
@@ -1561,9 +1570,20 @@ class HostCustomerAttendanceHistory extends StatelessWidget {
                   for (final (index, event) in events.indexed)
                     CatchField.nav(
                       title: event.displayName,
-                      body: event.eventStartAt == null
-                          ? event.source
-                          : '${AppTimeFormatters.shortDate(event.eventStartAt!)} · ${event.source}',
+                      body: [
+                        if (event.eventStartAt != null)
+                          AppTimeFormatters.shortDate(event.eventStartAt!),
+                        _customerEventOriginLabel(context, event.eventOrigin),
+                        if (event.eventOrigin ==
+                                HostCustomerEventOrigin.externalCompanion &&
+                            event.eventProvider != null)
+                          _customerEventProviderLabel(
+                            context,
+                            event.eventProvider!,
+                          ),
+                        for (final revenue in event.revenues)
+                          _customerEventRevenueLabel(context, revenue),
+                      ].join(' · '),
                       valueText: event.checkedIn
                           ? context.l10n.hostCustomersCheckedIn
                           : event.status,
@@ -1582,6 +1602,69 @@ class HostCustomerAttendanceHistory extends StatelessWidget {
     );
   }
 }
+
+String _customerRevenueSourceLabel(
+  BuildContext context,
+  HostCustomerRevenueSource source,
+) => switch (source) {
+  HostCustomerRevenueSource.catchPayment =>
+    context.l10n.hostCustomersRevenueSourceCatch,
+  HostCustomerRevenueSource.providerOrder =>
+    context.l10n.hostCustomersRevenueSourceProvider,
+  HostCustomerRevenueSource.hostImport =>
+    context.l10n.hostCustomersRevenueSourceImport,
+  HostCustomerRevenueSource.hostEstimate =>
+    context.l10n.hostCustomersRevenueSourceEstimate,
+};
+
+String _customerRevenueSourceSummary(
+  BuildContext context,
+  HostCustomerRevenueSourceAmount source,
+  String currency,
+) =>
+    '${_customerRevenueSourceLabel(context, source.source)} '
+    '${NumberFormat.simpleCurrency(name: currency).format(source.amountMinor / 100)}';
+
+String _customerEventRevenueLabel(
+  BuildContext context,
+  HostCustomerEventRevenue revenue,
+) => [
+  NumberFormat.simpleCurrency(
+    name: revenue.currency,
+  ).format(revenue.amountMinor / 100),
+  _customerRevenueSourceLabel(context, revenue.source),
+  if (revenue.allocation == HostCustomerRevenueAllocation.sharedOrder)
+    context.l10n.hostCustomersRevenueSharedOrder,
+].join(' · ');
+
+String _customerEventOriginLabel(
+  BuildContext context,
+  HostCustomerEventOrigin origin,
+) => switch (origin) {
+  HostCustomerEventOrigin.catchNative =>
+    context.l10n.hostCustomersEventOriginCatch,
+  HostCustomerEventOrigin.externalCompanion =>
+    context.l10n.hostCustomersEventOriginExternal,
+  HostCustomerEventOrigin.unknown =>
+    context.l10n.hostCustomersEventOriginUnknown,
+};
+
+String _customerEventProviderLabel(
+  BuildContext context,
+  String provider,
+) => switch (provider) {
+  'luma' => context.l10n.hostsEventDetailsStepExternalProviderLuma,
+  'eventbrite' => context.l10n.hostsEventDetailsStepExternalProviderEventbrite,
+  'partiful' => context.l10n.hostsEventDetailsStepExternalProviderPartiful,
+  'posh' => context.l10n.hostsEventDetailsStepExternalProviderPosh,
+  'bookmyshow' => context.l10n.hostsEventDetailsStepExternalProviderBookMyShow,
+  'district' => context.l10n.hostsEventDetailsStepExternalProviderDistrict,
+  'sortmyscene' =>
+    context.l10n.hostsEventDetailsStepExternalProviderSortMyScene,
+  'airbnb' =>
+    context.l10n.hostsEventDetailsStepExternalProviderAirbnbExperiences,
+  _ => context.l10n.hostsEventDetailsStepExternalProviderOther,
+};
 
 class HostCustomersSummary extends StatelessWidget {
   const HostCustomersSummary({

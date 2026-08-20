@@ -73,6 +73,44 @@ const schemaOrganizerContactEventEdgeDocumentSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 120,
     },
+    'eventDisplayName': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 120,
+    },
+    'eventOriginMode': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'enum': <Object?>[
+        'catchNative',
+        'externalCompanion',
+        null,
+      ],
+    },
+    'eventProvider': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'enum': <Object?>[
+        'catch',
+        'generic',
+        'luma',
+        'eventbrite',
+        'partiful',
+        'posh',
+        'bookmyshow',
+        'district',
+        'sortmyscene',
+        'airbnb',
+        null,
+      ],
+    },
     'linkedUid': <String, Object?>{
       'type': <Object?>[
         'string',
@@ -262,6 +300,52 @@ const schemaOrganizerContactEventEdgeDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+    },
+    'revenueAmountMinor': <String, Object?>{
+      'type': <Object?>[
+        'integer',
+        'null',
+      ],
+      'minimum': 0,
+      'maximum': 9007199254740991,
+    },
+    'revenueCurrency': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'pattern': '^[A-Z]{3}\$',
+    },
+    'revenueSource': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'enum': <Object?>[
+        'hostImport',
+        'hostEstimate',
+        'providerOrder',
+        null,
+      ],
+    },
+    'revenueAllocation': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'enum': <Object?>[
+        'perAttendee',
+        'sharedOrder',
+        null,
+      ],
+    },
+    'revenueOrderReference': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 180,
     },
     'inviteLinkId': <String, Object?>{
       'type': <Object?>[

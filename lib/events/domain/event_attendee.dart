@@ -25,6 +25,10 @@ enum EventSuccessAccountabilityResolution { returned, departed }
 
 enum EventAttendeeImportFormat { csv, xlsx, manual }
 
+enum EventAttendeeRevenueSource { hostImport, hostEstimate, providerOrder }
+
+enum EventAttendeeRevenueAllocation { perAttendee, sharedOrder }
+
 @freezed
 abstract class EventAttendee with _$EventAttendee {
   const EventAttendee._();
@@ -44,6 +48,12 @@ abstract class EventAttendee with _$EventAttendee {
     String? externalReference,
     String? arrivalGroup,
     String? ticketType,
+    int? revenueAmountMinor,
+    String? revenueCurrency,
+    EventAttendeeRevenueSource? revenueSource,
+    EventAttendeeRevenueAllocation? revenueAllocation,
+    String? revenueOrderReference,
+    int? revenueOrderAmountMinor,
     String? importId,
     String? sourceRowId,
     ExternalBookingProvider? provider,
@@ -93,6 +103,9 @@ class EventAttendeeImportRow {
     this.externalReference,
     this.arrivalGroup,
     this.ticketType,
+    this.revenueAmountMinor,
+    this.revenueCurrency,
+    this.revenueSource,
   });
 
   final String rowId;
@@ -103,6 +116,9 @@ class EventAttendeeImportRow {
   final String? externalReference;
   final String? arrivalGroup;
   final String? ticketType;
+  final int? revenueAmountMinor;
+  final String? revenueCurrency;
+  final EventAttendeeRevenueSource? revenueSource;
 
   Map<String, Object?> toJson() => {
     'rowId': rowId,
@@ -113,6 +129,9 @@ class EventAttendeeImportRow {
     'externalReference': externalReference,
     'arrivalGroup': arrivalGroup,
     'ticketType': ticketType,
+    'revenueAmountMinor': revenueAmountMinor,
+    'revenueCurrency': revenueCurrency,
+    'revenueSource': revenueSource?.name,
   };
 }
 

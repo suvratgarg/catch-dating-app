@@ -221,6 +221,9 @@ function edge(
     contactId: "contact-1",
     eventStartAt: admin.firestore.Timestamp.fromMillis(29 * day),
     eventEndAt: admin.firestore.Timestamp.fromMillis(30 * day),
+    eventDisplayName: "Social run",
+    eventOriginMode: "externalCompanion",
+    eventProvider: "eventbrite",
     now,
   });
   return {

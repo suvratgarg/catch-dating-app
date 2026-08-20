@@ -560,6 +560,8 @@ void _registerHostOperationsCustomersTests() {
       ),
       findsOneWidget,
     );
+    expect(find.textContaining('Externally hosted'), findsOneWidget);
+    expect(find.textContaining('Imported by your team'), findsOneWidget);
 
     await tester.tap(find.text('Sunday Run Club'));
     await pumpFeatureUi(tester);
@@ -1104,10 +1106,21 @@ HostAudienceContactDetail _customerDetail({
     HostAudienceEventFact(
       eventId: 'event-1',
       displayName: 'Sunday Run Club',
+      eventOrigin: HostCustomerEventOrigin.externalCompanion,
+      eventProvider: 'eventbrite',
       source: 'attendance',
       status: 'attended',
       checkedIn: true,
       eventStartAt: DateTime(2026, 8),
+      revenues: const [
+        HostCustomerEventRevenue(
+          currency: 'INR',
+          amountMinor: 125000,
+          source: HostCustomerRevenueSource.hostImport,
+          factCount: 1,
+          allocation: HostCustomerRevenueAllocation.perAttendee,
+        ),
+      ],
     ),
   ],
   eventsTruncated: false,

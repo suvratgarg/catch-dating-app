@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 3.6.0
-updated: 2026-08-19
+version: 3.7.0
+updated: 2026-08-20
 owner: recursive_audit_loop
 status: active
 ---
@@ -1100,8 +1100,8 @@ Widgetbook callers.
 | `HostCustomerIdentityCard` | `lib/hosts/presentation/customers/host_customers_screen.dart` | Customer identity section with one read-mode Edit details action and an in-place validated Cancel/Done editor. It optimistically reflects successful saves, discards cancelled drafts, keeps verified Catch phone/email rows read-only, and exposes only organizer-owned name/endpoint changes through its typed save callback. |
 | `HostCustomerConversationCard` | `lib/hosts/presentation/customers/host_customers_screen.dart:1302` | Provider-free manager-to-customer communication actions. It labels linked-account direct messaging as **Catch chat · Organizer** and retains the unlinked/ambiguous identity boundary. **WhatsApp app · You** remains visible with the exact missing-phone, organizer-suppression, or customer-opt-out blocker; when eligible, its editable prefilled native-app handoff with universal-link fallback still requires the Host to press Send and creates no Catch delivery evidence. |
 | `HostCustomerAttendanceCard` | `lib/hosts/presentation/customers/host_customers_screen.dart:683` | Provider-free attended, expected, and attendance-rate stat rail built from `CatchSection` and `CatchStatColumn`. |
-| `HostCustomerRevenueCard` | `lib/hosts/presentation/customers/host_customers_screen.dart:725` | Provider-free multi-currency Catch revenue presentation that preserves exact, partial, and unavailable coverage and counts only authoritative completed orders supplied by the backend. |
-| `HostCustomerAttendanceHistory` | `lib/hosts/presentation/customers/host_customers_screen.dart` | Provider-free operational event history with source, status, and checked-in truth kept distinct for every returned edge. |
+| `HostCustomerRevenueCard` | `lib/hosts/presentation/customers/host_customers_screen.dart:725` | Provider-free multi-currency customer revenue presentation with exact source breakdowns for Catch-confirmed payments, provider-confirmed orders, organizer imports, and organizer estimates. It preserves exact/partial coverage without requiring a Catch UID for organizer-owned financial facts. |
+| `HostCustomerAttendanceHistory` | `lib/hosts/presentation/customers/host_customers_screen.dart` | Provider-free operational event history with canonical event labels, Catch-native/external/legacy origin, provider, status, checked-in truth, per-event revenue provenance, and shared-order allocation kept distinct. |
 | `HostCustomersSummary` | `lib/hosts/presentation/customers/host_customers_screen.dart` | Provider-free async CRM summary for contacts, past attendees, repeat attendees, WhatsApp-ready contacts, and imported/linked source coverage. |
 
 ### StatefulWidget

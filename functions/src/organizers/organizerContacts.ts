@@ -45,7 +45,9 @@ import {
   OrganizerContactTagVocabularyDocument,
   OrganizerContactTraitDocument,
   PaymentDocument,
+  EventDocument,
 } from "../shared/generated/firestoreAdminTypes";
+import {eventTitleLabel} from "../shared/eventLabels";
 import {ListOrganizerContactsCallablePayload} from
   "../shared/generated/listOrganizerContactsCallablePayload";
 import {ListOrganizerContactsCallableResponse} from
@@ -566,16 +568,27 @@ export async function getOrganizerContactDetailHandler(
   }
   const eventDocuments = eventSnap.docs.slice(0, maxDetailEvents)
     .map((doc) => doc.data() as OrganizerContactEventEdgeDocument);
-  const events = eventDocuments
-    .map((doc) => eventDetailRow(
-      doc
-    ));
-  const revenue = await contactRevenue({
+  const uniqueEventIds = [...new Set(eventDocuments.map((edge) => edge.eventId))];
+  const hydratedEventSnaps = uniqueEventIds.length === 0 ? [] : await db.getAll(
+    ...uniqueEventIds.map((eventId) => db.collection("events").doc(eventId))
+  );
+  const hydratedEvents = new Map(hydratedEventSnaps
+    .filter((snapshot) => snapshot.exists)
+    .map((snapshot) => [
+      snapshot.id,
+      snapshot.data() as EventDocument,
+    ]));
+  const revenueResult = await contactRevenue({
     db,
     contact,
-    eventIds: new Set(eventDocuments.map((edge) => edge.eventId)),
+    eventEdges: eventDocuments,
     eventHistoryTruncated: eventSnap.size > maxDetailEvents,
   });
+  const events = eventDocuments.map((doc) => eventDetailRow(
+    doc,
+    revenueResult.byEvent.get(doc.eventId) ?? [],
+    hydratedEvents.get(doc.eventId),
+  ));
   const tagVocabulary = safeManualTagVocabulary(
     data.organizerId,
     tagVocabularySnap.data() as
@@ -653,7 +666,7 @@ export async function getOrganizerContactDetailHandler(
       smsStatus: traits.smsStatus,
       sourceCoverage: traits.sourceCoverage,
     },
-    revenue,
+    revenue: revenueResult.revenue,
     events,
     eventsTruncated: eventSnap.size > maxDetailEvents,
     manualTags: manualTagsForContact(contact, manualTagsById),
@@ -714,36 +727,86 @@ async function activeMergeRows(params: {
 async function contactRevenue(params: {
   db: FirebaseFirestore.Firestore;
   contact: OrganizerContactDocument;
-  eventIds: Set<string>;
+  eventEdges: OrganizerContactEventEdgeDocument[];
   eventHistoryTruncated: boolean;
-}): Promise<GetOrganizerContactDetailCallableResponse["revenue"]> {
+}): Promise<ContactRevenueResult> {
+  const reportedFacts = params.eventEdges
+    .map(reportedRevenueFact)
+    .filter((fact): fact is RevenueFact => fact !== null);
+  const eventIds = new Set(params.eventEdges.map((edge) => edge.eventId));
   if (params.contact.linkedUid === null ||
       params.contact.identityState !== "verified") {
-    return {coverage: "unavailable", amounts: []};
+    return summarizeContactRevenueFacts({
+      facts: reportedFacts,
+      coverage: params.contact.identityState === "ambiguous" ||
+        params.eventHistoryTruncated ? "partial" : "exact",
+    });
   }
   const paymentsSnap = await params.db.collection("payments")
     .where("userId", "==", params.contact.linkedUid)
     .limit(maxContactPayments + 1)
     .get();
-  return summarizeContactRevenue(
+  const paymentFacts = contactPaymentRevenueFacts(
     paymentsSnap.docs.slice(0, maxContactPayments)
       .map((paymentSnap) => paymentSnap.data() as PaymentDocument),
-    params.eventIds,
-    paymentsSnap.size > maxContactPayments || params.eventHistoryTruncated ?
-      "partial" : "exact"
+    eventIds,
   );
+  const paidEventIds = new Set(paymentFacts.map((fact) => fact.eventId));
+  return summarizeContactRevenueFacts({
+    facts: [
+      ...paymentFacts,
+      ...reportedFacts.filter((fact) => !paidEventIds.has(fact.eventId)),
+    ],
+    coverage:
+      paymentsSnap.size > maxContactPayments || params.eventHistoryTruncated ?
+        "partial" : "exact",
+  });
 }
 
-/** Aggregates only completed, non-refunded Catch payments for known events. */
-export function summarizeContactRevenue(
+type RevenueSource = "catchPayment" | "hostImport" | "hostEstimate" |
+  "providerOrder";
+
+interface RevenueFact {
+  eventId: string;
+  currency: string;
+  amountMinor: number;
+  source: RevenueSource;
+  factCount: number;
+  allocation: "perAttendee" | "sharedOrder";
+}
+
+interface ContactRevenueResult {
+  revenue: GetOrganizerContactDetailCallableResponse["revenue"];
+  byEvent: Map<
+    string,
+    GetOrganizerContactDetailCallableResponse["events"][number]["revenues"]
+  >;
+}
+
+function reportedRevenueFact(
+  edge: OrganizerContactEventEdgeDocument
+): RevenueFact | null {
+  const amountMinor = edge.revenueAmountMinor ?? null;
+  const currency = edge.revenueCurrency?.trim().toUpperCase() ?? null;
+  const source = edge.revenueSource ?? null;
+  if (!Number.isSafeInteger(amountMinor) || amountMinor === null ||
+      amountMinor <= 0 || currency === null || !/^[A-Z]{3}$/.test(currency) ||
+      source === null) return null;
+  return {
+    eventId: edge.eventId,
+    currency,
+    amountMinor,
+    source,
+    factCount: 1,
+    allocation: edge.revenueAllocation ?? "perAttendee",
+  };
+}
+
+function contactPaymentRevenueFacts(
   payments: PaymentDocument[],
   eventIds: Set<string>,
-  coverage: "exact" | "partial"
-): GetOrganizerContactDetailCallableResponse["revenue"] {
-  const totals = new Map<
-    string,
-    {amountMinor: number; paidOrderCount: number}
-  >();
+): RevenueFact[] {
+  const facts: RevenueFact[] = [];
   for (const payment of payments) {
     if (!eventIds.has(payment.eventId) ||
         payment.status !== "completed" || payment.signUpFailed) continue;
@@ -751,17 +814,91 @@ export function summarizeContactRevenue(
     const currency = payment.currency.trim().toUpperCase();
     if (!Number.isSafeInteger(amountMinor) || amountMinor <= 0 ||
         !/^[A-Z]{3}$/.test(currency)) continue;
-    const prior = totals.get(currency);
-    totals.set(currency, {
-      amountMinor: (prior?.amountMinor ?? 0) + amountMinor,
-      paidOrderCount: (prior?.paidOrderCount ?? 0) + 1,
+    facts.push({
+      eventId: payment.eventId,
+      currency,
+      amountMinor,
+      source: "catchPayment",
+      factCount: 1,
+      allocation: "perAttendee",
     });
   }
-  return {
+  return facts;
+}
+
+/** Aggregates completed Catch payments and organizer-reported event facts. */
+export function summarizeContactRevenue(
+  payments: PaymentDocument[],
+  eventIds: Set<string>,
+  coverage: "exact" | "partial"
+): GetOrganizerContactDetailCallableResponse["revenue"] {
+  return summarizeContactRevenueFacts({
+    facts: contactPaymentRevenueFacts(payments, eventIds),
     coverage,
-    amounts: [...totals.entries()]
-      .sort(([left], [right]) => left.localeCompare(right))
-      .map(([currency, value]) => ({currency, ...value})),
+  }).revenue;
+}
+
+export function summarizeContactRevenueFacts(params: {
+  facts: RevenueFact[];
+  coverage: "exact" | "partial";
+}): ContactRevenueResult {
+  const totals = new Map<string, {
+    amountMinor: number;
+    factCount: number;
+    sources: Map<RevenueSource, {amountMinor: number; factCount: number}>;
+  }>();
+  const eventTotals = new Map<string, Map<string, RevenueFact>>();
+  for (const fact of params.facts) {
+    const total = totals.get(fact.currency) ?? {
+      amountMinor: 0,
+      factCount: 0,
+      sources: new Map(),
+    };
+    total.amountMinor += fact.amountMinor;
+    total.factCount += fact.factCount;
+    const source = total.sources.get(fact.source) ?? {
+      amountMinor: 0,
+      factCount: 0,
+    };
+    source.amountMinor += fact.amountMinor;
+    source.factCount += fact.factCount;
+    total.sources.set(fact.source, source);
+    totals.set(fact.currency, total);
+
+    const event = eventTotals.get(fact.eventId) ?? new Map();
+    const eventKey = `${fact.currency}|${fact.source}|${fact.allocation}`;
+    const prior = event.get(eventKey);
+    event.set(eventKey, prior ? {
+      ...prior,
+      amountMinor: prior.amountMinor + fact.amountMinor,
+      factCount: prior.factCount + fact.factCount,
+    } : fact);
+    eventTotals.set(fact.eventId, event);
+  }
+  return {
+    revenue: {
+      coverage: params.coverage,
+      amounts: [...totals.entries()]
+        .sort(([left], [right]) => left.localeCompare(right))
+        .map(([currency, total]) => ({
+          currency,
+          amountMinor: total.amountMinor,
+          factCount: total.factCount,
+          sources: [...total.sources.entries()]
+            .sort(([left], [right]) => left.localeCompare(right))
+            .map(([source, value]) => ({source, ...value})),
+        })),
+    },
+    byEvent: new Map([...eventTotals.entries()].map(([eventId, facts]) => [
+      eventId,
+      [...facts.values()].map((fact) => ({
+        currency: fact.currency,
+        amountMinor: fact.amountMinor,
+        source: fact.source,
+        factCount: fact.factCount,
+        allocation: fact.allocation,
+      })),
+    ])),
   };
 }
 
@@ -1732,14 +1869,20 @@ function assertActiveOrganizerContact(
 }
 
 function eventDetailRow(
-  edge: OrganizerContactEventEdgeDocument
+  edge: OrganizerContactEventEdgeDocument,
+  revenues: GetOrganizerContactDetailCallableResponse["events"][number]["revenues"],
+  event?: EventDocument,
 ): GetOrganizerContactDetailCallableResponse["events"][number] {
   const millis = (value: FirebaseFirestore.Timestamp | null) =>
     value?.toMillis() ?? null;
   return {
     eventId: edge.eventId,
     attendeeId: edge.attendeeId,
-    displayName: edge.displayName,
+    displayName: event ? eventTitleLabel(event) :
+      edge.eventDisplayName ?? "Event",
+    eventOriginMode: event?.eventOrigin?.mode ??
+      edge.eventOriginMode ?? "unknown",
+    eventProvider: event?.eventOrigin?.provider ?? edge.eventProvider ?? null,
     source: edge.source,
     status: edge.status,
     expected: edge.expected,
@@ -1751,6 +1894,7 @@ function eventDetailRow(
     registeredAtMillis: millis(edge.registeredAt),
     cancelledAtMillis: millis(edge.cancelledAt),
     checkedInAtMillis: millis(edge.checkedInAt),
+    revenues,
   };
 }
 
