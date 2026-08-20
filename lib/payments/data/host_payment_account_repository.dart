@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/payments/data/payment_callable_requests.dart';
@@ -41,6 +42,7 @@ class HostPaymentAccountRepository {
         () => _db
             .collection(_collectionPath)
             .where('userId', isEqualTo: uid)
+            .limit(ReadLimitPolicy.hostPaymentProviders)
             .snapshots()
             .map(
               (snap) => snap.docs
