@@ -102,7 +102,10 @@ After the recommended rehearsal, a first-time host can:
    ambiguous claim, disconnection, or stale update;
 6. complete the rehearsal and interpret the same aggregate Report surface used
    after a live event;
-7. trust that no real guest, message, event document, payment, or notification
+7. read the configured Room, distinguish assigned from Host-confirmed
+   placement, and safely move one attendee using the same spatial control used
+   on event day;
+8. trust that no real guest, message, event document, payment, or notification
    was affected.
 
 ### 1.3 Product principles
@@ -136,6 +139,9 @@ After the recommended rehearsal, a first-time host can:
    live events as well as rehearsal.
 7. Make drift between live and rehearsal difficult to introduce and easy to
    detect.
+8. Give spatially structured events a coherent Room lifecycle across Setup,
+   Live, companion, Report, and Dress Rehearsal rather than exposing the map
+   only after hidden runtime preconditions happen to be satisfied.
 
 ### 2.2 Non-goals
 
@@ -152,6 +158,12 @@ After the recommended rehearsal, a first-time host can:
   Success capabilities. Rehearsal teaches the combined real workflow.
 - Shipping unrestricted production fault injection.
 - Allowing a temporary deployment to become the guest companion architecture.
+- Building a to-scale venue/CAD editor with walls, doors, stages, obstacles, or
+  freeform coordinates. Room remains an operational topology of tables, rows,
+  courts, and zones.
+- Claiming automatic table-seating optimization. Rehearsal may teach manual
+  placement and the assignment engines the production runtime actually
+  supports; it must not simulate an unsupported `tableSeating` solver.
 
 ### 2.3 Explicit boundary
 
@@ -235,6 +247,7 @@ Event workspace
   → Same Manage tabs, with persistent REHEARSAL chrome
       → Setup parity check (read-only summary by default)
       → Live runtime practice
+          → Now / Guests / Room workspaces where configured
       → Optional companion web session
       → Optional advanced Lab
   → Same Report runtime, populated by synthetic outcomes
@@ -254,13 +267,17 @@ minutes.
 | 3. Start | Threshold is met | Use the production primary start/advance action | Guest sees First Hello or current event instruction | Canonical active step/revision changes |
 | 4. Observe | Synthetic guest asks for help | Find unresolved/recovery destination | Guest receives resolved state | No unresolved actor remains |
 | 5. Recover | A late guest arrives after progression | Resolve late-arrival treatment | Late guest receives current safe assignment | Assignment/attendance rule succeeds |
-| 6. Coordinate | Companion is open | Compare “what guests see” with Host state | Same revision is visible | Host confirms or Coach observes companion view |
-| 7. Progress | Timer reaches next beat | Advance via the same pinned production action | Attendee moment advances | Canonical plan action succeeds |
-| 8. Finish | Final beat completes | Complete the run of show | Guest receives completion/afterglow state | Plan status and report projection update |
-| 9. Reflect | Synthetic outcomes are aggregated | Read the real Report tab | N/A | Host opens report and reviews one insight |
+| 6. Place | A late or unconfirmed guest needs a destination | Open Room, select the guest, inspect valid destinations, move, and confirm | Guest sees only their own current destination | Canonical spatial preview, reassignment, and confirmation succeed |
+| 7. Coordinate | Companion is open | Compare “what guests see” with Host state | Same revision and own destination are visible | Host confirms or Coach observes companion view |
+| 8. Progress | Timer reaches next beat | Advance via the same pinned production action | Attendee moment advances | Canonical plan action succeeds |
+| 9. Finish | Final beat completes | Complete the run of show | Guest receives completion/afterglow state | Plan status and report projection update |
+| 10. Reflect | Synthetic outcomes are aggregated | Read the real Report tab | N/A | Host opens report and reviews one insight |
 
 The curriculum may skip steps that the event’s actual configuration does not
-contain. It must never fabricate a control to keep the lesson intact.
+contain. The Place beat is required only when a non-`wholeGroup` source event
+has a selected Room layout, or when the host explicitly creates a
+session-local Room through the canonical Setup control. It must never fabricate
+a control to keep the lesson intact.
 
 ---
 
@@ -356,6 +373,47 @@ Actions:
 Any editable setup control must be the canonical control used in production,
 mounted against the rehearsal environment. No parallel form fields.
 
+#### Room setup inside the canonical Setup tab
+
+For events that use pods, pairs, teams, tables, rows, courts, or zones, Setup
+contains a first-class **Room** readiness section. This corrects the current
+split in which layout authoring is available only in the optional Create Event
+flow while Manage cannot attach or change a layout later.
+
+The collapsed readiness row shows:
+
+- `Room`;
+- `Configured` / `Not configured` / `Needs attention`;
+- selected reusable layout name and summary, for example `Main room · 6 tables
+  · 32 seats`;
+- `Preview` and `Configure` actions before the event is frozen;
+- the reason when Room does not apply, for example `Whole-group events do not
+  use mapped placement`.
+
+`Configure` opens the canonical production Room editor. The editor must:
+
+1. start from a reusable organizer layout or a format-appropriate template;
+2. show the map preview while fields change rather than asking the host to
+   imagine the result of unit count and column steppers;
+3. support the existing unit types: round table, rectangular table, row,
+   court, and zone;
+4. expose unit label, capacity, order, relative grid position, and mixed unit
+   types supported by the existing layout contract;
+5. show total capacity and highlight capacity below the event target;
+6. provide a fast parametric path for uniform rooms such as `6 round tables,
+   4 people each`;
+7. name reuse consequences truthfully. Editing a shared organizer asset must
+   list affected future events or require `Duplicate and customize`; it must
+   never silently reshape another active event;
+8. provide a preview using the same normalization and unit renderer as Live;
+9. prevent topology changes after assignments are published or the event is
+   running unless a separate, explicitly designed migration flow safely
+   remaps every affected assignment.
+
+In rehearsal, `Change for this rehearsal` mounts this same editor against a
+session-local layout snapshot and adds `Practice only`. It may not update the
+organizer layout library or source event.
+
 ### 5.4 Live tab in rehearsal
 
 This is the heart of the product. It uses the existing “Quiet Command Console”
@@ -371,6 +429,24 @@ structure:
 - roster, presence, unresolved, waitlist, and accountability summaries;
 - canonical recovery and exception panels.
 
+The canonical Live area has a quiet secondary workspace switcher when the
+event supports mapped placement:
+
+- **Now** — current beat, room-health summary, highest-priority work, and
+  primary progression action;
+- **Guests** — roster, presence, search, filters, admission, and attendee
+  recovery;
+- **Room** — full spatial operating surface.
+
+The top-level Setup / Live / Report model remains unchanged. Room is a Live
+workspace because it is an operating view of the current event, not a fourth
+lifecycle phase. On compact screens the switcher remains visible beneath the
+rehearsal band; on larger screens it may become a rail or split workspace.
+
+The Now workspace includes a compact Room status card whenever Room is
+configured: `29 placed · 3 unconfirmed · 1 needs attention`. Selecting it opens
+Room without losing the current beat, selected guest, or Coach objective.
+
 #### Allowed rehearsal-only markings inside canonical content
 
 - synthetic person rows include a small `Practice guest` semantic badge or an
@@ -385,7 +461,83 @@ structure:
 No rehearsal copy may replace a production action label. If the event-day
 button says `Advance`, rehearsal says `Advance`.
 
-### 5.5 Attendee companion web runtime
+### 5.5 Room workspace in live and rehearsal
+
+Room is a first-class production workspace reused unchanged in Dress
+Rehearsal. Its job is operational placement, not architectural drawing.
+
+#### Required regions
+
+1. **Room header:** layout name, unit/seat summary, overflow for permitted
+   pre-event layout actions.
+2. **Operational summary:** placed, unplaced, unconfirmed, at-capacity, and
+   needs-attention counts. Zero-value categories may collapse; unresolved work
+   never does.
+3. **Topology map:** normalized coarse-grid units using the selected table,
+   row, court, or zone shapes.
+4. **Legend:** assigned, Host confirmed, unconfirmed, unavailable, and safety
+   constrained. Meaning is not color-only.
+5. **Selected guest panel:** identity, current assignment, confirmation state,
+   valid destinations, invalid-destination reason, placement scope, and the
+   canonical action.
+6. **Unplaced/attention queue:** reachable without leaving Room and ordered by
+   operational urgency.
+
+#### Action cardinality
+
+| Room affordance | Cardinality |
+|---|---|
+| Selected event layout | Singleton: zero or one `layoutId` per event/session |
+| Reusable organizer layouts | Domain-bounded collection under existing contract/rate limits |
+| Selected guest | Singleton local selection; changing selection replaces it |
+| Destination choice | Exactly one layout unit per reassignment, bounded by the selected layout |
+| Placement scope | Exactly one of `This round` or `Pinned` when reassignment supports both |
+| Confirm / release pinned | Singleton state transition for the selected assignment and current revision |
+| Attention queue | Bounded by the session roster and current spatial projection |
+
+#### Interaction contract
+
+- Tap is the universal interaction: select a guest, preview destinations, then
+  select a valid unit.
+- Large surfaces may add drag-and-drop, but drag never replaces tap or keyboard
+  operation.
+- Destination preview uses the canonical spatial-control decision path.
+- Invalid destinations remain visible and explain `At capacity`, `Safety
+  separation`, or `Declared constraint`; they do not merely disappear.
+- A move requires an explicit scope where both are supported: `This round` or
+  `Pinned`.
+- Assigned and Host-confirmed remain distinct. The host can confirm a position
+  or release a pinned placement through the existing canonical actions.
+- A successful mutation returns focus to the moved guest, announces the new
+  destination, updates the summary, and preserves map position.
+- A stale revision uses the same `Another host changed this` recovery as the
+  rest of Live and reloads destination validity before retry.
+- The map renders configured empty units before assignments exist. It shows
+  `Waiting for assignments` or `No guests placed yet`; it must not disappear
+  merely because the assignment list is empty.
+- If no layout is selected, the applicable Live surface shows `Room is not
+  configured` with a pre-event `Configure in Setup` action. It does not fail by
+  returning no widget.
+- `wholeGroup` events omit the Room workspace and explain the omission in
+  Setup. They do not fetch or synthesize a spatial projection.
+
+#### Rehearsal behavior
+
+- The session snapshots the selected organizer layout, normalization output,
+  and assignment state at creation so later organizer edits cannot change an
+  active rehearsal.
+- Synthetic actors receive canonical `layoutUnitId` and
+  `confirmedLayoutUnitId` states.
+- Coach recognizes destination preview, reassignment, scope choice,
+  confirmation, pinned release, and invalid-destination inspection from
+  canonical state/action receipts—not from taps on rehearsal wrappers.
+- The recommended spatial lesson injects one late or unconfirmed guest, one
+  valid destination, and at least one unavailable destination whose reason is
+  safe to explain.
+- Reset restores the same layout, actors, placements, and destination outcomes
+  for the same seed. Fork preserves the current topology and placement state.
+
+### 5.6 Attendee companion web runtime
 
 The guest link opens a route such as:
 
@@ -401,6 +553,9 @@ Required behavior:
 - same responsive frame, content order, transitions, assignment cards,
   prompts, reveal, pause, help, opt-out, completion, error, reconnect, and
   reduced-motion behavior as production;
+- when Room is configured, the guest sees only their own current destination,
+  confirmation state, and movement instruction through the canonical attendee
+  renderer; no other attendee positions or Room-wide occupancy are exposed;
 - no real phone number, OTP, Catch account, ticket, or guest claim required;
 - no real messaging or notification side effect;
 - browser slot stored only for this rehearsal session and origin;
@@ -423,7 +578,7 @@ Required behavior:
 The current rehearsal-only guest moment model becomes orchestration metadata;
 it must not remain the rendering model.
 
-### 5.6 Report and learning recap
+### 5.7 Report and learning recap
 
 The Report tab first renders the **canonical production aggregate report** from
 synthetic event outcomes. A separate Coach recap can sit above or below it.
@@ -433,6 +588,8 @@ Coach recap sections:
 - `What you practised` — completed curriculum outcomes;
 - `What happened` — scenario timeline in plain language;
 - `How you recovered` — resolved, skipped, and unresolved exceptions;
+- `Room operations` — moved, confirmed, pinned, unresolved, and constrained
+  synthetic placements when Room was part of the rehearsal;
 - `Guest impact` — what the companion showed at consequential moments;
 - `Try once more` — up to three specific recommendations;
 - `Session details` — seed, source revision, runtime revision, session expiry;
@@ -446,7 +603,7 @@ Avoid a single opaque numerical score. Use outcome labels:
 - `Needs another try`;
 - `Not part of this event`.
 
-### 5.7 Exit and resume
+### 5.8 Exit and resume
 
 - Leaving a running rehearsal asks: `Leave rehearsal? Your practice session
   will stay available until {time}.`
@@ -577,6 +734,7 @@ and fallback if the event configuration does not support it.
 |---|---|---|---|
 | Smooth first run | Orientation and normal progression | On-time arrivals, start, advance, finish | First-time hosts |
 | Late arrivals and no-shows | Presence and assignment recovery | Late arrival after beat change, no-show threshold | All hosts |
+| Room placement and constraints | Spatial confidence and recovery | Unconfirmed position, valid move, full unit, safety separation, pinned release | Mapped events |
 | Early exit and return | State repair | Departure, return, assignment refresh | All hosts |
 | Roster and capacity | Admission operations | Waitlist movement, capacity boundary, walk-in | Ticketed events |
 | Ambiguous guest claim | Identity recovery | Two possible records, resolve safely | Imported/external rosters |
@@ -722,7 +880,7 @@ Required changes:
    behavior.
 3. Add a rehearsal implementation that operates on the session namespace but
    returns canonical Event Success plan, roster, presence, assignment, reveal,
-   and report types.
+   spatial layout, destination preview, placement action, and report types.
 4. Scope environment/provider overrides at the rehearsal route boundary.
 5. Mount `EventSuccessHostPanel` and the same Setup/Live/Report parts inside
    `EventRehearsalShell`.
@@ -762,7 +920,7 @@ The goal is shared behavior, not merely matching payload names.
 4. Route rehearsal calls to a session-scoped store, virtual clock, synthetic
    identity broker, and side-effect sink.
 5. Reuse the same validation, revision fence, assignment, presence, reveal,
-   recovery, and report projection logic.
+   spatial preview/control, recovery, and report projection logic.
 6. Keep rehearsal orchestration—scenario timeline, actor stimuli, faults,
    reset/fork/export—in `eventRehearsal` handlers.
 7. Reject any rehearsal action carrying a production document target that is
@@ -817,6 +975,7 @@ session
 children / equivalent bounded records
   actors
   runtime state
+  room layout snapshot + source layout revision
   assignments
   presence
   actions
@@ -879,7 +1038,7 @@ not enter the Host runtime until canonical bootstrap validation reaches
 
 | Action source | Examples | Goes through canonical production decision path? |
 |---|---|---:|
-| Host production UI | start, advance, previous, check-in, resolve, reveal, complete | Yes |
+| Host production UI | start, advance, previous, check-in, resolve, preview destination, reassign, confirm position, release pinned, reveal, complete | Yes |
 | Attendee production UI | help, opt-out, prompt completion, acknowledgement | Yes |
 | Scenario external stimulus | arrive late, disconnect, no-show, walk-in | Enters at the same external/input boundary as live equivalents |
 | Coach | open hint, spotlight, skip optional objective | No runtime mutation |
@@ -931,7 +1090,18 @@ Returning from Guests/recovery should restore Live scroll position, expanded
 current-beat state, and the pending task context. This is particularly valuable
 during real high-pressure operation.
 
-### 13.6 Decision rule
+### 13.6 First-class Room workspace
+
+Promote the existing spatial map from a conditionally inserted card to the
+Room workspace specified in §5.5. Add Room readiness to Setup and Room health
+to Now. Preserve the existing layout contracts, tap/drag actions, privacy
+projection, revision fencing, and safety/capacity reasoning.
+
+This is both a production improvement and a rehearsal prerequisite. A host
+cannot learn mapped placement reliably if the production surface disappears
+when configuration or assignments are incomplete.
+
+### 13.7 Decision rule
 
 If a proposed UI change exists only to make the simulation easier to explain,
 it belongs in Coach. If it reduces uncertainty during a real event, it belongs
@@ -956,6 +1126,12 @@ in the canonical runtime and therefore benefits rehearsal automatically.
 | Companion action | Open attendee view |
 | Primary creation action | Create rehearsal |
 | Completion action | Finish rehearsal |
+| Spatial workspace | Room |
+| Room setup action | Configure room |
+| Empty configured Room | Waiting for assignments |
+| Missing applicable Room | Room is not configured |
+| Temporary placement scope | This round |
+| Durable placement scope | Pinned |
 
 ### 14.2 Copy restrictions
 
@@ -968,6 +1144,10 @@ in the canonical runtime and therefore benefits rehearsal automatically.
 - Do not translate production action labels differently in rehearsal.
 - Do not use internal terms such as callable, fixture, revision fence, actor
   lease, namespace, or projection in normal host guidance.
+- Do not call the operational topology a `floor plan` or imply exact physical
+  scale. Use `Room`, `room layout`, `table`, `row`, `court`, or `zone`.
+- Do not use `seated` as a synonym for `assigned` or `Host confirmed`; those
+  states remain distinct.
 
 ---
 
@@ -988,6 +1168,13 @@ in the canonical runtime and therefore benefits rehearsal automatically.
   interaction.
 - Landscape/tablet may use a Coach side rail only after the canonical content
   meets its supported maximum/minimum widths.
+- Room units, occupants, destination validity, confirmation state, capacity,
+  and constraint reasons have accessible names independent of shape and color.
+- Keyboard users can select a guest, traverse units in stable order, hear each
+  destination reason, choose scope, move, confirm, and release pinned placement
+  without drag.
+- At 200% text the map may keep its spatial canvas while selected-guest details
+  and actions reflow below it; critical copy may not clip inside units.
 - Live-region announcements are reserved for consequential runtime changes;
   scenario background events must not create an inaccessible notification
   storm.
@@ -1006,6 +1193,10 @@ metrics.
 - objective completion and hint depth;
 - percentage who open the attendee companion;
 - scenario retry and recovery completion;
+- percentage of mapped-event hosts who configure Room, open it in rehearsal,
+  complete a placement objective, and later use it successfully in Live;
+- time to resolve unplaced, unconfirmed, capacity, and safety-constrained Room
+  work in rehearsal versus the eligible live event;
 - abandonment point and reported reason;
 - later live-event incidence of common operational errors, compared between
   rehearsed and unrehearsed eligible hosts;
@@ -1070,6 +1261,20 @@ canonical surface.
 
 ![Contextual spotlight Dress Rehearsal concept](assets/event_dress_rehearsal/contextual-spotlight.png)
 
+### Selected extension — Room workspace
+
+- Retains Direction C’s contextual Coach and untouched production controls.
+- Adds a quiet Now / Guests / Room switcher within Live; it does not add a
+  fourth top-level lifecycle tab.
+- Shows the real coarse topology map, operational counts, confirmation legend,
+  selected guest, placement scope, and production move action.
+- Demonstrates one valid destination and one unavailable state without
+  pretending to be a to-scale venue editor.
+- The same composition, minus rehearsal band, virtual time, synthetic labels,
+  spotlight, and Coach, is the production Room workspace.
+
+![Room workspace Dress Rehearsal concept](assets/event_dress_rehearsal/room-workspace.png)
+
 The concepts are alternatives, not three different runtime implementations.
 After selection, the chosen system should be documented across at least these
 snapshot states:
@@ -1082,7 +1287,11 @@ snapshot states:
 6. low-connectivity/revision recovery;
 7. real Report tab plus learning recap;
 8. advanced Lab open;
-9. session complete/expired.
+9. session complete/expired;
+10. Room configured but waiting for assignments;
+11. Room placement with valid and constrained destinations;
+12. Room stale-revision recovery;
+13. attendee companion showing only the selected guest’s own destination.
 
 ---
 
@@ -1107,6 +1316,11 @@ runtime states under both environments.
 - Add practice band, virtual time, leave/resume, and synthetic roster semantics.
 - Map current start/pause/advance/previous/complete operations to canonical
   actions.
+- Promote Room readiness, Room health, and the full Room workspace into the
+  canonical Host surface; render configured empty and missing-layout states
+  rather than silently omitting the map.
+- Snapshot the selected layout and route preview/reassign/confirm/release
+  through the canonical spatial gateway in rehearsal.
 
 Exit: a smooth scenario completes entirely through production Host controls.
 
@@ -1185,6 +1399,10 @@ or state without a rehearsal mapping fails the contract.
 - present/late/no-show/departed/returned/walk-in/ambiguous guest;
 - opt-out/keep-apart/help and unresolved state;
 - assignment pending/published/overridden;
+- Room not applicable / not configured / configured empty / populated;
+- Room assigned / unconfirmed / Host confirmed / pinned / released;
+- Room valid destination / at capacity / safety separation / declared
+  constraint / stale revision;
 - reveal ready/publishing/published/interrupted;
 - syncing/saved/stale/failure/retry/disconnected/reconnected;
 - single and concurrent host revisions;
@@ -1239,6 +1457,11 @@ describe the tutorial.
       host and attendee screen.
 - [ ] The recommended curriculum is completed through production controls.
 - [ ] At least one late-arrival/recovery objective is included.
+- [ ] A mapped-event rehearsal exposes the same Room workspace as production
+      and completes at least one preview, reassignment, and confirmation through
+      canonical spatial actions.
+- [ ] Applicable Room states are visible when unconfigured or waiting for
+      assignments; the workspace never disappears silently.
 - [ ] Host can open a temporary, expiring attendee practice link and observe
       the canonical attendee runtime.
 - [ ] Report uses the real production report renderer with synthetic outcomes.
@@ -1257,6 +1480,9 @@ describe the tutorial.
 - [ ] Stable semantic target IDs support coaching without coupling to copy.
 - [ ] Current guest link, slot, seed, fault, reset, fork, expiry, and export
       capabilities are retained or deliberately superseded.
+- [ ] Layout normalization, destination preview, reassignment, confirmation,
+      pinned release, constraints, and guest privacy projection are shared with
+      Live rather than reimplemented in rehearsal.
 
 ### Safety acceptance
 
@@ -1277,6 +1503,10 @@ describe the tutorial.
 - [ ] Core flow works at 320px web width, mobile text scaling, keyboard only,
       screen reader, and reduced motion.
 - [ ] Live-vs-rehearsal visual parity passes outside the overlay mask.
+- [ ] Room supports tap, keyboard, screen reader, and large-surface drag as an
+      additive affordance; invalid destinations expose a textual reason.
+- [ ] Companion Room output exposes only the synthetic guest’s own destination
+      and never the Room-wide occupancy map.
 
 ---
 
@@ -1292,9 +1522,18 @@ describe the tutorial.
    remain active by default?
 5. **Retention:** Is 24 hours sufficient for normal sessions and what redacted
    receipt may support keep?
-6. **Coach visual direction:** Guided current beat, Coach sheet, or contextual
-   spotlight.
-7. **Production improvements:** Which items in §13 are approved for the shared
+6. **Coach visual direction:** The recommendation is contextual spotlight for
+   ordinary objectives, with the Coach sheet reserved for explanations that
+   cannot fit safely in the dock. Confirm this hybrid as the delivery target.
+7. **Room asset semantics:** Should changing an organizer’s reusable layout
+   update only future events, or require an explicit migration for every
+   already-linked event? The recommendation is immutable event snapshots after
+   readiness freeze plus `Duplicate and customize` before freeze.
+8. **Room editor depth:** Confirm the recommended operational topology editor
+   (templates, mixed units, relative grid, capacity, labels, live preview) and
+   explicitly defer walls, doors, obstacles, freeform scale, and automatic
+   table seating.
+9. **Production improvements:** Which items in §13 are approved for the shared
    live runtime rather than deferred?
 
 None of these decisions changes the central architecture: the Dress Rehearsal
