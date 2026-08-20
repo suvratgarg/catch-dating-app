@@ -2036,12 +2036,13 @@ Widget _hostClubPreviewFor(String focus) {
       club: club,
     ),
     'HostPaymentAccountContentCard' => HostPaymentAccountContentCard(
-      account: payment,
+      accounts: [payment],
+      recommendedProvider: HostPaymentProvider.razorpay,
       actionErrorMessage: null,
       onboardingPending: false,
       refreshPending: false,
-      onShowPayoutsHandoff: (_, _) async {},
-      onRefresh: () async {},
+      onShowPayoutsHandoff: (_, _, _) async {},
+      onRefresh: (_) async {},
     ),
     'HostPaymentAccountErrorCard' => HostPaymentAccountErrorCard(
       error: StateError('Widgetbook payout status failed'),
@@ -6466,8 +6467,15 @@ class _HostShellScope extends StatelessWidget {
         (ref) =>
             ownedClubsStream ?? Stream<List<Club>>.value(effectiveOwnedClubs),
       ),
-      watchHostPaymentAccountProvider(effectiveUid).overrideWithValue(
-        paymentAccountValue ?? const AsyncData<HostPaymentAccount?>(null),
+      watchHostPaymentAccountsProvider(effectiveUid).overrideWithValue(
+        switch (paymentAccountValue) {
+          AsyncData(:final value) => AsyncData(
+            value == null ? const [] : [value],
+          ),
+          AsyncError(:final error, :final stackTrace) =>
+            AsyncError<List<HostPaymentAccount>>(error, stackTrace),
+          _ => const AsyncLoading<List<HostPaymentAccount>>(),
+        },
       ),
       hostClubEditControllerProvider.overrideWithValue(
         const _NoopHostClubEditActions(),
@@ -6878,12 +6886,14 @@ final class _NoopHostPaymentAccountActions
   const _NoopHostPaymentAccountActions();
 
   @override
-  Future<void> refreshStatus() async {}
+  Future<void> refreshStatus(HostPaymentProvider provider) async {}
 
   @override
   Future<void> startOnboarding({
+    required HostPaymentProvider provider,
     required String country,
     required String defaultCurrency,
+    RazorpayHostOnboardingDetails? razorpayDetails,
   }) async {}
 }
 

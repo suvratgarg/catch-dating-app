@@ -19,20 +19,28 @@ import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
 import 'package:flutter/material.dart';
 
 typedef HostPaymentStartOnboarding =
-    Future<void> Function({required String country, required String currency});
+    Future<void> Function({
+      required HostPaymentProvider provider,
+      required String country,
+      required String currency,
+      RazorpayHostOnboardingDetails? razorpayDetails,
+    });
 
 Future<void> _noopStartOnboarding({
+  required HostPaymentProvider provider,
   required String country,
   required String currency,
+  RazorpayHostOnboardingDetails? razorpayDetails,
 }) async {}
 
-Future<void> _noopRefresh() async {}
+Future<void> _noopRefresh(HostPaymentProvider provider) async {}
 
 class HostPaymentAccountCard extends StatelessWidget {
   const HostPaymentAccountCard({
     super.key,
     required this.club,
     this.account,
+    this.accounts = const [],
     this.loading = false,
     this.error,
     this.actionErrorMessage,
@@ -45,6 +53,7 @@ class HostPaymentAccountCard extends StatelessWidget {
 
   final Club club;
   final HostPaymentAccount? account;
+  final List<HostPaymentAccount> accounts;
   final bool loading;
   final Object? error;
   final String? actionErrorMessage;
@@ -52,10 +61,11 @@ class HostPaymentAccountCard extends StatelessWidget {
   final bool refreshPending;
   final VoidCallback? onRetry;
   final HostPaymentStartOnboarding onStartOnboarding;
-  final Future<void> Function() onRefresh;
+  final Future<void> Function(HostPaymentProvider provider) onRefresh;
 
   Future<void> _showPayoutsHandoff(
     BuildContext context,
+    HostPaymentProvider provider,
     HostPaymentAccount? account,
     HostPaymentPresentation presentation,
   ) async {
@@ -63,7 +73,10 @@ class HostPaymentAccountCard extends StatelessWidget {
     final derivedCountry = countryIsoCodeForCityName(club.location);
     final derivedCurrency = currencyCodeForCityName(club.location);
     final country = account?.country ?? derivedCountry;
-    final currency = account?.defaultCurrency ?? derivedCurrency;
+    final currency = provider == HostPaymentProvider.razorpay
+        ? 'INR'
+        : account?.defaultCurrency ?? derivedCurrency;
+    final isRazorpay = provider == HostPaymentProvider.razorpay;
 
     await showCatchBottomSheet<void>(
       context: context,
@@ -78,11 +91,17 @@ class HostPaymentAccountCard extends StatelessWidget {
         final sheetTokens = CatchTokens.of(sheetContext);
         return CatchBottomSheetScaffold(
           title: context.l10n.hostsHostPaymentAccountCardTitleSetUpPayouts,
-          subtitle:
-              context.l10n.hostsHostPaymentAccountCardSubtitlePoweredByStripe,
+          subtitle: isRazorpay
+              ? context
+                    .l10n
+                    .hostsHostPaymentAccountCardSubtitlePoweredByRazorpay
+              : context.l10n.hostsHostPaymentAccountCardSubtitlePoweredByStripe,
           action: CatchButton(
-            label:
-                context.l10n.hostsHostPaymentAccountCardLabelContinueToStripe,
+            label: isRazorpay
+                ? context
+                      .l10n
+                      .hostsHostPaymentAccountCardLabelContinueToRazorpay
+                : context.l10n.hostsHostPaymentAccountCardLabelContinueToStripe,
             icon: Icon(CatchIcons.openInNewRounded),
             fullWidth: true,
             isLoading: onboardingPending,
@@ -91,7 +110,13 @@ class HostPaymentAccountCard extends StatelessWidget {
                 : () {
                     Navigator.of(sheetContext).pop();
                     unawaited(
-                      onStartOnboarding(country: country, currency: currency),
+                      isRazorpay
+                          ? _showRazorpaySetup(context, country, currency)
+                          : onStartOnboarding(
+                              provider: provider,
+                              country: country,
+                              currency: currency,
+                            ),
                     );
                   },
           ),
@@ -104,9 +129,13 @@ class HostPaymentAccountCard extends StatelessWidget {
               ),
               gapH14,
               Text(
-                context
-                    .l10n
-                    .hostsHostPaymentAccountCardTextCatchPaysHostsThrough,
+                isRazorpay
+                    ? context
+                          .l10n
+                          .hostsHostPaymentAccountCardTextCatchPaysIndiaHostsThrough
+                    : context
+                          .l10n
+                          .hostsHostPaymentAccountCardTextCatchPaysHostsThrough,
                 style: CatchTextStyles.supporting(
                   sheetContext,
                   color: sheetTokens.ink2,
@@ -146,6 +175,29 @@ class HostPaymentAccountCard extends StatelessWidget {
     );
   }
 
+  Future<void> _showRazorpaySetup(
+    BuildContext context,
+    String country,
+    String currency,
+  ) => showCatchBottomSheet<void>(
+    context: context,
+    isDismissible: !onboardingPending,
+    enableDrag: !onboardingPending,
+    builder: (sheetContext) => _RazorpaySetupSheet(
+      club: club,
+      pending: onboardingPending,
+      onSubmit: (details) async {
+        Navigator.of(sheetContext).pop();
+        await onStartOnboarding(
+          provider: HostPaymentProvider.razorpay,
+          country: country,
+          currency: currency,
+          razorpayDetails: details,
+        );
+      },
+    ),
+  );
+
   @override
   Widget build(BuildContext context) {
     final error = this.error;
@@ -154,12 +206,15 @@ class HostPaymentAccountCard extends StatelessWidget {
       return HostPaymentAccountErrorCard(error: error, onRetry: onRetry);
     }
     return HostPaymentAccountContentCard(
-      account: account,
+      accounts: account == null ? accounts : [account!, ...accounts],
+      recommendedProvider: defaultHostPaymentProviderForCountry(
+        countryIsoCodeForCityName(club.location),
+      ),
       actionErrorMessage: actionErrorMessage,
       onboardingPending: onboardingPending,
       refreshPending: refreshPending,
-      onShowPayoutsHandoff: (account, presentation) =>
-          _showPayoutsHandoff(context, account, presentation),
+      onShowPayoutsHandoff: (provider, account, presentation) =>
+          _showPayoutsHandoff(context, provider, account, presentation),
       onRefresh: onRefresh,
     );
   }
@@ -168,7 +223,8 @@ class HostPaymentAccountCard extends StatelessWidget {
 class HostPaymentAccountContentCard extends StatelessWidget {
   const HostPaymentAccountContentCard({
     super.key,
-    required this.account,
+    required this.accounts,
+    required this.recommendedProvider,
     this.actionErrorMessage,
     required this.onboardingPending,
     required this.refreshPending,
@@ -176,21 +232,36 @@ class HostPaymentAccountContentCard extends StatelessWidget {
     required this.onRefresh,
   });
 
-  final HostPaymentAccount? account;
+  final List<HostPaymentAccount> accounts;
+  final HostPaymentProvider recommendedProvider;
   final String? actionErrorMessage;
   final bool onboardingPending;
   final bool refreshPending;
   final Future<void> Function(
+    HostPaymentProvider provider,
     HostPaymentAccount? account,
     HostPaymentPresentation presentation,
   )
   onShowPayoutsHandoff;
-  final Future<void> Function() onRefresh;
+  final Future<void> Function(HostPaymentProvider provider) onRefresh;
 
   @override
   Widget build(BuildContext context) {
-    final account = this.account;
+    HostPaymentAccount? accountFor(HostPaymentProvider provider) {
+      for (final account in accounts) {
+        if (account.provider == provider) return account;
+      }
+      return null;
+    }
+
+    final account = accountFor(recommendedProvider);
     final presentation = _presentation(account, context.l10n);
+    final providers = [
+      recommendedProvider,
+      ...HostPaymentProvider.values.where(
+        (provider) => provider != recommendedProvider,
+      ),
+    ];
 
     return CatchSection.fieldRows(
       title: context.l10n.hostsHostPaymentAccountCardTitlePayouts,
@@ -223,29 +294,42 @@ class HostPaymentAccountContentCard extends StatelessWidget {
             icon: CatchIcons.errorOutlineRounded,
             tone: CatchFieldTone.danger,
           ),
-        CatchField.action(
-          title: account == null
-              ? context.l10n.hostsHostPaymentAccountCardLabelSetUpPayouts
-              : context.l10n.hostsHostPaymentAccountCardLabelContinueSetup,
-          body: context.l10n.hostsHostPaymentAccountCardSubtitlePoweredByStripe,
-          icon: CatchIcons.openInNewRounded,
-          status: onboardingPending
-              ? CatchFieldStatus.saving
-              : CatchFieldStatus.idle,
-          onTap: onboardingPending
-              ? null
-              : () => unawaited(onShowPayoutsHandoff(account, presentation)),
-        ),
-        if (account != null)
+        for (final provider in providers) ...[
           CatchField.action(
-            title: context.l10n.hostsHostPaymentAccountCardLabelRefresh,
-            body: context.l10n.hostsHostPaymentAccountCardTextWeWillRefreshYour,
-            icon: CatchIcons.refreshRounded,
-            status: refreshPending
+            title: _providerTitle(context.l10n, provider),
+            body: _providerBody(
+              context.l10n,
+              provider,
+              recommended: provider == recommendedProvider,
+              account: accountFor(provider),
+            ),
+            icon: CatchIcons.openInNewRounded,
+            status: onboardingPending
                 ? CatchFieldStatus.saving
                 : CatchFieldStatus.idle,
-            onTap: refreshPending ? null : () => unawaited(onRefresh()),
+            onTap: onboardingPending
+                ? null
+                : () => unawaited(
+                    onShowPayoutsHandoff(
+                      provider,
+                      accountFor(provider),
+                      _presentation(accountFor(provider), context.l10n),
+                    ),
+                  ),
           ),
+          if (accountFor(provider) != null)
+            CatchField.action(
+              title: context.l10n.hostsHostPaymentAccountCardLabelRefresh,
+              body: _providerTitle(context.l10n, provider),
+              icon: CatchIcons.refreshRounded,
+              status: refreshPending
+                  ? CatchFieldStatus.saving
+                  : CatchFieldStatus.idle,
+              onTap: refreshPending
+                  ? null
+                  : () => unawaited(onRefresh(provider)),
+            ),
+        ],
       ],
     );
   }
@@ -262,20 +346,24 @@ class HostPaymentAccountContentCard extends StatelessWidget {
         body: l10n.hostsHostPaymentAccountCardBodyRequiredBeforePaidNon,
       );
     }
-    if (account.canAcceptInternationalPayments) {
+    if (account.canAcceptPayments) {
       return HostPaymentPresentation(
         badge: l10n.hostsHostPaymentAccountCardVisiblecopyReady,
         tone: CatchBadgeTone.success,
         title:
             l10n.hostsHostPaymentAccountCardTitleInternationalCheckoutIsReady,
-        body: l10n.hostsHostPaymentAccountCardBodyNonInrPaidBookings,
+        body: account.provider == HostPaymentProvider.razorpay
+            ? l10n.hostsHostPaymentAccountCardBodyRazorpayInr
+            : l10n.hostsHostPaymentAccountCardBodyNonInrPaidBookings,
       );
     }
     if (account.onboardingStatus == HostPaymentOnboardingStatus.restricted) {
       return HostPaymentPresentation(
         badge: l10n.hostsHostPaymentAccountCardVisiblecopyActionNeeded,
         tone: CatchBadgeTone.warning,
-        title: l10n.hostsHostPaymentAccountCardTitleStripeNeedsMoreInformation,
+        title: account.provider == HostPaymentProvider.razorpay
+            ? l10n.hostsHostPaymentAccountCardTitleRazorpay
+            : l10n.hostsHostPaymentAccountCardTitleStripeNeedsMoreInformation,
         body:
             account.disabledReason ??
             l10n.hostsHostPaymentAccountCardBodyFinishTheOutstandingStripe,
@@ -284,10 +372,416 @@ class HostPaymentAccountContentCard extends StatelessWidget {
     return HostPaymentPresentation(
       badge: l10n.hostsHostPaymentAccountCardVisiblecopyPending,
       tone: CatchBadgeTone.warning,
-      title: l10n.hostsHostPaymentAccountCardTitleStripeOnboardingIsIn,
-      body: l10n.hostsHostPaymentAccountCardBodyRefreshAfterCompletingStripe,
+      title: account.provider == HostPaymentProvider.razorpay
+          ? l10n.hostsHostPaymentAccountCardTitleRazorpay
+          : l10n.hostsHostPaymentAccountCardTitleStripeOnboardingIsIn,
+      body: account.provider == HostPaymentProvider.razorpay
+          ? l10n.hostsHostPaymentAccountCardTextCatchPaysIndiaHostsThrough
+          : l10n.hostsHostPaymentAccountCardBodyRefreshAfterCompletingStripe,
     );
   }
+}
+
+String _providerTitle(AppLocalizations l10n, HostPaymentProvider provider) =>
+    switch (provider) {
+      HostPaymentProvider.razorpay =>
+        l10n.hostsHostPaymentAccountCardTitleRazorpay,
+      HostPaymentProvider.stripe => l10n.hostsHostPaymentAccountCardTitleStripe,
+    };
+
+String _providerBody(
+  AppLocalizations l10n,
+  HostPaymentProvider provider, {
+  required bool recommended,
+  required HostPaymentAccount? account,
+}) {
+  final purpose = switch (provider) {
+    HostPaymentProvider.razorpay =>
+      l10n.hostsHostPaymentAccountCardBodyRazorpayInr,
+    HostPaymentProvider.stripe =>
+      l10n.hostsHostPaymentAccountCardBodyStripeInternational,
+  };
+  final status = account == null
+      ? l10n.hostsHostPaymentAccountCardVisiblecopyNotSetUp
+      : account.canAcceptPayments
+      ? l10n.hostsHostPaymentAccountCardVisiblecopyReady
+      : account.onboardingStatus == HostPaymentOnboardingStatus.restricted
+      ? l10n.hostsHostPaymentAccountCardVisiblecopyActionNeeded
+      : l10n.hostsHostPaymentAccountCardVisiblecopyPending;
+  final recommendation = recommended
+      ? '${l10n.hostsHostPaymentAccountCardLabelRecommended} · '
+      : '';
+  return '$recommendation$status · $purpose';
+}
+
+class _RazorpaySetupSheet extends StatefulWidget {
+  const _RazorpaySetupSheet({
+    required this.club,
+    required this.pending,
+    required this.onSubmit,
+  });
+
+  final Club club;
+  final bool pending;
+  final Future<void> Function(RazorpayHostOnboardingDetails details) onSubmit;
+
+  @override
+  State<_RazorpaySetupSheet> createState() => _RazorpaySetupSheetState();
+}
+
+class _RazorpaySetupSheetState extends State<_RazorpaySetupSheet> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _legalBusinessName;
+  late final TextEditingController _contactName;
+  late final TextEditingController _email;
+  late final TextEditingController _phone;
+  late final TextEditingController _businessModel;
+  final _businessPan = TextEditingController();
+  final _bankAccountNumber = TextEditingController();
+  final _ifscCode = TextEditingController();
+  late final TextEditingController _beneficiaryName;
+  late final TextEditingController _stakeholderName;
+  late final TextEditingController _stakeholderEmail;
+  late final TextEditingController _stakeholderPhone;
+  final _stakeholderPan = TextEditingController();
+  final _ownershipPercent = TextEditingController(text: '100');
+  var _businessType = RazorpayHostBusinessType.individual;
+  var _isDirector = true;
+  var _isExecutive = true;
+  var _termsAccepted = false;
+
+  Iterable<TextEditingController> get _controllers => [
+    _legalBusinessName,
+    _contactName,
+    _email,
+    _phone,
+    _businessModel,
+    _businessPan,
+    _bankAccountNumber,
+    _ifscCode,
+    _beneficiaryName,
+    _stakeholderName,
+    _stakeholderEmail,
+    _stakeholderPhone,
+    _stakeholderPan,
+    _ownershipPercent,
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    final contactName = widget.club.hostName ?? widget.club.name;
+    _legalBusinessName = TextEditingController(text: widget.club.name);
+    _contactName = TextEditingController(text: contactName);
+    _email = TextEditingController(text: widget.club.email ?? '');
+    _phone = TextEditingController(text: widget.club.phoneNumber ?? '');
+    _businessModel = TextEditingController(text: widget.club.description);
+    _beneficiaryName = TextEditingController(text: contactName);
+    _stakeholderName = TextEditingController(text: contactName);
+    _stakeholderEmail = TextEditingController(text: widget.club.email ?? '');
+    _stakeholderPhone = TextEditingController(
+      text: widget.club.phoneNumber ?? '',
+    );
+  }
+
+  @override
+  void dispose() {
+    for (final controller in _controllers) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  String? _required(String? value) => value == null || value.trim().isEmpty
+      ? context.l10n.sharedValidationRequired
+      : null;
+
+  String? _pattern(String? value, RegExp pattern, String field) {
+    final requiredError = _required(value);
+    if (requiredError != null) return requiredError;
+    return pattern.hasMatch(value!.trim())
+        ? null
+        : context.l10n.coreCatchFormValidationPattern(field: field);
+  }
+
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) return;
+    if (!_termsAccepted) {
+      setState(() {});
+      return;
+    }
+    await widget.onSubmit(
+      RazorpayHostOnboardingDetails(
+        legalBusinessName: _legalBusinessName.text,
+        businessType: _businessType,
+        contactName: _contactName.text,
+        email: _email.text,
+        phone: _phone.text,
+        businessModel: _businessModel.text,
+        businessPan: _businessPan.text,
+        bankAccountNumber: _bankAccountNumber.text,
+        ifscCode: _ifscCode.text,
+        beneficiaryName: _beneficiaryName.text,
+        stakeholderName: _stakeholderName.text,
+        stakeholderEmail: _stakeholderEmail.text,
+        stakeholderPhone: _stakeholderPhone.text,
+        stakeholderPan: _stakeholderPan.text,
+        stakeholderOwnershipPercent:
+            double.tryParse(_ownershipPercent.text) ?? 0,
+        stakeholderIsDirector: _isDirector,
+        stakeholderIsExecutive: _isExecutive,
+        termsAccepted: _termsAccepted,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    const gap = SizedBox(height: CatchSpacing.s3);
+    return CatchBottomSheetScaffold(
+      keyboardSafe: true,
+      title: l10n.hostsHostPaymentAccountCardTitleSetUpPayouts,
+      subtitle: l10n.hostsHostPaymentAccountCardSubtitlePoweredByRazorpay,
+      action: CatchButton(
+        label: l10n.hostsHostPaymentAccountCardLabelSubmitRazorpay,
+        fullWidth: true,
+        isLoading: widget.pending,
+        onPressed: widget.pending || !_termsAccepted ? null : _submit,
+      ),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.sizeOf(context).height * 0.62,
+        ),
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  l10n.hostsHostPaymentAccountCardTextCatchPaysIndiaHostsThrough,
+                  style: CatchTextStyles.supporting(
+                    context,
+                    color: CatchTokens.of(context).ink2,
+                  ),
+                ),
+                gapH16,
+                CatchField.select<RazorpayHostBusinessType>(
+                  title: l10n.hostsHostPaymentAccountCardTitleBusinessType,
+                  contract: CatchContractConstraints
+                      .createRazorpayHostPaymentAccountCallablePayloadBusinessType,
+                  contractValue: (value) => value.wireValue,
+                  values: RazorpayHostBusinessType.values,
+                  itemLabel: _businessTypeLabel,
+                  value: _businessType,
+                  enabled: !widget.pending,
+                  onChanged: (value) {
+                    if (value != null) setState(() => _businessType = value);
+                  },
+                ),
+                gap,
+                _input(
+                  l10n.hostsHostPaymentAccountCardTitleLegalBusinessName,
+                  _legalBusinessName,
+                  CatchContractConstraints
+                      .createRazorpayHostPaymentAccountCallablePayloadLegalBusinessName,
+                ),
+                gap,
+                _input(
+                  l10n.hostsHostPaymentAccountCardTitleContactName,
+                  _contactName,
+                  CatchContractConstraints
+                      .createRazorpayHostPaymentAccountCallablePayloadContactName,
+                ),
+                gap,
+                _input(
+                  l10n.hostsHostPaymentAccountCardTitleEmail,
+                  _email,
+                  CatchContractConstraints
+                      .createRazorpayHostPaymentAccountCallablePayloadEmail,
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                gap,
+                _input(
+                  l10n.hostsHostPaymentAccountCardTitlePhone,
+                  _phone,
+                  CatchContractConstraints
+                      .createRazorpayHostPaymentAccountCallablePayloadPhone,
+                  keyboardType: TextInputType.phone,
+                  validator: (value) => _pattern(
+                    value,
+                    RegExp(r'^\+?[0-9]{8,15}$'),
+                    l10n.hostsHostPaymentAccountCardTitlePhone,
+                  ),
+                ),
+                gap,
+                _input(
+                  l10n.hostsHostPaymentAccountCardTitleBusinessModel,
+                  _businessModel,
+                  CatchContractConstraints
+                      .createRazorpayHostPaymentAccountCallablePayloadBusinessModel,
+                  maxLines: 3,
+                ),
+                gap,
+                _panInput(
+                  l10n.hostsHostPaymentAccountCardTitleBusinessPan,
+                  _businessPan,
+                  CatchContractConstraints
+                      .createRazorpayHostPaymentAccountCallablePayloadBusinessPan,
+                ),
+                gap,
+                _input(
+                  l10n.hostsHostPaymentAccountCardTitleBankAccountNumber,
+                  _bankAccountNumber,
+                  CatchContractConstraints
+                      .createRazorpayHostPaymentAccountCallablePayloadBankAccountNumber,
+                  keyboardType: TextInputType.number,
+                  obscureText: true,
+                ),
+                gap,
+                _input(
+                  l10n.hostsHostPaymentAccountCardTitleIfscCode,
+                  _ifscCode,
+                  CatchContractConstraints
+                      .createRazorpayHostPaymentAccountCallablePayloadIfscCode,
+                  validator: (value) => _pattern(
+                    value?.toUpperCase(),
+                    RegExp(r'^[A-Z]{4}0[A-Z0-9]{6}$'),
+                    l10n.hostsHostPaymentAccountCardTitleIfscCode,
+                  ),
+                ),
+                gap,
+                _input(
+                  l10n.hostsHostPaymentAccountCardTitleBeneficiaryName,
+                  _beneficiaryName,
+                  CatchContractConstraints
+                      .createRazorpayHostPaymentAccountCallablePayloadBeneficiaryName,
+                ),
+                gapH16,
+                _input(
+                  l10n.hostsHostPaymentAccountCardTitleStakeholderName,
+                  _stakeholderName,
+                  CatchContractConstraints
+                      .createRazorpayHostPaymentAccountCallablePayloadStakeholderName,
+                ),
+                gap,
+                _input(
+                  l10n.hostsHostPaymentAccountCardTitleStakeholderEmail,
+                  _stakeholderEmail,
+                  CatchContractConstraints
+                      .createRazorpayHostPaymentAccountCallablePayloadStakeholderEmail,
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                gap,
+                _input(
+                  l10n.hostsHostPaymentAccountCardTitleStakeholderPhone,
+                  _stakeholderPhone,
+                  CatchContractConstraints
+                      .createRazorpayHostPaymentAccountCallablePayloadStakeholderPhone,
+                  keyboardType: TextInputType.phone,
+                  validator: (value) => _pattern(
+                    value,
+                    RegExp(r'^\+?[0-9]{8,15}$'),
+                    l10n.hostsHostPaymentAccountCardTitleStakeholderPhone,
+                  ),
+                ),
+                gap,
+                _panInput(
+                  l10n.hostsHostPaymentAccountCardTitleStakeholderPan,
+                  _stakeholderPan,
+                  CatchContractConstraints
+                      .createRazorpayHostPaymentAccountCallablePayloadStakeholderPan,
+                ),
+                gap,
+                _input(
+                  l10n.hostsHostPaymentAccountCardTitleOwnershipPercent,
+                  _ownershipPercent,
+                  CatchContractConstraints
+                      .createRazorpayHostPaymentAccountCallablePayloadStakeholderOwnershipPercent,
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    final parsed = double.tryParse(value?.trim() ?? '');
+                    return parsed != null && parsed >= 0 && parsed <= 100
+                        ? null
+                        : l10n.coreCatchFormValidationPattern(
+                            field: l10n
+                                .hostsHostPaymentAccountCardTitleOwnershipPercent,
+                          );
+                  },
+                ),
+                gap,
+                CatchField.toggle(
+                  title:
+                      l10n.hostsHostPaymentAccountCardTitleStakeholderDirector,
+                  value: _isDirector,
+                  onChanged: widget.pending
+                      ? null
+                      : (value) => setState(() => _isDirector = value),
+                ),
+                CatchField.toggle(
+                  title:
+                      l10n.hostsHostPaymentAccountCardTitleStakeholderExecutive,
+                  value: _isExecutive,
+                  onChanged: widget.pending
+                      ? null
+                      : (value) => setState(() => _isExecutive = value),
+                ),
+                CatchField.toggle(
+                  title:
+                      l10n.hostsHostPaymentAccountCardTitleAcceptRazorpayTerms,
+                  body: l10n.hostsHostPaymentAccountCardBodyRazorpayTerms,
+                  value: _termsAccepted,
+                  onChanged: widget.pending
+                      ? null
+                      : (value) => setState(() => _termsAccepted = value),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _input(
+    String title,
+    TextEditingController controller,
+    CatchContractFieldConstraints contract, {
+    TextInputType? keyboardType,
+    bool obscureText = false,
+    int? maxLines,
+    FormFieldValidator<String>? validator,
+  }) => CatchField.input(
+    title: title,
+    controller: controller,
+    contract: contract,
+    enabled: !widget.pending,
+    keyboardType: keyboardType,
+    obscureText: obscureText,
+    maxLines: maxLines,
+    validator: validator ?? _required,
+  );
+
+  Widget _panInput(
+    String title,
+    TextEditingController controller,
+    CatchContractFieldConstraints contract,
+  ) => _input(
+    title,
+    controller,
+    contract,
+    validator: (value) => _pattern(
+      value?.toUpperCase(),
+      RegExp(r'^[A-Z]{5}[0-9]{4}[A-Z]$'),
+      title,
+    ),
+  );
+
+  String _businessTypeLabel(RazorpayHostBusinessType value) => value.wireValue
+      .split('_')
+      .map((part) => '${part[0].toUpperCase()}${part.substring(1)}')
+      .join(' ');
 }
 
 class HostPaymentAccountLoadingCard extends StatelessWidget {

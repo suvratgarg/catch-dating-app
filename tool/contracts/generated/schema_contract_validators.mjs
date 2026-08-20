@@ -454,6 +454,8 @@ import {
   stripeCheckoutSessionCallableResponseSchema,
   createStripeHostOnboardingLinkCallablePayloadSchema,
   refreshStripeHostPaymentAccountCallablePayloadSchema,
+  createRazorpayHostPaymentAccountCallablePayloadSchema,
+  refreshRazorpayHostPaymentAccountCallablePayloadSchema,
   stripeHostOnboardingLinkCallableResponseSchema,
   placesAutocompleteCallablePayloadSchema,
   placesAutocompleteCallableResponseSchema,
@@ -970,6 +972,8 @@ export const validateCreateStripeCheckoutSessionCallablePayload = ajv.compile(cr
 export const validateStripeCheckoutSessionCallableResponse = ajv.compile(stripeCheckoutSessionCallableResponseSchema);
 export const validateCreateStripeHostOnboardingLinkCallablePayload = ajv.compile(createStripeHostOnboardingLinkCallablePayloadSchema);
 export const validateRefreshStripeHostPaymentAccountCallablePayload = ajv.compile(refreshStripeHostPaymentAccountCallablePayloadSchema);
+export const validateCreateRazorpayHostPaymentAccountCallablePayload = ajv.compile(createRazorpayHostPaymentAccountCallablePayloadSchema);
+export const validateRefreshRazorpayHostPaymentAccountCallablePayload = ajv.compile(refreshRazorpayHostPaymentAccountCallablePayloadSchema);
 export const validateStripeHostOnboardingLinkCallableResponse = ajv.compile(stripeHostOnboardingLinkCallableResponseSchema);
 export const validatePlacesAutocompleteCallablePayload = ajv.compile(placesAutocompleteCallablePayloadSchema);
 export const validatePlacesAutocompleteCallableResponse = ajv.compile(placesAutocompleteCallableResponseSchema);

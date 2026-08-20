@@ -38496,19 +38496,21 @@ export const hostPaymentAccountDocumentSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/host_payment_accounts.schema.json",
   "title": "HostPaymentAccountDocument",
-  "description": "Server-owned payment provider account state for a host. Stored at hostPaymentAccounts/{uid}.",
+  "description": "Server-owned payout-provider account state. New documents use hostPaymentAccounts/{uid}_{provider}; legacy Stripe documents at {uid} remain readable during migration.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "hostPaymentAccounts",
-  "x-firestore-path": "hostPaymentAccounts/{uid}",
+  "x-firestore-path": "hostPaymentAccounts/{accountId}",
   "x-document-id-field": "id",
-  "x-owner": "Stripe Connect onboarding and webhook callables",
+  "x-owner": "Stripe Connect and Razorpay Route onboarding, refresh, and webhook callables",
   "required": [
     "userId",
     "provider",
     "country",
     "defaultCurrency",
+    "providerAccountId",
     "stripeAccountId",
+    "razorpayAccountId",
     "chargesEnabled",
     "payoutsEnabled",
     "detailsSubmitted",
@@ -38529,6 +38531,7 @@ export const hostPaymentAccountDocumentSchema: Record<string, unknown> = {
     "provider": {
       "type": "string",
       "enum": [
+        "razorpay",
         "stripe"
       ],
       "x-catch-ownership": "callable-owned"
@@ -38545,9 +38548,27 @@ export const hostPaymentAccountDocumentSchema: Record<string, unknown> = {
       "maxLength": 3,
       "x-catch-ownership": "callable-owned"
     },
-    "stripeAccountId": {
+    "providerAccountId": {
       "type": "string",
       "minLength": 1,
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
+    },
+    "stripeAccountId": {
+      "type": "string",
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
+    },
+    "razorpayAccountId": {
+      "type": "string",
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
+    },
+    "razorpayProductId": {
+      "type": [
+        "string",
+        "null"
+      ],
       "maxLength": 120,
       "x-catch-ownership": "callable-owned"
     },
@@ -83820,6 +83841,135 @@ export const refreshStripeHostPaymentAccountCallablePayloadSchema: Record<string
   "$id": "https://catch.app/contracts/callables/refresh_stripe_host_payment_account_payload.schema.json",
   "title": "RefreshStripeHostPaymentAccountCallablePayload",
   "description": "Callable payload accepted by refreshStripeHostPaymentAccount. The authenticated host id determines which Stripe account is refreshed.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {}
+} as const;
+
+export const createRazorpayHostPaymentAccountCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/create_razorpay_host_payment_account_payload.schema.json",
+  "title": "CreateRazorpayHostPaymentAccountCallablePayload",
+  "description": "Creates or continues an India host's Razorpay Route linked-account setup. Legal, stakeholder, and settlement details are sent to Razorpay and are never persisted in Catch Firestore.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "legalBusinessName",
+    "businessType",
+    "contactName",
+    "email",
+    "phone",
+    "businessModel",
+    "businessPan",
+    "bankAccountNumber",
+    "ifscCode",
+    "beneficiaryName",
+    "stakeholderName",
+    "stakeholderEmail",
+    "stakeholderPhone",
+    "stakeholderPan",
+    "stakeholderOwnershipPercent",
+    "stakeholderIsDirector",
+    "stakeholderIsExecutive",
+    "termsAccepted"
+  ],
+  "properties": {
+    "legalBusinessName": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 200
+    },
+    "businessType": {
+      "type": "string",
+      "enum": [
+        "individual",
+        "proprietorship",
+        "partnership",
+        "private_limited",
+        "public_limited",
+        "llp",
+        "trust",
+        "society",
+        "ngo"
+      ]
+    },
+    "contactName": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 255
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "maxLength": 132
+    },
+    "phone": {
+      "type": "string",
+      "pattern": "^[+]?[0-9]{8,15}$"
+    },
+    "businessModel": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "businessPan": {
+      "type": "string",
+      "pattern": "^[A-Z]{5}[0-9]{4}[A-Z]$"
+    },
+    "bankAccountNumber": {
+      "type": "string",
+      "pattern": "^[0-9]{5,20}$"
+    },
+    "ifscCode": {
+      "type": "string",
+      "pattern": "^[A-Z]{4}0[A-Z0-9]{6}$"
+    },
+    "beneficiaryName": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 120
+    },
+    "stakeholderName": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 255
+    },
+    "stakeholderEmail": {
+      "type": "string",
+      "format": "email",
+      "maxLength": 132
+    },
+    "stakeholderPhone": {
+      "type": "string",
+      "pattern": "^[+]?[0-9]{8,15}$"
+    },
+    "stakeholderPan": {
+      "type": "string",
+      "pattern": "^[A-Z]{5}[0-9]{4}[A-Z]$"
+    },
+    "stakeholderOwnershipPercent": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "stakeholderIsDirector": {
+      "type": "boolean"
+    },
+    "stakeholderIsExecutive": {
+      "type": "boolean"
+    },
+    "termsAccepted": {
+      "type": "boolean",
+      "const": true
+    }
+  }
+} as const;
+
+export const refreshRazorpayHostPaymentAccountCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/refresh_razorpay_host_payment_account_payload.schema.json",
+  "title": "RefreshRazorpayHostPaymentAccountCallablePayload",
+  "description": "Refreshes the authenticated host's Razorpay Route activation state.",
   "type": "object",
   "additionalProperties": false,
   "properties": {}

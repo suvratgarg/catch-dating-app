@@ -19,10 +19,10 @@ HostPaymentAccountRepository hostPaymentAccountRepository(Ref ref) {
 }
 
 @riverpod
-Stream<HostPaymentAccount?> watchHostPaymentAccount(Ref ref, String uid) {
+Stream<List<HostPaymentAccount>> watchHostPaymentAccounts(Ref ref, String uid) {
   return ref
       .watch(hostPaymentAccountRepositoryProvider)
-      .watchHostPaymentAccount(uid);
+      .watchHostPaymentAccounts(uid);
 }
 
 class HostPaymentAccountRepository {
@@ -36,16 +36,16 @@ class HostPaymentAccountRepository {
   final FirebaseFirestore _db;
   final FirebaseFunctions _functions;
 
-  Stream<HostPaymentAccount?> watchHostPaymentAccount(String uid) =>
+  Stream<List<HostPaymentAccount>> watchHostPaymentAccounts(String uid) =>
       withBackendErrorStream(
         () => _db
             .collection(_collectionPath)
-            .doc(uid)
+            .where('userId', isEqualTo: uid)
             .snapshots()
             .map(
-              (snap) => snap.exists && snap.data() != null
-                  ? HostPaymentAccount.fromJson(snap.data()!)
-                  : null,
+              (snap) => snap.docs
+                  .map((doc) => HostPaymentAccount.fromJson(doc.data()))
+                  .toList(growable: false),
             ),
         context: const BackendErrorContext(
           service: BackendService.firestore,
@@ -55,37 +55,60 @@ class HostPaymentAccountRepository {
       );
 
   Future<StripeHostOnboardingLinkCallableResponse> createOnboardingLink({
+    required HostPaymentProvider provider,
     required String country,
     required String defaultCurrency,
-  }) => withBackendErrorContext(
-    () async {
-      final result = await _functions
-          .httpsCallable('createStripeHostOnboardingLink')
-          .call<Object?>(
-            CreateStripeHostOnboardingLinkCallableRequest(
-              country: country,
-              defaultCurrency: defaultCurrency,
-            ).toJson(),
-          );
-      return StripeHostOnboardingLinkCallableResponse.fromCallableData(
-        result.data,
-      );
-    },
-    context: const BackendErrorContext(
-      service: BackendService.functions,
-      action: 'create Stripe onboarding link',
-      resource: _collectionPath,
-    ),
-  );
+  }) {
+    if (provider != HostPaymentProvider.stripe) {
+      throw ArgumentError.value(provider, 'provider');
+    }
+    return withBackendErrorContext(
+      () async {
+        final result = await _functions
+            .httpsCallable('createStripeHostOnboardingLink')
+            .call<Object?>(
+              CreateStripeHostOnboardingLinkCallableRequest(
+                country: country,
+                defaultCurrency: defaultCurrency,
+              ).toJson(),
+            );
+        return StripeHostOnboardingLinkCallableResponse.fromCallableData(
+          result.data,
+        );
+      },
+      context: const BackendErrorContext(
+        service: BackendService.functions,
+        action: 'create Stripe onboarding link',
+        resource: _collectionPath,
+      ),
+    );
+  }
 
-  Future<void> refreshStripeStatus() => withBackendErrorContext(
-    () => _functions
-        .httpsCallable('refreshStripeHostPaymentAccount')
-        .call(const <String, Object?>{}),
-    context: const BackendErrorContext(
-      service: BackendService.functions,
-      action: 'refresh Stripe account status',
-      resource: _collectionPath,
-    ),
-  );
+  Future<void> createRazorpayAccount(RazorpayHostOnboardingDetails details) =>
+      withBackendErrorContext(
+        () => _functions
+            .httpsCallable('createRazorpayHostPaymentAccount')
+            .call(details.toJson()),
+        context: const BackendErrorContext(
+          service: BackendService.functions,
+          action: 'create Razorpay host payment account',
+          resource: _collectionPath,
+        ),
+      );
+
+  Future<void> refreshStatus(HostPaymentProvider provider) =>
+      withBackendErrorContext(
+        () => _functions
+            .httpsCallable(switch (provider) {
+              HostPaymentProvider.razorpay =>
+                'refreshRazorpayHostPaymentAccount',
+              HostPaymentProvider.stripe => 'refreshStripeHostPaymentAccount',
+            })
+            .call(const <String, Object?>{}),
+        context: const BackendErrorContext(
+          service: BackendService.functions,
+          action: 'refresh host payment account status',
+          resource: _collectionPath,
+        ),
+      );
 }

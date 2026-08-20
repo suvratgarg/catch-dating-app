@@ -2833,9 +2833,14 @@ List<Object> _hostOperationsProviderOverrides({
       watchClubsOwnedByProvider(uid).overrideWith((ref) => Stream.value(owned))
     else
       watchClubsOwnedByProvider(uid).overrideWithValue(ownedClubsAsync),
-    watchHostPaymentAccountProvider(uid).overrideWithValue(
-      paymentAccountValue ?? const AsyncData<HostPaymentAccount?>(null),
-    ),
+    watchHostPaymentAccountsProvider(
+      uid,
+    ).overrideWithValue(switch (paymentAccountValue) {
+      AsyncData(:final value) => AsyncData(value == null ? const [] : [value]),
+      AsyncError(:final error, :final stackTrace) =>
+        AsyncError<List<HostPaymentAccount>>(error, stackTrace),
+      _ => const AsyncLoading<List<HostPaymentAccount>>(),
+    }),
     hostClubEditControllerProvider.overrideWithValue(
       const _CaptureNoopHostClubEditActions(),
     ),
@@ -3089,12 +3094,14 @@ final class _CaptureNoopHostPaymentAccountActions
   const _CaptureNoopHostPaymentAccountActions();
 
   @override
-  Future<void> refreshStatus() async {}
+  Future<void> refreshStatus(HostPaymentProvider provider) async {}
 
   @override
   Future<void> startOnboarding({
+    required HostPaymentProvider provider,
     required String country,
     required String defaultCurrency,
+    RazorpayHostOnboardingDetails? razorpayDetails,
   }) async {}
 }
 

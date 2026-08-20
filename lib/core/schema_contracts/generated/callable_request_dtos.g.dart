@@ -79,6 +79,7 @@ export 'callables/create_organizer_form_share_link_callable_request.g.dart';
 export 'callables/create_organizer_post_callable_request.g.dart';
 export 'callables/create_public_club_review_callable_request.g.dart';
 export 'callables/create_public_organizer_review_callable_request.g.dart';
+export 'callables/create_razorpay_host_payment_account_callable_request.g.dart';
 export 'callables/create_stripe_checkout_session_callable_request.g.dart';
 export 'callables/create_stripe_host_onboarding_link_callable_request.g.dart';
 export 'callables/delete_club_callable_request.g.dart';

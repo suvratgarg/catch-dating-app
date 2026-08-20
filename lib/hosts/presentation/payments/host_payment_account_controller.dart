@@ -2,6 +2,7 @@ import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
+import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -13,11 +14,13 @@ HostPaymentAccountActions hostPaymentAccountController(Ref ref) =>
 
 abstract interface class HostPaymentAccountActions {
   Future<void> startOnboarding({
+    required HostPaymentProvider provider,
     required String country,
     required String defaultCurrency,
+    RazorpayHostOnboardingDetails? razorpayDetails,
   });
 
-  Future<void> refreshStatus();
+  Future<void> refreshStatus(HostPaymentProvider provider);
 }
 
 class HostPaymentAccountController implements HostPaymentAccountActions {
@@ -30,13 +33,27 @@ class HostPaymentAccountController implements HostPaymentAccountActions {
 
   @override
   Future<void> startOnboarding({
+    required HostPaymentProvider provider,
     required String country,
     required String defaultCurrency,
+    RazorpayHostOnboardingDetails? razorpayDetails,
   }) async {
     requireSignedInUid(_ref, action: 'set up payouts');
+    if (provider == HostPaymentProvider.razorpay) {
+      if (razorpayDetails == null) {
+        throw ArgumentError.notNull('razorpayDetails');
+      }
+      final uid = requireSignedInUid(_ref, action: 'set up Razorpay payouts');
+      await _ref
+          .read(hostPaymentAccountRepositoryProvider)
+          .createRazorpayAccount(razorpayDetails);
+      _ref.invalidate(watchHostPaymentAccountsProvider(uid));
+      return;
+    }
     final link = await _ref
         .read(hostPaymentAccountRepositoryProvider)
         .createOnboardingLink(
+          provider: provider,
           country: country,
           defaultCurrency: defaultCurrency,
         );
@@ -44,14 +61,18 @@ class HostPaymentAccountController implements HostPaymentAccountActions {
         .read(externalLinkControllerProvider)
         .openExternal(link.onboardingUrl);
     if (!opened) {
-      throw const ExternalActionException('Could not open Stripe onboarding.');
+      throw ExternalActionException(
+        'Could not open ${provider.name} onboarding.',
+      );
     }
   }
 
   @override
-  Future<void> refreshStatus() async {
+  Future<void> refreshStatus(HostPaymentProvider provider) async {
     final uid = requireSignedInUid(_ref, action: 'refresh payouts');
-    await _ref.read(hostPaymentAccountRepositoryProvider).refreshStripeStatus();
-    _ref.invalidate(watchHostPaymentAccountProvider(uid));
+    await _ref
+        .read(hostPaymentAccountRepositoryProvider)
+        .refreshStatus(provider);
+    _ref.invalidate(watchHostPaymentAccountsProvider(uid));
   }
 }

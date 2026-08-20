@@ -22,14 +22,14 @@ class HostPaymentAccountControllerCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final uidAsync = ref.watch(uidProvider);
     final uid = catchAsyncStateFromAsyncValue(uidAsync).value;
-    final accountAsync = switch (uidAsync) {
+    final accountsAsync = switch (uidAsync) {
       AsyncData(:final value) =>
         value == null
-            ? const AsyncValue<HostPaymentAccount?>.data(null)
-            : ref.watch(watchHostPaymentAccountProvider(value)),
+            ? const AsyncValue<List<HostPaymentAccount>>.data([])
+            : ref.watch(watchHostPaymentAccountsProvider(value)),
       AsyncError(:final error, :final stackTrace) =>
-        AsyncValue<HostPaymentAccount?>.error(error, stackTrace),
-      _ => const AsyncValue<HostPaymentAccount?>.loading(),
+        AsyncValue<List<HostPaymentAccount>>.error(error, stackTrace),
+      _ => const AsyncValue<List<HostPaymentAccount>>.loading(),
     };
     final onboardingMutation = ref.watch(
       HostPaymentAccountController.startOnboardingMutation,
@@ -51,8 +51,10 @@ class HostPaymentAccountControllerCard extends ConsumerWidget {
           );
 
     Future<void> startOnboarding({
+      required HostPaymentProvider provider,
       required String country,
       required String currency,
+      RazorpayHostOnboardingDetails? razorpayDetails,
     }) async {
       final failureReason = context
           .l10n
@@ -65,7 +67,12 @@ class HostPaymentAccountControllerCard extends ConsumerWidget {
           ref,
           (tx) => tx
               .get(hostPaymentAccountControllerProvider)
-              .startOnboarding(country: country, defaultCurrency: currency),
+              .startOnboarding(
+                provider: provider,
+                country: country,
+                defaultCurrency: currency,
+                razorpayDetails: razorpayDetails,
+              ),
         );
       } catch (error, stackTrace) {
         ref
@@ -74,7 +81,7 @@ class HostPaymentAccountControllerCard extends ConsumerWidget {
       }
     }
 
-    Future<void> refresh() async {
+    Future<void> refresh(HostPaymentProvider provider) async {
       final failureReason = context
           .l10n
           .hostsHostPaymentAccountControllerCardVisiblecopyHostpaymentaccountcontrollercardRefreshFailed;
@@ -84,7 +91,9 @@ class HostPaymentAccountControllerCard extends ConsumerWidget {
       try {
         await HostPaymentAccountController.refreshStatusMutation.run(
           ref,
-          (tx) => tx.get(hostPaymentAccountControllerProvider).refreshStatus(),
+          (tx) => tx
+              .get(hostPaymentAccountControllerProvider)
+              .refreshStatus(provider),
         );
       } catch (error, stackTrace) {
         ref
@@ -93,21 +102,21 @@ class HostPaymentAccountControllerCard extends ConsumerWidget {
       }
     }
 
-    return CatchAsyncValueView<HostPaymentAccount?>(
-      value: accountAsync,
+    return CatchAsyncValueView<List<HostPaymentAccount>>(
+      value: accountsAsync,
       onRetry: uid == null
           ? null
-          : () => ref.invalidate(watchHostPaymentAccountProvider(uid)),
+          : () => ref.invalidate(watchHostPaymentAccountsProvider(uid)),
       loadingBuilder: (_) => const HostPaymentAccountLoadingCard(),
       errorBuilder: (_, error, _) => HostPaymentAccountErrorCard(
         error: error,
         onRetry: uid == null
             ? null
-            : () => ref.invalidate(watchHostPaymentAccountProvider(uid)),
+            : () => ref.invalidate(watchHostPaymentAccountsProvider(uid)),
       ),
-      builder: (context, account) => HostPaymentAccountCard(
+      builder: (context, accounts) => HostPaymentAccountCard(
         club: club,
-        account: account,
+        accounts: accounts,
         actionErrorMessage: actionErrorMessage,
         onboardingPending: onboardingMutation.isPending,
         refreshPending: refreshMutation.isPending,

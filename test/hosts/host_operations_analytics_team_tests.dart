@@ -35,9 +35,9 @@ void _registerHostOperationsAnalyticsTeamTests() {
             _previewViewModel(ownedClub, events: [previewEvent]),
           ),
         ),
-        watchHostPaymentAccountProvider(
+        watchHostPaymentAccountsProvider(
           _hostUid,
-        ).overrideWithValue(const AsyncData<HostPaymentAccount?>(null)),
+        ).overrideWithValue(const AsyncData<List<HostPaymentAccount>>([])),
         hostAnalyticsRepositoryProvider.overrideWithValue(
           const _EmptyHostAnalyticsRepository(),
         ),
@@ -256,9 +256,9 @@ void _registerHostOperationsAnalyticsTeamTests() {
         ),
         overrides: [
           ..._hostClubOverrides(owned: [ownedClub]),
-          watchHostPaymentAccountProvider(
+          watchHostPaymentAccountsProvider(
             _hostUid,
-          ).overrideWithValue(const AsyncData<HostPaymentAccount?>(null)),
+          ).overrideWithValue(const AsyncData<List<HostPaymentAccount>>([])),
         ],
       );
 
@@ -720,9 +720,9 @@ void _registerHostOperationsAnalyticsTeamTests() {
         watchEventsForClubProvider(
           ownedClub.id,
         ).overrideWithValue(const AsyncData<List<Event>>([])),
-        watchHostPaymentAccountProvider(
+        watchHostPaymentAccountsProvider(
           _hostUid,
-        ).overrideWithValue(const AsyncData<HostPaymentAccount?>(null)),
+        ).overrideWithValue(const AsyncData<List<HostPaymentAccount>>([])),
         hostAnalyticsRepositoryProvider.overrideWithValue(
           _EmptyHostAnalyticsRepository(
             topEvents: List.generate(

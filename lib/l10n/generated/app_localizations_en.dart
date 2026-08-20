@@ -2132,6 +2132,109 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostPaymentAccountCardLabelRefresh => 'Refresh';
 
   @override
+  String get hostsHostPaymentAccountCardSubtitlePoweredByRazorpay =>
+      'Powered by Razorpay Route';
+
+  @override
+  String get hostsHostPaymentAccountCardLabelContinueToRazorpay =>
+      'Set up Razorpay';
+
+  @override
+  String get hostsHostPaymentAccountCardTextCatchPaysIndiaHostsThrough =>
+      'Catch uses Razorpay Route for INR payouts. Provide the legal, stakeholder, and bank details Razorpay needs to review your linked account.';
+
+  @override
+  String get hostsHostPaymentAccountCardLabelRecommended => 'Recommended';
+
+  @override
+  String get hostsHostPaymentAccountCardTitleRazorpay => 'Razorpay';
+
+  @override
+  String get hostsHostPaymentAccountCardTitleStripe => 'Stripe';
+
+  @override
+  String get hostsHostPaymentAccountCardBodyRazorpayInr =>
+      'INR checkout and payouts for India-based organizers.';
+
+  @override
+  String get hostsHostPaymentAccountCardBodyStripeInternational =>
+      'Non-INR checkout and international payouts.';
+
+  @override
+  String get hostsHostPaymentAccountCardTitleLegalBusinessName =>
+      'Legal business name';
+
+  @override
+  String get hostsHostPaymentAccountCardTitleBusinessType => 'Business type';
+
+  @override
+  String get hostsHostPaymentAccountCardTitleContactName => 'Contact name';
+
+  @override
+  String get hostsHostPaymentAccountCardTitleEmail => 'Business email';
+
+  @override
+  String get hostsHostPaymentAccountCardTitlePhone => 'Business phone';
+
+  @override
+  String get hostsHostPaymentAccountCardTitleBusinessModel =>
+      'Business description';
+
+  @override
+  String get hostsHostPaymentAccountCardTitleBusinessPan => 'Business PAN';
+
+  @override
+  String get hostsHostPaymentAccountCardTitleBankAccountNumber =>
+      'Bank account number';
+
+  @override
+  String get hostsHostPaymentAccountCardTitleIfscCode => 'IFSC code';
+
+  @override
+  String get hostsHostPaymentAccountCardTitleBeneficiaryName =>
+      'Beneficiary name';
+
+  @override
+  String get hostsHostPaymentAccountCardTitleStakeholderName =>
+      'Stakeholder name';
+
+  @override
+  String get hostsHostPaymentAccountCardTitleStakeholderEmail =>
+      'Stakeholder email';
+
+  @override
+  String get hostsHostPaymentAccountCardTitleStakeholderPhone =>
+      'Stakeholder phone';
+
+  @override
+  String get hostsHostPaymentAccountCardTitleStakeholderPan =>
+      'Stakeholder PAN';
+
+  @override
+  String get hostsHostPaymentAccountCardTitleOwnershipPercent =>
+      'Ownership percentage';
+
+  @override
+  String get hostsHostPaymentAccountCardTitleStakeholderDirector =>
+      'This stakeholder is a director';
+
+  @override
+  String get hostsHostPaymentAccountCardTitleStakeholderExecutive =>
+      'This stakeholder is an executive';
+
+  @override
+  String get hostsHostPaymentAccountCardTitleAcceptRazorpayTerms =>
+      'Accept Razorpay Route terms';
+
+  @override
+  String get hostsHostPaymentAccountCardBodyRazorpayTerms =>
+      'You confirm these details are accurate and authorize Catch to submit them to Razorpay for linked-account review.';
+
+  @override
+  String get hostsHostPaymentAccountCardLabelSubmitRazorpay =>
+      'Submit to Razorpay';
+
+  @override
   String get hostsCatchRosterBoardLabelOpenProfile => 'Open profile';
 
   @override

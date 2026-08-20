@@ -33,6 +33,8 @@ import {
   stripeConnectReturnUrlValue,
   stripeSecretKey,
 } from "./stripe";
+import {findHostPaymentAccount, providerAccountId} from
+  "./hostPaymentAccounts";
 
 interface StripeHostAccountDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -67,10 +69,10 @@ export async function createStripeHostOnboardingLinkHandler(
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, uid, "createStripeHostOnboardingLink");
 
-  const [userSnap, hostClaimSnap, accountSnap] = await Promise.all([
+  const [userSnap, hostClaimSnap, existing] = await Promise.all([
     db.collection("users").doc(uid).get(),
     db.collection("clubHostClaims").doc(uid).get(),
-    db.collection("hostPaymentAccounts").doc(uid).get(),
+    findHostPaymentAccount(db, uid, "stripe"),
   ]);
   if (!userSnap.exists) {
     throw new HttpsError("not-found", "User profile not found.");
@@ -91,12 +93,7 @@ export async function createStripeHostOnboardingLinkHandler(
     "ClubHostClaimDocument"
   );
   const stripe = deps.stripe();
-  const existingAccount = accountSnap.exists ?
-    requireDoc<HostPaymentAccountDocument>(
-      accountSnap,
-      "HostPaymentAccountDocument"
-    ) :
-    null;
+  const existingAccount = existing.account;
   const account = existingAccount === null ?
     await stripe.createConnectedAccount({
       contactEmail: user.email,
@@ -104,10 +101,10 @@ export async function createStripeHostOnboardingLinkHandler(
       country: payload.country ?? "US",
       defaultCurrency: payload.defaultCurrency ?? "USD",
     }) :
-    await stripe.retrieveConnectedAccount(existingAccount.stripeAccountId);
+    await stripe.retrieveConnectedAccount(providerAccountId(existingAccount));
 
   await writeHostPaymentAccount({
-    db,
+    accountRef: existing.ref,
     uid,
     account,
     createdAt: existingAccount === null ? deps.serverTimestamp() : undefined,
@@ -134,17 +131,13 @@ export async function refreshStripeHostPaymentAccountHandler(
   );
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, uid, "refreshStripeHostPaymentAccount");
-  const accountRef = db.collection("hostPaymentAccounts").doc(uid);
-  const accountSnap = await accountRef.get();
-  if (!accountSnap.exists) {
+  const existing = await findHostPaymentAccount(db, uid, "stripe");
+  if (!existing.account) {
     return {account: null};
   }
-  const existingAccount = requireDoc<HostPaymentAccountDocument>(
-    accountSnap,
-    "HostPaymentAccountDocument"
-  );
+  const existingAccount = existing.account;
   const account = await deps.stripe().retrieveConnectedAccount(
-    existingAccount.stripeAccountId
+    providerAccountId(existingAccount)
   );
   const next = hostPaymentAccountDocument({
     uid,
@@ -153,7 +146,7 @@ export async function refreshStripeHostPaymentAccountHandler(
     updatedAt: deps.serverTimestamp(),
     lastStripeEventId: existingAccount.lastStripeEventId ?? null,
   });
-  await accountRef.set(next, {merge: true});
+  await existing.ref.set(next, {merge: true});
   return {account: next};
 }
 
@@ -213,7 +206,10 @@ function hostPaymentAccountDocument({
     provider: "stripe",
     country: account.country,
     defaultCurrency: account.defaultCurrency,
+    providerAccountId: account.id,
     stripeAccountId: account.id,
+    razorpayAccountId: "",
+    razorpayProductId: null,
     chargesEnabled: account.chargesEnabled,
     payoutsEnabled: account.payoutsEnabled,
     detailsSubmitted: account.detailsSubmitted,
@@ -230,26 +226,25 @@ function hostPaymentAccountDocument({
 }
 
 async function writeHostPaymentAccount({
-  db,
+  accountRef,
   uid,
   account,
   createdAt,
   updatedAt,
 }: {
-  db: FirebaseFirestore.Firestore;
+  accountRef: FirebaseFirestore.DocumentReference;
   uid: string;
   account: StripeAccountSnapshot;
   createdAt?: unknown;
   updatedAt: unknown;
 }) {
-  const ref = db.collection("hostPaymentAccounts").doc(uid);
   const base = hostPaymentAccountDocument({
     uid,
     account,
     createdAt: createdAt ?? updatedAt,
     updatedAt,
   });
-  await ref.set(base, {merge: true});
+  await accountRef.set(base, {merge: true});
 }
 
 function onboardingStatus(
