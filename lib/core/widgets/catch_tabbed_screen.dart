@@ -16,6 +16,7 @@ class CatchTabbedScreenScaffold extends StatelessWidget {
     this.subtitle,
     this.leading,
     this.actions = const <Widget>[],
+    this.search,
     this.titleMaxLines = 1,
     this.rowCrossAxisAlignment = CrossAxisAlignment.center,
     this.outerScrollController,
@@ -28,6 +29,7 @@ class CatchTabbedScreenScaffold extends StatelessWidget {
   final String? subtitle;
   final Widget? leading;
   final List<Widget> actions;
+  final CatchTopBarSearch? search;
   final int titleMaxLines;
   final CrossAxisAlignment rowCrossAxisAlignment;
   final PreferredSizeWidget tabRail;
@@ -42,16 +44,31 @@ class CatchTabbedScreenScaffold extends StatelessWidget {
     Widget scrollView = NestedScrollView(
       controller: outerScrollController,
       headerSliverBuilder: (context, innerBoxIsScrolled) {
+        final headerTitle = search == null
+            ? CatchScreenHeaderTitle.block(
+                eyebrow: eyebrow,
+                title: title,
+                subtitle: subtitle,
+                leading: leading,
+                actions: actions,
+                titleMaxLines: titleMaxLines,
+                rowCrossAxisAlignment: rowCrossAxisAlignment,
+              )
+            : CatchScreenTopBar(
+                context: context,
+                eyebrow: eyebrow,
+                title: title,
+                subtitle: subtitle,
+                leading: leading,
+                leadingType: CatchTopBarLeading.none,
+                actions: actions,
+                titleMaxLines: titleMaxLines,
+                rowCrossAxisAlignment: rowCrossAxisAlignment,
+                applySafeArea: false,
+                search: search,
+              );
         final headerSlivers = CatchSliverHeader(
-          title: CatchScreenHeaderTitle.block(
-            eyebrow: eyebrow,
-            title: title,
-            subtitle: subtitle,
-            leading: leading,
-            actions: actions,
-            titleMaxLines: titleMaxLines,
-            rowCrossAxisAlignment: rowCrossAxisAlignment,
-          ),
+          title: headerTitle,
           bottomHeight: tabRail.preferredSize.height,
           bottom: tabRail,
         ).buildSlivers(context);

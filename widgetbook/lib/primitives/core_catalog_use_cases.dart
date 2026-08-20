@@ -4066,8 +4066,7 @@ class _SearchFieldExpansionDemoState extends State<_SearchFieldExpansionDemo> {
   Widget build(BuildContext context) {
     return SizedBox(
       height: WidgetbookPreviewLayout.navigationBarHeight,
-      child: CatchSearchField(
-        mode: CatchSearchFieldMode.expanding,
+      child: CatchSearchField.expanding(
         progress: _open ? 1 : 0,
         maxWidth: 420,
         value: _value,

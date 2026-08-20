@@ -44,6 +44,7 @@ class CatchActionMenu<T> extends StatefulWidget {
 
 class _CatchActionMenuState<T> extends State<CatchActionMenu<T>> {
   final _controller = MenuController();
+  final _anchorKey = GlobalKey();
 
   bool get _canOpen => widget.enabled && widget.items.isNotEmpty;
 
@@ -73,43 +74,45 @@ class _CatchActionMenuState<T> extends State<CatchActionMenu<T>> {
         CatchLayout.actionMenuAlignmentXFor(menuWidth),
         CatchSpacing.s1,
       ),
-      style: const MenuStyle(
-        backgroundColor: WidgetStatePropertyAll(Colors.transparent),
-        elevation: WidgetStatePropertyAll(0),
-        shadowColor: WidgetStatePropertyAll(Colors.transparent),
-        surfaceTintColor: WidgetStatePropertyAll(Colors.transparent),
-        padding: WidgetStatePropertyAll(EdgeInsets.zero),
-      ),
+      style: catchMenuAnchorStyle,
       menuChildren: [
-        CatchMenu<T>(
-          width: menuWidth,
-          items: [
-            for (final item in widget.items)
-              CatchMenuItem<T>(
-                value: item.value,
-                label: item.label,
-                sublabel: item.sublabel,
-                icon: item.icon,
-                danger: item.isDestructive,
-                enabled: item.enabled,
-              ),
-          ],
-          onSelected: (value, _) {
-            widget.onSelected?.call(value);
-            _controller.close();
-          },
+        catchMenuWithViewportBoundary(
+          context: context,
+          anchorKey: _anchorKey,
+          child: CatchMenu<T>(
+            width: menuWidth,
+            items: [
+              for (final item in widget.items)
+                CatchMenuItem<T>(
+                  value: item.value,
+                  label: item.label,
+                  sublabel: item.sublabel,
+                  icon: item.icon,
+                  danger: item.isDestructive,
+                  enabled: item.enabled,
+                ),
+            ],
+            onSelected: (value, _) {
+              widget.onSelected?.call(value);
+              _controller.close();
+            },
+          ),
         ),
       ],
       builder: (context, controller, child) {
-        return CatchIconButton(
-          tooltip: widget.tooltip,
-          onTap: _canOpen
-              ? () => controller.isOpen ? controller.close() : controller.open()
-              : null,
-          child: Icon(
-            widget.icon ?? CatchIcons.moreHorizRounded,
-            size: CatchIcon.md,
-            color: widget.enabled ? t.ink : t.ink3,
+        return KeyedSubtree(
+          key: _anchorKey,
+          child: CatchIconButton(
+            tooltip: widget.tooltip,
+            onTap: _canOpen
+                ? () =>
+                      controller.isOpen ? controller.close() : controller.open()
+                : null,
+            child: Icon(
+              widget.icon ?? CatchIcons.moreHorizRounded,
+              size: CatchIcon.md,
+              color: widget.enabled ? t.ink : t.ink3,
+            ),
           ),
         );
       },

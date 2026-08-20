@@ -62,6 +62,7 @@ class CatchSelectionMenu<T> extends StatefulWidget {
 
 class _CatchSelectionMenuState<T> extends State<CatchSelectionMenu<T>> {
   final _controller = MenuController();
+  final _anchorKey = GlobalKey();
 
   CatchSelectionMenuItem<T> get _selectedItem =>
       widget.items.firstWhere((item) => item.value == widget.value);
@@ -75,40 +76,41 @@ class _CatchSelectionMenuState<T> extends State<CatchSelectionMenu<T>> {
     return MenuAnchor(
       controller: _controller,
       alignmentOffset: const Offset(0, CatchSpacing.s1),
-      style: const MenuStyle(
-        backgroundColor: WidgetStatePropertyAll(Colors.transparent),
-        elevation: WidgetStatePropertyAll(0),
-        shadowColor: WidgetStatePropertyAll(Colors.transparent),
-        surfaceTintColor: WidgetStatePropertyAll(Colors.transparent),
-        padding: WidgetStatePropertyAll(EdgeInsets.zero),
-      ),
+      style: catchMenuAnchorStyle,
       menuChildren: [
-        CatchMenu<T>(
-          width: menuWidth,
-          items: [
-            for (final item in widget.items)
-              CatchMenuItem<T>(
-                value: item.value,
-                label: item.label,
-                sublabel: item.sublabel,
-                icon: item.icon,
-                selected: item.value == widget.value,
-                enabled: item.enabled,
-                role: CatchMenuItemRole.choice,
-              ),
-          ],
-          onSelected: (value, _) {
-            if (value != widget.value) catchSelectionHaptic();
-            widget.onSelected(value);
-            _controller.close();
-          },
+        catchMenuWithViewportBoundary(
+          context: context,
+          anchorKey: _anchorKey,
+          child: CatchMenu<T>(
+            width: menuWidth,
+            items: [
+              for (final item in widget.items)
+                CatchMenuItem<T>(
+                  value: item.value,
+                  label: item.label,
+                  sublabel: item.sublabel,
+                  icon: item.icon,
+                  selected: item.value == widget.value,
+                  enabled: item.enabled,
+                  role: CatchMenuItemRole.choice,
+                ),
+            ],
+            onSelected: (value, _) {
+              if (value != widget.value) catchSelectionHaptic();
+              widget.onSelected(value);
+              _controller.close();
+            },
+          ),
         ),
       ],
-      builder: (context, controller, child) => widget.builder(
-        context,
-        _selectedItem,
-        controller.isOpen,
-        () => controller.isOpen ? controller.close() : controller.open(),
+      builder: (context, controller, child) => KeyedSubtree(
+        key: _anchorKey,
+        child: widget.builder(
+          context,
+          _selectedItem,
+          controller.isOpen,
+          () => controller.isOpen ? controller.close() : controller.open(),
+        ),
       ),
     );
   }
