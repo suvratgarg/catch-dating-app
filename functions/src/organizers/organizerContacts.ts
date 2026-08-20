@@ -568,7 +568,9 @@ export async function getOrganizerContactDetailHandler(
   }
   const eventDocuments = eventSnap.docs.slice(0, maxDetailEvents)
     .map((doc) => doc.data() as OrganizerContactEventEdgeDocument);
-  const uniqueEventIds = [...new Set(eventDocuments.map((edge) => edge.eventId))];
+  const uniqueEventIds = [
+    ...new Set(eventDocuments.map((edge) => edge.eventId)),
+  ];
   const hydratedEventSnaps = uniqueEventIds.length === 0 ? [] : await db.getAll(
     ...uniqueEventIds.map((eventId) => db.collection("events").doc(eventId))
   );
@@ -1870,7 +1872,8 @@ function assertActiveOrganizerContact(
 
 function eventDetailRow(
   edge: OrganizerContactEventEdgeDocument,
-  revenues: GetOrganizerContactDetailCallableResponse["events"][number]["revenues"],
+  revenues:
+    GetOrganizerContactDetailCallableResponse["events"][number]["revenues"],
   event?: EventDocument,
 ): GetOrganizerContactDetailCallableResponse["events"][number] {
   const millis = (value: FirebaseFirestore.Timestamp | null) =>

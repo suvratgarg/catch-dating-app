@@ -845,8 +845,8 @@ export function prepareImportRows(params: {
     const revenueCurrency = stringOrNull(row.revenueCurrency)?.toUpperCase() ??
       null;
     const revenueSource = row.revenueSource ?? null;
-    const hasRevenue = revenueAmountMinor !== null || revenueCurrency !== null ||
-      revenueSource !== null;
+    const hasRevenue = revenueAmountMinor !== null ||
+      revenueCurrency !== null || revenueSource !== null;
     if (hasRevenue &&
         (!Number.isSafeInteger(revenueAmountMinor) ||
           revenueAmountMinor! < 0 ||

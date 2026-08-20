@@ -254,7 +254,9 @@ test("customer revenue includes completed organizer payments only", () => {
   });
 });
 
-test("customer revenue keeps imported and estimated provenance together", () => {
+const importedRevenueTestName =
+  "customer revenue keeps imported and estimated provenance together";
+test(importedRevenueTestName, () => {
   const result = summarizeContactRevenueFacts({
     coverage: "exact",
     facts: [
