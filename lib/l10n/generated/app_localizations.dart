@@ -22829,6 +22829,24 @@ abstract class AppLocalizations {
   /// **'Drag to reorder question'**
   String get hostFormReorderQuestion;
 
+  /// Title for the focused question editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit question'**
+  String get hostFormEditQuestion;
+
+  /// Disclosure label for less common question settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced settings'**
+  String get hostFormAdvancedQuestionSettings;
+
+  /// Summary of advanced question settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy, prefill, response display, and validation'**
+  String get hostFormAdvancedQuestionSettingsHelp;
+
   /// Moves a form question to another section.
   ///
   /// In en, this message translates to:

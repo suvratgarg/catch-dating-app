@@ -13,7 +13,6 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_field_accordion.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
@@ -56,30 +55,10 @@ class HostFormBuilderScreen extends ConsumerStatefulWidget {
 }
 
 class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
-  late final CatchFieldAccordion _questionAccordion;
   int? _selectedSection;
   int? _selectedQuestion;
   _BuilderView _view = _BuilderView.build;
   _CompactBuilderStep _compactStep = _CompactBuilderStep.questions;
-
-  @override
-  void initState() {
-    super.initState();
-    _questionAccordion = CatchFieldAccordion()
-      ..addListener(_handleQuestionAccordionChanged);
-  }
-
-  @override
-  void dispose() {
-    _questionAccordion
-      ..removeListener(_handleQuestionAccordionChanged)
-      ..dispose();
-    super.dispose();
-  }
-
-  void _handleQuestionAccordionChanged() {
-    if (mounted) setState(() {});
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -195,7 +174,6 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                       formId: widget.formId,
                       state: value,
                       notifier: notifier,
-                      questionAccordion: _questionAccordion,
                       step: _compactStep,
                       onStepChanged: (step) => setState(() {
                         _compactStep = step;
@@ -495,7 +473,6 @@ class _CompactFormEditor extends StatelessWidget {
     required this.formId,
     required this.state,
     required this.notifier,
-    required this.questionAccordion,
     required this.step,
     required this.onStepChanged,
     required this.onPreview,
@@ -506,7 +483,6 @@ class _CompactFormEditor extends StatelessWidget {
   final String formId;
   final HostFormEditorState state;
   final HostFormEditorController notifier;
-  final CatchFieldAccordion questionAccordion;
   final _CompactBuilderStep step;
   final ValueChanged<_CompactBuilderStep> onStepChanged;
   final VoidCallback onPreview;
@@ -527,7 +503,6 @@ class _CompactFormEditor extends StatelessWidget {
             formId: formId,
             definition: definition,
             notifier: notifier,
-            questionAccordion: questionAccordion,
             onSelectionChanged: onSelectionChanged,
           ),
           _CompactBuilderStep.settings => _CompactSettingsStep(
@@ -633,7 +608,6 @@ class _CompactQuestionsStep extends StatelessWidget {
     required this.formId,
     required this.definition,
     required this.notifier,
-    required this.questionAccordion,
     required this.onSelectionChanged,
   });
 
@@ -641,7 +615,6 @@ class _CompactQuestionsStep extends StatelessWidget {
   final String formId;
   final HostFormDefinition definition;
   final HostFormEditorController notifier;
-  final CatchFieldAccordion questionAccordion;
   final void Function(int section, int? question) onSelectionChanged;
 
   @override
@@ -669,7 +642,6 @@ class _CompactQuestionsStep extends StatelessWidget {
             section: sectionEntry.$2,
             sectionCount: definition.sections.length,
             notifier: notifier,
-            questionAccordion: questionAccordion,
             onSelectionChanged: onSelectionChanged,
           ),
           gapH20,
@@ -783,7 +755,6 @@ class _CompactSectionOutline extends StatelessWidget {
     required this.section,
     required this.sectionCount,
     required this.notifier,
-    required this.questionAccordion,
     required this.onSelectionChanged,
   });
 
@@ -794,7 +765,6 @@ class _CompactSectionOutline extends StatelessWidget {
   final HostFormSection section;
   final int sectionCount;
   final HostFormEditorController notifier;
-  final CatchFieldAccordion questionAccordion;
   final void Function(int section, int? question) onSelectionChanged;
 
   @override
@@ -851,11 +821,12 @@ class _CompactSectionOutline extends StatelessWidget {
       },
     ),
     child: _CompactQuestionRows(
+      organizerId: organizerId,
+      formId: formId,
       definition: definition,
       sectionIndex: sectionIndex,
       section: section,
       notifier: notifier,
-      questionAccordion: questionAccordion,
       onSelectionChanged: onSelectionChanged,
     ),
   );
@@ -863,19 +834,21 @@ class _CompactSectionOutline extends StatelessWidget {
 
 class _CompactQuestionRows extends StatelessWidget {
   const _CompactQuestionRows({
+    required this.organizerId,
+    required this.formId,
     required this.definition,
     required this.sectionIndex,
     required this.section,
     required this.notifier,
-    required this.questionAccordion,
     required this.onSelectionChanged,
   });
 
+  final String organizerId;
+  final String formId;
   final HostFormDefinition definition;
   final int sectionIndex;
   final HostFormSection section;
   final HostFormEditorController notifier;
-  final CatchFieldAccordion questionAccordion;
   final void Function(int section, int? question) onSelectionChanged;
 
   @override
@@ -894,27 +867,13 @@ class _CompactQuestionRows extends StatelessWidget {
         },
         itemBuilder: (context, questionIndex) {
           final question = section.questions[questionIndex];
-          final expanded = questionAccordion.isExpanded(question.questionId);
           return CatchFieldLanes.single(
             key: ValueKey('form-question-${question.questionId}'),
-            child: CatchField.control(
-              key: ValueKey('form-question-control-${question.questionId}'),
+            child: CatchField.nav(
               title: question.label,
               body: _questionSummary(context, question),
               emphasis: CatchFieldEmphasis.title,
               divider: true,
-              open: expanded,
-              onOpenChanged: (open) {
-                if (open) {
-                  onSelectionChanged(sectionIndex, questionIndex);
-                  if (!expanded) {
-                    questionAccordion.toggle(question.questionId);
-                  }
-                } else {
-                  onSelectionChanged(sectionIndex, null);
-                  if (expanded) questionAccordion.collapse();
-                }
-              },
               action: section.questions.length > 1
                   ? ReorderableDragStartListener(
                       index: questionIndex,
@@ -927,20 +886,20 @@ class _CompactQuestionRows extends StatelessWidget {
                       ),
                     )
                   : null,
-              control: _QuestionEditFields(
-                sectionIndex: sectionIndex,
-                questionIndex: questionIndex,
-                question: question,
-                questionCount: section.questions.length,
-                sections: definition.sections,
-                notifier: notifier,
-                embedded: true,
-                showMoveControls: false,
-                onRemoved: () {
-                  questionAccordion.collapse();
-                  onSelectionChanged(sectionIndex, null);
-                },
-              ),
+              onTap: () {
+                onSelectionChanged(sectionIndex, questionIndex);
+                _showQuestionEditorSheet(
+                  context,
+                  organizerId: organizerId,
+                  formId: formId,
+                  sectionIndex: sectionIndex,
+                  questionIndex: questionIndex,
+                  question: question,
+                  questionCount: section.questions.length,
+                  sections: definition.sections,
+                  notifier: notifier,
+                );
+              },
             ),
           );
         },
@@ -1008,6 +967,70 @@ Future<void> _showSectionEditorSheet(
               ),
             ),
           ],
+        ),
+      );
+    },
+  ),
+);
+
+Future<void> _showQuestionEditorSheet(
+  BuildContext context, {
+  required String organizerId,
+  required String formId,
+  required int sectionIndex,
+  required int questionIndex,
+  required HostFormQuestion question,
+  required int questionCount,
+  required List<HostFormSection> sections,
+  required HostFormEditorController notifier,
+}) => showCatchBottomSheet<void>(
+  context: context,
+  builder: (sheetContext) => Consumer(
+    builder: (sheetContext, ref, _) {
+      final liveDefinition = catchAsyncStateFromAsyncValue(
+        ref.watch(hostFormEditorControllerProvider(organizerId, formId)),
+      ).value?.editor.definition;
+      var currentSectionIndex = sectionIndex;
+      var currentQuestionIndex = questionIndex;
+      var currentQuestion = question;
+      var currentQuestionCount = questionCount;
+      if (liveDefinition != null) {
+        final candidateSection = liveDefinition.sections.indexWhere(
+          (section) => section.questions.any(
+            (candidate) => candidate.questionId == question.questionId,
+          ),
+        );
+        if (candidateSection >= 0) {
+          currentSectionIndex = candidateSection;
+          final questions = liveDefinition.sections[candidateSection].questions;
+          currentQuestionIndex = questions.indexWhere(
+            (candidate) => candidate.questionId == question.questionId,
+          );
+          currentQuestion = questions[currentQuestionIndex];
+          currentQuestionCount = questions.length;
+        }
+      }
+      return CatchBottomSheetScaffold(
+        title: context.l10n.hostFormEditQuestion,
+        subtitle: _questionSummary(context, currentQuestion),
+        keyboardSafe: true,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.sizeOf(sheetContext).height * 0.72,
+          ),
+          child: SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            child: _QuestionEditFields(
+              sectionIndex: currentSectionIndex,
+              questionIndex: currentQuestionIndex,
+              question: currentQuestion,
+              questionCount: currentQuestionCount,
+              sections: liveDefinition?.sections ?? sections,
+              notifier: notifier,
+              compact: true,
+              onRemoved: () => Navigator.of(sheetContext).pop(),
+            ),
+          ),
         ),
       );
     },
@@ -1540,8 +1563,7 @@ class _QuestionEditFields extends StatelessWidget {
     required this.questionCount,
     required this.sections,
     required this.notifier,
-    this.embedded = false,
-    this.showMoveControls = true,
+    this.compact = false,
     this.onRemoved,
   });
 
@@ -1551,8 +1573,7 @@ class _QuestionEditFields extends StatelessWidget {
   final int questionCount;
   final List<HostFormSection> sections;
   final HostFormEditorController notifier;
-  final bool embedded;
-  final bool showMoveControls;
+  final bool compact;
   final VoidCallback? onRemoved;
 
   @override
@@ -1711,52 +1732,63 @@ class _QuestionEditFields extends StatelessWidget {
         notifier: notifier,
       ),
     ];
-    final fields = <Widget>[
-      ...primaryFields,
-      ...advancedFields,
-      if (showMoveControls)
-        Row(
-          children: [
-            Expanded(
-              child: CatchButton(
-                label: context.l10n.hostFormMoveUp,
-                variant: CatchButtonVariant.ghost,
-                onPressed: questionIndex == 0
-                    ? null
-                    : () => notifier.moveQuestion(
-                        sectionIndex,
-                        questionIndex,
-                        -1,
-                      ),
+    return CatchSection.fieldRows(
+      first: true,
+      children: [
+        ...primaryFields,
+        if (compact)
+          CatchField.control(
+            title: context.l10n.hostFormAdvancedQuestionSettings,
+            body: context.l10n.hostFormAdvancedQuestionSettingsHelp,
+            contractExemption:
+                'Disclosure groups advanced fields from the form definition.',
+            control: CatchFieldLanes.divided(children: advancedFields),
+          )
+        else
+          ...advancedFields,
+        if (!compact)
+          Row(
+            children: [
+              Expanded(
+                child: CatchButton(
+                  label: context.l10n.hostFormMoveUp,
+                  variant: CatchButtonVariant.ghost,
+                  onPressed: questionIndex == 0
+                      ? null
+                      : () => notifier.moveQuestion(
+                          sectionIndex,
+                          questionIndex,
+                          -1,
+                        ),
+                ),
               ),
-            ),
-            gapW8,
-            Expanded(
-              child: CatchButton(
-                label: context.l10n.hostFormMoveDown,
-                variant: CatchButtonVariant.ghost,
-                onPressed: questionIndex == questionCount - 1
-                    ? null
-                    : () =>
-                          notifier.moveQuestion(sectionIndex, questionIndex, 1),
+              gapW8,
+              Expanded(
+                child: CatchButton(
+                  label: context.l10n.hostFormMoveDown,
+                  variant: CatchButtonVariant.ghost,
+                  onPressed: questionIndex == questionCount - 1
+                      ? null
+                      : () => notifier.moveQuestion(
+                          sectionIndex,
+                          questionIndex,
+                          1,
+                        ),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
+        CatchButton(
+          label: context.l10n.hostFormRemoveQuestion,
+          variant: CatchButtonVariant.danger,
+          fullWidth: true,
+          onPressed: () {
+            notifier.removeQuestion(sectionIndex, questionIndex);
+            onRemoved?.call();
+          },
         ),
-      CatchButton(
-        label: context.l10n.hostFormRemoveQuestion,
-        variant: CatchButtonVariant.danger,
-        fullWidth: true,
-        onPressed: () {
-          notifier.removeQuestion(sectionIndex, questionIndex);
-          onRemoved?.call();
-        },
-      ),
-    ];
-    if (embedded) {
-      return CatchFieldLanes.divided(children: fields);
-    }
-    return CatchSection.fieldRows(first: true, children: fields);
+      ],
+    );
   }
 }
 

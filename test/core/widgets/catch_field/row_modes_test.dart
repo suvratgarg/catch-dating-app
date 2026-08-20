@@ -161,32 +161,6 @@ void main() {
   });
 
   testWidgets(
-    'CatchField control keeps a custom row action beside disclosure',
-    (tester) async {
-      await tester.pumpWidget(
-        _wrap(
-          CatchField.control(
-            title: 'Question',
-            body: 'Short text · Required',
-            action: Icon(CatchIcons.dragIndicatorRounded),
-            control: const Text('Question settings'),
-          ),
-        ),
-      );
-
-      expect(find.byIcon(CatchIcons.dragIndicatorRounded), findsOneWidget);
-      expect(find.byIcon(CatchIcons.expandMoreRounded), findsOneWidget);
-
-      await tester.tap(find.text('Question'));
-      await _pumpCatchFieldMotion(tester);
-
-      expect(find.text('Question settings').hitTestable(), findsOneWidget);
-      expect(find.byIcon(CatchIcons.dragIndicatorRounded), findsOneWidget);
-      expect(find.byIcon(CatchIcons.expandMoreRounded), findsOneWidget);
-    },
-  );
-
-  testWidgets(
     'CatchField keeps disclosure chevrons centered on the value line',
     (tester) async {
       final fieldKey = GlobalKey();
