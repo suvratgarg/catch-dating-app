@@ -101,6 +101,85 @@ test("creates a Razorpay Route linked account without persisting KYC data",
     }
   });
 
+test("retries continue the checkpointed Route account and product",
+  async () => {
+    const firestore = new FakeFirestore({
+      "clubHostClaims/host-1": {clubIds: ["club-1"]},
+    });
+    let accountCreates = 0;
+    let productRequests = 0;
+    let settlementEdits = 0;
+    const stakeholderItems: unknown[] = [];
+    const razorpay = {
+      accounts: {
+        create: async () => {
+          accountCreates += 1;
+          return {id: "acc_route", status: "created"};
+        },
+        fetch: async () => ({id: "acc_route", status: "created"}),
+      },
+      stakeholders: {
+        all: async () => ({items: stakeholderItems}),
+        create: async () => {
+          stakeholderItems.push({id: "sth_1"});
+          return {};
+        },
+      },
+      products: {
+        requestProductConfiguration: async () => {
+          productRequests += 1;
+          return {
+            id: "acc_prd_route",
+            activation_status: "requested",
+            requirements: [],
+          };
+        },
+        fetch: async () => ({
+          id: "acc_prd_route",
+          activation_status: "requested",
+          requirements: [],
+        }),
+        edit: async () => {
+          settlementEdits += 1;
+          if (settlementEdits === 1) {
+            throw new Error("temporary settlement update failure");
+          }
+          return {
+            id: "acc_prd_route",
+            activation_status: "under_review",
+            requirements: [],
+          };
+        },
+      },
+    };
+    const deps = {
+      firestore: () => firestore as unknown as FirebaseFirestore.Firestore,
+      razorpay: () => razorpay,
+      serverTimestamp: () => "server-now",
+      checkRateLimit: async () => undefined,
+    };
+
+    await assert.rejects(
+      createRazorpayHostPaymentAccountHandler(request(validPayload()), deps),
+      /temporary settlement update failure/
+    );
+    assert.equal(
+      (firestore.data["hostPaymentAccounts/host-1_razorpay"] as
+      Record<string, unknown>).razorpayProductId,
+      "acc_prd_route"
+    );
+
+    await createRazorpayHostPaymentAccountHandler(
+      request(validPayload()),
+      deps
+    );
+
+    assert.equal(accountCreates, 1);
+    assert.equal(productRequests, 1);
+    assert.equal(settlementEdits, 2);
+    assert.equal(stakeholderItems.length, 1);
+  });
+
 test(
   "refresh maps Razorpay clarification requirements to restricted",
   async () => {

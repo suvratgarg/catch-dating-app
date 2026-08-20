@@ -2,8 +2,8 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/host_organizers.feature.json",
-  "generatedFor": "2026-08-15",
-  "sourceDigest": "sha256:16b189a162b8c992a23d16f3ae857b7a73c037c9f27888a0a034ee14257ec6ff",
+  "generatedFor": "2026-08-20",
+  "sourceDigest": "sha256:e8e5f53e89154003f3fef6dfc99cc161c6d3091bc716dedd3dedb7560f9d791c",
   "resolvedDigest": "sha256:ebde8e681a6f4eb376a4ae8675393f37c29ea8e1887ce9b4983d7ab6efc78f84",
   "feature": {
     "id": "feature.host_organizers",
@@ -34,7 +34,7 @@
       "actionScope": {
         "included": "Host organizer route recovery, organizer and tab selection, private-to-public publication coaching, organizer profile/media/default writes, cross-event attendee CRM readiness, settings-spoke navigation, analytics controls, payout onboarding/status, host-team membership, host identity, hosted-organizer navigation, and sign out.",
         "excluded": [
-          "Organizer creation internals, public membership behavior, hosted-event creation and management, campaign composition or delivery, WhatsApp and SMS provider adapters, Stripe-hosted onboarding UI, analytics computation, and repository authorization retain their owning features, external services, or data-contract layers."
+          "Organizer creation internals, public membership behavior, hosted-event creation and management, campaign composition or delivery, WhatsApp and SMS provider adapters, provider-hosted review UI, analytics computation, and repository authorization retain their owning features, external services, or data-contract layers."
         ]
       },
       "bindings": {
@@ -161,8 +161,11 @@
         ],
         "dataContracts": [
           "contracts/callables/add_organizer_manager_payload.schema.json",
+          "contracts/callables/create_razorpay_host_payment_account_payload.schema.json",
+          "contracts/callables/create_stripe_host_onboarding_link_payload.schema.json",
           "contracts/callables/get_organizer_crm_summary_payload.schema.json",
           "contracts/callables/host_analytics_query_payload.schema.json",
+          "contracts/callables/refresh_razorpay_host_payment_account_payload.schema.json",
           "contracts/callables/refresh_stripe_host_payment_account_payload.schema.json",
           "contracts/callables/remove_organizer_manager_payload.schema.json",
           "contracts/callables/transfer_organizer_ownership_payload.schema.json",
@@ -647,7 +650,7 @@
               ]
             }
           ],
-          "description": "Invalidates the current host payment account after a load failure.",
+          "description": "Invalidates the viewer's provider-scoped host payment-account list after a load failure.",
           "implementationStatus": "implemented"
         },
         {
@@ -657,6 +660,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
+            "provider",
             "accountVersion",
             "onboardingAttemptId"
           ],
@@ -670,10 +674,10 @@
             },
             {
               "kind": "side_effect",
-              "id": "payments.stripe_onboarding_opened"
+              "id": "payments.provider_onboarding_started"
             }
           ],
-          "description": "Creates and opens one Stripe onboarding link for the selected country and currency.",
+          "description": "Starts setup for the chosen provider: Razorpay Route collects and submits India linked-account details in-app, while Stripe opens hosted onboarding. India recommends Razorpay; other countries recommend Stripe.",
           "implementationStatus": "implemented"
         },
         {
@@ -683,6 +687,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
+            "provider",
             "accountVersion",
             "refreshAttemptId"
           ],
@@ -699,7 +704,7 @@
               "id": "payments.host_account_refreshed"
             }
           ],
-          "description": "Refreshes Stripe status once and invalidates the viewer's host payment-account stream.",
+          "description": "Refreshes the selected provider status once and invalidates the viewer's host payment-account list.",
           "implementationStatus": "implemented"
         },
         {

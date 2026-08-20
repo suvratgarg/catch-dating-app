@@ -2123,12 +2123,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'We will refresh your payout status when you return.';
 
   @override
-  String get hostsHostPaymentAccountCardLabelSetUpPayouts => 'Set up payouts';
-
-  @override
-  String get hostsHostPaymentAccountCardLabelContinueSetup => 'Continue setup';
-
-  @override
   String get hostsHostPaymentAccountCardLabelRefresh => 'Refresh';
 
   @override

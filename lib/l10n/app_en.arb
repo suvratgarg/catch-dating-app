@@ -4259,20 +4259,6 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.payments.host_payment_account_card"
   },
-  "hostsHostPaymentAccountCardLabelSetUpPayouts": "Set up payouts",
-  "@hostsHostPaymentAccountCardLabelSetUpPayouts": {
-    "description": "Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.payments.host_payment_account_card"
-  },
-  "hostsHostPaymentAccountCardLabelContinueSetup": "Continue setup",
-  "@hostsHostPaymentAccountCardLabelContinueSetup": {
-    "description": "Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.payments.host_payment_account_card"
-  },
   "hostsHostPaymentAccountCardLabelRefresh": "Refresh",
   "@hostsHostPaymentAccountCardLabelRefresh": {
     "description": "Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (label).",

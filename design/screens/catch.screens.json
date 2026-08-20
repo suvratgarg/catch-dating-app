@@ -9914,11 +9914,11 @@
           "id": "payouts_not_setup",
           "kind": "populated",
           "status": "tested",
-          "source": "HostPaymentAccountCard renders Not set up payout state when watchHostPaymentAccountProvider returns null.",
+          "source": "HostPaymentAccountCard renders both provider rows from watchHostPaymentAccountsProvider, recommends Razorpay for India-derived organizer locations and Stripe elsewhere, and retains provider-specific setup actions when no account exists.",
           "tests": [
             "test/hosts/host_operations_screen_test.dart"
           ],
-          "nextAction": "Add Widgetbook states for not-set-up, pending, ready, restricted, loading, and error payout statuses.",
+          "nextAction": "Keep provider ordering and country-derived recommendation coverage aligned across Widgetbook, deterministic captures, and focused Host tests.",
           "previewIds": [
             "HostClubsScreen/Route states"
           ],
@@ -9930,8 +9930,8 @@
           "id": "payouts_ready_or_restricted",
           "kind": "populated",
           "status": "captured",
-          "source": "HostPaymentAccountCard maps HostPaymentAccount status into ready, pending, restricted, currency, and country badges.",
-          "nextAction": "HostPaymentAccountCard maps HostPaymentAccount status into ready, pending, restricted, currency, and country badges. Captures now cover ready and restricted statuses; pending remains visually close to the setup/status family unless design requests a separate export.",
+          "source": "HostPaymentAccountCard maps each provider-scoped HostPaymentAccount into ready, pending, restricted, currency, and country badges without collapsing Razorpay and Stripe state.",
+          "nextAction": "Captures cover ready and restricted statuses; add a distinct pending-provider export only if design requires it.",
           "previewIds": [
             "HostClubsScreen/Route states"
           ],
@@ -9944,7 +9944,7 @@
           "id": "payout_mutation",
           "kind": "mutation",
           "status": "captured",
-          "source": "Set up payouts and Refresh actions call HostPaymentAccountRepository methods and surface errors in CatchErrorBanner.",
+          "source": "Provider-scoped setup and refresh actions call HostPaymentAccountRepository through HostPaymentAccountController and surface normalized mutation errors in the payout section.",
           "nextAction": "Covered by HostPaymentAccountController setup/refresh pending, generic error, and offline captures.",
           "previewIds": [
             "HostClubsScreen/Route states"
@@ -10622,7 +10622,7 @@
               "refresh_pending",
               "error"
             ],
-            "migration": "Move Stripe onboarding and refresh mutations behind a controller and expose account presentation state plus route/external-link callbacks to the section.",
+            "migration": "Completed: provider-neutral account presentation and controller seams expose Razorpay Route and Stripe setup/refresh independently; country-derived recommendation changes ordering without hiding either provider.",
             "previewIds": [
               "HostClubsScreen/Route states"
             ]

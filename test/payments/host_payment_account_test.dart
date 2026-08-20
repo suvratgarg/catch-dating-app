@@ -33,7 +33,7 @@ void main() {
   });
 
   test('Razorpay onboarding serialization normalizes sensitive inputs', () {
-    final json = RazorpayHostOnboardingDetails(
+    final json = const RazorpayHostOnboardingDetails(
       legalBusinessName: ' Catch Events Pvt Ltd ',
       businessType: RazorpayHostBusinessType.privateLimited,
       contactName: ' Mira Shah ',

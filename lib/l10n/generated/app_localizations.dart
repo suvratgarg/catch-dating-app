@@ -3698,18 +3698,6 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Set up payouts'**
-  String get hostsHostPaymentAccountCardLabelSetUpPayouts;
-
-  /// Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Continue setup'**
-  String get hostsHostPaymentAccountCardLabelContinueSetup;
-
-  /// Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (label).
-  ///
-  /// In en, this message translates to:
   /// **'Refresh'**
   String get hostsHostPaymentAccountCardLabelRefresh;
 

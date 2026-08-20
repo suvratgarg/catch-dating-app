@@ -431,8 +431,7 @@ void _registerHostOperationsStateEventsTests() {
     await tester.pumpAndSettle();
 
     expect(find.text('Legal business name'), findsOneWidget);
-    expect(find.text('Business PAN'), findsOneWidget);
-    expect(find.text('Accept Razorpay Route terms'), findsOneWidget);
+    expect(find.text('Business type'), findsOneWidget);
     expect(find.text('Submit to Razorpay'), findsOneWidget);
   });
 }

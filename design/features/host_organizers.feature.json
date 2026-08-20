@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-08-15",
+  "updated": "2026-08-20",
   "id": "feature.host_organizers",
   "name": "Host Organizers",
   "owner": "hosts",
@@ -18,7 +18,7 @@
       "actionScope": {
         "included": "Host organizer route recovery, organizer and tab selection, private-to-public publication coaching, organizer profile/media/default writes, cross-event attendee CRM readiness, settings-spoke navigation, analytics controls, payout onboarding/status, host-team membership, host identity, hosted-organizer navigation, and sign out.",
         "excluded": [
-          "Organizer creation internals, public membership behavior, hosted-event creation and management, campaign composition or delivery, WhatsApp and SMS provider adapters, Stripe-hosted onboarding UI, analytics computation, and repository authorization retain their owning features, external services, or data-contract layers."
+          "Organizer creation internals, public membership behavior, hosted-event creation and management, campaign composition or delivery, WhatsApp and SMS provider adapters, provider-hosted review UI, analytics computation, and repository authorization retain their owning features, external services, or data-contract layers."
         ]
       },
       "bindings": {
@@ -145,8 +145,11 @@
         ],
         "dataContracts": [
           "contracts/callables/add_organizer_manager_payload.schema.json",
+          "contracts/callables/create_razorpay_host_payment_account_payload.schema.json",
+          "contracts/callables/create_stripe_host_onboarding_link_payload.schema.json",
           "contracts/callables/get_organizer_crm_summary_payload.schema.json",
           "contracts/callables/host_analytics_query_payload.schema.json",
+          "contracts/callables/refresh_razorpay_host_payment_account_payload.schema.json",
           "contracts/callables/refresh_stripe_host_payment_account_payload.schema.json",
           "contracts/callables/remove_organizer_manager_payload.schema.json",
           "contracts/callables/transfer_organizer_ownership_payload.schema.json",
@@ -354,31 +357,31 @@
           "cardinality": "singleton",
           "scopeKeys": ["viewerUid", "failureStateVersion"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["payouts_not_setup", "payouts_ready_or_restricted"]}],
-          "description": "Invalidates the current host payment account after a load failure."
+          "description": "Invalidates the viewer's provider-scoped host payment-account list after a load failure."
         },
         {
           "id": "start_payout_onboarding",
           "owner": "payout_controller",
           "codeValue": "startOnboarding",
           "cardinality": "singleton",
-          "scopeKeys": ["viewerUid", "accountVersion", "onboardingAttemptId"],
+          "scopeKeys": ["viewerUid", "provider", "accountVersion", "onboardingAttemptId"],
           "outcomes": [
             {"kind": "surface_state", "stateIds": ["payout_mutation", "payouts_ready_or_restricted"]},
-            {"kind": "side_effect", "id": "payments.stripe_onboarding_opened"}
+            {"kind": "side_effect", "id": "payments.provider_onboarding_started"}
           ],
-          "description": "Creates and opens one Stripe onboarding link for the selected country and currency."
+          "description": "Starts setup for the chosen provider: Razorpay Route collects and submits India linked-account details in-app, while Stripe opens hosted onboarding. India recommends Razorpay; other countries recommend Stripe."
         },
         {
           "id": "refresh_payout_status",
           "owner": "payout_controller",
           "codeValue": "refreshStatus",
           "cardinality": "singleton",
-          "scopeKeys": ["viewerUid", "accountVersion", "refreshAttemptId"],
+          "scopeKeys": ["viewerUid", "provider", "accountVersion", "refreshAttemptId"],
           "outcomes": [
             {"kind": "surface_state", "stateIds": ["payout_mutation", "payouts_ready_or_restricted"]},
             {"kind": "side_effect", "id": "payments.host_account_refreshed"}
           ],
-          "description": "Refreshes Stripe status once and invalidates the viewer's host payment-account stream."
+          "description": "Refreshes the selected provider status once and invalidates the viewer's host payment-account list."
         },
         {
           "id": "retry_host_profile",

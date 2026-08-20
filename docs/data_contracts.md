@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.34.0
+version: 1.35.0
 updated: 2026-08-20
 owner: recursive_audit_loop
 status: active
@@ -428,6 +428,31 @@ contract also requires immutable `uploaderUid` custom object metadata: only
 that active-match participant may create or compensate-delete the object, and
 client updates are denied. Prove this boundary with both emulator rules tests
 and the authenticated live upload/delete canary.
+
+### Host Payment Account Provider Boundary
+
+`hostPaymentAccounts` is a user-and-provider projection owned by payment
+callables. New documents use `{uid}_{provider}` ids and must carry the explicit
+`provider`, generic `providerAccountId`, and provider-specific identifier
+fields from `contracts/firestore/host_payment_accounts.schema.json`. The
+provider enum is currently `razorpay | stripe`. Legacy Stripe documents at
+`{uid}` remain readable and refreshable; new Stripe and Razorpay writes use the
+provider-scoped ids so one host can retain both accounts without overwriting
+either state.
+
+Razorpay Route setup accepts legal-business, stakeholder, PAN, and bank details
+through the callable payload contract. Those values are transient provider
+inputs and must never be written to Catch Firestore or logs. The persisted
+projection contains only Razorpay linked-account/product ids, normalized
+activation state, and bounded requirements. Each provider-created id is
+checkpointed before later provider calls so an exact retry resumes the same
+linked account or product.
+
+The Flutter repository returns a list of provider accounts. Country-based
+recommendation is presentation policy only: India recommends Razorpay and
+other countries recommend Stripe, while both setup paths remain available.
+Checkout routing and eventual settlement remain server-authoritative and must
+not infer readiness from the recommendation badge alone.
 
 ## Contract Architecture
 
