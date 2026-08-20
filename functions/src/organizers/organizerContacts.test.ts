@@ -11,6 +11,7 @@ import {
   manualContactDetailsEditable,
   resolveManualTags,
   summarizeContactRevenue,
+  summarizeContactRevenueFacts,
 } from "./organizerContacts";
 import {
   OrganizerAudienceSummaryDocument,
@@ -240,6 +241,54 @@ test("customer revenue includes completed organizer payments only", () => {
 
   assert.deepEqual(revenue, {
     coverage: "exact",
-    amounts: [{currency: "INR", amountMinor: 25000, paidOrderCount: 1}],
+    amounts: [{
+      currency: "INR",
+      amountMinor: 25000,
+      factCount: 1,
+      sources: [{
+        source: "catchPayment",
+        amountMinor: 25000,
+        factCount: 1,
+      }],
+    }],
   });
+});
+
+const importedRevenueTestName =
+  "customer revenue keeps imported and estimated provenance together";
+test(importedRevenueTestName, () => {
+  const result = summarizeContactRevenueFacts({
+    coverage: "exact",
+    facts: [
+      {
+        eventId: "event-1",
+        currency: "INR",
+        amountMinor: 120000,
+        source: "hostImport",
+        factCount: 1,
+        allocation: "sharedOrder",
+      },
+      {
+        eventId: "event-2",
+        currency: "INR",
+        amountMinor: 90000,
+        source: "hostEstimate",
+        factCount: 1,
+        allocation: "perAttendee",
+      },
+    ],
+  });
+
+  assert.equal(result.revenue.amounts[0].amountMinor, 210000);
+  assert.deepEqual(
+    result.revenue.amounts[0].sources.map((source) => source.source),
+    ["hostEstimate", "hostImport"]
+  );
+  assert.deepEqual(result.byEvent.get("event-1"), [{
+    currency: "INR",
+    amountMinor: 120000,
+    source: "hostImport",
+    factCount: 1,
+    allocation: "sharedOrder",
+  }]);
 });

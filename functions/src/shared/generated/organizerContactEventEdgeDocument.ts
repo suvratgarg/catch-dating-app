@@ -12,6 +12,20 @@ export interface OrganizerContactEventEdgeDocument {
   eventId: string;
   attendeeId: string;
   displayName: string;
+  eventDisplayName?: string | null;
+  eventOriginMode?: "catchNative" | "externalCompanion" | null;
+  eventProvider?:
+    | "catch"
+    | "generic"
+    | "luma"
+    | "eventbrite"
+    | "partiful"
+    | "posh"
+    | "bookmyshow"
+    | "district"
+    | "sortmyscene"
+    | "airbnb"
+    | null;
   linkedUid: string | null;
   phoneE164: string | null;
   email: string | null;
@@ -46,6 +60,11 @@ export interface OrganizerContactEventEdgeDocument {
     _seconds: number;
     _nanoseconds: number;
   } | null;
+  revenueAmountMinor?: number | null;
+  revenueCurrency?: string | null;
+  revenueSource?: "hostImport" | "hostEstimate" | "providerOrder" | null;
+  revenueAllocation?: "perAttendee" | "sharedOrder" | null;
+  revenueOrderReference?: string | null;
   inviteLinkId?: string | null;
   inviteCapturedAt?: {
     _seconds: number;

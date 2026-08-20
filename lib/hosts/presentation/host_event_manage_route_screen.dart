@@ -26,9 +26,9 @@ class HostEventManageRouteScreen extends ConsumerWidget {
     final clubAsync = ref.watch(fetchClubProvider(clubId));
     final eventAsync = ref.watch(watchEventProvider(eventId));
     final routeDataAsync = _hostEventManageRouteData(
-      uidAsync: uidAsync,
-      clubAsync: clubAsync,
-      eventAsync: eventAsync,
+      uid: catchAsyncStateFromAsyncValue(uidAsync),
+      club: catchAsyncStateFromAsyncValue(clubAsync),
+      event: catchAsyncStateFromAsyncValue(eventAsync),
       initialEvent: initialEvent,
     );
 
@@ -96,31 +96,30 @@ class HostEventManageRouteScreen extends ConsumerWidget {
 }
 
 AsyncValue<_HostEventManageRouteData> _hostEventManageRouteData({
-  required AsyncValue<String?> uidAsync,
-  required AsyncValue<Club?> clubAsync,
-  required AsyncValue<Event?> eventAsync,
+  required CatchAsyncState<String?> uid,
+  required CatchAsyncState<Club?> club,
+  required CatchAsyncState<Event?> event,
   required Event? initialEvent,
 }) {
-  final event = eventAsync.asData?.value ?? initialEvent;
-  final loading =
-      uidAsync.isLoading ||
-      clubAsync.isLoading ||
-      (eventAsync.isLoading && event == null);
-  if (loading) return const AsyncLoading<_HostEventManageRouteData>();
-
-  final error = uidAsync.error ?? clubAsync.error ?? eventAsync.error;
+  final resolvedEvent = event.value ?? initialEvent;
+  final error = uid.error ?? club.error ?? event.error;
   if (error != null) {
     final stackTrace =
-        uidAsync.stackTrace ??
-        clubAsync.stackTrace ??
-        eventAsync.stackTrace ??
+        uid.stackTrace ??
+        club.stackTrace ??
+        event.stackTrace ??
         StackTrace.current;
     return AsyncError<_HostEventManageRouteData>(error, stackTrace);
   }
+  final loading =
+      uid.isLoading ||
+      club.isLoading ||
+      (event.isLoading && resolvedEvent == null);
+  if (loading) return const AsyncLoading<_HostEventManageRouteData>();
 
   return AsyncData<_HostEventManageRouteData>((
-    uid: uidAsync.asData?.value,
-    club: clubAsync.asData?.value,
-    event: event,
+    uid: uid.value,
+    club: club.value,
+    event: resolvedEvent,
   ));
 }

@@ -226,7 +226,7 @@
             {"kind": "surface_state", "stateIds": ["customer_manage_pending", "customers_populated"]},
             {"kind": "side_effect", "id": "host_customers.contact_updated"}
           ],
-          "description": "Renames, pauses or resumes WhatsApp, or removes a customer using revision-checked server mutations."
+          "description": "Saves organizer-owned customer identity fields from the inline details editor, pauses or resumes WhatsApp, or removes a customer using revision-checked server mutations."
         },
         {
           "id": "review_duplicate_customers",

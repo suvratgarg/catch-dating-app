@@ -78,6 +78,35 @@
       "minLength": 1,
       "maxLength": 120
     },
+    "revenueAmountMinor": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Revenue allocated to this attendee in minor currency units. Organizer-reported and estimated values are not payment verification."
+    },
+    "revenueCurrency": {
+      "type": ["string", "null"],
+      "pattern": "^[A-Z]{3}$"
+    },
+    "revenueSource": {
+      "type": ["string", "null"],
+      "enum": ["hostImport", "hostEstimate", "providerOrder", null]
+    },
+    "revenueAllocation": {
+      "type": ["string", "null"],
+      "enum": ["perAttendee", "sharedOrder", null]
+    },
+    "revenueOrderReference": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "revenueOrderAmountMinor": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Original shared-order total before deterministic attendee allocation."
+    },
     "importId": {
       "type": ["string", "null"],
       "minLength": 1,

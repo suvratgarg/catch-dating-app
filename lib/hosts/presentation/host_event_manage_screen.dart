@@ -143,10 +143,12 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
     final rosterAsync = ref.watch(
       watchEventParticipationRosterProvider(event.id),
     );
-    final roster = rosterAsync.asData?.value;
+    final roster = catchAsyncStateFromAsyncValue(rosterAsync).value;
     final operationalAttendees =
         screenState.phase == HostEventWorkspacePhase.runtime
-        ? ref.watch(watchEventAttendeesProvider(event.id)).asData?.value
+        ? catchAsyncStateFromAsyncValue(
+            ref.watch(watchEventAttendeesProvider(event.id)),
+          ).value
         : null;
     final operationalRosterSummary = _operationalRosterSummary(
       operationalAttendees,
@@ -276,6 +278,8 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
               eventId: event.id,
               organizerId: event.clubId,
               bookingProvider: event.eventOrigin?.provider,
+              suggestedRevenueAmountMinor: event.priceInPaise,
+              revenueCurrency: event.currency,
             ),
           ],
         ),

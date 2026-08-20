@@ -1799,6 +1799,20 @@ export interface OrganizerContactEventEdgeDocument {
   eventId: string;
   attendeeId: string;
   displayName: string;
+  eventDisplayName?: string | null;
+  eventOriginMode?: "catchNative" | "externalCompanion" | null;
+  eventProvider?:
+    | "catch"
+    | "generic"
+    | "luma"
+    | "eventbrite"
+    | "partiful"
+    | "posh"
+    | "bookmyshow"
+    | "district"
+    | "sortmyscene"
+    | "airbnb"
+    | null;
   linkedUid: string | null;
   phoneE164: string | null;
   email: string | null;
@@ -1818,6 +1832,11 @@ export interface OrganizerContactEventEdgeDocument {
   registeredAt: FirebaseFirestore.Timestamp | null;
   cancelledAt: FirebaseFirestore.Timestamp | null;
   checkedInAt: FirebaseFirestore.Timestamp | null;
+  revenueAmountMinor?: number | null;
+  revenueCurrency?: string | null;
+  revenueSource?: "hostImport" | "hostEstimate" | "providerOrder" | null;
+  revenueAllocation?: "perAttendee" | "sharedOrder" | null;
+  revenueOrderReference?: string | null;
   inviteLinkId?: string | null;
   inviteCapturedAt?: FirebaseFirestore.Timestamp | null;
   sourceCreatedAt: FirebaseFirestore.Timestamp;
@@ -4200,6 +4219,18 @@ export interface EventAttendeeDocument {
    */
   arrivalGroup: string | null;
   ticketType: string | null;
+  /**
+   * Revenue allocated to this attendee in minor currency units. Organizer-reported and estimated values are not payment verification.
+   */
+  revenueAmountMinor?: number | null;
+  revenueCurrency?: string | null;
+  revenueSource?: "hostImport" | "hostEstimate" | "providerOrder" | null;
+  revenueAllocation?: "perAttendee" | "sharedOrder" | null;
+  revenueOrderReference?: string | null;
+  /**
+   * Original shared-order total before deterministic attendee allocation.
+   */
+  revenueOrderAmountMinor?: number | null;
   importId: string | null;
   sourceRowId: string | null;
   createdAt: FirebaseFirestore.Timestamp;

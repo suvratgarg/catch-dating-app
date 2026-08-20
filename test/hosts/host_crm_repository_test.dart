@@ -436,17 +436,39 @@ void main() {
       'revenue': {
         'coverage': 'exact',
         'amounts': [
-          {'currency': 'INR', 'amountMinor': 450000, 'paidOrderCount': 3},
+          {
+            'currency': 'INR',
+            'amountMinor': 450000,
+            'factCount': 3,
+            'sources': [
+              {
+                'source': 'catchPayment',
+                'amountMinor': 450000,
+                'factCount': 3,
+              },
+            ],
+          },
         ],
       },
       'events': [
         {
           'eventId': 'event-1',
-          'displayName': 'Asha Rao',
+          'displayName': 'Social run',
+          'eventOriginMode': 'externalCompanion',
+          'eventProvider': 'eventbrite',
           'source': 'hostImport',
           'status': 'checkedIn',
           'checkedIn': true,
           'eventStartAtMillis': 1700000000000,
+          'revenues': [
+            {
+              'currency': 'INR',
+              'amountMinor': 150000,
+              'source': 'hostImport',
+              'factCount': 1,
+              'allocation': 'perAttendee',
+            },
+          ],
         },
       ],
       'eventsTruncated': false,

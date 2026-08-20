@@ -65,15 +65,16 @@ class HostClubSpokeResolver extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final uidAsync = ref.watch(uidProvider);
-    if (uidAsync.isLoading) return HostLoadingScreen(title: title);
-    if (uidAsync.hasError) {
+    final uidState = catchAsyncStateFromAsyncValue(uidAsync);
+    if (uidState.hasError) {
       return CatchErrorScaffold.fromError(
-        uidAsync.error!,
+        uidState.error!,
         context: AppErrorContext.auth,
         onRetry: () => ref.invalidate(uidProvider),
       );
     }
-    final uid = uidAsync.asData?.value;
+    if (uidState.isLoading) return HostLoadingScreen(title: title);
+    final uid = uidState.value;
     if (uid == null) return const HostAuthRequiredScreen();
 
     final clubsAsync = ref.watch(_hostClubsForUserProvider(uid));

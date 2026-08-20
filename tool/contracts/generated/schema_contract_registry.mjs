@@ -13746,6 +13746,44 @@ export const organizerContactEventEdgeDocumentSchema = {
       "minLength": 1,
       "maxLength": 120
     },
+    "eventDisplayName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "eventOriginMode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "catchNative",
+        "externalCompanion",
+        null
+      ]
+    },
+    "eventProvider": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "catch",
+        "generic",
+        "luma",
+        "eventbrite",
+        "partiful",
+        "posh",
+        "bookmyshow",
+        "district",
+        "sortmyscene",
+        "airbnb",
+        null
+      ]
+    },
     "linkedUid": {
       "type": [
         "string",
@@ -13935,6 +13973,52 @@ export const organizerContactEventEdgeDocumentSchema = {
           "type": "null"
         }
       ]
+    },
+    "revenueAmountMinor": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "revenueCurrency": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Z]{3}$"
+    },
+    "revenueSource": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "hostImport",
+        "hostEstimate",
+        "providerOrder",
+        null
+      ]
+    },
+    "revenueAllocation": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "perAttendee",
+        "sharedOrder",
+        null
+      ]
+    },
+    "revenueOrderReference": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
     },
     "inviteLinkId": {
       "type": [
@@ -29045,6 +29129,62 @@ export const eventAttendeeDocumentSchema = {
       ],
       "minLength": 1,
       "maxLength": 120
+    },
+    "revenueAmountMinor": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Revenue allocated to this attendee in minor currency units. Organizer-reported and estimated values are not payment verification."
+    },
+    "revenueCurrency": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Z]{3}$"
+    },
+    "revenueSource": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "hostImport",
+        "hostEstimate",
+        "providerOrder",
+        null
+      ]
+    },
+    "revenueAllocation": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "perAttendee",
+        "sharedOrder",
+        null
+      ]
+    },
+    "revenueOrderReference": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "revenueOrderAmountMinor": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Original shared-order total before deterministic attendee allocation."
     },
     "importId": {
       "type": [
@@ -59018,6 +59158,32 @@ export const importEventAttendeesCallablePayloadSchema = {
             ],
             "maxLength": 120
           },
+          "revenueAmountMinor": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "revenueCurrency": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[A-Z]{3}$"
+          },
+          "revenueSource": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "hostImport",
+              "hostEstimate",
+              null
+            ]
+          },
           "status": {
             "type": "string",
             "enum": [
@@ -77917,7 +78083,8 @@ export const getOrganizerContactDetailCallableResponseSchema = {
             "required": [
               "currency",
               "amountMinor",
-              "paidOrderCount"
+              "factCount",
+              "sources"
             ],
             "properties": {
               "currency": {
@@ -77929,10 +78096,44 @@ export const getOrganizerContactDetailCallableResponseSchema = {
                 "minimum": 0,
                 "maximum": 9007199254740991
               },
-              "paidOrderCount": {
+              "factCount": {
                 "type": "integer",
                 "minimum": 0,
                 "maximum": 1000000
+              },
+              "sources": {
+                "type": "array",
+                "maxItems": 4,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "source",
+                    "amountMinor",
+                    "factCount"
+                  ],
+                  "properties": {
+                    "source": {
+                      "type": "string",
+                      "enum": [
+                        "catchPayment",
+                        "hostImport",
+                        "hostEstimate",
+                        "providerOrder"
+                      ]
+                    },
+                    "amountMinor": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "factCount": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 1000000
+                    }
+                  }
+                }
               }
             }
           }
@@ -77949,6 +78150,8 @@ export const getOrganizerContactDetailCallableResponseSchema = {
           "eventId",
           "attendeeId",
           "displayName",
+          "eventOriginMode",
+          "eventProvider",
           "source",
           "status",
           "expected",
@@ -77959,7 +78162,8 @@ export const getOrganizerContactDetailCallableResponseSchema = {
           "eventEndAtMillis",
           "registeredAtMillis",
           "cancelledAtMillis",
-          "checkedInAtMillis"
+          "checkedInAtMillis",
+          "revenues"
         ],
         "properties": {
           "eventId": {
@@ -77976,6 +78180,33 @@ export const getOrganizerContactDetailCallableResponseSchema = {
             "type": "string",
             "minLength": 1,
             "maxLength": 120
+          },
+          "eventOriginMode": {
+            "type": "string",
+            "enum": [
+              "catchNative",
+              "externalCompanion",
+              "unknown"
+            ]
+          },
+          "eventProvider": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "catch",
+              "generic",
+              "luma",
+              "eventbrite",
+              "partiful",
+              "posh",
+              "bookmyshow",
+              "district",
+              "sortmyscene",
+              "airbnb",
+              null
+            ]
           },
           "source": {
             "type": "string",
@@ -78043,6 +78274,53 @@ export const getOrganizerContactDetailCallableResponseSchema = {
               "null"
             ],
             "minimum": 0
+          },
+          "revenues": {
+            "type": "array",
+            "maxItems": 8,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "currency",
+                "amountMinor",
+                "source",
+                "factCount",
+                "allocation"
+              ],
+              "properties": {
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "amountMinor": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "catchPayment",
+                    "hostImport",
+                    "hostEstimate",
+                    "providerOrder"
+                  ]
+                },
+                "factCount": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000
+                },
+                "allocation": {
+                  "type": "string",
+                  "enum": [
+                    "perAttendee",
+                    "sharedOrder"
+                  ]
+                }
+              }
+            }
           }
         }
       }
@@ -78768,7 +79046,8 @@ export const getOrganizerContactDetailCallableResponseSchema = {
             "required": [
               "currency",
               "amountMinor",
-              "paidOrderCount"
+              "factCount",
+              "sources"
             ],
             "properties": {
               "currency": {
@@ -78780,10 +79059,44 @@ export const getOrganizerContactDetailCallableResponseSchema = {
                 "minimum": 0,
                 "maximum": 9007199254740991
               },
-              "paidOrderCount": {
+              "factCount": {
                 "type": "integer",
                 "minimum": 0,
                 "maximum": 1000000
+              },
+              "sources": {
+                "type": "array",
+                "maxItems": 4,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "source",
+                    "amountMinor",
+                    "factCount"
+                  ],
+                  "properties": {
+                    "source": {
+                      "type": "string",
+                      "enum": [
+                        "catchPayment",
+                        "hostImport",
+                        "hostEstimate",
+                        "providerOrder"
+                      ]
+                    },
+                    "amountMinor": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "factCount": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 1000000
+                    }
+                  }
+                }
               }
             }
           }
@@ -78796,7 +79109,8 @@ export const getOrganizerContactDetailCallableResponseSchema = {
       "required": [
         "currency",
         "amountMinor",
-        "paidOrderCount"
+        "factCount",
+        "sources"
       ],
       "properties": {
         "currency": {
@@ -78808,7 +79122,71 @@ export const getOrganizerContactDetailCallableResponseSchema = {
           "minimum": 0,
           "maximum": 9007199254740991
         },
-        "paidOrderCount": {
+        "factCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "sources": {
+          "type": "array",
+          "maxItems": 4,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "source",
+              "amountMinor",
+              "factCount"
+            ],
+            "properties": {
+              "source": {
+                "type": "string",
+                "enum": [
+                  "catchPayment",
+                  "hostImport",
+                  "hostEstimate",
+                  "providerOrder"
+                ]
+              },
+              "amountMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "factCount": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1000000
+              }
+            }
+          }
+        }
+      }
+    },
+    "revenueSourceAmount": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "amountMinor",
+        "factCount"
+      ],
+      "properties": {
+        "source": {
+          "type": "string",
+          "enum": [
+            "catchPayment",
+            "hostImport",
+            "hostEstimate",
+            "providerOrder"
+          ]
+        },
+        "amountMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "factCount": {
           "type": "integer",
           "minimum": 0,
           "maximum": 1000000
@@ -78918,6 +79296,8 @@ export const getOrganizerContactDetailCallableResponseSchema = {
         "eventId",
         "attendeeId",
         "displayName",
+        "eventOriginMode",
+        "eventProvider",
         "source",
         "status",
         "expected",
@@ -78928,7 +79308,8 @@ export const getOrganizerContactDetailCallableResponseSchema = {
         "eventEndAtMillis",
         "registeredAtMillis",
         "cancelledAtMillis",
-        "checkedInAtMillis"
+        "checkedInAtMillis",
+        "revenues"
       ],
       "properties": {
         "eventId": {
@@ -78945,6 +79326,33 @@ export const getOrganizerContactDetailCallableResponseSchema = {
           "type": "string",
           "minLength": 1,
           "maxLength": 120
+        },
+        "eventOriginMode": {
+          "type": "string",
+          "enum": [
+            "catchNative",
+            "externalCompanion",
+            "unknown"
+          ]
+        },
+        "eventProvider": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "catch",
+            "generic",
+            "luma",
+            "eventbrite",
+            "partiful",
+            "posh",
+            "bookmyshow",
+            "district",
+            "sortmyscene",
+            "airbnb",
+            null
+          ]
         },
         "source": {
           "type": "string",
@@ -79012,6 +79420,96 @@ export const getOrganizerContactDetailCallableResponseSchema = {
             "null"
           ],
           "minimum": 0
+        },
+        "revenues": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "currency",
+              "amountMinor",
+              "source",
+              "factCount",
+              "allocation"
+            ],
+            "properties": {
+              "currency": {
+                "type": "string",
+                "pattern": "^[A-Z]{3}$"
+              },
+              "amountMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "source": {
+                "type": "string",
+                "enum": [
+                  "catchPayment",
+                  "hostImport",
+                  "hostEstimate",
+                  "providerOrder"
+                ]
+              },
+              "factCount": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 1000000
+              },
+              "allocation": {
+                "type": "string",
+                "enum": [
+                  "perAttendee",
+                  "sharedOrder"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "eventRevenue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "amountMinor",
+        "source",
+        "factCount",
+        "allocation"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "amountMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "catchPayment",
+            "hostImport",
+            "hostEstimate",
+            "providerOrder"
+          ]
+        },
+        "factCount": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "allocation": {
+          "type": "string",
+          "enum": [
+            "perAttendee",
+            "sharedOrder"
+          ]
         }
       }
     }

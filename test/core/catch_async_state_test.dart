@@ -18,6 +18,7 @@ void main() {
     expect(refreshingError.isLoading, isTrue);
     expect(state.status, CatchAsyncStatus.error);
     expect(state.error, same(failure));
+    expect(state.stackTrace, StackTrace.empty);
   });
 
   test('credible refresh data outranks the loading flag', () {

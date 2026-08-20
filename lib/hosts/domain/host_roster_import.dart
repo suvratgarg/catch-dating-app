@@ -40,6 +40,8 @@ enum HostRosterField {
   externalReference,
   arrivalGroup,
   ticketType,
+  revenueAmount,
+  revenueCurrency,
   status,
 }
 
@@ -71,6 +73,8 @@ enum HostRosterRowIssueType {
   missingStableIdentity,
   invalidPhone,
   invalidEmail,
+  invalidRevenueAmount,
+  missingRevenueCurrency,
   duplicateIdentity,
   unknownStatus,
   excludedStatus,
@@ -107,7 +111,11 @@ class HostRosterTable {
   final bool usedLegacyEncoding;
   final int worksheetCount;
 
-  HostRosterMappedRows mapRows(Map<HostRosterField, int?> mapping) {
+  HostRosterMappedRows mapRows(
+    Map<HostRosterField, int?> mapping, {
+    int? fallbackRevenueAmountMinor,
+    String? fallbackRevenueCurrency,
+  }) {
     final nameColumn = mapping[HostRosterField.displayName];
     if (nameColumn == null) {
       return const HostRosterMappedRows(
@@ -163,6 +171,44 @@ class HostRosterTable {
         source,
         mapping[HostRosterField.status],
       );
+      final rawRevenueAmount = _nullableValueAt(
+        source,
+        mapping[HostRosterField.revenueAmount],
+      );
+      final mappedRevenueAmountMinor = rawRevenueAmount == null
+          ? null
+          : parseHostRosterRevenueAmountMinor(rawRevenueAmount);
+      if (rawRevenueAmount != null && mappedRevenueAmountMinor == null) {
+        issues.add(
+          HostRosterRowIssue(
+            HostRosterRowIssueType.invalidRevenueAmount,
+            rowNumber: index + 2,
+            value: rawRevenueAmount,
+          ),
+        );
+        needsReviewCount += 1;
+        continue;
+      }
+      final mappedCurrency = _nullableValueAt(
+        source,
+        mapping[HostRosterField.revenueCurrency],
+      )?.toUpperCase();
+      final revenueAmountMinor =
+          mappedRevenueAmountMinor ?? fallbackRevenueAmountMinor;
+      final revenueCurrency = mappedCurrency ?? fallbackRevenueCurrency;
+      if (revenueAmountMinor != null &&
+          (revenueCurrency == null ||
+              !RegExp(r'^[A-Z]{3}$').hasMatch(revenueCurrency))) {
+        issues.add(
+          HostRosterRowIssue(
+            HostRosterRowIssueType.missingRevenueCurrency,
+            rowNumber: index + 2,
+            value: revenueCurrency,
+          ),
+        );
+        needsReviewCount += 1;
+        continue;
+      }
       final parsedStatus = _parseStatus(statusValue);
       if (parsedStatus.disposition == _RosterRowDisposition.excluded) {
         issues.add(
@@ -246,6 +292,13 @@ class HostRosterTable {
             source,
             mapping[HostRosterField.ticketType],
           ),
+          revenueAmountMinor: revenueAmountMinor,
+          revenueCurrency: revenueAmountMinor == null ? null : revenueCurrency,
+          revenueSource: revenueAmountMinor == null
+              ? null
+              : mappedRevenueAmountMinor != null
+              ? EventAttendeeRevenueSource.hostImport
+              : EventAttendeeRevenueSource.hostEstimate,
           status: parsedStatus.status,
         ),
       );
@@ -398,6 +451,21 @@ Map<HostRosterField, int?> suggestHostRosterMapping(
       'pass',
       'ticketname',
     }),
+    HostRosterField.revenueAmount: firstAlias({
+      'amount',
+      'amountpaid',
+      'paidamount',
+      'ordertotal',
+      'ticketprice',
+      'ticketamount',
+      'revenue',
+      'grossrevenue',
+    }),
+    HostRosterField.revenueCurrency: firstAlias({
+      'currency',
+      'currencycode',
+      'paymentcurrency',
+    }),
     HostRosterField.status: firstAlias({
       'status',
       'registrationstatus',
@@ -469,6 +537,19 @@ String? _nullableValueAt(List<String> row, int? index) {
   if (index == null) return null;
   final value = _valueAt(row, index);
   return value.isEmpty ? null : value;
+}
+
+int? parseHostRosterRevenueAmountMinor(String value) {
+  final normalized = value.trim().replaceAll(',', '');
+  final match = RegExp(
+    r'^(?:[^0-9-]*)?([0-9]+)(?:\.([0-9]{1,2}))?$',
+  ).firstMatch(normalized);
+  if (match == null) return null;
+  final whole = int.tryParse(match.group(1)!);
+  if (whole == null) return null;
+  final fraction = (match.group(2) ?? '').padRight(2, '0');
+  final minor = whole * 100 + (int.tryParse(fraction) ?? 0);
+  return minor <= 9007199254740991 ? minor : null;
 }
 
 enum _RosterRowDisposition { ready, needsReview, excluded }

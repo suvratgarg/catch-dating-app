@@ -916,7 +916,7 @@ async function loadFirebaseRuntime(): Promise<FirebaseRuntime | null> {
   if (!config || !appCheckSiteKey) return null;
   const [
     {initializeApp},
-    {initializeAppCheck, ReCaptchaV3Provider},
+    {initializeAppCheck, ReCaptchaEnterpriseProvider},
     {getAuth},
     {getFirestore},
     {getFunctions},
@@ -929,7 +929,7 @@ async function loadFirebaseRuntime(): Promise<FirebaseRuntime | null> {
   ]);
   const app = initializeApp(config);
   initializeAppCheck(app, {
-    provider: new ReCaptchaV3Provider(appCheckSiteKey),
+    provider: new ReCaptchaEnterpriseProvider(appCheckSiteKey),
     isTokenAutoRefreshEnabled: true,
   });
   return {

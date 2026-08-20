@@ -5,7 +5,10 @@ import {CallableRequest, HttpsError, onCall} from
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import {adminRolesFromToken} from "../admin/adminAuth";
 import {requireAuth} from "../shared/auth";
-import {appCheckCallableOptions} from "../shared/callableOptions";
+import {
+  appCheckCallableOptions,
+  appCheckCallableOptionsWithLimits,
+} from "../shared/callableOptions";
 import {
   EventDocument,
   EventRehearsalActionDocument,
@@ -1397,7 +1400,7 @@ export const createEventRehearsal = onCall(
   createEventRehearsalHandler
 );
 export const getEventRehearsalBootstrap = onCall(
-  appCheckCallableOptions,
+  appCheckCallableOptionsWithLimits({memory: "512MiB"}),
   getEventRehearsalBootstrapHandler
 );
 export const updateEventRehearsalSetup = onCall(

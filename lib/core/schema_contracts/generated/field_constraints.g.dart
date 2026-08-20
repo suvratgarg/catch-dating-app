@@ -11626,6 +11626,45 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const eventAttendeeDocumentRevenueAllocation = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.revenueAllocation',
+    valueTypes: <String>['string'],
+    enumValues: <String>['perAttendee', 'sharedOrder'],
+  );
+
+  static const eventAttendeeDocumentRevenueAmountMinor = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.revenueAmountMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAttendeeDocumentRevenueCurrency = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.revenueCurrency',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const eventAttendeeDocumentRevenueOrderAmountMinor = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.revenueOrderAmountMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAttendeeDocumentRevenueOrderReference = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.revenueOrderReference',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendeeDocumentRevenueSource = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.revenueSource',
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostImport', 'hostEstimate', 'providerOrder'],
+  );
+
   static const eventAttendeeDocumentSearchName = CatchContractFieldConstraints(
     path: 'eventAttendeeDocument.searchName',
     maxLength: 120,
@@ -23261,6 +23300,19 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const getOrganizerContactDetailCallableResponseEventsItemsEventOriginMode = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.events.items.eventOriginMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchNative', 'externalCompanion', 'unknown'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseEventsItemsEventProvider = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.events.items.eventProvider',
+    valueTypes: <String>['string'],
+    enumValues: <String>['catch', 'generic', 'luma', 'eventbrite', 'partiful', 'posh', 'bookmyshow', 'district', 'sortmyscene', 'airbnb'],
+  );
+
   static const getOrganizerContactDetailCallableResponseEventsItemsEventStartAtMillis = CatchContractFieldConstraints(
     path: 'getOrganizerContactDetailCallableResponse.events.items.eventStartAtMillis',
     valueTypes: <String>['integer'],
@@ -23283,6 +23335,51 @@ abstract final class CatchContractConstraints {
     path: 'getOrganizerContactDetailCallableResponse.events.items.registeredAtMillis',
     valueTypes: <String>['integer'],
     minimum: 0,
+  );
+
+  static const getOrganizerContactDetailCallableResponseEventsItemsRevenues = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.events.items.revenues',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 8,
+  );
+
+  static const getOrganizerContactDetailCallableResponseEventsItemsRevenuesItemsAllocation = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.events.items.revenues.items.allocation',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['perAttendee', 'sharedOrder'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseEventsItemsRevenuesItemsAmountMinor = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.events.items.revenues.items.amountMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getOrganizerContactDetailCallableResponseEventsItemsRevenuesItemsCurrency = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.events.items.revenues.items.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const getOrganizerContactDetailCallableResponseEventsItemsRevenuesItemsFactCount = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.events.items.revenues.items.factCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const getOrganizerContactDetailCallableResponseEventsItemsRevenuesItemsSource = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.events.items.revenues.items.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchPayment', 'hostImport', 'hostEstimate', 'providerOrder'],
   );
 
   static const getOrganizerContactDetailCallableResponseEventsItemsSource = CatchContractFieldConstraints(
@@ -23472,12 +23569,43 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Z]{3}\$',
   );
 
-  static const getOrganizerContactDetailCallableResponseRevenueAmountsItemsPaidOrderCount = CatchContractFieldConstraints(
-    path: 'getOrganizerContactDetailCallableResponse.revenue.amounts.items.paidOrderCount',
+  static const getOrganizerContactDetailCallableResponseRevenueAmountsItemsFactCount = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.revenue.amounts.items.factCount',
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 1000000,
+  );
+
+  static const getOrganizerContactDetailCallableResponseRevenueAmountsItemsSources = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.revenue.amounts.items.sources',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 4,
+  );
+
+  static const getOrganizerContactDetailCallableResponseRevenueAmountsItemsSourcesItemsAmountMinor = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.revenue.amounts.items.sources.items.amountMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getOrganizerContactDetailCallableResponseRevenueAmountsItemsSourcesItemsFactCount = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.revenue.amounts.items.sources.items.factCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const getOrganizerContactDetailCallableResponseRevenueAmountsItemsSourcesItemsSource = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.revenue.amounts.items.sources.items.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchPayment', 'hostImport', 'hostEstimate', 'providerOrder'],
   );
 
   static const getOrganizerContactDetailCallableResponseRevenueCoverage = CatchContractFieldConstraints(
@@ -26610,6 +26738,25 @@ abstract final class CatchContractConstraints {
     path: 'importEventAttendeesCallablePayload.rows.items.phone',
     maxLength: 40,
     valueTypes: <String>['string'],
+  );
+
+  static const importEventAttendeesCallablePayloadRowsItemsRevenueAmountMinor = CatchContractFieldConstraints(
+    path: 'importEventAttendeesCallablePayload.rows.items.revenueAmountMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const importEventAttendeesCallablePayloadRowsItemsRevenueCurrency = CatchContractFieldConstraints(
+    path: 'importEventAttendeesCallablePayload.rows.items.revenueCurrency',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const importEventAttendeesCallablePayloadRowsItemsRevenueSource = CatchContractFieldConstraints(
+    path: 'importEventAttendeesCallablePayload.rows.items.revenueSource',
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostImport', 'hostEstimate'],
   );
 
   static const importEventAttendeesCallablePayloadRowsItemsRowId = CatchContractFieldConstraints(
@@ -34605,6 +34752,13 @@ abstract final class CatchContractConstraints {
     format: 'email',
   );
 
+  static const organizerContactEventEdgeDocumentEventDisplayName = CatchContractFieldConstraints(
+    path: 'organizerContactEventEdgeDocument.eventDisplayName',
+    maxLength: 120,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerContactEventEdgeDocumentEventEndAtNanoseconds = CatchContractFieldConstraints(
     path: 'organizerContactEventEdgeDocument.eventEndAt._nanoseconds',
     required: true,
@@ -34625,6 +34779,18 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const organizerContactEventEdgeDocumentEventOriginMode = CatchContractFieldConstraints(
+    path: 'organizerContactEventEdgeDocument.eventOriginMode',
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchNative', 'externalCompanion'],
+  );
+
+  static const organizerContactEventEdgeDocumentEventProvider = CatchContractFieldConstraints(
+    path: 'organizerContactEventEdgeDocument.eventProvider',
+    valueTypes: <String>['string'],
+    enumValues: <String>['catch', 'generic', 'luma', 'eventbrite', 'partiful', 'posh', 'bookmyshow', 'district', 'sortmyscene', 'airbnb'],
   );
 
   static const organizerContactEventEdgeDocumentEventStartAtNanoseconds = CatchContractFieldConstraints(
@@ -34715,6 +34881,38 @@ abstract final class CatchContractConstraints {
     path: 'organizerContactEventEdgeDocument.registeredAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const organizerContactEventEdgeDocumentRevenueAllocation = CatchContractFieldConstraints(
+    path: 'organizerContactEventEdgeDocument.revenueAllocation',
+    valueTypes: <String>['string'],
+    enumValues: <String>['perAttendee', 'sharedOrder'],
+  );
+
+  static const organizerContactEventEdgeDocumentRevenueAmountMinor = CatchContractFieldConstraints(
+    path: 'organizerContactEventEdgeDocument.revenueAmountMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerContactEventEdgeDocumentRevenueCurrency = CatchContractFieldConstraints(
+    path: 'organizerContactEventEdgeDocument.revenueCurrency',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const organizerContactEventEdgeDocumentRevenueOrderReference = CatchContractFieldConstraints(
+    path: 'organizerContactEventEdgeDocument.revenueOrderReference',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactEventEdgeDocumentRevenueSource = CatchContractFieldConstraints(
+    path: 'organizerContactEventEdgeDocument.revenueSource',
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostImport', 'hostEstimate', 'providerOrder'],
   );
 
   static const organizerContactEventEdgeDocumentRevision = CatchContractFieldConstraints(
@@ -56818,6 +57016,12 @@ abstract final class CatchContractConstraints {
     'eventAttendeeDocument.providerSyncedAt._seconds': eventAttendeeDocumentProviderSyncedAtSeconds,
     'eventAttendeeDocument.registeredAt._nanoseconds': eventAttendeeDocumentRegisteredAtNanoseconds,
     'eventAttendeeDocument.registeredAt._seconds': eventAttendeeDocumentRegisteredAtSeconds,
+    'eventAttendeeDocument.revenueAllocation': eventAttendeeDocumentRevenueAllocation,
+    'eventAttendeeDocument.revenueAmountMinor': eventAttendeeDocumentRevenueAmountMinor,
+    'eventAttendeeDocument.revenueCurrency': eventAttendeeDocumentRevenueCurrency,
+    'eventAttendeeDocument.revenueOrderAmountMinor': eventAttendeeDocumentRevenueOrderAmountMinor,
+    'eventAttendeeDocument.revenueOrderReference': eventAttendeeDocumentRevenueOrderReference,
+    'eventAttendeeDocument.revenueSource': eventAttendeeDocumentRevenueSource,
     'eventAttendeeDocument.searchName': eventAttendeeDocumentSearchName,
     'eventAttendeeDocument.source': eventAttendeeDocumentSource,
     'eventAttendeeDocument.sourceRowId': eventAttendeeDocumentSourceRowId,
@@ -58420,10 +58624,18 @@ abstract final class CatchContractConstraints {
     'getOrganizerContactDetailCallableResponse.events.items.displayName': getOrganizerContactDetailCallableResponseEventsItemsDisplayName,
     'getOrganizerContactDetailCallableResponse.events.items.eventEndAtMillis': getOrganizerContactDetailCallableResponseEventsItemsEventEndAtMillis,
     'getOrganizerContactDetailCallableResponse.events.items.eventId': getOrganizerContactDetailCallableResponseEventsItemsEventId,
+    'getOrganizerContactDetailCallableResponse.events.items.eventOriginMode': getOrganizerContactDetailCallableResponseEventsItemsEventOriginMode,
+    'getOrganizerContactDetailCallableResponse.events.items.eventProvider': getOrganizerContactDetailCallableResponseEventsItemsEventProvider,
     'getOrganizerContactDetailCallableResponse.events.items.eventStartAtMillis': getOrganizerContactDetailCallableResponseEventsItemsEventStartAtMillis,
     'getOrganizerContactDetailCallableResponse.events.items.expected': getOrganizerContactDetailCallableResponseEventsItemsExpected,
     'getOrganizerContactDetailCallableResponse.events.items.registered': getOrganizerContactDetailCallableResponseEventsItemsRegistered,
     'getOrganizerContactDetailCallableResponse.events.items.registeredAtMillis': getOrganizerContactDetailCallableResponseEventsItemsRegisteredAtMillis,
+    'getOrganizerContactDetailCallableResponse.events.items.revenues': getOrganizerContactDetailCallableResponseEventsItemsRevenues,
+    'getOrganizerContactDetailCallableResponse.events.items.revenues.items.allocation': getOrganizerContactDetailCallableResponseEventsItemsRevenuesItemsAllocation,
+    'getOrganizerContactDetailCallableResponse.events.items.revenues.items.amountMinor': getOrganizerContactDetailCallableResponseEventsItemsRevenuesItemsAmountMinor,
+    'getOrganizerContactDetailCallableResponse.events.items.revenues.items.currency': getOrganizerContactDetailCallableResponseEventsItemsRevenuesItemsCurrency,
+    'getOrganizerContactDetailCallableResponse.events.items.revenues.items.factCount': getOrganizerContactDetailCallableResponseEventsItemsRevenuesItemsFactCount,
+    'getOrganizerContactDetailCallableResponse.events.items.revenues.items.source': getOrganizerContactDetailCallableResponseEventsItemsRevenuesItemsSource,
     'getOrganizerContactDetailCallableResponse.events.items.source': getOrganizerContactDetailCallableResponseEventsItemsSource,
     'getOrganizerContactDetailCallableResponse.events.items.status': getOrganizerContactDetailCallableResponseEventsItemsStatus,
     'getOrganizerContactDetailCallableResponse.eventsTruncated': getOrganizerContactDetailCallableResponseEventsTruncated,
@@ -58450,7 +58662,11 @@ abstract final class CatchContractConstraints {
     'getOrganizerContactDetailCallableResponse.revenue.amounts': getOrganizerContactDetailCallableResponseRevenueAmounts,
     'getOrganizerContactDetailCallableResponse.revenue.amounts.items.amountMinor': getOrganizerContactDetailCallableResponseRevenueAmountsItemsAmountMinor,
     'getOrganizerContactDetailCallableResponse.revenue.amounts.items.currency': getOrganizerContactDetailCallableResponseRevenueAmountsItemsCurrency,
-    'getOrganizerContactDetailCallableResponse.revenue.amounts.items.paidOrderCount': getOrganizerContactDetailCallableResponseRevenueAmountsItemsPaidOrderCount,
+    'getOrganizerContactDetailCallableResponse.revenue.amounts.items.factCount': getOrganizerContactDetailCallableResponseRevenueAmountsItemsFactCount,
+    'getOrganizerContactDetailCallableResponse.revenue.amounts.items.sources': getOrganizerContactDetailCallableResponseRevenueAmountsItemsSources,
+    'getOrganizerContactDetailCallableResponse.revenue.amounts.items.sources.items.amountMinor': getOrganizerContactDetailCallableResponseRevenueAmountsItemsSourcesItemsAmountMinor,
+    'getOrganizerContactDetailCallableResponse.revenue.amounts.items.sources.items.factCount': getOrganizerContactDetailCallableResponseRevenueAmountsItemsSourcesItemsFactCount,
+    'getOrganizerContactDetailCallableResponse.revenue.amounts.items.sources.items.source': getOrganizerContactDetailCallableResponseRevenueAmountsItemsSourcesItemsSource,
     'getOrganizerContactDetailCallableResponse.revenue.coverage': getOrganizerContactDetailCallableResponseRevenueCoverage,
     'getOrganizerContactDetailCallableResponse.revision': getOrganizerContactDetailCallableResponseRevision,
     'getOrganizerContactDetailCallableResponse.sends': getOrganizerContactDetailCallableResponseSends,
@@ -58881,6 +59097,9 @@ abstract final class CatchContractConstraints {
     'importEventAttendeesCallablePayload.rows.items.email': importEventAttendeesCallablePayloadRowsItemsEmail,
     'importEventAttendeesCallablePayload.rows.items.externalReference': importEventAttendeesCallablePayloadRowsItemsExternalReference,
     'importEventAttendeesCallablePayload.rows.items.phone': importEventAttendeesCallablePayloadRowsItemsPhone,
+    'importEventAttendeesCallablePayload.rows.items.revenueAmountMinor': importEventAttendeesCallablePayloadRowsItemsRevenueAmountMinor,
+    'importEventAttendeesCallablePayload.rows.items.revenueCurrency': importEventAttendeesCallablePayloadRowsItemsRevenueCurrency,
+    'importEventAttendeesCallablePayload.rows.items.revenueSource': importEventAttendeesCallablePayloadRowsItemsRevenueSource,
     'importEventAttendeesCallablePayload.rows.items.rowId': importEventAttendeesCallablePayloadRowsItemsRowId,
     'importEventAttendeesCallablePayload.rows.items.status': importEventAttendeesCallablePayloadRowsItemsStatus,
     'importEventAttendeesCallablePayload.rows.items.ticketType': importEventAttendeesCallablePayloadRowsItemsTicketType,
@@ -59980,9 +60199,12 @@ abstract final class CatchContractConstraints {
     'organizerContactEventEdgeDocument.createdAt._seconds': organizerContactEventEdgeDocumentCreatedAtSeconds,
     'organizerContactEventEdgeDocument.displayName': organizerContactEventEdgeDocumentDisplayName,
     'organizerContactEventEdgeDocument.email': organizerContactEventEdgeDocumentEmail,
+    'organizerContactEventEdgeDocument.eventDisplayName': organizerContactEventEdgeDocumentEventDisplayName,
     'organizerContactEventEdgeDocument.eventEndAt._nanoseconds': organizerContactEventEdgeDocumentEventEndAtNanoseconds,
     'organizerContactEventEdgeDocument.eventEndAt._seconds': organizerContactEventEdgeDocumentEventEndAtSeconds,
     'organizerContactEventEdgeDocument.eventId': organizerContactEventEdgeDocumentEventId,
+    'organizerContactEventEdgeDocument.eventOriginMode': organizerContactEventEdgeDocumentEventOriginMode,
+    'organizerContactEventEdgeDocument.eventProvider': organizerContactEventEdgeDocumentEventProvider,
     'organizerContactEventEdgeDocument.eventStartAt._nanoseconds': organizerContactEventEdgeDocumentEventStartAtNanoseconds,
     'organizerContactEventEdgeDocument.eventStartAt._seconds': organizerContactEventEdgeDocumentEventStartAtSeconds,
     'organizerContactEventEdgeDocument.expected': organizerContactEventEdgeDocumentExpected,
@@ -59996,6 +60218,11 @@ abstract final class CatchContractConstraints {
     'organizerContactEventEdgeDocument.registered': organizerContactEventEdgeDocumentRegistered,
     'organizerContactEventEdgeDocument.registeredAt._nanoseconds': organizerContactEventEdgeDocumentRegisteredAtNanoseconds,
     'organizerContactEventEdgeDocument.registeredAt._seconds': organizerContactEventEdgeDocumentRegisteredAtSeconds,
+    'organizerContactEventEdgeDocument.revenueAllocation': organizerContactEventEdgeDocumentRevenueAllocation,
+    'organizerContactEventEdgeDocument.revenueAmountMinor': organizerContactEventEdgeDocumentRevenueAmountMinor,
+    'organizerContactEventEdgeDocument.revenueCurrency': organizerContactEventEdgeDocumentRevenueCurrency,
+    'organizerContactEventEdgeDocument.revenueOrderReference': organizerContactEventEdgeDocumentRevenueOrderReference,
+    'organizerContactEventEdgeDocument.revenueSource': organizerContactEventEdgeDocumentRevenueSource,
     'organizerContactEventEdgeDocument.revision': organizerContactEventEdgeDocumentRevision,
     'organizerContactEventEdgeDocument.source': organizerContactEventEdgeDocumentSource,
     'organizerContactEventEdgeDocument.sourceCreatedAt._nanoseconds': organizerContactEventEdgeDocumentSourceCreatedAtNanoseconds,

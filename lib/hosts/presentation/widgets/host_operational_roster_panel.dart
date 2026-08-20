@@ -4,6 +4,8 @@ import 'package:catch_dating_app/core/app_error_context.dart' as app_ops;
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/clipboard.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
+import 'package:catch_dating_app/core/country_markets.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -37,6 +39,7 @@ import 'package:catch_dating_app/hosts/presentation/host_roster_insight_filter.d
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 class HostGuestIntakeField extends StatelessWidget {
   const HostGuestIntakeField({
@@ -44,17 +47,23 @@ class HostGuestIntakeField extends StatelessWidget {
     required this.eventId,
     required this.organizerId,
     this.bookingProvider,
+    this.suggestedRevenueAmountMinor,
+    this.revenueCurrency = defaultCurrencyCode,
   });
 
   final String eventId;
   final String organizerId;
   final ExternalBookingProvider? bookingProvider;
+  final int? suggestedRevenueAmountMinor;
+  final String revenueCurrency;
 
   @override
   Widget build(BuildContext context) => HostOperationalRosterPanel._guestIntake(
     eventId: eventId,
     organizerId: organizerId,
     bookingProvider: bookingProvider,
+    suggestedRevenueAmountMinor: suggestedRevenueAmountMinor,
+    revenueCurrency: revenueCurrency,
   );
 }
 
@@ -183,6 +192,8 @@ class HostOperationalRosterPanel extends ConsumerStatefulWidget {
     this.allowRuntimeClaimReview = true,
     this.showAudienceInsights = true,
     this.allowManualGuest = false,
+    this.suggestedRevenueAmountMinor,
+    this.revenueCurrency = defaultCurrencyCode,
   }) : _view = _HostOperationalRosterView.roster,
        bookingProvider = null;
 
@@ -190,6 +201,8 @@ class HostOperationalRosterPanel extends ConsumerStatefulWidget {
     required this.eventId,
     required this.organizerId,
     required this.bookingProvider,
+    required this.suggestedRevenueAmountMinor,
+    required this.revenueCurrency,
   }) : _view = _HostOperationalRosterView.guestIntake,
        allowAttendanceChanges = false,
        allowRuntimeClaimReview = false,
@@ -203,6 +216,8 @@ class HostOperationalRosterPanel extends ConsumerStatefulWidget {
   final bool showAudienceInsights;
   final bool allowManualGuest;
   final ExternalBookingProvider? bookingProvider;
+  final int? suggestedRevenueAmountMinor;
+  final String revenueCurrency;
   final _HostOperationalRosterView _view;
 
   @override
@@ -267,6 +282,7 @@ class _HostOperationalRosterPanelState
     final attendeesAsync = ref.watch(
       watchEventAttendeesProvider(widget.eventId),
     );
+    final attendeesState = catchAsyncStateFromAsyncValue(attendeesAsync);
     final insightsAsync = widget.showAudienceInsights
         ? ref.watch(hostEventRosterInsightsProvider(widget.eventId))
         : null;
@@ -326,7 +342,7 @@ class _HostOperationalRosterPanelState
                 padding: CatchInsets.sectionItemBottomGap,
                 child: _HostRuntimeClaimQueue(
                   claims: claims,
-                  attendees: attendeesAsync.asData?.value ?? const [],
+                  attendees: attendeesState.value ?? const [],
                   pendingUid: _pendingClaimUid,
                   onApprove: (claim, attendeeId) => unawaited(
                     _reviewClaim(
@@ -356,7 +372,9 @@ class _HostOperationalRosterPanelState
                   message: context.l10n.hostsOperationalRosterEmptyMessage,
                 );
               }
-              final insights = insightsAsync?.asData?.value;
+              final insights = insightsAsync == null
+                  ? null
+                  : catchAsyncStateFromAsyncValue(insightsAsync).value;
               final insightByAttendeeId = insights?.byAttendeeId ?? const {};
               final effectiveFilter = insights == null
                   ? HostRosterInsightFilter.all
@@ -570,7 +588,12 @@ class _HostOperationalRosterPanelState
           .read(hostOperationalRosterControllerProvider)
           .pickRosterFile(providerHint: widget.bookingProvider);
       if (table == null || !mounted) return;
-      final plan = await showHostRosterMapping(context, table);
+      final plan = await showHostRosterMapping(
+        context,
+        table,
+        suggestedRevenueAmountMinor: widget.suggestedRevenueAmountMinor,
+        defaultRevenueCurrency: widget.revenueCurrency,
+      );
       if (plan == null || !mounted) return;
       await _importRows(
         fileName: table.fileName,
@@ -1748,16 +1771,29 @@ class _RosterAttendanceAction extends StatelessWidget {
 
 Future<HostRosterImportPlan?> showHostRosterMapping(
   BuildContext context,
-  HostRosterTable table,
-) => showCatchBottomSheet<HostRosterImportPlan>(
+  HostRosterTable table, {
+  int? suggestedRevenueAmountMinor,
+  String defaultRevenueCurrency = defaultCurrencyCode,
+}) => showCatchBottomSheet<HostRosterImportPlan>(
   context: context,
-  builder: (context) => HostRosterImportSheet(table: table),
+  builder: (context) => HostRosterImportSheet(
+    table: table,
+    suggestedRevenueAmountMinor: suggestedRevenueAmountMinor,
+    defaultRevenueCurrency: defaultRevenueCurrency,
+  ),
 );
 
 class HostRosterImportSheet extends StatefulWidget {
-  const HostRosterImportSheet({super.key, required this.table});
+  const HostRosterImportSheet({
+    super.key,
+    required this.table,
+    this.suggestedRevenueAmountMinor,
+    this.defaultRevenueCurrency = defaultCurrencyCode,
+  });
 
   final HostRosterTable table;
+  final int? suggestedRevenueAmountMinor;
+  final String defaultRevenueCurrency;
 
   @override
   State<HostRosterImportSheet> createState() => _HostRosterImportSheetState();
@@ -1767,11 +1803,40 @@ class _HostRosterImportSheetState extends State<HostRosterImportSheet> {
   late final Map<HostRosterField, int?> _mapping = {
     ...widget.table.suggestedMapping,
   };
+  final _fallbackRevenueController = TextEditingController();
+  late final _revenueCurrencyController = TextEditingController(
+    text: widget.defaultRevenueCurrency,
+  );
+
+  @override
+  void dispose() {
+    _fallbackRevenueController.dispose();
+    _revenueCurrencyController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final mapped = widget.table.mapRows(_mapping);
-    final canImport = mapped.rows.isNotEmpty && !mapped.hasBlockingMappingIssue;
+    final fallbackText = _fallbackRevenueController.text.trim();
+    final fallbackRevenueAmountMinor = fallbackText.isEmpty
+        ? null
+        : parseHostRosterRevenueAmountMinor(fallbackText);
+    final fallbackRevenueCurrency = _revenueCurrencyController.text
+        .trim()
+        .toUpperCase();
+    final invalidFallback =
+        fallbackText.isNotEmpty &&
+        (fallbackRevenueAmountMinor == null ||
+            !RegExp(r'^[A-Z]{3}$').hasMatch(fallbackRevenueCurrency));
+    final mapped = widget.table.mapRows(
+      _mapping,
+      fallbackRevenueAmountMinor: fallbackRevenueAmountMinor,
+      fallbackRevenueCurrency: fallbackRevenueCurrency,
+    );
+    final canImport =
+        mapped.rows.isNotEmpty &&
+        !mapped.hasBlockingMappingIssue &&
+        !invalidFallback;
     return CatchBottomSheetScaffold(
       title: context.l10n.hostsOperationalRosterImportTitle,
       subtitle: context.l10n.hostsOperationalRosterImportSubtitle,
@@ -1842,6 +1907,52 @@ class _HostRosterImportSheetState extends State<HostRosterImportSheet> {
                       _mapping[field] = value;
                     }),
                   ),
+              ],
+            ),
+            gapH12,
+            CatchFieldLanes.divided(
+              children: [
+                CatchField.input(
+                  key: const ValueKey('host-roster-revenue-fallback'),
+                  title:
+                      context.l10n.hostsOperationalRosterRevenueFallbackAmount,
+                  contractExemption:
+                      'Major-unit organizer estimate is converted to the '
+                      'callable minor-unit revenue contract before import.',
+                  controller: _fallbackRevenueController,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  isOptional: true,
+                  helperText: widget.suggestedRevenueAmountMinor == null
+                      ? context.l10n.hostsOperationalRosterRevenueFallbackHelp
+                      : context.l10n
+                            .hostsOperationalRosterRevenueFallbackEventPrice(
+                              amount:
+                                  NumberFormat.simpleCurrency(
+                                    name: widget.defaultRevenueCurrency,
+                                  ).format(
+                                    widget.suggestedRevenueAmountMinor! / 100,
+                                  ),
+                            ),
+                  errorText: invalidFallback
+                      ? context
+                            .l10n
+                            .hostsOperationalRosterRevenueFallbackInvalid
+                      : null,
+                  onChanged: (_) => setState(() {}),
+                ),
+                CatchField.input(
+                  key: const ValueKey('host-roster-revenue-currency'),
+                  title: context.l10n.hostsOperationalRosterFieldCurrency,
+                  contractExemption:
+                      'Three-letter currency is copied into each row that '
+                      'uses the explicit organizer estimate.',
+                  controller: _revenueCurrencyController,
+                  maxLength: 3,
+                  textCapitalization: TextCapitalization.characters,
+                  onChanged: (_) => setState(() {}),
+                ),
               ],
             ),
             gapH12,
@@ -2169,6 +2280,10 @@ String _fieldCopy(
   HostRosterField.arrivalGroup =>
     context.l10n.hostsOperationalRosterFieldArrivalGroup,
   HostRosterField.ticketType => context.l10n.hostsOperationalRosterFieldTicket,
+  HostRosterField.revenueAmount =>
+    context.l10n.hostsOperationalRosterFieldRevenue,
+  HostRosterField.revenueCurrency =>
+    context.l10n.hostsOperationalRosterFieldCurrency,
   HostRosterField.status => context.l10n.hostsOperationalRosterFieldStatus,
 };
 
@@ -2213,6 +2328,14 @@ String _rowIssueCopy(BuildContext context, HostRosterRowIssue issue) =>
         ),
       HostRosterRowIssueType.invalidEmail =>
         context.l10n.hostsOperationalRosterIssueInvalidEmail(
+          row: issue.rowNumber ?? 0,
+        ),
+      HostRosterRowIssueType.invalidRevenueAmount =>
+        context.l10n.hostsOperationalRosterIssueInvalidRevenue(
+          row: issue.rowNumber ?? 0,
+        ),
+      HostRosterRowIssueType.missingRevenueCurrency =>
+        context.l10n.hostsOperationalRosterIssueMissingRevenueCurrency(
           row: issue.rowNumber ?? 0,
         ),
       HostRosterRowIssueType.duplicateIdentity =>

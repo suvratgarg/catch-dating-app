@@ -19,8 +19,8 @@ void _registerHostOperationsStateEventsTests() {
 
       final state = buildHostTeamWorkspaceState(
         uid: _hostUid,
-        profile: const AsyncLoading<HostProfile?>(),
-        clubs: AsyncData<List<Club>>([ownedClub]),
+        profile: const CatchAsyncState<HostProfile?>.loading(),
+        clubs: CatchAsyncState<List<Club>>.data([ownedClub]),
       );
 
       final profileState = state.profile;
@@ -57,8 +57,8 @@ void _registerHostOperationsStateEventsTests() {
 
       final editState = buildHostTeamWorkspaceState(
         uid: _hostUid,
-        profile: AsyncData<HostProfile?>(profile),
-        clubs: AsyncData<List<Club>>([ownedClub, cohostClub]),
+        profile: CatchAsyncState<HostProfile?>.data(profile),
+        clubs: CatchAsyncState<List<Club>>.data([ownedClub, cohostClub]),
       );
       expect(editState.actions.canCreateProfile, isFalse);
       expect(editState.actions.canEditProfile, isTrue);
@@ -77,8 +77,8 @@ void _registerHostOperationsStateEventsTests() {
 
       final previewState = buildHostTeamWorkspaceState(
         uid: _hostUid,
-        profile: const AsyncData<HostProfile?>(null),
-        clubs: const AsyncData<List<Club>>([]),
+        profile: const CatchAsyncState<HostProfile?>.data(null),
+        clubs: const CatchAsyncState<List<Club>>.data([]),
         editMode: false,
       );
       expect(previewState.actions.canCreateProfile, isTrue);
@@ -186,16 +186,20 @@ void _registerHostOperationsStateEventsTests() {
     final clubsError = StateError('clubs failed');
 
     expect(
-      buildHostHomeRouteState(uid: const AsyncData<String?>(null)).status,
+      buildHostHomeRouteState(
+        uid: const CatchAsyncState<String?>.data(null),
+      ).status,
       HostHomeRouteStatus.authRequired,
     );
     expect(
-      buildHostHomeRouteState(uid: const AsyncLoading<String?>()).status,
+      buildHostHomeRouteState(
+        uid: const CatchAsyncState<String?>.loading(),
+      ).status,
       HostHomeRouteStatus.loading,
     );
 
     final authErrorState = buildHostHomeRouteState(
-      uid: AsyncError<String?>(authError, stackTrace),
+      uid: CatchAsyncState<String?>.error(authError, stackTrace),
     );
     expect(authErrorState.status, HostHomeRouteStatus.error);
     expect(authErrorState.error, authError);
@@ -203,15 +207,15 @@ void _registerHostOperationsStateEventsTests() {
 
     expect(
       buildHostHomeRouteState(
-        uid: const AsyncData<String?>(_hostUid),
-        clubs: const AsyncLoading<List<Club>>(),
+        uid: const CatchAsyncState<String?>.data(_hostUid),
+        clubs: const CatchAsyncState<List<Club>>.loading(),
       ).status,
       HostHomeRouteStatus.loading,
     );
 
     final clubsErrorState = buildHostHomeRouteState(
-      uid: const AsyncData<String?>(_hostUid),
-      clubs: AsyncError<List<Club>>(clubsError, stackTrace),
+      uid: const CatchAsyncState<String?>.data(_hostUid),
+      clubs: CatchAsyncState<List<Club>>.error(clubsError, stackTrace),
     );
     expect(clubsErrorState.status, HostHomeRouteStatus.error);
     expect(clubsErrorState.uid, _hostUid);
@@ -219,15 +223,15 @@ void _registerHostOperationsStateEventsTests() {
     expect(clubsErrorState.errorContext, AppErrorContext.club);
 
     final emptyState = buildHostHomeRouteState(
-      uid: const AsyncData<String?>(_hostUid),
-      clubs: const AsyncData<List<Club>>([]),
+      uid: const CatchAsyncState<String?>.data(_hostUid),
+      clubs: const CatchAsyncState<List<Club>>.data([]),
     );
     expect(emptyState.status, HostHomeRouteStatus.empty);
     expect(emptyState.uid, _hostUid);
 
     final loadedState = buildHostHomeRouteState(
-      uid: const AsyncData<String?>(_hostUid),
-      clubs: AsyncData<List<Club>>([club]),
+      uid: const CatchAsyncState<String?>.data(_hostUid),
+      clubs: CatchAsyncState<List<Club>>.data([club]),
     );
     expect(loadedState.status, HostHomeRouteStatus.loaded);
     expect(loadedState.clubs, [club]);

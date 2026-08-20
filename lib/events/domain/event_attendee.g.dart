@@ -23,6 +23,18 @@ _EventAttendee _$EventAttendeeFromJson(
   externalReference: json['externalReference'] as String?,
   arrivalGroup: json['arrivalGroup'] as String?,
   ticketType: json['ticketType'] as String?,
+  revenueAmountMinor: (json['revenueAmountMinor'] as num?)?.toInt(),
+  revenueCurrency: json['revenueCurrency'] as String?,
+  revenueSource: $enumDecodeNullable(
+    _$EventAttendeeRevenueSourceEnumMap,
+    json['revenueSource'],
+  ),
+  revenueAllocation: $enumDecodeNullable(
+    _$EventAttendeeRevenueAllocationEnumMap,
+    json['revenueAllocation'],
+  ),
+  revenueOrderReference: json['revenueOrderReference'] as String?,
+  revenueOrderAmountMinor: (json['revenueOrderAmountMinor'] as num?)?.toInt(),
   importId: json['importId'] as String?,
   sourceRowId: json['sourceRowId'] as String?,
   provider: $enumDecodeNullable(
@@ -80,6 +92,13 @@ Map<String, dynamic> _$EventAttendeeToJson(
   'externalReference': instance.externalReference,
   'arrivalGroup': instance.arrivalGroup,
   'ticketType': instance.ticketType,
+  'revenueAmountMinor': instance.revenueAmountMinor,
+  'revenueCurrency': instance.revenueCurrency,
+  'revenueSource': _$EventAttendeeRevenueSourceEnumMap[instance.revenueSource],
+  'revenueAllocation':
+      _$EventAttendeeRevenueAllocationEnumMap[instance.revenueAllocation],
+  'revenueOrderReference': instance.revenueOrderReference,
+  'revenueOrderAmountMinor': instance.revenueOrderAmountMinor,
   'importId': instance.importId,
   'sourceRowId': instance.sourceRowId,
   'provider': _$ExternalBookingProviderEnumMap[instance.provider],
@@ -132,6 +151,17 @@ const _$EventAttendeeStatusEnumMap = {
   EventAttendeeStatus.waitlisted: 'waitlisted',
   EventAttendeeStatus.checkedIn: 'checkedIn',
   EventAttendeeStatus.cancelled: 'cancelled',
+};
+
+const _$EventAttendeeRevenueSourceEnumMap = {
+  EventAttendeeRevenueSource.hostImport: 'hostImport',
+  EventAttendeeRevenueSource.hostEstimate: 'hostEstimate',
+  EventAttendeeRevenueSource.providerOrder: 'providerOrder',
+};
+
+const _$EventAttendeeRevenueAllocationEnumMap = {
+  EventAttendeeRevenueAllocation.perAttendee: 'perAttendee',
+  EventAttendeeRevenueAllocation.sharedOrder: 'sharedOrder',
 };
 
 const _$ExternalBookingProviderEnumMap = {

@@ -12065,6 +12065,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsOperationalRosterFieldTicket => 'Ticket type';
 
   @override
+  String get hostsOperationalRosterFieldRevenue => 'Order or ticket revenue';
+
+  @override
+  String get hostsOperationalRosterFieldCurrency => 'Revenue currency';
+
+  @override
+  String get hostsOperationalRosterRevenueFallbackAmount =>
+      'Revenue per guest when missing';
+
+  @override
+  String get hostsOperationalRosterRevenueFallbackHelp =>
+      'Optional. This is recorded as your estimate, not a verified payment.';
+
+  @override
+  String hostsOperationalRosterRevenueFallbackEventPrice({
+    required String amount,
+  }) {
+    return 'Optional. The event price is $amount; enter it here only if it is a reasonable per-guest estimate.';
+  }
+
+  @override
+  String get hostsOperationalRosterRevenueFallbackInvalid =>
+      'Enter a non-negative amount and a three-letter currency code.';
+
+  @override
   String get hostsOperationalRosterFieldStatus => 'Registration status';
 
   @override
@@ -12216,6 +12241,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String hostsOperationalRosterIssueInvalidEmail({required int row}) {
     return 'Row $row: email address is not valid.';
+  }
+
+  @override
+  String hostsOperationalRosterIssueInvalidRevenue({required int row}) {
+    return 'Row $row: revenue is not a valid non-negative amount.';
+  }
+
+  @override
+  String hostsOperationalRosterIssueMissingRevenueCurrency({required int row}) {
+    return 'Row $row: choose a three-letter currency for this revenue amount.';
   }
 
   @override
@@ -12585,10 +12620,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostAudienceRemoveAction => 'Remove customer';
-
-  @override
-  String get hostsHostAudienceContactSubtitle =>
-      'Private to your organizer team';
 
   @override
   String get hostsHostAudienceContactName => 'Name shown to your team';
@@ -13413,15 +13444,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersInitialNote => 'Private note';
 
   @override
-  String get hostCustomersSaveDetails => 'Save details';
-
-  @override
   String get hostCustomersVerifiedDetailsManagedByCatch =>
       'Linked Catch profiles stay private. Phone and email can’t be edited here.';
 
   @override
   String get hostCustomersUnverifiedContactDetails =>
       'Added by your team · not verified by Catch';
+
+  @override
+  String get hostCustomersUnavailable => 'Customers unavailable';
+
+  @override
+  String get hostCustomersReload => 'Reload customers';
 
   @override
   String get hostCustomersDetailUnavailable => 'Customer details unavailable';
@@ -13632,26 +13666,50 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersDetailNoRevenue =>
-      'No completed Catch payments for this organizer.';
+      'No revenue has been recorded for this customer.';
 
   @override
   String get hostCustomersDetailRevenueUnavailable =>
-      'Revenue is unavailable until this customer has an unambiguous linked Catch account.';
+      'Revenue facts are unavailable right now.';
 
   @override
   String get hostCustomersDetailRevenuePartial =>
-      'Revenue includes known completed Catch payments only; some history may be outside this bounded result.';
+      'This total includes the available event and payment facts, but some bounded history may be missing.';
 
   @override
-  String hostCustomersDetailPaidOrders({required int count}) {
+  String hostCustomersDetailRevenueFacts({required int count}) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count paid orders',
-      one: '1 paid order',
+      other: '$count revenue facts',
+      one: '1 revenue fact',
     );
     return '$_temp0';
   }
+
+  @override
+  String get hostCustomersRevenueSourceCatch => 'Catch confirmed';
+
+  @override
+  String get hostCustomersRevenueSourceProvider => 'Provider confirmed';
+
+  @override
+  String get hostCustomersRevenueSourceImport => 'Imported by your team';
+
+  @override
+  String get hostCustomersRevenueSourceEstimate => 'Estimated by your team';
+
+  @override
+  String get hostCustomersRevenueSharedOrder => 'allocated from a shared order';
+
+  @override
+  String get hostCustomersEventOriginCatch => 'Catch-hosted';
+
+  @override
+  String get hostCustomersEventOriginExternal => 'Externally hosted';
+
+  @override
+  String get hostCustomersEventOriginUnknown => 'Event origin unavailable';
 
   @override
   String get hostCustomersStartCatchChat => 'Start Catch chat';
@@ -14054,6 +14112,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostApplicationsTitle => 'Applications';
+
+  @override
+  String get hostApplicationsUnavailable => 'Applications unavailable';
+
+  @override
+  String get hostApplicationsReload => 'Reload applications';
+
+  @override
+  String get hostApplicationNotFound => 'Application not found';
 
   @override
   String get hostApplicationsOpen => 'Review applications';

@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -162,13 +164,17 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
   Widget build(BuildContext context) {
     final messaging = ref.watch(hostMessagingSetupProvider(widget.club.id));
     final crmSummary = ref.watch(hostCrmSummaryProvider(widget.club.id));
-    return _buildCampaignComposer(context, messaging, crmSummary);
+    return _buildCampaignComposer(
+      context,
+      messaging,
+      catchAsyncStateFromAsyncValue(crmSummary),
+    );
   }
 
   CatchSection _buildCampaignComposer(
     BuildContext context,
     AsyncValue<HostMessagingSetup> messaging,
-    AsyncValue<HostCrmSummary> crmSummary,
+    CatchAsyncState<HostCrmSummary> crmSummary,
   ) => CatchSection.divided(
     title: context.l10n.hostsHostAudienceCampaign,
     child: CatchAsyncValueView<HostMessagingSetup>(
@@ -187,11 +193,10 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
         final connection = setup.connection;
         final approved = setup.approvedTemplates;
         final events =
-            ref
-                .watch(watchEventsForClubProvider(widget.club.id))
-                .asData
-                ?.value
-                .where((event) => !event.isCancelled)
+            catchAsyncStateFromAsyncValue(
+                  ref.watch(watchEventsForClubProvider(widget.club.id)),
+                ).value
+                ?.where((event) => !event.isCancelled)
                 .toList(growable: false) ??
             const <Event>[];
         if (connection == null || !connection.isActive) {
@@ -214,7 +219,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
         }
         final template = _selectedTemplate ?? approved.first;
         final eligibleSegments = hostCampaignEligibleSegmentsForSmsReadiness(
-          crmSummary.asData?.value.smsReadiness,
+          crmSummary.value?.smsReadiness,
         );
         final selectedEligibleSegments = _campaignSegments
             .where(eligibleSegments.contains)

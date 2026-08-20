@@ -2,6 +2,7 @@ import 'package:catch_dating_app/clubs/data/club_posts_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/shared/club_action_keys.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -163,7 +164,7 @@ class HostClubManagementPanel extends StatelessWidget {
                       watchClubPostRemainingWeeklyQuotaProvider(club.id),
                     );
                     final remainingQuota =
-                        quotaAsync.asData?.value ??
+                        catchAsyncStateFromAsyncValue(quotaAsync).value ??
                         ClubPostsRepository.weeklyQuota;
                     final quotaExhausted = remainingQuota <= 0;
                     return CatchButton(
