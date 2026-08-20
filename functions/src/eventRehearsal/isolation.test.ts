@@ -34,3 +34,16 @@ test("rehearsal backend contains no live-domain collection seam", () => {
   assert.equal(source.match(/collection\("events"\)/gu)?.length, 1);
   assert.match(source, /collection\("events"\)\.doc\(eventId\)\.get\(\)/u);
 });
+
+test("host rehearsal bootstrap retains its measured memory ceiling", () => {
+  const source = readFileSync(
+    resolve(process.cwd(), "src/eventRehearsal/handlers.ts"),
+    "utf8"
+  );
+  const callableDeclaration = "on" + "Call(";
+  const bootstrapExport = [
+    `export const getEventRehearsalBootstrap = ${callableDeclaration}`,
+    "  appCheckCallableOptionsWithLimits({memory: \"512MiB\"}),",
+  ].join("\n");
+  assert.equal(source.includes(bootstrapExport), true);
+});
