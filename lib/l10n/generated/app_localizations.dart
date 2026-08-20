@@ -22823,23 +22823,29 @@ abstract class AppLocalizations {
   /// **'Continue to publish'**
   String get hostFormContinueToPublish;
 
-  /// Opens direct question reordering controls.
-  ///
-  /// In en, this message translates to:
-  /// **'Reorder questions'**
-  String get hostFormReorderQuestions;
-
-  /// Guidance for direct question reordering.
-  ///
-  /// In en, this message translates to:
-  /// **'Drag questions to change their order within each section.'**
-  String get hostFormReorderQuestionsHelp;
-
   /// Accessible label for a question drag handle.
   ///
   /// In en, this message translates to:
   /// **'Drag to reorder question'**
   String get hostFormReorderQuestion;
+
+  /// Title for the focused question editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit question'**
+  String get hostFormEditQuestion;
+
+  /// Disclosure label for less common question settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced settings'**
+  String get hostFormAdvancedQuestionSettings;
+
+  /// Summary of advanced question settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy, prefill, response display, and validation'**
+  String get hostFormAdvancedQuestionSettingsHelp;
 
   /// Moves a form question to another section.
   ///

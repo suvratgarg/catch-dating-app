@@ -14636,14 +14636,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormContinueToPublish => 'Continue to publish';
 
   @override
-  String get hostFormReorderQuestions => 'Reorder questions';
-
-  @override
-  String get hostFormReorderQuestionsHelp =>
-      'Drag questions to change their order within each section.';
-
-  @override
   String get hostFormReorderQuestion => 'Drag to reorder question';
+
+  @override
+  String get hostFormEditQuestion => 'Edit question';
+
+  @override
+  String get hostFormAdvancedQuestionSettings => 'Advanced settings';
+
+  @override
+  String get hostFormAdvancedQuestionSettingsHelp =>
+      'Privacy, prefill, response display, and validation';
 
   @override
   String get hostFormMoveToSection => 'Move to section';

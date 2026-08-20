@@ -27,7 +27,8 @@ void main() {
     expect(find.text('Full name'), findsOneWidget);
     expect(find.text('Short text · Required'), findsOneWidget);
     expect(find.text('Add question'), findsOneWidget);
-    expect(find.text('Reorder questions'), findsOneWidget);
+    expect(find.text('Reorder questions'), findsNothing);
+    expect(find.byIcon(Icons.drag_indicator_rounded), findsNWidgets(2));
     expect(find.text('Continue to settings'), findsOneWidget);
     expect(find.text('Form title'), findsNothing);
   });
@@ -40,9 +41,19 @@ void main() {
       await tester.tap(find.text('Full name'));
       await pumpFeatureUi(tester);
 
+      expect(find.text('Edit question'), findsOneWidget);
       expect(find.text('Question'), findsOneWidget);
       expect(find.text('Answer type'), findsOneWidget);
       expect(find.text('Response required'), findsOneWidget);
+      expect(find.text('Advanced settings'), findsOneWidget);
+      expect(find.text('Data classification'), findsNothing);
+
+      await tester.tap(find.text('Advanced settings'));
+      await pumpFeatureUi(tester);
+
+      expect(find.text('Data classification'), findsOneWidget);
+      expect(find.text('Prefill behavior'), findsOneWidget);
+      expect(find.text('Host response view'), findsOneWidget);
 
       Navigator.of(tester.element(find.text('Question'))).pop();
       await pumpFeatureUi(tester);
@@ -75,32 +86,23 @@ void main() {
     expect(find.text('Publish form'), findsOneWidget);
   });
 
-  testWidgets('reorder action changes the persisted question order', (
+  testWidgets('inline drag handle changes the persisted question order', (
     tester,
   ) async {
     await _pumpBuilder(tester);
 
-    await tester.tap(find.text('Reorder questions'));
-    await pumpFeatureUi(tester);
-
-    expect(
-      find.text('Drag questions to change their order within each section.'),
-      findsOneWidget,
-    );
-    expect(find.byIcon(Icons.drag_indicator_rounded), findsWidgets);
-
     final reorderList = tester.widget<ReorderableListView>(
       find.byType(ReorderableListView),
     );
-    reorderList.onReorderItem!(0, 1);
+    reorderList.onReorderItem!(0, 2);
     await tester.pump();
 
     final phoneRow = find.descendant(
-      of: find.byKey(const ValueKey('reorder-question-question_2')),
+      of: find.byKey(const ValueKey('form-question-question_2')),
       matching: find.text('Phone number'),
     );
     final nameRow = find.descendant(
-      of: find.byKey(const ValueKey('reorder-question-question_1')),
+      of: find.byKey(const ValueKey('form-question-question_1')),
       matching: find.text('Full name'),
     );
     expect(

@@ -653,18 +653,6 @@ class _CompactQuestionsStep extends StatelessWidget {
               icon: CatchIcons.addRounded,
               onTap: notifier.addSection,
             ),
-            CatchField.action(
-              key: const ValueKey('host-form-reorder-questions'),
-              title: context.l10n.hostFormReorderQuestions,
-              icon: CatchIcons.dragIndicatorRounded,
-              onTap: () => _showQuestionReorderSheet(
-                context,
-                organizerId: organizerId,
-                formId: formId,
-                definition: definition,
-                notifier: notifier,
-              ),
-            ),
           ],
         ),
       ],
@@ -832,35 +820,99 @@ class _CompactSectionOutline extends StatelessWidget {
         }
       },
     ),
+    child: _CompactQuestionRows(
+      organizerId: organizerId,
+      formId: formId,
+      definition: definition,
+      sectionIndex: sectionIndex,
+      section: section,
+      notifier: notifier,
+      onSelectionChanged: onSelectionChanged,
+    ),
+  );
+}
+
+class _CompactQuestionRows extends StatelessWidget {
+  const _CompactQuestionRows({
+    required this.organizerId,
+    required this.formId,
+    required this.definition,
+    required this.sectionIndex,
+    required this.section,
+    required this.notifier,
+    required this.onSelectionChanged,
+  });
+
+  final String organizerId;
+  final String formId;
+  final HostFormDefinition definition;
+  final int sectionIndex;
+  final HostFormSection section;
+  final HostFormEditorController notifier;
+  final void Function(int section, int? question) onSelectionChanged;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    mainAxisSize: MainAxisSize.min,
     children: [
-      for (final questionEntry in section.questions.indexed)
-        CatchField.nav(
-          key: ValueKey('form-question-${questionEntry.$2.questionId}'),
-          title: questionEntry.$2.label,
-          body: _questionSummary(context, questionEntry.$2),
-          emphasis: CatchFieldEmphasis.title,
-          onTap: () {
-            onSelectionChanged(sectionIndex, questionEntry.$1);
-            _showQuestionEditorSheet(
-              context,
-              organizerId: organizerId,
-              formId: formId,
-              sectionIndex: sectionIndex,
-              questionIndex: questionEntry.$1,
-              question: questionEntry.$2,
-              questionCount: section.questions.length,
-              sections: definition.sections,
-              notifier: notifier,
-            );
-          },
-        ),
-      CatchField.add(
-        key: ValueKey('form-section-${section.sectionId}-add-question'),
-        title: context.l10n.hostFormAddQuestion,
-        icon: CatchIcons.addRounded,
-        onTap: () => _showQuestionTypePicker(
-          context,
-          onSelected: (kind) => notifier.addQuestion(sectionIndex, kind),
+      ReorderableListView.builder(
+        key: ValueKey('form-section-${section.sectionId}-questions'),
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        buildDefaultDragHandles: false,
+        itemCount: section.questions.length,
+        onReorderItem: (oldIndex, newIndex) {
+          final targetIndex = newIndex > oldIndex ? newIndex - 1 : newIndex;
+          notifier.moveQuestion(sectionIndex, oldIndex, targetIndex - oldIndex);
+        },
+        itemBuilder: (context, questionIndex) {
+          final question = section.questions[questionIndex];
+          return CatchFieldLanes.single(
+            key: ValueKey('form-question-${question.questionId}'),
+            child: CatchField.nav(
+              title: question.label,
+              body: _questionSummary(context, question),
+              emphasis: CatchFieldEmphasis.title,
+              divider: true,
+              action: section.questions.length > 1
+                  ? ReorderableDragStartListener(
+                      index: questionIndex,
+                      child: Tooltip(
+                        message: context.l10n.hostFormReorderQuestion,
+                        child: Padding(
+                          padding: CatchInsets.iconChipContent,
+                          child: Icon(CatchIcons.dragIndicatorRounded),
+                        ),
+                      ),
+                    )
+                  : null,
+              onTap: () {
+                onSelectionChanged(sectionIndex, questionIndex);
+                _showQuestionEditorSheet(
+                  context,
+                  organizerId: organizerId,
+                  formId: formId,
+                  sectionIndex: sectionIndex,
+                  questionIndex: questionIndex,
+                  question: question,
+                  questionCount: section.questions.length,
+                  sections: definition.sections,
+                  notifier: notifier,
+                );
+              },
+            ),
+          );
+        },
+      ),
+      CatchFieldLanes.single(
+        child: CatchField.add(
+          key: ValueKey('form-section-${section.sectionId}-add-question'),
+          title: context.l10n.hostFormAddQuestion,
+          icon: CatchIcons.addRounded,
+          onTap: () => _showQuestionTypePicker(
+            context,
+            onSelected: (kind) => notifier.addQuestion(sectionIndex, kind),
+          ),
         ),
       ),
     ],
@@ -959,7 +1011,7 @@ Future<void> _showQuestionEditorSheet(
         }
       }
       return CatchBottomSheetScaffold(
-        title: currentQuestion.label,
+        title: context.l10n.hostFormEditQuestion,
         subtitle: _questionSummary(context, currentQuestion),
         keyboardSafe: true,
         child: ConstrainedBox(
@@ -975,6 +1027,7 @@ Future<void> _showQuestionEditorSheet(
               questionCount: currentQuestionCount,
               sections: liveDefinition?.sections ?? sections,
               notifier: notifier,
+              compact: true,
               onRemoved: () => Navigator.of(sheetContext).pop(),
             ),
           ),
@@ -983,104 +1036,6 @@ Future<void> _showQuestionEditorSheet(
     },
   ),
 );
-
-Future<void> _showQuestionReorderSheet(
-  BuildContext context, {
-  required String organizerId,
-  required String formId,
-  required HostFormDefinition definition,
-  required HostFormEditorController notifier,
-}) => showCatchBottomSheet<void>(
-  context: context,
-  builder: (sheetContext) => Consumer(
-    builder: (sheetContext, ref, _) {
-      final liveDefinition = catchAsyncStateFromAsyncValue(
-        ref.watch(hostFormEditorControllerProvider(organizerId, formId)),
-      ).value?.editor.definition;
-      return CatchBottomSheetScaffold(
-        title: context.l10n.hostFormReorderQuestions,
-        subtitle: context.l10n.hostFormReorderQuestionsHelp,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.sizeOf(sheetContext).height * 0.72,
-          ),
-          child: SingleChildScrollView(
-            child: _QuestionReorderList(
-              definition: liveDefinition ?? definition,
-              notifier: notifier,
-            ),
-          ),
-        ),
-      );
-    },
-  ),
-);
-
-class _QuestionReorderList extends StatelessWidget {
-  const _QuestionReorderList({
-    required this.definition,
-    required this.notifier,
-  });
-
-  final HostFormDefinition definition;
-  final HostFormEditorController notifier;
-
-  @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      for (final sectionEntry in definition.sections.indexed) ...[
-        Text(
-          sectionEntry.$2.title.toUpperCase(),
-          style: CatchTextStyles.monoLabel(context),
-        ),
-        gapH8,
-        ReorderableListView.builder(
-          key: ValueKey('question-reorder-${sectionEntry.$2.sectionId}'),
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          buildDefaultDragHandles: false,
-          itemCount: sectionEntry.$2.questions.length,
-          onReorderItem: (oldIndex, newIndex) {
-            notifier.moveQuestion(
-              sectionEntry.$1,
-              oldIndex,
-              newIndex - oldIndex,
-            );
-          },
-          itemBuilder: (context, questionIndex) {
-            final question = sectionEntry.$2.questions[questionIndex];
-            return CatchSection.fieldRows(
-              key: ValueKey('reorder-question-${question.questionId}'),
-              first: questionIndex == 0,
-              showTopDivider: questionIndex == 0,
-              children: [
-                CatchField.action(
-                  title: question.label,
-                  body: _questionSummary(context, question),
-                  emphasis: CatchFieldEmphasis.title,
-                  divider: questionIndex < sectionEntry.$2.questions.length - 1,
-                  action: ReorderableDragStartListener(
-                    index: questionIndex,
-                    child: Tooltip(
-                      message: context.l10n.hostFormReorderQuestion,
-                      child: Padding(
-                        padding: CatchInsets.iconChipContent,
-                        child: Icon(CatchIcons.dragIndicatorRounded),
-                      ),
-                    ),
-                  ),
-                  onTap: null,
-                ),
-              ],
-            );
-          },
-        ),
-        if (sectionEntry.$1 < definition.sections.length - 1) gapH20,
-      ],
-    ],
-  );
-}
 
 String _questionSummary(BuildContext context, HostFormQuestion question) =>
     context.l10n.hostFormQuestionSummary(
@@ -1608,6 +1563,7 @@ class _QuestionEditFields extends StatelessWidget {
     required this.questionCount,
     required this.sections,
     required this.notifier,
+    this.compact = false,
     this.onRemoved,
   });
 
@@ -1617,23 +1573,25 @@ class _QuestionEditFields extends StatelessWidget {
   final int questionCount;
   final List<HostFormSection> sections;
   final HostFormEditorController notifier;
+  final bool compact;
   final VoidCallback? onRemoved;
 
   @override
-  Widget build(BuildContext context) => CatchSection.fieldRows(
-    first: true,
-    children: [
-      CatchField.input(
-        key: ValueKey(
-          'question-label-${question.questionId}-${question.label}',
-        ),
-        title: context.l10n.hostFormQuestionLabel,
-        initialValue: question.label,
-        contractExemption: 'The backend form definition validates questions.',
-        onBlur: (value) => notifier.updateQuestion(
-          sectionIndex,
-          questionIndex,
-          label: value.trim(),
+  Widget build(BuildContext context) {
+    final primaryFields = <Widget>[
+      CatchFieldLanes.single(
+        child: CatchField.input(
+          key: ValueKey(
+            'question-label-${question.questionId}-${question.label}',
+          ),
+          title: context.l10n.hostFormQuestionLabel,
+          initialValue: question.label,
+          contractExemption: 'The backend form definition validates questions.',
+          onBlur: (value) => notifier.updateQuestion(
+            sectionIndex,
+            questionIndex,
+            label: value.trim(),
+          ),
         ),
       ),
       CatchField.select<HostFormQuestionKind>(
@@ -1667,32 +1625,38 @@ class _QuestionEditFields extends StatelessWidget {
             );
           },
         ),
-      CatchField.input(
-        key: ValueKey(
-          'question-help-${question.questionId}-${question.helpText}',
-        ),
-        title: context.l10n.hostFormQuestionHelpLabel,
-        initialValue: question.helpText,
-        isOptional: true,
-        maxLines: 3,
-        contractExemption: 'The form contract validates question help.',
-        onBlur: (value) => notifier.updateQuestion(
-          sectionIndex,
-          questionIndex,
-          helpText: value.trim(),
-          clearHelpText: value.trim().isEmpty,
-        ),
-      ),
-      CatchField.toggle(
-        title: context.l10n.hostFormQuestionRequired,
-        value: question.required,
-        contractExemption: 'Requiredness is part of the form definition.',
-        onChanged: (value) => notifier.updateQuestion(
-          sectionIndex,
-          questionIndex,
-          required: value,
+      CatchFieldLanes.single(
+        child: CatchField.input(
+          key: ValueKey(
+            'question-help-${question.questionId}-${question.helpText}',
+          ),
+          title: context.l10n.hostFormQuestionHelpLabel,
+          initialValue: question.helpText,
+          isOptional: true,
+          maxLines: 3,
+          contractExemption: 'The form contract validates question help.',
+          onBlur: (value) => notifier.updateQuestion(
+            sectionIndex,
+            questionIndex,
+            helpText: value.trim(),
+            clearHelpText: value.trim().isEmpty,
+          ),
         ),
       ),
+      CatchFieldLanes.single(
+        child: CatchField.toggle(
+          title: context.l10n.hostFormQuestionRequired,
+          value: question.required,
+          contractExemption: 'Requiredness is part of the form definition.',
+          onChanged: (value) => notifier.updateQuestion(
+            sectionIndex,
+            questionIndex,
+            required: value,
+          ),
+        ),
+      ),
+    ];
+    final advancedFields = <Widget>[
       CatchField.select<HostFormPrivacyClass>(
         title: context.l10n.hostFormPrivacyLabel,
         contract: CatchContractConstraints
@@ -1736,24 +1700,30 @@ class _QuestionEditFields extends StatelessWidget {
         ),
       ),
       for (final optionEntry in question.options.indexed)
-        CatchField.input(
-          key: ValueKey(
-            'question-option-${question.questionId}-${optionEntry.$2.optionId}',
-          ),
-          title: context.l10n.hostFormOptionNumber(number: optionEntry.$1 + 1),
-          initialValue: optionEntry.$2.label,
-          contractExemption: 'The backend validates form choice options.',
-          onBlur: (value) => notifier.updateOption(
-            sectionIndex,
-            questionIndex,
-            optionEntry.$1,
-            label: value.trim(),
+        CatchFieldLanes.single(
+          child: CatchField.input(
+            key: ValueKey(
+              'question-option-${question.questionId}-${optionEntry.$2.optionId}',
+            ),
+            title: context.l10n.hostFormOptionNumber(
+              number: optionEntry.$1 + 1,
+            ),
+            initialValue: optionEntry.$2.label,
+            contractExemption: 'The backend validates form choice options.',
+            onBlur: (value) => notifier.updateOption(
+              sectionIndex,
+              questionIndex,
+              optionEntry.$1,
+              label: value.trim(),
+            ),
           ),
         ),
       if (question.options.isNotEmpty)
-        CatchField.add(
-          title: context.l10n.hostFormAddOption,
-          onTap: () => notifier.addOption(sectionIndex, questionIndex),
+        CatchFieldLanes.single(
+          child: CatchField.add(
+            title: context.l10n.hostFormAddOption,
+            onTap: () => notifier.addOption(sectionIndex, questionIndex),
+          ),
         ),
       _QuestionValidationFormSchemaFields(
         sectionIndex: sectionIndex,
@@ -1761,41 +1731,65 @@ class _QuestionEditFields extends StatelessWidget {
         question: question,
         notifier: notifier,
       ),
-      Row(
-        children: [
-          Expanded(
-            child: CatchButton(
-              label: context.l10n.hostFormMoveUp,
-              variant: CatchButtonVariant.ghost,
-              onPressed: questionIndex == 0
-                  ? null
-                  : () =>
-                        notifier.moveQuestion(sectionIndex, questionIndex, -1),
-            ),
+    ];
+    return CatchSection.fieldRows(
+      first: true,
+      children: [
+        ...primaryFields,
+        if (compact)
+          CatchField.control(
+            title: context.l10n.hostFormAdvancedQuestionSettings,
+            body: context.l10n.hostFormAdvancedQuestionSettingsHelp,
+            contractExemption:
+                'Disclosure groups advanced fields from the form definition.',
+            control: CatchFieldLanes.divided(children: advancedFields),
+          )
+        else
+          ...advancedFields,
+        if (!compact)
+          Row(
+            children: [
+              Expanded(
+                child: CatchButton(
+                  label: context.l10n.hostFormMoveUp,
+                  variant: CatchButtonVariant.ghost,
+                  onPressed: questionIndex == 0
+                      ? null
+                      : () => notifier.moveQuestion(
+                          sectionIndex,
+                          questionIndex,
+                          -1,
+                        ),
+                ),
+              ),
+              gapW8,
+              Expanded(
+                child: CatchButton(
+                  label: context.l10n.hostFormMoveDown,
+                  variant: CatchButtonVariant.ghost,
+                  onPressed: questionIndex == questionCount - 1
+                      ? null
+                      : () => notifier.moveQuestion(
+                          sectionIndex,
+                          questionIndex,
+                          1,
+                        ),
+                ),
+              ),
+            ],
           ),
-          gapW8,
-          Expanded(
-            child: CatchButton(
-              label: context.l10n.hostFormMoveDown,
-              variant: CatchButtonVariant.ghost,
-              onPressed: questionIndex == questionCount - 1
-                  ? null
-                  : () => notifier.moveQuestion(sectionIndex, questionIndex, 1),
-            ),
-          ),
-        ],
-      ),
-      CatchButton(
-        label: context.l10n.hostFormRemoveQuestion,
-        variant: CatchButtonVariant.danger,
-        fullWidth: true,
-        onPressed: () {
-          notifier.removeQuestion(sectionIndex, questionIndex);
-          onRemoved?.call();
-        },
-      ),
-    ],
-  );
+        CatchButton(
+          label: context.l10n.hostFormRemoveQuestion,
+          variant: CatchButtonVariant.danger,
+          fullWidth: true,
+          onPressed: () {
+            notifier.removeQuestion(sectionIndex, questionIndex);
+            onRemoved?.call();
+          },
+        ),
+      ],
+    );
+  }
 }
 
 class _QuestionValidationFormSchemaFields extends StatelessWidget {
