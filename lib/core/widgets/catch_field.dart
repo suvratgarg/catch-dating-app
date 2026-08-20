@@ -286,6 +286,7 @@ abstract class CatchField extends StatefulWidget {
     CatchFieldTone tone,
     IconData? icon,
     Color? iconColor,
+    Widget? action,
     String? placeholder,
     String? emptyValueText,
     String? error,

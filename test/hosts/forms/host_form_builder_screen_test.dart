@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/hosts/domain/host_form.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
@@ -33,40 +34,48 @@ void main() {
     expect(find.text('Form title'), findsNothing);
   });
 
-  testWidgets(
-    'question editor stays focused and settings are a distinct step',
-    (tester) async {
-      await _pumpBuilder(tester);
+  testWidgets('question editor expands inline with every setting', (
+    tester,
+  ) async {
+    await _pumpBuilder(tester);
 
-      await tester.tap(find.text('Full name'));
-      await pumpFeatureUi(tester);
+    expect(find.text('Answer type').hitTestable(), findsNothing);
 
-      expect(find.text('Edit question'), findsOneWidget);
-      expect(find.text('Question'), findsOneWidget);
-      expect(find.text('Answer type'), findsOneWidget);
-      expect(find.text('Response required'), findsOneWidget);
-      expect(find.text('Advanced settings'), findsOneWidget);
-      expect(find.text('Data classification'), findsNothing);
+    await tester.tap(find.text('Full name'));
+    await pumpFeatureUi(tester);
 
-      await tester.tap(find.text('Advanced settings'));
-      await pumpFeatureUi(tester);
+    final nameControl = find.byKey(
+      const ValueKey('form-question-control-question_1'),
+    );
+    expect(tester.widget<CatchField>(nameControl).open, isTrue);
+    expect(find.text('Edit question'), findsNothing);
+    expect(find.text('Question'), findsOneWidget);
+    expect(find.text('Answer type'), findsOneWidget);
+    expect(find.text('Response required'), findsOneWidget);
+    expect(find.text('Data classification'), findsOneWidget);
+    expect(find.text('Prefill behavior'), findsOneWidget);
+    expect(find.text('Host response view'), findsOneWidget);
+    expect(find.text('Advanced settings'), findsNothing);
+    expect(find.byIcon(Icons.drag_indicator_rounded), findsNWidgets(2));
 
-      expect(find.text('Data classification'), findsOneWidget);
-      expect(find.text('Prefill behavior'), findsOneWidget);
-      expect(find.text('Host response view'), findsOneWidget);
+    await ensureCentered(tester, find.text('Phone number'));
+    await tester.tap(find.text('Phone number'));
+    await pumpFeatureUi(tester);
 
-      Navigator.of(tester.element(find.text('Question'))).pop();
-      await pumpFeatureUi(tester);
+    final phoneControl = find.byKey(
+      const ValueKey('form-question-control-question_2'),
+    );
+    expect(tester.widget<CatchField>(nameControl).open, isFalse);
+    expect(tester.widget<CatchField>(phoneControl).open, isTrue);
 
-      await tester.tap(find.text('Continue to settings'));
-      await pumpFeatureUi(tester);
+    await tester.tap(find.text('Continue to settings'));
+    await pumpFeatureUi(tester);
 
-      expect(find.text('How should this form work?'), findsOneWidget);
-      expect(find.text('Form title'), findsOneWidget);
-      expect(find.text('Who can respond'), findsOneWidget);
-      expect(find.text('Continue to publish'), findsOneWidget);
-    },
-  );
+    expect(find.text('How should this form work?'), findsOneWidget);
+    expect(find.text('Form title'), findsOneWidget);
+    expect(find.text('Who can respond'), findsOneWidget);
+    expect(find.text('Continue to publish'), findsOneWidget);
+  });
 
   testWidgets('publish step summarizes readiness and keeps preview explicit', (
     tester,

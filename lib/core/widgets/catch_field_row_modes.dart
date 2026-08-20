@@ -364,10 +364,20 @@ extension _CatchFieldRowModes on _CatchFieldState {
     }
 
     if (_hasControl) {
-      return CatchFieldTrailing.rotatingChevron(
+      final chevron = CatchFieldTrailing.rotatingChevron(
         open: _isOpen,
         color: _active ? t.ink : t.ink3,
         topPadding: 0,
+      );
+      final custom = _buildCustomTrailingSlot(t, _action);
+      if (custom == null) return chevron;
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          custom,
+          const SizedBox(width: CatchSpacing.s2),
+          chevron,
+        ],
       );
     }
 
