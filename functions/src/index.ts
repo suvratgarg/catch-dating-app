@@ -353,7 +353,6 @@ export {
 } from "./demoOps/suvbot";
 export {exploreSearch} from "./search/exploreSearch";
 export {
-  syncAlgoliaClubIndex,
   syncAlgoliaEventIndex,
   syncAlgoliaOrganizerIndex,
 } from "./search/algoliaExploreIndex";

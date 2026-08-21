@@ -1,31 +1,30 @@
 import {HttpsError} from "firebase-functions/v2/https";
 import {
-  ClubDocument,
   EventDocument,
   OrganizerDocument,
 } from "./generated/firestoreAdminTypes";
-import {isClubHost} from "./clubHosts";
 import {isOrganizerManager} from "./organizerHosts";
 import {requireDoc} from "./validation";
 
-export type EventOrganizerDocument = OrganizerDocument | ClubDocument;
+export type EventOrganizerDocument = OrganizerDocument;
 
-/** Returns the canonical organizer id with legacy event fallback. */
+/** Returns an event's required canonical organizer id. */
 export function eventOrganizerId(event: EventDocument): string {
-  return event.organizerId ?? event.clubId;
+  if (!event.organizerId) {
+    throw new HttpsError("failed-precondition", "Event has no organizer.");
+  }
+  return event.organizerId;
 }
 
-/** Returns the correct organizer authority reference for an event. */
+/** Returns the canonical organizer authority reference for an event. */
 export function eventOrganizerRef(
   db: FirebaseFirestore.Firestore,
   event: EventDocument
 ): FirebaseFirestore.DocumentReference {
-  return event.organizerId ?
-    db.collection("organizers").doc(event.organizerId) :
-    db.collection("clubs").doc(event.clubId);
+  return db.collection("organizers").doc(eventOrganizerId(event));
 }
 
-/** Parses an event's organizer authority document. */
+/** Parses an event's canonical organizer authority document. */
 export function requireEventOrganizer(
   snap: FirebaseFirestore.DocumentSnapshot,
   event: EventDocument
@@ -33,18 +32,16 @@ export function requireEventOrganizer(
   if (!snap.exists) {
     throw new HttpsError("not-found", "Organizer not found.");
   }
-  return event.organizerId ?
-    requireDoc<OrganizerDocument>(snap, "OrganizerDocument") :
-    requireDoc<ClubDocument>(snap, "ClubDocument");
+  eventOrganizerId(event);
+  return requireDoc<OrganizerDocument>(snap, "OrganizerDocument");
 }
 
-/** Checks management privilege using canonical or compatibility authority. */
+/** Checks management privilege using canonical organizer authority. */
 export function isEventOrganizerManager(
   organizer: EventOrganizerDocument,
   event: EventDocument,
   uid: string
 ): boolean {
-  return event.organizerId ?
-    isOrganizerManager(organizer as OrganizerDocument, uid) :
-    isClubHost(organizer as ClubDocument, uid);
+  eventOrganizerId(event);
+  return isOrganizerManager(organizer, uid);
 }
