@@ -192,7 +192,7 @@ void main() {
     await flushAppShellCallbacks(tester);
     await pumpMutationUi(tester);
 
-    expect(reviewsRepository.addedReview?.clubId, club.id);
+    expect(reviewsRepository.addedReview?.organizerId, club.id);
     expect(reviewsRepository.addedReview?.eventId, run.id);
     expect(reviewsRepository.addedReview?.reviewerUserId, user.uid);
     expect(reviewsRepository.addedReview?.reviewerName, user.name);
