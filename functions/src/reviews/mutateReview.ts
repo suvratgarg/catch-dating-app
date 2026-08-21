@@ -523,7 +523,9 @@ function assertCanWriteReview(
   }
 }
 
-function eventOrganizerId(eventSnap: FirebaseFirestore.DocumentSnapshot): string {
+function eventOrganizerId(
+  eventSnap: FirebaseFirestore.DocumentSnapshot
+): string {
   const event = eventSnap.data() as {organizerId?: unknown} | undefined;
   if (typeof event?.organizerId === "string") return event.organizerId;
   throw new HttpsError("failed-precondition", "Event organizer is missing.");

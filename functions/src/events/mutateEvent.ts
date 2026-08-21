@@ -233,7 +233,7 @@ export async function createEventHandler(
 
   let createdEvent: EventDocument | null = null;
   let organizerName = "Your organizer";
-  let useLegacyFollowerProjection = false;
+  const useLegacyFollowerProjection = false;
 
   await db.runTransaction(async (tx) => {
     const [

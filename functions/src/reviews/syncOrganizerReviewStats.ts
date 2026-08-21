@@ -15,7 +15,8 @@ const defaultDeps: SyncOrganizerReviewStatsDeps = {
  *
  * Trust model: the headline {@code rating} is computed from VERIFIED reviews
  * only (those created after an attended Catch event), so unverified
- * public-listing reviews — which anyone can submit — can never move an organizer's
+ * public-listing reviews — which anyone can submit — can never move an
+ * organizer's
  * score. {@code reviewCount} still reflects every published review so the
  * listing page count matches what is rendered, and {@code verifiedReviewCount}
  * exposes how many of those actually back the rating.

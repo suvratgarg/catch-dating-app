@@ -17,7 +17,9 @@ test("refreshOrganizerNextEvent stores the earliest upcoming active event",
       "events/past": event("organizer-1", past, "Past gate"),
       "events/later": event("organizer-1", later, "Later gate"),
       "events/soon": event("organizer-1", soon, "Soon gate"),
-      "events/cancelled": event("organizer-1", soon, "Cancelled gate", "cancelled"),
+      "events/cancelled": event(
+        "organizer-1", soon, "Cancelled gate", "cancelled"
+      ),
       "events/other-organizer": event("organizer-2", soon, "Other gate"),
     });
 
@@ -30,7 +32,9 @@ test("refreshOrganizerNextEvent stores the earliest upcoming active event",
       nextEventAt: soon,
       nextEventLabel: "Soon gate",
     };
-    assert.deepEqual(firestore.get("organizers/organizer-1"), expectedProjection);
+    assert.deepEqual(
+      firestore.get("organizers/organizer-1"), expectedProjection
+    );
   }
 );
 
@@ -42,10 +46,13 @@ test("refreshOrganizerNextEvent clears projection when no future event exists",
         nextEventAt: timestamp("2026-05-13T10:00:00.000Z"),
         nextEventLabel: "Old gate",
       },
-      "events/past": event("organizer-1", timestamp("2026-05-11T10:00:00.000Z"),
-        "Past gate"),
-      "events/cancelled": event("organizer-1", timestamp("2026-05-13T10:00:00.000Z"),
-        "Cancelled gate", "cancelled"),
+      "events/past": event(
+        "organizer-1", timestamp("2026-05-11T10:00:00.000Z"), "Past gate"
+      ),
+      "events/cancelled": event(
+        "organizer-1", timestamp("2026-05-13T10:00:00.000Z"),
+        "Cancelled gate", "cancelled"
+      ),
     });
 
     await refreshOrganizerNextEvent("organizer-1", {
@@ -57,7 +64,9 @@ test("refreshOrganizerNextEvent clears projection when no future event exists",
       nextEventAt: null,
       nextEventLabel: null,
     };
-    assert.deepEqual(firestore.get("organizers/organizer-1"), expectedProjection);
+    assert.deepEqual(
+      firestore.get("organizers/organizer-1"), expectedProjection
+    );
   }
 );
 

@@ -414,48 +414,50 @@ test("createPublicOrganizerReviewHandler requires name when not anonymous",
     );
   });
 
-test("createPublicOrganizerReviewHandler rejects missing organizer", async () => {
-  const h = harness(baseDocs({"organizers/club-1": undefined}));
+test("createPublicOrganizerReviewHandler rejects missing organizer",
+  async () => {
+    const h = harness(baseDocs({"organizers/club-1": undefined}));
 
-  await assert.rejects(
-    () => createPublicOrganizerReviewHandler(
-      request(null, {
-        organizerId: "club-1",
-        rating: 4,
-        comment: "Helpful.",
-        reviewerName: "Reviewer",
-        isAnonymous: false,
-        submittedFromPath: "/organizers/club-one/",
+    await assert.rejects(
+      () => createPublicOrganizerReviewHandler(
+        request(null, {
+          organizerId: "club-1",
+          rating: 4,
+          comment: "Helpful.",
+          reviewerName: "Reviewer",
+          isAnonymous: false,
+          submittedFromPath: "/organizers/club-one/",
+        }),
+        h.deps
+      ),
+      (error) => assertHttpsCode(error, "not-found")
+    );
+  });
+
+test("createPublicOrganizerReviewHandler rejects unpublished pages",
+  async () => {
+    const h = harness(baseDocs({
+      "organizers/club-1": clubDoc({
+        publishStatus: "qa",
+        robots: "noindex, follow",
       }),
-      h.deps
-    ),
-    (error) => assertHttpsCode(error, "not-found")
-  );
-});
+    }));
 
-test("createPublicOrganizerReviewHandler rejects unpublished pages", async () => {
-  const h = harness(baseDocs({
-    "organizers/club-1": clubDoc({
-      publishStatus: "qa",
-      robots: "noindex, follow",
-    }),
-  }));
-
-  await assert.rejects(
-    () => createPublicOrganizerReviewHandler(
-      request(null, {
-        organizerId: "club-1",
-        rating: 5,
-        comment: "Good room.",
-        reviewerName: "Visitor",
-        isAnonymous: false,
-        submittedFromPath: "/organizers/club-one/",
-      }),
-      h.deps
-    ),
-    (error) => assertHttpsCode(error, "failed-precondition")
-  );
-});
+    await assert.rejects(
+      () => createPublicOrganizerReviewHandler(
+        request(null, {
+          organizerId: "club-1",
+          rating: 5,
+          comment: "Good room.",
+          reviewerName: "Visitor",
+          isAnonymous: false,
+          submittedFromPath: "/organizers/club-one/",
+        }),
+        h.deps
+      ),
+      (error) => assertHttpsCode(error, "failed-precondition")
+    );
+  });
 
 test("ineligible canonical organizer rejects public reviews",
   async () => {
@@ -490,41 +492,43 @@ test("ineligible canonical organizer rejects public reviews",
     );
   });
 
-test("createPublicOrganizerReviewHandler rejects noncanonical paths", async () => {
-  const h = harness(baseDocs());
+test("createPublicOrganizerReviewHandler rejects noncanonical paths",
+  async () => {
+    const h = harness(baseDocs());
 
-  await assert.rejects(
-    () => createPublicOrganizerReviewHandler(
-      request(null, {
-        organizerId: "club-1",
-        rating: 5,
-        comment: "Good room.",
-        reviewerName: "Visitor",
-        isAnonymous: false,
-        submittedFromPath: "/organizers/other-club/",
+    await assert.rejects(
+      () => createPublicOrganizerReviewHandler(
+        request(null, {
+          organizerId: "club-1",
+          rating: 5,
+          comment: "Good room.",
+          reviewerName: "Visitor",
+          isAnonymous: false,
+          submittedFromPath: "/organizers/other-club/",
+        }),
+        h.deps
+      ),
+      (error) => assertHttpsCode(error, "invalid-argument")
+    );
+  });
+
+test("listPublicOrganizerReviewsHandler rejects unpublished pages",
+  async () => {
+    const h = harness(baseDocs({
+      "organizers/club-1": clubDoc({
+        publishStatus: "suppressed",
+        robots: "noindex, follow",
       }),
-      h.deps
-    ),
-    (error) => assertHttpsCode(error, "invalid-argument")
-  );
-});
+    }));
 
-test("listPublicOrganizerReviewsHandler rejects unpublished pages", async () => {
-  const h = harness(baseDocs({
-    "organizers/club-1": clubDoc({
-      publishStatus: "suppressed",
-      robots: "noindex, follow",
-    }),
-  }));
-
-  await assert.rejects(
-    () => listPublicOrganizerReviewsHandler(
-      request(null, {organizerId: "club-1"}),
-      h.deps
-    ),
-    (error) => assertHttpsCode(error, "failed-precondition")
-  );
-});
+    await assert.rejects(
+      () => listPublicOrganizerReviewsHandler(
+        request(null, {organizerId: "club-1"}),
+        h.deps
+      ),
+      (error) => assertHttpsCode(error, "failed-precondition")
+    );
+  });
 
 test("listPublicOrganizerReviewsHandler returns only public published reviews",
   async () => {

@@ -350,7 +350,9 @@ test("syncHostProfileProjectionsHandler never falls back to dating identity",
       {firestore: () => firestore as never}
     );
 
-    assert.equal(firestore.get("organizers/organizer-1")?.hostName, "Catch Host");
+    assert.equal(
+      firestore.get("organizers/organizer-1")?.hostName, "Catch Host"
+    );
     assert.equal(firestore.get("organizers/organizer-1")?.hostAvatarUrl, null);
   }
 );
