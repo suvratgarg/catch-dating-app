@@ -13,9 +13,7 @@ import {
 } from "../shared/uploadedPhotoNormalization";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {
-  activeClubMembershipPatch,
   activeOrganizerTeamMembershipPatch,
-  clubMembershipId,
   organizerRelationshipId,
 } from "../shared/relationshipDocuments";
 import {
@@ -52,7 +50,7 @@ const defaultDeps: CreateOrganizerDeps = {
   reserveCanonicalRoute: reserveOrganizerCanonicalRoute,
 };
 
-/** Creates the canonical organizer and a temporary legacy club shadow. */
+/** Creates the canonical organizer and its owner team membership. */
 export async function createOrganizerHandler(
   request: CallableRequest<unknown>,
   deps: CreateOrganizerDeps = defaultDeps
@@ -79,11 +77,8 @@ export async function createOrganizerHandler(
   const organizerId = organizerRef.id;
   const publicSlug = defaultOrganizerPublicSlug(data.name, organizerId);
   const canonicalPath = `/organizers/${publicSlug}/`;
-  const legacyClubRef = db.collection("clubs").doc(organizerId);
   const teamRef = db.collection("organizerTeamMemberships")
     .doc(organizerRelationshipId(organizerId, ownerUid));
-  const legacyMembershipRef = db.collection("clubMemberships")
-    .doc(clubMembershipId(organizerId, ownerUid));
   const userRef = db.collection("users").doc(ownerUid);
   const hostProfileRef = db.collection("hostProfiles").doc(ownerUid);
   const deletedUserRef = db.collection("deletedUsers").doc(ownerUid);
@@ -91,18 +86,16 @@ export async function createOrganizerHandler(
   await db.runTransaction(async (tx) => {
     const [
       organizerSnap,
-      legacyClubSnap,
       userSnap,
       hostProfileSnap,
       deletedUserSnap,
     ] = await Promise.all([
       tx.get(organizerRef),
-      tx.get(legacyClubRef),
       tx.get(userRef),
       tx.get(hostProfileRef),
       tx.get(deletedUserRef),
     ]);
-    if (organizerSnap.exists || legacyClubSnap.exists) {
+    if (organizerSnap.exists) {
       throw new HttpsError("already-exists", "Organizer already exists.");
     }
     if (deletedUserSnap.exists) {
@@ -233,20 +226,8 @@ export async function createOrganizerHandler(
       organizerPhotos,
       followerCount: 0,
     });
-    // Compatibility shadow for released clients. Canonical writes and new
-    // development target organizers; the migration contract owns retirement.
-    tx.create(legacyClubRef, {
-      ...common,
-      clubPhotos: organizerPhotos,
-      memberCount: 1,
-    });
     tx.set(teamRef, activeOrganizerTeamMembershipPatch({
       organizerId,
-      uid: ownerUid,
-      role: "owner",
-    }), {merge: true});
-    tx.set(legacyMembershipRef, activeClubMembershipPatch({
-      clubId: organizerId,
       uid: ownerUid,
       role: "owner",
     }), {merge: true});

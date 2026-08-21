@@ -2208,7 +2208,7 @@ function buildReviews({seedPrefix, seedMarker, club, event, roster, now}) {
         rating: 4 + (index % 2),
         doc: {
           ...seedMarker,
-          clubId: club.id,
+          organizerId: club.id,
           eventId: event.id,
           reviewerUserId: entry.person.uid,
           reviewerName: entry.person.name || entry.person.displayName || "Runner",

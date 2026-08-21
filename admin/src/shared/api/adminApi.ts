@@ -1286,7 +1286,7 @@ export async function getAccessApplicationDetails(
   return result.data;
 }
 
-export async function decideClubClaim(
+export async function decideOrganizerClaim(
   payload: AdminDecideClubClaimPayload
 ): Promise<AdminDecideClubClaimResponse> {
   if (dataMode() === "sample") {
@@ -1302,12 +1302,12 @@ export async function decideClubClaim(
   const callable = httpsCallable<
     AdminDecideClubClaimPayload,
     AdminDecideClubClaimResponse
-  >(functions, "adminDecideClubClaim");
+  >(functions, "adminDecideOrganizerClaim");
   const result = await callable(payload);
   return result.data;
 }
 
-export async function listClubClaimRequests():
+export async function listOrganizerClaimRequests():
 Promise<AdminListClubClaimRequestsResponse> {
   if (dataMode() === "sample") {
     await new Promise((resolve) => window.setTimeout(resolve, 180));
@@ -1330,18 +1330,18 @@ Promise<AdminListClubClaimRequestsResponse> {
 
   const callable = httpsCallable<unknown, AdminListClubClaimRequestsResponse>(
     functions,
-    "adminListClubClaimRequests"
+    "adminListOrganizerClaimRequests"
   );
   const result = await callable({});
   return result.data;
 }
 
-export async function getClubClaimRequestDetails(
+export async function getOrganizerClaimRequestDetails(
   payload: AdminGetClubClaimRequestDetailsPayload
 ): Promise<AdminGetClubClaimRequestDetailsResponse> {
   if (dataMode() === "sample") {
     await new Promise((resolve) => window.setTimeout(resolve, 140));
-    const list = await listClubClaimRequests();
+    const list = await listOrganizerClaimRequests();
     const row = list.rows.find((item) => item.requestId === payload.requestId);
     if (!row) throw new Error("Organizer claim request not found.");
     return {
@@ -1371,12 +1371,12 @@ export async function getClubClaimRequestDetails(
   const callable = httpsCallable<
     AdminGetClubClaimRequestDetailsPayload,
     AdminGetClubClaimRequestDetailsResponse
-  >(functions, "adminGetClubClaimRequestDetails");
+  >(functions, "adminGetOrganizerClaimRequestDetails");
   const result = await callable(payload);
   return result.data;
 }
 
-export async function setClubIndexStatus(
+export async function setOrganizerIndexStatus(
   payload: AdminSetClubIndexStatusPayload
 ): Promise<AdminSetClubIndexStatusResponse> {
   if (dataMode() === "sample") {
@@ -1403,7 +1403,7 @@ export async function setClubIndexStatus(
   const callable = httpsCallable<
     AdminSetClubIndexStatusPayload,
     AdminSetClubIndexStatusResponse
-  >(functions, "adminSetClubIndexStatus");
+  >(functions, "adminSetOrganizerIndexStatus");
   const result = await callable(payload);
   return result.data;
 }

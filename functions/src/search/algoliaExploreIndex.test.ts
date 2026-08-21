@@ -9,6 +9,7 @@ import {
 import {
   ClubDocument,
   EventDocument,
+  OrganizerDocument,
 } from "../shared/generated/firestoreAdminTypes.js";
 
 /**
@@ -64,6 +65,18 @@ function club(overrides: Partial<ClubDocument> = {}): ClubDocument {
     archiveReason: null,
     ...overrides,
   };
+}
+
+function organizer(
+  overrides: Partial<OrganizerDocument> = {}
+): OrganizerDocument {
+  return {
+    ...club(),
+    organizerType: "club",
+    organizerPhotos: [],
+    followerCount: 12,
+    ...overrides,
+  } as OrganizerDocument;
 }
 
 /**
@@ -141,8 +154,8 @@ test("buildClubSearchRecord omits archived clubs", () => {
   );
 });
 
-test("buildEventSearchRecord uses the club city and event time", () => {
-  const record = buildEventSearchRecord("event-1", event(), club());
+test("buildEventSearchRecord uses the organizer city and event time", () => {
+  const record = buildEventSearchRecord("event-1", event(), organizer());
 
   assert.equal(record?.objectID, "event-1");
   assert.equal(record?.clubName, "Saket Social Runners");
@@ -153,7 +166,9 @@ test("buildEventSearchRecord uses the club city and event time", () => {
 
 test("buildEventSearchRecord omits cancelled events", () => {
   assert.equal(
-    buildEventSearchRecord("event-1", event({status: "cancelled"}), club()),
+    buildEventSearchRecord(
+      "event-1", event({status: "cancelled"}), organizer()
+    ),
     null
   );
 });

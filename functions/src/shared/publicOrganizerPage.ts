@@ -1,5 +1,5 @@
 import {HttpsError} from "firebase-functions/v2/https";
-import {ClubDocument} from "./generated/firestoreAdminTypes";
+import {OrganizerDocument} from "./generated/firestoreAdminTypes";
 
 interface PublicOrganizerPageEligibilityOptions {
   pagePath?: string | null;
@@ -7,23 +7,23 @@ interface PublicOrganizerPageEligibilityOptions {
 }
 
 export function assertPublicOrganizerPageEligible(
-  club: ClubDocument,
+  organizer: OrganizerDocument,
   options: PublicOrganizerPageEligibilityOptions = {}
 ) {
-  if (club.archived || club.status === "archived") {
+  if (organizer.archived || organizer.status === "archived") {
     throw new HttpsError(
       "failed-precondition",
       "This organizer profile is not accepting public website activity."
     );
   }
-  if (club.claim?.state === "suppressed") {
+  if (organizer.claim?.state === "suppressed") {
     throw new HttpsError(
       "failed-precondition",
       "This organizer profile is not accepting public website activity."
     );
   }
 
-  const publicPage = club.publicPage;
+  const publicPage = organizer.publicPage;
   if (
     !publicPage ||
     publicPage.publishStatus !== "published" ||

@@ -68,7 +68,7 @@ class WriteReviewController extends _$WriteReviewController {
       await repo.addReview(
         Review(
           id: '',
-          clubId: clubId,
+          organizerId: clubId,
           eventId: eventId,
           reviewerUserId: reviewerUserId,
           reviewerName: reviewerName,

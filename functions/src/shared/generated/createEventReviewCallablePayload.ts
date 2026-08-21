@@ -6,8 +6,7 @@
  * Callable payload accepted by createEventReview.
  */
 export interface CreateEventReviewCallablePayload {
-  clubId: string;
-  organizerId?: string;
+  organizerId: string;
   eventId: string;
   rating: number;
   comment: string;

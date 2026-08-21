@@ -3,7 +3,7 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Callable payload accepted by joinClub and leaveClub.
+ * Retired legacy membership payload retained only for schema-history decoding.
  */
 export interface ClubMembershipCallablePayload {
   clubId: string;

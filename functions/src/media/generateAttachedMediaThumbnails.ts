@@ -101,8 +101,7 @@ function pendingOrganizerThumbnails(
 ): PendingThumbnail[] {
   const pending: PendingThumbnail[] = [];
   addPendingPhoto(pending, data.logoPhoto, "logo", organizerId);
-  const gallery = Array.isArray(data.organizerPhotos) ?
-    data.organizerPhotos : data.clubPhotos;
+  const gallery = data.organizerPhotos;
   if (Array.isArray(gallery)) {
     gallery.forEach((photo) =>
       addPendingPhoto(pending, photo, "gallery", organizerId));
@@ -210,8 +209,6 @@ async function attachThumbnail({
 }): Promise<boolean> {
   const db = admin.firestore();
   const ref = db.collection(collection).doc(documentId);
-  const legacyRef = collection === "organizers" ?
-    db.collection("clubs").doc(documentId) : null;
   return db.runTransaction(async (tx) => {
     const snap = await tx.get(ref);
     if (!snap.exists) return false;
@@ -249,35 +246,13 @@ async function attachThumbnail({
         thumbnailUrl,
         timestamp,
       });
-      const legacy = applyThumbnailToPhotos({
-        photos: data.clubPhotos,
-        sourcePath: item.sourcePath,
-        thumbnailPath: item.thumbnailPath,
-        thumbnailUrl,
-        timestamp,
-      });
       if (canonical.matched) patch.organizerPhotos = canonical.photos;
-      if (legacy.matched) patch.clubPhotos = legacy.photos;
-      matched = canonical.matched || legacy.matched;
+      matched = canonical.matched;
     }
     if (!matched) return false;
     tx.update(ref, patch);
-    if (legacyRef) {
-      tx.set(legacyRef, organizerLegacyPatch(patch), {merge: true});
-    }
     return true;
   });
-}
-
-function organizerLegacyPatch(
-  organizerPatch: Record<string, unknown>
-): Record<string, unknown> {
-  const patch = {...organizerPatch};
-  if ("organizerPhotos" in patch) {
-    patch.clubPhotos = patch.organizerPhotos;
-    delete patch.organizerPhotos;
-  }
-  return patch;
 }
 
 async function processWithConcurrency<T>(

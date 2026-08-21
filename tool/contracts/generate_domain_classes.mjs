@@ -160,7 +160,7 @@ const SPECS = [
         fields: [
           {name: "id", dartType: "String", synthetic: true,
             forceRequired: true, jsonKey: {includeToJson: false}},
-          {name: "clubId", dartType: "String"},
+          {name: "organizerId", dartType: "String"},
           {name: "eventId", dartType: "String"},
           {name: "reviewerUserId", dartType: "String"},
           {name: "reviewerName", dartType: "String"},

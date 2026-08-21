@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   syncAuthoredReviewReviewerProfile,
-  syncHostedClubHostProfile,
+  syncOrganizerHostProfile,
   syncHostProfileProjectionsHandler,
   syncUserProfileProjectionsHandler,
 } from "./syncPublicProfile";
@@ -175,17 +175,6 @@ function profilePhotos(thumbnailUrl = "https://example.test/thumb-1.jpg") {
 test("syncUserProfileProjectionsHandler syncs public profile and reviews only",
   async () => {
     const firestore = new FakeFirestore({
-      "clubs/club-1": {
-        hostUserId: "host-1",
-        hostName: "Old Name",
-        hostAvatarUrl: "https://old.test/avatar.jpg",
-        memberCount: 3,
-      },
-      "clubs/club-2": {
-        hostUserId: "other-host",
-        hostName: "Other Host",
-        memberCount: 4,
-      },
       "reviews/event-1~host-1": {
         reviewerUserId: "host-1",
         reviewerName: "Old Reviewer",
@@ -210,16 +199,6 @@ test("syncUserProfileProjectionsHandler syncs public profile and reviews only",
     assert.equal(
       firestore.get("publicProfiles/host-1")?.name,
       "Asha Updated"
-    );
-    assert.deepEqual(firestore.get("clubs/club-1"), {
-      hostUserId: "host-1",
-      hostName: "Old Name",
-      hostAvatarUrl: "https://old.test/avatar.jpg",
-      memberCount: 3,
-    });
-    assert.equal(
-      firestore.get("clubs/club-2")?.hostName,
-      "Other Host"
     );
     assert.equal(
       firestore.get("reviews/event-1~host-1")?.reviewerName,
@@ -250,27 +229,36 @@ test("syncUserProfileProjectionsHandler deletes profiles below social-ready",
   }
 );
 
-test("syncHostedClubHostProfile updates canonical and legacy organizer hosts",
+test("syncOrganizerHostProfile updates organizer hosts",
   async () => {
     const firestore = new FakeFirestore({
       "organizers/club-1": {
         ownerUserId: "host-1",
         hostUserId: "host-1",
         hostName: "Old 1",
+        hostProfiles: [],
       },
-      "clubs/club-2": {hostUserId: "host-1", hostName: "Old 2"},
-      "clubs/club-3": {hostUserId: "host-2", hostName: "Other"},
+      "organizers/organizer-2": {
+        hostUserId: "host-1",
+        hostName: "Old 2",
+        hostProfiles: [],
+      },
+      "organizers/organizer-3": {
+        hostUserId: "host-2",
+        hostName: "Other",
+        hostProfiles: [],
+      },
     });
 
-    await syncHostedClubHostProfile(
+    await syncOrganizerHostProfile(
       "host-1",
       {hostName: "New Host", hostAvatarUrl: null},
       {firestore: () => firestore as never}
     );
 
     assert.equal(firestore.get("organizers/club-1")?.hostName, "New Host");
-    assert.equal(firestore.get("clubs/club-2")?.hostName, "New Host");
-    assert.equal(firestore.get("clubs/club-3")?.hostName, "Other");
+    assert.equal(firestore.get("organizers/organizer-2")?.hostName, "New Host");
+    assert.equal(firestore.get("organizers/organizer-3")?.hostName, "Other");
   }
 );
 
@@ -283,6 +271,7 @@ test("syncHostProfileProjectionsHandler owns organizer host display snapshots",
         hostUserId: "host-1",
         hostName: "Old 1",
         hostAvatarUrl: null,
+        hostProfiles: [],
       },
       "organizers/club-2": {
         hostUserId: "host-2",
@@ -302,7 +291,6 @@ test("syncHostProfileProjectionsHandler owns organizer host display snapshots",
           },
         ],
       },
-      "clubs/club-3": {hostUserId: "host-3", hostName: "Unchanged"},
     });
 
     await syncHostProfileProjectionsHandler(
@@ -343,14 +331,17 @@ test("syncHostProfileProjectionsHandler owns organizer host display snapshots",
         role: "host",
       },
     ]);
-    assert.equal(firestore.get("clubs/club-3")?.hostName, "Unchanged");
   }
 );
 
 test("syncHostProfileProjectionsHandler never falls back to dating identity",
   async () => {
     const firestore = new FakeFirestore({
-      "clubs/club-1": {hostUserId: "host-1", hostName: "Old 1"},
+      "organizers/organizer-1": {
+        hostUserId: "host-1",
+        hostName: "Old 1",
+        hostProfiles: [],
+      },
     });
 
     await syncHostProfileProjectionsHandler(
@@ -359,8 +350,10 @@ test("syncHostProfileProjectionsHandler never falls back to dating identity",
       {firestore: () => firestore as never}
     );
 
-    assert.equal(firestore.get("clubs/club-1")?.hostName, "Catch Host");
-    assert.equal(firestore.get("clubs/club-1")?.hostAvatarUrl, null);
+    assert.equal(
+      firestore.get("organizers/organizer-1")?.hostName, "Catch Host"
+    );
+    assert.equal(firestore.get("organizers/organizer-1")?.hostAvatarUrl, null);
   }
 );
 

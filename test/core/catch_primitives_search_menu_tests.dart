@@ -796,7 +796,7 @@ void _registerCatchPrimitivesSearchMenuTests() {
       );
 
       await tester.tap(find.text('Open menu'));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
       final menu = find.byType(CatchMenu<int>);
       expect(menu, findsOneWidget);
@@ -860,7 +860,7 @@ void _registerCatchPrimitivesSearchMenuTests() {
         )
         .top;
     await tester.tap(trigger);
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     final menuRect = tester.getRect(find.byType(CatchMenu<int>));
     expect(menuRect.bottom, closeTo(triggerTop, 1));

@@ -161,7 +161,7 @@ void main() {
     });
   });
 
-  group('legacy Host clubs redirect', () {
+  group('Host organizer routes', () {
     test('legacy Host root redirects to consolidated Events', () {
       expect(Routes.hostHomeScreen.path, '/host');
       expect(Routes.hostEventsScreen.path, '/host/events');
@@ -235,58 +235,18 @@ void main() {
       );
     });
 
-    test('redirects only the exact legacy clubs location', () {
+    test('organizer index opens the primary organizer workspace', () {
       expect(
-        hostClubsLegacyRedirect(Uri.parse('/host/clubs')),
+        hostOrganizerIndexRedirect(Uri.parse('/host/organizers')),
         Routes.hostOrganizerScreen.path,
       );
       expect(
-        hostClubsLegacyRedirect(Uri.parse('/host/clubs?source=legacy')),
-        '/host/organizer?source=legacy',
-      );
-    });
-
-    test('redirects retired dedicated Insights into the selected tab', () {
-      expect(
-        hostInsightsLegacyRedirect('club-1'),
-        '/host/organizers?clubId=club-1&tab=insights',
-      );
-      expect(
-        hostClubsLegacyRedirect(
-          Uri.parse(hostInsightsLegacyRedirect('club-1')),
+        hostOrganizerIndexRedirect(
+          Uri.parse('/host/organizers?source=host-navigation'),
         ),
-        '/host/organizer?clubId=club-1&tab=insights',
+        '/host/organizer?source=host-navigation',
       );
     });
-
-    test('redirects nested legacy Host club operations', () {
-      for (final entry in {
-        '/host/clubs/club-1': '/host/organizers/club-1',
-        '/host/clubs/club-1/edit': '/host/organizers/club-1/edit',
-        '/host/clubs/club-1/create-event':
-            '/host/organizers/club-1/create-event',
-        '/host/clubs/club-1/events/event-1':
-            '/host/organizers/club-1/events/event-1',
-        '/host/clubs/club-1/events/event-1/manage':
-            '/host/organizers/club-1/events/event-1/manage',
-      }.entries) {
-        expect(
-          hostClubsLegacyRedirect(Uri.parse(entry.key)),
-          entry.value,
-          reason: '${entry.key} must retain its nested destination.',
-        );
-      }
-    });
-
-    test(
-      'sends the retired club editor to the selected organizer Edit tab',
-      () {
-        expect(
-          hostEditClubLegacyRedirect('club-1'),
-          '/host/organizer?clubId=club-1&tab=edit',
-        );
-      },
-    );
 
     testWidgets('GoRouter keeps the canonical create-event child route', (
       tester,
@@ -300,7 +260,7 @@ void main() {
           ),
           GoRoute(
             path: Routes.hostClubsScreen.path,
-            redirect: (_, state) => hostClubsLegacyRedirect(state.uri),
+            redirect: (_, state) => hostOrganizerIndexRedirect(state.uri),
             routes: [
               GoRoute(
                 path: ':clubId',
@@ -345,10 +305,10 @@ void main() {
         _redirect(
           uidAsync: const AsyncData(null),
           userProfileAsync: const AsyncData(null),
-          location: '/host/clubs',
+          location: '/host/organizers',
           matchedLocation: Routes.hostClubsScreen.path,
         ),
-        '/auth?from=%2Fhost%2Fclubs',
+        '/auth?from=%2Fhost%2Forganizers',
       );
 
       expect(

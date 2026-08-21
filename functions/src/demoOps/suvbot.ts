@@ -679,7 +679,6 @@ async function refreshDemoState({
 
   const eventIds = new Set([...deletePlan.eventIds, ...warmPlan.eventIds]);
   await repairEventAggregates(db, eventIds);
-  await repairClubMemberCounts(db, deletePlan.clubIds);
   await writeDemoManifest({
     db,
     uid,
@@ -714,7 +713,6 @@ async function clearDemoState({
   const deletePlan = await buildResetPlan(db, uid, "all");
   await applyDeletePlan(db, deletePlan.paths);
   await repairEventAggregates(db, deletePlan.eventIds);
-  await repairClubMemberCounts(db, deletePlan.clubIds);
   await writeDemoManifest({
     db,
     uid,
@@ -747,7 +745,6 @@ async function resetScopedDemoState({
   const deletePlan = await buildResetPlan(db, uid, scope);
   await applyDeletePlan(db, deletePlan.paths);
   await repairEventAggregates(db, deletePlan.eventIds);
-  await repairClubMemberCounts(db, deletePlan.clubIds);
   await writeDemoManifest({
     db,
     uid,
@@ -1477,29 +1474,6 @@ async function repairEventAggregates(
       if (data.status === "waitlisted") aggregate.waitlistedCount += 1;
     }
     await eventSnap.ref.update(aggregate);
-  }
-}
-
-/**
- * Recomputes memberCount for touched clubs.
- * @param {FirebaseFirestore.Firestore} db Firestore instance.
- * @param {Set<string>} clubIds Touched club ids.
- */
-async function repairClubMemberCounts(
-  db: FirebaseFirestore.Firestore,
-  clubIds: Set<string>
-): Promise<void> {
-  for (const clubId of clubIds) {
-    const [clubSnap, membershipsSnap] = await Promise.all([
-      db.collection("clubs").doc(clubId).get(),
-      db.collection("clubMemberships")
-        .where("clubId", "==", clubId)
-        .where("status", "==", "active")
-        .get(),
-    ]);
-    if (clubSnap.exists) {
-      await clubSnap.ref.update({memberCount: membershipsSnap.size});
-    }
   }
 }
 

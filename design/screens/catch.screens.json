@@ -9269,11 +9269,6 @@
           "role": "alias"
         },
         {
-          "id": "hostEditClubScreen",
-          "path": "/host/organizers/:clubId/edit",
-          "role": "alias"
-        },
-        {
           "id": "hostClubEventDefaultsScreen",
           "path": "/host/organizers/event-defaults",
           "role": "host"
@@ -10948,7 +10943,7 @@
         {
           "id": "DS-HOST-CLUBS-002",
           "status": "closed",
-          "nextAction": "Selected club, selected tab, and owner/co-host role capability live in HostClubsScreenState. The organizer Edit tab is the only club editor and owns identity, contact, logo/photos, policy defaults, Event Success defaults, payouts, and host team. The former /host/clubs/:clubId/edit location is a redirect alias into the selected organizer Edit tab. Inline edit, media, defaults, and payout actions have controller mutations; Host Team sheet/dialog states are public; HostClubInsightsState owns analytics query and retry target identity. Broader provider-free section extraction remains part of GOAL-DS-002."
+          "nextAction": "Selected club, selected tab, and owner/co-host role capability live in HostClubsScreenState. The organizer Edit tab is the only club editor and owns identity, contact, logo/photos, policy defaults, Event Success defaults, payouts, and host team. The former /host/clubs/:clubId/edit location is not mounted. Inline edit, media, defaults, and payout actions have controller mutations; Host Team sheet/dialog states are public; HostClubInsightsState owns analytics query and retry target identity. Broader provider-free section extraction remains part of GOAL-DS-002."
         },
         {
           "id": "DS-HOST-CLUBS-003",

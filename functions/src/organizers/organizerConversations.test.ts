@@ -2,11 +2,10 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {
-  clubHostInquiryMatchId,
-  startClubHostConversationHandler,
+  organizerInquiryMatchId,
   startOrganizerContactConversationHandler,
   startOrganizerConversationHandler,
-} from "./clubHostConversations";
+} from "./organizerConversations";
 
 type FakeData = Record<string, unknown>;
 
@@ -137,50 +136,9 @@ function assertHttpsCode(error: unknown, code: string): boolean {
   return error instanceof HttpsError && error.code === code;
 }
 
-test("startClubHostConversationHandler creates a host inquiry match",
-  async () => {
-    const h = harness({
-      "clubs/club-1": club(),
-    });
-
-    const result = await startClubHostConversationHandler(
-      request("viewer-1", {clubId: "club-1", hostUid: "host-1"}),
-      h.deps
-    );
-    const matchId = clubHostInquiryMatchId({
-      clubId: "club-1",
-      user1Id: "host-1",
-      user2Id: "viewer-1",
-    });
-
-    assert.deepEqual(result, {matchId});
-    assert.deepEqual(h.rateLimitCalls, [
-      "viewer-1:startClubHostConversation",
-    ]);
-    assert.deepEqual(h.firestore.get(`matches/${matchId}`), {
-      user1Id: "host-1",
-      user2Id: "viewer-1",
-      participantIds: ["host-1", "viewer-1"],
-      eventIds: [],
-      createdAt: "SERVER_TIMESTAMP",
-      lastMessageAt: null,
-      lastMessagePreview: null,
-      lastMessageSenderId: null,
-      unreadCounts: {"host-1": 0, "viewer-1": 0},
-      status: "active",
-      blockedBy: null,
-      blockedAt: null,
-      conversationType: "clubHostInquiry",
-      organizerId: "club-1",
-      clubId: "club-1",
-    });
-  }
-);
-
 test("startOrganizerConversationHandler uses organizer authority", async () => {
   const h = harness({
     "organizers/organizer-1": organizer(),
-    "clubs/organizer-1": club({hostUserIds: ["owner-1"]}),
   });
 
   const result = await startOrganizerConversationHandler(
@@ -190,8 +148,8 @@ test("startOrganizerConversationHandler uses organizer authority", async () => {
     }),
     h.deps
   );
-  const matchId = clubHostInquiryMatchId({
-    clubId: "organizer-1",
+  const matchId = organizerInquiryMatchId({
+    organizerId: "organizer-1",
     user1Id: "host-1",
     user2Id: "viewer-1",
   });
@@ -228,8 +186,8 @@ test("startOrganizerContactConversationHandler requires a linked contact",
       }),
       h.deps
     );
-    const matchId = clubHostInquiryMatchId({
-      clubId: "organizer-1",
+    const matchId = organizerInquiryMatchId({
+      organizerId: "organizer-1",
       user1Id: "customer-1",
       user2Id: "owner-1",
     });
@@ -298,174 +256,3 @@ test("startOrganizerContactConversationHandler rejects ambiguous contacts",
     );
   }
 );
-
-test("startClubHostConversationHandler never reuses a dating match",
-  async () => {
-    const existingMatch = {
-      user1Id: "host-1",
-      user2Id: "viewer-1",
-      participantIds: ["host-1", "viewer-1"],
-      eventIds: ["event-1"],
-      createdAt: "CREATED_AT",
-      unreadCounts: {},
-      status: "active",
-      conversationType: "match",
-    };
-    const h = harness({
-      "clubs/club-1": club(),
-      "matches/host-1_viewer-1": existingMatch,
-    });
-
-    const result = await startClubHostConversationHandler(
-      request("viewer-1", {clubId: "club-1", hostUid: "host-1"}),
-      h.deps
-    );
-    const matchId = clubHostInquiryMatchId({
-      clubId: "club-1",
-      user1Id: "host-1",
-      user2Id: "viewer-1",
-    });
-
-    assert.deepEqual(result, {matchId});
-    assert.deepEqual(
-      h.firestore.get("matches/host-1_viewer-1"),
-      existingMatch
-    );
-    assert.equal(
-      h.firestore.get(`matches/${matchId}`)?.conversationType,
-      "clubHostInquiry"
-    );
-  }
-);
-
-test("startClubHostConversationHandler preserves a legacy general inquiry",
-  async () => {
-    const legacyMatch = {
-      user1Id: "host-1",
-      user2Id: "viewer-1",
-      participantIds: ["host-1", "viewer-1"],
-      eventIds: [],
-      createdAt: "CREATED_AT",
-      unreadCounts: {},
-      status: "active",
-      conversationType: "clubHostInquiry",
-      clubId: "club-1",
-    };
-    const h = harness({
-      "clubs/club-1": club(),
-      "matches/host-1_viewer-1": legacyMatch,
-    });
-
-    const result = await startClubHostConversationHandler(
-      request("viewer-1", {clubId: "club-1", hostUid: "host-1"}),
-      h.deps
-    );
-
-    assert.deepEqual(result, {matchId: "host-1_viewer-1"});
-    assert.deepEqual(
-      h.firestore.get("matches/host-1_viewer-1"),
-      legacyMatch
-    );
-  }
-);
-
-test("startClubHostConversationHandler creates an event-scoped inquiry",
-  async () => {
-    const h = harness({
-      "clubs/club-1": club(),
-      "events/event-1": {
-        clubId: "club-1",
-        startTime: "START",
-        endTime: "END",
-        meetingPoint: "Start",
-        meetingLocation: null,
-        distanceKm: 5,
-        eventFormat: {},
-        pace: "easy",
-        capacityLimit: 20,
-        description: "Event",
-        priceInPaise: 0,
-      },
-      "matches/host-1_viewer-1": {
-        user1Id: "host-1",
-        user2Id: "viewer-1",
-        participantIds: ["host-1", "viewer-1"],
-        eventIds: ["dating-event"],
-        createdAt: "CREATED_AT",
-        unreadCounts: {},
-        status: "active",
-        conversationType: "match",
-      },
-    });
-
-    const result = await startClubHostConversationHandler(
-      request("viewer-1", {
-        clubId: "club-1",
-        hostUid: "host-1",
-        eventId: "event-1",
-      }),
-      h.deps
-    );
-    const matchId = clubHostInquiryMatchId({
-      clubId: "club-1",
-      eventId: "event-1",
-      user1Id: "host-1",
-      user2Id: "viewer-1",
-    });
-
-    assert.deepEqual(result, {matchId});
-    assert.deepEqual(
-      h.firestore.get(`matches/${matchId}`)?.eventIds,
-      ["event-1"]
-    );
-    assert.equal(
-      h.firestore.get(`matches/${matchId}`)?.conversationType,
-      "clubHostInquiry"
-    );
-  }
-);
-
-test("startClubHostConversationHandler rejects an event from another club",
-  async () => {
-    const h = harness({
-      "clubs/club-1": club(),
-      "events/event-2": {
-        clubId: "club-2",
-        startTime: "START",
-        endTime: "END",
-        meetingPoint: "Start",
-        meetingLocation: null,
-        distanceKm: 5,
-        eventFormat: {},
-        pace: "easy",
-        capacityLimit: 20,
-        description: "Event",
-        priceInPaise: 0,
-      },
-    });
-
-    await assert.rejects(
-      () => startClubHostConversationHandler(
-        request("viewer-1", {
-          clubId: "club-1",
-          hostUid: "host-1",
-          eventId: "event-2",
-        }),
-        h.deps
-      ),
-      (error) => assertHttpsCode(error, "failed-precondition")
-    );
-  }
-);
-
-test("startClubHostConversationHandler rejects non-host targets", async () => {
-  const h = harness({"clubs/club-1": club()});
-
-  await assert.rejects(
-    () => startClubHostConversationHandler(
-      request("viewer-1", {clubId: "club-1", hostUid: "other-1"}),
-      h.deps
-    ),
-    (error) => assertHttpsCode(error, "permission-denied")
-  );
-});

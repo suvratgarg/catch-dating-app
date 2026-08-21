@@ -17,9 +17,7 @@ import {
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {
-  activeClubMembershipPatch,
   activeOrganizerTeamMembershipPatch,
-  clubMembershipId,
   organizerRelationshipId,
 } from "../shared/relationshipDocuments";
 import {
@@ -61,25 +59,20 @@ export async function addOrganizerManagerHandler(
   const targetUid = await resolveTargetUid(db, data);
   await db.runTransaction(async (tx) => {
     const organizerRef = db.collection("organizers").doc(data.organizerId);
-    const legacyClubRef = db.collection("clubs").doc(data.organizerId);
     const targetUserRef = db.collection("users").doc(targetUid);
     const targetHostProfileRef = db.collection("hostProfiles").doc(targetUid);
     const callerDeletedRef = db.collection("deletedUsers").doc(callerUid);
     const targetDeletedRef = db.collection("deletedUsers").doc(targetUid);
     const teamRef = db.collection("organizerTeamMemberships")
       .doc(organizerRelationshipId(data.organizerId, targetUid));
-    const legacyMembershipRef = db.collection("clubMemberships")
-      .doc(clubMembershipId(data.organizerId, targetUid));
     const [
       organizerSnap,
-      legacyClubSnap,
       targetUserSnap,
       targetHostProfileSnap,
       callerDeletedSnap,
       targetDeletedSnap,
     ] = await Promise.all([
       tx.get(organizerRef),
-      tx.get(legacyClubRef),
       tx.get(targetUserRef),
       tx.get(targetHostProfileRef),
       tx.get(callerDeletedRef),
@@ -116,19 +109,11 @@ export async function addOrganizerManagerHandler(
     ].sort((a, b) => ids.indexOf(a.uid) - ids.indexOf(b.uid));
     const patch = {hostUserIds: ids, hostProfiles: profiles};
     tx.update(organizerRef, patch);
-    if (legacyClubSnap.exists) tx.update(legacyClubRef, patch);
     tx.set(teamRef, activeOrganizerTeamMembershipPatch({
       organizerId: data.organizerId,
       uid: targetUid,
       role: "manager",
     }), {merge: true});
-    if (legacyClubSnap.exists) {
-      tx.set(legacyMembershipRef, activeClubMembershipPatch({
-        clubId: data.organizerId,
-        uid: targetUid,
-        role: "host",
-      }), {merge: true});
-    }
     if (!targetHostProfileSnap.exists) {
       tx.set(
         targetHostProfileRef,
@@ -157,16 +142,12 @@ export async function removeOrganizerManagerHandler(
   await deps.checkRateLimit?.(db, callerUid, "removeOrganizerManager");
   await db.runTransaction(async (tx) => {
     const organizerRef = db.collection("organizers").doc(data.organizerId);
-    const legacyClubRef = db.collection("clubs").doc(data.organizerId);
     const callerDeletedRef = db.collection("deletedUsers").doc(callerUid);
     const teamRef = db.collection("organizerTeamMemberships")
       .doc(organizerRelationshipId(data.organizerId, data.uid));
-    const legacyMembershipRef = db.collection("clubMemberships")
-      .doc(clubMembershipId(data.organizerId, data.uid));
-    const [organizerSnap, legacyClubSnap, callerDeletedSnap] =
+    const [organizerSnap, callerDeletedSnap] =
       await Promise.all([
         tx.get(organizerRef),
-        tx.get(legacyClubRef),
         tx.get(callerDeletedRef),
       ]);
     assertOwner(organizerSnap, callerDeletedSnap, callerUid);
@@ -187,19 +168,10 @@ export async function removeOrganizerManagerHandler(
         .filter((host) => host.uid !== data.uid),
     };
     tx.update(organizerRef, patch);
-    if (legacyClubSnap.exists) tx.update(legacyClubRef, patch);
     tx.set(teamRef, {
       status: "removed",
       removedAt: admin.firestore.FieldValue.serverTimestamp(),
     }, {merge: true});
-    if (legacyClubSnap.exists) {
-      tx.set(legacyMembershipRef, {
-        role: "member",
-        status: "active",
-        leftAt: admin.firestore.FieldValue.delete(),
-        deletedAt: admin.firestore.FieldValue.delete(),
-      }, {merge: true});
-    }
   });
   return {removed: true};
 }
@@ -220,7 +192,6 @@ export async function transferOrganizerOwnershipHandler(
   await deps.checkRateLimit?.(db, callerUid, "transferOrganizerOwnership");
   await db.runTransaction(async (tx) => {
     const organizerRef = db.collection("organizers").doc(data.organizerId);
-    const legacyClubRef = db.collection("clubs").doc(data.organizerId);
     const targetUserRef = db.collection("users").doc(data.uid);
     const targetHostProfileRef = db.collection("hostProfiles").doc(data.uid);
     const callerDeletedRef = db.collection("deletedUsers").doc(callerUid);
@@ -231,14 +202,12 @@ export async function transferOrganizerOwnershipHandler(
       .doc(organizerRelationshipId(data.organizerId, data.uid));
     const [
       organizerSnap,
-      legacyClubSnap,
       targetUserSnap,
       targetHostProfileSnap,
       callerDeletedSnap,
       targetDeletedSnap,
     ] = await Promise.all([
       tx.get(organizerRef),
-      tx.get(legacyClubRef),
       tx.get(targetUserRef),
       tx.get(targetHostProfileRef),
       tx.get(callerDeletedRef),
@@ -298,7 +267,6 @@ export async function transferOrganizerOwnershipHandler(
       "ownership.claimedByUid": data.uid,
     };
     tx.update(organizerRef, patch);
-    if (legacyClubSnap.exists) tx.update(legacyClubRef, patch);
     tx.set(previousTeamRef, activeOrganizerTeamMembershipPatch({
       organizerId: data.organizerId,
       uid: callerUid,

@@ -393,7 +393,7 @@ export const adminActionCatalog = {
     },
     {
       "actionId": "organizer-claims.list",
-      "callable": "adminListClubClaimRequests",
+      "callable": "adminListOrganizerClaimRequests",
       "workflowIds": [
         "organizer-claims"
       ],
@@ -410,7 +410,7 @@ export const adminActionCatalog = {
     },
     {
       "actionId": "organizer-claims.get",
-      "callable": "adminGetClubClaimRequestDetails",
+      "callable": "adminGetOrganizerClaimRequestDetails",
       "workflowIds": [
         "organizer-claims"
       ],
@@ -427,7 +427,7 @@ export const adminActionCatalog = {
     },
     {
       "actionId": "organizer-claims.decide",
-      "callable": "adminDecideClubClaim",
+      "callable": "adminDecideOrganizerClaim",
       "workflowIds": [
         "organizer-claims"
       ],
@@ -495,7 +495,7 @@ export const adminActionCatalog = {
     },
     {
       "actionId": "organizers.set-index-status",
-      "callable": "adminSetClubIndexStatus",
+      "callable": "adminSetOrganizerIndexStatus",
       "workflowIds": [
         "organizers"
       ],

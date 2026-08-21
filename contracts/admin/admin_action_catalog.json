@@ -303,7 +303,7 @@
     },
     {
       "actionId": "organizer-claims.list",
-      "callable": "adminListClubClaimRequests",
+      "callable": "adminListOrganizerClaimRequests",
       "workflowIds": ["organizer-claims"],
       "guiPath": "/organizers/claims",
       "kind": "read",
@@ -315,7 +315,7 @@
     },
     {
       "actionId": "organizer-claims.get",
-      "callable": "adminGetClubClaimRequestDetails",
+      "callable": "adminGetOrganizerClaimRequestDetails",
       "workflowIds": ["organizer-claims"],
       "guiPath": "/organizers/claims",
       "kind": "read",
@@ -327,7 +327,7 @@
     },
     {
       "actionId": "organizer-claims.decide",
-      "callable": "adminDecideClubClaim",
+      "callable": "adminDecideOrganizerClaim",
       "workflowIds": ["organizer-claims"],
       "guiPath": "/organizers/claims",
       "kind": "mutation",
@@ -379,7 +379,7 @@
     },
     {
       "actionId": "organizers.set-index-status",
-      "callable": "adminSetClubIndexStatus",
+      "callable": "adminSetOrganizerIndexStatus",
       "workflowIds": ["organizers"],
       "guiPath": "/organizers",
       "kind": "mutation",

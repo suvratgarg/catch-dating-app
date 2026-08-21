@@ -63,6 +63,7 @@ function club(overrides = {}) {
 
 function event(overrides = {}) {
   return {
+    organizerId: "club-1",
     clubId: "club-1",
     startTime: Timestamp.fromDate(new Date("2026-05-02T01:30:00.000Z")),
     endTime: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
@@ -643,7 +644,7 @@ describe("firestore.rules", () => {
     });
 
     it("denies direct host profile edits because updates are callable-owned", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
 
       await assertFails(
         updateDoc(doc(authedDb("host-1"), "clubs", "club-1"), {
@@ -672,7 +673,7 @@ describe("firestore.rules", () => {
     });
 
     it("denies direct member joins because membership is callable-owned", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
 
       await assertFails(
         setDoc(
@@ -685,7 +686,7 @@ describe("firestore.rules", () => {
     });
 
     it("rejects member updates that tamper with club profile fields", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
 
       await assertFails(
         setDoc(
@@ -699,7 +700,7 @@ describe("firestore.rules", () => {
     });
 
     it("denies direct member count repairs", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
 
       await assertFails(
         setDoc(
@@ -713,7 +714,7 @@ describe("firestore.rules", () => {
 
     it("denies direct member leaves because membership is callable-owned", async () => {
       await seed(
-        ["clubs", "club-1"],
+        ["organizers", "club-1"],
         club({
           memberCount: 3,
         }),
@@ -731,7 +732,7 @@ describe("firestore.rules", () => {
 
     it("rejects members changing aggregate membership count", async () => {
       await seed(
-        ["clubs", "club-1"],
+        ["organizers", "club-1"],
         club({
           memberCount: 3,
         }),
@@ -748,7 +749,7 @@ describe("firestore.rules", () => {
     });
 
     it("denies joining via direct aggregate updates", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
 
       await assertFails(
         updateDoc(doc(authedDb("runner-1"), "clubs", "club-1"), {
@@ -759,7 +760,7 @@ describe("firestore.rules", () => {
 
     it("denies leaving via direct aggregate updates", async () => {
       await seed(
-        ["clubs", "club-1"],
+        ["organizers", "club-1"],
         club({
           memberCount: 3,
         }),
@@ -773,7 +774,7 @@ describe("firestore.rules", () => {
     });
 
     it("denies direct club deletes", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
 
       await assertFails(
         deleteDoc(doc(authedDb("host-1"), "clubs", "club-1")),
@@ -1148,52 +1149,8 @@ describe("firestore.rules", () => {
       );
     });
 
-    it("allows active club membership reads but keeps writes callable-owned", async () => {
-      await seed(
-        ["clubMemberships", "club-1_runner-1"],
-        clubMembership(),
-      );
-      await seed(
-        ["clubMemberships", "club-1_runner-2"],
-        clubMembership({
-          uid: "runner-2",
-          status: "left",
-          leftAt: Timestamp.fromDate(new Date("2026-05-02T10:00:00.000Z")),
-        }),
-      );
-
-      await assertSucceeds(
-        getDoc(doc(authedDb("runner-3"), "clubMemberships", "club-1_runner-1")),
-      );
-      await assertSucceeds(
-        getDoc(doc(authedDb("runner-2"), "clubMemberships", "club-1_runner-2")),
-      );
-      await assertFails(
-        getDoc(doc(authedDb("runner-3"), "clubMemberships", "club-1_runner-2")),
-      );
-      await assertFails(
-        setDoc(
-          doc(authedDb("runner-1"), "clubMemberships", "club-1_runner-1"),
-          clubMembership(),
-        ),
-      );
-    });
-
-    it("allows users to query their own missing club membership edge", async () => {
-      await assertSucceeds(
-        getDocs(
-          query(
-            collection(authedDb("runner-1"), "clubMemberships"),
-            where("clubId", "==", "club-1"),
-            where("uid", "==", "runner-1"),
-            limit(1),
-          ),
-        ),
-      );
-    });
-
     it("allows only participants and hosts to read event participation edges", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
       await seed(["events", "event-1"], event());
       await seed(
         ["eventParticipations", "event-1_runner-1"],
@@ -1230,7 +1187,7 @@ describe("firestore.rules", () => {
     });
 
     it("keeps operational attendee contacts host-only and server-written", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
       await seed(["events", "event-1"], event());
       await seed(["eventAttendees", "attendee-1"], {
         eventId: "event-1",
@@ -1276,7 +1233,7 @@ describe("firestore.rules", () => {
     });
 
     it("limits event staff to one event's live operational surfaces", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
       await seed(["events", "event-1"], event());
       await seed(["events", "event-2"], event());
       await seed(["eventAttendees", "attendee-1"], {
@@ -1345,7 +1302,7 @@ describe("firestore.rules", () => {
     });
 
     it("fails closed for revoked, expired, and wrong-organizer staff grants", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
       await seed(["events", "event-1"], event());
       await seed(["eventAttendees", "attendee-1"], {
         eventId: "event-1",
@@ -1375,7 +1332,7 @@ describe("firestore.rules", () => {
     });
 
     it("keeps runtime identity owner-private and claim review host-only", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
       await seed(["events", "event-1"], event());
       await seed(
         ["eventRuntimeParticipants", "event-1_runner-1"],
@@ -1869,7 +1826,7 @@ describe("firestore.rules", () => {
     });
 
     it("denies attendee-roster queries to unrelated authenticated users", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
       await seed(["events", "event-1"], event());
       await seed(
         ["eventParticipations", "event-1_runner-1"],
@@ -1906,7 +1863,7 @@ describe("firestore.rules", () => {
     });
 
     it("keeps cancelled event participation edges private", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
       await seed(["events", "event-1"], event());
       await seed(
         ["eventParticipations", "event-1_runner-1"],
@@ -2884,7 +2841,7 @@ describe("firestore.rules", () => {
 
   describe("events", () => {
     it("denies direct event creates because creation is callable-owned", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
 
       await assertFails(
         setDoc(doc(authedDb("host-1"), "events", "event-new"), event()),
@@ -2892,7 +2849,7 @@ describe("firestore.rules", () => {
     });
 
     it("denies direct host event detail edits because updates are callable-owned", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
       await seed(["events", "event-1"], event());
 
       await assertFails(
@@ -2911,7 +2868,7 @@ describe("firestore.rules", () => {
     });
 
     it("denies hosts changing booking-sensitive or ownership event fields", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
       await seed(["events", "event-1"], event());
 
       const runRef = doc(authedDb("host-1"), "events", "event-1");
@@ -2938,7 +2895,7 @@ describe("firestore.rules", () => {
     });
 
     it("denies direct event deletes", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
       await seed(["events", "event-1"], event());
 
       await assertFails(
@@ -2988,7 +2945,7 @@ describe("firestore.rules", () => {
 
   describe("event success", () => {
     it("allows host setup writes but keeps live control callable-owned", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
       await seed(["events", "event-1"], event({
         startTime: Timestamp.fromDate(new Date("2099-05-02T01:30:00.000Z")),
         endTime: Timestamp.fromDate(new Date("2099-05-02T02:30:00.000Z")),
@@ -3131,7 +3088,7 @@ describe("firestore.rules", () => {
     });
 
     it("freezes event success setup after participant activity or event start", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
       await seed(["events", "event-1"], event({
         startTime: Timestamp.fromDate(new Date("2099-05-02T01:30:00.000Z")),
         endTime: Timestamp.fromDate(new Date("2099-05-02T02:30:00.000Z")),
@@ -3178,7 +3135,7 @@ describe("firestore.rules", () => {
     });
 
     it("allows hosts and active participants to read event success plans", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
       await seed(["events", "event-1"], event());
       await seed(["eventSuccessPlans", "event-1"], eventSuccessPlan());
       await seed(
@@ -3209,7 +3166,7 @@ describe("firestore.rules", () => {
     });
 
     it("grants Event Success to a ready external runtime identity", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
       await seed(["events", "event-1"], event());
       await seed(["eventSuccessPlans", "event-1"], eventSuccessPlan());
       await seed(
@@ -3253,7 +3210,7 @@ describe("firestore.rules", () => {
     });
 
     it("allows attended users to submit feedback only after the event has ended", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
       await seed(["events", "event-1"], event());
       await seed(
         ["eventParticipations", "event-1_runner-1"],
@@ -3322,7 +3279,7 @@ describe("firestore.rules", () => {
     });
 
     it("keeps raw attendee feedback private from hosts and unrelated users", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
       await seed(["events", "event-1"], event());
       await seed(
         ["eventSuccessFeedback", "event-1_runner-1"],
@@ -3349,7 +3306,7 @@ describe("firestore.rules", () => {
     });
 
     it("keeps conversation graph edges attendee-private and server-written", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
       await seed(["events", "event-1"], event());
       await seed(
         ["eventParticipations", "event-1_runner-1"],
@@ -3425,7 +3382,7 @@ describe("firestore.rules", () => {
     });
 
     it("allows participants to manage only their own event-success preferences", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
       await seed(["events", "event-1"], event());
       await seed(
         ["eventParticipations", "event-1_runner-1"],
@@ -3487,7 +3444,7 @@ describe("firestore.rules", () => {
     });
 
     it("lets participants manage private compatibility answers without host read access", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
       await seed(["events", "event-1"], event());
       await seed(
         ["eventParticipations", "event-1_runner-1"],
@@ -3571,7 +3528,7 @@ describe("firestore.rules", () => {
     });
 
     it("keeps wingman requests server-owned and host-visible", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
       await seed(["events", "event-1"], event());
       await seed(
         ["eventParticipations", "event-1_runner-1"],
@@ -3719,7 +3676,7 @@ describe("firestore.rules", () => {
     });
 
     it("keeps First Hello arrival missions server-owned and attendee-private", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
       await seed(["events", "event-1"], event());
       await seed(
         ["eventParticipations", "event-1_runner-1"],
@@ -3805,7 +3762,7 @@ describe("firestore.rules", () => {
     });
 
     it("keeps event-success assignments server-owned and scoped to the attendee", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
       await seed(["events", "event-1"], event());
       await seed(
         ["eventParticipations", "event-1_runner-1"],
@@ -3887,7 +3844,7 @@ describe("firestore.rules", () => {
     });
 
     it("keeps prepared rotation drafts host-only and server-owned", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
       await seed(["events", "event-1"], event());
       await seed(
         ["eventParticipations", "event-1_runner-1"],
@@ -3924,7 +3881,7 @@ describe("firestore.rules", () => {
     });
 
     it("keeps presence private and scopes late-arrival outcomes", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
       await seed(["events", "event-1"], event());
       await seed(
         ["eventParticipations", "event-1_runner-1"],
@@ -3986,7 +3943,7 @@ describe("firestore.rules", () => {
     });
 
     it("keeps outcome facts Host-only and shares standings with participants", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
       await seed(["events", "event-1"], event());
       await seed(
         ["eventParticipations", "event-1_runner-1"],
@@ -4081,7 +4038,7 @@ describe("firestore.rules", () => {
     });
 
     it("exposes event scorecards only to the event host", async () => {
-      await seed(["clubs", "club-1"], club());
+      await seed(["organizers", "club-1"], club());
       await seed(["events", "event-1"], event());
       await seed(
         ["eventParticipations", "event-1_runner-1"],

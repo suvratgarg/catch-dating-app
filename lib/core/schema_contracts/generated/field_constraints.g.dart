@@ -8611,14 +8611,6 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
-  static const createEventReviewCallablePayloadClubId = CatchContractFieldConstraints(
-    path: 'createEventReviewCallablePayload.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const createEventReviewCallablePayloadComment = CatchContractFieldConstraints(
     path: 'createEventReviewCallablePayload.comment',
     maxLength: 1000,
@@ -47404,14 +47396,6 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['accepted', 'declined'],
   );
 
-  static const reviewDocumentClubId = CatchContractFieldConstraints(
-    path: 'reviewDocument.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const reviewDocumentComment = CatchContractFieldConstraints(
     path: 'reviewDocument.comment',
     maxLength: 1000,
@@ -56751,7 +56735,6 @@ abstract final class CatchContractConstraints {
     'createEventRehearsalCallableResponse.runtimeRevision': createEventRehearsalCallableResponseRuntimeRevision,
     'createEventRehearsalCallableResponse.sessionId': createEventRehearsalCallableResponseSessionId,
     'createEventRehearsalCallableResponse.setupRevision': createEventRehearsalCallableResponseSetupRevision,
-    'createEventReviewCallablePayload.clubId': createEventReviewCallablePayloadClubId,
     'createEventReviewCallablePayload.comment': createEventReviewCallablePayloadComment,
     'createEventReviewCallablePayload.eventId': createEventReviewCallablePayloadEventId,
     'createEventReviewCallablePayload.organizerId': createEventReviewCallablePayloadOrganizerId,
@@ -62105,7 +62088,6 @@ abstract final class CatchContractConstraints {
     'respondCrossPathsInvitationCallableResponse.invitationId': respondCrossPathsInvitationCallableResponseInvitationId,
     'respondCrossPathsInvitationCallableResponse.pairHoldId': respondCrossPathsInvitationCallableResponsePairHoldId,
     'respondCrossPathsInvitationCallableResponse.status': respondCrossPathsInvitationCallableResponseStatus,
-    'reviewDocument.clubId': reviewDocumentClubId,
     'reviewDocument.comment': reviewDocumentComment,
     'reviewDocument.createdAt._nanoseconds': reviewDocumentCreatedAtNanoseconds,
     'reviewDocument.createdAt._seconds': reviewDocumentCreatedAtSeconds,

@@ -175,7 +175,7 @@ final _hostViewer = _viewer.copyWith(
 final _reviews = [
   Review(
     id: 'widgetbook-event-review-1',
-    clubId: _clubId,
+    organizerId: _clubId,
     eventId: _pastEvent.id,
     reviewerUserId: _viewerUid,
     reviewerName: 'Neha',
@@ -185,7 +185,7 @@ final _reviews = [
   ),
   Review(
     id: 'widgetbook-event-review-2',
-    clubId: _clubId,
+    organizerId: _clubId,
     eventId: _pastEvent.id,
     reviewerUserId: 'runner-dev',
     reviewerName: 'Dev',
@@ -205,7 +205,7 @@ final _reviews = [
   ),
   Review(
     id: 'widgetbook-event-review-3',
-    clubId: _clubId,
+    organizerId: _clubId,
     eventId: _pastEvent.id,
     reviewerUserId: 'runner-ana',
     reviewerName: 'Ana',
@@ -215,7 +215,7 @@ final _reviews = [
   ),
   Review(
     id: 'widgetbook-event-review-4',
-    clubId: _clubId,
+    organizerId: _clubId,
     eventId: _pastEvent.id,
     reviewerUserId: 'runner-lee',
     reviewerName: 'Lee',

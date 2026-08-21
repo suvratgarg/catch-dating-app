@@ -104,20 +104,17 @@ void main() {
       expect(decoded?.displayHostProfiles, isEmpty);
     });
 
-    test(
-      'converter treats legacy docs without appVisibility as discoverable',
-      () async {
-        final legacy = buildClub(id: 'legacy-club');
-        await firestore
-            .collection('organizers')
-            .doc(legacy.id)
-            .set(legacy.toJson()..remove('appVisibility'));
+    test('missing app visibility fails closed', () async {
+      final organizer = buildClub(id: 'missing-visibility');
+      await firestore
+          .collection('organizers')
+          .doc(organizer.id)
+          .set(organizer.toJson()..remove('appVisibility'));
 
-        final decoded = await repository.fetchClub(legacy.id);
-        expect(decoded?.appVisibility, ClubAppVisibility.discoverable);
-        expect(decoded?.isAppDiscoverable, isTrue);
-      },
-    );
+      final decoded = await repository.fetchClub(organizer.id);
+      expect(decoded?.appVisibility, ClubAppVisibility.hidden);
+      expect(decoded?.isAppDiscoverable, isFalse);
+    });
 
     test('watchClub emits the decoded club when the document exists', () async {
       final club = buildClub();

@@ -682,7 +682,7 @@ void main() {
       'opens a booked event from the agenda and back returns to calendar',
       (tester) async {
         final event = buildEvent(
-          startTime: DateTime(2026, 5, 7, 7, 15),
+          startTime: DateTime.now().add(const Duration(days: 2, hours: 7)),
           meetingPoint: 'Carter Road Promenade',
           bookedCount: 1,
         );

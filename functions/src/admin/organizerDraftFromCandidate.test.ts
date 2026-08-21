@@ -6,7 +6,6 @@ import {
 } from "./organizerDraftFromCandidate";
 import {
   validateAdminCreateOrganizerDraftFromCandidateCallableResponse,
-  validateClubDocument,
   validateOrganizerDocument,
   validateOrganizerIntakeCurationDecisionDocument,
   schemaErrorMessages,
@@ -354,13 +353,6 @@ test("creates a fail-closed organizer draft and curation receipt", async () => {
       "tags",
     ]
   );
-  const legacyClub = h.firestore.get(`clubs/${result.organizerId}`);
-  assert.equal(
-    validateClubDocument(legacyClub),
-    true,
-    schemaErrorMessages(validateClubDocument).join("; ")
-  );
-  assert.equal(legacyClub?.intakeLearningSource, undefined);
   const curation = h.firestore.get(result.curationPath);
   assert.equal(
     validateOrganizerIntakeCurationDecisionDocument(curation),

@@ -265,7 +265,7 @@ Future<void> _showEditReviewSheet(
   if (eventId == null) return Future<void>.value();
   return showWriteReviewSheet(
     context: context,
-    clubId: row.review.clubId,
+    clubId: row.review.organizerId,
     eventId: eventId,
     reviewer: state.user,
     existingReview: row.review,

@@ -19,7 +19,6 @@
   ],
   "required": [
     "organizerId",
-    "clubId",
     "reviewerUserId",
     "reviewerName",
     "rating",
@@ -27,11 +26,6 @@
     "createdAt"
   ],
   "properties": {
-    "clubId": {
-      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
-      "description": "Deprecated organizer id alias retained while released clients migrate.",
-      "x-catch-ownership": "callable-owned"
-    },
     "organizerId": {
       "$ref": "../shared/event_common.schema.json#/definitions/documentId",
       "x-catch-ownership": "callable-owned"

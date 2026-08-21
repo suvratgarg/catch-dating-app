@@ -33,7 +33,6 @@
       "requiredWhen": {
         "anyDeployTarget": [
           "functions:exploreSearch",
-          "functions:syncAlgoliaClubIndex",
           "functions:syncAlgoliaOrganizerIndex",
           "functions:syncAlgoliaEventIndex"
         ]
@@ -80,7 +79,6 @@
       ],
       "requiredWhen": {
         "anyDeployTarget": [
-          "functions:syncAlgoliaClubIndex",
           "functions:syncAlgoliaOrganizerIndex",
           "functions:syncAlgoliaEventIndex"
         ]

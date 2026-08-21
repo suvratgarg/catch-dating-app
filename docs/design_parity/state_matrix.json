@@ -5557,7 +5557,6 @@
           "routeIds": [
             "hostClubsScreen",
             "hostOrganizerScreen",
-            "hostEditClubScreen",
             "hostClubEventDefaultsScreen",
             "hostClubLiveGuideScreen",
             "hostClubTeamScreen",

@@ -48,7 +48,7 @@ test("organizer nomenclature gate passes a canonical fixture", () => {
   }));
   write(root, "contracts/migrations/clubs_to_organizers.json", JSON.stringify({
     selectedFutureName: "organizers",
-    currentPhase: "backfill_and_parity",
+    currentPhase: "retire_legacy",
   }));
   for (const [file, markers] of new Map([
     ["lib/clubs/data/clubs_repository.dart", [
@@ -58,7 +58,7 @@ test("organizer nomenclature gate passes a canonical fixture", () => {
     ["lib/clubs/data/club_membership_repository.dart", ["organizerFollows"]],
     ["lib/clubs/data/club_posts_repository.dart", ["createOrganizerPost"]],
     ["lib/image_uploads/data/image_upload_repository.dart", ["organizers/"]],
-    ["lib/routing/go_router.dart", ["/host/organizers"]],
+    ["lib/routing/route_contract.dart", ["/host/organizer"]],
     ["website/src/firebase.ts", [
       "requestOrganizerClaim", "createPublicOrganizerReview",
     ]],
@@ -68,7 +68,8 @@ test("organizer nomenclature gate passes a canonical fixture", () => {
     ]],
     ["functions/src/index.ts", [
       "createOrganizer", "followOrganizer", "startOrganizerConversation",
-      "adminGetOrganizerDetails",
+      "adminGetOrganizerDetails", "adminGetOrganizerClaimRequestDetails",
+      "adminListOrganizerClaimRequests", "adminSetOrganizerIndexStatus",
     ]],
     ["tool/data/migrate_clubs_to_organizers.mjs", ["--confirm-migration"]],
     ["docs/migrations/clubs_to_organizers.md", ["organizerType"]],

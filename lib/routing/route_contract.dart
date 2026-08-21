@@ -98,7 +98,6 @@ enum Routes {
     '/host/organizers/create-organizer',
     AppRouteAudience.host,
   ),
-  hostEditClubScreen('/host/organizers/:clubId/edit', AppRouteAudience.host),
   hostCreateEventScreen(
     '/host/organizers/:clubId/create-event',
     AppRouteAudience.host,

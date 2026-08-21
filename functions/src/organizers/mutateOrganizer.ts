@@ -70,14 +70,12 @@ export async function updateOrganizerHandler(
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, actorUid, "updateOrganizer");
   const organizerRef = db.collection("organizers").doc(data.organizerId);
-  const legacyClubRef = db.collection("clubs").doc(data.organizerId);
   const deletedUserRef = db.collection("deletedUsers").doc(actorUid);
   let removedStoragePaths: string[] = [];
 
   await db.runTransaction(async (tx) => {
-    const [organizerSnap, legacyClubSnap, deletedUserSnap] = await Promise.all([
+    const [organizerSnap, deletedUserSnap] = await Promise.all([
       tx.get(organizerRef),
-      tx.get(legacyClubRef),
       tx.get(deletedUserRef),
     ]);
     const organizer = assertCanUpdateOrganizer(
@@ -124,9 +122,6 @@ export async function updateOrganizerHandler(
       owner: {kind: "organizer", id: data.organizerId},
     });
     tx.update(organizerRef, patch);
-    if (legacyClubSnap.exists) {
-      tx.update(legacyClubRef, legacyClubPatch(patch));
-    }
   });
   await cleanupRemovedOrganizerMedia(
     deps,
@@ -149,13 +144,11 @@ export async function archiveOrganizerHandler(
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, actorUid, "archiveOrganizer");
   const organizerRef = db.collection("organizers").doc(data.organizerId);
-  const legacyClubRef = db.collection("clubs").doc(data.organizerId);
   const deletedUserRef = db.collection("deletedUsers").doc(actorUid);
 
   await db.runTransaction(async (tx) => {
-    const [organizerSnap, legacyClubSnap, deletedUserSnap] = await Promise.all([
+    const [organizerSnap, deletedUserSnap] = await Promise.all([
       tx.get(organizerRef),
-      tx.get(legacyClubRef),
       tx.get(deletedUserRef),
     ]);
     assertCanMutateOrganizer(organizerSnap, deletedUserSnap, actorUid);
@@ -169,7 +162,6 @@ export async function archiveOrganizerHandler(
       archiveReason: data.reason ?? null,
     };
     tx.update(organizerRef, patch);
-    if (legacyClubSnap.exists) tx.update(legacyClubRef, patch);
   });
   return {archived: true};
 }
@@ -187,39 +179,27 @@ export async function deleteOrganizerHandler(
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, actorUid, "deleteOrganizer");
   const organizerRef = db.collection("organizers").doc(data.organizerId);
-  const legacyClubRef = db.collection("clubs").doc(data.organizerId);
   const deletedUserRef = db.collection("deletedUsers").doc(actorUid);
   let removedStoragePaths: string[] = [];
 
   await db.runTransaction(async (tx) => {
     const [
       organizerSnap,
-      legacyClubSnap,
       deletedUserSnap,
       organizerEventsSnap,
-      legacyEventsSnap,
       organizerReviewsSnap,
-      legacyReviewsSnap,
       organizerPaymentsSnap,
-      legacyPaymentsSnap,
       teamSnap,
       followsSnap,
     ] = await Promise.all([
       tx.get(organizerRef),
-      tx.get(legacyClubRef),
       tx.get(deletedUserRef),
       tx.get(db.collection("events")
         .where("organizerId", "==", data.organizerId).limit(1)),
-      tx.get(db.collection("events")
-        .where("clubId", "==", data.organizerId).limit(1)),
       tx.get(db.collection("reviews")
         .where("organizerId", "==", data.organizerId).limit(1)),
-      tx.get(db.collection("reviews")
-        .where("clubId", "==", data.organizerId).limit(1)),
       tx.get(db.collection("payments")
         .where("organizerId", "==", data.organizerId).limit(1)),
-      tx.get(db.collection("payments")
-        .where("clubId", "==", data.organizerId).limit(1)),
       tx.get(db.collection("organizerTeamMemberships")
         .where("organizerId", "==", data.organizerId).limit(2)),
       tx.get(db.collection("organizerFollows")
@@ -236,9 +216,8 @@ export async function deleteOrganizerHandler(
       membership.uid === actorUid && membership.role === "owner"
     );
     if (
-      !organizerEventsSnap.empty || !legacyEventsSnap.empty ||
-      !organizerReviewsSnap.empty || !legacyReviewsSnap.empty ||
-      !organizerPaymentsSnap.empty || !legacyPaymentsSnap.empty ||
+      !organizerEventsSnap.empty || !organizerReviewsSnap.empty ||
+      !organizerPaymentsSnap.empty ||
       !followsSnap.empty || !onlyOwner
     ) {
       throw new HttpsError(
@@ -248,7 +227,6 @@ export async function deleteOrganizerHandler(
       );
     }
     teamSnap.docs.forEach((doc) => tx.delete(doc.ref));
-    if (legacyClubSnap.exists) tx.delete(legacyClubRef);
     tx.delete(organizerRef);
   });
   await cleanupRemovedOrganizerMedia(
@@ -467,17 +445,6 @@ export function organizerPublicationPatch(
     "publicPage.indexStatus": "noindex",
     "publicPage.robots": "noindex, follow",
   };
-}
-
-function legacyClubPatch(
-  organizerPatch: Record<string, unknown>
-): Record<string, unknown> {
-  const patch = {...organizerPatch};
-  if ("organizerPhotos" in patch) {
-    patch.clubPhotos = patch.organizerPhotos;
-    delete patch.organizerPhotos;
-  }
-  return patch;
 }
 
 function primaryPhotoUrl(photos: unknown[] | undefined): string | null {

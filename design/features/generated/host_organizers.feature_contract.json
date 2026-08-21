@@ -5097,11 +5097,6 @@
               "role": "alias"
             },
             {
-              "id": "hostEditClubScreen",
-              "path": "/host/organizers/:clubId/edit",
-              "role": "alias"
-            },
-            {
               "id": "hostClubEventDefaultsScreen",
               "path": "/host/organizers/event-defaults",
               "role": "host"

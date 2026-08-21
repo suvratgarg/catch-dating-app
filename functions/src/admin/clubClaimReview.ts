@@ -234,12 +234,12 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-export const adminListClubClaimRequests = onCall(
+export const adminListOrganizerClaimRequests = onCall(
   appCheckCallableOptions,
   (request) => adminListClubClaimRequestsHandler(request)
 );
 
-export const adminGetClubClaimRequestDetails = onCall(
+export const adminGetOrganizerClaimRequestDetails = onCall(
   appCheckCallableOptions,
   (request) => adminGetClubClaimRequestDetailsHandler(request)
 );

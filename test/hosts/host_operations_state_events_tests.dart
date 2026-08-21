@@ -425,10 +425,10 @@ void _registerHostOperationsStateEventsTests() {
     expect(find.textContaining('Recommended'), findsOneWidget);
 
     await tester.tap(razorpay);
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     expect(find.text('Powered by Razorpay Route'), findsOneWidget);
     await tester.tap(find.text('Set up Razorpay'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(find.text('Legal business name'), findsOneWidget);
     expect(find.text('Business type'), findsOneWidget);

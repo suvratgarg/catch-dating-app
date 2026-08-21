@@ -6,7 +6,7 @@ import {appCheckCallableOptions} from "../shared/callableOptions";
 import {BigQueryClient, defaultBigQueryClient} from "../shared/bigQuery";
 import {checkIpRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
-import {ClubDocument} from "../shared/generated/firestoreAdminTypes";
+import {OrganizerDocument} from "../shared/generated/firestoreAdminTypes";
 import {
   RecordOrganizerAnalyticsEventCallablePayload,
 } from "../shared/generated/recordOrganizerAnalyticsEventCallablePayload";
@@ -112,19 +112,19 @@ async function assertOrganizerScope(
   payload: RecordOrganizerAnalyticsEventCallablePayload
 ): Promise<void> {
   const organizerId = payload.organizerId;
-  const clubRef = db.collection("organizers").doc(organizerId);
+  const organizerRef = db.collection("organizers").doc(organizerId);
   const eventRef = payload.eventId ?
     db.collection("events").doc(payload.eventId) :
     null;
-  const [clubSnapshot, eventSnapshot] = await Promise.all([
-    clubRef.get(),
+  const [organizerSnapshot, eventSnapshot] = await Promise.all([
+    organizerRef.get(),
     eventRef ? eventRef.get() : Promise.resolve(null),
   ]);
-  if (!clubSnapshot.exists) {
+  if (!organizerSnapshot.exists) {
     throw new HttpsError("not-found", "Organizer not found.");
   }
   assertPublicOrganizerPageEligible(
-    clubSnapshot.data() as ClubDocument,
+    organizerSnapshot.data() as OrganizerDocument,
     {
       allowDirectorySearchPath: payload.eventName === "searchAppearance",
       pagePath: payload.pagePath,

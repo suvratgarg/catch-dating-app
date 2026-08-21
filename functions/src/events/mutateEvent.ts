@@ -10,7 +10,6 @@ import {
 import {requireAuth} from "../shared/auth";
 import {
   PaymentDocument,
-  ClubDocument,
   OrganizerDocument,
   EventDocument,
   EventConstraints,
@@ -52,8 +51,8 @@ import {
   releaseUserEventScheduleInTransaction,
   replaceClubScheduleInTransaction,
 } from "./scheduleConflicts";
-import {refreshClubNextEvent as defaultRefreshClubNextEvent} from
-  "../clubs/syncClubNextEvent";
+import {refreshOrganizerNextEvent as defaultRefreshOrganizerNextEvent} from
+  "../organizers/syncOrganizerNextEvent";
 import {
   normalizeCancelEventPayload,
   normalizeCreateEventPayload,
@@ -67,7 +66,6 @@ import {
   normalizePolicy,
 } from "./eventPolicy";
 import {eventDiscoveryProjection} from "./eventDiscoveryProjection";
-import {isClubHost} from "../shared/clubHosts";
 import {isOrganizerManager} from "../shared/organizerHosts";
 import {
   normalizeUploadedPhotosForFirestore,
@@ -107,8 +105,8 @@ interface EventMutationDeps {
     uid: string,
     action: string
   ) => Promise<void>;
-  refreshClubNextEvent?: (
-    clubId: string,
+  refreshOrganizerNextEvent?: (
+    organizerId: string,
     deps?: {
       firestore: () => FirebaseFirestore.Firestore;
       nowTimestamp: () => FirebaseFirestore.Timestamp;
@@ -180,7 +178,7 @@ const defaultDeps: EventMutationDeps = {
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
   sendNotification: sendFcmNotification,
   checkRateLimit: defaultCheckRateLimit,
-  refreshClubNextEvent: defaultRefreshClubNextEvent,
+  refreshOrganizerNextEvent: defaultRefreshOrganizerNextEvent,
   refundPayment: async (paymentId, amount) => {
     await createRazorpayClient().payments.refund(paymentId, {amount});
   },
@@ -225,7 +223,6 @@ export async function createEventHandler(
     .collection("eventSuccessPlans")
     .doc(eventRef.id);
   const organizerRef = db.collection("organizers").doc(organizerId);
-  const legacyOrganizerRef = db.collection("clubs").doc(organizerId);
   const deletedUserRef = db.collection("deletedUsers").doc(hostUserId);
   const selectedLayoutId = data.eventSuccessDefaults?.enabled === true ?
     data.eventSuccessDefaults.layoutId ?? null : null;
@@ -236,19 +233,17 @@ export async function createEventHandler(
 
   let createdEvent: EventDocument | null = null;
   let organizerName = "Your organizer";
-  let useLegacyFollowerProjection = false;
+  const useLegacyFollowerProjection = false;
 
   await db.runTransaction(async (tx) => {
     const [
       eventSnap,
       organizerSnap,
-      legacyOrganizerSnap,
       deletedUserSnap,
       selectedLayoutSnap,
     ] = await Promise.all([
       tx.get(eventRef),
       tx.get(organizerRef),
-      tx.get(legacyOrganizerRef),
       tx.get(deletedUserRef),
       selectedLayoutRef ? tx.get(selectedLayoutRef) : Promise.resolve(null),
     ]);
@@ -256,15 +251,10 @@ export async function createEventHandler(
     if (eventSnap.exists) {
       throw new HttpsError("already-exists", "Event already exists.");
     }
-    const authoritativeOrganizerSnap = organizerSnap.exists ?
-      organizerSnap :
-      legacyOrganizerSnap;
-    useLegacyFollowerProjection = !organizerSnap.exists;
     const organizer = assertCanMutateOrganizerEntity(
-      authoritativeOrganizerSnap,
+      organizerSnap,
       deletedUserSnap,
-      hostUserId,
-      organizerSnap.exists
+      hostUserId
     );
     if (selectedLayoutId) {
       if (!selectedLayoutSnap?.exists) {
@@ -364,7 +354,7 @@ export async function createEventHandler(
   });
 
   if (createdEvent) {
-    await deps.refreshClubNextEvent?.(organizerId, {
+    await deps.refreshOrganizerNextEvent?.(organizerId, {
       firestore: deps.firestore,
       nowTimestamp: () => admin.firestore.Timestamp.now(),
     });
@@ -436,18 +426,15 @@ export async function updateEventHandler(
         "Cancelled events cannot be edited."
       );
     }
-    const organizerId = event.organizerId ?? event.clubId;
+    const organizerId = requireOrganizerId(event);
     const organizerRef = db.collection("organizers").doc(organizerId);
-    const legacyOrganizerRef = db.collection("clubs").doc(organizerId);
     const [
       organizerSnap,
-      legacyOrganizerSnap,
       activeParticipations,
       privateAccessSnap,
     ] =
       await Promise.all([
         tx.get(organizerRef),
-        tx.get(legacyOrganizerRef),
         eventParticipationsByStatusInTransaction(tx, db, data.eventId, [
           "signedUp",
           "waitlisted",
@@ -455,13 +442,10 @@ export async function updateEventHandler(
         ]),
         tx.get(privateAccessRef),
       ]);
-    const authoritativeOrganizerSnap = organizerSnap.exists ?
-      organizerSnap : legacyOrganizerSnap;
     const organizer = assertCanMutateOrganizerEntity(
-      authoritativeOrganizerSnap,
+      organizerSnap,
       deletedUserSnap,
-      hostUserId,
-      organizerSnap.exists
+      hostUserId
     );
     assertValidMergedRunUpdate(event, data.fields);
     assertValidEventConstraints(data.fields.constraints);
@@ -533,7 +517,7 @@ export async function updateEventHandler(
     });
   }
   if (affectedClubId) {
-    await deps.refreshClubNextEvent?.(affectedClubId, {
+    await deps.refreshOrganizerNextEvent?.(affectedClubId, {
       firestore: deps.firestore,
       nowTimestamp: () => admin.firestore.Timestamp.now(),
     });
@@ -588,25 +572,20 @@ export async function cancelEventHandler(
       "EventDocument"
 
     );
-    const organizerId = event.organizerId ?? event.clubId;
+    const organizerId = requireOrganizerId(event);
     const organizerRef = db.collection("organizers").doc(organizerId);
-    const legacyOrganizerRef = db.collection("clubs").doc(organizerId);
-    const [organizerSnap, legacyOrganizerSnap, participantEdges] =
+    const [organizerSnap, participantEdges] =
       await Promise.all([
         tx.get(organizerRef),
-        tx.get(legacyOrganizerRef),
         eventParticipationsByStatusInTransaction(tx, db, data.eventId, [
           "signedUp",
           "waitlisted",
         ]),
       ]);
-    const authoritativeOrganizerSnap = organizerSnap.exists ?
-      organizerSnap : legacyOrganizerSnap;
     const organizer = assertCanMutateOrganizerEntity(
-      authoritativeOrganizerSnap,
+      organizerSnap,
       deletedUserSnap,
-      hostUserId,
-      organizerSnap.exists
+      hostUserId
     );
 
     if (event.status === "cancelled") {
@@ -664,7 +643,7 @@ export async function cancelEventHandler(
     });
   }
   if (affectedClubId) {
-    await deps.refreshClubNextEvent?.(affectedClubId, {
+    await deps.refreshOrganizerNextEvent?.(affectedClubId, {
       firestore: deps.firestore,
       nowTimestamp: () => admin.firestore.Timestamp.now(),
     });
@@ -752,19 +731,16 @@ export async function deleteEventHandler(
       "EventDocument"
 
     );
-    const organizerId = event.organizerId ?? event.clubId;
+    const organizerId = requireOrganizerId(event);
     const organizerRef = db.collection("organizers").doc(organizerId);
-    const legacyOrganizerRef = db.collection("clubs").doc(organizerId);
     const [
       organizerSnap,
-      legacyOrganizerSnap,
       deletedUserSnap,
       participationSnap,
       paymentSnap,
       reviewSnap,
     ] = await Promise.all([
       tx.get(organizerRef),
-      tx.get(legacyOrganizerRef),
       tx.get(deletedUserRef),
       tx.get(db.collection("eventParticipations")
         .where("eventId", "==", data.eventId)
@@ -776,14 +752,10 @@ export async function deleteEventHandler(
         .where("eventId", "==", data.eventId)
         .limit(1)),
     ]);
-    const authoritativeOrganizerSnap = organizerSnap.exists ?
-      organizerSnap : legacyOrganizerSnap;
-
     assertCanMutateOrganizerEntity(
-      authoritativeOrganizerSnap,
+      organizerSnap,
       deletedUserSnap,
-      hostUserId,
-      organizerSnap.exists
+      hostUserId
     );
     if (
       !participationSnap.empty ||
@@ -814,7 +786,7 @@ export async function deleteEventHandler(
   await cleanupRemovedEventMedia(deps, data.eventId, removedStoragePaths);
 
   if (deletedClubId) {
-    await deps.refreshClubNextEvent?.(deletedClubId, {
+    await deps.refreshOrganizerNextEvent?.(deletedClubId, {
       firestore: deps.firestore,
       nowTimestamp: () => admin.firestore.Timestamp.now(),
     });
@@ -1774,20 +1746,17 @@ function assertValidEventConstraints(constraints?: ParsedEventConstraints) {
 }
 
 /**
- * Authorizes event creation against the canonical organizer collection while
- * retaining the released-client club path during the dual-read window.
+ * Authorizes event creation against the canonical organizer collection.
  * @param {FirebaseFirestore.DocumentSnapshot} organizerSnap Entity snapshot.
  * @param {FirebaseFirestore.DocumentSnapshot} deletedUserSnap Tombstone snap.
  * @param {string} hostUserId Authenticated caller UID.
- * @param {boolean} canonical Whether the request selected organizer authority.
- * @return {OrganizerDocument | ClubDocument} Authorized entity document.
+ * @return {OrganizerDocument} Authorized entity document.
  */
 function assertCanMutateOrganizerEntity(
   organizerSnap: FirebaseFirestore.DocumentSnapshot,
   deletedUserSnap: FirebaseFirestore.DocumentSnapshot,
-  hostUserId: string,
-  canonical: boolean
-): OrganizerDocument | ClubDocument {
+  hostUserId: string
+): OrganizerDocument {
   if (deletedUserSnap.exists) {
     throw new HttpsError(
       "failed-precondition",
@@ -1797,27 +1766,24 @@ function assertCanMutateOrganizerEntity(
   if (!organizerSnap.exists) {
     throw new HttpsError("not-found", "Organizer not found.");
   }
-  if (canonical) {
-    const organizer = requireDoc<OrganizerDocument>(
-      organizerSnap,
-      "OrganizerDocument"
-    );
-    if (!isOrganizerManager(organizer, hostUserId)) {
-      throw new HttpsError(
-        "permission-denied",
-        "Only organizer owners and managers can manage events."
-      );
-    }
-    return organizer;
-  }
-  const club = requireDoc<ClubDocument>(organizerSnap, "ClubDocument");
-  if (!isClubHost(club, hostUserId)) {
+  const organizer = requireDoc<OrganizerDocument>(
+    organizerSnap,
+    "OrganizerDocument"
+  );
+  if (!isOrganizerManager(organizer, hostUserId)) {
     throw new HttpsError(
       "permission-denied",
       "Only organizer owners and managers can manage events."
     );
   }
-  return club;
+  return organizer;
+}
+
+function requireOrganizerId(event: EventDocument): string {
+  if (!event.organizerId) {
+    throw new HttpsError("failed-precondition", "Event has no organizer.");
+  }
+  return event.organizerId;
 }
 
 /**
@@ -1941,7 +1907,6 @@ async function notifyClubMembersForNewEvent(params: {
         createdAt: params.deps.serverTimestamp?.() ??
           admin.firestore.FieldValue.serverTimestamp(),
         eventId: params.eventId,
-        clubId: params.clubId,
         organizerId: params.organizerId,
       });
       if (
@@ -1955,7 +1920,6 @@ async function notifyClubMembersForNewEvent(params: {
           body: copy.body,
           type: "organizerUpdate",
           eventId: params.eventId,
-          clubId: params.clubId,
           organizerId: params.organizerId,
         });
       }
@@ -2025,8 +1989,7 @@ async function notifyEventParticipants(params: {
         createdAt: params.deps.serverTimestamp?.() ??
           admin.firestore.FieldValue.serverTimestamp(),
         eventId: params.eventId,
-        clubId: params.event.clubId,
-        organizerId: params.event.organizerId ?? params.event.clubId,
+        organizerId: params.event.organizerId,
       });
       if (user.fcmToken && allowsPushPreference(user, "eventStatusUpdates")) {
         await params.deps.sendNotification?.({
@@ -2035,8 +1998,7 @@ async function notifyEventParticipants(params: {
           body: copy.body,
           type: params.type,
           eventId: params.eventId,
-          clubId: params.event.clubId,
-          organizerId: params.event.organizerId ?? params.event.clubId,
+          organizerId: params.event.organizerId,
         });
       }
     }));

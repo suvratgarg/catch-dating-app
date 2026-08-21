@@ -387,7 +387,6 @@ function validReviewDoc() {
     seedPrefix: "demo_test",
     scenario: "schema-test",
     organizerId: "club-1",
-    clubId: "club-1",
     eventId: "event-1",
     reviewerUserId: "runner-1",
     reviewerName: "Runner One",

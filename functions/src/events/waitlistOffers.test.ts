@@ -187,6 +187,12 @@ test("createEventWaitlistOffersHandler creates balanced capacity offers",
   async () => {
     const h = harness({
       "events/event-1": event({capacityLimit: 2, bookedCount: 1}),
+      "organizers/organizer-1": {
+        hostUserId: "host-1",
+        hostUserIds: ["host-1"],
+        ownerUserId: "host-1",
+        hostProfiles: [],
+      },
       "users/runner-1": user(),
       "users/runner-2": user({
         gender: "woman",
@@ -408,7 +414,7 @@ function request(data: FakeData, uid = "host-1"): CallableRequest<unknown> {
 
 function event(overrides: FakeData = {}): FakeData {
   return {
-    clubId: "club-1",
+    organizerId: "organizer-1",
     status: "active",
     startTime: timestamp(60 * 60 * 1000),
     endTime: timestamp(2 * 60 * 60 * 1000),

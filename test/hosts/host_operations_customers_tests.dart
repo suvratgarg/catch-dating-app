@@ -718,7 +718,7 @@ void _registerHostOperationsCustomersTests() {
       'NEW@Example.COM',
     );
     await tester.tap(find.byKey(const ValueKey('catch-field-done')));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(savedDisplayName, 'Ananya Kapoor');
     expect(savedPhone, '+919999999999');

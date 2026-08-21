@@ -634,17 +634,11 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
       name: Routes.hostHomeScreen.name,
       redirect: (context, state) => hostHomeLegacyRedirect(),
     ),
-    ..._legacyHostClubRoutes(),
     GoRoute(
       path: Routes.hostOperatorEventScreen.path,
       name: Routes.hostOperatorEventScreen.name,
       builder: (context, state) =>
           HostEventOperatorScreen(eventId: state.pathParameters['eventId']!),
-    ),
-    GoRoute(
-      path: '/host/organizer/:clubId/insights',
-      redirect: (context, state) =>
-          hostInsightsLegacyRedirect(state.pathParameters['clubId']!),
     ),
     GoRoute(
       path: Routes.hostOrganizerMessagingScreen.path,
@@ -682,7 +676,7 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
     GoRoute(
       path: Routes.hostClubsScreen.path,
       name: Routes.hostClubsScreen.name,
-      redirect: (context, state) => hostClubsLegacyRedirect(state.uri),
+      redirect: (context, state) => hostOrganizerIndexRedirect(state.uri),
       routes: [
         GoRoute(
           path: 'create-organizer',
@@ -695,12 +689,6 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
           parentNavigatorKey: rootNavigatorKey,
           pageBuilder: _clubDetailPage,
           routes: [
-            GoRoute(
-              path: 'edit',
-              name: Routes.hostEditClubScreen.name,
-              redirect: (context, state) =>
-                  hostEditClubLegacyRedirect(state.pathParameters['clubId']!),
-            ),
             GoRoute(
               path: 'create-event',
               name: Routes.hostCreateEventScreen.name,
@@ -822,69 +810,17 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
   ];
 }
 
-List<RouteBase> _legacyHostClubRoutes() => [
-  GoRoute(
-    path: '/host/clubs',
-    redirect: (context, state) => _legacyHostClubRedirect(state.uri),
-    routes: [
-      GoRoute(
-        path: ':clubId',
-        redirect: (context, state) => _legacyHostClubRedirect(state.uri),
-        routes: [
-          for (final path in const [
-            'edit',
-            'create-event',
-            'events/:eventId',
-            'events/:eventId/manage',
-            'events/:eventId/edit',
-            'events/:eventId/attendance',
-            'events/:eventId/success',
-          ])
-            GoRoute(
-              path: path,
-              redirect: (context, state) => _legacyHostClubRedirect(state.uri),
-            ),
-        ],
-      ),
-    ],
-  ),
-];
-
-String _legacyHostClubRedirect(Uri uri) {
-  if (uri.path == '/host/clubs') {
-    return uri.replace(path: Routes.hostOrganizerScreen.path).toString();
-  }
-  var path = uri.path.replaceFirst('/host/clubs', '/host/organizers');
-  path = path.replaceFirst('/create-club', '/create-organizer');
-  return uri.replace(path: path).toString();
-}
-
 @visibleForTesting
 String hostHomeLegacyRedirect() => Routes.hostEventsScreen.path;
 
 @visibleForTesting
-String? hostClubsLegacyRedirect(Uri uri) {
-  if (uri.path == '/host/clubs' || uri.path.startsWith('/host/clubs/')) {
-    return _legacyHostClubRedirect(uri);
-  }
+String? hostOrganizerIndexRedirect(Uri uri) {
   if (uri.path != Routes.hostClubsScreen.path) return null;
   return Uri(
     path: Routes.hostOrganizerScreen.path,
     queryParameters: uri.queryParameters.isEmpty ? null : uri.queryParameters,
   ).toString();
 }
-
-@visibleForTesting
-String hostInsightsLegacyRedirect(String clubId) => Uri(
-  path: Routes.hostClubsScreen.path,
-  queryParameters: {'clubId': clubId, 'tab': HostClubTab.insights.name},
-).toString();
-
-@visibleForTesting
-String hostEditClubLegacyRedirect(String clubId) => Uri(
-  path: Routes.hostOrganizerScreen.path,
-  queryParameters: {'clubId': clubId, 'tab': HostClubTab.edit.name},
-).toString();
 
 StatefulShellRoute _hostShellRoute(
   AppAnalytics analytics,

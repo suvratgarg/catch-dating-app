@@ -84,7 +84,7 @@ void main() {
             functions.httpsCallable('createEventReview') as TestHttpsCallable;
         expect(callable.calls, [
           {
-            'clubId': 'club-1',
+            'organizerId': 'club-1',
             'eventId': 'event-1',
             'rating': 5,
             'comment': 'Great event.',
@@ -124,10 +124,7 @@ void main() {
       final callable =
           functions.httpsCallable('setReviewResponse') as TestHttpsCallable;
       expect(callable.calls, [
-        {
-          'reviewId': 'event-1~runner-1',
-          'message': 'Thanks for joining us.',
-        },
+        {'reviewId': 'event-1~runner-1', 'message': 'Thanks for joining us.'},
       ]);
     });
 
@@ -135,7 +132,7 @@ void main() {
       'watchUserReviewForEvent emits the deterministic review doc',
       () async {
         await firestore.collection('reviews').doc('event-1~runner-1').set({
-          'clubId': 'club-1',
+          'organizerId': 'club-1',
           'eventId': 'event-1',
           'reviewerUserId': 'runner-1',
           'reviewerName': 'Runner One',
@@ -188,7 +185,7 @@ Review _review({
 }) {
   return Review(
     id: '',
-    clubId: clubId,
+    organizerId: clubId,
     eventId: eventId,
     reviewerUserId: reviewerUserId,
     reviewerName: 'Runner One',

@@ -241,14 +241,15 @@ function baseDocs(
   const now = Date.parse("2026-07-10T12:00:00.000Z");
   return {
     "events/event-1": {
-      clubId: "club-1",
+      organizerId: "club-1",
       status: "active",
       endTime: new FakeTimestamp(now + 3 * 60 * 60 * 1000),
     },
-    "clubs/club-1": {
+    "organizers/club-1": {
       name: "Tuesday Trivia",
       hostUserId: "host-1",
       hostUserIds: ["host-1", "cohost-1"],
+      hostProfiles: [],
     },
     "eventParticipations/event-1_user-1": {
       eventId: "event-1",
@@ -552,7 +553,7 @@ test("authorization, moderation, and lifecycle failures write nothing",
 
     const past = harness(baseDocs({
       "events/event-1": {
-        clubId: "club-1",
+        organizerId: "club-1",
         status: "active",
         endTime: new FakeTimestamp(
           Date.parse("2026-07-10T11:59:00.000Z")

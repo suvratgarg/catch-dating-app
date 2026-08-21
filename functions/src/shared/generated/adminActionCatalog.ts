@@ -224,7 +224,7 @@ export const ADMIN_ACTION_CATALOG = {
     ]
   },
   "organizer-claims.list": {
-    "callable": "adminListClubClaimRequests",
+    "callable": "adminListOrganizerClaimRequests",
     "controlPlane": false,
     "kind": "read",
     "roles": [
@@ -234,7 +234,7 @@ export const ADMIN_ACTION_CATALOG = {
     ]
   },
   "organizer-claims.get": {
-    "callable": "adminGetClubClaimRequestDetails",
+    "callable": "adminGetOrganizerClaimRequestDetails",
     "controlPlane": false,
     "kind": "read",
     "roles": [
@@ -244,7 +244,7 @@ export const ADMIN_ACTION_CATALOG = {
     ]
   },
   "organizer-claims.decide": {
-    "callable": "adminDecideClubClaim",
+    "callable": "adminDecideOrganizerClaim",
     "controlPlane": false,
     "kind": "mutation",
     "roles": [
@@ -284,7 +284,7 @@ export const ADMIN_ACTION_CATALOG = {
     ]
   },
   "organizers.set-index-status": {
-    "callable": "adminSetClubIndexStatus",
+    "callable": "adminSetOrganizerIndexStatus",
     "controlPlane": false,
     "kind": "mutation",
     "roles": [

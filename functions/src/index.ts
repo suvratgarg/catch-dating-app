@@ -101,38 +101,14 @@ export {
   placeDetails,
   placesAutocomplete,
 } from "./places/placeAutocomplete";
-export {createClub} from "./clubs/createClub";
 export {createOrganizer} from "./organizers/createOrganizer";
-export {createClubPost} from "./clubs/clubPosts";
 export {
-  startClubHostConversation,
   startOrganizerContactConversation,
   startOrganizerConversation,
-} from "./clubs/clubHostConversations";
-export {
-  addClubHost,
-  removeClubHost,
-  transferClubOwnership,
-} from "./clubs/manageClubHosts";
-export {
-  adminDecideClubClaim,
-  requestClubClaim,
-} from "./clubs/clubClaims";
-export {
-  syncClubMemberStats,
-  syncOrganizerFollowerStats,
-} from "./clubs/syncClubMemberStats";
-export {syncClubNextEvent} from "./clubs/syncClubNextEvent";
-export {
-  joinClub,
-  leaveClub,
-  setClubNotificationPreference,
-} from "./clubs/membership";
-export {
-  archiveClub,
-  deleteClub,
-  updateClub,
-} from "./clubs/mutateClub";
+} from "./organizers/organizerConversations";
+export {syncOrganizerFollowerStats} from
+  "./organizers/syncOrganizerFollowerStats";
+export {syncOrganizerNextEvent} from "./organizers/syncOrganizerNextEvent";
 export {
   archiveOrganizer,
   deleteOrganizer,
@@ -324,13 +300,11 @@ export {
   completeEventSuccessFirstHelloMission,
   startEventSuccessFirstHelloMission,
 } from "./eventSuccess/firstHelloCheckIn";
-export {syncClubReviewStats} from "./reviews/syncClubReviewStats";
+export {syncOrganizerReviewStats} from "./reviews/syncOrganizerReviewStats";
 export {
   createEventReview,
-  createPublicClubReview,
   createPublicOrganizerReview,
   deleteEventReview,
-  listPublicClubReviews,
   listPublicOrganizerReviews,
   setReviewResponse,
   updateEventReview,
@@ -359,9 +333,6 @@ export {
   generateProfilePhotoThumbnail,
 } from "./profiles/generateProfilePhotoThumbnail";
 export {
-  generateClubLogoThumbnail,
-} from "./clubs/generateClubLogoThumbnail";
-export {
   generateOrganizerLogoThumbnail,
 } from "./organizers/generateOrganizerLogoThumbnail";
 export {
@@ -380,7 +351,6 @@ export {
 } from "./demoOps/suvbot";
 export {exploreSearch} from "./search/exploreSearch";
 export {
-  syncAlgoliaClubIndex,
   syncAlgoliaEventIndex,
   syncAlgoliaOrganizerIndex,
 } from "./search/algoliaExploreIndex";
@@ -400,22 +370,19 @@ export {
   adminGetAccessApplicationDetails,
 } from "./admin/accessApplications";
 export {
-  adminGetClubClaimRequestDetails,
-  adminListClubClaimRequests,
+  adminGetOrganizerClaimRequestDetails,
+  adminListOrganizerClaimRequests,
 } from "./admin/clubClaimReview";
 export {
-  adminSetClubIndexStatus,
+  adminSetOrganizerIndexStatus,
 } from "./admin/clubIndexing";
 export {
   adminListCrossPathsShowcaseCandidates,
   adminSetCrossPathsShowcaseEligibility,
 } from "./admin/crossPathsShowcaseEligibility";
 export {
-  adminGetClubDetails,
   adminGetOrganizerDetails,
-  adminListClubDetails,
   adminListOrganizerDetails,
-  adminUpdateClubDetails,
   adminUpdateOrganizerDetails,
 } from "./admin/clubDetails";
 export {

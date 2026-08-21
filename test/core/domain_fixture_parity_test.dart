@@ -127,14 +127,6 @@ void main() {
       expect(club.organizerType, OrganizerType.club);
     });
 
-    test('Club maps legacy entityKind into canonical organizerType', () {
-      final json = _loadFixture('club_doc.json', injectIdField: 'id')
-        ..remove('organizerType')
-        ..['entityKind'] = 'eventOrganizer';
-      final club = Club.fromJson(json);
-      expect(club.organizerType, OrganizerType.eventProducer);
-    });
-
     test('ClubHostProfile decodes event_common fixture shape directly', () {
       final host = ClubHostProfile.fromJson(
         _fixtureListItemMap('club_doc.json', 'hostProfiles', 0),

@@ -6,7 +6,7 @@ CreateEventReviewCallableRequest createEventReviewCallableRequestFromReview(
   Review review, {
   required String eventId,
 }) => CreateEventReviewCallableRequest(
-  clubId: review.clubId,
+  organizerId: review.organizerId,
   eventId: eventId,
   rating: review.rating,
   comment: review.comment,

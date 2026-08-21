@@ -260,7 +260,11 @@ test("decideEventJoinRequestHandler rejects non-hosts", async () => {
 function harness(overrides: Record<string, FakeData | undefined> = {}) {
   const firestore = new FakeFirestore({
     "events/event-1": event(),
-    "clubs/club-1": {hostUserId: "host-1"},
+    "organizers/club-1": {
+      hostUserId: "host-1",
+      hostUserIds: ["host-1"],
+      hostProfiles: [],
+    },
     "users/runner-2": {
       gender: "man",
       interestedInGenders: ["woman"],
@@ -313,7 +317,7 @@ function request(
 
 function event(overrides: FakeData = {}): FakeData {
   return {
-    clubId: "club-1",
+    organizerId: "club-1",
     status: "active",
     startTime: timestamp("2026-05-02T06:00:00.000Z"),
     endTime: timestamp("2026-05-02T07:00:00.000Z"),
@@ -336,7 +340,7 @@ function event(overrides: FakeData = {}): FakeData {
 function participation(uid: string): FakeData {
   return {
     eventId: "event-1",
-    clubId: "club-1",
+    organizerId: "club-1",
     uid,
     status: "waitlisted",
     cohortAtSignup: "menInterestedInWomen",

@@ -23,7 +23,10 @@ describe("generated admin callable validators", () => {
         "adminCreateMarketingContentDraft",
         "adminRecordMarketingReviewDecision",
         "adminCreateOrganizerDraftFromCandidate",
+        "adminGetOrganizerClaimRequestDetails",
         "adminListCrossPathsShowcaseCandidates",
+        "adminListOrganizerClaimRequests",
+        "adminSetOrganizerIndexStatus",
         "adminSetCrossPathsShowcaseEligibility",
       ])
     );
@@ -49,7 +52,7 @@ describe("generated admin callable validators", () => {
       rangePreset: "30d",
       granularity: "week",
     }],
-    ["organizer claim", "adminDecideClubClaim", {
+    ["organizer claim", "adminDecideOrganizerClaim", {
       requestId: "claim-1",
       decision: "approve",
     }],
@@ -60,7 +63,7 @@ describe("generated admin callable validators", () => {
 
   it.each([
     ["analytics", "adminGetHostAnalytics", {unexpected: true}],
-    ["organizer claim", "adminDecideClubClaim", {decision: "approve"}],
+    ["organizer claim", "adminDecideOrganizerClaim", {decision: "approve"}],
     ["event publishing", "adminGetEventDetails", {}],
   ])("rejects a known-bad %s request", (_family, callable, payload) => {
     expect(() => validateAdminCallableRequest(callable, payload)).toThrow(

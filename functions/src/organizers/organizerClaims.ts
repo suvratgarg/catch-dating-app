@@ -23,9 +23,7 @@ import {
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {
-  activeClubMembershipPatch,
   activeOrganizerTeamMembershipPatch,
-  clubMembershipId,
   organizerRelationshipId,
 } from "../shared/relationshipDocuments";
 import {publicAvatarUrl, publicDisplayName} from
@@ -76,15 +74,13 @@ export async function requestOrganizerClaimHandler(
   await deps.checkRateLimit?.(db, requesterUid, "requestOrganizerClaim");
   const requestId = organizerClaimRequestId(data.organizerId, requesterUid);
   const organizerRef = db.collection("organizers").doc(data.organizerId);
-  const legacyClubRef = db.collection("clubs").doc(data.organizerId);
   const requestRef = db.collection("organizerClaimRequests").doc(requestId);
   const deletedUserRef = db.collection("deletedUsers").doc(requesterUid);
 
   await db.runTransaction(async (tx) => {
-    const [organizerSnap, legacyClubSnap, requestSnap, deletedUserSnap] =
+    const [organizerSnap, requestSnap, deletedUserSnap] =
       await Promise.all([
         tx.get(organizerRef),
-        tx.get(legacyClubRef),
         tx.get(requestRef),
         tx.get(deletedUserRef),
       ]);
@@ -156,9 +152,6 @@ export async function requestOrganizerClaimHandler(
       claimState: claim.state,
     });
     tx.update(organizerRef, {claim, supplyCapabilities});
-    if (legacyClubSnap.exists) {
-      tx.update(legacyClubRef, {claim, supplyCapabilities});
-    }
   });
   return {requestId, status: "pending"};
 }
@@ -202,12 +195,7 @@ export async function adminDecideOrganizerClaimHandler(
     }
     const organizerRef = db.collection("organizers")
       .doc(claimRequest.organizerId);
-    const legacyClubRef = db.collection("clubs")
-      .doc(claimRequest.organizerId);
-    const [organizerSnap, legacyClubSnap] = await Promise.all([
-      tx.get(organizerRef),
-      tx.get(legacyClubRef),
-    ]);
+    const organizerSnap = await tx.get(organizerRef);
     const organizer = organizerSnap.exists ?
       requireDoc<OrganizerDocument>(organizerSnap, "OrganizerDocument") : null;
 
@@ -234,9 +222,6 @@ export async function adminDecideOrganizerClaimHandler(
           claimState: claim.state,
         });
         tx.update(organizerRef, {claim, supplyCapabilities});
-        if (legacyClubSnap.exists) {
-          tx.update(legacyClubRef, {claim, supplyCapabilities});
-        }
       }
       setActivityNotificationInTransaction(tx, db, {
         id: activityNotificationId(
@@ -287,9 +272,6 @@ export async function adminDecideOrganizerClaimHandler(
         claimRequest.organizerId,
         claimRequest.requesterUid
       )
-    );
-    const legacyMembershipRef = db.collection("clubMemberships").doc(
-      clubMembershipId(claimRequest.organizerId, claimRequest.requesterUid)
     );
     const [requesterSnap, deletedUserSnap] = await Promise.all([
       tx.get(requesterRef),
@@ -364,7 +346,6 @@ export async function adminDecideOrganizerClaimHandler(
       },
     };
     tx.update(organizerRef, organizerPatch);
-    if (legacyClubSnap.exists) tx.update(legacyClubRef, organizerPatch);
     tx.set(requestRef, {
       status: "approved",
       updatedAt: timestamp,
@@ -377,13 +358,6 @@ export async function adminDecideOrganizerClaimHandler(
       uid: claimRequest.requesterUid,
       role: "owner",
     }), {merge: true});
-    if (legacyClubSnap.exists) {
-      tx.set(legacyMembershipRef, activeClubMembershipPatch({
-        clubId: claimRequest.organizerId,
-        uid: claimRequest.requesterUid,
-        role: "owner",
-      }), {merge: true});
-    }
     setActivityNotificationInTransaction(tx, db, {
       id: activityNotificationId("organizerUpdate", data.requestId),
       uid: claimRequest.requesterUid,

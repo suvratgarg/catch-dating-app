@@ -99,10 +99,8 @@ export async function createOrganizerPostHandler(
 
   await deps.checkRateLimit?.(db, authorUid, "createOrganizerPost");
   const organizerRef = db.collection("organizers").doc(data.organizerId);
-  const legacyClubRef = db.collection("clubs").doc(data.organizerId);
   const postsRef = organizerRef.collection("posts");
   const postRef = postsRef.doc(postId);
-  const legacyPostRef = legacyClubRef.collection("posts").doc(postRef.id);
   const quotaWindowStart = deps.timestampFromMillis(
     deps.now().getTime() - quotaWindowMs
   );
@@ -114,14 +112,12 @@ export async function createOrganizerPostHandler(
       db.collection("events").doc(data.eventId) : null;
     const [
       organizerSnap,
-      legacyClubSnap,
       deletedUserSnap,
       eventSnap,
       postsSnap,
       operationSnap,
     ] = await Promise.all([
       tx.get(organizerRef),
-      tx.get(legacyClubRef),
       tx.get(db.collection("deletedUsers").doc(authorUid)),
       eventRef ? tx.get(eventRef) : Promise.resolve(null),
       tx.get(postsRef.where("createdAt", ">=", quotaWindowStart)),
@@ -189,7 +185,6 @@ export async function createOrganizerPostHandler(
       status: "active",
     };
     tx.create(postRef, post);
-    if (legacyClubSnap.exists) tx.create(legacyPostRef, post);
     const createdAt = deps.timestampFromMillis(deps.now().getTime());
     const operation: OrganizerPostDeliveryOperationDocument = {
       organizerId: data.organizerId,

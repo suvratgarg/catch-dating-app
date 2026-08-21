@@ -397,6 +397,7 @@ Club _buildClub({String id = 'club-1', String hostUserId = 'host-1'}) {
     hostUserId: hostUserId,
     hostName: 'Host',
     createdAt: DateTime(2025),
+    appVisibility: ClubAppVisibility.discoverable,
   );
 }
 

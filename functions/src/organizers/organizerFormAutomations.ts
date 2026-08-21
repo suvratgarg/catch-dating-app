@@ -15,7 +15,6 @@ import {CreateOrganizerFormAutomationCallablePayload} from
 import {CreateOrganizerFormAutomationCallableResponse} from
   "../shared/generated/createOrganizerFormAutomationCallableResponse";
 import {
-  ClubDocument,
   OrganizerContactDocument,
   OrganizerContactTagVocabularyDocument,
   OrganizerDocument,
@@ -528,13 +527,9 @@ async function notifyTeam(params: {
   runId: string;
   response: OrganizerFormResponseDocument;
 }): Promise<string> {
-  const [organizerSnap, clubSnap] = await Promise.all([
-    params.db.collection("organizers").doc(params.response.organizerId).get(),
-    params.db.collection("clubs").doc(params.response.organizerId).get(),
-  ]);
-  const organizer = organizerSnap.exists ?
-    organizerSnap.data() as OrganizerDocument :
-    clubSnap.data() as ClubDocument | undefined;
+  const organizerSnap = await params.db.collection("organizers")
+    .doc(params.response.organizerId).get();
+  const organizer = organizerSnap.data() as OrganizerDocument | undefined;
   const uids = [...new Set([
     ...(organizer?.hostUserIds ?? []),
     ...organizer?.ownerUserId ? [organizer.ownerUserId] : [],

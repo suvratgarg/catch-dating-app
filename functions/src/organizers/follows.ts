@@ -17,10 +17,7 @@ import {
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {
-  activeClubMembershipPatch,
   activeOrganizerFollowPatch,
-  clubMembershipId,
-  leftClubMembershipPatch,
   organizerRelationshipId,
 } from "../shared/relationshipDocuments";
 import {normalizeOrganizerIdPayload} from
@@ -54,22 +51,17 @@ export async function followOrganizerHandler(
   await deps.checkRateLimit?.(db, uid, "followOrganizer");
   await db.runTransaction(async (tx) => {
     const organizerRef = db.collection("organizers").doc(organizerId);
-    const legacyClubRef = db.collection("clubs").doc(organizerId);
     const userRef = db.collection("users").doc(uid);
     const deletedUserRef = db.collection("deletedUsers").doc(uid);
     const followRef = db.collection("organizerFollows")
       .doc(organizerRelationshipId(organizerId, uid));
-    const legacyMembershipRef = db.collection("clubMemberships")
-      .doc(clubMembershipId(organizerId, uid));
     const [
       organizerSnap,
-      legacyClubSnap,
       userSnap,
       deletedUserSnap,
       followSnap,
     ] = await Promise.all([
       tx.get(organizerRef),
-      tx.get(legacyClubRef),
       tx.get(userRef),
       tx.get(deletedUserRef),
       tx.get(followRef),
@@ -87,25 +79,12 @@ export async function followOrganizerHandler(
       tx.update(organizerRef, {
         followerCount: (organizer.followerCount ?? 0) + 1,
       });
-      if (legacyClubSnap.exists) {
-        const legacy = legacyClubSnap.data();
-        tx.update(legacyClubRef, {
-          memberCount: (legacy?.memberCount ?? 0) + 1,
-        });
-      }
     }
     tx.set(followRef, activeOrganizerFollowPatch({
       organizerId,
       uid,
       pushNotificationsEnabled: previous?.pushNotificationsEnabled,
     }), {merge: true});
-    if (legacyClubSnap.exists) {
-      tx.set(legacyMembershipRef, activeClubMembershipPatch({
-        clubId: organizerId,
-        uid,
-        role: "member",
-      }), {merge: true});
-    }
   });
   return {following: true};
 }
@@ -124,14 +103,10 @@ export async function unfollowOrganizerHandler(
   await deps.checkRateLimit?.(db, uid, "unfollowOrganizer");
   await db.runTransaction(async (tx) => {
     const organizerRef = db.collection("organizers").doc(organizerId);
-    const legacyClubRef = db.collection("clubs").doc(organizerId);
     const followRef = db.collection("organizerFollows")
       .doc(organizerRelationshipId(organizerId, uid));
-    const legacyMembershipRef = db.collection("clubMemberships")
-      .doc(clubMembershipId(organizerId, uid));
-    const [organizerSnap, legacyClubSnap, followSnap] = await Promise.all([
+    const [organizerSnap, followSnap] = await Promise.all([
       tx.get(organizerRef),
-      tx.get(legacyClubRef),
       tx.get(followRef),
     ]);
     if (!organizerSnap.exists) {
@@ -146,12 +121,6 @@ export async function unfollowOrganizerHandler(
       tx.update(organizerRef, {
         followerCount: Math.max(0, (organizer.followerCount ?? 0) - 1),
       });
-      if (legacyClubSnap.exists) {
-        const legacy = legacyClubSnap.data();
-        tx.update(legacyClubRef, {
-          memberCount: Math.max(0, (legacy?.memberCount ?? 0) - 1),
-        });
-      }
     }
     tx.set(followRef, {
       organizerId,
@@ -160,9 +129,6 @@ export async function unfollowOrganizerHandler(
       pushNotificationsEnabled: false,
       unfollowedAt: admin.firestore.FieldValue.serverTimestamp(),
     }, {merge: true});
-    if (legacyClubSnap.exists) {
-      tx.set(legacyMembershipRef, leftClubMembershipPatch(), {merge: true});
-    }
   });
   return {following: false};
 }
@@ -188,12 +154,7 @@ export async function setOrganizerNotificationPreferenceHandler(
   await db.runTransaction(async (tx) => {
     const followRef = db.collection("organizerFollows")
       .doc(organizerRelationshipId(data.organizerId, uid));
-    const legacyMembershipRef = db.collection("clubMemberships")
-      .doc(clubMembershipId(data.organizerId, uid));
-    const [followSnap, legacyMembershipSnap] = await Promise.all([
-      tx.get(followRef),
-      tx.get(legacyMembershipRef),
-    ]);
+    const followSnap = await tx.get(followRef);
     if (!followSnap.exists || followSnap.data()?.status !== "active") {
       throw new HttpsError(
         "failed-precondition",
@@ -201,11 +162,6 @@ export async function setOrganizerNotificationPreferenceHandler(
       );
     }
     tx.update(followRef, {pushNotificationsEnabled: data.enabled});
-    if (legacyMembershipSnap.exists) {
-      tx.update(legacyMembershipRef, {
-        pushNotificationsEnabled: data.enabled,
-      });
-    }
   });
   return {enabled: data.enabled};
 }

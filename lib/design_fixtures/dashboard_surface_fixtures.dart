@@ -111,7 +111,7 @@ final class DashboardSurfaceFixtures {
   static final reviews = <Review>[
     Review(
       id: 'design-dashboard-review',
-      clubId: club.id,
+      organizerId: club.id,
       eventId: attendedEvent.id,
       reviewerUserId: viewerUid,
       reviewerName: 'Subrath',

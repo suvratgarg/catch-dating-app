@@ -145,24 +145,24 @@ test("late insertion patches only an unpublished draft", async () => {
   };
   for (const [path, data] of Object.entries({
     "events/event-1": {
-      clubId: "club-1",
+      organizerId: "club-1",
       status: "active",
     },
-    "clubs/club-1": {
+    "organizers/club-1": {
       hostUserId: "host-1",
       hostUserIds: [],
       hostProfiles: [],
     },
     "eventParticipations/event-1_late-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       uid: "late-1",
       status: "attended",
       attendedAt: timestamp,
     },
     "eventSuccessPlans/event-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       liveControlRevision: 7,
       assignmentDraftRevision: 4,
       publishedRotationRoundIndex: 0,
@@ -172,14 +172,14 @@ test("late insertion patches only an unpublished draft", async () => {
       publishedAssignment,
     "eventSuccessAssignmentDrafts/event-1_guided_rotations_guest-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       moduleId: "guided_rotations",
       uid: "guest-1",
       roundIndex: 1,
       baseAssignmentRevision: 4,
       assignment: {
         eventId: "event-1",
-        clubId: "club-1",
+        organizerId: "club-1",
         moduleId: "guided_rotations",
         uid: "guest-1",
         peerUids: [],

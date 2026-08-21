@@ -177,10 +177,6 @@
     },
     {
       "rule": "missingReadmeFunction",
-      "function": "syncAlgoliaClubIndex"
-    },
-    {
-      "rule": "missingReadmeFunction",
       "function": "syncAlgoliaEventIndex"
     },
     {
