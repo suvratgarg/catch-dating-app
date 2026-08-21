@@ -53,7 +53,7 @@ final class DashboardSurfaceFixtures {
   static final memberships = <ClubMembership>[
     ClubMembership(
       id: 'design-dashboard-club-$viewerUid',
-      clubId: club.id,
+      organizerId: club.id,
       uid: viewerUid,
       role: ClubMembershipRole.member,
       status: ClubMembershipStatus.active,
@@ -111,7 +111,7 @@ final class DashboardSurfaceFixtures {
   static final reviews = <Review>[
     Review(
       id: 'design-dashboard-review',
-      clubId: club.id,
+      organizerId: club.id,
       eventId: attendedEvent.id,
       reviewerUserId: viewerUid,
       reviewerName: 'Subrath',

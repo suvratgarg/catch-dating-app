@@ -76,7 +76,7 @@ final class UtilitySurfaceFixtures {
   static final reviews = <Review>[
     Review(
       id: 'review-event-backed',
-      clubId: 'design-club',
+      organizerId: 'design-club',
       eventId: event.id,
       reviewerUserId: viewerUid,
       reviewerName: 'Neha',
@@ -87,7 +87,7 @@ final class UtilitySurfaceFixtures {
     ),
     Review(
       id: 'review-legacy-club',
-      clubId: 'design-club',
+      organizerId: 'design-club',
       reviewerUserId: viewerUid,
       reviewerName: 'Neha',
       rating: 4,

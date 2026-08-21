@@ -253,7 +253,7 @@ void main() {
         _expectValid(
           'CreateEventReviewCallablePayload',
           const CreateEventReviewCallableRequest(
-            clubId: 'club-1',
+            organizerId: 'organizer-1',
             eventId: 'event-1',
             rating: 5,
             comment: 'Thoughtful route and good pacing.',

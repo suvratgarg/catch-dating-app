@@ -519,7 +519,7 @@ class SalesDemoSyntheticFixtures {
       for (final indexed in reviewers.indexed)
         Review(
           id: 'review-${event.id}-${indexed.$1 + 1}',
-          clubId: club.id,
+          organizerId: club.id,
           eventId: event.id,
           reviewerUserId: indexed.$2.uid,
           reviewerName: _firstName(indexed.$2.name),
@@ -547,7 +547,7 @@ class SalesDemoSyntheticFixtures {
       for (final indexed in eventList.indexed)
         Review(
           id: 'review-${indexed.$2.id}',
-          clubId: indexed.$2.clubId,
+          organizerId: indexed.$2.clubId,
           eventId: indexed.$2.id,
           reviewerUserId: reviewerUserId,
           reviewerName: reviewerName,

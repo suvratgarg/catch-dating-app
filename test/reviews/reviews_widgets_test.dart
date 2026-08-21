@@ -61,7 +61,7 @@ void main() {
     await tester.tap(find.byKey(ReviewKeys.submitReviewButton));
     await pumpFeatureUi(tester);
 
-    expect(repository.addedReview?.clubId, 'club-1');
+    expect(repository.addedReview?.organizerId, 'club-1');
     expect(repository.addedReview?.eventId, 'event-1');
     expect(repository.addedReview?.reviewerUserId, 'runner-1');
     expect(repository.addedReview?.reviewerName, 'Asha');

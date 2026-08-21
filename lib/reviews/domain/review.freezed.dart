@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Review {
 
-@JsonKey(includeToJson: false) String get id; String get clubId; String? get eventId; String? get reviewerUserId; String get reviewerName; int get rating; String get comment; String get verificationStatus; String get source; String get moderationStatus; bool get isAnonymous; String? get submittedFromPath;@TimestampConverter() DateTime get createdAt;@NullableTimestampConverter() DateTime? get updatedAt; ReviewOwnerResponse? get ownerResponse;
+@JsonKey(includeToJson: false) String get id; String get organizerId; String? get eventId; String? get reviewerUserId; String get reviewerName; int get rating; String get comment; String get verificationStatus; String get source; String get moderationStatus; bool get isAnonymous; String? get submittedFromPath;@TimestampConverter() DateTime get createdAt;@NullableTimestampConverter() DateTime? get updatedAt; ReviewOwnerResponse? get ownerResponse;
 /// Create a copy of Review
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $ReviewCopyWith<Review> get copyWith => _$ReviewCopyWithImpl<Review>(this as Rev
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Review&&(identical(other.id, id) || other.id == id)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.reviewerUserId, reviewerUserId) || other.reviewerUserId == reviewerUserId)&&(identical(other.reviewerName, reviewerName) || other.reviewerName == reviewerName)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.verificationStatus, verificationStatus) || other.verificationStatus == verificationStatus)&&(identical(other.source, source) || other.source == source)&&(identical(other.moderationStatus, moderationStatus) || other.moderationStatus == moderationStatus)&&(identical(other.isAnonymous, isAnonymous) || other.isAnonymous == isAnonymous)&&(identical(other.submittedFromPath, submittedFromPath) || other.submittedFromPath == submittedFromPath)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.ownerResponse, ownerResponse) || other.ownerResponse == ownerResponse));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Review&&(identical(other.id, id) || other.id == id)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.reviewerUserId, reviewerUserId) || other.reviewerUserId == reviewerUserId)&&(identical(other.reviewerName, reviewerName) || other.reviewerName == reviewerName)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.verificationStatus, verificationStatus) || other.verificationStatus == verificationStatus)&&(identical(other.source, source) || other.source == source)&&(identical(other.moderationStatus, moderationStatus) || other.moderationStatus == moderationStatus)&&(identical(other.isAnonymous, isAnonymous) || other.isAnonymous == isAnonymous)&&(identical(other.submittedFromPath, submittedFromPath) || other.submittedFromPath == submittedFromPath)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.ownerResponse, ownerResponse) || other.ownerResponse == ownerResponse));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,clubId,eventId,reviewerUserId,reviewerName,rating,comment,verificationStatus,source,moderationStatus,isAnonymous,submittedFromPath,createdAt,updatedAt,ownerResponse);
+int get hashCode => Object.hash(runtimeType,id,organizerId,eventId,reviewerUserId,reviewerName,rating,comment,verificationStatus,source,moderationStatus,isAnonymous,submittedFromPath,createdAt,updatedAt,ownerResponse);
 
 @override
 String toString() {
-  return 'Review(id: $id, clubId: $clubId, eventId: $eventId, reviewerUserId: $reviewerUserId, reviewerName: $reviewerName, rating: $rating, comment: $comment, verificationStatus: $verificationStatus, source: $source, moderationStatus: $moderationStatus, isAnonymous: $isAnonymous, submittedFromPath: $submittedFromPath, createdAt: $createdAt, updatedAt: $updatedAt, ownerResponse: $ownerResponse)';
+  return 'Review(id: $id, organizerId: $organizerId, eventId: $eventId, reviewerUserId: $reviewerUserId, reviewerName: $reviewerName, rating: $rating, comment: $comment, verificationStatus: $verificationStatus, source: $source, moderationStatus: $moderationStatus, isAnonymous: $isAnonymous, submittedFromPath: $submittedFromPath, createdAt: $createdAt, updatedAt: $updatedAt, ownerResponse: $ownerResponse)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $ReviewCopyWith<$Res>  {
   factory $ReviewCopyWith(Review value, $Res Function(Review) _then) = _$ReviewCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String clubId, String? eventId, String? reviewerUserId, String reviewerName, int rating, String comment, String verificationStatus, String source, String moderationStatus, bool isAnonymous, String? submittedFromPath,@TimestampConverter() DateTime createdAt,@NullableTimestampConverter() DateTime? updatedAt, ReviewOwnerResponse? ownerResponse
+@JsonKey(includeToJson: false) String id, String organizerId, String? eventId, String? reviewerUserId, String reviewerName, int rating, String comment, String verificationStatus, String source, String moderationStatus, bool isAnonymous, String? submittedFromPath,@TimestampConverter() DateTime createdAt,@NullableTimestampConverter() DateTime? updatedAt, ReviewOwnerResponse? ownerResponse
 });
 
 
@@ -65,10 +65,10 @@ class _$ReviewCopyWithImpl<$Res>
 
 /// Create a copy of Review
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? clubId = null,Object? eventId = freezed,Object? reviewerUserId = freezed,Object? reviewerName = null,Object? rating = null,Object? comment = null,Object? verificationStatus = null,Object? source = null,Object? moderationStatus = null,Object? isAnonymous = null,Object? submittedFromPath = freezed,Object? createdAt = null,Object? updatedAt = freezed,Object? ownerResponse = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? organizerId = null,Object? eventId = freezed,Object? reviewerUserId = freezed,Object? reviewerName = null,Object? rating = null,Object? comment = null,Object? verificationStatus = null,Object? source = null,Object? moderationStatus = null,Object? isAnonymous = null,Object? submittedFromPath = freezed,Object? createdAt = null,Object? updatedAt = freezed,Object? ownerResponse = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,clubId: null == clubId ? _self.clubId : clubId // ignore: cast_nullable_to_non_nullable
+as String,organizerId: null == organizerId ? _self.organizerId : organizerId // ignore: cast_nullable_to_non_nullable
 as String,eventId: freezed == eventId ? _self.eventId : eventId // ignore: cast_nullable_to_non_nullable
 as String?,reviewerUserId: freezed == reviewerUserId ? _self.reviewerUserId : reviewerUserId // ignore: cast_nullable_to_non_nullable
 as String?,reviewerName: null == reviewerName ? _self.reviewerName : reviewerName // ignore: cast_nullable_to_non_nullable
@@ -179,10 +179,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String clubId,  String? eventId,  String? reviewerUserId,  String reviewerName,  int rating,  String comment,  String verificationStatus,  String source,  String moderationStatus,  bool isAnonymous,  String? submittedFromPath, @TimestampConverter()  DateTime createdAt, @NullableTimestampConverter()  DateTime? updatedAt,  ReviewOwnerResponse? ownerResponse)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String organizerId,  String? eventId,  String? reviewerUserId,  String reviewerName,  int rating,  String comment,  String verificationStatus,  String source,  String moderationStatus,  bool isAnonymous,  String? submittedFromPath, @TimestampConverter()  DateTime createdAt, @NullableTimestampConverter()  DateTime? updatedAt,  ReviewOwnerResponse? ownerResponse)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Review() when $default != null:
-return $default(_that.id,_that.clubId,_that.eventId,_that.reviewerUserId,_that.reviewerName,_that.rating,_that.comment,_that.verificationStatus,_that.source,_that.moderationStatus,_that.isAnonymous,_that.submittedFromPath,_that.createdAt,_that.updatedAt,_that.ownerResponse);case _:
+return $default(_that.id,_that.organizerId,_that.eventId,_that.reviewerUserId,_that.reviewerName,_that.rating,_that.comment,_that.verificationStatus,_that.source,_that.moderationStatus,_that.isAnonymous,_that.submittedFromPath,_that.createdAt,_that.updatedAt,_that.ownerResponse);case _:
   return orElse();
 
 }
@@ -200,10 +200,10 @@ return $default(_that.id,_that.clubId,_that.eventId,_that.reviewerUserId,_that.r
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String clubId,  String? eventId,  String? reviewerUserId,  String reviewerName,  int rating,  String comment,  String verificationStatus,  String source,  String moderationStatus,  bool isAnonymous,  String? submittedFromPath, @TimestampConverter()  DateTime createdAt, @NullableTimestampConverter()  DateTime? updatedAt,  ReviewOwnerResponse? ownerResponse)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String organizerId,  String? eventId,  String? reviewerUserId,  String reviewerName,  int rating,  String comment,  String verificationStatus,  String source,  String moderationStatus,  bool isAnonymous,  String? submittedFromPath, @TimestampConverter()  DateTime createdAt, @NullableTimestampConverter()  DateTime? updatedAt,  ReviewOwnerResponse? ownerResponse)  $default,) {final _that = this;
 switch (_that) {
 case _Review():
-return $default(_that.id,_that.clubId,_that.eventId,_that.reviewerUserId,_that.reviewerName,_that.rating,_that.comment,_that.verificationStatus,_that.source,_that.moderationStatus,_that.isAnonymous,_that.submittedFromPath,_that.createdAt,_that.updatedAt,_that.ownerResponse);case _:
+return $default(_that.id,_that.organizerId,_that.eventId,_that.reviewerUserId,_that.reviewerName,_that.rating,_that.comment,_that.verificationStatus,_that.source,_that.moderationStatus,_that.isAnonymous,_that.submittedFromPath,_that.createdAt,_that.updatedAt,_that.ownerResponse);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -220,10 +220,10 @@ return $default(_that.id,_that.clubId,_that.eventId,_that.reviewerUserId,_that.r
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String clubId,  String? eventId,  String? reviewerUserId,  String reviewerName,  int rating,  String comment,  String verificationStatus,  String source,  String moderationStatus,  bool isAnonymous,  String? submittedFromPath, @TimestampConverter()  DateTime createdAt, @NullableTimestampConverter()  DateTime? updatedAt,  ReviewOwnerResponse? ownerResponse)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String organizerId,  String? eventId,  String? reviewerUserId,  String reviewerName,  int rating,  String comment,  String verificationStatus,  String source,  String moderationStatus,  bool isAnonymous,  String? submittedFromPath, @TimestampConverter()  DateTime createdAt, @NullableTimestampConverter()  DateTime? updatedAt,  ReviewOwnerResponse? ownerResponse)?  $default,) {final _that = this;
 switch (_that) {
 case _Review() when $default != null:
-return $default(_that.id,_that.clubId,_that.eventId,_that.reviewerUserId,_that.reviewerName,_that.rating,_that.comment,_that.verificationStatus,_that.source,_that.moderationStatus,_that.isAnonymous,_that.submittedFromPath,_that.createdAt,_that.updatedAt,_that.ownerResponse);case _:
+return $default(_that.id,_that.organizerId,_that.eventId,_that.reviewerUserId,_that.reviewerName,_that.rating,_that.comment,_that.verificationStatus,_that.source,_that.moderationStatus,_that.isAnonymous,_that.submittedFromPath,_that.createdAt,_that.updatedAt,_that.ownerResponse);case _:
   return null;
 
 }
@@ -235,11 +235,11 @@ return $default(_that.id,_that.clubId,_that.eventId,_that.reviewerUserId,_that.r
 @JsonSerializable()
 
 class _Review implements Review {
-  const _Review({@JsonKey(includeToJson: false) required this.id, required this.clubId, this.eventId, this.reviewerUserId, required this.reviewerName, required this.rating, required this.comment, this.verificationStatus = 'verified', this.source = 'catchEvent', this.moderationStatus = 'published', this.isAnonymous = false, this.submittedFromPath, @TimestampConverter() required this.createdAt, @NullableTimestampConverter() this.updatedAt, this.ownerResponse});
+  const _Review({@JsonKey(includeToJson: false) required this.id, required this.organizerId, this.eventId, this.reviewerUserId, required this.reviewerName, required this.rating, required this.comment, this.verificationStatus = 'verified', this.source = 'catchEvent', this.moderationStatus = 'published', this.isAnonymous = false, this.submittedFromPath, @TimestampConverter() required this.createdAt, @NullableTimestampConverter() this.updatedAt, this.ownerResponse});
   factory _Review.fromJson(Map<String, dynamic> json) => _$ReviewFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String id;
-@override final  String clubId;
+@override final  String organizerId;
 @override final  String? eventId;
 @override final  String? reviewerUserId;
 @override final  String reviewerName;
@@ -267,16 +267,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Review&&(identical(other.id, id) || other.id == id)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.reviewerUserId, reviewerUserId) || other.reviewerUserId == reviewerUserId)&&(identical(other.reviewerName, reviewerName) || other.reviewerName == reviewerName)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.verificationStatus, verificationStatus) || other.verificationStatus == verificationStatus)&&(identical(other.source, source) || other.source == source)&&(identical(other.moderationStatus, moderationStatus) || other.moderationStatus == moderationStatus)&&(identical(other.isAnonymous, isAnonymous) || other.isAnonymous == isAnonymous)&&(identical(other.submittedFromPath, submittedFromPath) || other.submittedFromPath == submittedFromPath)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.ownerResponse, ownerResponse) || other.ownerResponse == ownerResponse));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Review&&(identical(other.id, id) || other.id == id)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.reviewerUserId, reviewerUserId) || other.reviewerUserId == reviewerUserId)&&(identical(other.reviewerName, reviewerName) || other.reviewerName == reviewerName)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.verificationStatus, verificationStatus) || other.verificationStatus == verificationStatus)&&(identical(other.source, source) || other.source == source)&&(identical(other.moderationStatus, moderationStatus) || other.moderationStatus == moderationStatus)&&(identical(other.isAnonymous, isAnonymous) || other.isAnonymous == isAnonymous)&&(identical(other.submittedFromPath, submittedFromPath) || other.submittedFromPath == submittedFromPath)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.ownerResponse, ownerResponse) || other.ownerResponse == ownerResponse));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,clubId,eventId,reviewerUserId,reviewerName,rating,comment,verificationStatus,source,moderationStatus,isAnonymous,submittedFromPath,createdAt,updatedAt,ownerResponse);
+int get hashCode => Object.hash(runtimeType,id,organizerId,eventId,reviewerUserId,reviewerName,rating,comment,verificationStatus,source,moderationStatus,isAnonymous,submittedFromPath,createdAt,updatedAt,ownerResponse);
 
 @override
 String toString() {
-  return 'Review(id: $id, clubId: $clubId, eventId: $eventId, reviewerUserId: $reviewerUserId, reviewerName: $reviewerName, rating: $rating, comment: $comment, verificationStatus: $verificationStatus, source: $source, moderationStatus: $moderationStatus, isAnonymous: $isAnonymous, submittedFromPath: $submittedFromPath, createdAt: $createdAt, updatedAt: $updatedAt, ownerResponse: $ownerResponse)';
+  return 'Review(id: $id, organizerId: $organizerId, eventId: $eventId, reviewerUserId: $reviewerUserId, reviewerName: $reviewerName, rating: $rating, comment: $comment, verificationStatus: $verificationStatus, source: $source, moderationStatus: $moderationStatus, isAnonymous: $isAnonymous, submittedFromPath: $submittedFromPath, createdAt: $createdAt, updatedAt: $updatedAt, ownerResponse: $ownerResponse)';
 }
 
 
@@ -287,7 +287,7 @@ abstract mixin class _$ReviewCopyWith<$Res> implements $ReviewCopyWith<$Res> {
   factory _$ReviewCopyWith(_Review value, $Res Function(_Review) _then) = __$ReviewCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String clubId, String? eventId, String? reviewerUserId, String reviewerName, int rating, String comment, String verificationStatus, String source, String moderationStatus, bool isAnonymous, String? submittedFromPath,@TimestampConverter() DateTime createdAt,@NullableTimestampConverter() DateTime? updatedAt, ReviewOwnerResponse? ownerResponse
+@JsonKey(includeToJson: false) String id, String organizerId, String? eventId, String? reviewerUserId, String reviewerName, int rating, String comment, String verificationStatus, String source, String moderationStatus, bool isAnonymous, String? submittedFromPath,@TimestampConverter() DateTime createdAt,@NullableTimestampConverter() DateTime? updatedAt, ReviewOwnerResponse? ownerResponse
 });
 
 
@@ -304,10 +304,10 @@ class __$ReviewCopyWithImpl<$Res>
 
 /// Create a copy of Review
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? clubId = null,Object? eventId = freezed,Object? reviewerUserId = freezed,Object? reviewerName = null,Object? rating = null,Object? comment = null,Object? verificationStatus = null,Object? source = null,Object? moderationStatus = null,Object? isAnonymous = null,Object? submittedFromPath = freezed,Object? createdAt = null,Object? updatedAt = freezed,Object? ownerResponse = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? organizerId = null,Object? eventId = freezed,Object? reviewerUserId = freezed,Object? reviewerName = null,Object? rating = null,Object? comment = null,Object? verificationStatus = null,Object? source = null,Object? moderationStatus = null,Object? isAnonymous = null,Object? submittedFromPath = freezed,Object? createdAt = null,Object? updatedAt = freezed,Object? ownerResponse = freezed,}) {
   return _then(_Review(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,clubId: null == clubId ? _self.clubId : clubId // ignore: cast_nullable_to_non_nullable
+as String,organizerId: null == organizerId ? _self.organizerId : organizerId // ignore: cast_nullable_to_non_nullable
 as String,eventId: freezed == eventId ? _self.eventId : eventId // ignore: cast_nullable_to_non_nullable
 as String?,reviewerUserId: freezed == reviewerUserId ? _self.reviewerUserId : reviewerUserId // ignore: cast_nullable_to_non_nullable
 as String?,reviewerName: null == reviewerName ? _self.reviewerName : reviewerName // ignore: cast_nullable_to_non_nullable

@@ -6916,7 +6916,7 @@ final _reviewHistoryReviews = _captureFixtures.reviewsByViewer(
 final _reviewHistoryMissingContextReviews = [
   Review(
     id: 'review-history-missing-event',
-    clubId: _dashboardJoinedClub.id,
+    organizerId: _dashboardJoinedClub.id,
     eventId: 'event-review-history-missing',
     reviewerUserId: _captureViewerUid,
     reviewerName: _captureViewer.name,
@@ -6926,7 +6926,7 @@ final _reviewHistoryMissingContextReviews = [
   ),
   Review(
     id: 'review-history-legacy-club',
-    clubId: _dashboardJoinedClub.id,
+    organizerId: _dashboardJoinedClub.id,
     reviewerUserId: _captureViewerUid,
     reviewerName: _captureViewer.name,
     rating: 5,

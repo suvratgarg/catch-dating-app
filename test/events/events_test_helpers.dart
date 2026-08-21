@@ -211,7 +211,7 @@ Review buildReview({
 }) {
   return Review(
     id: id,
-    clubId: clubId,
+    organizerId: clubId,
     eventId: eventId,
     reviewerUserId: reviewerUserId,
     reviewerName: reviewerName,

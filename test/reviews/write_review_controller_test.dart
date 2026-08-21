@@ -25,7 +25,7 @@ void main() {
           comment: '  Great hosts.  ',
         );
 
-    expect(repository.addedReview?.clubId, 'club-1');
+    expect(repository.addedReview?.organizerId, 'club-1');
     expect(repository.addedReview?.eventId, 'event-1');
     expect(repository.addedReview?.rating, 4);
     expect(repository.addedReview?.comment, 'Great hosts.');
@@ -40,7 +40,7 @@ void main() {
     await container
         .read(writeReviewControllerProvider.notifier)
         .submit(
-          clubId: existing.clubId,
+          clubId: existing.organizerId,
           eventId: existing.eventId!,
           reviewerUserId: existing.reviewerUserId!,
           reviewerName: existing.reviewerName,
