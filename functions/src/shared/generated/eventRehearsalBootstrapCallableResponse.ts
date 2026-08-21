@@ -189,6 +189,8 @@ export interface EventRehearsalBootstrapCallableResponse {
     keepApartActorIds: string[];
     helpRequested: boolean;
     promptCompleted: boolean;
+    layoutUnitId: string | null;
+    confirmedLayoutUnitId: string | null;
   }[];
   /**
    * @maxItems 500

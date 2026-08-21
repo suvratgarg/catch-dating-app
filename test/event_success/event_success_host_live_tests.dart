@@ -1,6 +1,61 @@
 part of 'event_success_live_screens_test.dart';
 
 void _registerEventSuccessHostLiveTests() {
+  testWidgets('host hides phase navigation during the actual event window', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(430, 5000);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    final now = DateTime(2026, 8, 21, 18);
+    final event = buildEvent(
+      id: 'event-live-phase-lock',
+      startTime: now.subtract(const Duration(minutes: 15)),
+      endTime: now.add(const Duration(hours: 2)),
+    );
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          watchEventSuccessPlanProvider(
+            event.id,
+          ).overrideWith((ref) => Stream.value(plan)),
+          watchEventParticipationRosterProvider(event.id).overrideWith(
+            (ref) => Stream.value(EventParticipationRoster.empty()),
+          ),
+          watchEventSuccessAssignmentsProvider(
+            event.id,
+          ).overrideWith((ref) => Stream.value(const [])),
+          watchEventSuccessRotationAssignmentsProvider(
+            event.id,
+          ).overrideWith((ref) => Stream.value(const [])),
+          watchEventSuccessPreferencesProvider(
+            event.id,
+          ).overrideWith((ref) => Stream.value(const [])),
+          watchEventSuccessWingmanRequestsProvider(
+            event.id,
+          ).overrideWith((ref) => Stream.value(const [])),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: EventSuccessHostSection(
+              event: event,
+              referenceNow: now,
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.byType(EventSuccessTabPicker), findsNothing);
+    expect(find.textContaining('LIVE NOW'), findsOneWidget);
+  });
+
   testWidgets(
     'host skips rotation drafts when the saved plan does not use them',
     (tester) async {

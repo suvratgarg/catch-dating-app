@@ -258,13 +258,17 @@ EventSuccessAssignment _assignmentFor({
   required String practiceGuestLabel,
   required String latePracticeGuestLabel,
 }) {
-  final tableIndex = index % tableCount;
+  final fallbackLayoutUnitId = 'table-${(index % tableCount) + 1}';
+  final layoutUnitId = actor.layoutUnitId ?? fallbackLayoutUnitId;
+  final parsedTableIndex = int.tryParse(layoutUnitId.split('-').last);
+  final tableIndex = parsedTableIndex == null
+      ? index % tableCount
+      : (parsedTableIndex - 1).clamp(0, tableCount - 1);
   final tableLabel = 'Table ${tableIndex + 1}';
-  final confirmed = switch (actor.status) {
-    EventRehearsalActorStatus.present ||
-    EventRehearsalActorStatus.returned => true,
-    _ => false,
-  };
+  final legacyConfirmed =
+      actor.layoutUnitId == null &&
+      (actor.status == EventRehearsalActorStatus.present ||
+          actor.status == EventRehearsalActorStatus.returned);
   return EventSuccessAssignment(
     id: 'rehearsal-assignment-${actor.actorId}',
     eventId: eventId,
@@ -280,8 +284,9 @@ EventSuccessAssignment _assignmentFor({
     unitKind: 'table',
     unitIndex: tableIndex,
     unitLabel: tableLabel,
-    layoutUnitId: 'table-${tableIndex + 1}',
-    confirmedLayoutUnitId: confirmed ? 'table-${tableIndex + 1}' : null,
+    layoutUnitId: layoutUnitId,
+    confirmedLayoutUnitId:
+        actor.confirmedLayoutUnitId ?? (legacyConfirmed ? layoutUnitId : null),
     source: 'rehearsal',
     createdAt: now,
     updatedAt: now,

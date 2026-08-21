@@ -6729,6 +6729,57 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const controlEventRehearsalSpatialCallablePayloadAction = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalSpatialCallablePayload.action',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['reassign', 'confirmPosition', 'releasePinned'],
+  );
+
+  static const controlEventRehearsalSpatialCallablePayloadActorId = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalSpatialCallablePayload.actorId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const controlEventRehearsalSpatialCallablePayloadClientActionId = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalSpatialCallablePayload.clientActionId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{8,120}\$',
+  );
+
+  static const controlEventRehearsalSpatialCallablePayloadDestinationUnitId = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalSpatialCallablePayload.destinationUnitId',
+    maxLength: 40,
+    valueTypes: <String>['string'],
+    pattern: '^table-[1-9][0-9]*\$',
+  );
+
+  static const controlEventRehearsalSpatialCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalSpatialCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const controlEventRehearsalSpatialCallablePayloadScope = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalSpatialCallablePayload.scope',
+    valueTypes: <String>['string'],
+    enumValues: <String>['thisRound', 'pinned'],
+  );
+
+  static const controlEventRehearsalSpatialCallablePayloadSessionId = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalSpatialCallablePayload.sessionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const convertOrganizerFormResponseCallablePayloadEventId = CatchContractFieldConstraints(
     path: 'convertOrganizerFormResponseCallablePayload.eventId',
     maxLength: 180,
@@ -15395,7 +15446,7 @@ abstract final class CatchContractConstraints {
     path: 'eventRehearsalActionDocument.kind',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['control', 'behavior', 'guest', 'setup', 'system'],
+    enumValues: <String>['control', 'behavior', 'spatial', 'guest', 'setup', 'system'],
   );
 
   static const eventRehearsalActionDocumentName = CatchContractFieldConstraints(
@@ -15442,6 +15493,13 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalActorDocumentConfirmedLayoutUnitId = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.confirmedLayoutUnitId',
+    maxLength: 40,
+    valueTypes: <String>['string'],
+    pattern: '^table-[1-9][0-9]*\$',
   );
 
   static const eventRehearsalActorDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
@@ -15508,6 +15566,13 @@ abstract final class CatchContractConstraints {
     path: 'eventRehearsalActorDocument.lastActionAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const eventRehearsalActorDocumentLayoutUnitId = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.layoutUnitId',
+    maxLength: 40,
+    valueTypes: <String>['string'],
+    pattern: '^table-[1-9][0-9]*\$',
   );
 
   static const eventRehearsalActorDocumentOptedOut = CatchContractFieldConstraints(
@@ -15615,6 +15680,11 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventRehearsalBootstrapCallableResponseActorsItemsConfirmedLayoutUnitId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.confirmedLayoutUnitId',
+    valueTypes: <String>['string'],
+  );
+
   static const eventRehearsalBootstrapCallableResponseActorsItemsDisplayName = CatchContractFieldConstraints(
     path: 'eventRehearsalBootstrapCallableResponse.actors.items.displayName',
     required: true,
@@ -15644,6 +15714,11 @@ abstract final class CatchContractConstraints {
   static const eventRehearsalBootstrapCallableResponseActorsItemsKeepApartActorIdsItems = CatchContractFieldConstraints(
     path: 'eventRehearsalBootstrapCallableResponse.actors.items.keepApartActorIds.items',
     required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsLayoutUnitId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.layoutUnitId',
     valueTypes: <String>['string'],
   );
 
@@ -59356,6 +59431,13 @@ abstract final class CatchContractConstraints {
     'controlEventRehearsalCallablePayload.expectedRevision': controlEventRehearsalCallablePayloadExpectedRevision,
     'controlEventRehearsalCallablePayload.minutes': controlEventRehearsalCallablePayloadMinutes,
     'controlEventRehearsalCallablePayload.sessionId': controlEventRehearsalCallablePayloadSessionId,
+    'controlEventRehearsalSpatialCallablePayload.action': controlEventRehearsalSpatialCallablePayloadAction,
+    'controlEventRehearsalSpatialCallablePayload.actorId': controlEventRehearsalSpatialCallablePayloadActorId,
+    'controlEventRehearsalSpatialCallablePayload.clientActionId': controlEventRehearsalSpatialCallablePayloadClientActionId,
+    'controlEventRehearsalSpatialCallablePayload.destinationUnitId': controlEventRehearsalSpatialCallablePayloadDestinationUnitId,
+    'controlEventRehearsalSpatialCallablePayload.expectedRevision': controlEventRehearsalSpatialCallablePayloadExpectedRevision,
+    'controlEventRehearsalSpatialCallablePayload.scope': controlEventRehearsalSpatialCallablePayloadScope,
+    'controlEventRehearsalSpatialCallablePayload.sessionId': controlEventRehearsalSpatialCallablePayloadSessionId,
     'convertOrganizerFormResponseCallablePayload.eventId': convertOrganizerFormResponseCallablePayloadEventId,
     'convertOrganizerFormResponseCallablePayload.kind': convertOrganizerFormResponseCallablePayloadKind,
     'convertOrganizerFormResponseCallablePayload.organizerId': convertOrganizerFormResponseCallablePayloadOrganizerId,
@@ -60566,6 +60648,7 @@ abstract final class CatchContractConstraints {
     'eventRehearsalActionDocument.virtualNow._nanoseconds': eventRehearsalActionDocumentVirtualNowNanoseconds,
     'eventRehearsalActionDocument.virtualNow._seconds': eventRehearsalActionDocumentVirtualNowSeconds,
     'eventRehearsalActorDocument.actorId': eventRehearsalActorDocumentActorId,
+    'eventRehearsalActorDocument.confirmedLayoutUnitId': eventRehearsalActorDocumentConfirmedLayoutUnitId,
     'eventRehearsalActorDocument.createdAt._nanoseconds': eventRehearsalActorDocumentCreatedAtNanoseconds,
     'eventRehearsalActorDocument.createdAt._seconds': eventRehearsalActorDocumentCreatedAtSeconds,
     'eventRehearsalActorDocument.displayName': eventRehearsalActorDocumentDisplayName,
@@ -60575,6 +60658,7 @@ abstract final class CatchContractConstraints {
     'eventRehearsalActorDocument.keepApartActorIds.items': eventRehearsalActorDocumentKeepApartActorIdsItems,
     'eventRehearsalActorDocument.lastActionAt._nanoseconds': eventRehearsalActorDocumentLastActionAtNanoseconds,
     'eventRehearsalActorDocument.lastActionAt._seconds': eventRehearsalActorDocumentLastActionAtSeconds,
+    'eventRehearsalActorDocument.layoutUnitId': eventRehearsalActorDocumentLayoutUnitId,
     'eventRehearsalActorDocument.optedOut': eventRehearsalActorDocumentOptedOut,
     'eventRehearsalActorDocument.persona': eventRehearsalActorDocumentPersona,
     'eventRehearsalActorDocument.promptCompleted': eventRehearsalActorDocumentPromptCompleted,
@@ -60591,11 +60675,13 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.actions.items.virtualNowMillis': eventRehearsalBootstrapCallableResponseActionsItemsVirtualNowMillis,
     'eventRehearsalBootstrapCallableResponse.actors': eventRehearsalBootstrapCallableResponseActors,
     'eventRehearsalBootstrapCallableResponse.actors.items.actorId': eventRehearsalBootstrapCallableResponseActorsItemsActorId,
+    'eventRehearsalBootstrapCallableResponse.actors.items.confirmedLayoutUnitId': eventRehearsalBootstrapCallableResponseActorsItemsConfirmedLayoutUnitId,
     'eventRehearsalBootstrapCallableResponse.actors.items.displayName': eventRehearsalBootstrapCallableResponseActorsItemsDisplayName,
     'eventRehearsalBootstrapCallableResponse.actors.items.guestMoment': eventRehearsalBootstrapCallableResponseActorsItemsGuestMoment,
     'eventRehearsalBootstrapCallableResponse.actors.items.helpRequested': eventRehearsalBootstrapCallableResponseActorsItemsHelpRequested,
     'eventRehearsalBootstrapCallableResponse.actors.items.keepApartActorIds': eventRehearsalBootstrapCallableResponseActorsItemsKeepApartActorIds,
     'eventRehearsalBootstrapCallableResponse.actors.items.keepApartActorIds.items': eventRehearsalBootstrapCallableResponseActorsItemsKeepApartActorIdsItems,
+    'eventRehearsalBootstrapCallableResponse.actors.items.layoutUnitId': eventRehearsalBootstrapCallableResponseActorsItemsLayoutUnitId,
     'eventRehearsalBootstrapCallableResponse.actors.items.optedOut': eventRehearsalBootstrapCallableResponseActorsItemsOptedOut,
     'eventRehearsalBootstrapCallableResponse.actors.items.persona': eventRehearsalBootstrapCallableResponseActorsItemsPersona,
     'eventRehearsalBootstrapCallableResponse.actors.items.promptCompleted': eventRehearsalBootstrapCallableResponseActorsItemsPromptCompleted,

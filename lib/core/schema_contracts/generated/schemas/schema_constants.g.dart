@@ -81,6 +81,7 @@ export 'complete_organizer_whatsapp_connection_callable_payload.g.dart';
 export 'config_cities_document.g.dart';
 export 'connect_organizer_luma_provider_callable_payload.g.dart';
 export 'control_event_rehearsal_callable_payload.g.dart';
+export 'control_event_rehearsal_spatial_callable_payload.g.dart';
 export 'convert_organizer_form_response_callable_payload.g.dart';
 export 'convert_organizer_form_response_callable_response.g.dart';
 export 'create_chat_message_client_write.g.dart';

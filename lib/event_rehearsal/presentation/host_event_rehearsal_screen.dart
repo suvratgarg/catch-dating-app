@@ -25,6 +25,8 @@ import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_ru
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_link_and_run.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_setup_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_simulator.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';
@@ -60,6 +62,7 @@ class _HostEventRehearsalScreenState
     final behaviorMutation = ref.watch(
       EventRehearsalController.behaviorMutation,
     );
+    final spatialMutation = ref.watch(EventRehearsalController.spatialMutation);
     final resetMutation = ref.watch(EventRehearsalController.resetMutation);
     final forkMutation = ref.watch(EventRehearsalController.forkMutation);
     final guestLinkMutation = ref.watch(
@@ -71,6 +74,7 @@ class _HostEventRehearsalScreenState
         setupMutation.isPending ||
         controlMutation.isPending ||
         behaviorMutation.isPending ||
+        spatialMutation.isPending ||
         resetMutation.isPending ||
         forkMutation.isPending ||
         guestLinkMutation.isPending ||
@@ -81,6 +85,7 @@ class _HostEventRehearsalScreenState
         EventRehearsalController.setupMutation,
         EventRehearsalController.controlMutation,
         EventRehearsalController.behaviorMutation,
+        EventRehearsalController.spatialMutation,
         EventRehearsalController.resetMutation,
         EventRehearsalController.forkMutation,
         EventRehearsalController.guestLinkMutation,
@@ -147,9 +152,16 @@ class _HostEventRehearsalScreenState
                       assignments: runtime.assignments,
                       assignmentParticipantProfiles: runtime.profiles,
                       presenceSummary: runtime.presence,
-                      initialTab: rehearsal.session.hasStarted
-                          ? EventSuccessHostTab.live
-                          : EventSuccessHostTab.setup,
+                      initialTab: switch (rehearsal.session.status) {
+                        EventRehearsalStatus.draft ||
+                        EventRehearsalStatus.ready => EventSuccessHostTab.setup,
+                        EventRehearsalStatus.running ||
+                        EventRehearsalStatus.paused => EventSuccessHostTab.live,
+                        EventRehearsalStatus.complete ||
+                        EventRehearsalStatus.expired =>
+                          EventSuccessHostTab.report,
+                      },
+                      showTabs: false,
                       compactLiveControls: true,
                       referenceNow: rehearsal.session.virtualNow,
                       exclusionReferenceNow: rehearsal.session.virtualNow,
@@ -169,6 +181,26 @@ class _HostEventRehearsalScreenState
                         rehearsal.session,
                         actorId,
                         EventRehearsalBehavior.arrive,
+                      ),
+                      onPreviewSpatial: (assignment) =>
+                          _previewSpatial(runtime, rehearsal, assignment),
+                      onReassignSpatial: (assignment, unitId, scope) =>
+                          _controlSpatial(
+                            rehearsal.session,
+                            assignment.uid,
+                            EventRehearsalSpatialAction.reassign,
+                            destinationUnitId: unitId,
+                            scope: _rehearsalSpatialScope(scope),
+                          ),
+                      onConfirmSpatial: (assignment) => _controlSpatial(
+                        rehearsal.session,
+                        assignment.uid,
+                        EventRehearsalSpatialAction.confirmPosition,
+                      ),
+                      onReleaseSpatial: (assignment) => _controlSpatial(
+                        rehearsal.session,
+                        assignment.uid,
+                        EventRehearsalSpatialAction.releasePinned,
                       ),
                     ),
                   ),
@@ -377,6 +409,72 @@ class _HostEventRehearsalScreenState
         (tx) => tx
             .get(eventRehearsalControllerProvider.notifier)
             .inject(session: session, fault: fault),
+      );
+    } on Object {
+      // The mutation listener owns user-visible action failure.
+    }
+  }
+
+  Future<List<EventSuccessSpatialDestination>> _previewSpatial(
+    EventRehearsalRuntimeProjection runtime,
+    EventRehearsalBootstrap rehearsal,
+    EventSuccessAssignment assignment,
+  ) async {
+    final actor = rehearsal.actors
+        .where((candidate) => candidate.actorId == assignment.uid)
+        .firstOrNull;
+    final assignmentsByUnit = <String, List<EventSuccessAssignment>>{};
+    for (final candidate in runtime.assignments) {
+      final unitId = candidate.layoutUnitId;
+      if (unitId == null || candidate.uid == assignment.uid) continue;
+      assignmentsByUnit.putIfAbsent(unitId, () => []).add(candidate);
+    }
+    return [
+      for (final unit in runtime.layout.units)
+        if (unit.id != assignment.layoutUnitId)
+          () {
+            final occupants = assignmentsByUnit[unit.id] ?? const [];
+            final full = occupants.length >= unit.capacity;
+            final conflicts =
+                actor != null &&
+                occupants.any(
+                  (occupant) => actor.keepApartActorIds.contains(occupant.uid),
+                );
+            return EventSuccessSpatialDestination(
+              unitId: unit.id,
+              valid: !full && !conflicts,
+              reason: full
+                  ? EventSuccessSpatialDestinationReason.capacity
+                  : conflicts
+                  ? EventSuccessSpatialDestinationReason.safetyKeepApart
+                  : null,
+              recommendedScope: actor?.status == EventRehearsalActorStatus.late
+                  ? EventSuccessSpatialScope.thisRound
+                  : EventSuccessSpatialScope.pinned,
+            );
+          }(),
+    ];
+  }
+
+  Future<void> _controlSpatial(
+    EventRehearsalSession session,
+    String actorId,
+    EventRehearsalSpatialAction action, {
+    String? destinationUnitId,
+    EventRehearsalSpatialScope? scope,
+  }) async {
+    try {
+      await EventRehearsalController.spatialMutation.run(
+        ref,
+        (tx) => tx
+            .get(eventRehearsalControllerProvider.notifier)
+            .controlSpatial(
+              session: session,
+              actorId: actorId,
+              action: action,
+              destinationUnitId: destinationUnitId,
+              scope: scope,
+            ),
       );
     } on Object {
       // The mutation listener owns user-visible action failure.
@@ -705,3 +803,10 @@ String _coachFirstName(String displayName) {
   if (trimmed.isEmpty) return displayName;
   return trimmed.split(RegExp(r'\s+')).first;
 }
+
+EventRehearsalSpatialScope _rehearsalSpatialScope(
+  EventSuccessSpatialScope scope,
+) => switch (scope) {
+  EventSuccessSpatialScope.thisRound => EventRehearsalSpatialScope.thisRound,
+  EventSuccessSpatialScope.pinned => EventRehearsalSpatialScope.pinned,
+};

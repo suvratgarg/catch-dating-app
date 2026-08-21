@@ -73,6 +73,7 @@ export {
 export {
   completeEventRehearsal,
   controlEventRehearsal,
+  controlEventRehearsalSpatial,
   createEventRehearsal,
   expireEventRehearsals,
   exportEventRehearsalReproduction,

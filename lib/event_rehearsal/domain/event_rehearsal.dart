@@ -81,6 +81,10 @@ enum EventRehearsalControlAction {
   complete,
 }
 
+enum EventRehearsalSpatialAction { reassign, confirmPosition, releasePinned }
+
+enum EventRehearsalSpatialScope { thisRound, pinned }
+
 enum EventRehearsalBehavior {
   arrive,
   arriveLate,
@@ -311,6 +315,8 @@ class EventRehearsalActor {
     required this.keepApartActorIds,
     required this.helpRequested,
     required this.promptCompleted,
+    this.layoutUnitId,
+    this.confirmedLayoutUnitId,
   });
 
   factory EventRehearsalActor.fromMap(Map<Object?, Object?> map) =>
@@ -328,6 +334,8 @@ class EventRehearsalActor {
         keepApartActorIds: _stringList(map['keepApartActorIds']),
         helpRequested: _requiredBool(map, 'helpRequested'),
         promptCompleted: _requiredBool(map, 'promptCompleted'),
+        layoutUnitId: map['layoutUnitId'] as String?,
+        confirmedLayoutUnitId: map['confirmedLayoutUnitId'] as String?,
       );
 
   final String actorId;
@@ -339,6 +347,8 @@ class EventRehearsalActor {
   final List<String> keepApartActorIds;
   final bool helpRequested;
   final bool promptCompleted;
+  final String? layoutUnitId;
+  final String? confirmedLayoutUnitId;
 }
 
 class EventRehearsalActionRecord {

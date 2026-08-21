@@ -1706,6 +1706,13 @@ const schemaSpecs = [
       "functions/src/shared/generated/injectEventRehearsalBehaviorCallablePayload.ts",
   },
   {
+    name: "ControlEventRehearsalSpatialCallablePayload",
+    source:
+      "callables/control_event_rehearsal_spatial_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/controlEventRehearsalSpatialCallablePayload.ts",
+  },
+  {
     name: "ResetEventRehearsalCallablePayload",
     source: "callables/reset_event_rehearsal_payload.schema.json",
     typeOutput:

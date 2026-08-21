@@ -45,6 +45,8 @@ export interface EventRehearsalActorDocument {
   keepApartActorIds: string[];
   helpRequested: boolean;
   promptCompleted: boolean;
+  layoutUnitId: string | null;
+  confirmedLayoutUnitId: string | null;
   lastActionAt: {
     _seconds: number;
     _nanoseconds: number;

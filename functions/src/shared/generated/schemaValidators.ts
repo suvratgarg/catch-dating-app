@@ -280,6 +280,7 @@ import {EventRehearsalBootstrapCallableResponse} from "./eventRehearsalBootstrap
 import {UpdateEventRehearsalSetupCallablePayload} from "./updateEventRehearsalSetupCallablePayload";
 import {ControlEventRehearsalCallablePayload} from "./controlEventRehearsalCallablePayload";
 import {InjectEventRehearsalBehaviorCallablePayload} from "./injectEventRehearsalBehaviorCallablePayload";
+import {ControlEventRehearsalSpatialCallablePayload} from "./controlEventRehearsalSpatialCallablePayload";
 import {ResetEventRehearsalCallablePayload} from "./resetEventRehearsalCallablePayload";
 import {RotateEventRehearsalGuestLinkCallablePayload} from "./rotateEventRehearsalGuestLinkCallablePayload";
 import {GetEventRehearsalGuestBootstrapCallablePayload} from "./getEventRehearsalGuestBootstrapCallablePayload";
@@ -778,6 +779,7 @@ import {
   updateEventRehearsalSetupCallablePayloadSchema,
   controlEventRehearsalCallablePayloadSchema,
   injectEventRehearsalBehaviorCallablePayloadSchema,
+  controlEventRehearsalSpatialCallablePayloadSchema,
   resetEventRehearsalCallablePayloadSchema,
   rotateEventRehearsalGuestLinkCallablePayloadSchema,
   getEventRehearsalGuestBootstrapCallablePayloadSchema,
@@ -1570,6 +1572,8 @@ export const validateControlEventRehearsalCallablePayload =
   lazyValidator<ControlEventRehearsalCallablePayload>(controlEventRehearsalCallablePayloadSchema);
 export const validateInjectEventRehearsalBehaviorCallablePayload =
   lazyValidator<InjectEventRehearsalBehaviorCallablePayload>(injectEventRehearsalBehaviorCallablePayloadSchema);
+export const validateControlEventRehearsalSpatialCallablePayload =
+  lazyValidator<ControlEventRehearsalSpatialCallablePayload>(controlEventRehearsalSpatialCallablePayloadSchema);
 export const validateResetEventRehearsalCallablePayload =
   lazyValidator<ResetEventRehearsalCallablePayload>(resetEventRehearsalCallablePayloadSchema);
 export const validateRotateEventRehearsalGuestLinkCallablePayload =

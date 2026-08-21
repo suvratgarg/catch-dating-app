@@ -701,11 +701,6 @@ class _EventSuccessRoomWorkspaceSummary extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            context.l10n.eventSuccessLiveWorkspaceRoom,
-            style: CatchTextStyles.headlineS(context, color: t.ink),
-          ),
-          gapH4,
-          Text(
             context.l10n.eventSuccessRoomWorkspaceCapacitySummary(
               units: _eventSuccessRoomUnitCountLabel(context, layout),
               seats: seatCount,

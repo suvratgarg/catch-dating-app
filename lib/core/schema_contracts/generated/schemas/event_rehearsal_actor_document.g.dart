@@ -26,6 +26,8 @@ const schemaEventRehearsalActorDocumentSchema = <String, Object?>{
     'keepApartActorIds',
     'helpRequested',
     'promptCompleted',
+    'layoutUnitId',
+    'confirmedLayoutUnitId',
     'lastActionAt',
     'createdAt',
     'updatedAt',
@@ -114,6 +116,32 @@ const schemaEventRehearsalActorDocumentSchema = <String, Object?>{
     },
     'promptCompleted': <String, Object?>{
       'type': 'boolean',
+      'x-catch-ownership': 'callable-owned',
+    },
+    'layoutUnitId': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'string',
+          'pattern': '^table-[1-9][0-9]*\$',
+          'maxLength': 40,
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+      'x-catch-ownership': 'callable-owned',
+    },
+    'confirmedLayoutUnitId': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'string',
+          'pattern': '^table-[1-9][0-9]*\$',
+          'maxLength': 40,
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
       'x-catch-ownership': 'callable-owned',
     },
     'lastActionAt': <String, Object?>{

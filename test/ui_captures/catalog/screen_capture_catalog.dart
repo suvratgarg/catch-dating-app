@@ -8390,6 +8390,19 @@ EventRehearsalBootstrap _eventRehearsalRuntimeCaptureBootstrap() {
           keepApartActorIds: const [],
           helpRequested: false,
           promptCompleted: indexed.$1 < 16,
+          layoutUnitId: switch (indexed.$1) {
+            15 => 'table-5',
+            19 => 'table-6',
+            < 23 => 'table-${(indexed.$1 ~/ 4) + 1}',
+            _ => null,
+          },
+          confirmedLayoutUnitId: indexed.$1 < 20
+              ? switch (indexed.$1) {
+                  15 => 'table-5',
+                  19 => 'table-6',
+                  _ => 'table-${(indexed.$1 ~/ 4) + 1}',
+                }
+              : null,
         ),
     ],
     actions: [
