@@ -371,7 +371,6 @@ export async function adminUpdateClubDetailsHandler(
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, adminContext.uid, "adminUpdateClubDetails");
   const clubRef = db.collection("organizers").doc(data.clubId);
-  const legacyClubRef = db.collection("clubs").doc(data.clubId);
   await db.runTransaction(async (tx) => {
     const clubSnap = await tx.get(clubRef);
     if (!clubSnap.exists) {
@@ -439,7 +438,6 @@ export async function adminUpdateClubDetailsHandler(
       );
     }
     tx.update(clubRef, patch);
-    tx.set(legacyClubRef, patch, {merge: true});
     setAdminAuditLogInTransaction(tx, db, adminContext, {
       action: "adminUpdateClubDetails",
       targetPath: clubRef.path,

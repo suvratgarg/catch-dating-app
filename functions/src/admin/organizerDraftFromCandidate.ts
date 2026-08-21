@@ -135,12 +135,8 @@ export async function adminCreateOrganizerDraftFromCandidateHandler(
     organizerId = nullableString(operationSnap.data()?.entityId) ??
       allocatedOrganizerRef.id;
     const organizerRef = db.collection("organizers").doc(organizerId);
-    const legacyClubRef = db.collection("clubs").doc(organizerId);
     organizerPath = organizerRef.path;
-    const [organizerSnap, legacyClubSnap] = await Promise.all([
-      tx.get(organizerRef),
-      tx.get(legacyClubRef),
-    ]);
+    const organizerSnap = await tx.get(organizerRef);
     if (operationSnap.exists) {
       if (!organizerSnap.exists) {
         throw new HttpsError(
@@ -151,7 +147,7 @@ export async function adminCreateOrganizerDraftFromCandidateHandler(
       }
       return;
     }
-    if (organizerSnap.exists || legacyClubSnap.exists) {
+    if (organizerSnap.exists) {
       throw new HttpsError(
         "already-exists",
         "Allocated organizer id is already in use; retry draft creation."
@@ -215,17 +211,6 @@ export async function adminCreateOrganizerDraftFromCandidateHandler(
 
     tx.create(organizerRef, organizer);
     created = true;
-    const legacyOrganizer = Object.fromEntries(
-      Object.entries(organizer).filter(([key]) =>
-        key !== "organizerPhotos" &&
-        key !== "followerCount" &&
-        key !== "intakeLearningSource")
-    );
-    tx.create(legacyClubRef, {
-      ...legacyOrganizer,
-      clubPhotos: organizer.organizerPhotos,
-      memberCount: 0,
-    });
     const operation: OrganizerIntakeCurationDecisionDocument = {
       schemaVersion: 1,
       operationId,

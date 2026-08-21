@@ -75,7 +75,6 @@ export async function adminSetClubIndexStatusHandler(
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, adminContext.uid, "adminSetClubIndexStatus");
   const clubRef = db.collection("organizers").doc(data.clubId);
-  const legacyClubRef = db.collection("clubs").doc(data.clubId);
   const timestamp = deps.serverTimestamp();
   const publishStatus = data.indexStatus === "noindex" ? "qa" : "published";
   const robots = data.indexStatus === "noindex" ?
@@ -124,7 +123,6 @@ export async function adminSetClubIndexStatusHandler(
       ),
     };
     tx.update(clubRef, patch);
-    tx.set(legacyClubRef, patch, {merge: true});
     setAdminAuditLogInTransaction(tx, db, adminContext, {
       action: "adminSetClubIndexStatus",
       targetPath: clubRef.path,
