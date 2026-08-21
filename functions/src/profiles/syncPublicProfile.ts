@@ -8,7 +8,7 @@ import {
   publicProfileFromUserProfileDoc,
 } from "../shared/profileProjection";
 import {isSocialReadyUserProfile} from "../shared/profileReadiness";
-import {clubHostProfiles} from "../shared/clubHosts";
+import {organizerHostProfiles} from "../shared/organizerHosts";
 import {HostProfileDocument} from "../shared/hostProfiles";
 
 interface SyncPublicProfileDeps {
@@ -97,7 +97,7 @@ export async function syncUserProfileProjectionsHandler(
 }
 
 /**
- * Syncs professional host-owned denormalized projections.
+ * Syncs organizer-owned denormalized host projections.
  * @param {string} userId Host user id.
  * @param {HostProfileDocument | undefined} hostProfile Current host profile,
  * undefined when the source document was deleted.
@@ -109,14 +109,14 @@ export async function syncHostProfileProjectionsHandler(
   hostProfile: HostProfileDocument | undefined,
   deps: SyncPublicProfileDeps = defaultDeps
 ): Promise<void> {
-  await syncHostedClubHostProfile(userId, {
+  await syncOrganizerHostProfile(userId, {
     hostName: nonBlank(hostProfile?.displayName) ?? "Catch Host",
     hostAvatarUrl: nonBlank(hostProfile?.avatarUrl),
   }, deps);
 }
 
 /**
- * Updates hosted club denormalized professional host profile fields.
+ * Updates organizer denormalized professional host profile fields.
  * @param {string} userId Host user id.
  * @param {object} patch Host projection patch.
  * @param {string} patch.hostName Professional host display name.
@@ -124,7 +124,7 @@ export async function syncHostProfileProjectionsHandler(
  * @param {SyncPublicProfileDeps} deps Injectable Firebase dependencies.
  * @return {Promise<void>}
  */
-export async function syncHostedClubHostProfile(
+export async function syncOrganizerHostProfile(
   userId: string,
   patch: {hostName: string; hostAvatarUrl: string | null},
   deps: SyncPublicProfileDeps = defaultDeps
@@ -133,34 +133,29 @@ export async function syncHostedClubHostProfile(
   const [
     canonicalOwnerSnap,
     canonicalTeamSnap,
-    legacyHostedSnap,
-    legacyHostedByProjectionSnap,
+    canonicalHostSnap,
   ] = await Promise.all([
     db.collection("organizers").where("ownerUserId", "==", userId).get(),
     db.collection("organizers")
       .where("hostUserIds", "array-contains", userId)
       .get(),
-    db.collection("clubs").where("hostUserId", "==", userId).get(),
-    db.collection("clubs").where("hostUserIds", "array-contains", userId).get(),
+    db.collection("organizers").where("hostUserId", "==", userId).get(),
   ]);
   const docsByPath = new Map<string, FirebaseFirestore.QueryDocumentSnapshot>();
   for (const doc of canonicalOwnerSnap.docs) docsByPath.set(doc.ref.path, doc);
   for (const doc of canonicalTeamSnap.docs) docsByPath.set(doc.ref.path, doc);
-  for (const doc of legacyHostedSnap.docs) docsByPath.set(doc.ref.path, doc);
-  for (const doc of legacyHostedByProjectionSnap.docs) {
-    docsByPath.set(doc.ref.path, doc);
-  }
+  for (const doc of canonicalHostSnap.docs) docsByPath.set(doc.ref.path, doc);
   if (docsByPath.size === 0) return;
 
   const batch = db.batch();
   docsByPath.forEach((doc) => {
-    const club = doc.data() as Parameters<typeof clubHostProfiles>[0];
+    const organizer = doc.data() as Parameters<typeof organizerHostProfiles>[0];
     const fields: Record<string, unknown> = {};
-    if (club.hostUserId === userId) {
+    if (organizer.hostUserId === userId) {
       fields.hostName = patch.hostName;
       fields.hostAvatarUrl = patch.hostAvatarUrl;
     }
-    fields.hostProfiles = clubHostProfiles(club).map((host) =>
+    fields.hostProfiles = organizerHostProfiles(organizer).map((host) =>
       host.uid === userId ?
         {
           ...host,

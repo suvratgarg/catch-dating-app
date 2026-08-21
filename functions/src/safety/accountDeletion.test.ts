@@ -300,18 +300,6 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
   );
   assert.ok(
     harness.setWrites.some((write) =>
-      write.path === "clubMemberships/club-1_runner-1" &&
-      write.data.status === "deleted"
-    )
-  );
-  assert.ok(
-    harness.updateWrites.some((write) =>
-      write.path === "clubs/club-1" &&
-      write.data.memberCount !== undefined
-    )
-  );
-  assert.ok(
-    harness.setWrites.some((write) =>
       write.path === "eventParticipations/event-1_runner-1" &&
       write.data.status === "deleted"
     )

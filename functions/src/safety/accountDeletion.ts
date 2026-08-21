@@ -7,7 +7,6 @@ import {requireAuth} from "../shared/auth";
 import {eventBroadcastDeliveryKey} from "../shared/eventBroadcasts";
 import {
   ProfilePhoto,
-  ClubMembershipDocument,
   OrganizerFollowDocument,
   EventParticipationDocument,
   OrganizerContactIdentityLinkDocument,
@@ -317,8 +316,7 @@ async function queueHostAnalyticsSnapshotCleanup(
 }
 
 /**
- * Marks the user's club membership edges deleted and updates aggregate
- * projections for active memberships.
+ * Marks the user's organizer follow edges inactive and updates aggregates.
  */
 async function queueClubMembershipCleanup(
   db: FirebaseFirestore.Firestore,
@@ -326,10 +324,8 @@ async function queueClubMembershipCleanup(
   now: FirebaseFirestore.FieldValue,
   writer: BatchQueue
 ) {
-  const [follows, memberships] = await Promise.all([
-    db.collection("organizerFollows").where("uid", "==", uid).get(),
-    db.collection("clubMemberships").where("uid", "==", uid).get(),
-  ]);
+  const follows = await db.collection("organizerFollows")
+    .where("uid", "==", uid).get();
   follows.forEach((doc) => {
     const follow = doc.data() as OrganizerFollowDocument;
     writer.set(doc.ref, {
@@ -340,20 +336,6 @@ async function queueClubMembershipCleanup(
     if (follow.status === "active") {
       writer.update(db.collection("organizers").doc(follow.organizerId), {
         followerCount: admin.firestore.FieldValue.increment(-1),
-      });
-    }
-  });
-  memberships.forEach((doc) => {
-    const membership = doc.data() as ClubMembershipDocument;
-    writer.set(doc.ref, {
-      status: "deleted",
-      deletedAt: now,
-      leftAt: now,
-      pushNotificationsEnabled: false,
-    }, {merge: true});
-    if (membership.status === "active") {
-      writer.update(db.collection("clubs").doc(membership.clubId), {
-        memberCount: admin.firestore.FieldValue.increment(-1),
       });
     }
   });
