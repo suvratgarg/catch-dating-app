@@ -2054,9 +2054,9 @@ const model = {
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_decide_organizer_claim_payload.schema.json",
-      "title": "AdminDecideOrganizerClaimCallablePayload",
-      "description": "Callable payload accepted by adminDecideOrganizerClaim.",
+      "$id": "https://catch.app/contracts/callables/admin_decide_club_claim_payload.schema.json",
+      "title": "AdminDecideClubClaimCallablePayload",
+      "description": "Callable payload accepted by adminDecideClubClaim.",
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -4329,6 +4329,85 @@ const model = {
             "week",
             "month"
           ]
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_list_club_claim_requests_payload.schema.json",
+      "title": "AdminListClubClaimRequestsCallablePayload",
+      "type": "object",
+      "additionalProperties": false
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_get_club_claim_request_details_payload.schema.json",
+      "title": "AdminGetClubClaimRequestDetailsCallablePayload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId"
+      ],
+      "properties": {
+        "requestId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_set_club_index_status_payload.schema.json",
+      "title": "AdminSetClubIndexStatusCallablePayload",
+      "description": "Callable payload accepted by adminSetClubIndexStatus.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "clubId",
+        "indexStatus",
+        "checklist"
+      ],
+      "properties": {
+        "clubId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "indexStatus": {
+          "type": "string",
+          "enum": [
+            "noindex",
+            "indexReady",
+            "indexed"
+          ]
+        },
+        "checklist": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sourceEvidenceVerified",
+            "mediaRightsVerified",
+            "cadenceVerified",
+            "ownerContactVerified"
+          ],
+          "properties": {
+            "sourceEvidenceVerified": {
+              "type": "boolean"
+            },
+            "mediaRightsVerified": {
+              "type": "boolean"
+            },
+            "cadenceVerified": {
+              "type": "boolean"
+            },
+            "ownerContactVerified": {
+              "type": "boolean"
+            }
+          }
+        },
+        "reviewNote": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
         }
       }
     },
@@ -8042,11 +8121,6 @@ const model = {
       "additionalProperties": true
     },
     {
-      "$id": "https://catch.app/contracts/admin_runtime/adminGetOrganizerClaimRequestDetails_payload.schema.json",
-      "type": "object",
-      "additionalProperties": true
-    },
-    {
       "$id": "https://catch.app/contracts/admin_runtime/adminGetOrganizerClaimRequestDetails_response.schema.json",
       "type": "object",
       "additionalProperties": true
@@ -8073,11 +8147,6 @@ const model = {
     },
     {
       "$id": "https://catch.app/contracts/admin_runtime/adminListExternalEventDetails_response.schema.json",
-      "type": "object",
-      "additionalProperties": true
-    },
-    {
-      "$id": "https://catch.app/contracts/admin_runtime/adminListOrganizerClaimRequests_payload.schema.json",
       "type": "object",
       "additionalProperties": true
     },
@@ -8112,11 +8181,6 @@ const model = {
       "additionalProperties": true
     },
     {
-      "$id": "https://catch.app/contracts/admin_runtime/adminSetOrganizerIndexStatus_payload.schema.json",
-      "type": "object",
-      "additionalProperties": true
-    },
-    {
       "$id": "https://catch.app/contracts/admin_runtime/adminSetOrganizerIndexStatus_response.schema.json",
       "type": "object",
       "additionalProperties": true
@@ -8142,7 +8206,7 @@ const model = {
     "adminCreateMarketingContentDraft": "https://catch.app/contracts/callables/admin_create_marketing_content_draft_payload.schema.json",
     "adminCreateOrganizerDraftFromCandidate": "https://catch.app/contracts/callables/admin_create_organizer_draft_from_candidate_payload.schema.json",
     "adminDecideAccessApplication": "https://catch.app/contracts/callables/admin_decide_access_application_payload.schema.json",
-    "adminDecideOrganizerClaim": "https://catch.app/contracts/callables/admin_decide_organizer_claim_payload.schema.json",
+    "adminDecideOrganizerClaim": "https://catch.app/contracts/callables/admin_decide_club_claim_payload.schema.json",
     "adminDecideOrganizerEventCandidate": "https://catch.app/contracts/callables/admin_decide_organizer_event_candidate_payload.schema.json",
     "adminDecideOrganizerIntake": "https://catch.app/contracts/callables/admin_decide_organizer_intake_payload.schema.json",
     "adminDecideOrganizerPolicyGap": "https://catch.app/contracts/callables/admin_decide_organizer_policy_gap_payload.schema.json",
@@ -8154,7 +8218,7 @@ const model = {
     "adminGetEventSupplyReadiness": "https://catch.app/contracts/callables/admin_get_event_supply_readiness_payload.schema.json",
     "adminGetHostAnalytics": "https://catch.app/contracts/callables/host_analytics_query_payload.schema.json",
     "adminGetMarketingOpsDashboard": "https://catch.app/contracts/callables/admin_get_marketing_ops_dashboard_payload.schema.json",
-    "adminGetOrganizerClaimRequestDetails": "https://catch.app/contracts/admin_runtime/adminGetOrganizerClaimRequestDetails_payload.schema.json",
+    "adminGetOrganizerClaimRequestDetails": "https://catch.app/contracts/callables/admin_get_club_claim_request_details_payload.schema.json",
     "adminGetOrganizerDetails": "https://catch.app/contracts/callables/admin_get_organizer_details_payload.schema.json",
     "adminGetOverview": "https://catch.app/contracts/callables/admin_get_overview_payload.schema.json",
     "adminGetSafetyTriageDetails": "https://catch.app/contracts/callables/admin_get_safety_triage_details_payload.schema.json",
@@ -8165,7 +8229,7 @@ const model = {
     "adminListEventDetails": "https://catch.app/contracts/callables/admin_list_event_details_payload.schema.json",
     "adminListExternalEventDetails": "https://catch.app/contracts/callables/admin_list_external_event_details_payload.schema.json",
     "adminListIntakeOperations": "https://catch.app/contracts/callables/admin_list_intake_operations_payload.schema.json",
-    "adminListOrganizerClaimRequests": "https://catch.app/contracts/admin_runtime/adminListOrganizerClaimRequests_payload.schema.json",
+    "adminListOrganizerClaimRequests": "https://catch.app/contracts/callables/admin_list_club_claim_requests_payload.schema.json",
     "adminListOrganizerDetails": "https://catch.app/contracts/callables/admin_list_organizer_details_payload.schema.json",
     "adminPublishExternalEvent": "https://catch.app/contracts/callables/admin_publish_external_event_payload.schema.json",
     "adminRecordEventIntakeReviewDecision": "https://catch.app/contracts/callables/admin_record_event_intake_review_decision_payload.schema.json",
@@ -8174,7 +8238,7 @@ const model = {
     "adminResolveOrganizerEventLocation": "https://catch.app/contracts/callables/admin_resolve_organizer_event_location_payload.schema.json",
     "adminSetAdminUserRoles": "https://catch.app/contracts/callables/admin_set_admin_user_roles_payload.schema.json",
     "adminSetCrossPathsShowcaseEligibility": "https://catch.app/contracts/callables/admin_set_cross_paths_showcase_eligibility_payload.schema.json",
-    "adminSetOrganizerIndexStatus": "https://catch.app/contracts/admin_runtime/adminSetOrganizerIndexStatus_payload.schema.json",
+    "adminSetOrganizerIndexStatus": "https://catch.app/contracts/callables/admin_set_club_index_status_payload.schema.json",
     "adminTakedownExternalEvent": "https://catch.app/contracts/callables/admin_takedown_external_event_payload.schema.json",
     "adminUpdateEventDetails": "https://catch.app/contracts/callables/admin_update_event_details_payload.schema.json",
     "adminUpdateOrganizerDetails": "https://catch.app/contracts/callables/admin_update_organizer_details_payload.schema.json"
@@ -8238,6 +8302,7 @@ const model = {
     "adminGetEventSupplyReadiness",
     "adminGetHostAnalytics",
     "adminGetMarketingOpsDashboard",
+    "adminGetOrganizerClaimRequestDetails",
     "adminGetOrganizerDetails",
     "adminGetOverview",
     "adminGetSafetyTriageDetails",
@@ -8248,6 +8313,7 @@ const model = {
     "adminListEventDetails",
     "adminListExternalEventDetails",
     "adminListIntakeOperations",
+    "adminListOrganizerClaimRequests",
     "adminListOrganizerDetails",
     "adminPublishExternalEvent",
     "adminRecordEventIntakeReviewDecision",
@@ -8256,6 +8322,7 @@ const model = {
     "adminResolveOrganizerEventLocation",
     "adminSetAdminUserRoles",
     "adminSetCrossPathsShowcaseEligibility",
+    "adminSetOrganizerIndexStatus",
     "adminTakedownExternalEvent",
     "adminUpdateEventDetails",
     "adminUpdateOrganizerDetails"

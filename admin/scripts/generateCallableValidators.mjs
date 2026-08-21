@@ -12,6 +12,11 @@ const outputPath = path.join(
   adminRoot,
   "src/generated/validators/adminCallableValidators.ts"
 );
+const adminActionCatalogPath = path.join(
+  contractsRoot,
+  "admin",
+  "admin_action_catalog.json"
+);
 const checkOnly = process.argv.includes("--check");
 const selfTest = process.argv.includes("--self-test");
 
@@ -80,6 +85,16 @@ function buildModel() {
       requestPaths.set(name, filePath);
       strictRequests.add(name);
     }
+  }
+  const adminActions = readJson(adminActionCatalogPath).actions ?? [];
+  for (const action of adminActions) {
+    if (!names.includes(action.callable) || typeof action.requestSchema !== "string") {
+      continue;
+    }
+    const filePath = path.resolve(repoRoot, action.requestSchema);
+    if (!fs.existsSync(filePath)) continue;
+    requestPaths.set(action.callable, filePath);
+    strictRequests.add(action.callable);
   }
 
   const responsePaths = new Map();
