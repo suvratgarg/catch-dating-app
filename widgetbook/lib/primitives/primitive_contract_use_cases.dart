@@ -5555,6 +5555,7 @@ Widget catchOptionGroupContractStates(BuildContext context) {
     states: const [
       'label',
       'mono',
+      'operational',
       'selected',
       'disabled',
       'accented',
@@ -5589,6 +5590,33 @@ Widget catchOptionGroupContractStates(BuildContext context) {
           child: CatchOptionGroup<String>(
             options: options,
             selected: 'hosting',
+            onChanged: _ignoreString,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'operational',
+        child: _FieldWidth(
+          child: CatchOptionGroup<String>(
+            options: [
+              CatchOption(
+                value: 'now',
+                label: 'Now',
+                icon: CatchIcons.scheduleRounded,
+              ),
+              CatchOption(
+                value: 'guests',
+                label: 'Guests',
+                icon: CatchIcons.groupsOutlined,
+              ),
+              CatchOption(
+                value: 'room',
+                label: 'Room',
+                icon: CatchIcons.gridViewRounded,
+              ),
+            ],
+            selected: 'room',
+            variant: CatchOptionGroupVariant.operational,
             onChanged: _ignoreString,
           ),
         ),
@@ -5651,7 +5679,7 @@ Widget catchOptionGroupItemContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'CatchOptionGroupItem',
     contractId: 'catch.option_group.item',
-    states: const ['selected', 'unselected', 'mono'],
+    states: const ['selected', 'unselected', 'mono', 'operational'],
     children: [
       _StateCard(
         label: 'selected',
@@ -5683,6 +5711,20 @@ Widget catchOptionGroupItemContractStates(BuildContext context) {
           onTap: _noop,
         ),
       ),
+      _StateCard(
+        label: 'operational',
+        child: CatchOptionGroupItem<String>(
+          option: CatchOption(
+            value: 'room',
+            label: 'Room',
+            icon: CatchIcons.gridViewRounded,
+          ),
+          selected: true,
+          selectedRule: t.ink,
+          variant: CatchOptionGroupVariant.operational,
+          onTap: _noop,
+        ),
+      ),
     ],
   );
 }
@@ -5707,7 +5749,12 @@ Widget catchTabRailContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'CatchTabRail',
     contractId: 'catch.tab_rail',
-    states: const ['two-option', 'four-option', 'selected-middle'],
+    states: const [
+      'two-option',
+      'four-option',
+      'selected-middle',
+      'operational',
+    ],
     children: [
       _StateCard(
         label: 'two-option',
@@ -5736,6 +5783,33 @@ Widget catchTabRailContractStates(BuildContext context) {
             selected: 'insights',
             onChanged: _ignoreString,
             options: hostOptions,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'operational',
+        child: _FieldWidth(
+          child: CatchTabRail<String>(
+            selected: 'room',
+            onChanged: _ignoreString,
+            variant: CatchOptionGroupVariant.operational,
+            options: [
+              CatchOption(
+                value: 'now',
+                label: 'Now',
+                icon: CatchIcons.scheduleRounded,
+              ),
+              CatchOption(
+                value: 'guests',
+                label: 'Guests',
+                icon: CatchIcons.groupsOutlined,
+              ),
+              CatchOption(
+                value: 'room',
+                label: 'Room',
+                icon: CatchIcons.gridViewRounded,
+              ),
+            ],
           ),
         ),
       ),

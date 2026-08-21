@@ -17,6 +17,7 @@ class LiveTab extends StatelessWidget {
     required this.spatialLayout,
     required this.spatialLayoutState,
     required this.showRoomWorkspace,
+    this.initialSpatialSelectionUid,
     required this.roster,
     required this.assignments,
     required this.assignmentParticipantProfiles,
@@ -76,6 +77,7 @@ class LiveTab extends StatelessWidget {
   final EventSuccessLayout? spatialLayout;
   final EventSuccessSpatialLayoutState spatialLayoutState;
   final bool showRoomWorkspace;
+  final String? initialSpatialSelectionUid;
   final EventParticipationRoster roster;
   final List<EventSuccessAssignment> assignments;
   final List<PublicProfile> assignmentParticipantProfiles;
@@ -402,6 +404,7 @@ class LiveTab extends StatelessWidget {
             layout: spatialLayout!,
             assignments: spatialAssignments,
             profiles: spatialProfiles,
+            activityKind: event.activityKind,
             exclusionAlertUids: exclusionSnapshot.alertEntries
                 .map((entry) => entry.uid)
                 .toSet(),
@@ -409,7 +412,9 @@ class LiveTab extends StatelessWidget {
             onReassign: onReassignSpatial,
             onConfirmPosition: onConfirmSpatial,
             onReleasePinned: onReleaseSpatial,
-            initialSelectedUid: fixtureActions?.initialSpatialSelectionUid,
+            initialSelectedUid:
+                initialSpatialSelectionUid ??
+                fixtureActions?.initialSpatialSelectionUid,
           );
 
     if (showRoomWorkspace) {
@@ -461,6 +466,7 @@ class LiveTab extends StatelessWidget {
               layout: effectiveSpatialLayoutState.layout!,
               assignments: spatialAssignments,
               profiles: spatialProfiles,
+              activityKind: event.activityKind,
               exclusionAlertUids: exclusionSnapshot.alertEntries
                   .map((entry) => entry.uid)
                   .toSet(),
@@ -468,7 +474,9 @@ class LiveTab extends StatelessWidget {
               onReassign: onReassignSpatial,
               onConfirmPosition: onConfirmSpatial,
               onReleasePinned: onReleaseSpatial,
-              initialSelectedUid: fixtureActions?.initialSpatialSelectionUid,
+              initialSelectedUid:
+                  initialSpatialSelectionUid ??
+                  fixtureActions?.initialSpatialSelectionUid,
               showHeader: false,
             ),
             if (spatialAssignments.isEmpty) ...[
@@ -483,7 +491,7 @@ class LiveTab extends StatelessWidget {
         ),
       };
       return ColoredBox(
-        color: CatchTokens.of(context).surface,
+        color: CatchTokens.of(context).bg,
         child: SingleChildScrollView(
           padding: CatchInsets.pageBody,
           child: roomBody,
@@ -695,6 +703,26 @@ class _EventSuccessRoomWorkspaceSummary extends StatelessWidget {
       (total, unit) => total + unit.capacity,
     );
     final t = CatchTokens.of(context);
+    final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.4;
+    final metrics = [
+      CatchStatColumn(
+        value: '$placedCount',
+        label: context.l10n.eventSuccessRoomWorkspacePlaced,
+        center: !largeText,
+      ),
+      CatchStatColumn(
+        value: '$unconfirmedCount',
+        label: context.l10n.eventSuccessRoomWorkspaceUnconfirmed,
+        center: !largeText,
+        highlight: unconfirmedCount > 0,
+      ),
+      CatchStatColumn(
+        value: '$attentionCount',
+        label: context.l10n.eventSuccessRoomWorkspaceNeedsAttention,
+        center: !largeText,
+        highlight: attentionCount > 0,
+      ),
+    ];
     return CatchSurface(
       padding: CatchInsets.content,
       child: Column(
@@ -708,36 +736,31 @@ class _EventSuccessRoomWorkspaceSummary extends StatelessWidget {
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH16,
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: CatchStatColumn(
-                  value: '$placedCount',
-                  label: context.l10n.eventSuccessRoomWorkspacePlaced,
-                  center: true,
-                ),
-              ),
-              VerticalDivider(color: t.line, width: CatchSpacing.s3),
-              Expanded(
-                child: CatchStatColumn(
-                  value: '$unconfirmedCount',
-                  label: context.l10n.eventSuccessRoomWorkspaceUnconfirmed,
-                  center: true,
-                  highlight: unconfirmedCount > 0,
-                ),
-              ),
-              VerticalDivider(color: t.line, width: CatchSpacing.s3),
-              Expanded(
-                child: CatchStatColumn(
-                  value: '$attentionCount',
-                  label: context.l10n.eventSuccessRoomWorkspaceNeedsAttention,
-                  center: true,
-                  highlight: attentionCount > 0,
-                ),
-              ),
-            ],
-          ),
+          if (largeText)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (final indexed in metrics.indexed) ...[
+                  indexed.$2,
+                  if (indexed.$1 != metrics.length - 1) ...[
+                    gapH8,
+                    Divider(color: t.line),
+                    gapH8,
+                  ],
+                ],
+              ],
+            )
+          else
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (final indexed in metrics.indexed) ...[
+                  Expanded(child: indexed.$2),
+                  if (indexed.$1 != metrics.length - 1)
+                    VerticalDivider(color: t.line, width: CatchSpacing.s3),
+                ],
+              ],
+            ),
         ],
       ),
     );
@@ -1232,6 +1255,32 @@ class LiveNowConsole extends StatelessWidget {
     );
 
     if (compactCopy) {
+      final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.4;
+      if (largeText) {
+        return ColoredBox(
+          color: t.surface,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                controlRoomBody(showVenue: true),
+                CatchBottomAction(
+                  label: primaryLabel,
+                  onPressed: primaryAction,
+                  isLoading: isPrimaryLoading,
+                  buttonAccentColor: accent,
+                  buttonKey: ValueKey(
+                    context
+                        .l10n
+                        .eventSuccessEventSuccessHostLiveCatchbuttonEventsuccessnextstepbutton,
+                  ),
+                  leadingContent: previousAction,
+                ),
+              ],
+            ),
+          ),
+        );
+      }
       return ColoredBox(
         color: t.surface,
         child: Column(

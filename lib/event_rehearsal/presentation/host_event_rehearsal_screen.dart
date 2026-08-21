@@ -53,6 +53,18 @@ class HostEventRehearsalScreen extends ConsumerStatefulWidget {
 class _HostEventRehearsalScreenState
     extends ConsumerState<HostEventRehearsalScreen> {
   var _coachCollapsed = false;
+  var _coachTextScaleInitialized = false;
+  String? _lastCoachTaskKey;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_coachTextScaleInitialized) return;
+    _coachTextScaleInitialized = true;
+    if (MediaQuery.textScalerOf(context).scale(1) >= 1.4) {
+      _coachCollapsed = true;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,12 +107,30 @@ class _HostEventRehearsalScreenState
       errorContext: AppErrorContext.event,
       child: CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
-          title:
-              rehearsalAsync.asData?.value.session.setup.title ??
-              context.l10n.hostEventRehearsalTitle,
-          subtitle: context.l10n.hostEventRehearsalManageSubtitle,
+          large: false,
+          height: MediaQuery.textScalerOf(context).scale(1) >= 1.4
+              ? CatchScreenTopBar.heightFor(
+                  context: context,
+                  hasEyebrow: true,
+                  titleMaxLines: 3,
+                  titleStyle: CatchTextStyles.titleL(context),
+                )
+              : CatchLayout.browseHeaderHeight,
+          allowContentHeightExpansion: true,
+          contentCrossAxisAlignment: CrossAxisAlignment.start,
+          titleWidget: _HostRuntimeTopBarTitle(
+            eyebrow: context.l10n.hostEventRehearsalManageSubtitle,
+            title:
+                rehearsalAsync.asData?.value.session.setup.title ??
+                context.l10n.hostEventRehearsalTitle,
+          ),
           leadingType: CatchTopBarLeading.back,
-          onBack: () => _leaveRehearsal(rehearsalAsync.asData?.value.session),
+          leading: CatchIconAction(
+            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+            icon: CatchIcons.arrowBackIosNewRounded,
+            onPressed: () =>
+                _leaveRehearsal(rehearsalAsync.asData?.value.session),
+          ),
           divider: scrolledUnder,
         ),
         body: SafeArea(
@@ -129,6 +159,8 @@ class _HostEventRehearsalScreenState
                 latePracticeGuestLabel:
                     context.l10n.hostEventRehearsalLatePracticeGuest,
               );
+              final coachTask = _buildCoachTask(context, rehearsal);
+              _syncCoachTask(coachTask);
               return Column(
                 children: [
                   _RehearsalBand(
@@ -163,6 +195,8 @@ class _HostEventRehearsalScreenState
                       },
                       showTabs: false,
                       compactLiveControls: true,
+                      initialLiveWorkspace: coachTask.workspace,
+                      initialSpatialSelectionUid: coachTask.actorId,
                       referenceNow: rehearsal.session.virtualNow,
                       exclusionReferenceNow: rehearsal.session.virtualNow,
                       liveActionState: EventSuccessLiveActionState(
@@ -205,7 +239,7 @@ class _HostEventRehearsalScreenState
                     ),
                   ),
                   _RehearsalCoachDock(
-                    rehearsal: rehearsal,
+                    task: coachTask,
                     collapsed: _coachCollapsed,
                     onWhy: () => _showCoachWhy(rehearsal),
                     onToggle: () =>
@@ -218,6 +252,18 @@ class _HostEventRehearsalScreenState
         ),
       ),
     );
+  }
+
+  void _syncCoachTask(_RehearsalCoachTask task) {
+    if (_lastCoachTaskKey == task.key) return;
+    final previousTaskKey = _lastCoachTaskKey;
+    _lastCoachTaskKey = task.key;
+    if (previousTaskKey == null) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && !_coachCollapsed) {
+        setState(() => _coachCollapsed = true);
+      }
+    });
   }
 
   Future<void> _setCanonicalLiveStep(
@@ -591,6 +637,38 @@ class _HostEventRehearsalScreenState
   }
 }
 
+class _HostRuntimeTopBarTitle extends StatelessWidget {
+  const _HostRuntimeTopBarTitle({required this.eyebrow, required this.title});
+
+  final String eyebrow;
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.4;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          eyebrow,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: CatchTextStyles.kicker(context, color: t.ink3),
+        ),
+        gapH2,
+        Text(
+          title,
+          maxLines: largeText ? 3 : 1,
+          overflow: TextOverflow.ellipsis,
+          style: CatchTextStyles.titleL(context, color: t.ink),
+        ),
+      ],
+    );
+  }
+}
+
 class _RehearsalBand extends StatelessWidget {
   const _RehearsalBand({
     required this.session,
@@ -608,58 +686,101 @@ class _RehearsalBand extends StatelessWidget {
     final formatter = DateFormat.jm(
       Localizations.localeOf(context).toLanguageTag(),
     );
-    return CatchSurface(
-      radius: 0,
-      borderColor: t.danger.withValues(alpha: CatchOpacity.lightOverlayBorder),
-      backgroundColor: t.danger.withValues(alpha: CatchOpacity.tabBarPillFill),
-      padding: CatchInsets.rosterRowContent,
-      child: Row(
-        children: [
-          CatchBadge.functional(
-            label: context.l10n.hostEventRehearsalBadge,
-            tone: CatchBadgeTone.danger,
-            icon: CatchIcons.groupsOutlined,
-          ),
-          gapW8,
-          Expanded(
-            child: Text(
-              context.l10n.hostEventRehearsalSyntheticGuests,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.supporting(context, color: t.ink2),
-            ),
-          ),
-          CatchButton(
-            label: context.l10n.hostEventRehearsalClockPill(
-              time: formatter.format(session.virtualNow),
-            ),
-            size: CatchButtonSize.sm,
-            variant: CatchButtonVariant.secondary,
-            onPressed: onOpenClock,
-          ),
-          gapW4,
-          CatchIconButton.icon(
-            icon: CatchIcons.more,
-            variant: CatchIconButtonVariant.plain,
-            size: CatchIconButton.navSize,
-            tooltip: context.l10n.hostEventRehearsalPracticeTools,
-            onTap: onOpenTools,
-          ),
-        ],
+    final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.4;
+    final clock = CatchButton(
+      label: context.l10n.hostEventRehearsalClockPill(
+        time: formatter.format(session.virtualNow),
       ),
+      size: CatchButtonSize.sm,
+      accentColor: t.danger,
+      onPressed: onOpenClock,
+    );
+    final tools = CatchIconButton.icon(
+      icon: CatchIcons.more,
+      variant: CatchIconButtonVariant.plain,
+      size: CatchIconButton.navSize,
+      tooltip: context.l10n.hostEventRehearsalPracticeTools,
+      onTap: onOpenTools,
+    );
+    final identity = Row(
+      children: [
+        Icon(CatchIcons.groupsOutlined, size: CatchIcon.md, color: t.danger),
+        gapW8,
+        Expanded(
+          child: Text(
+            context.l10n.hostEventRehearsalBadge.toUpperCase(),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: CatchTextStyles.kicker(context, color: t.danger),
+          ),
+        ),
+      ],
+    );
+    final descriptor = Text(
+      context.l10n.hostEventRehearsalSyntheticGuests,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: CatchTextStyles.labelS(context, color: t.ink2),
+    );
+    final bandContent = largeText
+        ? Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Expanded(child: identity),
+                  tools,
+                ],
+              ),
+              gapH4,
+              Row(
+                children: [
+                  Expanded(child: descriptor),
+                  gapW8,
+                  clock,
+                ],
+              ),
+            ],
+          )
+        : Row(
+            children: [
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [identity, gapH2, descriptor],
+                ),
+              ),
+              gapW8,
+              clock,
+              gapW4,
+              tools,
+            ],
+          );
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: t.danger.withValues(alpha: CatchOpacity.tabBarPillFill),
+        border: Border.symmetric(
+          horizontal: BorderSide(
+            color: t.danger.withValues(alpha: CatchOpacity.lightOverlayBorder),
+          ),
+        ),
+      ),
+      child: Padding(padding: CatchInsets.controlContent, child: bandContent),
     );
   }
 }
 
 class _RehearsalCoachDock extends StatelessWidget {
   const _RehearsalCoachDock({
-    required this.rehearsal,
+    required this.task,
     required this.collapsed,
     required this.onWhy,
     required this.onToggle,
   });
 
-  final EventRehearsalBootstrap rehearsal;
+  final _RehearsalCoachTask task;
   final bool collapsed;
   final VoidCallback onWhy;
   final VoidCallback onToggle;
@@ -667,6 +788,7 @@ class _RehearsalCoachDock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.4;
     if (collapsed) {
       return CatchBottomDock(
         padding: CatchInsets.rosterRowContent,
@@ -691,68 +813,104 @@ class _RehearsalCoachDock extends StatelessWidget {
       );
     }
 
-    final objective = _coachObjective(context, rehearsal);
-    final task = (rehearsal.session.activeStepIndex + 2).clamp(1, 8);
-    return CatchBottomDock(
-      child: Row(
-        children: [
-          CatchSurface(
-            width: CatchIconButton.defaultSize,
-            height: CatchIconButton.defaultSize,
-            radius: CatchRadius.sm,
-            backgroundColor: t.danger,
-            child: Icon(CatchIcons.scienceOutlined, color: t.primaryInk),
+    final taskCopy = Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CatchSurface(
+          width: CatchIconButton.navSize,
+          height: CatchIconButton.navSize,
+          radius: CatchRadius.sm,
+          backgroundColor: t.danger,
+          child: Icon(CatchIcons.scienceOutlined, color: t.primaryInk),
+        ),
+        gapW12,
+        Expanded(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                context.l10n.hostEventRehearsalCoachProgress(
+                  current: task.number,
+                  total: 8,
+                ),
+                style: CatchTextStyles.kicker(context, color: t.danger),
+              ),
+              gapH4,
+              Text(
+                task.title,
+                maxLines: largeText ? null : 2,
+                overflow: largeText ? null : TextOverflow.ellipsis,
+                style: CatchTextStyles.sectionTitle(context),
+              ),
+              gapH2,
+              Text(
+                task.body,
+                maxLines: largeText ? null : 1,
+                overflow: largeText ? null : TextOverflow.ellipsis,
+                style: CatchTextStyles.supporting(context, color: t.ink2),
+              ),
+            ],
           ),
-          gapW12,
-          Expanded(
-            child: Column(
+        ),
+      ],
+    );
+    final actions = Wrap(
+      spacing: CatchSpacing.s2,
+      runSpacing: CatchSpacing.s2,
+      alignment: WrapAlignment.end,
+      children: [
+        CatchButton(
+          label: context.l10n.hostEventRehearsalCoachWhy,
+          size: CatchButtonSize.sm,
+          variant: CatchButtonVariant.secondary,
+          onPressed: onWhy,
+        ),
+        CatchButton(
+          label: context.l10n.hostEventRehearsalCoachGotIt,
+          size: CatchButtonSize.sm,
+          onPressed: onToggle,
+        ),
+      ],
+    );
+    return CatchBottomDock(
+      padding: largeText ? CatchInsets.content : CatchInsets.rosterRowContent,
+      child: largeText
+          ? Column(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [taskCopy, gapH10, actions],
+            )
+          : Row(
               children: [
-                Text(
-                  context.l10n.hostEventRehearsalCoachProgress(
-                    current: task,
-                    total: 8,
-                  ),
-                  style: CatchTextStyles.kicker(context, color: t.danger),
-                ),
-                gapH4,
-                Text(
-                  objective.$1,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.sectionTitle(context),
-                ),
-                gapH2,
-                Text(
-                  objective.$2,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
-                ),
+                Expanded(child: taskCopy),
+                gapW8,
+                actions,
               ],
             ),
-          ),
-          gapW8,
-          CatchButton(
-            label: context.l10n.hostEventRehearsalCoachWhy,
-            size: CatchButtonSize.sm,
-            variant: CatchButtonVariant.secondary,
-            onPressed: onWhy,
-          ),
-          gapW6,
-          CatchButton(
-            label: context.l10n.hostEventRehearsalCoachGotIt,
-            size: CatchButtonSize.sm,
-            onPressed: onToggle,
-          ),
-        ],
-      ),
     );
   }
 }
 
-(String, String) _coachObjective(
+class _RehearsalCoachTask {
+  const _RehearsalCoachTask({
+    required this.key,
+    required this.number,
+    required this.title,
+    required this.body,
+    required this.workspace,
+    this.actorId,
+  });
+
+  final String key;
+  final int number;
+  final String title;
+  final String body;
+  final EventSuccessLiveWorkspace workspace;
+  final String? actorId;
+}
+
+_RehearsalCoachTask _buildCoachTask(
   BuildContext context,
   EventRehearsalBootstrap rehearsal,
 ) {
@@ -760,40 +918,83 @@ class _RehearsalCoachDock extends StatelessWidget {
       .where((actor) => actor.status == EventRehearsalActorStatus.late)
       .firstOrNull;
   if (late != null) {
-    return (
-      context.l10n.hostEventRehearsalCoachResolveLate(
+    return _RehearsalCoachTask(
+      key: 'late:${late.actorId}',
+      number: 3,
+      title: context.l10n.hostEventRehearsalCoachResolveLate(
         name: _coachFirstName(late.displayName),
       ),
-      context.l10n.hostEventRehearsalCoachSameControl,
+      body: context.l10n.hostEventRehearsalCoachSameControl,
+      workspace: EventSuccessLiveWorkspace.now,
+      actorId: late.actorId,
     );
   }
   final help = rehearsal.actors
       .where((actor) => actor.helpRequested)
       .firstOrNull;
   if (help != null) {
-    return (
-      context.l10n.hostEventRehearsalCoachResolveHelp(
+    return _RehearsalCoachTask(
+      key: 'help:${help.actorId}',
+      number: 5,
+      title: context.l10n.hostEventRehearsalCoachResolveHelp(
         name: _coachFirstName(help.displayName),
       ),
-      context.l10n.hostEventRehearsalCoachSameControl,
+      body: context.l10n.hostEventRehearsalCoachSameControl,
+      workspace: EventSuccessLiveWorkspace.now,
+      actorId: help.actorId,
+    );
+  }
+  final placement = rehearsal.actors
+      .where(
+        (actor) =>
+            (actor.status == EventRehearsalActorStatus.present ||
+                actor.status == EventRehearsalActorStatus.returned) &&
+            actor.layoutUnitId != null &&
+            actor.confirmedLayoutUnitId != actor.layoutUnitId,
+      )
+      .firstOrNull;
+  if (placement != null) {
+    return _RehearsalCoachTask(
+      key: 'place:${placement.actorId}:${placement.layoutUnitId}',
+      number: 4,
+      title: context.l10n.hostEventRehearsalCoachPlaceGuest(
+        name: _coachFirstName(placement.displayName),
+      ),
+      body: context.l10n.hostEventRehearsalCoachPlaceGuestBody,
+      workspace: EventSuccessLiveWorkspace.room,
+      actorId: placement.actorId,
     );
   }
   return switch (rehearsal.session.status) {
-    EventRehearsalStatus.draft || EventRehearsalStatus.ready => (
-      context.l10n.hostEventRehearsalCoachStart,
-      context.l10n.hostEventRehearsalCoachStartBody,
+    EventRehearsalStatus.draft ||
+    EventRehearsalStatus.ready => _RehearsalCoachTask(
+      key: 'start',
+      number: 1,
+      title: context.l10n.hostEventRehearsalCoachStart,
+      body: context.l10n.hostEventRehearsalCoachStartBody,
+      workspace: EventSuccessLiveWorkspace.now,
     ),
-    EventRehearsalStatus.paused => (
-      context.l10n.hostEventRehearsalCoachResume,
-      context.l10n.hostEventRehearsalCoachSameControl,
+    EventRehearsalStatus.paused => _RehearsalCoachTask(
+      key: 'resume:${rehearsal.session.activeStepIndex}',
+      number: (rehearsal.session.activeStepIndex + 2).clamp(1, 8),
+      title: context.l10n.hostEventRehearsalCoachResume,
+      body: context.l10n.hostEventRehearsalCoachSameControl,
+      workspace: EventSuccessLiveWorkspace.now,
     ),
-    EventRehearsalStatus.complete || EventRehearsalStatus.expired => (
-      context.l10n.hostEventRehearsalCoachComplete,
-      context.l10n.hostEventRehearsalCoachCompleteBody,
+    EventRehearsalStatus.complete ||
+    EventRehearsalStatus.expired => _RehearsalCoachTask(
+      key: 'complete',
+      number: 8,
+      title: context.l10n.hostEventRehearsalCoachComplete,
+      body: context.l10n.hostEventRehearsalCoachCompleteBody,
+      workspace: EventSuccessLiveWorkspace.now,
     ),
-    EventRehearsalStatus.running => (
-      context.l10n.hostEventRehearsalCoachAdvance,
-      context.l10n.hostEventRehearsalCoachSameControl,
+    EventRehearsalStatus.running => _RehearsalCoachTask(
+      key: 'advance:${rehearsal.session.activeStepIndex}',
+      number: (rehearsal.session.activeStepIndex + 2).clamp(1, 8),
+      title: context.l10n.hostEventRehearsalCoachAdvance,
+      body: context.l10n.hostEventRehearsalCoachSameControl,
+      workspace: EventSuccessLiveWorkspace.now,
     ),
   };
 }

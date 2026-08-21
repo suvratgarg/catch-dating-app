@@ -87,7 +87,11 @@ void main() {
     );
     expect(find.byType(Draggable<String>), findsNothing);
 
+    await tester.tap(find.byTooltip('More'));
+    await tester.pump();
     await tester.tap(find.text('Confirm position'));
+    await tester.pump();
+    await tester.tap(find.byTooltip('More'));
     await tester.pump();
     await tester.tap(find.text('Release pinned placement'));
     await tester.pump();

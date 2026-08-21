@@ -3,12 +3,12 @@
   "source": "test/ui_captures/catalog/screen_capture_catalog.dart",
   "coverage": {
     "routes": 66,
-    "captures": 625,
+    "captures": 628,
     "statusCounts": {
       "excluded": 2,
-      "captured": 39,
+      "captured": 40,
       "alias": 8,
-      "planned": 17
+      "planned": 16
     }
   },
   "profile": {
@@ -5534,6 +5534,40 @@
       "keepChangeNotes": ""
     },
     {
+      "id": "host_event_rehearsal_runtime_room",
+      "routes": [
+        "hostEventRehearsalScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_event_rehearsal_runtime_room.png",
+        "dark": "dark/host_event_rehearsal_runtime_room.png"
+      },
+      "whatItIs": "Host Event Rehearsal Runtime Room",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_event_rehearsal_practice_tools",
+      "routes": [
+        "hostEventRehearsalScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_event_rehearsal_practice_tools.png",
+        "dark": "dark/host_event_rehearsal_practice_tools.png"
+      },
+      "whatItIs": "Host Event Rehearsal Practice Tools",
+      "keepChangeNotes": ""
+    },
+    {
       "id": "host_manage_route_loading",
       "routes": [
         "hostAppEventManageScreen"
@@ -6452,6 +6486,23 @@
         "salesDemo.host.liveConsole"
       ],
       "whatItIs": "Host Live Console",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_live_room_workspace",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_live_room_workspace.png",
+        "dark": "dark/host_live_room_workspace.png"
+      },
+      "whatItIs": "Host Live Room Workspace",
       "keepChangeNotes": ""
     },
     {

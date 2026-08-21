@@ -8279,7 +8279,7 @@
       "name": "CatchOptionGroup",
       "status": "active",
       "kind": "composite",
-      "summary": "Underline option group for inline scope controls, lens tabs, and compact mode pickers.",
+      "summary": "Single-select option group for underline scopes and icon-led operational workspace pickers.",
       "dart": {
         "symbol": "CatchOptionGroup",
         "file": "lib/core/widgets/catch_option_group.dart",
@@ -8331,7 +8331,8 @@
             "dartType": "CatchOptionGroupVariant",
             "values": [
               "label",
-              "mono"
+              "mono",
+              "operational"
             ]
           },
           {
@@ -8350,6 +8351,7 @@
         "states": [
           "label",
           "mono",
+          "operational",
           "selected",
           "disabled",
           "accented",
@@ -8394,7 +8396,8 @@
             "states": [
               "selected",
               "unselected",
-              "mono"
+              "mono",
+              "operational"
             ],
             "governance": {
               "conceptRole": "member",
@@ -8456,7 +8459,7 @@
       "name": "CatchTabRail",
       "status": "active",
       "kind": "composite",
-      "summary": "Preferred-size app-bar bottom rail that wraps CatchOptionGroup in the standard tab-rail shell.",
+      "summary": "Preferred-size rail that wraps CatchOptionGroup in standard underline or operational segmented chrome.",
       "dart": {
         "symbol": "CatchTabRail",
         "file": "lib/core/widgets/catch_tab_rail.dart",
@@ -8505,12 +8508,25 @@
             "type": "object",
             "required": false,
             "dartType": "Key?"
+          },
+          {
+            "name": "variant",
+            "type": "enum",
+            "required": false,
+            "default": "label",
+            "dartType": "CatchOptionGroupVariant",
+            "values": [
+              "label",
+              "mono",
+              "operational"
+            ]
           }
         ],
         "states": [
           "two-option",
           "four-option",
-          "selected-middle"
+          "selected-middle",
+          "operational"
         ],
         "slots": [],
         "tokens": [

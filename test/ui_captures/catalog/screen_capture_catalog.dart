@@ -8251,10 +8251,9 @@ EventRehearsalBootstrap _eventRehearsalRuntimeCaptureBootstrap() {
         EventRehearsalActor(
           actorId: 'capture-actor-${indexed.$1 + 1}',
           displayName: indexed.$2,
-          persona: indexed.$1 == 20 ? 'lateArrival' : 'socialRegular',
+          persona: indexed.$1 == 20 ? 'placementPractice' : 'socialRegular',
           status: switch (indexed.$1) {
-            < 20 => EventRehearsalActorStatus.present,
-            20 => EventRehearsalActorStatus.late,
+            <= 20 => EventRehearsalActorStatus.present,
             21 || 22 => EventRehearsalActorStatus.expected,
             _ => EventRehearsalActorStatus.noShow,
           },
@@ -8264,13 +8263,16 @@ EventRehearsalBootstrap _eventRehearsalRuntimeCaptureBootstrap() {
           helpRequested: false,
           promptCompleted: indexed.$1 < 16,
           layoutUnitId: switch (indexed.$1) {
+            12 => 'table-6',
             15 => 'table-5',
             19 => 'table-6',
+            20 => 'table-1',
             < 23 => 'table-${(indexed.$1 ~/ 4) + 1}',
             _ => null,
           },
           confirmedLayoutUnitId: indexed.$1 < 20
               ? switch (indexed.$1) {
+                  12 => 'table-6',
                   15 => 'table-5',
                   19 => 'table-6',
                   _ => 'table-${(indexed.$1 ~/ 4) + 1}',
@@ -8283,7 +8285,7 @@ EventRehearsalBootstrap _eventRehearsalRuntimeCaptureBootstrap() {
         clientActionId: 'capture-action-1',
         actorId: 'capture-actor-21',
         kind: 'behavior',
-        name: 'arriveLate',
+        name: 'placementAssigned',
         runtimeRevision: 4,
         virtualNow: virtualNow,
       ),
@@ -12082,10 +12084,6 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       clubId: 'capture-club',
       sessionId: 'capture-rehearsal',
     ),
-    drive: (tester) async {
-      await tester.tap(find.text('Room'));
-      await pumpFeatureUi(tester);
-    },
   ),
   ScreenCaptureEntry(
     id: 'host_event_rehearsal_practice_tools',

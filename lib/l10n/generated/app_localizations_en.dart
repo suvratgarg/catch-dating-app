@@ -13178,9 +13178,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get eventSuccessRoomMapSelectedGuestTitle => 'Selected guest';
-
-  @override
   String get eventSuccessRoomMapNotPlaced => 'Not placed';
 
   @override
@@ -15559,6 +15556,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String hostEventRehearsalCoachResolveLate({required String name}) {
     return 'Resolve $name\'s late arrival';
   }
+
+  @override
+  String hostEventRehearsalCoachPlaceGuest({required String name}) {
+    return 'Place $name in the current round';
+  }
+
+  @override
+  String get hostEventRehearsalCoachPlaceGuestBody =>
+      'Use the same Room control you will use on event day.';
 
   @override
   String hostEventRehearsalCoachResolveHelp({required String name}) {

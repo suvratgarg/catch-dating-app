@@ -7,18 +7,20 @@ import 'package:flutter/material.dart';
 export 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart'
     show CatchContractConstraints, CatchContractFieldConstraints;
 
-enum CatchOptionGroupVariant { label, mono }
+enum CatchOptionGroupVariant { label, mono, operational }
 
 class CatchOption<T> {
   const CatchOption({
     required this.value,
     required this.label,
+    this.icon,
     this.enabled = true,
     this.disabledReason,
   }) : assert(enabled || disabledReason != null);
 
   final T value;
   final String label;
+  final IconData? icon;
   final bool enabled;
   final String? disabledReason;
 }
@@ -149,9 +151,11 @@ class _CatchOptionGroupState<T> extends State<CatchOptionGroup<T>> {
       'CatchOptionGroup selected value must be allowed by its contract.',
     );
     final selectedRule = widget.accent ?? t.ink;
-    final gap = widget.variant == CatchOptionGroupVariant.mono
-        ? CatchSpacing.s4
-        : CatchSpacing.micro18;
+    final gap = switch (widget.variant) {
+      CatchOptionGroupVariant.mono => CatchSpacing.s4,
+      CatchOptionGroupVariant.operational => CatchSpacing.s1,
+      CatchOptionGroupVariant.label => CatchSpacing.micro18,
+    };
     final selectedIndex = options.indexWhere(
       (option) => option.value == widget.selected,
     );
@@ -179,7 +183,9 @@ class _CatchOptionGroupState<T> extends State<CatchOptionGroup<T>> {
             )
           else
             Flexible(
-              flex: options[index].label.length,
+              flex: widget.variant == CatchOptionGroupVariant.operational
+                  ? 1
+                  : options[index].label.length,
               child: CatchOptionGroupItem<T>(
                 option: options[index],
                 selected: index == selectedIndex,
@@ -229,7 +235,8 @@ class _CatchOptionGroupState<T> extends State<CatchOptionGroup<T>> {
             ],
           ),
         ),
-        if (indicatorRect != null)
+        if (indicatorRect != null &&
+            widget.variant != CatchOptionGroupVariant.operational)
           AnimatedPositioned(
             duration: indicatorDuration,
             curve: CatchMotion.standardCurve,
@@ -305,11 +312,17 @@ class CatchOptionGroupItem<T> extends StatelessWidget {
         context,
         color: foreground,
       ),
+      CatchOptionGroupVariant.operational => CatchTextStyles.labelL(
+        context,
+        color: foreground,
+      ),
     };
     final label = variant == CatchOptionGroupVariant.mono
         ? option.label.toUpperCase()
         : option.label;
 
+    final textScale = MediaQuery.textScalerOf(context).scale(1);
+    final showIcon = option.icon != null && textScale < 1.4;
     final item = Semantics(
       button: onTap != null,
       enabled: option.enabled,
@@ -323,26 +336,51 @@ class CatchOptionGroupItem<T> extends StatelessWidget {
           child: AnimatedContainer(
             duration: CatchMotion.fast,
             curve: CatchMotion.standardCurve,
-            padding: const EdgeInsets.symmetric(
-              horizontal: CatchSpacing.s1,
+            padding: EdgeInsets.symmetric(
+              horizontal: variant == CatchOptionGroupVariant.operational
+                  ? textScale >= 1.4
+                        ? CatchSpacing.s1
+                        : CatchSpacing.s2
+                  : CatchSpacing.s1,
               vertical: CatchSpacing.s2,
             ),
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: showIndicator && selected
-                      ? selectedRuleColor
-                      : Colors.transparent,
-                  width: CatchSpacing.micro3,
+            decoration: variant == CatchOptionGroupVariant.operational
+                ? BoxDecoration(
+                    color: selected ? t.surface : Colors.transparent,
+                    borderRadius: BorderRadius.circular(CatchRadius.pill),
+                    border: Border.all(
+                      color: selected ? t.line : Colors.transparent,
+                    ),
+                    boxShadow: selected ? CatchElevation.card : null,
+                  )
+                : BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        color: showIndicator && selected
+                            ? selectedRuleColor
+                            : Colors.transparent,
+                        width: CatchSpacing.micro3,
+                      ),
+                    ),
+                  ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (showIcon) ...[
+                  Icon(option.icon, size: CatchIcon.sm, color: foreground),
+                  const SizedBox(width: CatchSpacing.s2),
+                ],
+                Flexible(
+                  child: Text(
+                    label,
+                    key: labelKey,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: style,
+                  ),
                 ),
-              ),
-            ),
-            child: Text(
-              label,
-              key: labelKey,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: style,
+              ],
             ),
           ),
         ),

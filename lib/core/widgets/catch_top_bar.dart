@@ -105,6 +105,7 @@ class CatchScreenHeaderTitle extends StatelessWidget {
     this.leading,
     this.actions = const <Widget>[],
     this.titleMaxLines = 1,
+    this.titleStyle,
     this.rowCrossAxisAlignment = CrossAxisAlignment.center,
     this.padding,
     this.material = false,
@@ -119,6 +120,7 @@ class CatchScreenHeaderTitle extends StatelessWidget {
     this.leading,
     this.actions = const <Widget>[],
     this.titleMaxLines = 1,
+    this.titleStyle,
     this.rowCrossAxisAlignment = CrossAxisAlignment.center,
     this.padding = CatchInsets.screenTitleBlock,
     this.backgroundColor,
@@ -130,6 +132,7 @@ class CatchScreenHeaderTitle extends StatelessWidget {
   final Widget? leading;
   final List<Widget> actions;
   final int titleMaxLines;
+  final TextStyle? titleStyle;
   final CrossAxisAlignment rowCrossAxisAlignment;
   final EdgeInsetsGeometry? padding;
   final bool material;
@@ -163,7 +166,9 @@ class CatchScreenHeaderTitle extends StatelessWidget {
                 title,
                 maxLines: titleMaxLines,
                 overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.headline(context, color: t.ink),
+                style:
+                    titleStyle ??
+                    CatchTextStyles.headline(context, color: t.ink),
               ),
               if (hasSubtitle) ...[
                 const SizedBox(height: CatchGaps.headerTitleToSubtitle),
@@ -217,6 +222,7 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
     CatchTopBarLeading leadingType = CatchTopBarLeading.auto,
     List<Widget> actions = const <Widget>[],
     int titleMaxLines = 1,
+    TextStyle? titleStyle,
     CrossAxisAlignment rowCrossAxisAlignment = CrossAxisAlignment.center,
     Color? backgroundColor,
     bool surface = false,
@@ -233,6 +239,7 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
       hasEyebrow: eyebrow?.isNotEmpty ?? false,
       hasSubtitle: subtitle?.isNotEmpty ?? false,
       titleMaxLines: titleMaxLines,
+      titleStyle: titleStyle,
     ),
     key: key,
     title: title,
@@ -242,6 +249,7 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
     leadingType: leadingType,
     actions: actions,
     titleMaxLines: titleMaxLines,
+    titleStyle: titleStyle,
     rowCrossAxisAlignment: rowCrossAxisAlignment,
     backgroundColor: backgroundColor,
     surface: surface,
@@ -265,6 +273,7 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
     required this.leadingType,
     required this.actions,
     required this.titleMaxLines,
+    required this.titleStyle,
     required this.rowCrossAxisAlignment,
     required this.backgroundColor,
     required this.surface,
@@ -285,6 +294,7 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
   final CatchTopBarLeading leadingType;
   final List<Widget> actions;
   final int titleMaxLines;
+  final TextStyle? titleStyle;
   final CrossAxisAlignment rowCrossAxisAlignment;
   final Color? backgroundColor;
   final bool surface;
@@ -303,6 +313,7 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
     bool hasEyebrow = false,
     bool hasSubtitle = false,
     int titleMaxLines = 1,
+    TextStyle? titleStyle,
   }) {
     final textScaler = MediaQuery.textScalerOf(context);
     final resolvedPadding = CatchInsets.screenTitleBlock.resolve(
@@ -312,7 +323,8 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
         textScaler.scale(style.fontSize!) * (style.height ?? 1);
 
     var textHeight =
-        lineHeight(CatchTextStyles.headline(context)) * titleMaxLines;
+        lineHeight(titleStyle ?? CatchTextStyles.headline(context)) *
+        titleMaxLines;
     if (hasEyebrow) {
       textHeight +=
           lineHeight(CatchTextStyles.kicker(context)) + CatchSpacing.micro2;
@@ -331,8 +343,8 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
         : CatchIconButton.navSize;
     // Text layout can round a scaled glyph run slightly above the nominal
     // style height, so reserve the next logical pixel in the preferred size.
-    final requiredHeight = (contentHeight + resolvedPadding.vertical)
-        .ceilToDouble();
+    final requiredHeight =
+        (contentHeight + resolvedPadding.vertical).ceilToDouble() + 1;
     return requiredHeight > baseline ? requiredHeight : baseline;
   }
 
@@ -350,6 +362,7 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
         eyebrow: eyebrow,
         subtitle: subtitle,
         titleMaxLines: titleMaxLines,
+        titleStyle: titleStyle,
         rowCrossAxisAlignment: rowCrossAxisAlignment,
       ),
       large: false,

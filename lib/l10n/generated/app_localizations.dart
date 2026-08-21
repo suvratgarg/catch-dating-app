@@ -20535,12 +20535,6 @@ abstract class AppLocalizations {
     required String status,
   });
 
-  /// Selected placement card eyebrow.
-  ///
-  /// In en, this message translates to:
-  /// **'Selected guest'**
-  String get eventSuccessRoomMapSelectedGuestTitle;
-
   /// Attendee has no current room unit.
   ///
   /// In en, this message translates to:
@@ -24505,6 +24499,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Resolve {name}\'\'s late arrival'**
   String hostEventRehearsalCoachResolveLate({required String name});
+
+  /// Coach task for placing a synthetic guest in the live room map.
+  ///
+  /// In en, this message translates to:
+  /// **'Place {name} in the current round'**
+  String hostEventRehearsalCoachPlaceGuest({required String name});
+
+  /// Explains that the rehearsal placement task uses the canonical live Room control.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the same Room control you will use on event day.'**
+  String get hostEventRehearsalCoachPlaceGuestBody;
 
   /// Coach task for a synthetic help request.
   ///

@@ -38,22 +38,40 @@ class CatchTabRail<T> extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final operational = variant == CatchOptionGroupVariant.operational;
 
     return ColoredBox(
       color: backgroundColor ?? t.bg,
-      child: SizedBox(
-        height: preferredSize.height,
-        child: CatchOptionGroup<T>(
-          key: groupKey,
-          selected: selected,
-          onChanged: onChanged,
-          options: options,
-          selectionPosition: selectionPosition,
-          trailing: trailing,
-          scrollable: scrollable,
-          variant: variant,
-          accent: accent,
-          contentPadding: contentPadding,
+      child: Padding(
+        padding: operational
+            ? const EdgeInsets.symmetric(horizontal: CatchSpacing.s4)
+            : EdgeInsets.zero,
+        child: SizedBox(
+          height: preferredSize.height,
+          child: DecoratedBox(
+            decoration: operational
+                ? BoxDecoration(
+                    color: t.raised,
+                    borderRadius: BorderRadius.circular(CatchRadius.pill),
+                    border: Border.all(color: t.line),
+                  )
+                : const BoxDecoration(),
+            child: CatchOptionGroup<T>(
+              key: groupKey,
+              selected: selected,
+              onChanged: onChanged,
+              options: options,
+              selectionPosition: selectionPosition,
+              trailing: trailing,
+              scrollable: scrollable,
+              variant: variant,
+              accent: accent,
+              contentPadding: operational
+                  ? const EdgeInsets.all(CatchSpacing.s1)
+                  : contentPadding,
+              showDivider: !operational,
+            ),
+          ),
         ),
       ),
     );

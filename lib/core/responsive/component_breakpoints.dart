@@ -37,6 +37,10 @@ abstract final class ComponentBreakpoints {
   /// tap selection remains the universal interaction.
   static const double eventSuccessSpatialDragBreakpoint = 720.0;
 
+  /// The selected Room placement card keeps identity and its move action on
+  /// one row whenever both retain a usable tap and copy width.
+  static const double eventSuccessSelectedPlacementInlineBreakpoint = 300.0;
+
   /// Host waitlist movement callout stacks its text and action below this local
   /// width so the action label never crowds the summary.
   static const double hostWaitlistBulkOfferStackBreakpoint = 340.0;
