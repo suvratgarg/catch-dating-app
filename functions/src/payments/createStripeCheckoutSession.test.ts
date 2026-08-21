@@ -5,9 +5,9 @@ import {
   createStripeCheckoutSessionHandler,
 } from "./createStripeCheckoutSession";
 import {
-  ClubDocument,
   EventDocument,
   HostPaymentAccountDocument,
+  OrganizerDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {
   StripeClient,
@@ -23,7 +23,7 @@ test("createStripeCheckoutSessionHandler creates trusted destination checkout",
         gender: "man",
         interestedInGenders: ["woman"],
       },
-      "clubs/club-1": buildClubDoc(),
+      "organizers/organizer-1": buildOrganizerDoc(),
       "hostPaymentAccounts/host-1": buildHostAccountDoc(),
     });
     let capturedInput: StripeCheckoutSessionCreateInput | undefined;
@@ -105,7 +105,7 @@ test("createStripeCheckoutSessionHandler rejects hosts without Stripe payouts",
         gender: "man",
         interestedInGenders: ["woman"],
       },
-      "clubs/club-1": buildClubDoc(),
+      "organizers/organizer-1": buildOrganizerDoc(),
       "hostPaymentAccounts/host-1": buildHostAccountDoc({
         chargesEnabled: false,
         payoutsEnabled: false,
@@ -188,6 +188,7 @@ function buildEventDoc(
 ): EventDocument {
   return {
     clubId: "club-1",
+    organizerId: "organizer-1",
     eventOrigin: catchNativeEventOrigin(),
     startTime: timestamp("2026-05-02T01:30:00.000Z"),
     endTime: timestamp("2026-05-02T02:30:00.000Z"),
@@ -245,7 +246,9 @@ function buildEventDoc(
   };
 }
 
-function buildClubDoc(overrides: Partial<ClubDocument> = {}): ClubDocument {
+function buildOrganizerDoc(
+  overrides: Partial<OrganizerDocument> = {}
+): OrganizerDocument {
   return {
     name: "Brooklyn Run Club",
     description: "Small social runs.",
@@ -268,7 +271,9 @@ function buildClubDoc(overrides: Partial<ClubDocument> = {}): ClubDocument {
     imageUrl: null,
     profileImageUrl: null,
     tags: [],
-    memberCount: 1,
+    organizerType: "club",
+    organizerPhotos: [],
+    followerCount: 1,
     rating: 0,
     reviewCount: 0,
     nextEventAt: null,
@@ -281,7 +286,7 @@ function buildClubDoc(overrides: Partial<ClubDocument> = {}): ClubDocument {
     archivedAt: null,
     archiveReason: null,
     ...overrides,
-  };
+  } as OrganizerDocument;
 }
 
 function buildHostAccountDoc(

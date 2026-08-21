@@ -5,7 +5,6 @@ import {
 } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {
-  ClubDocument,
   EventDocument,
   OrganizerDocument,
   UserProfileDocument,
@@ -19,7 +18,6 @@ import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {eventParticipationId} from "../shared/relationshipDocuments";
 import {appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
-import {clubOwnerUserId} from "../shared/clubHosts";
 import {organizerOwnerUserId} from "../shared/organizerHosts";
 import {
   assertPolicyAllowsSignup,
@@ -219,9 +217,10 @@ export async function createStripeCheckoutSessionHandler(
     );
   }
 
-  const organizerRef = event.organizerId ?
-    db.collection("organizers").doc(event.organizerId) :
-    db.collection("clubs").doc(event.clubId);
+  if (!event.organizerId) {
+    throw new HttpsError("failed-precondition", "Event has no organizer.");
+  }
+  const organizerRef = db.collection("organizers").doc(event.organizerId);
   const [organizerSnap] = await Promise.all([
     organizerRef.get(),
     deps.checkRateLimit?.(db, uid, "createStripeCheckoutSession"),
@@ -229,15 +228,10 @@ export async function createStripeCheckoutSessionHandler(
   if (!organizerSnap.exists) {
     throw new HttpsError("not-found", "Organizer not found.");
   }
-  const hostUserId = event.organizerId ?
-    organizerOwnerUserId(requireDoc<OrganizerDocument>(
-      organizerSnap,
-      "OrganizerDocument"
-    )) :
-    clubOwnerUserId(requireDoc<ClubDocument>(
-      organizerSnap,
-      "ClubDocument"
-    ));
+  const hostUserId = organizerOwnerUserId(requireDoc<OrganizerDocument>(
+    organizerSnap,
+    "OrganizerDocument"
+  ));
   if (!hostUserId) {
     throw new HttpsError(
       "failed-precondition",

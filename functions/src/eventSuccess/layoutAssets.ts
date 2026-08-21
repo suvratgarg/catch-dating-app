@@ -5,7 +5,6 @@ import {CallableRequest, HttpsError, onCall} from
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {
-  ClubDocument,
   EventDocument,
   EventParticipationDocument,
   EventRuntimeParticipantDocument,
@@ -36,7 +35,6 @@ import {
   isEventOrganizerManager,
   requireEventOrganizer,
 } from "../shared/eventOrganizers";
-import {isClubHost} from "../shared/clubHosts";
 import {isOrganizerManager} from "../shared/organizerHosts";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {eventParticipationId} from "../shared/relationshipDocuments";
@@ -241,7 +239,7 @@ async function applySpatialActionTransaction(params: {
     const currentLayoutRef = params.db
       .collection("organizerEventSuccessLayouts")
       .doc(organizerEventSuccessLayoutDocumentId(
-        params.event.organizerId ?? params.event.clubId,
+        requireOrganizerId(params.event),
         plan.layoutId
       ));
     const assignmentsQuery = params.db.collection("eventSuccessAssignments")
@@ -253,7 +251,7 @@ async function applySpatialActionTransaction(params: {
     ]);
     const layout = requireSelectedLayout(
       layoutSnap,
-      params.event.organizerId ?? params.event.clubId,
+      requireOrganizerId(params.event),
       plan.layoutId
     );
     const assignments = assignmentSnap.docs.map((doc) =>
@@ -391,7 +389,7 @@ async function loadSelectedLayout(
   if (!plan.layoutId) {
     throw new HttpsError("failed-precondition", "No room layout is selected.");
   }
-  const organizerId = event.organizerId ?? event.clubId;
+  const organizerId = requireOrganizerId(event);
   const snap = await db.collection("organizerEventSuccessLayouts").doc(
     organizerEventSuccessLayoutDocumentId(organizerId, plan.layoutId)
   ).get();
@@ -448,15 +446,10 @@ async function requireOrganizerLayoutManager(
   organizerId: string,
   uid: string
 ): Promise<void> {
-  const [organizerSnap, clubSnap] = await Promise.all([
-    db.collection("organizers").doc(organizerId).get(),
-    db.collection("clubs").doc(organizerId).get(),
-  ]);
-  const allowed = organizerSnap.exists ? isOrganizerManager(
+  const organizerSnap = await db.collection("organizers").doc(organizerId)
+    .get();
+  const allowed = organizerSnap.exists && isOrganizerManager(
     requireDoc<OrganizerDocument>(organizerSnap, "OrganizerDocument"),
-    uid
-  ) : clubSnap.exists && isClubHost(
-    requireDoc<ClubDocument>(clubSnap, "ClubDocument"),
     uid
   );
   if (!allowed) {
@@ -465,6 +458,13 @@ async function requireOrganizerLayoutManager(
       "Only an organizer manager can save room layouts."
     );
   }
+}
+
+function requireOrganizerId(event: EventDocument): string {
+  if (!event.organizerId) {
+    throw new HttpsError("failed-precondition", "Event has no organizer.");
+  }
+  return event.organizerId;
 }
 
 async function requireSpatialReader(
