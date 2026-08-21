@@ -252,7 +252,7 @@ async function notifyCompanionReadyBestEffort(params: {
       body: copy.body,
       type: "eventCompanionReady",
       eventId: params.eventId,
-      clubId: params.event.clubId,
+      organizerId: params.event.organizerId,
     });
   } catch (error) {
     logger.error("Failed to send companion-ready notification", {

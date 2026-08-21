@@ -201,7 +201,7 @@ class FakeFirestore {
 function harness(overrides: Record<string, FakeData | undefined> = {}) {
   const firestore = new FakeFirestore({
     "events/event-1": {
-      clubId: "club-1",
+      organizerId: "club-1",
       status: "active",
       eventFormat: {
         version: 1,
@@ -211,7 +211,7 @@ function harness(overrides: Record<string, FakeData | undefined> = {}) {
       startTime: fakeTimestamp("2026-05-21T08:00:00.000Z"),
       endTime: fakeTimestamp("2026-05-21T09:00:00.000Z"),
     },
-    "clubs/club-1": {
+    "organizers/club-1": {
       hostUserId: "host-1",
       hostName: "Host",
       hostUserIds: [],
@@ -219,7 +219,7 @@ function harness(overrides: Record<string, FakeData | undefined> = {}) {
     },
     "eventSuccessPlans/event-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       selectedModuleIds: ["guided_rotations"],
       liveControlRevision: 0,
       assignmentDraftRevision: 0,
@@ -327,7 +327,7 @@ test("pickleball defaults to profile-free coverage schedules", async () => {
   );
   assert.deepEqual(firestore.get("eventSuccessPlans/event-1"), {
     eventId: "event-1",
-    clubId: "club-1",
+    organizerId: "club-1",
     selectedModuleIds: ["guided_rotations"],
     liveControlRevision: 1,
     assignmentDraftRevision: 1,
@@ -367,7 +367,7 @@ test("sequence topology uses configured court capacity", async () => {
   const {firestore, deps} = harness({
     "eventSuccessPlans/event-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       selectedModuleIds: ["guided_rotations"],
       liveControlRevision: 0,
       assignmentDraftRevision: 0,
@@ -438,7 +438,7 @@ test("adjacency topology fails instead of using pair rotations", async () => {
   const {deps} = harness({
     "eventSuccessPlans/event-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       selectedModuleIds: ["guided_rotations"],
       structureConfig: {
         unitKind: "tables",
@@ -462,7 +462,7 @@ test("does not prepare a phantom round after the schedule ends", async () => {
   const {firestore, deps} = harness({
     "eventSuccessPlans/event-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       selectedModuleIds: ["guided_rotations"],
       liveControlRevision: 4,
       assignmentDraftRevision: 3,
@@ -506,7 +506,7 @@ test("does not prepare a phantom round after the schedule ends", async () => {
 test("uses the saved event-structure rotation cadence", async () => {
   const {firestore, deps} = harness({
     "events/event-1": {
-      clubId: "club-1",
+      organizerId: "club-1",
       status: "active",
       eventFormat: {
         version: 1,
@@ -518,7 +518,7 @@ test("uses the saved event-structure rotation cadence", async () => {
     },
     "eventSuccessPlans/event-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       selectedModuleIds: ["guided_rotations"],
       structureConfig: {
         unitKind: "pairs",
@@ -557,7 +557,7 @@ test("honors saved allow-exhausted rotation repeat policy", async () => {
   const {firestore, deps} = harness({
     "eventSuccessPlans/event-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       selectedModuleIds: ["guided_rotations"],
       structureConfig: {
         unitKind: "pairs",
@@ -606,7 +606,7 @@ test(
       }),
       "eventSuccessPlans/event-1": {
         eventId: "event-1",
-        clubId: "club-1",
+        organizerId: "club-1",
         selectedModuleIds: [
           "guided_rotations",
           "compatibility_questionnaire",
@@ -655,7 +655,7 @@ test(
       }),
       "eventSuccessPlans/event-1": {
         eventId: "event-1",
-        clubId: "club-1",
+        organizerId: "club-1",
         selectedModuleIds: [
           "guided_rotations",
           "compatibility_questionnaire",
@@ -704,7 +704,7 @@ test(
       }),
       "eventSuccessPlans/event-1": {
         eventId: "event-1",
-        clubId: "club-1",
+        organizerId: "club-1",
         selectedModuleIds: [
           "guided_rotations",
           "compatibility_questionnaire",
@@ -749,7 +749,7 @@ test(
       }),
       "eventSuccessPlans/event-1": {
         eventId: "event-1",
-        clubId: "club-1",
+        organizerId: "club-1",
         selectedModuleIds: ["guided_rotations"],
         compatibilityAffectsRanking: true,
       },
@@ -785,7 +785,7 @@ test(
   async () => {
     const {firestore, deps} = harness({
       "events/event-1": {
-        clubId: "club-1",
+        organizerId: "club-1",
         status: "active",
         eventFormat: {
           version: 1,
@@ -813,7 +813,6 @@ test(
       },
       "eventSuccessAssignmentDrafts/event-1_guided_rotations_woman-2": {
         eventId: "event-1",
-        clubId: "club-1",
         organizerId: "club-1",
         moduleId: "guided_rotations",
         uid: "woman-2",
@@ -915,7 +914,7 @@ test("rejects rotation generation when the module is disabled", async () => {
   const {deps} = harness({
     "eventSuccessPlans/event-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       selectedModuleIds: ["micro_pods"],
     },
   });
@@ -933,7 +932,7 @@ test("rejects pair rotations for larger unit sizes", async () => {
   const {deps} = harness({
     "eventSuccessPlans/event-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       selectedModuleIds: ["guided_rotations"],
       structureConfig: {
         unitKind: "teams",
@@ -995,7 +994,7 @@ test("host override cannot exceed sequence resource capacity", async () => {
   const {deps} = harness({
     "eventSuccessPlans/event-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       selectedModuleIds: ["guided_rotations"],
       liveControlRevision: 0,
       assignmentDraftRevision: 0,
@@ -1142,7 +1141,7 @@ test(
     const {deps} = harness({
       "eventSuccessPlans/event-1": {
         eventId: "event-1",
-        clubId: "club-1",
+        organizerId: "club-1",
         selectedModuleIds: [
           "guided_rotations",
           "compatibility_questionnaire",
@@ -1218,7 +1217,7 @@ function rotationEvent(
   endTime = "2026-05-21T09:00:00.000Z"
 ): FakeData {
   return {
-    clubId: "club-1",
+    organizerId: "club-1",
     status: "active",
     eventFormat: {
       version: 1,

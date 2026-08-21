@@ -1,11 +1,11 @@
 import {
-  decideClubClaim,
-  getClubClaimRequestDetails,
-  listClubClaimRequests,
+  decideOrganizerClaim as decideOrganizerClaimRequest,
+  getOrganizerClaimRequestDetails as getOrganizerClaimRequest,
+  listOrganizerClaimRequests as listOrganizerClaimRequestRows,
   listClubDetails,
   loadClubDetails,
   saveClubDetails,
-  setClubIndexStatus,
+  setOrganizerIndexStatus as setOrganizerIndexStatusRequest,
 } from "../../../shared/api/adminApi";
 import type {
   AdminDecideClubClaimPayload,
@@ -23,19 +23,19 @@ import type {
 } from "../../../shared/types/adminTypes";
 
 export function listOrganizerClaimRequests() {
-  return listClubClaimRequests();
+  return listOrganizerClaimRequestRows();
 }
 
 export function loadOrganizerClaimRequest(
   payload: AdminGetClubClaimRequestDetailsPayload
 ): Promise<AdminGetClubClaimRequestDetailsResponse> {
-  return getClubClaimRequestDetails(payload);
+  return getOrganizerClaimRequest(payload);
 }
 
 export function decideOrganizerClaim(
   payload: AdminDecideClubClaimPayload
 ): Promise<AdminDecideClubClaimResponse> {
-  return decideClubClaim(payload);
+  return decideOrganizerClaimRequest(payload);
 }
 
 export function listOrganizerProfiles(
@@ -59,5 +59,5 @@ export function saveOrganizerProfile(
 export function publishOrganizerProfile(
   payload: AdminSetClubIndexStatusPayload
 ): Promise<AdminSetClubIndexStatusResponse> {
-  return setClubIndexStatus(payload);
+  return setOrganizerIndexStatusRequest(payload);
 }

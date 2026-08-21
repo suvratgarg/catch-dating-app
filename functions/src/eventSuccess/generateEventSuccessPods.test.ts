@@ -158,7 +158,7 @@ class FakeFirestore {
 function harness(overrides: Record<string, FakeData | undefined> = {}) {
   const firestore = new FakeFirestore({
     "events/event-1": {
-      clubId: "club-1",
+      organizerId: "club-1",
       status: "active",
       eventFormat: {
         version: 1,
@@ -166,7 +166,7 @@ function harness(overrides: Record<string, FakeData | undefined> = {}) {
         interactionModel: "pacePods",
       },
     },
-    "clubs/club-1": {
+    "organizers/club-1": {
       hostUserId: "host-1",
       hostName: "Host",
       hostUserIds: [],
@@ -174,7 +174,7 @@ function harness(overrides: Record<string, FakeData | undefined> = {}) {
     },
     "eventSuccessPlans/event-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       selectedModuleIds: ["micro_pods"],
     },
     ...overrides,
@@ -308,7 +308,7 @@ test("uses saved unit size for generated pod count", async () => {
   const {deps} = harness({
     "eventSuccessPlans/event-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       selectedModuleIds: ["micro_pods"],
       structureConfig: {
         unitKind: "teams",
@@ -340,7 +340,7 @@ test("uses unit kind labels for table assignments", async () => {
   const {firestore, deps} = harness({
     "eventSuccessPlans/event-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       selectedModuleIds: ["micro_pods"],
       structureConfig: {
         unitKind: "tables",
@@ -382,7 +382,7 @@ test("uses saved fixed unit count when present", async () => {
   const {deps} = harness({
     "eventSuccessPlans/event-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       selectedModuleIds: ["micro_pods"],
       structureConfig: {
         unitKind: "teams",
@@ -515,7 +515,7 @@ test("uses profile cohorts as pod balancing tie-breakers", async () => {
   const {firestore, deps} = harness({
     "eventSuccessPlans/event-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       selectedModuleIds: ["micro_pods"],
       structureConfig: {
         unitKind: "pods",
@@ -554,7 +554,7 @@ test("uses profile cohorts as pod balancing tie-breakers", async () => {
 test("rejects unimplemented custom team formats honestly", async () => {
   const {firestore, deps} = harness({
     "events/event-1": {
-      clubId: "club-1",
+      organizerId: "club-1",
       status: "active",
       eventFormat: {
         version: 1,
@@ -569,7 +569,7 @@ test("rejects unimplemented custom team formats honestly", async () => {
     },
     "eventSuccessPlans/event-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       selectedModuleIds: ["micro_pods"],
       structureConfig: {
         unitKind: "teams",
@@ -612,7 +612,7 @@ test("rejects unimplemented custom team formats honestly", async () => {
 test("rejects a format with no assignment algorithm", async () => {
   const {firestore, deps} = harness({
     "events/event-1": {
-      clubId: "club-1",
+      organizerId: "club-1",
       status: "active",
       startTime: fakeTimestamp("2026-05-21T08:00:00.000Z"),
       endTime: fakeTimestamp("2026-05-21T08:40:00.000Z"),
@@ -624,7 +624,7 @@ test("rejects a format with no assignment algorithm", async () => {
     },
     "eventSuccessPlans/event-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       selectedModuleIds: ["micro_pods"],
       structureConfig: {
         unitKind: "tables",
@@ -658,7 +658,7 @@ test("rejects a format with no assignment algorithm", async () => {
 test("lets hosts override rotating table groups", async () => {
   const {firestore, deps, rateLimitCalls} = harness({
     "events/event-1": {
-      clubId: "club-1",
+      organizerId: "club-1",
       status: "active",
       startTime: fakeTimestamp("2026-05-21T08:00:00.000Z"),
       endTime: fakeTimestamp("2026-05-21T08:40:00.000Z"),
@@ -670,7 +670,7 @@ test("lets hosts override rotating table groups", async () => {
     },
     "eventSuccessPlans/event-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       selectedModuleIds: ["micro_pods"],
       structureConfig: {
         unitKind: "tables",
@@ -726,7 +726,7 @@ test("lets hosts override static team groups", async () => {
   const {firestore, deps} = harness({
     "eventSuccessPlans/event-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       selectedModuleIds: ["micro_pods"],
       structureConfig: {
         unitKind: "teams",
@@ -770,7 +770,7 @@ test("rejects blocked attendees in host group overrides", async () => {
   const {deps} = harness({
     "eventSuccessPlans/event-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       selectedModuleIds: ["micro_pods"],
       structureConfig: {
         unitKind: "teams",
@@ -824,7 +824,7 @@ test("rejects pod generation when the module is disabled", async () => {
   const {deps} = harness({
     "eventSuccessPlans/event-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       selectedModuleIds: ["host_script"],
     },
   });
@@ -842,7 +842,7 @@ test("uses the same group engine for pair-sized units", async () => {
   const {firestore, deps} = harness({
     "eventSuccessPlans/event-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       selectedModuleIds: ["micro_pods"],
       structureConfig: {
         unitKind: "pairs",

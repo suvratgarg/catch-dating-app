@@ -39638,7 +39638,6 @@ export const reviewDocumentSchema: Record<string, unknown> = {
   ],
   "required": [
     "organizerId",
-    "clubId",
     "reviewerUserId",
     "reviewerName",
     "rating",
@@ -39646,13 +39645,6 @@ export const reviewDocumentSchema: Record<string, unknown> = {
     "createdAt"
   ],
   "properties": {
-    "clubId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "description": "Deprecated organizer id alias retained while released clients migrate.",
-      "x-catch-ownership": "callable-owned"
-    },
     "organizerId": {
       "type": "string",
       "minLength": 1,
@@ -53653,11 +53645,7 @@ export const clubMembershipCallablePayloadSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/club_membership_payload.schema.json",
   "title": "ClubMembershipCallablePayload",
-  "description": "Callable payload accepted by joinClub and leaveClub.",
-  "x-callable-aliases": [
-    "joinClub",
-    "leaveClub"
-  ],
+  "description": "Retired legacy membership payload retained only for schema-history decoding.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -82218,17 +82206,12 @@ export const createEventReviewCallablePayloadSchema: Record<string, unknown> = {
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "clubId",
+    "organizerId",
     "eventId",
     "rating",
     "comment"
   ],
   "properties": {
-    "clubId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
     "organizerId": {
       "type": "string",
       "minLength": 1,

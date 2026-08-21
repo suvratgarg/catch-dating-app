@@ -1188,21 +1188,6 @@ function clubListRowMatchesQuery(
     .every((token) => haystack.includes(token));
 }
 
-export const adminListClubDetails = onCall(
-  appCheckCallableOptions,
-  (request) => adminListClubDetailsHandler(request)
-);
-
-export const adminGetClubDetails = onCall(
-  appCheckCallableOptions,
-  (request) => adminGetClubDetailsHandler(request)
-);
-
-export const adminUpdateClubDetails = onCall(
-  appCheckCallableOptions,
-  (request) => adminUpdateClubDetailsHandler(request)
-);
-
 export const adminListOrganizerDetails = onCall(
   appCheckCallableOptions,
   (request) => adminListOrganizerDetailsHandler(request)

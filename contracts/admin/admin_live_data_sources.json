@@ -54,14 +54,14 @@
       "navId": "organizers",
       "paths": ["/organizers"],
       "liveReads": [
-        "adminGetClubClaimRequestDetails",
+        "adminGetOrganizerClaimRequestDetails",
         "adminGetOrganizerDetails",
-        "adminListClubClaimRequests",
+        "adminListOrganizerClaimRequests",
         "adminListOrganizerDetails"
       ],
       "liveMutations": [
-        "adminDecideClubClaim",
-        "adminSetClubIndexStatus",
+        "adminDecideOrganizerClaim",
+        "adminSetOrganizerIndexStatus",
         "adminUpdateOrganizerDetails"
       ]
     },

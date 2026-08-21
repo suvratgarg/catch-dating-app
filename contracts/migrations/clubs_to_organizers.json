@@ -68,8 +68,8 @@
     },
     {
       "id": "retire_legacy",
-      "status": "approved_local_cleanup",
-      "description": "The owner approved retirement before launch. Source, contracts, rules, indexes, and storage paths are removed locally; remote synthetic-data reset and deployment remain separately authorized operations."
+      "status": "complete",
+      "description": "The owner approved retirement before launch. Legacy source authority, callable aliases, contracts, rules, indexes, and storage paths are removed locally; remote synthetic-data reset and deployment remain separately authorized operations."
     }
   ],
   "knownConsumers": [

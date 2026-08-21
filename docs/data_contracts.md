@@ -322,13 +322,13 @@ mapping, rollout, parity, and recovery procedure is owned by
 
 New contracts use `organizerId`, `organizerTeamMemberships`,
 `organizerFollows`, `organizerClaimRequests`, `organizerScheduleLocks`, and
-`organizers/{organizerId}/posts`. The `clubs`, `clubMemberships`,
-`clubClaimRequests`, `clubScheduleLocks`, `clubId`, and club-media contracts are
-released-client compatibility projections only. They remain additive during
-the migration window and must not become the authority for new behavior.
-Production canonical parity completed on 2026-07-22, and current Flutter reads
-do not fall back to `clubs`; compatibility writes remain until the separate
-released-client retirement gate is approved.
+`organizers/{organizerId}/posts`. Legacy `clubs`, `clubMemberships`,
+`clubClaimRequests`, `clubScheduleLocks`, `clubId`, and club-media projections
+are not local contracts, callable aliases, rule paths, or client fallbacks.
+Production canonical parity completed on 2026-07-22; because the application
+has not launched, the owner approved local compatibility retirement rather than
+a released-client support window. Remote synthetic-data reset and deployment
+remain separately authorized operations.
 
 Public organizer website content is also owned by the canonical organizer
 document. `publicPage` controls publication, indexing, canonical and legacy

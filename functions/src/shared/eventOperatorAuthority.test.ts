@@ -46,7 +46,7 @@ class FakeFirestore {
 
 const now = admin.firestore.Timestamp.fromMillis(1_000);
 const event = {
-  clubId: "organizer-1",
+  organizerId: "organizer-1",
 } as EventDocument;
 const organizer = {
   hostUserId: "owner-1",

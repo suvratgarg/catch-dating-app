@@ -8,22 +8,19 @@
 /// Callable payload accepted by createEventReview.
 final class CreateEventReviewCallableRequest {
   const CreateEventReviewCallableRequest({
-    required this.clubId,
-    this.organizerId,
+    required this.organizerId,
     required this.eventId,
     required this.rating,
     required this.comment,
   });
 
-  final String clubId;
-  final String? organizerId;
+  final String organizerId;
   final String eventId;
   final int rating;
   final String comment;
 
   Map<String, Object?> toJson() => {
-    'clubId': clubId,
-    'organizerId': ?organizerId,
+    'organizerId': organizerId,
     'eventId': eventId,
     'rating': rating,
     'comment': comment,

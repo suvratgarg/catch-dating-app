@@ -1907,7 +1907,6 @@ async function notifyClubMembersForNewEvent(params: {
         createdAt: params.deps.serverTimestamp?.() ??
           admin.firestore.FieldValue.serverTimestamp(),
         eventId: params.eventId,
-        clubId: params.clubId,
         organizerId: params.organizerId,
       });
       if (
@@ -1921,7 +1920,6 @@ async function notifyClubMembersForNewEvent(params: {
           body: copy.body,
           type: "organizerUpdate",
           eventId: params.eventId,
-          clubId: params.clubId,
           organizerId: params.organizerId,
         });
       }
@@ -1991,8 +1989,7 @@ async function notifyEventParticipants(params: {
         createdAt: params.deps.serverTimestamp?.() ??
           admin.firestore.FieldValue.serverTimestamp(),
         eventId: params.eventId,
-        clubId: params.event.clubId,
-        organizerId: params.event.organizerId ?? params.event.clubId,
+        organizerId: params.event.organizerId,
       });
       if (user.fcmToken && allowsPushPreference(user, "eventStatusUpdates")) {
         await params.deps.sendNotification?.({
@@ -2001,8 +1998,7 @@ async function notifyEventParticipants(params: {
           body: copy.body,
           type: params.type,
           eventId: params.eventId,
-          clubId: params.event.clubId,
-          organizerId: params.event.organizerId ?? params.event.clubId,
+          organizerId: params.event.organizerId,
         });
       }
     }));

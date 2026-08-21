@@ -30,6 +30,9 @@ const requiredMarkers = [
   ["functions/src/index.ts", "followOrganizer"],
   ["functions/src/index.ts", "startOrganizerConversation"],
   ["functions/src/index.ts", "adminGetOrganizerDetails"],
+  ["functions/src/index.ts", "adminGetOrganizerClaimRequestDetails"],
+  ["functions/src/index.ts", "adminListOrganizerClaimRequests"],
+  ["functions/src/index.ts", "adminSetOrganizerIndexStatus"],
   ["tool/data/migrate_clubs_to_organizers.mjs", "--confirm-migration"],
   ["docs/migrations/clubs_to_organizers.md", "organizerType"],
 ];
@@ -51,6 +54,14 @@ const forbiddenSourceMarkers = [
   ["lib/clubs/presentation/detail/club_membership_controller.dart", "join a club"],
   ["lib/clubs/presentation/detail/club_membership_controller.dart", "leave a club"],
   ["lib/clubs/presentation/detail/club_membership_controller.dart", "update club notifications"],
+  ["functions/src/index.ts", "createPublicClubReview"],
+  ["functions/src/index.ts", "listPublicClubReviews"],
+  ["functions/src/index.ts", "adminGetClubClaimRequestDetails"],
+  ["functions/src/index.ts", "adminListClubClaimRequests"],
+  ["functions/src/index.ts", "adminSetClubIndexStatus"],
+  ["functions/src/index.ts", "adminGetClubDetails"],
+  ["functions/src/index.ts", "adminListClubDetails"],
+  ["functions/src/index.ts", "adminUpdateClubDetails"],
 ];
 
 const forbiddenClientAuthorityPatterns = [

@@ -267,6 +267,8 @@ function request(
 function club(overrides: FakeData = {}): FakeData {
   return {
     hostUserId: "host-1",
+    hostUserIds: ["host-1"],
+    hostProfiles: [],
     location: "in-mh-mumbai",
     locationCityId: "in-mh-mumbai",
     locationMarketId: "in-mh-mumbai",
@@ -277,7 +279,6 @@ function club(overrides: FakeData = {}): FakeData {
 function event(overrides: FakeData = {}): FakeData {
   return {
     organizerId: "club-1",
-    clubId: "club-1",
     startTime: ts("2026-05-02T01:30:00.000Z"),
     endTime: ts("2026-05-02T02:30:00.000Z"),
     meetingPoint: "Carter Road",
@@ -325,7 +326,6 @@ function payload(overrides: FakeData = {}): FakeData {
   return {
     eventId: "event-1",
     organizerId: "club-1",
-    clubId: "club-1",
     startTimeMillis: Date.parse("2026-05-02T01:30:00.000Z"),
     endTimeMillis: Date.parse("2026-05-02T02:30:00.000Z"),
     meetingPoint: "Carter Road",
@@ -360,7 +360,7 @@ function assertHttpsCode(error: unknown, code: string): boolean {
 
 test("createEventHandler creates a server-owned event for the club host",
   async () => {
-    const h = harness({"clubs/club-1": club()});
+    const h = harness({"organizers/club-1": club()});
 
     const result = await createEventHandler(
       request("host-1", payload()),
@@ -370,7 +370,6 @@ test("createEventHandler creates a server-owned event for the club host",
     assert.deepEqual(result, {eventId: "event-1"});
     assert.deepEqual(h.rateLimitCalls, ["host-1:createEvent"]);
     assert.deepEqual(h.firestore.get("events/event-1"), {
-      clubId: "club-1",
       organizerId: "club-1",
       eventOrigin: {
         mode: "catchNative",
@@ -483,7 +482,7 @@ test("createEventHandler creates a server-owned event for the club host",
 );
 
 test("createEventHandler accepts client event-policy snapshots", async () => {
-  const h = harness({"clubs/club-1": club()});
+  const h = harness({"organizers/club-1": club()});
 
   const eventPolicy = {
     version: 1,
@@ -542,7 +541,7 @@ test("createEventHandler accepts client event-policy snapshots", async () => {
 });
 
 test("createEventHandler creates event success plans atomically", async () => {
-  const h = harness({"clubs/club-1": club()});
+  const h = harness({"organizers/club-1": club()});
 
   await createEventHandler(
     request("host-1", payload({
@@ -576,7 +575,7 @@ test("createEventHandler creates event success plans atomically", async () => {
 
   const eventDoc = h.firestore.get("events/event-1");
   const plan = h.firestore.get("eventSuccessPlans/event-1");
-  assert.equal(eventDoc?.clubId, "club-1");
+  assert.equal(eventDoc?.organizerId, "club-1");
   assert.deepEqual(eventDoc?.runtimeAccess, {
     enabled: true,
     publicRuntimeId: "runtime_123456789012345678901234",
@@ -584,7 +583,7 @@ test("createEventHandler creates event success plans atomically", async () => {
     termsVersion: "event-runtime-v1",
   });
   assert.equal(plan?.eventId, "event-1");
-  assert.equal(plan?.clubId, "club-1");
+  assert.equal(plan?.organizerId, "club-1");
   assert.equal(plan?.playbookId, "social_run_light");
   assert.deepEqual(plan?.selectedModuleIds, [
     "decomposed_feedback",
@@ -604,7 +603,7 @@ test("createEventHandler creates event success plans atomically", async () => {
 });
 
 test("createEventHandler creates companion-only external events", async () => {
-  const h = harness({"clubs/club-1": club()});
+  const h = harness({"organizers/club-1": club()});
 
   await createEventHandler(request("host-1", payload({
     priceInPaise: 40000,
@@ -675,7 +674,7 @@ test("createEventHandler creates companion-only external events", async () => {
 
 test("createEventHandler rejects external events without runtime tooling",
   async () => {
-    const h = harness({"clubs/club-1": club()});
+    const h = harness({"organizers/club-1": club()});
     await assert.rejects(
       () => createEventHandler(request("host-1", payload({
         externalOrigin: {provider: "generic"},
@@ -687,7 +686,7 @@ test("createEventHandler rejects external events without runtime tooling",
 test(
   "createEventHandler derives event success booleans from modules",
   async () => {
-    const h = harness({"clubs/club-1": club()});
+    const h = harness({"organizers/club-1": club()});
 
     await createEventHandler(
       request("host-1", payload({
@@ -715,7 +714,7 @@ test(
 );
 
 test("createEventHandler defaults pub quiz teams from capacity", async () => {
-  const h = harness({"clubs/club-1": club()});
+  const h = harness({"organizers/club-1": club()});
 
   await createEventHandler(
     request("host-1", payload({
@@ -757,7 +756,7 @@ test("createEventHandler defaults pub quiz teams from capacity", async () => {
 
 test("createEventHandler uses event-success primitives for custom formats",
   async () => {
-    const h = harness({"clubs/club-1": club()});
+    const h = harness({"organizers/club-1": club()});
 
     await createEventHandler(
       request("host-1", payload({
@@ -828,7 +827,7 @@ test("createEventHandler uses event-success primitives for custom formats",
 test("createEventHandler rejects orphan-prone event success plan conflicts",
   async () => {
     const h = harness({
-      "clubs/club-1": club(),
+      "organizers/club-1": club(),
       "eventSuccessPlans/event-1": {eventId: "event-1"},
     });
 
@@ -852,7 +851,7 @@ test("createEventHandler rejects orphan-prone event success plan conflicts",
 
 test("createEventHandler stores invite codes in host-private access docs",
   async () => {
-    const h = harness({"clubs/club-1": club()});
+    const h = harness({"organizers/club-1": club()});
     const eventPolicy = {
       version: 1,
       admission: {
@@ -904,14 +903,14 @@ test("createEventHandler stores invite codes in host-private access docs",
     });
     assert.equal(JSON.stringify(createdEvent).includes("CATCH-DELHI"), false);
     assert.equal(privateAccess?.eventId, "event-1");
-    assert.equal(privateAccess?.clubId, "club-1");
+    assert.equal(privateAccess?.organizerId, "club-1");
     assert.equal(privateAccess?.inviteCode, "CATCH-DELHI");
     assert.notEqual(privateAccess?.createdAt, undefined);
   }
 );
 
 test("createEventHandler accepts an uploaded event photo URL", async () => {
-  const h = harness({"clubs/club-1": club()});
+  const h = harness({"organizers/club-1": club()});
 
   await createEventHandler(
     request("host-1", payload({
@@ -929,26 +928,26 @@ test("createEventHandler accepts an uploaded event photo URL", async () => {
 test("createEventHandler notifies active club members about a new event",
   async () => {
     const h = harness({
-      "clubs/club-1": club({name: "Indore Striders"}),
-      "clubMemberships/club-1_host-1": {
-        clubId: "club-1",
+      "organizers/club-1": club({name: "Indore Striders"}),
+      "organizerFollows/club-1_host-1": {
+        organizerId: "club-1",
         uid: "host-1",
         status: "active",
       },
-      "clubMemberships/club-1_runner-1": {
-        clubId: "club-1",
+      "organizerFollows/club-1_runner-1": {
+        organizerId: "club-1",
         uid: "runner-1",
         status: "active",
         pushNotificationsEnabled: true,
       },
-      "clubMemberships/club-1_runner-2": {
-        clubId: "club-1",
+      "organizerFollows/club-1_runner-2": {
+        organizerId: "club-1",
         uid: "runner-2",
         status: "active",
         pushNotificationsEnabled: false,
       },
-      "clubMemberships/club-1_runner-3": {
-        clubId: "club-1",
+      "organizerFollows/club-1_runner-3": {
+        organizerId: "club-1",
         uid: "runner-3",
         status: "left",
       },
@@ -977,7 +976,7 @@ test("createEventHandler notifies active club members about a new event",
     assert.equal(runner1Notification?.title, "Indore Striders posted an event");
     assert.equal(runner1Notification?.body, "5 km from Carter Road.");
     assert.equal(runner1Notification?.eventId, "event-1");
-    assert.equal(runner1Notification?.clubId, "club-1");
+    assert.equal(runner1Notification?.organizerId, "club-1");
     assert.equal(runner1Notification?.organizerId, "club-1");
     assert.equal(runner1Notification?.readAt, null);
     assert.equal(runner2Notification?.uid, "runner-2");
@@ -989,7 +988,6 @@ test("createEventHandler notifies active club members about a new event",
       body: "5 km from Carter Road.",
       type: "organizerUpdate",
       eventId: "event-1",
-      clubId: "club-1",
       organizerId: "club-1",
     }]);
   }
@@ -997,7 +995,7 @@ test("createEventHandler notifies active club members about a new event",
 
 test("createEventHandler rejects unsafe creation states", async () => {
   const h = harness({
-    "clubs/club-1": club(),
+    "organizers/club-1": club(),
     "events/existing": event(),
     "deletedUsers/deleted-host": {deletedAt: "now"},
   });
@@ -1030,7 +1028,7 @@ test("createEventHandler rejects unsafe creation states", async () => {
 
 test("createEventHandler rejects club schedule conflicts", async () => {
   const h = harness({
-    "clubs/club-1": club(),
+    "organizers/club-1": club(),
     "events/overlapping": event({
       startTime: ts("2026-05-02T01:00:00.000Z"),
       endTime: ts("2026-05-02T02:00:00.000Z"),
@@ -1045,7 +1043,7 @@ test("createEventHandler rejects club schedule conflicts", async () => {
 
 test("createEventHandler allows adjacent club schedules", async () => {
   const h = harness({
-    "clubs/club-1": club(),
+    "organizers/club-1": club(),
     "events/adjacent": event({
       startTime: ts("2026-05-02T02:30:00.000Z"),
       endTime: ts("2026-05-02T03:30:00.000Z"),
@@ -1054,12 +1052,12 @@ test("createEventHandler allows adjacent club schedules", async () => {
 
   await createEventHandler(request("host-1", payload()), h.deps);
 
-  assert.equal(h.firestore.get("events/event-1")?.clubId, "club-1");
+  assert.equal(h.firestore.get("events/event-1")?.organizerId, "club-1");
 });
 
 test("createEventHandler rejects events over the shared max duration", async (
 ) => {
-  const h = harness({"clubs/club-1": club()});
+  const h = harness({"organizers/club-1": club()});
 
   await assert.rejects(
     () => createEventHandler(request("host-1", payload({
@@ -1072,7 +1070,7 @@ test("createEventHandler rejects events over the shared max duration", async (
 
 test("updateEventHandler updates only host-editable event fields", async () => {
   const h = harness({
-    "clubs/club-1": club(),
+    "organizers/club-1": club(),
     "events/event-1": event({capacityLimit: 12}),
   });
 
@@ -1103,7 +1101,7 @@ test("updateEventHandler cleans removed event media after commit", async () => {
   const kept = uploadedEventPhoto("keep", 0);
   const removed = uploadedEventPhoto("remove", 1);
   const h = harness({
-    "clubs/club-1": club(),
+    "organizers/club-1": club(),
     "events/event-1": event({eventPhotos: [kept, removed]}),
   });
 
@@ -1122,7 +1120,7 @@ test(
   "updateEventHandler limits web registration to free open events",
   async () => {
     const eligible = harness({
-      "clubs/club-1": club(),
+      "organizers/club-1": club(),
       "events/event-1": event(),
     });
     await updateEventHandler(request("host-1", {
@@ -1135,7 +1133,7 @@ test(
     );
 
     const paid = harness({
-      "clubs/club-1": club(),
+      "organizers/club-1": club(),
       "events/event-1": event({priceInPaise: 50000}),
     });
     await assert.rejects(
@@ -1147,7 +1145,7 @@ test(
     );
 
     const cohortGated = harness({
-      "clubs/club-1": club(),
+      "organizers/club-1": club(),
       "events/event-1": event({
         constraints: {minAge: 0, maxAge: 99, maxMen: 10, maxWomen: 10},
       }),
@@ -1165,23 +1163,23 @@ test(
 test("updateEventHandler notifies participants for location changes",
   async () => {
     const h = harness({
-      "clubs/club-1": club(),
+      "organizers/club-1": club(),
       "events/event-1": event(),
       "eventParticipations/event-1_runner-1": {
         eventId: "event-1",
-        clubId: "club-1",
+        organizerId: "club-1",
         uid: "runner-1",
         status: "signedUp",
       },
       "eventParticipations/event-1_runner-2": {
         eventId: "event-1",
-        clubId: "club-1",
+        organizerId: "club-1",
         uid: "runner-2",
         status: "waitlisted",
       },
       "eventParticipations/event-1_runner-3": {
         eventId: "event-1",
-        clubId: "club-1",
+        organizerId: "club-1",
         uid: "runner-3",
         status: "cancelled",
       },
@@ -1218,7 +1216,7 @@ test("updateEventHandler notifies participants for location changes",
       "Check the latest time and meeting point for your 5 km event."
     );
     assert.equal(runner1Notification?.eventId, "event-1");
-    assert.equal(runner1Notification?.clubId, "club-1");
+    assert.equal(runner1Notification?.organizerId, "club-1");
     assert.equal(runner2Notification?.uid, "runner-2");
     assert.equal(runner3Notification, undefined);
     assert.deepEqual(h.notifications, [{
@@ -1227,7 +1225,6 @@ test("updateEventHandler notifies participants for location changes",
       body: "Check the latest time and meeting point for your 5 km event.",
       type: "eventUpdated",
       eventId: "event-1",
-      clubId: "club-1",
       organizerId: "club-1",
     }]);
   }
@@ -1236,11 +1233,11 @@ test("updateEventHandler notifies participants for location changes",
 test("updateEventHandler rejects schedule changes once participants exist",
   async () => {
     const h = harness({
-      "clubs/club-1": club(),
+      "organizers/club-1": club(),
       "events/event-1": event(),
       "eventParticipations/event-1_runner-1": {
         eventId: "event-1",
-        clubId: "club-1",
+        organizerId: "club-1",
         uid: "runner-1",
         status: "signedUp",
       },
@@ -1275,11 +1272,11 @@ test("updateEventHandler rejects schedule changes once participants exist",
 test("updateEventHandler skips participant notifications for copy-only edits",
   async () => {
     const h = harness({
-      "clubs/club-1": club(),
+      "organizers/club-1": club(),
       "events/event-1": event(),
       "eventParticipations/event-1_runner-1": {
         eventId: "event-1",
-        clubId: "club-1",
+        organizerId: "club-1",
         uid: "runner-1",
         status: "signedUp",
       },
@@ -1305,17 +1302,17 @@ test("updateEventHandler skips participant notifications for copy-only edits",
 test("cancelEventHandler marks the event cancelled and notifies participants",
   async () => {
     const h = harness({
-      "clubs/club-1": club(),
+      "organizers/club-1": club(),
       "events/event-1": event(),
       "eventParticipations/event-1_runner-1": {
         eventId: "event-1",
-        clubId: "club-1",
+        organizerId: "club-1",
         uid: "runner-1",
         status: "signedUp",
       },
       "eventParticipations/event-1_runner-2": {
         eventId: "event-1",
-        clubId: "club-1",
+        organizerId: "club-1",
         uid: "runner-2",
         status: "waitlisted",
       },
@@ -1357,7 +1354,6 @@ test("cancelEventHandler marks the event cancelled and notifies participants",
       body: "Your 5 km event from Carter Road has been cancelled.",
       type: "eventCancelled",
       eventId: "event-1",
-      clubId: "club-1",
       organizerId: "club-1",
     }]);
 
@@ -1372,7 +1368,7 @@ test("cancelEventHandler marks the event cancelled and notifies participants",
 test("deleteEventHandler hard-deletes only unused events", async () => {
   const photo = uploadedEventPhoto("delete", 0);
   const h = harness({
-    "clubs/club-1": club(),
+    "organizers/club-1": club(),
     "events/event-1": event({eventPhotos: [photo]}),
   });
 
@@ -1392,7 +1388,7 @@ test("deleteEventHandler hard-deletes only unused events", async () => {
 
 test("deleteEventHandler rejects events with user activity", async () => {
   const h = harness({
-    "clubs/club-1": club(),
+    "organizers/club-1": club(),
     "events/event-1": event(),
     "eventParticipations/event-1_runner-1": {
       eventId: "event-1",
@@ -1411,7 +1407,7 @@ test("deleteEventHandler rejects events with user activity", async () => {
 test("updateEventHandler rejects non-host and server-owned field edits",
   async () => {
     const h = harness({
-      "clubs/club-1": club(),
+      "organizers/club-1": club(),
       "events/event-1": event(),
     });
 
@@ -1443,7 +1439,7 @@ test("updateEventHandler rejects non-host and server-owned field edits",
 
 test("updateEventHandler rejects cancelled events", async () => {
   const h = harness({
-    "clubs/club-1": club(),
+    "organizers/club-1": club(),
     "events/event-1": event({status: "cancelled"}),
   });
 

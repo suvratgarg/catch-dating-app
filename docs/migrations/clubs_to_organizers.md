@@ -1,22 +1,23 @@
 ---
 doc_id: clubs_to_organizers_migration
-version: 1.1.0
-updated: 2026-07-22
+version: 1.2.0
+updated: 2026-08-21
 owner: data_platform
 status: active
 ---
 
 # Clubs To Organizers Migration
 
-This runbook owns the one-time authority cutover from `clubs` to `organizers`.
-`Organizer` is the durable entity; `club` is one value of its required
-`organizerType`. The machine-readable state lives in
+This document records the completed one-time authority cutover from `clubs` to
+`organizers`. `Organizer` is the durable entity; `club` is one value of its
+required `organizerType`. The machine-readable state lives in
 `contracts/migrations/clubs_to_organizers.json`.
 
-The migration is additive and idempotent. It does not delete legacy documents,
-Storage objects, callable wrappers, fields, indexes, or rules. Retirement is a
-later operation that requires released-client evidence and a separate explicit
-approval.
+The original migration was additive and idempotent. The application has not
+launched, and the owner has approved local retirement of its legacy contracts,
+callable aliases, rule paths, storage paths, and client fallbacks. This
+historical runbook does not authorize remote deletion; any synthetic-data reset
+and deployment still require a separate explicit approval.
 
 ## Canonical Type Model
 
@@ -44,7 +45,7 @@ reviewed.
 
 ## Authority And Compatibility
 
-| Concern | Canonical authority | Temporary compatibility projection |
+| Concern | Canonical authority | Retired local projection |
 |---|---|---|
 | Entity | `organizers/{organizerId}` | `clubs/{clubId}` |
 | Owner/manager relationship | `organizerTeamMemberships/{organizerId_uid}` | host-role `clubMemberships` and `clubHostClaims` |
@@ -57,16 +58,16 @@ reviewed.
 | Public route | `/organizers/.../` | existing legacy redirects only |
 
 New Flutter, React, and Functions code must use the canonical column. Legacy
-fields are mirrors for released clients and warehouse continuity, not alternate
-sources of truth. `tool/check_organizer_nomenclature.mjs` enforces the selected
-cutover points.
+fields and paths are not local source contracts or alternate sources of truth.
+`tool/check_organizer_nomenclature.mjs` enforces the selected cutover points.
 
 Flutter organizer reads now use `organizers` exclusively. The temporary
 permission-denied fallback to `clubs` was retired on 2026-07-22 after staging
 and production rules were deployed and production parity reached 41 clubs, 41
 organizers, zero remaining writes, and zero blockers. The legacy collections
-remain read/write compatibility projections for supported older released
-clients; they are not an alternate read authority for current source.
+are not local read/write projections, callable aliases, or rule paths. Existing
+remote synthetic data must be reset or migrated before a deployment that removes
+those legacy surfaces.
 
 ## What The Migration Copies
 

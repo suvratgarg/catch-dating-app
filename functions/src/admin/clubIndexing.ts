@@ -210,7 +210,7 @@ function normalizeNullableString(value: unknown): unknown {
   return trimmed.length === 0 ? null : trimmed;
 }
 
-export const adminSetClubIndexStatus = onCall(
+export const adminSetOrganizerIndexStatus = onCall(
   appCheckCallableOptions,
   (request) => adminSetClubIndexStatusHandler(request)
 );

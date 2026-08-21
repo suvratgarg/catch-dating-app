@@ -5,7 +5,7 @@
 // Typed callable request DTO emitted from callables/club_membership_payload.schema.json.
 // Re-exported by lib/core/schema_contracts/generated/callable_request_dtos.g.dart.
 
-/// Callable payload accepted by joinClub and leaveClub.
+/// Retired legacy membership payload retained only for schema-history decoding.
 final class ClubMembershipCallableRequest {
   const ClubMembershipCallableRequest({
     required this.clubId,

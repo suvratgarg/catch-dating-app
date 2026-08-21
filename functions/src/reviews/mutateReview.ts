@@ -20,30 +20,20 @@ import {
 } from "../shared/relationshipDocuments";
 import {CreateEventReviewCallablePayload} from
   "../shared/generated/createEventReviewCallablePayload";
-import {CreatePublicClubReviewCallablePayload} from
-  "../shared/generated/createPublicClubReviewCallablePayload";
-import {CreatePublicClubReviewCallableResponse} from
-  "../shared/generated/createPublicClubReviewCallableResponse";
 import {CreatePublicOrganizerReviewCallablePayload} from
   "../shared/generated/createPublicOrganizerReviewCallablePayload";
 import {CreatePublicOrganizerReviewCallableResponse} from
   "../shared/generated/createPublicOrganizerReviewCallableResponse";
 import {DeleteEventReviewCallablePayload} from
   "../shared/generated/deleteEventReviewCallablePayload";
-import {ListPublicClubReviewsCallablePayload} from
-  "../shared/generated/listPublicClubReviewsCallablePayload";
-import {ListPublicClubReviewsCallableResponse} from
-  "../shared/generated/listPublicClubReviewsCallableResponse";
 import {ListPublicOrganizerReviewsCallablePayload} from
   "../shared/generated/listPublicOrganizerReviewsCallablePayload";
 import {ListPublicOrganizerReviewsCallableResponse} from
   "../shared/generated/listPublicOrganizerReviewsCallableResponse";
 import {
   validateCreateEventReviewCallablePayload,
-  validateCreatePublicClubReviewCallablePayload,
   validateCreatePublicOrganizerReviewCallablePayload,
   validateDeleteEventReviewCallablePayload,
-  validateListPublicClubReviewsCallablePayload,
   validateListPublicOrganizerReviewsCallablePayload,
   validateSetReviewResponseCallablePayload,
   validateUpdateEventReviewCallablePayload,
@@ -68,7 +58,7 @@ import {assertPublicOrganizerPageEligible} from
  * Moderation status for a freshly written review. If the comment or the
  * reviewer-supplied name trips the block filter, the review is held as
  * "pending" instead of "published" so it never renders on the public listing
- * nor counts toward the club rating until a human clears it.
+ * nor counts toward the organizer rating until a human clears it.
  * @param {string} comment Review comment text.
  * @param {string} reviewerName Display name attached to the review.
  * @return {"published" | "pending"} Moderation status to store.
@@ -104,7 +94,6 @@ const defaultDeps: ReviewMutationDeps = {
   checkIpRateLimit,
 };
 
-export type PublicClubReview = CreatePublicClubReviewCallableResponse["review"];
 export type PublicOrganizerReview =
   CreatePublicOrganizerReviewCallableResponse["review"];
 
@@ -156,7 +145,7 @@ export async function createEventReviewHandler(
       userSnap,
       deletedUserSnap,
       participationSnap,
-      data.clubId
+      data.organizerId
     );
 
     const user = requireDoc<UserProfileDocument>(
@@ -167,8 +156,7 @@ export async function createEventReviewHandler(
 
     );
     tx.create(reviewRef, {
-      clubId: data.clubId,
-      organizerId: eventOrganizerId(eventSnap, data.clubId),
+      organizerId: eventOrganizerId(eventSnap),
       eventId: data.eventId,
       reviewerUserId,
       reviewerName: publicDisplayName(user),
@@ -188,23 +176,6 @@ export async function createEventReviewHandler(
   });
 
   return {reviewId};
-}
-
-export async function createPublicClubReviewHandler(
-  request: CallableRequest<unknown>,
-  deps: ReviewMutationDeps = defaultDeps
-): Promise<CreatePublicClubReviewCallableResponse> {
-  const data = validateCallableWithAjv<CreatePublicClubReviewCallablePayload>(
-    request,
-    validateCreatePublicClubReviewCallablePayload,
-    normalizeCreatePublicClubReviewPayload
-  );
-  return createPublicOrganizerReviewFromData(
-    request,
-    {...data, organizerId: data.clubId},
-    deps,
-    "createPublicClubReview"
-  );
 }
 
 export async function createPublicOrganizerReviewHandler(
@@ -229,7 +200,7 @@ async function createPublicOrganizerReviewFromData(
   request: CallableRequest<unknown>,
   data: CreatePublicOrganizerReviewCallablePayload,
   deps: ReviewMutationDeps,
-  rateLimitAction: "createPublicClubReview" | "createPublicOrganizerReview"
+  rateLimitAction: "createPublicOrganizerReview"
 ): Promise<CreatePublicOrganizerReviewCallableResponse> {
   const db = deps.firestore();
   const reviewerUserId = request.auth?.uid ?? null;
@@ -262,7 +233,6 @@ async function createPublicOrganizerReviewFromData(
     assertCanReceivePublicReview(organizerSnap, data.submittedFromPath);
     tx.create(reviewRef, {
       organizerId: data.organizerId,
-      clubId: data.organizerId,
       eventId: null,
       reviewerUserId,
       reviewerName,
@@ -293,21 +263,6 @@ async function createPublicOrganizerReviewFromData(
       ownerResponse: null,
     },
   };
-}
-
-export async function listPublicClubReviewsHandler(
-  request: CallableRequest<unknown>,
-  deps: ReviewMutationDeps = defaultDeps
-): Promise<ListPublicClubReviewsCallableResponse> {
-  const data = validateCallableWithAjv<ListPublicClubReviewsCallablePayload>(
-    request,
-    validateListPublicClubReviewsCallablePayload,
-    normalizeSingleIdPayload("clubId")
-  );
-  return listPublicOrganizerReviewsFromData(
-    {organizerId: data.clubId},
-    deps
-  );
 }
 
 export async function listPublicOrganizerReviewsHandler(
@@ -344,8 +299,8 @@ async function listPublicOrganizerReviewsFromData(
     .sort((a, b) => timestampMillis(b.data().createdAt) -
       timestampMillis(a.data().createdAt))
     .slice(0, 50)
-    .map((doc) => toPublicClubReview(doc.id, doc.data() as ReviewDocument))
-    .filter((review): review is PublicClubReview => review !== null);
+    .map((doc) => toPublicOrganizerReview(doc.id, doc.data() as ReviewDocument))
+    .filter((review): review is PublicOrganizerReview => review !== null);
 
   return {reviews};
 }
@@ -489,13 +444,7 @@ export async function setReviewResponseHandler(
 
 function normalizeCreateEventReviewPayload(data: unknown): unknown {
   return normalizePayloadStrings(data, {
-    stringFields: ["clubId", "eventId", "comment"],
-  });
-}
-
-function normalizeCreatePublicClubReviewPayload(data: unknown): unknown {
-  return normalizePayloadStrings(data, {
-    stringFields: ["clubId", "comment", "reviewerName", "submittedFromPath"],
+    stringFields: ["organizerId", "eventId", "comment"],
   });
 }
 
@@ -527,7 +476,7 @@ function assertCanWriteReview(
   userSnap: FirebaseFirestore.DocumentSnapshot,
   deletedUserSnap: FirebaseFirestore.DocumentSnapshot,
   participationSnap: FirebaseFirestore.DocumentSnapshot,
-  clubId: string
+  organizerId: string
 ) {
   if (deletedUserSnap.exists) {
     throw new HttpsError(
@@ -549,10 +498,10 @@ function assertCanWriteReview(
     "EventDocument"
 
   );
-  if (event.clubId !== clubId) {
+  if (event.organizerId !== organizerId) {
     throw new HttpsError(
       "failed-precondition",
-      "This review does not match the club."
+      "This review does not match the organizer."
     );
   }
   if (!participationSnap.exists) {
@@ -574,14 +523,10 @@ function assertCanWriteReview(
   }
 }
 
-function eventOrganizerId(
-  eventSnap: FirebaseFirestore.DocumentSnapshot,
-  fallbackClubId: string
-): string {
+function eventOrganizerId(eventSnap: FirebaseFirestore.DocumentSnapshot): string {
   const event = eventSnap.data() as {organizerId?: unknown} | undefined;
-  return typeof event?.organizerId === "string" ?
-    event.organizerId :
-    fallbackClubId;
+  if (typeof event?.organizerId === "string") return event.organizerId;
+  throw new HttpsError("failed-precondition", "Event organizer is missing.");
 }
 
 function assertCanReceivePublicReview(
@@ -682,10 +627,10 @@ function requesterIp(request: CallableRequest<unknown>): string {
   return rawRequest?.ip ?? forwardedIp?.split(",")[0]?.trim() ?? "unknown";
 }
 
-function toPublicClubReview(
+function toPublicOrganizerReview(
   id: string,
   review: ReviewDocument
-): PublicClubReview | null {
+): PublicOrganizerReview | null {
   if (review.moderationStatus && review.moderationStatus !== "published") {
     return null;
   }
@@ -742,19 +687,9 @@ export const createEventReview = onCall(
   (request) => createEventReviewHandler(request)
 );
 
-export const createPublicClubReview = onCall(
-  appCheckCallableOptions,
-  (request) => createPublicClubReviewHandler(request)
-);
-
 export const createPublicOrganizerReview = onCall(
   appCheckCallableOptions,
   (request) => createPublicOrganizerReviewHandler(request)
-);
-
-export const listPublicClubReviews = onCall(
-  appCheckCallableOptions,
-  (request) => listPublicClubReviewsHandler(request)
 );
 
 export const listPublicOrganizerReviews = onCall(

@@ -303,10 +303,8 @@ export {
 export {syncOrganizerReviewStats} from "./reviews/syncOrganizerReviewStats";
 export {
   createEventReview,
-  createPublicClubReview,
   createPublicOrganizerReview,
   deleteEventReview,
-  listPublicClubReviews,
   listPublicOrganizerReviews,
   setReviewResponse,
   updateEventReview,
@@ -372,22 +370,19 @@ export {
   adminGetAccessApplicationDetails,
 } from "./admin/accessApplications";
 export {
-  adminGetClubClaimRequestDetails,
-  adminListClubClaimRequests,
+  adminGetOrganizerClaimRequestDetails,
+  adminListOrganizerClaimRequests,
 } from "./admin/clubClaimReview";
 export {
-  adminSetClubIndexStatus,
+  adminSetOrganizerIndexStatus,
 } from "./admin/clubIndexing";
 export {
   adminListCrossPathsShowcaseCandidates,
   adminSetCrossPathsShowcaseEligibility,
 } from "./admin/crossPathsShowcaseEligibility";
 export {
-  adminGetClubDetails,
   adminGetOrganizerDetails,
-  adminListClubDetails,
   adminListOrganizerDetails,
-  adminUpdateClubDetails,
   adminUpdateOrganizerDetails,
 } from "./admin/clubDetails";
 export {

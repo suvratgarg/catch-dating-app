@@ -8,11 +8,7 @@ const schemaClubMembershipCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/callables/club_membership_payload.schema.json',
   'title': 'ClubMembershipCallablePayload',
-  'description': 'Callable payload accepted by joinClub and leaveClub.',
-  'x-callable-aliases': <Object?>[
-    'joinClub',
-    'leaveClub',
-  ],
+  'description': 'Retired legacy membership payload retained only for schema-history decoding.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[

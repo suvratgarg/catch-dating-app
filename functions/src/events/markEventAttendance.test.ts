@@ -125,7 +125,7 @@ test(
       body: "Open the live guide for your 5 km event from Bandstand.",
       type: "eventCompanionReady",
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
     }]);
   }
 );
@@ -168,16 +168,20 @@ function buildHarness(overrides: Record<string, FakeData | undefined> = {}) {
   const notifications: FcmParams[] = [];
   const firestore = new FakeFirestore({
     "events/event-1": eventDoc(),
-    "clubs/club-1": {hostUserId: "host-1"},
+    "organizers/club-1": {
+      hostUserId: "host-1",
+      hostUserIds: ["host-1"],
+      hostProfiles: [],
+    },
     "eventParticipations/event-1_runner-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       uid: "runner-1",
       status: "signedUp",
     },
     "eventSuccessPlans/event-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       selectedModuleIds: ["qr_check_in"],
       contextualOpenersEnabled: false,
     },
@@ -208,7 +212,7 @@ function buildHarness(overrides: Record<string, FakeData | undefined> = {}) {
 
 function eventDoc(): FakeData {
   return {
-    clubId: "club-1",
+    organizerId: "club-1",
     status: "active",
     startTime: timestamp("2026-05-02T11:00:00.000Z"),
     endTime: timestamp("2026-05-02T12:00:00.000Z"),

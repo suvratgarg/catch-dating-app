@@ -231,15 +231,11 @@
       "rulesMatch": "/hostProfiles/{uid}",
       "typescriptInterface": "HostProfileDocument",
       "dartModel": "lib/hosts/domain/host_profile.dart",
-      "owner": "professional host identity owned by the authenticated host; seeded and projected by club/profile functions",
+      "owner": "professional host identity owned by the authenticated host; seeded and projected by organizer/profile functions",
       "read": "public",
       "write": "authenticated owner direct create/update; server functions may seed and project host display data",
       "exportedFunctions": [
-        "syncHostProfile",
-        "createClub",
-        "addClubHost",
-        "removeClubHost",
-        "transferClubOwnership"
+        "syncHostProfile"
       ],
       "operations": [
         {
@@ -259,104 +255,7 @@
       ],
       "migrationNotes": [
         "Host professional identity is intentionally separate from users/{uid} dating profile data and publicProfiles/{uid}.",
-        "Club creation and team-management callables may seed missing hostProfiles/{uid} documents from professional host snapshots."
-      ]
-    },
-    {
-      "id": "clubs",
-      "path": "clubs/{clubId}",
-      "rulesMatch": "/clubs/{clubId}",
-      "typescriptInterface": "ClubDocument",
-      "dartModel": "lib/clubs/domain/club.dart",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "owner": "club create/update/membership lifecycle is callable-owned; aggregate and next-event projections are trigger-owned",
-      "read": "public",
-      "write": "all club writes are callable-owned; direct client writes are denied",
-      "exportedFunctions": [
-        "createClub",
-        "updateClub",
-        "createClubPost",
-        "joinClub",
-        "leaveClub",
-        "archiveClub",
-        "deleteClub",
-        "adminCreateOrganizerDraftFromCandidate",
-        "syncClubMemberStats",
-        "syncClubNextEvent",
-        "syncClubReviewStats"
-      ],
-      "migrationNotes": [
-        "archiveClub marks clubs archived when history exists.",
-        "deleteClub hard-deletes only never-used clubs with no events, payments, reviews, or non-host members.",
-        "Organizer posts live under clubs/{clubId}/posts/{postId} and are created only by createClubPost.",
-        "memberCount is recomputed from active clubMemberships by syncClubMemberStats.",
-        "nextEventAt and nextEventLabel are recomputed from active future events by syncClubNextEvent.",
-        "adminCreateOrganizerDraftFromCandidate may create an unclaimed source-backed compatibility document only after a reviewed Supply Intake work item; it cannot publish, index, crawl, or assign ownership."
-      ]
-    },
-    {
-      "id": "club_posts",
-      "path": "clubs/{clubId}/posts/{postId}",
-      "rulesMatch": "/clubs/{clubId}/posts/{postId}",
-      "typescriptInterface": "ClubPostDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "owner": "createClubPost callable",
-      "read": "authenticated users",
-      "write": "server only",
-      "exportedFunctions": [
-        "createClubPost"
-      ],
-      "operations": [
-        {
-          "id": "host_create_post",
-          "type": "callable",
-          "owner": "club owner or host",
-          "function": "createClubPost",
-          "payloadSchemaRef": "contracts/callables/create_club_post_payload.schema.json"
-        }
-      ],
-      "migrationNotes": [
-        "V1 post audience is followers only.",
-        "The createClubPost callable enforces max 3 active posts per club per rolling 7 days."
-      ]
-    },
-    {
-      "id": "clubMemberships",
-      "path": "clubMemberships/{membershipId}",
-      "rulesMatch": "/clubMemberships/{membershipId}",
-      "typescriptInterface": "ClubMembershipDocument",
-      "dartModel": "lib/clubs/domain/club_membership.dart",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "owner": "club membership callables; syncClubMemberStats derives parent count",
-      "read": "active memberships visible to authenticated users; historical memberships visible to the member",
-      "write": "server only",
-      "exportedFunctions": [
-        "createClub",
-        "joinClub",
-        "leaveClub",
-        "setClubNotificationPreference",
-        "syncClubMemberStats",
-        "requestAccountDeletion"
-      ],
-      "migrationNotes": [
-        "Owns club membership state; parent clubs documents retain only memberCount as a trigger-recomputed aggregate.",
-        "pushNotificationsEnabled is the per-club bell opt-in for FCM only; active membership still receives durable Activity updates."
-      ]
-    },
-    {
-      "id": "clubHostClaims",
-      "path": "clubHostClaims/{uid}",
-      "rulesMatch": "/clubHostClaims/{uid}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "owner": "createClub callable",
-      "read": "server only",
-      "write": "server only",
-      "exportedFunctions": [
-        "createClub"
-      ],
-      "migrationNotes": [
-        "One document per host UID enforces the product rule that a user can host at most one club.",
-        "Existing beta data should be backfilled with a host claim or reset before relying on this invariant in production."
+        "Organizer creation and team-management callables may seed missing hostProfiles/{uid} documents from professional host snapshots."
       ]
     },
     {
@@ -390,7 +289,7 @@
           "function": "createEvent",
           "payloadSchemaRef": "contracts/callables/create_event_payload.schema.json",
           "allowedFields": [
-            "clubId",
+            "organizerId",
             "startTime",
             "endTime",
             "meetingPoint",
@@ -434,7 +333,7 @@
             "description"
           ],
           "deniedFields": [
-            "clubId",
+            "organizerId",
             "capacityLimit",
             "priceInPaise",
             "constraints",
@@ -1442,24 +1341,6 @@
       ]
     },
     {
-      "id": "clubScheduleLocks",
-      "path": "clubScheduleLocks/{lockId}",
-      "rulesMatch": "/clubScheduleLocks/{lockId}",
-      "owner": "event scheduling callables",
-      "read": "server/admin only",
-      "write": "server only",
-      "exportedFunctions": [
-        "createEvent",
-        "updateEvent",
-        "cancelEvent",
-        "deleteEvent"
-      ],
-      "migrationNotes": [
-        "Server-owned minute-bucket lock documents prevent overlapping active events for a club.",
-        "Demo seeding writes these only when --include-schedule-locks is explicitly provided."
-      ]
-    },
-    {
       "id": "userEventScheduleLocks",
       "path": "userEventScheduleLocks/{lockId}",
       "rulesMatch": "/userEventScheduleLocks/{lockId}",
@@ -1536,8 +1417,7 @@
       "exportedFunctions": [
         "createEventReview",
         "updateEventReview",
-        "deleteEventReview",
-        "syncClubReviewStats"
+        "deleteEventReview"
       ],
       "operations": [
         {
@@ -1548,7 +1428,7 @@
           "payloadSchemaRef": "contracts/callables/create_event_review_payload.schema.json",
           "strictAllowedFieldsMatch": true,
           "allowedFields": [
-            "clubId",
+            "organizerId",
             "eventId",
             "rating",
             "comment"
@@ -1576,7 +1456,7 @@
             "comment"
           ],
           "deniedFields": [
-            "clubId",
+            "organizerId",
             "eventId",
             "reviewerUserId",
             "reviewerName",
@@ -1691,7 +1571,6 @@
         "createEvent",
         "updateEvent",
         "cancelEvent",
-        "createClubPost",
         "signUpForFreeEvent",
         "verifyRazorpayPayment",
         "cancelEventSignUp"
