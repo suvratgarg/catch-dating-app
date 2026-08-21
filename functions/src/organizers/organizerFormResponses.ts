@@ -39,7 +39,6 @@ import {WithdrawOrganizerFormResponseCallablePayload} from
 import {WithdrawOrganizerFormResponseCallableResponse} from
   "../shared/generated/withdrawOrganizerFormResponseCallableResponse";
 import {
-  ClubDocument,
   OrganizerDocument,
   OrganizerFormAssetDocument,
   OrganizerFormDocument,
@@ -951,16 +950,6 @@ async function organizerPresentation(
       canonical,
       "OrganizerDocument"
     );
-    return {
-      organizerId,
-      name: organizer.name,
-      logoUrl: organizer.logoPhoto?.url ?? organizer.profileImageUrl ??
-        organizer.imageUrl,
-    };
-  }
-  const legacy = await db.collection("clubs").doc(organizerId).get();
-  if (legacy.exists) {
-    const organizer = requireDoc<ClubDocument>(legacy, "ClubDocument");
     return {
       organizerId,
       name: organizer.name,

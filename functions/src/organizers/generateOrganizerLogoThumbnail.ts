@@ -146,7 +146,6 @@ async function updateOrganizerLogoThumbnail({
 }) {
   const organizerRef = admin.firestore()
     .collection("organizers").doc(organizerId);
-  const legacyClubRef = admin.firestore().collection("clubs").doc(organizerId);
   await admin.firestore().runTransaction(async (tx) => {
     const snap = await tx.get(organizerRef);
     if (!snap.exists) return;
@@ -154,7 +153,6 @@ async function updateOrganizerLogoThumbnail({
     const logoPhoto = data.logoPhoto;
     if (!isRecord(logoPhoto)) {
       tx.update(organizerRef, {profileImageUrl: thumbnailUrl});
-      tx.set(legacyClubRef, {profileImageUrl: thumbnailUrl}, {merge: true});
       return;
     }
     const storagePath = typeof logoPhoto.storagePath === "string" ?
@@ -174,7 +172,6 @@ async function updateOrganizerLogoThumbnail({
       profileImageUrl: thumbnailUrl,
     };
     tx.update(organizerRef, patch);
-    tx.set(legacyClubRef, patch, {merge: true});
   });
 }
 
