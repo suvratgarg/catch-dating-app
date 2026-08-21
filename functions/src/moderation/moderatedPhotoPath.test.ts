@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {isModeratedPhotoPath} from "./moderatedPhotoPath";
 
-test("canonical and legacy organizer media paths are moderated", () => {
+test("canonical organizer media paths are moderated", () => {
   assert.equal(
     isModeratedPhotoPath("organizers/organizer-1/photos/0_photo.jpg"),
     true
@@ -11,14 +11,7 @@ test("canonical and legacy organizer media paths are moderated", () => {
     isModeratedPhotoPath("organizers/organizer-1/logo/logo.jpg"),
     true
   );
-  assert.equal(
-    isModeratedPhotoPath("clubs/club-1/photos/0_photo.jpg"),
-    true
-  );
-  assert.equal(
-    isModeratedPhotoPath("clubs/club-1/logo/logo.jpg"),
-    true
-  );
+  assert.equal(isModeratedPhotoPath("clubs/club-1/photos/0_photo.jpg"), false);
 });
 
 test("moderation path recognition preserves other image surfaces", () => {

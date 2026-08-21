@@ -300,7 +300,7 @@ export {
   completeEventSuccessFirstHelloMission,
   startEventSuccessFirstHelloMission,
 } from "./eventSuccess/firstHelloCheckIn";
-export {syncClubReviewStats} from "./reviews/syncClubReviewStats";
+export {syncOrganizerReviewStats} from "./reviews/syncOrganizerReviewStats";
 export {
   createEventReview,
   createPublicClubReview,
