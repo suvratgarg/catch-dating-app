@@ -184,7 +184,7 @@ final _sameDayScheduleEvents = [
 final _reviews = [
   Review(
     id: 'widgetbook-club-review-1',
-    clubId: _club.id,
+    organizerId: _club.id,
     reviewerUserId: 'runner-neha',
     reviewerName: 'Neha',
     rating: 5,
@@ -193,7 +193,7 @@ final _reviews = [
   ),
   Review(
     id: 'widgetbook-club-review-2',
-    clubId: _club.id,
+    organizerId: _club.id,
     reviewerUserId: 'runner-dev',
     reviewerName: 'Dev',
     rating: 5,

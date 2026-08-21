@@ -53,7 +53,7 @@ final class DashboardSurfaceFixtures {
   static final memberships = <ClubMembership>[
     ClubMembership(
       id: 'design-dashboard-club-$viewerUid',
-      organizerId: club.id,
+      clubId: club.id,
       uid: viewerUid,
       role: ClubMembershipRole.member,
       status: ClubMembershipStatus.active,

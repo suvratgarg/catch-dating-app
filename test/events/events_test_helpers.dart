@@ -242,6 +242,7 @@ Club buildClub({
     hostName: hostName,
     createdAt: createdAt ?? DateTime(2025),
     memberCount: 1,
+    appVisibility: ClubAppVisibility.discoverable,
   );
 }
 
