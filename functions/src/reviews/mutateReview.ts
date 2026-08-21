@@ -9,7 +9,6 @@ import {
   EventDocument,
   EventParticipationDocument,
   UserProfileDocument,
-  ClubDocument,
   OrganizerDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {
@@ -60,7 +59,6 @@ import {
   publicAvatarUrl,
   publicDisplayName,
 } from "../shared/profileProjection";
-import {clubHostProfiles, isClubHost} from "../shared/clubHosts";
 import {isOrganizerManager, organizerHostProfiles} from
   "../shared/organizerHosts";
 import {assertPublicOrganizerPageEligible} from
@@ -254,22 +252,14 @@ async function createPublicOrganizerReviewFromData(
   }
 
   const organizerRef = db.collection("organizers").doc(data.organizerId);
-  const legacyClubRef = db.collection("clubs").doc(data.organizerId);
   const reviewRef = db.collection("reviews").doc();
   const createdAt = new Date().toISOString();
   const reviewerName = publicReviewerName(data);
   const moderationStatus = reviewModerationStatus(data.comment, reviewerName);
 
   await db.runTransaction(async (tx) => {
-    const [organizerSnap, legacyClubSnap] = await Promise.all([
-      tx.get(organizerRef),
-      tx.get(legacyClubRef),
-    ]);
-    assertCanReceivePublicReview(
-      organizerSnap,
-      legacyClubSnap,
-      data.submittedFromPath
-    );
+    const organizerSnap = await tx.get(organizerRef);
+    assertCanReceivePublicReview(organizerSnap, data.submittedFromPath);
     tx.create(reviewRef, {
       organizerId: data.organizerId,
       clubId: data.organizerId,
@@ -338,34 +328,19 @@ async function listPublicOrganizerReviewsFromData(
   deps: ReviewMutationDeps
 ): Promise<ListPublicOrganizerReviewsCallableResponse> {
   const db = deps.firestore();
-  const [organizerSnap, legacyClubSnap, reviewsSnap, legacyReviewsSnap] =
+  const [organizerSnap, reviewsSnap] =
     await Promise.all([
       db.collection("organizers").doc(data.organizerId).get(),
-      db.collection("clubs").doc(data.organizerId).get(),
       db
         .collection("reviews")
         .where("organizerId", "==", data.organizerId)
         .orderBy("createdAt", "desc")
         .limit(50)
         .get(),
-      db
-        .collection("reviews")
-        .where("clubId", "==", data.organizerId)
-        .orderBy("createdAt", "desc")
-        .limit(50)
-        .get(),
     ]);
-  assertCanReceivePublicReview(
-    organizerSnap,
-    legacyClubSnap,
-    null
-  );
+  assertCanReceivePublicReview(organizerSnap, null);
 
-  const docsById = new Map([
-    ...legacyReviewsSnap.docs.map((doc) => [doc.id, doc] as const),
-    ...reviewsSnap.docs.map((doc) => [doc.id, doc] as const),
-  ]);
-  const reviews = Array.from(docsById.values())
+  const reviews = reviewsSnap.docs
     .sort((a, b) => timestampMillis(b.data().createdAt) -
       timestampMillis(a.data().createdAt))
     .slice(0, 50)
@@ -460,7 +435,7 @@ export async function setReviewResponseHandler(
       reviewSnap,
       "ReviewDocument"
     );
-    const organizerId = review.organizerId ?? review.clubId;
+    const organizerId = review.organizerId;
     if (!organizerId) {
       throw new HttpsError(
         "failed-precondition",
@@ -468,35 +443,25 @@ export async function setReviewResponseHandler(
       );
     }
     const organizerRef = db.collection("organizers").doc(organizerId);
-    const legacyClubRef = db.collection("clubs").doc(organizerId);
     const [
       organizerSnap,
-      legacyClubSnap,
       userSnap,
       deletedUserSnap,
     ] = await Promise.all([
       tx.get(organizerRef),
-      tx.get(legacyClubRef),
       tx.get(userRef),
       tx.get(deletedUserRef),
     ]);
-    const authoritySnap = organizerSnap.exists ? organizerSnap : legacyClubSnap;
     assertCanRespondToReview(
-      authoritySnap,
+      organizerSnap,
       userSnap,
       deletedUserSnap,
-      hostUserId,
-      organizerSnap.exists
+      hostUserId
     );
-    const hostProfiles = organizerSnap.exists ?
-      organizerHostProfiles(requireDoc<OrganizerDocument>(
-        organizerSnap,
-        "OrganizerDocument"
-      )) :
-      clubHostProfiles(requireDoc<ClubDocument>(
-        legacyClubSnap,
-        "ClubDocument"
-      ));
+    const hostProfiles = organizerHostProfiles(requireDoc<OrganizerDocument>(
+      organizerSnap,
+      "OrganizerDocument"
+    ));
     const user = requireDoc<UserProfileDocument>(
       userSnap,
       "UserProfileDocument"
@@ -621,31 +586,16 @@ function eventOrganizerId(
 
 function assertCanReceivePublicReview(
   organizerSnap: FirebaseFirestore.DocumentSnapshot,
-  legacyClubSnap: FirebaseFirestore.DocumentSnapshot,
   submittedFromPath: string | null
 ) {
-  const candidates = [organizerSnap, legacyClubSnap]
-    .filter((snapshot) => snapshot.exists);
-  if (candidates.length === 0) {
+  if (!organizerSnap.exists) {
     throw new HttpsError("not-found", "Organizer profile not found.");
   }
-
-  const eligibilityErrors: unknown[] = [];
-  for (const candidate of candidates) {
-    try {
-      const club = requireDoc<ClubDocument>(candidate, "ClubDocument");
-      assertPublicOrganizerPageEligible(club, {pagePath: submittedFromPath});
-      return;
-    } catch (error) {
-      eligibilityErrors.push(error);
-    }
-  }
-
-  const pathError = eligibilityErrors.find((error) =>
-    error instanceof HttpsError && error.code === "invalid-argument"
+  const organizer = requireDoc<OrganizerDocument>(
+    organizerSnap,
+    "OrganizerDocument"
   );
-  if (pathError) throw pathError;
-  throw eligibilityErrors[0];
+  assertPublicOrganizerPageEligible(organizer, {pagePath: submittedFromPath});
 }
 
 function assertOwnsReview(
@@ -668,11 +618,10 @@ function assertOwnsReview(
 }
 
 function assertCanRespondToReview(
-  clubSnap: FirebaseFirestore.DocumentSnapshot,
+  organizerSnap: FirebaseFirestore.DocumentSnapshot,
   userSnap: FirebaseFirestore.DocumentSnapshot,
   deletedUserSnap: FirebaseFirestore.DocumentSnapshot,
   hostUserId: string,
-  canonicalOrganizer: boolean
 ) {
   if (deletedUserSnap.exists) {
     throw new HttpsError(
@@ -683,18 +632,13 @@ function assertCanRespondToReview(
   if (!userSnap.exists) {
     throw new HttpsError("not-found", "User profile not found.");
   }
-  if (!clubSnap.exists) {
+  if (!organizerSnap.exists) {
     throw new HttpsError("not-found", "Organizer not found.");
   }
-  const canRespond = canonicalOrganizer ?
-    isOrganizerManager(
-      requireDoc<OrganizerDocument>(clubSnap, "OrganizerDocument"),
-      hostUserId
-    ) :
-    isClubHost(
-      requireDoc<ClubDocument>(clubSnap, "ClubDocument"),
-      hostUserId
-    );
+  const canRespond = isOrganizerManager(
+    requireDoc<OrganizerDocument>(organizerSnap, "OrganizerDocument"),
+    hostUserId
+  );
   if (!canRespond) {
     throw new HttpsError(
       "permission-denied",
