@@ -143,43 +143,6 @@ service firebase.storage {
         );
     }
 
-    function canWriteClubMedia(clubId) {
-      return isSignedIn()
-        && firestore.exists(/databases/(default)/documents/clubs/$(clubId))
-        && (
-          (
-            firestore.get(
-              /databases/(default)/documents/clubs/$(clubId)
-            ).data.keys().hasAny(['hostUserId'])
-            &&
-            firestore.get(
-              /databases/(default)/documents/clubs/$(clubId)
-            ).data.hostUserId == request.auth.uid
-          )
-          || (
-            firestore.get(
-              /databases/(default)/documents/clubs/$(clubId)
-            ).data.keys().hasAny(['ownerUserId'])
-            &&
-            firestore.get(
-              /databases/(default)/documents/clubs/$(clubId)
-            ).data.ownerUserId == request.auth.uid
-          )
-          || (
-            firestore.get(
-              /databases/(default)/documents/clubs/$(clubId)
-            ).data.keys().hasAny(['hostUserIds'])
-            &&
-            firestore.get(
-              /databases/(default)/documents/clubs/$(clubId)
-            ).data.hostUserIds is list
-            && firestore.get(
-              /databases/(default)/documents/clubs/$(clubId)
-            ).data.hostUserIds.hasAny([request.auth.uid])
-          )
-        );
-    }
-
     function canWriteOrganizerMedia(organizerId) {
       return isSignedIn()
         && firestore.exists(
@@ -295,25 +258,6 @@ service firebase.storage {
     }
 
     match /users/{uid}/hostedMedia/{fileName} {
-      allow read: if true;
-      allow write: if false;
-    }
-
-    match /clubs/{clubId}/photos/{fileName} {
-      allow read: if true;
-      allow write: if canWriteClubMedia(clubId)
-        && isGalleryPhotoFileName(fileName)
-        && (isNewImageUpload() || isStoredImageDelete());
-    }
-
-    match /clubs/{clubId}/logo/{fileName} {
-      allow read: if true;
-      allow write: if canWriteClubMedia(clubId)
-        && isTimestampImageFileName(fileName)
-        && (isNewImageUpload() || isStoredImageDelete());
-    }
-
-    match /clubs/{clubId}/logoThumbnails/{fileName} {
       allow read: if true;
       allow write: if false;
     }

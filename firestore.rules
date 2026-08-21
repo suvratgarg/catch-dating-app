@@ -155,36 +155,18 @@ service cloud.firestore {
 
     function isClubHostForEvent(eventId) {
       return exists(/databases/$(database)/documents/events/$(eventId))
-        && (
-          (
+        && get(/databases/$(database)/documents/events/$(eventId))
+          .data.keys().hasAny(['organizerId'])
+        && exists(/databases/$(database)/documents/organizers/$(
+          get(/databases/$(database)/documents/events/$(eventId))
+            .data.organizerId
+        ))
+        && isClubHostData(get(
+          /databases/$(database)/documents/organizers/$(
             get(/databases/$(database)/documents/events/$(eventId))
-              .data.keys().hasAny(['organizerId'])
-            && exists(/databases/$(database)/documents/organizers/$(
-              get(/databases/$(database)/documents/events/$(eventId))
-                .data.organizerId
-            ))
-            && isClubHostData(get(
-              /databases/$(database)/documents/organizers/$(
-                get(/databases/$(database)/documents/events/$(eventId))
-                  .data.organizerId
-              )
-            ).data)
+              .data.organizerId
           )
-          || (
-            !get(/databases/$(database)/documents/events/$(eventId))
-              .data.keys().hasAny(['organizerId'])
-            && exists(/databases/$(database)/documents/clubs/$(
-              get(/databases/$(database)/documents/events/$(eventId))
-                .data.clubId
-            ))
-            && isClubHostData(get(
-              /databases/$(database)/documents/clubs/$(
-                get(/databases/$(database)/documents/events/$(eventId))
-                  .data.clubId
-              )
-            ).data)
-          )
-        );
+        ).data);
     }
 
     function eventStaffGrantDocId(eventId, uid) {
@@ -816,12 +798,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    // Written exclusively by event scheduling Cloud Functions to prevent
-    // overlapping events and bookings.
-    match /clubScheduleLocks/{lockId} {
-      allow read, write: if false;
-    }
-
     match /userEventScheduleLocks/{lockId} {
       allow read, write: if false;
     }
@@ -851,47 +827,6 @@ service cloud.firestore {
       allow read: if isAuthed()
         && !isDeletedUser(uid)
         && !hasBlockBetween(request.auth.uid, uid);
-      allow write: if false;
-    }
-
-    // ── Clubs ─────────────────────────────────────────────────────────────
-    match /clubMemberships/{membershipId} {
-      allow read: if isAuthed()
-        && (
-          resource.data.status == 'active'
-          || resource.data.uid == request.auth.uid
-        );
-      allow write: if false;
-    }
-
-    match /clubHostClaims/{uid} {
-      allow read, write: if false;
-    }
-
-    match /clubClaimRequests/{requestId} {
-      allow read, write: if false;
-    }
-
-    match /clubs/{clubId} {
-      allow read: if true;
-
-      // Club creation is handled by the createClub Cloud Function so the
-      // initial club doc and user membership projection stay atomic.
-      allow create: if false;
-
-      // Club profile edits go through updateClub. Keeping direct updates
-      // closed lets rules avoid duplicating Zod validation and prevents
-      // clients from touching aggregate/projection fields.
-      allow update: if false;
-
-      // Club deletion needs backend cleanup of events, memberships, reviews, and
-      // images before it can be safely exposed.
-      allow delete: if false;
-
-    }
-
-    match /clubs/{clubId}/posts/{postId} {
-      allow read: if isAuthed();
       allow write: if false;
     }
 
