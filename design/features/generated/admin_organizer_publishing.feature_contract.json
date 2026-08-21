@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/admin_organizer_publishing.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:8b3e6a8f224a6be30c79ea56a763c9ac56262c6eef237eb0d86c7596c6f27476",
+  "sourceDigest": "sha256:65bfedbd8da43540e84fc1dad060c18b9a383ae5e51ac8f9ca97594c32a1328f",
   "resolvedDigest": "sha256:eda9604ceca62d7ce6c41e743e1ebe7f68d808961d15342a7c2445c2e52ee0a7",
   "feature": {
     "id": "feature.admin_organizer_publishing",
@@ -99,28 +99,28 @@
           {
             "kind": "admin_callable",
             "registry": "admin/src/generated/validators/adminCallableValidators.ts",
-            "callable": "adminSetClubIndexStatus",
+            "callable": "adminSetOrganizerIndexStatus",
             "requestValidation": "strict_schema",
             "responseValidation": "structural_object"
           },
           {
             "kind": "admin_callable",
             "registry": "admin/src/generated/validators/adminCallableValidators.ts",
-            "callable": "adminListClubClaimRequests",
+            "callable": "adminListOrganizerClaimRequests",
             "requestValidation": "strict_schema",
             "responseValidation": "structural_object"
           },
           {
             "kind": "admin_callable",
             "registry": "admin/src/generated/validators/adminCallableValidators.ts",
-            "callable": "adminGetClubClaimRequestDetails",
+            "callable": "adminGetOrganizerClaimRequestDetails",
             "requestValidation": "strict_schema",
             "responseValidation": "structural_object"
           },
           {
             "kind": "admin_callable",
             "registry": "admin/src/generated/validators/adminCallableValidators.ts",
-            "callable": "adminDecideClubClaim",
+            "callable": "adminDecideOrganizerClaim",
             "requestValidation": "strict_schema",
             "responseValidation": "structural_object"
           }

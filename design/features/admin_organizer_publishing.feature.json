@@ -40,10 +40,10 @@
           {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminListOrganizerDetails", "requestValidation": "strict_schema", "responseValidation": "structural_object"},
           {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminGetOrganizerDetails", "requestValidation": "strict_schema", "responseValidation": "structural_object"},
           {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminUpdateOrganizerDetails", "requestValidation": "strict_schema", "responseValidation": "structural_object"},
-          {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminSetClubIndexStatus", "requestValidation": "strict_schema", "responseValidation": "structural_object"},
-          {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminListClubClaimRequests", "requestValidation": "strict_schema", "responseValidation": "structural_object"},
-          {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminGetClubClaimRequestDetails", "requestValidation": "strict_schema", "responseValidation": "structural_object"},
-          {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminDecideClubClaim", "requestValidation": "strict_schema", "responseValidation": "structural_object"}
+          {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminSetOrganizerIndexStatus", "requestValidation": "strict_schema", "responseValidation": "structural_object"},
+          {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminListOrganizerClaimRequests", "requestValidation": "strict_schema", "responseValidation": "structural_object"},
+          {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminGetOrganizerClaimRequestDetails", "requestValidation": "strict_schema", "responseValidation": "structural_object"},
+          {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminDecideOrganizerClaim", "requestValidation": "strict_schema", "responseValidation": "structural_object"}
         ],
         "testEvidence": {
           "canonical-directory": [
