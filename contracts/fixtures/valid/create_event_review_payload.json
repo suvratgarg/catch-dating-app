@@ -1,5 +1,5 @@
 {
-  "clubId": "club-1",
+  "organizerId": "club-1",
   "eventId": "event-1",
   "rating": 5,
   "comment": "Well organized event with clear pacing."

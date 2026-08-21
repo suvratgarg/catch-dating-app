@@ -345,7 +345,11 @@ async function assertNoClubConflictByEventsQuery(
 ) {
   const snap = await tx.get(db
     .collection("events")
-    .where("clubId", "==", params.clubId)
+    .where(
+      params.organizerId ? "organizerId" : "clubId",
+      "==",
+      params.organizerId ?? params.clubId
+    )
     .where("status", "==", "active"));
 
   for (const doc of snap.docs) {
@@ -354,7 +358,7 @@ async function assertNoClubConflictByEventsQuery(
     if (eventDocOverlaps(event, params.startTimeMillis, params.endTimeMillis)) {
       throw new HttpsError(
         "failed-precondition",
-        "This club already has an event during that time."
+        "This organizer already has an event during that time."
       );
     }
   }

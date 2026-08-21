@@ -370,6 +370,7 @@ test("createEventHandler creates a server-owned event for the club host",
     assert.deepEqual(result, {eventId: "event-1"});
     assert.deepEqual(h.rateLimitCalls, ["host-1:createEvent"]);
     assert.deepEqual(h.firestore.get("events/event-1"), {
+      clubId: "club-1",
       organizerId: "club-1",
       eventOrigin: {
         mode: "catchNative",
