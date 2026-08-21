@@ -52,8 +52,8 @@ import {
   releaseUserEventScheduleInTransaction,
   replaceClubScheduleInTransaction,
 } from "./scheduleConflicts";
-import {refreshClubNextEvent as defaultRefreshClubNextEvent} from
-  "../clubs/syncClubNextEvent";
+import {refreshOrganizerNextEvent as defaultRefreshOrganizerNextEvent} from
+  "../organizers/syncOrganizerNextEvent";
 import {
   normalizeCancelEventPayload,
   normalizeCreateEventPayload,
@@ -107,8 +107,8 @@ interface EventMutationDeps {
     uid: string,
     action: string
   ) => Promise<void>;
-  refreshClubNextEvent?: (
-    clubId: string,
+  refreshOrganizerNextEvent?: (
+    organizerId: string,
     deps?: {
       firestore: () => FirebaseFirestore.Firestore;
       nowTimestamp: () => FirebaseFirestore.Timestamp;
@@ -180,7 +180,7 @@ const defaultDeps: EventMutationDeps = {
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
   sendNotification: sendFcmNotification,
   checkRateLimit: defaultCheckRateLimit,
-  refreshClubNextEvent: defaultRefreshClubNextEvent,
+  refreshOrganizerNextEvent: defaultRefreshOrganizerNextEvent,
   refundPayment: async (paymentId, amount) => {
     await createRazorpayClient().payments.refund(paymentId, {amount});
   },
@@ -364,7 +364,7 @@ export async function createEventHandler(
   });
 
   if (createdEvent) {
-    await deps.refreshClubNextEvent?.(organizerId, {
+    await deps.refreshOrganizerNextEvent?.(organizerId, {
       firestore: deps.firestore,
       nowTimestamp: () => admin.firestore.Timestamp.now(),
     });
@@ -533,7 +533,7 @@ export async function updateEventHandler(
     });
   }
   if (affectedClubId) {
-    await deps.refreshClubNextEvent?.(affectedClubId, {
+    await deps.refreshOrganizerNextEvent?.(affectedClubId, {
       firestore: deps.firestore,
       nowTimestamp: () => admin.firestore.Timestamp.now(),
     });
@@ -664,7 +664,7 @@ export async function cancelEventHandler(
     });
   }
   if (affectedClubId) {
-    await deps.refreshClubNextEvent?.(affectedClubId, {
+    await deps.refreshOrganizerNextEvent?.(affectedClubId, {
       firestore: deps.firestore,
       nowTimestamp: () => admin.firestore.Timestamp.now(),
     });
@@ -814,7 +814,7 @@ export async function deleteEventHandler(
   await cleanupRemovedEventMedia(deps, data.eventId, removedStoragePaths);
 
   if (deletedClubId) {
-    await deps.refreshClubNextEvent?.(deletedClubId, {
+    await deps.refreshOrganizerNextEvent?.(deletedClubId, {
       firestore: deps.firestore,
       nowTimestamp: () => admin.firestore.Timestamp.now(),
     });

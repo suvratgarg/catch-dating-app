@@ -2,27 +2,26 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import * as admin from "firebase-admin";
 import {
-  refreshClubNextEvent,
-  syncClubNextEventHandler,
-} from "./syncClubNextEvent";
+  refreshOrganizerNextEvent,
+  syncOrganizerNextEventHandler,
+} from "./syncOrganizerNextEvent";
 
-test("refreshClubNextEvent stores the earliest upcoming active event",
+test("refreshOrganizerNextEvent stores the earliest upcoming active event",
   async () => {
     const now = timestamp("2026-05-12T10:00:00.000Z");
     const soon = timestamp("2026-05-13T10:00:00.000Z");
     const later = timestamp("2026-05-14T10:00:00.000Z");
     const past = timestamp("2026-05-11T10:00:00.000Z");
     const firestore = fakeFirestore({
-      "organizers/club-1": {nextEventAt: null, nextEventLabel: null},
-      "clubs/club-1": {nextEventAt: null, nextEventLabel: null},
-      "events/past": event("club-1", past, "Past gate"),
-      "events/later": event("club-1", later, "Later gate"),
-      "events/soon": event("club-1", soon, "Soon gate"),
-      "events/cancelled": event("club-1", soon, "Cancelled gate", "cancelled"),
-      "events/other-club": event("club-2", soon, "Other gate"),
+      "organizers/organizer-1": {nextEventAt: null, nextEventLabel: null},
+      "events/past": event("organizer-1", past, "Past gate"),
+      "events/later": event("organizer-1", later, "Later gate"),
+      "events/soon": event("organizer-1", soon, "Soon gate"),
+      "events/cancelled": event("organizer-1", soon, "Cancelled gate", "cancelled"),
+      "events/other-organizer": event("organizer-2", soon, "Other gate"),
     });
 
-    await refreshClubNextEvent("club-1", {
+    await refreshOrganizerNextEvent("organizer-1", {
       firestore: () => firestore as never,
       nowTimestamp: () => now,
     });
@@ -31,30 +30,25 @@ test("refreshClubNextEvent stores the earliest upcoming active event",
       nextEventAt: soon,
       nextEventLabel: "Soon gate",
     };
-    assert.deepEqual(firestore.get("organizers/club-1"), expectedProjection);
-    assert.deepEqual(firestore.get("clubs/club-1"), expectedProjection);
+    assert.deepEqual(firestore.get("organizers/organizer-1"), expectedProjection);
   }
 );
 
-test("refreshClubNextEvent clears projection when no future event exists",
+test("refreshOrganizerNextEvent clears projection when no future event exists",
   async () => {
     const now = timestamp("2026-05-12T10:00:00.000Z");
     const firestore = fakeFirestore({
-      "organizers/club-1": {
+      "organizers/organizer-1": {
         nextEventAt: timestamp("2026-05-13T10:00:00.000Z"),
         nextEventLabel: "Old gate",
       },
-      "clubs/club-1": {
-        nextEventAt: timestamp("2026-05-13T10:00:00.000Z"),
-        nextEventLabel: "Old gate",
-      },
-      "events/past": event("club-1", timestamp("2026-05-11T10:00:00.000Z"),
+      "events/past": event("organizer-1", timestamp("2026-05-11T10:00:00.000Z"),
         "Past gate"),
-      "events/cancelled": event("club-1", timestamp("2026-05-13T10:00:00.000Z"),
+      "events/cancelled": event("organizer-1", timestamp("2026-05-13T10:00:00.000Z"),
         "Cancelled gate", "cancelled"),
     });
 
-    await refreshClubNextEvent("club-1", {
+    await refreshOrganizerNextEvent("organizer-1", {
       firestore: () => firestore as never,
       nowTimestamp: () => now,
     });
@@ -63,17 +57,16 @@ test("refreshClubNextEvent clears projection when no future event exists",
       nextEventAt: null,
       nextEventLabel: null,
     };
-    assert.deepEqual(firestore.get("organizers/club-1"), expectedProjection);
-    assert.deepEqual(firestore.get("clubs/club-1"), expectedProjection);
+    assert.deepEqual(firestore.get("organizers/organizer-1"), expectedProjection);
   }
 );
 
-test("syncClubNextEventHandler refreshes moved clubs", async () => {
+test("syncOrganizerNextEventHandler refreshes moved organizers", async () => {
   const refreshed: string[] = [];
   const now = timestamp("2026-05-12T10:00:00.000Z");
   const firestore = fakeFirestore({
-    "organizers/club-1": {},
-    "organizers/club-2": {},
+    "organizers/organizer-1": {},
+    "organizers/organizer-2": {},
   });
 
   const deps = {
@@ -94,13 +87,13 @@ test("syncClubNextEventHandler refreshes moved clubs", async () => {
     }) as never,
   };
 
-  await syncClubNextEventHandler(
-    {organizerId: "club-1"} as never,
-    {organizerId: "club-2"} as never,
+  await syncOrganizerNextEventHandler(
+    {organizerId: "organizer-1"} as never,
+    {organizerId: "organizer-2"} as never,
     deps
   );
 
-  assert.deepEqual(refreshed.sort(), ["club-1", "club-2"]);
+  assert.deepEqual(refreshed.sort(), ["organizer-1", "organizer-2"]);
 });
 
 function event(
@@ -109,7 +102,7 @@ function event(
   meetingPoint: string,
   status = "active"
 ) {
-  return {organizerId, clubId: organizerId, startTime, meetingPoint, status};
+  return {organizerId, startTime, meetingPoint, status};
 }
 
 function timestamp(iso: string): FirebaseFirestore.Timestamp {

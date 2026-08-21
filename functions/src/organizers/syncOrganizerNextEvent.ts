@@ -4,25 +4,25 @@ import {
   EventDocument,
 } from "../shared/generated/firestoreAdminTypes";
 
-interface SyncClubNextEventDeps {
+interface SyncOrganizerNextEventDeps {
   firestore: () => FirebaseFirestore.Firestore;
   nowTimestamp: () => FirebaseFirestore.Timestamp;
 }
 
-const defaultDeps: SyncClubNextEventDeps = {
+const defaultDeps: SyncOrganizerNextEventDeps = {
   firestore: () => admin.firestore(),
   nowTimestamp: () => admin.firestore.Timestamp.now(),
 };
 
 /**
- * Recomputes the next upcoming active event projection for one club.
- * @param {string} clubId Club id.
- * @param {SyncClubNextEventDeps} deps Injectable Firebase dependencies.
+ * Recomputes the next upcoming active event projection for one organizer.
+ * @param {string} organizerId Organizer id.
+ * @param {SyncOrganizerNextEventDeps} deps Injectable Firebase dependencies.
  * @return {Promise<void>}
  */
-export async function refreshClubNextEvent(
+export async function refreshOrganizerNextEvent(
   organizerId: string,
-  deps: SyncClubNextEventDeps = defaultDeps
+  deps: SyncOrganizerNextEventDeps = defaultDeps
 ): Promise<void> {
   const db = deps.firestore();
   const organizerRef = db.collection("organizers").doc(organizerId);
@@ -48,45 +48,42 @@ export async function refreshClubNextEvent(
       nextEvent.meetingLocation?.name ?? nextEvent.meetingPoint :
       null,
   };
-  const batch = db.batch();
-  batch.set(organizerRef, projection, {merge: true});
-  batch.set(db.collection("clubs").doc(organizerId), projection, {merge: true});
-  await batch.commit();
+  await organizerRef.set(projection, {merge: true});
 }
 
 /**
- * Recomputes club next-event projections affected by an event write.
+ * Recomputes organizer next-event projections affected by an event write.
  * @param {EventDocument | undefined} before Event before state.
  * @param {EventDocument | undefined} after Event after state.
- * @param {SyncClubNextEventDeps} deps Injectable Firebase dependencies.
+ * @param {SyncOrganizerNextEventDeps} deps Injectable Firebase dependencies.
  * @return {Promise<void>}
  */
-export async function syncClubNextEventHandler(
+export async function syncOrganizerNextEventHandler(
   before: EventDocument | undefined,
   after: EventDocument | undefined,
-  deps: SyncClubNextEventDeps = defaultDeps
+  deps: SyncOrganizerNextEventDeps = defaultDeps
 ): Promise<void> {
   const organizerIds = new Set<string>();
 
-  if (before?.organizerId ?? before?.clubId) {
-    organizerIds.add(before.organizerId ?? before!.clubId);
+  if (before?.organizerId) {
+    organizerIds.add(before.organizerId);
   }
-  if (after?.organizerId ?? after?.clubId) {
-    organizerIds.add(after.organizerId ?? after!.clubId);
+  if (after?.organizerId) {
+    organizerIds.add(after.organizerId);
   }
 
   await Promise.all(
     Array.from(organizerIds).map(
-      (organizerId) => refreshClubNextEvent(organizerId, deps)
+      (organizerId) => refreshOrganizerNextEvent(organizerId, deps)
     )
   );
 }
 
-export const syncClubNextEvent = onDocumentWritten(
+export const syncOrganizerNextEvent = onDocumentWritten(
   "events/{eventId}",
   async (event) => {
     const before = event.data?.before.data() as EventDocument | undefined;
     const after = event.data?.after.data() as EventDocument | undefined;
-    await syncClubNextEventHandler(before, after);
+    await syncOrganizerNextEventHandler(before, after);
   }
 );
