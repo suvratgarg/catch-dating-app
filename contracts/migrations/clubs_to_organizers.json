@@ -4,8 +4,8 @@
   "legacyStoragePath": "clubs/{clubId}",
   "candidatePrimaryStoragePath": "organizers/{organizerId}",
   "selectedFutureName": "organizers",
-  "currentPhase": "freeze_legacy_writes",
-  "reason": "Organizer is the durable product entity and club is one organizer subtype. The migration must replace club-specific storage, identifiers, relationships, routes, and client vocabulary without breaking released apps or public pages.",
+  "currentPhase": "retire_legacy",
+  "reason": "Organizer is the durable product entity and club is one organizer subtype. The application has not launched, so legacy aliases, storage paths, and compatibility projections are retired instead of maintained for released clients.",
   "classification": {
     "field": "organizerType",
     "values": [
@@ -63,13 +63,13 @@
     },
     {
       "id": "freeze_legacy_writes",
-      "status": "pending",
-      "description": "After the supported released-client window, stop compatibility writes to legacy club collections and prove no operational consumer depends on them."
+      "status": "complete",
+      "description": "Compatibility writes and legacy callable exports are removed from the local source tree; no released-client window applies."
     },
     {
       "id": "retire_legacy",
-      "status": "pending",
-      "description": "After release-age and operational-consumer evidence, remove legacy fields, collections, indexes, rules, storage paths, and callable wrappers through an explicitly approved cleanup."
+      "status": "approved_local_cleanup",
+      "description": "The owner approved retirement before launch. Source, contracts, rules, indexes, and storage paths are removed locally; remote synthetic-data reset and deployment remain separately authorized operations."
     }
   ],
   "knownConsumers": [

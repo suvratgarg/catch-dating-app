@@ -20,7 +20,7 @@ const requiredMarkers = [
   ["lib/clubs/data/club_posts_repository.dart", "createOrganizerPost"],
   ["lib/clubs/data/clubs_repository.dart", "startOrganizerConversation"],
   ["lib/image_uploads/data/image_upload_repository.dart", "organizers/"],
-  ["lib/routing/go_router.dart", "/host/organizers"],
+  ["lib/routing/route_contract.dart", "/host/organizer"],
   ["website/src/firebase.ts", "requestOrganizerClaim"],
   ["website/src/firebase.ts", "createPublicOrganizerReview"],
   ["admin/src/shared/api/adminApi.ts", "adminGetOrganizerDetails"],
@@ -180,11 +180,11 @@ function checkMigrationState(root, findings) {
         detail: "selectedFutureName must remain organizers.",
       });
     }
-    if (migration.currentPhase === "retire_legacy") {
+    if (migration.currentPhase !== "retire_legacy") {
       findings.push({
-        rule: "prematureLegacyRetirement",
+        rule: "legacyRetirementIncomplete",
         path: relativePath,
-        detail: "Legacy retirement needs remote parity evidence first.",
+        detail: "Legacy retirement must be marked complete after cleanup approval.",
       });
     }
   } catch (error) {
