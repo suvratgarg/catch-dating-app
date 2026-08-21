@@ -358,12 +358,12 @@ describe("storage.rules", () => {
 
     it("denies retired legacy club and event media paths", async () => {
       await assertFails(
-        uploadImage(authedStorage("host-1"), "clubs/club-1/profile.jpg"),
+        uploadImage(authedStorage("host-1"), "organizers/club-1/profile.jpg"),
       );
       await assertFails(
         uploadImage(
           authedStorage("host-1"),
-          "clubs/club-1/events/event-1/photo.jpg",
+          "organizers/club-1/events/event-1/photo.jpg",
         ),
       );
     });
@@ -535,50 +535,50 @@ describe("storage.rules", () => {
       );
     });
 
-    it("allows club hosts to upload club photos and logos", async () => {
-      await seedFirestore(["clubs", "club-1"], {
+    it("allows organizer hosts to upload organizer photos and logos", async () => {
+      await seedFirestore(["organizers", "club-1"], {
         hostUserId: "owner-1",
         ownerUserId: "owner-1",
         hostUserIds: ["owner-1", "host-1"],
       });
 
       await assertSucceeds(
-        uploadImage(authedStorage("host-1"), "clubs/club-1/photos/0_123.jpg"),
+        uploadImage(authedStorage("host-1"), "organizers/club-1/photos/0_123.jpg"),
       );
       await assertSucceeds(
-        uploadImage(authedStorage("owner-1"), "clubs/club-1/logo/123.jpg"),
+        uploadImage(authedStorage("owner-1"), "organizers/club-1/logo/123.jpg"),
       );
       await assertFails(
-        uploadImage(authedStorage("runner-1"), "clubs/club-1/photos/0_123.jpg"),
+        uploadImage(authedStorage("runner-1"), "organizers/club-1/photos/0_123.jpg"),
       );
       await assertFails(
         uploadImage(
           authedStorage("host-1"),
-          "clubs/club-1/logo/123.txt",
+          "organizers/club-1/logo/123.txt",
           {contentType: "text/plain"},
         ),
       );
       await assertFails(
         uploadImage(
           authedStorage("host-1"),
-          "clubs/club-1/photos/6_123.jpg",
+          "organizers/club-1/photos/6_123.jpg",
         ),
       );
       await assertFails(
         uploadImage(
           authedStorage("owner-1"),
-          "clubs/club-1/logo/logo_123.jpg",
+          "organizers/club-1/logo/logo_123.jpg",
         ),
       );
     });
 
-    it("allows event club hosts to upload event photos after event creation", async () => {
-      await seedFirestore(["clubs", "club-1"], {
+    it("allows event organizer hosts to upload event photos after event creation", async () => {
+      await seedFirestore(["organizers", "club-1"], {
         hostUserId: "owner-1",
         ownerUserId: "owner-1",
         hostUserIds: ["owner-1", "host-1"],
       });
-      await seedFirestore(["events", "event-1"], {clubId: "club-1"});
+      await seedFirestore(["events", "event-1"], {organizerId: "club-1"});
 
       await assertSucceeds(
         uploadImage(authedStorage("host-1"), "events/event-1/photos/0_123.jpg"),
@@ -609,9 +609,9 @@ describe("storage.rules", () => {
       );
     });
 
-    it("allows public reads for club logos and event photos", async () => {
-      await seedStorageFile("clubs/club-1/logo/123.jpg");
-      await seedStorageFile("clubs/club-1/logoThumbnails/123.jpg");
+    it("allows public reads for organizer logos and event photos", async () => {
+      await seedStorageFile("organizers/club-1/logo/123.jpg");
+      await seedStorageFile("organizers/club-1/logoThumbnails/123.jpg");
       await seedStorageFile("organizers/organizer-1/logo/123.jpg");
       await seedStorageFile(
         "organizers/organizer-1/logoThumbnails/123.jpg",
@@ -619,11 +619,11 @@ describe("storage.rules", () => {
       await seedStorageFile("events/event-1/photos/0_123.jpg");
 
       await assertSucceeds(
-        unauthenticatedStorage().ref("clubs/club-1/logo/123.jpg").getMetadata(),
+        unauthenticatedStorage().ref("organizers/club-1/logo/123.jpg").getMetadata(),
       );
       await assertSucceeds(
         unauthenticatedStorage()
-          .ref("clubs/club-1/logoThumbnails/123.jpg")
+          .ref("organizers/club-1/logoThumbnails/123.jpg")
           .getMetadata(),
       );
       await assertSucceeds(
