@@ -212,7 +212,7 @@ class _ShellRouteScopeState extends State<_ShellRouteScope> {
         branches: widget.host
             ? [
                 _branch('/host/events', 'Events'),
-                _branch('/host/clubs', 'Clubs'),
+                _branch('/host/organizer', 'Organizer'),
                 _branch('/host/inbox', 'Inbox'),
                 _branch('/host/account', 'Account'),
               ]

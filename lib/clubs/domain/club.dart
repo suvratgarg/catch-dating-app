@@ -16,27 +16,6 @@ enum ClubAppVisibility { discoverable, hidden }
 /// individuals, event producers, venues, and brands.
 enum OrganizerType { club, community, individual, eventProducer, venue, brand }
 
-Object? _readOrganizerType(Map<dynamic, dynamic> json, String key) {
-  final organizerType = json[key];
-  if (organizerType is String &&
-      OrganizerType.values.any((value) => value.name == organizerType)) {
-    return organizerType;
-  }
-  return switch (json['entityKind']) {
-    'creatorCommunity' => OrganizerType.community.name,
-    'eventOrganizer' => OrganizerType.eventProducer.name,
-    'venue' => OrganizerType.venue.name,
-    'brand' => OrganizerType.brand.name,
-    _ => OrganizerType.club.name,
-  };
-}
-
-Object? _readOrganizerPhotos(Map<dynamic, dynamic> json, String key) =>
-    json[key] ?? json['clubPhotos'];
-
-Object? _readFollowerCount(Map<dynamic, dynamic> json, String key) =>
-    json[key] ?? json['memberCount'];
-
 @freezed
 abstract class Club with _$Club {
   const Club._();
@@ -60,12 +39,12 @@ abstract class Club with _$Club {
     @TimestampConverter() required DateTime createdAt,
     String? imageUrl,
     String? profileImageUrl,
-    @JsonKey(name: 'organizerPhotos', readValue: _readOrganizerPhotos)
+    @JsonKey(name: 'organizerPhotos')
     @Default([])
     List<UploadedPhoto> clubPhotos,
     UploadedPhoto? logoPhoto,
     @Default([]) List<String> tags,
-    @JsonKey(name: 'followerCount', readValue: _readFollowerCount)
+    @JsonKey(name: 'followerCount')
     @Default(0)
     int memberCount,
     @Default(0.0) double rating,
@@ -79,7 +58,7 @@ abstract class Club with _$Club {
     @Default(false) bool archived,
     @NullableTimestampConverter() DateTime? archivedAt,
     String? archiveReason,
-    @Default(ClubAppVisibility.discoverable) ClubAppVisibility appVisibility,
+    @Default(ClubAppVisibility.hidden) ClubAppVisibility appVisibility,
     OrganizerOwnership? ownership,
     OrganizerClaim? claim,
     OrganizerPublicPage? publicPage,
@@ -87,7 +66,7 @@ abstract class Club with _$Club {
     @JsonKey(readValue: readOrganizerSupplyCapabilities)
     @Default(OrganizerSupplyCapabilities.claimedManaged())
     OrganizerSupplyCapabilities supplyCapabilities,
-    @JsonKey(readValue: _readOrganizerType)
+    @JsonKey(name: 'organizerType')
     @Default(OrganizerType.club)
     OrganizerType organizerType,
     String? publicCategoryLabel,

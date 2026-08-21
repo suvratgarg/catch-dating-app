@@ -50,10 +50,11 @@ The consumer and Hosts apps treat `Organizer` as the product entity and `club`
 as one organizer subtype. Primary repository reads use `organizers`,
 `organizerFollows`, and organizer-named callables; events carry
 `organizerId`; organizer media uploads use `organizers/{id}`; public/detail and
-Hosts routes use `/organizers` and `/host/organizers`. `/host/clubs` is a
-redirect-only compatibility route. Current Flutter repositories never fall
-back to the legacy `clubs` collection; a canonical read failure remains visible
-and recoverable through the shared async error policy.
+Hosts routes use `/organizers` and `/host/organizers`. The retired
+`/host/clubs` and `/host/organizers/:clubId/edit` locations are not mounted or
+redirected. Current Flutter repositories never fall back to the legacy `clubs`
+collection; a canonical read failure remains visible and recoverable through
+the shared async error policy.
 
 The Hosts owner can edit the required `organizerType` field using the closed
 taxonomy `club`, `community`, `individual`, `eventProducer`, `venue`, and

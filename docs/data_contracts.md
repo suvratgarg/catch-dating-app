@@ -314,7 +314,8 @@ sources into the browser runtime validator registry.
 `organizers/{organizerId}` is the canonical organization entity. `club` is an
 organizer subtype, never a peer top-level entity. The required
 `organizerType` enum is `club`, `community`, `individual`, `eventProducer`,
-`venue`, or `brand`; missing legacy values default to `club`. The complete
+`venue`, or `brand`; no legacy `entityKind` value is read. Missing
+`appVisibility` fails closed as `hidden`. The complete
 mapping, rollout, parity, and recovery procedure is owned by
 `docs/migrations/clubs_to_organizers.md` and
 `contracts/migrations/clubs_to_organizers.json`.

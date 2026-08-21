@@ -169,9 +169,10 @@ ledgers as the source of truth when counts differ:
   The old Today and Events advisory metrics remain historical ingredient evidence
   until an approved consolidated reference replaces both compositions.
 - The former Host Edit Club visual reference is retained as historical evidence.
-  The standalone route and screen are retired; `/host/clubs/:clubId/edit` now
-  redirects to the selected organizer Edit tab, which owns identity, contact,
-  logo/photos, policy defaults, and Event Success defaults.
+  The standalone route and screen are retired; the old
+  `/host/clubs/:clubId/edit` location is not mounted. The selected organizer
+  Edit tab owns identity, contact, logo/photos, policy defaults, and Event
+  Success defaults.
 - Host Edit Event owner edit was refreshed against the registered Claude
   reference and now compares within threshold at `9.25% / 10.93`. Remaining
   work is state-specific reference exports and adapter ownership for private

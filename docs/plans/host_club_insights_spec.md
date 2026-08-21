@@ -203,11 +203,9 @@ conventions and `node tool/run.mjs check --manifest-only`.
   `dedicated` flag and both its branches in `HostClubInsightsPane`,
   `HostAnalyticsRangeChip`, `HostAnalyticsRangeSheet`, and
   `_showRangePicker`.
-- Remove route `Routes.hostInsightsScreen`; add a redirect from
-  `/host/organizer/:clubId/insights` →
-  `/host/clubs?clubId=:clubId&tab=insights` (precedent:
-  `hostClubsLegacyRedirect` in `go_router.dart`). The organizer route
-  already accepts `clubId` + `tab` query params.
+- Remove route `Routes.hostInsightsScreen` and retire
+  `/host/organizer/:clubId/insights`; the organizer workspace accepts
+  `clubId` + `tab` query params without maintaining a legacy route.
 - Event-report navigation moves into the pane: `HostClubInsightsPane` gains
   a default `onOpenEventReport` that pushes
   `Routes.hostAppEventManageScreen` (section=report) — see Phase 2 §7.4.

@@ -197,11 +197,6 @@ Future<void> _pumpHostScreen(
         builder: (_, state) => Text('Club ${state.pathParameters['clubId']}'),
       ),
       GoRoute(
-        path: Routes.hostEditClubScreen.path,
-        name: Routes.hostEditClubScreen.name,
-        builder: (_, state) => Text('Edit ${state.pathParameters['clubId']}'),
-      ),
-      GoRoute(
         path: Routes.hostClubEventDefaultsScreen.path,
         name: Routes.hostClubEventDefaultsScreen.name,
         builder: (_, state) => HostClubEventDefaultsScreen(

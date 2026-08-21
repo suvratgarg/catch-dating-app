@@ -253,8 +253,8 @@ former organizer payout prompt, team summary, and Manage shell were removed.
 Follow-up consolidation closed on 2026-07-16: the organizer Edit tab now also
 owns club logo/photos, cohort caps, demand pricing, and activity-aware Event
 Success defaults. The standalone Host Edit Club implementation and the
-create-wizard edit mode were deleted. `/host/clubs/:clubId/edit` remains only
-as a compatibility redirect to `/host/organizer?clubId=:clubId&tab=edit`.
+create-wizard edit mode were deleted. The obsolete `/host/clubs/:clubId/edit`
+location is not mounted; the Organizer workspace owns editing.
 
 ### Requested outcome
 

@@ -381,13 +381,6 @@
       "screenId": "screen.host.club.create"
     },
     {
-      "routeId": "hostEditClubScreen",
-      "status": "contracted",
-      "priority": "P2",
-      "reason": "Covered by screen.host.clubs as the organizer-owned host edit-club route.",
-      "screenId": "screen.host.clubs"
-    },
-    {
       "routeId": "hostCreateEventScreen",
       "status": "contracted",
       "priority": "P1",

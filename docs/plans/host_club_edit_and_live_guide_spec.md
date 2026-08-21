@@ -200,8 +200,8 @@ Replace localized `fieldName` values in
 
 Acceptance: `flutter analyze`; existing widget tests for the edit tab pass
 with keys unchanged in behavior; opening
-`/host/clubs?clubId=X&editField=description` lands on the Edit tab with the
-description editor expanded (add a widget test beside the existing host
+`/host/organizer?clubId=X&editField=description` lands on the Edit tab with
+the description editor expanded (add a widget test beside the existing host
 operations tests in `test/hosts/`).
 
 ### 4.3 Add-host affordance
@@ -447,10 +447,10 @@ take `clubId` as a query parameter and resolve the club the same way
 
 | Route enum | Path | Screen | Content (moved, not rewritten) |
 |---|---|---|---|
-| `hostClubEventDefaultsScreen` | `/host/clubs/event-defaults` | `HostClubEventDefaultsScreen` | The "Event defaults" inline rows (activity, admission, age range, cancellation) + `ClubPolicyDefaultsCard(advancedOnly: true)` merged into ONE section flow — the admission row and its dependent cohort-caps/demand-pricing disclosures finally live together (fixes F4/F5/F6: render caps/pricing as contained rows nested under the admission row, same pattern as §6.1.3) |
-| `hostClubLiveGuideScreen` | `/host/clubs/live-guide` | `HostClubLiveGuideScreen` | `EventSuccessDefaultsPanel` (title "Live event guide", subtitle per §5.2) |
-| `hostClubTeamScreen` | `/host/clubs/team` | `HostClubTeamScreen` | `HostTeamManagementSection` |
-| `hostClubPaymentsScreen` | `/host/clubs/payments` | `HostClubPaymentsScreen` | `HostPaymentAccountControllerCard` |
+| `hostClubEventDefaultsScreen` | `/host/organizers/event-defaults` | `HostClubEventDefaultsScreen` | The "Event defaults" inline rows (activity, admission, age range, cancellation) + `ClubPolicyDefaultsCard(advancedOnly: true)` merged into ONE section flow — the admission row and its dependent cohort-caps/demand-pricing disclosures finally live together (fixes F4/F5/F6: render caps/pricing as contained rows nested under the admission row, same pattern as §6.1.3) |
+| `hostClubLiveGuideScreen` | `/host/organizers/live-guide` | `HostClubLiveGuideScreen` | `EventSuccessDefaultsPanel` (title "Live event guide", subtitle per §5.2) |
+| `hostClubTeamScreen` | `/host/organizers/team` | `HostClubTeamScreen` | `HostTeamManagementSection` |
+| `hostClubPaymentsScreen` | `/host/organizers/payments` | `HostPaymentAccountControllerCard` |
 
 - Screens are thin scaffolds: `CatchScreenTopBar` (eyebrow = club name, title
   = section name), `ListView` with `CatchInsets` page padding, the moved

@@ -869,13 +869,6 @@
       "reason": "Host app create-club route now has deterministic captures for basics, basics validation errors, separate logo and picked gallery media, the shared 24-photo scalable gallery manager, restored draft, details, host defaults, Event Success defaults, save-draft pending/error, submit pending/error, offline submit error, text scale 2.0, reduced motion, and paired light/dark output. Remaining captures are reference-specific variants."
     },
     {
-      "routeId": "hostEditClubScreen",
-      "status": "alias",
-      "priority": "P2",
-      "canonicalRouteId": "hostOrganizerScreen",
-      "reason": "The retired edit-club location redirects to the selected organizer Edit tab, which is the canonical club editor and owns identity, contact, media, advanced policy, and Event Success defaults."
-    },
-    {
       "routeId": "hostCreateEventScreen",
       "status": "captured",
       "priority": "P1",

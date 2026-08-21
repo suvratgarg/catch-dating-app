@@ -4,13 +4,13 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "3a9ebb19dae374bc6ee3aec93549f8c892138c39822e79f993c2309d9dbdc789",
-    "routeContractSha256": "486722d1b6620224138fd7ee4ef8dc72c11c46ef18e6f6f3e56c7236c5b74a00",
-    "goRouteCount": 67,
+    "normalizedFileSha256": "48f3c00ef67d481508f7fb57a5d750ca8e6acb19462bd9d37e3db9beae201c7c",
+    "routeContractSha256": "5ce9e719693647b9705ea846cf73fd5856a57e5b7832295a94b741e7ecf52bec",
+    "goRouteCount": 65,
     "shellBranchCount": 9,
-    "enumRouteCount": 66,
-    "referencedRouteCount": 66,
-    "runtimeRouteCount": 66,
+    "enumRouteCount": 65,
+    "referencedRouteCount": 65,
+    "runtimeRouteCount": 65,
     "routeHelperCount": 2,
     "routeHelpers": [
       "_hostUtilityRoutes",
@@ -730,20 +730,6 @@
       "referencedByGoRouter": true
     },
     {
-      "id": "hostEditClubScreen",
-      "path": "/host/organizers/:clubId/edit",
-      "pathParameters": [
-        "clubId"
-      ],
-      "requiresFixture": true,
-      "gated": false,
-      "runtimePath": "/host/organizers/:clubId/edit",
-      "runtimeParentId": "hostClubDetailScreen",
-      "runtimePathExpression": "'edit'",
-      "runtimePathMatchesEnum": true,
-      "referencedByGoRouter": true
-    },
-    {
       "id": "hostCreateEventScreen",
       "path": "/host/organizers/:clubId/create-event",
       "pathParameters": [
@@ -922,7 +908,6 @@
     "hostCreateEventScreen",
     "hostCustomerDetailScreen",
     "hostCustomersScreen",
-    "hostEditClubScreen",
     "hostEventRehearsalScreen",
     "hostEventRehearsalStartScreen",
     "hostEventsScreen",
