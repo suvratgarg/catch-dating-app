@@ -106,6 +106,28 @@ class EventRehearsalRepository {
     parse: EventRehearsalBootstrap.fromCallableData,
   );
 
+  Future<EventRehearsalBootstrap> controlSpatial({
+    required EventRehearsalSession session,
+    required String clientActionId,
+    required String actorId,
+    required EventRehearsalSpatialAction action,
+    String? destinationUnitId,
+    EventRehearsalSpatialScope? scope,
+  }) => _call(
+    name: 'controlEventRehearsalSpatial',
+    payload: ControlEventRehearsalSpatialCallableRequest(
+      sessionId: session.id,
+      expectedRevision: session.runtimeRevision,
+      clientActionId: clientActionId,
+      actorId: actorId,
+      action: action.name,
+      destinationUnitId: destinationUnitId,
+      scope: scope?.name,
+    ).toJson(),
+    action: 'change a rehearsal Room placement',
+    parse: EventRehearsalBootstrap.fromCallableData,
+  );
+
   Future<EventRehearsalBootstrap> reset({
     required String sessionId,
     int? seed,

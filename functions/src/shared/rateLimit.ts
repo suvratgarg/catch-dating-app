@@ -163,6 +163,7 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   getEventRehearsalBootstrap: {maxRequests: 90, windowMs: 60 * 1000},
   updateEventRehearsalSetup: {maxRequests: 30, windowMs: 60 * 1000},
   controlEventRehearsal: {maxRequests: 120, windowMs: 60 * 1000},
+  controlEventRehearsalSpatial: {maxRequests: 120, windowMs: 60 * 1000},
   injectEventRehearsalBehavior: {maxRequests: 120, windowMs: 60 * 1000},
   resetEventRehearsal: {maxRequests: 10, windowMs: 60 * 1000},
   rotateEventRehearsalGuestLink: {maxRequests: 10, windowMs: 60 * 1000},

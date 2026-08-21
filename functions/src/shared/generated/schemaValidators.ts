@@ -279,6 +279,7 @@ import {EventRehearsalBootstrapCallableResponse} from "./eventRehearsalBootstrap
 import {UpdateEventRehearsalSetupCallablePayload} from "./updateEventRehearsalSetupCallablePayload";
 import {ControlEventRehearsalCallablePayload} from "./controlEventRehearsalCallablePayload";
 import {InjectEventRehearsalBehaviorCallablePayload} from "./injectEventRehearsalBehaviorCallablePayload";
+import {ControlEventRehearsalSpatialCallablePayload} from "./controlEventRehearsalSpatialCallablePayload";
 import {ResetEventRehearsalCallablePayload} from "./resetEventRehearsalCallablePayload";
 import {RotateEventRehearsalGuestLinkCallablePayload} from "./rotateEventRehearsalGuestLinkCallablePayload";
 import {GetEventRehearsalGuestBootstrapCallablePayload} from "./getEventRehearsalGuestBootstrapCallablePayload";
@@ -772,6 +773,7 @@ import {
   updateEventRehearsalSetupCallablePayloadSchema,
   controlEventRehearsalCallablePayloadSchema,
   injectEventRehearsalBehaviorCallablePayloadSchema,
+  controlEventRehearsalSpatialCallablePayloadSchema,
   resetEventRehearsalCallablePayloadSchema,
   rotateEventRehearsalGuestLinkCallablePayloadSchema,
   getEventRehearsalGuestBootstrapCallablePayloadSchema,
@@ -2094,6 +2096,10 @@ export const validateInjectEventRehearsalBehaviorCallablePayload:
   ValidateFunction<InjectEventRehearsalBehaviorCallablePayload> =
     ajv.compile(injectEventRehearsalBehaviorCallablePayloadSchema) as
       ValidateFunction<InjectEventRehearsalBehaviorCallablePayload>;
+export const validateControlEventRehearsalSpatialCallablePayload:
+  ValidateFunction<ControlEventRehearsalSpatialCallablePayload> =
+    ajv.compile(controlEventRehearsalSpatialCallablePayloadSchema) as
+      ValidateFunction<ControlEventRehearsalSpatialCallablePayload>;
 export const validateResetEventRehearsalCallablePayload:
   ValidateFunction<ResetEventRehearsalCallablePayload> =
     ajv.compile(resetEventRehearsalCallablePayloadSchema) as

@@ -149,8 +149,7 @@ class _EventSuccessHostSectionState
   @override
   Widget build(BuildContext context) {
     final event = widget.event;
-    final initialTab = widget.initialTab;
-    final showTabs = widget.showTabs;
+    final requestedInitialTab = widget.initialTab;
     final compactLiveControls = widget.compactLiveControls;
     final operationalRosterSummary = widget.operationalRosterSummary;
     final onOpenGuests = widget.onOpenGuests;
@@ -198,6 +197,16 @@ class _EventSuccessHostSectionState
       EventSuccessController.accountabilityResolutionMutation,
     );
     final persistedPlan = planAsync.asData?.value;
+    final eventIsInProgress =
+        !event.startTime.isAfter(referenceNow) &&
+        event.endTime.isAfter(referenceNow);
+    final phaseLocksLive =
+        eventIsInProgress ||
+        persistedPlan?.status == EventSuccessPlanStatus.live;
+    final initialTab = phaseLocksLive
+        ? EventSuccessHostTab.live
+        : requestedInitialTab;
+    final showTabs = widget.showTabs && !phaseLocksLive;
     final hasSavedGuide = persistedPlan != null;
     final shouldLoadSetupResources =
         showTabs || initialTab == EventSuccessHostTab.setup;

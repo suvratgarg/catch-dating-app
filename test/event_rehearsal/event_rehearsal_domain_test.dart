@@ -41,6 +41,8 @@ void main() {
           'keepApartActorIds': <String>[],
           'helpRequested': false,
           'promptCompleted': false,
+          'layoutUnitId': 'table-2',
+          'confirmedLayoutUnitId': 'table-2',
         },
       ],
       'actions': [
@@ -113,6 +115,8 @@ void main() {
           'keepApartActorIds': <String>[],
           'helpRequested': false,
           'promptCompleted': false,
+          'layoutUnitId': 'table-2',
+          'confirmedLayoutUnitId': 'table-2',
         },
         {
           'actorId': 'actor-late',
@@ -144,6 +148,7 @@ void main() {
     expect(runtime.layout.units, hasLength(2));
     expect(runtime.assignments, hasLength(2));
     expect(runtime.assignments.first.confirmedLayoutUnitId, isNotNull);
+    expect(runtime.assignments.first.layoutUnitId, 'table-2');
     expect(runtime.assignments.last.confirmedLayoutUnitId, isNull);
     expect(runtime.presence.lateArrivals.single.uid, 'actor-late');
   });

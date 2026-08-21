@@ -10,7 +10,7 @@ export interface EventRehearsalActionDocument {
   clientActionId: string;
   actorUid: string | null;
   actorId: string | null;
-  kind: "control" | "behavior" | "guest" | "setup" | "system";
+  kind: "control" | "behavior" | "spatial" | "guest" | "setup" | "system";
   name: string;
   runtimeRevision: number;
   /**

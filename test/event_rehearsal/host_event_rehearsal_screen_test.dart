@@ -62,11 +62,14 @@ void main() {
     expect(find.text('Courtyard practice'), findsOneWidget);
     expect(find.text('REHEARSAL'), findsOneWidget);
     expect(find.text('Synthetic guests'), findsOneWidget);
-    expect(find.text('Setup'), findsOneWidget);
-    expect(find.text('Live'), findsWidgets);
-    expect(find.text('Report'), findsOneWidget);
+    expect(find.text('Setup'), findsNothing);
+    expect(find.text('Report'), findsNothing);
     expect(find.text('Live guest phone'), findsNothing);
     expect(find.textContaining('Task 3 of 8'), findsOneWidget);
+
+    await tester.tap(find.text('Room'));
+    await tester.pump();
+    expect(find.text('Room'), findsOneWidget);
 
     await tester.tap(find.byIcon(CatchIcons.more));
     await pumpFeatureUi(tester);

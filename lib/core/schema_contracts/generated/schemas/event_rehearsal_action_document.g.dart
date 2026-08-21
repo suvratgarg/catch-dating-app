@@ -59,6 +59,7 @@ const schemaEventRehearsalActionDocumentSchema = <String, Object?>{
       'enum': <Object?>[
         'control',
         'behavior',
+        'spatial',
         'guest',
         'setup',
         'system',

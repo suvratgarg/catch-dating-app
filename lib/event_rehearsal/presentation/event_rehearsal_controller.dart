@@ -15,6 +15,7 @@ class EventRehearsalController extends _$EventRehearsalController {
   static final setupMutation = Mutation<void>();
   static final controlMutation = Mutation<void>();
   static final behaviorMutation = Mutation<void>();
+  static final spatialMutation = Mutation<void>();
   static final resetMutation = Mutation<void>();
   static final forkMutation = Mutation<EventRehearsalCreated>();
   static final guestLinkMutation = Mutation<void>();
@@ -87,6 +88,26 @@ class EventRehearsalController extends _$EventRehearsalController {
           actorId: actorId,
           behavior: behavior,
           fault: fault,
+        );
+    ref.invalidate(eventRehearsalProvider(session.id));
+  }
+
+  Future<void> controlSpatial({
+    required EventRehearsalSession session,
+    required String actorId,
+    required EventRehearsalSpatialAction action,
+    String? destinationUnitId,
+    EventRehearsalSpatialScope? scope,
+  }) async {
+    await ref
+        .read(eventRehearsalRepositoryProvider)
+        .controlSpatial(
+          session: session,
+          clientActionId: _clientActionId(),
+          actorId: actorId,
+          action: action,
+          destinationUnitId: destinationUnitId,
+          scope: scope,
         );
     ref.invalidate(eventRehearsalProvider(session.id));
   }

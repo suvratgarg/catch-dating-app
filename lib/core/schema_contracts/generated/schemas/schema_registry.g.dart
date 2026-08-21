@@ -1392,6 +1392,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaInjectEventRehearsalBehaviorCallablePayloadSchema,
   ),
   SchemaContractDefinition(
+    name: 'ControlEventRehearsalSpatialCallablePayload',
+    source: 'callables/control_event_rehearsal_spatial_payload.schema.json',
+    schema: schemaControlEventRehearsalSpatialCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
     name: 'ResetEventRehearsalCallablePayload',
     source: 'callables/reset_event_rehearsal_payload.schema.json',
     schema: schemaResetEventRehearsalCallablePayloadSchema,
@@ -2754,6 +2759,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'UpdateEventRehearsalSetupCallablePayload': schemaUpdateEventRehearsalSetupCallablePayloadSchema,
   'ControlEventRehearsalCallablePayload': schemaControlEventRehearsalCallablePayloadSchema,
   'InjectEventRehearsalBehaviorCallablePayload': schemaInjectEventRehearsalBehaviorCallablePayloadSchema,
+  'ControlEventRehearsalSpatialCallablePayload': schemaControlEventRehearsalSpatialCallablePayloadSchema,
   'ResetEventRehearsalCallablePayload': schemaResetEventRehearsalCallablePayloadSchema,
   'RotateEventRehearsalGuestLinkCallablePayload': schemaRotateEventRehearsalGuestLinkCallablePayloadSchema,
   'GetEventRehearsalGuestBootstrapCallablePayload': schemaGetEventRehearsalGuestBootstrapCallablePayloadSchema,
@@ -3249,6 +3255,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'callables/update_event_rehearsal_setup_payload.schema.json': schemaUpdateEventRehearsalSetupCallablePayloadSchema,
   'callables/control_event_rehearsal_payload.schema.json': schemaControlEventRehearsalCallablePayloadSchema,
   'callables/inject_event_rehearsal_behavior_payload.schema.json': schemaInjectEventRehearsalBehaviorCallablePayloadSchema,
+  'callables/control_event_rehearsal_spatial_payload.schema.json': schemaControlEventRehearsalSpatialCallablePayloadSchema,
   'callables/reset_event_rehearsal_payload.schema.json': schemaResetEventRehearsalCallablePayloadSchema,
   'callables/rotate_event_rehearsal_guest_link_payload.schema.json': schemaRotateEventRehearsalGuestLinkCallablePayloadSchema,
   'callables/get_event_rehearsal_guest_bootstrap_payload.schema.json': schemaGetEventRehearsalGuestBootstrapCallablePayloadSchema,

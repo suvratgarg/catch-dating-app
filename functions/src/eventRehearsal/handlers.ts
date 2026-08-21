@@ -18,6 +18,8 @@ import {
 } from "../shared/generated/firestoreAdminTypes";
 import {ControlEventRehearsalCallablePayload} from
   "../shared/generated/controlEventRehearsalCallablePayload";
+import {ControlEventRehearsalSpatialCallablePayload} from
+  "../shared/generated/controlEventRehearsalSpatialCallablePayload";
 import {CreateEventRehearsalCallablePayload} from
   "../shared/generated/createEventRehearsalCallablePayload";
 import {CreateEventRehearsalCallableResponse} from
@@ -44,6 +46,7 @@ import {UpdateEventRehearsalSetupCallablePayload} from
   "../shared/generated/updateEventRehearsalSetupCallablePayload";
 import {
   validateControlEventRehearsalCallablePayload,
+  validateControlEventRehearsalSpatialCallablePayload,
   validateCreateEventRehearsalCallablePayload,
   validateGetEventRehearsalBootstrapCallablePayload,
   validateGetEventRehearsalGuestBootstrapCallablePayload,
@@ -60,6 +63,7 @@ import {
   actorAtMoment,
   applyRehearsalBehavior,
   applyRehearsalGuestAction,
+  applyRehearsalSpatialAction,
   buildRehearsalActors,
   cuesBetween,
   eventRehearsalActionDocumentId,
@@ -400,6 +404,95 @@ export async function injectEventRehearsalBehaviorHandler(
       actorId: data.actorId,
       kind: "behavior",
       name: data.behavior ?? `fault:${data.faultId}`,
+      runtimeRevision: nextRevision,
+      virtualNow: session.virtualNow,
+      createdAt: now,
+    }));
+  });
+  return hostProjection(
+    db,
+    data.sessionId,
+    await requireHostSession(db, data.sessionId, uid),
+    request
+  );
+}
+
+/** Persists a revision-fenced Room placement for one synthetic actor. */
+export async function controlEventRehearsalSpatialHandler(
+  request: CallableRequest<unknown>
+): Promise<EventRehearsalBootstrapCallableResponse> {
+  const uid = requireAuth(request);
+  const data = validateCallableWithAjv<
+    ControlEventRehearsalSpatialCallablePayload
+  >(request, validateControlEventRehearsalSpatialCallablePayload);
+  const db = admin.firestore();
+  await checkRateLimit(db, uid, "controlEventRehearsalSpatial");
+  await requireHostSession(db, data.sessionId, uid);
+  const sessionRef = db.collection(sessions).doc(data.sessionId);
+  const actorRef = db.collection(actors)
+    .doc(actorDocumentId(data.sessionId, data.actorId));
+  const actionRef = db.collection(actions)
+    .doc(eventRehearsalActionDocumentId(
+      data.sessionId,
+      "host-spatial",
+      data.clientActionId
+    ));
+  await db.runTransaction(async (tx) => {
+    const [sessionSnap, actorSnap, actionSnap] = await Promise.all([
+      tx.get(sessionRef),
+      tx.get(actorRef),
+      tx.get(actionRef),
+    ]);
+    if (actionSnap.exists) return;
+    const session = requireSession(sessionSnap);
+    assertActionCapacity(session);
+    assertCurrentRevision(session, data.expectedRevision);
+    if (!["running", "paused"].includes(session.status)) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Room placement is available only while the rehearsal is running " +
+          "or paused."
+      );
+    }
+    if (!actorSnap.exists) {
+      throw new HttpsError("not-found", "Synthetic actor not found.");
+    }
+    const actor = requireDoc<EventRehearsalActorDocument>(
+      actorSnap,
+      "EventRehearsalActorDocument"
+    );
+    const now = admin.firestore.Timestamp.now();
+    let nextActor: EventRehearsalActorDocument;
+    try {
+      nextActor = applyRehearsalSpatialAction(
+        actor,
+        data.action,
+        data.destinationUnitId,
+        data.scope,
+        Math.max(1, Math.ceil(session.actorCount / 4)),
+        now
+      );
+    } catch (error) {
+      throw new HttpsError(
+        "invalid-argument",
+        error instanceof Error ? error.message : "Invalid Room placement."
+      );
+    }
+    const nextRevision = session.runtimeRevision + 1;
+    tx.set(actorRef, nextActor);
+    tx.update(sessionRef, {
+      runtimeRevision: nextRevision,
+      actionCount: session.actionCount + 1,
+      updatedAt: now,
+    });
+    tx.create(actionRef, actionDocument({
+      sessionId: data.sessionId,
+      clientActionId: data.clientActionId,
+      actorUid: uid,
+      actorId: data.actorId,
+      kind: "spatial",
+      name: data.destinationUnitId ?
+        `${data.action}:${data.destinationUnitId}` : data.action,
       runtimeRevision: nextRevision,
       virtualNow: session.virtualNow,
       createdAt: now,
@@ -989,6 +1082,8 @@ async function hostProjection(
         keepApartActorIds: actor.keepApartActorIds,
         helpRequested: actor.helpRequested,
         promptCompleted: actor.promptCompleted,
+        layoutUnitId: actor.layoutUnitId,
+        confirmedLayoutUnitId: actor.confirmedLayoutUnitId,
       };
     }).sort((a, b) => a.actorId.localeCompare(b.actorId)),
     actions: actionSnaps.docs.map((doc) => {
@@ -1414,6 +1509,10 @@ export const controlEventRehearsal = onCall(
 export const injectEventRehearsalBehavior = onCall(
   appCheckCallableOptions,
   injectEventRehearsalBehaviorHandler
+);
+export const controlEventRehearsalSpatial = onCall(
+  appCheckCallableOptions,
+  controlEventRehearsalSpatialHandler
 );
 export const resetEventRehearsal = onCall(
   appCheckCallableOptions,

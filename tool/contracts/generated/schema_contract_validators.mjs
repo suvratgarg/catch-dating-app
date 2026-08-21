@@ -278,6 +278,7 @@ import {
   updateEventRehearsalSetupCallablePayloadSchema,
   controlEventRehearsalCallablePayloadSchema,
   injectEventRehearsalBehaviorCallablePayloadSchema,
+  controlEventRehearsalSpatialCallablePayloadSchema,
   resetEventRehearsalCallablePayloadSchema,
   rotateEventRehearsalGuestLinkCallablePayloadSchema,
   getEventRehearsalGuestBootstrapCallablePayloadSchema,
@@ -794,6 +795,7 @@ export const validateEventRehearsalBootstrapCallableResponse = ajv.compile(event
 export const validateUpdateEventRehearsalSetupCallablePayload = ajv.compile(updateEventRehearsalSetupCallablePayloadSchema);
 export const validateControlEventRehearsalCallablePayload = ajv.compile(controlEventRehearsalCallablePayloadSchema);
 export const validateInjectEventRehearsalBehaviorCallablePayload = ajv.compile(injectEventRehearsalBehaviorCallablePayloadSchema);
+export const validateControlEventRehearsalSpatialCallablePayload = ajv.compile(controlEventRehearsalSpatialCallablePayloadSchema);
 export const validateResetEventRehearsalCallablePayload = ajv.compile(resetEventRehearsalCallablePayloadSchema);
 export const validateRotateEventRehearsalGuestLinkCallablePayload = ajv.compile(rotateEventRehearsalGuestLinkCallablePayloadSchema);
 export const validateGetEventRehearsalGuestBootstrapCallablePayload = ajv.compile(getEventRehearsalGuestBootstrapCallablePayloadSchema);
