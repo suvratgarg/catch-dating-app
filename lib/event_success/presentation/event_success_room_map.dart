@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
@@ -8,6 +9,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_action_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
@@ -46,6 +48,7 @@ class EventSuccessRoomMap extends StatefulWidget {
     required this.assignments,
     this.profiles = const [],
     this.exclusionAlertUids = const {},
+    this.activityKind,
     this.onPreview,
     this.onReassign,
     this.onConfirmPosition,
@@ -58,6 +61,7 @@ class EventSuccessRoomMap extends StatefulWidget {
   final List<EventSuccessAssignment> assignments;
   final List<PublicProfile> profiles;
   final Set<String> exclusionAlertUids;
+  final ActivityKind? activityKind;
   final EventSuccessSpatialPreview? onPreview;
   final EventSuccessSpatialReassign? onReassign;
   final Future<void> Function(EventSuccessAssignment assignment)?
@@ -161,7 +165,37 @@ class _EventSuccessRoomMapState extends State<EventSuccessRoomMap> {
               ],
             ),
           ),
+        if (widget.interactive && _error != null)
+          CatchErrorBanner.fromError(_error!, context: AppErrorContext.event),
+        if (widget.interactive && _selected != null)
+          _EventSuccessSelectedPlacementCard(
+            assignment: _selected!,
+            profile: profileByUid[_selected!.uid],
+            currentUnit: unitById(_selected!.layoutUnitId),
+            destinationUnit: unitById(_destinationUnitId),
+            scope: _scope,
+            pending: _pending,
+            needsAttention: widget.exclusionAlertUids.contains(_selected!.uid),
+            onScopeChanged: (scope) => setState(() => _scope = scope),
+            onMove: _destinationUnitId == null
+                ? null
+                : () => unawaited(_applyDestination(_destinationUnitId!)),
+            onConfirm: widget.onConfirmPosition == null
+                ? null
+                : () => _run(
+                    () => widget.onConfirmPosition!(_selected!),
+                    key: 'confirm:${_selected!.uid}',
+                  ),
+            onRelease: widget.onReleasePinned == null
+                ? null
+                : () => _run(
+                    () => widget.onReleasePinned!(_selected!),
+                    key: 'release:${_selected!.uid}',
+                  ),
+          ),
         CatchSurface(
+          backgroundColor: CatchTokens.of(context).raised,
+          borderColor: CatchTokens.of(context).line,
           padding: CatchInsets.content,
           child: AspectRatio(
             aspectRatio: CatchAspectRatio.roomMap,
@@ -183,6 +217,7 @@ class _EventSuccessRoomMapState extends State<EventSuccessRoomMap> {
                       pending: _pending,
                       interactive: widget.interactive,
                       alertUids: widget.exclusionAlertUids,
+                      activityKind: widget.activityKind,
                       onChooseDestination: _chooseDestination,
                       onApplyDraggedDestination: _applyDestination,
                     ),
@@ -193,36 +228,6 @@ class _EventSuccessRoomMapState extends State<EventSuccessRoomMap> {
         ),
         const _EventSuccessRoomLegend(),
         if (widget.interactive) ...[
-          if (_error != null)
-            CatchErrorBanner.fromError(_error!, context: AppErrorContext.event),
-          if (_selected != null)
-            _EventSuccessSelectedPlacementCard(
-              assignment: _selected!,
-              profile: profileByUid[_selected!.uid],
-              currentUnit: unitById(_selected!.layoutUnitId),
-              destinationUnit: unitById(_destinationUnitId),
-              scope: _scope,
-              pending: _pending,
-              needsAttention: widget.exclusionAlertUids.contains(
-                _selected!.uid,
-              ),
-              onScopeChanged: (scope) => setState(() => _scope = scope),
-              onMove: _destinationUnitId == null
-                  ? null
-                  : () => unawaited(_applyDestination(_destinationUnitId!)),
-              onConfirm: widget.onConfirmPosition == null
-                  ? null
-                  : () => _run(
-                      () => widget.onConfirmPosition!(_selected!),
-                      key: 'confirm:${_selected!.uid}',
-                    ),
-              onRelease: widget.onReleasePinned == null
-                  ? null
-                  : () => _run(
-                      () => widget.onReleasePinned!(_selected!),
-                      key: 'release:${_selected!.uid}',
-                    ),
-            ),
           CatchSection.fieldRows(
             title: context.l10n.eventSuccessRoomMapSelectAttendee,
             children: [
@@ -274,8 +279,12 @@ class _EventSuccessRoomMapState extends State<EventSuccessRoomMap> {
           .map((destination) => destination.recommendedScope)
           .whereType<EventSuccessSpatialScope>()
           .firstOrNull;
+      final recommendedDestination = destinations
+          .where((destination) => destination.valid)
+          .firstOrNull;
       setState(() {
         _destinations = destinations;
+        _destinationUnitId = recommendedDestination?.unitId;
         _scope = recommendation ?? EventSuccessSpatialScope.pinned;
       });
     } catch (error) {
@@ -387,6 +396,7 @@ class _EventSuccessPositionedMapUnit extends StatelessWidget {
     required this.pending,
     required this.interactive,
     required this.alertUids,
+    required this.activityKind,
     required this.onChooseDestination,
     required this.onApplyDraggedDestination,
   });
@@ -400,6 +410,7 @@ class _EventSuccessPositionedMapUnit extends StatelessWidget {
   final bool pending;
   final bool interactive;
   final Set<String> alertUids;
+  final ActivityKind? activityKind;
   final ValueChanged<String> onChooseDestination;
   final Future<void> Function(String unitId) onApplyDraggedDestination;
 
@@ -416,6 +427,7 @@ class _EventSuccessPositionedMapUnit extends StatelessWidget {
         (assignment) => alertUids.contains(assignment.uid),
       ),
       alertUids: alertUids,
+      activityKind: activityKind,
       onTap: !interactive || pending || !attendeeSelected || invalid
           ? null
           : () => onChooseDestination(unit.id),
@@ -522,121 +534,137 @@ class _EventSuccessSelectedPlacementCard extends StatelessWidget {
         assignment.confirmedLayoutUnitId == assignment.layoutUnitId;
     final currentLabel =
         currentUnit?.label ?? context.l10n.eventSuccessRoomMapNotPlaced;
+    final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.4;
+    final secondaryActions = <CatchActionMenuItem<_PlacementSecondaryAction>>[
+      if (assignment.layoutUnitId != null && !confirmed && onConfirm != null)
+        CatchActionMenuItem(
+          value: _PlacementSecondaryAction.confirm,
+          label: context.l10n.eventSuccessRoomMapConfirmPosition,
+          icon: CatchIcons.checkCircleOutlineRounded,
+        ),
+      if (onRelease != null)
+        CatchActionMenuItem(
+          value: _PlacementSecondaryAction.release,
+          label: context.l10n.eventSuccessRoomMapReleasePinned,
+          icon: CatchIcons.lockOpenRounded,
+        ),
+    ];
+    final identity = Row(
+      children: [
+        CatchPersonAvatar(
+          size: CatchLayout.avatarIdentityExtent,
+          name: profile?.name ?? assignment.displayTitle,
+          imageUrl: profile?.primaryPhotoThumbnailUrl,
+          borderWidth: CatchStroke.hairline,
+          borderColor: needsAttention ? t.warning : t.line2,
+        ),
+        gapW12,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                profile?.name ?? assignment.displayTitle,
+                style: CatchTextStyles.titleL(context, color: t.ink),
+              ),
+              gapH4,
+              CatchBadge(
+                label: needsAttention
+                    ? context.l10n.eventSuccessRoomMapNeedsAttention
+                    : confirmed
+                    ? context.l10n.eventSuccessRoomMapConfirmedShort
+                    : context.l10n.eventSuccessRoomMapAssigned,
+                tone: needsAttention
+                    ? CatchBadgeTone.warning
+                    : confirmed
+                    ? CatchBadgeTone.success
+                    : CatchBadgeTone.brand,
+              ),
+              gapH4,
+              Text(
+                context.l10n.eventSuccessRoomMapCurrentPosition(
+                  unitLabel: currentLabel,
+                ),
+                style: CatchTextStyles.supporting(context, color: t.ink2),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+    final move = CatchButton(
+      label: destinationUnit == null
+          ? context.l10n.eventSuccessRoomMapChooseDestinationShort
+          : context.l10n.eventSuccessRoomMapMoveToUnit(
+              unitLabel: destinationUnit!.label,
+            ),
+      isLoading: pending,
+      onPressed: pending ? null : onMove,
+      fullWidth: true,
+    );
+    final stackedHeader = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [identity, gapH12, move],
+    );
     return CatchSurface(
-      padding: CatchInsets.content,
+      padding: CatchInsets.contentDense,
       borderColor: needsAttention ? t.warning : t.line,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            context.l10n.eventSuccessRoomMapSelectedGuestTitle,
-            style: CatchTextStyles.monoLabel(context, color: t.ink2),
+          ComponentResponsiveBuilder(
+            breakpoint: ComponentBreakpoints
+                .eventSuccessSelectedPlacementInlineBreakpoint,
+            compact: (_) => stackedHeader,
+            expanded: (_) => largeText
+                ? stackedHeader
+                : Row(
+                    children: [
+                      Expanded(flex: 4, child: identity),
+                      gapW12,
+                      Expanded(flex: 3, child: move),
+                    ],
+                  ),
           ),
-          gapH10,
+          gapH8,
           Row(
             children: [
-              CatchPersonAvatar(
-                size: CatchLayout.avatarIdentityExtent,
-                name: profile?.name ?? assignment.displayTitle,
-                imageUrl: profile?.primaryPhotoThumbnailUrl,
-                borderWidth: CatchStroke.hairline,
-                borderColor: needsAttention ? t.warning : t.line2,
-              ),
-              gapW12,
               Expanded(
-                flex: 3,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      profile?.name ?? assignment.displayTitle,
-                      style: CatchTextStyles.titleL(context, color: t.ink),
+                child: CatchOptionGroup<EventSuccessSpatialScope>(
+                  options: [
+                    CatchOption(
+                      value: EventSuccessSpatialScope.thisRound,
+                      label:
+                          context.l10n.eventSuccessRoomMapScopeThisRoundShort,
                     ),
-                    gapH4,
-                    CatchBadge(
-                      label: needsAttention
-                          ? context.l10n.eventSuccessRoomMapNeedsAttention
-                          : confirmed
-                          ? context.l10n.eventSuccessRoomMapConfirmedShort
-                          : context.l10n.eventSuccessRoomMapAssigned,
-                      tone: needsAttention
-                          ? CatchBadgeTone.warning
-                          : confirmed
-                          ? CatchBadgeTone.success
-                          : CatchBadgeTone.brand,
-                    ),
-                    gapH4,
-                    Text(
-                      context.l10n.eventSuccessRoomMapCurrentPosition(
-                        unitLabel: currentLabel,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.supporting(context, color: t.ink2),
+                    CatchOption(
+                      value: EventSuccessSpatialScope.pinned,
+                      label: context.l10n.eventSuccessRoomMapScopePinnedShort,
                     ),
                   ],
+                  selected: scope,
+                  contract: CatchContractConstraints
+                      .eventSuccessSpatialActionCallablePayloadScope,
+                  contractValue: (value) => value.name,
+                  onChanged: pending ? null : onScopeChanged,
+                  showDivider: false,
                 ),
               ),
-              gapW12,
-              Expanded(
-                flex: 3,
-                child: CatchButton(
-                  label: destinationUnit == null
-                      ? context.l10n.eventSuccessRoomMapChooseDestinationShort
-                      : context.l10n.eventSuccessRoomMapMoveToUnit(
-                          unitLabel: destinationUnit!.label,
-                        ),
-                  isLoading: pending,
-                  onPressed: pending ? null : onMove,
-                  fullWidth: true,
+              if (secondaryActions.isNotEmpty) ...[
+                gapW8,
+                CatchActionMenu<_PlacementSecondaryAction>(
+                  items: secondaryActions,
+                  tooltip: MaterialLocalizations.of(context).moreButtonTooltip,
+                  onSelected: (action) {
+                    switch (action) {
+                      case _PlacementSecondaryAction.confirm:
+                        unawaited(onConfirm!());
+                      case _PlacementSecondaryAction.release:
+                        unawaited(onRelease!());
+                    }
+                  },
                 ),
-              ),
-            ],
-          ),
-          gapH10,
-          CatchOptionGroup<EventSuccessSpatialScope>(
-            options: [
-              CatchOption(
-                value: EventSuccessSpatialScope.thisRound,
-                label: context.l10n.eventSuccessRoomMapScopeThisRoundShort,
-              ),
-              CatchOption(
-                value: EventSuccessSpatialScope.pinned,
-                label: context.l10n.eventSuccessRoomMapScopePinnedShort,
-              ),
-            ],
-            selected: scope,
-            contract: CatchContractConstraints
-                .eventSuccessSpatialActionCallablePayloadScope,
-            contractValue: (value) => value.name,
-            onChanged: pending ? null : onScopeChanged,
-            showDivider: false,
-          ),
-          gapH10,
-          Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s2,
-            children: [
-              CatchButton(
-                label: context.l10n.eventSuccessRoomMapConfirmPosition,
-                variant: CatchButtonVariant.secondary,
-                isLoading: pending,
-                onPressed:
-                    pending ||
-                        assignment.layoutUnitId == null ||
-                        confirmed ||
-                        onConfirm == null
-                    ? null
-                    : () => unawaited(onConfirm!()),
-              ),
-              CatchButton(
-                label: context.l10n.eventSuccessRoomMapReleasePinned,
-                variant: CatchButtonVariant.ghost,
-                isLoading: pending,
-                onPressed: pending || onRelease == null
-                    ? null
-                    : () => unawaited(onRelease!()),
-              ),
+              ],
             ],
           ),
         ],
@@ -644,6 +672,8 @@ class _EventSuccessSelectedPlacementCard extends StatelessWidget {
     );
   }
 }
+
+enum _PlacementSecondaryAction { confirm, release }
 
 class _EventSuccessRoomLegend extends StatelessWidget {
   const _EventSuccessRoomLegend();
@@ -721,6 +751,7 @@ class _EventSuccessMapUnit extends StatelessWidget {
     required this.selectedDestination,
     required this.alert,
     required this.alertUids,
+    required this.activityKind,
     required this.onTap,
     required this.invalidReason,
   });
@@ -732,6 +763,7 @@ class _EventSuccessMapUnit extends StatelessWidget {
   final bool selectedDestination;
   final bool alert;
   final Set<String> alertUids;
+  final ActivityKind? activityKind;
   final VoidCallback? onTap;
   final String? invalidReason;
 
@@ -740,6 +772,9 @@ class _EventSuccessMapUnit extends StatelessWidget {
     final t = CatchTokens.of(context);
     final orderedAssignments = [...assignments]
       ..sort((left, right) => left.uid.compareTo(right.uid));
+    final isTable =
+        unit.shape == EventSuccessLayoutShape.round ||
+        unit.shape == EventSuccessLayoutShape.rect;
     final borderColor = alert
         ? t.warning
         : invalid
@@ -765,12 +800,20 @@ class _EventSuccessMapUnit extends StatelessWidget {
       child: CatchSurface(
         key: ValueKey<String>('event_success.room.unit.${unit.id}'),
         radius: CatchRadius.md,
-        borderColor: borderColor,
-        borderWidth: selectedDestination || alert ? 2 : 1,
+        borderColor: isTable && !selectedDestination && !alert && !invalid
+            ? Colors.transparent
+            : borderColor,
+        borderWidth: selectedDestination || alert
+            ? CatchStroke.underline
+            : CatchStroke.hairline,
         backgroundColor: selectedDestination
             ? t.success.withValues(alpha: CatchOpacity.subtleFill)
+            : alert
+            ? t.warning.withValues(alpha: CatchOpacity.subtleFill)
             : invalid
             ? t.surface.withValues(alpha: CatchOpacity.disabledControl)
+            : isTable
+            ? Colors.transparent
             : t.surface,
         onTap: onTap,
         child: Padding(
@@ -822,6 +865,7 @@ class _EventSuccessMapUnit extends StatelessWidget {
                           unit.capacity,
                           CatchLayout.roomMapMaxVisiblePositions,
                         ),
+                        unit.shape,
                       ).indexed)
                         Align(
                           alignment: indexed.$2,
@@ -845,6 +889,7 @@ class _EventSuccessMapUnit extends StatelessWidget {
                                   orderedAssignments[indexed.$1].uid,
                                 ),
                             unavailable: invalid,
+                            activityKind: activityKind,
                           ),
                         ),
                     ],
@@ -881,7 +926,7 @@ class _EventSuccessUnitShape extends StatelessWidget {
       radius: radius,
       backgroundColor: invalid
           ? t.raised.withValues(alpha: CatchOpacity.disabledControl)
-          : t.raised,
+          : t.surface,
       borderColor: invalid ? t.ink3 : t.line2,
       child: const SizedBox.expand(),
     );
@@ -900,6 +945,7 @@ class _EventSuccessCapacityPosition extends StatelessWidget {
     required this.confirmed,
     required this.needsAttention,
     required this.unavailable,
+    required this.activityKind,
   });
 
   final double extent;
@@ -908,6 +954,7 @@ class _EventSuccessCapacityPosition extends StatelessWidget {
   final bool confirmed;
   final bool needsAttention;
   final bool unavailable;
+  final ActivityKind? activityKind;
 
   @override
   Widget build(BuildContext context) {
@@ -939,13 +986,55 @@ class _EventSuccessCapacityPosition extends StatelessWidget {
       size: extent,
       name: profile?.name ?? assignment.displayTitle,
       imageUrl: profile?.primaryPhotoThumbnailUrl,
+      activityKind: activityKind,
       borderWidth: CatchStroke.underline,
       borderColor: ringColor,
     );
   }
 }
 
-List<Alignment> _roomPositionAlignments(int count) => switch (count) {
+List<Alignment> _roomPositionAlignments(
+  int count,
+  EventSuccessLayoutShape shape,
+) {
+  if (shape == EventSuccessLayoutShape.round) {
+    return switch (count) {
+      <= 0 => const [],
+      1 => const [Alignment.topCenter],
+      2 => const [Alignment.centerLeft, Alignment.centerRight],
+      3 => const [
+        Alignment.topCenter,
+        Alignment.bottomLeft,
+        Alignment.bottomRight,
+      ],
+      4 => const [
+        Alignment.topLeft,
+        Alignment.topRight,
+        Alignment.bottomLeft,
+        Alignment.bottomRight,
+      ],
+      5 => const [
+        Alignment.topCenter,
+        Alignment.topRight,
+        Alignment.bottomRight,
+        Alignment.bottomLeft,
+        Alignment.topLeft,
+      ],
+      6 => const [
+        Alignment(-0.62, -0.78),
+        Alignment(0.62, -0.78),
+        Alignment.centerRight,
+        Alignment(0.62, 0.78),
+        Alignment(-0.62, 0.78),
+        Alignment.centerLeft,
+      ],
+      _ => _roomGridPositionAlignments(count),
+    };
+  }
+  return _roomGridPositionAlignments(count);
+}
+
+List<Alignment> _roomGridPositionAlignments(int count) => switch (count) {
   <= 0 => const [],
   1 => const [Alignment.topCenter],
   2 => const [Alignment.topLeft, Alignment.topRight],

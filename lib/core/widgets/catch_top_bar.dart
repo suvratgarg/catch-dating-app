@@ -108,6 +108,7 @@ class CatchScreenHeaderTitle extends StatelessWidget {
     this.leading,
     this.actions = const <Widget>[],
     this.titleMaxLines = 1,
+    this.titleStyle,
     this.rowCrossAxisAlignment = CrossAxisAlignment.center,
     this.padding,
     this.material = false,
@@ -122,6 +123,7 @@ class CatchScreenHeaderTitle extends StatelessWidget {
     this.leading,
     this.actions = const <Widget>[],
     this.titleMaxLines = 1,
+    this.titleStyle,
     this.rowCrossAxisAlignment = CrossAxisAlignment.center,
     this.padding = CatchInsets.screenTitleBlock,
     this.backgroundColor,
@@ -133,6 +135,7 @@ class CatchScreenHeaderTitle extends StatelessWidget {
   final Widget? leading;
   final List<Widget> actions;
   final int titleMaxLines;
+  final TextStyle? titleStyle;
   final CrossAxisAlignment rowCrossAxisAlignment;
   final EdgeInsetsGeometry? padding;
   final bool material;
@@ -162,7 +165,7 @@ class CatchScreenHeaderTitle extends StatelessWidget {
           title,
           maxLines: titleMaxLines,
           overflow: TextOverflow.ellipsis,
-          style: CatchTextStyles.headline(context, color: t.ink),
+          style: titleStyle ?? CatchTextStyles.headline(context, color: t.ink),
         ),
         if (hasSubtitle) ...[
           const SizedBox(height: CatchGaps.headerTitleToSubtitle),
@@ -240,6 +243,7 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
     CatchTopBarLeading leadingType = CatchTopBarLeading.auto,
     List<Widget> actions = const <Widget>[],
     int titleMaxLines = 1,
+    TextStyle? titleStyle,
     CrossAxisAlignment rowCrossAxisAlignment = CrossAxisAlignment.center,
     Color? backgroundColor,
     bool surface = false,
@@ -257,6 +261,7 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
       hasSubtitle: subtitle?.isNotEmpty ?? false,
       titleMaxLines: titleMaxLines,
       hasActions: actions.isNotEmpty,
+      titleStyle: titleStyle,
     ),
     key: key,
     title: title,
@@ -266,6 +271,7 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
     leadingType: leadingType,
     actions: actions,
     titleMaxLines: titleMaxLines,
+    titleStyle: titleStyle,
     rowCrossAxisAlignment: rowCrossAxisAlignment,
     backgroundColor: backgroundColor,
     surface: surface,
@@ -289,6 +295,7 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
     required this.leadingType,
     required this.actions,
     required this.titleMaxLines,
+    required this.titleStyle,
     required this.rowCrossAxisAlignment,
     required this.backgroundColor,
     required this.surface,
@@ -309,6 +316,7 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
   final CatchTopBarLeading leadingType;
   final List<Widget> actions;
   final int titleMaxLines;
+  final TextStyle? titleStyle;
   final CrossAxisAlignment rowCrossAxisAlignment;
   final Color? backgroundColor;
   final bool surface;
@@ -328,6 +336,7 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
     bool hasSubtitle = false,
     int titleMaxLines = 1,
     bool hasActions = false,
+    TextStyle? titleStyle,
   }) {
     final textScaler = MediaQuery.textScalerOf(context);
     final largeText = textScaler.scale(1) >= 1.6;
@@ -338,7 +347,8 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
         textScaler.scale(style.fontSize!) * (style.height ?? 1);
 
     var textHeight =
-        lineHeight(CatchTextStyles.headline(context)) * titleMaxLines;
+        lineHeight(titleStyle ?? CatchTextStyles.headline(context)) *
+        titleMaxLines;
     if (hasEyebrow) {
       textHeight +=
           lineHeight(CatchTextStyles.kicker(context)) + CatchSpacing.micro2;
@@ -381,6 +391,7 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
         subtitle: subtitle,
         actions: largeText ? actions : const <Widget>[],
         titleMaxLines: titleMaxLines,
+        titleStyle: titleStyle,
         rowCrossAxisAlignment: rowCrossAxisAlignment,
       ),
       large: false,

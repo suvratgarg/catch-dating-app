@@ -310,6 +310,57 @@ void _registerCatchPrimitivesCompositionTests() {
     expect((labelCenter.dy - iconCenter.dy).abs(), lessThan(8));
   });
 
+  testWidgets('operational CatchTabRail keeps labels and actions at 2x text', (
+    tester,
+  ) async {
+    var selected = 'now';
+    final options = [
+      CatchOption(value: 'now', label: 'Now', icon: CatchIcons.scheduleRounded),
+      CatchOption(
+        value: 'guests',
+        label: 'Guests',
+        icon: CatchIcons.groupsOutlined,
+      ),
+      CatchOption(
+        value: 'room',
+        label: 'Room',
+        icon: CatchIcons.gridViewRounded,
+      ),
+    ];
+
+    await tester.pumpWidget(
+      _wrap(
+        CatchTabRail<String>(
+          selected: selected,
+          options: options,
+          variant: CatchOptionGroupVariant.operational,
+          onChanged: (value) => selected = value,
+        ),
+      ),
+    );
+    expect(find.byIcon(CatchIcons.gridViewRounded), findsOneWidget);
+    await tester.tap(find.text('Room'));
+    expect(selected, 'room');
+
+    await tester.pumpWidget(
+      _wrap(
+        CatchTabRail<String>(
+          selected: selected,
+          options: options,
+          variant: CatchOptionGroupVariant.operational,
+          onChanged: (value) => selected = value,
+        ),
+        textScale: 2,
+      ),
+    );
+    await tester.pump();
+    expect(find.text('Now'), findsOneWidget);
+    expect(find.text('Guests'), findsOneWidget);
+    expect(find.text('Room'), findsOneWidget);
+    expect(find.byIcon(CatchIcons.gridViewRounded), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('CatchOptionGroupItem renders mono uppercase label and tap', (
     tester,
   ) async {

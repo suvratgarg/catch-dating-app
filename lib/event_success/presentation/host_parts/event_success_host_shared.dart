@@ -17,18 +17,22 @@ class EventSuccessLiveWorkspacePicker extends StatelessWidget {
         CatchOption(
           value: EventSuccessLiveWorkspace.now,
           label: context.l10n.eventSuccessLiveWorkspaceNow,
+          icon: CatchIcons.scheduleRounded,
         ),
         CatchOption(
           value: EventSuccessLiveWorkspace.guests,
           label: context.l10n.eventSuccessLiveWorkspaceGuests,
+          icon: CatchIcons.groupsOutlined,
         ),
         CatchOption(
           value: EventSuccessLiveWorkspace.room,
           label: context.l10n.eventSuccessLiveWorkspaceRoom,
+          icon: CatchIcons.gridViewRounded,
         ),
       ],
       selected: selected,
       onChanged: onChanged,
+      variant: CatchOptionGroupVariant.operational,
     );
   }
 }

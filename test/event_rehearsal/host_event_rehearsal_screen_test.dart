@@ -107,6 +107,90 @@ void main() {
     expect(find.text('+15 min'), findsOneWidget);
   });
 
+  testWidgets('host console reflows at 2x text without hiding live controls', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(430, 932);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    final rehearsal = _bootstrap(title: 'Sunday Morning Singles Mixer');
+
+    await tester.pumpWidget(
+      _app(
+        const HostEventRehearsalScreen(
+          clubId: 'club-1',
+          sessionId: 'session-1',
+        ),
+        textScale: 2,
+        overrides: [
+          eventRehearsalProvider(
+            'session-1',
+          ).overrideWith((ref) => Stream.value(rehearsal)),
+        ],
+      ),
+    );
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Sunday Morning Singles Mixer'), findsOneWidget);
+    expect(find.text('REHEARSAL'), findsOneWidget);
+    expect(find.text('Room'), findsOneWidget);
+    expect(find.text('Show Coach'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('placement Coach task opens Room on the real guest control', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(430, 932);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    final base = _bootstrap();
+    final rehearsal = EventRehearsalBootstrap(
+      session: base.session,
+      actors: const [
+        EventRehearsalActor(
+          actorId: 'actor-01',
+          displayName: 'Maya Shah',
+          persona: 'placementPractice',
+          status: EventRehearsalActorStatus.present,
+          guestMoment: EventRehearsalGuestMoment.assignment,
+          optedOut: false,
+          keepApartActorIds: [],
+          helpRequested: false,
+          promptCompleted: true,
+          layoutUnitId: 'table-1',
+        ),
+      ],
+      actions: base.actions,
+      guestUrl: base.guestUrl,
+      canUseInternalFaults: base.canUseInternalFaults,
+    );
+
+    await tester.pumpWidget(
+      _app(
+        const HostEventRehearsalScreen(
+          clubId: 'club-1',
+          sessionId: 'session-1',
+        ),
+        overrides: [
+          eventRehearsalProvider(
+            'session-1',
+          ).overrideWith((ref) => Stream.value(rehearsal)),
+        ],
+      ),
+    );
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Room'), findsOneWidget);
+    expect(find.textContaining('Task 4 of 8'), findsOneWidget);
+    expect(find.text('Place Maya in the current round'), findsOneWidget);
+    expect(find.text('Maya Shah'), findsWidgets);
+    expect(find.textContaining('Move to Table'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('issue injection follows the virtual event lifecycle', (
     tester,
   ) async {
@@ -136,18 +220,26 @@ void main() {
   });
 }
 
-Widget _app(Widget child, {List overrides = const []}) => ProviderScope(
-  overrides: overrides.cast(),
-  child: MaterialApp(
-    theme: AppTheme.light,
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
-    supportedLocales: AppLocalizations.supportedLocales,
-    home: child,
-  ),
-);
+Widget _app(Widget child, {List overrides = const [], double textScale = 1}) =>
+    ProviderScope(
+      overrides: overrides.cast(),
+      child: MaterialApp(
+        theme: AppTheme.light,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(textScale)),
+          child: child!,
+        ),
+        home: child,
+      ),
+    );
 
 EventRehearsalBootstrap _bootstrap({
   EventRehearsalStatus status = EventRehearsalStatus.running,
+  String title = 'Courtyard practice',
 }) => EventRehearsalBootstrap(
   session: EventRehearsalSession(
     id: 'session-1',
@@ -158,8 +250,8 @@ EventRehearsalBootstrap _bootstrap({
     actorCount: 12,
     actionCount: 2,
     status: status,
-    setup: const EventRehearsalSetup(
-      title: 'Courtyard practice',
+    setup: EventRehearsalSetup(
+      title: title,
       locationName: 'Practice studio',
       durationMinutes: 120,
       hostGoal: 'Learn the live flow',

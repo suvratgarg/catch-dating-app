@@ -124,6 +124,26 @@ class CatchPersonRow extends StatelessWidget {
 
     final trailingContent =
         trailing ?? (isChatMode ? CatchPersonChatTrailing(data: data) : null);
+    final stackExplicitTrailing =
+        trailing != null && MediaQuery.textScalerOf(context).scale(1) >= 1.4;
+    final identity = Row(
+      children: [
+        CatchPersonAvatar(
+          size: avatarSize,
+          name: data.name,
+          imageUrl: data.imageUrl,
+          borderWidth: data.isFresh ? CatchStroke.underline : 0,
+          borderColor: data.isFresh ? t.primary : null,
+          shape: data.avatarShape,
+        ),
+        gapW12,
+        Expanded(
+          child: isChatMode
+              ? CatchPersonChatLayout(data: data)
+              : CatchPersonRosterLayout(data: data),
+        ),
+      ],
+    );
     final row = ColoredBox(
       color: showFreshBackground && data.isFresh
           ? t.primarySoft
@@ -139,25 +159,24 @@ class CatchPersonRow extends StatelessWidget {
             ),
           Padding(
             padding: padding,
-            child: Row(
-              children: [
-                CatchPersonAvatar(
-                  size: avatarSize,
-                  name: data.name,
-                  imageUrl: data.imageUrl,
-                  borderWidth: data.isFresh ? CatchStroke.underline : 0,
-                  borderColor: data.isFresh ? t.primary : null,
-                  shape: data.avatarShape,
-                ),
-                gapW12,
-                Expanded(
-                  child: isChatMode
-                      ? CatchPersonChatLayout(data: data)
-                      : CatchPersonRosterLayout(data: data),
-                ),
-                if (trailingContent != null) ...[gapW10, trailingContent],
-              ],
-            ),
+            child: stackExplicitTrailing
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      identity,
+                      gapH8,
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: trailingContent,
+                      ),
+                    ],
+                  )
+                : Row(
+                    children: [
+                      Expanded(child: identity),
+                      if (trailingContent != null) ...[gapW10, trailingContent],
+                    ],
+                  ),
           ),
         ],
       ),

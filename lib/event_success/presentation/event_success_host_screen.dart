@@ -122,6 +122,8 @@ class EventSuccessHostSection extends ConsumerStatefulWidget {
     this.initialTab = EventSuccessHostTab.setup,
     this.showTabs = true,
     this.compactLiveControls = false,
+    this.initialLiveWorkspace = EventSuccessLiveWorkspace.now,
+    this.initialSpatialSelectionUid,
     this.operationalRosterSummary,
     this.onOpenGuests,
     this.fixtureActions,
@@ -133,6 +135,8 @@ class EventSuccessHostSection extends ConsumerStatefulWidget {
   final EventSuccessHostTab initialTab;
   final bool showTabs;
   final bool compactLiveControls;
+  final EventSuccessLiveWorkspace initialLiveWorkspace;
+  final String? initialSpatialSelectionUid;
   final EventSuccessOperationalRosterSummary? operationalRosterSummary;
   final VoidCallback? onOpenGuests;
   final EventSuccessHostFixtureActions? fixtureActions;
@@ -470,6 +474,8 @@ class _EventSuccessHostSectionState
       showTabs: showTabs,
       embedded: true,
       compactLiveControls: compactLiveControls,
+      initialLiveWorkspace: widget.initialLiveWorkspace,
+      initialSpatialSelectionUid: widget.initialSpatialSelectionUid,
       operationalRosterSummary: operationalRosterSummary,
       onOpenGuests: onOpenGuests,
       setupActionState: EventSuccessSetupActionState.resolve(
@@ -1212,6 +1218,8 @@ class EventSuccessHostPanel extends StatefulWidget {
     this.showTabs = true,
     this.embedded = false,
     this.compactLiveControls = false,
+    this.initialLiveWorkspace = EventSuccessLiveWorkspace.now,
+    this.initialSpatialSelectionUid,
     this.operationalRosterSummary,
     this.onOpenGuests,
     this.setupActionState = const EventSuccessSetupActionState(),
@@ -1283,6 +1291,8 @@ class EventSuccessHostPanel extends StatefulWidget {
   final bool showTabs;
   final bool embedded;
   final bool compactLiveControls;
+  final EventSuccessLiveWorkspace initialLiveWorkspace;
+  final String? initialSpatialSelectionUid;
   final EventSuccessOperationalRosterSummary? operationalRosterSummary;
   final VoidCallback? onOpenGuests;
   final EventSuccessSetupActionState setupActionState;
@@ -1340,7 +1350,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
   static const _liveActionDebounce = CatchMotion.eventSuccessActionDebounce;
 
   late EventSuccessHostTab _selectedTab = widget.initialTab;
-  var _liveWorkspace = EventSuccessLiveWorkspace.now;
+  late EventSuccessLiveWorkspace _liveWorkspace = widget.initialLiveWorkspace;
   var _liveActionPending = false;
   String? _lastLiveActionKey;
   DateTime? _lastLiveActionAt;
@@ -1350,6 +1360,9 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.initialTab != widget.initialTab) {
       _selectedTab = widget.initialTab;
+    }
+    if (oldWidget.initialLiveWorkspace != widget.initialLiveWorkspace) {
+      _liveWorkspace = widget.initialLiveWorkspace;
     }
   }
 
@@ -1376,6 +1389,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         spatialLayout: widget.spatialLayout,
         spatialLayoutState: widget.spatialLayoutState,
         showRoomWorkspace: _liveWorkspace == EventSuccessLiveWorkspace.room,
+        initialSpatialSelectionUid: widget.initialSpatialSelectionUid,
         roster: widget.roster,
         assignments: widget.assignments,
         assignmentParticipantProfiles: widget.assignmentParticipantProfiles,

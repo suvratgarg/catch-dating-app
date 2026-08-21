@@ -459,20 +459,31 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       errorContext: AppErrorContext.event,
       child: CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
-          showBackButton: true,
-          onBack: onBackToSuccess,
+          large: false,
+          height: MediaQuery.textScalerOf(context).scale(1) >= 1.4
+              ? CatchScreenTopBar.heightFor(
+                  context: context,
+                  hasEyebrow: true,
+                  titleMaxLines: 3,
+                  titleStyle: CatchTextStyles.titleL(context),
+                )
+              : CatchLayout.browseHeaderHeight,
+          allowContentHeightExpansion: true,
+          contentCrossAxisAlignment: CrossAxisAlignment.start,
+          titleWidget: _HostManageTopBarTitle(
+            eyebrow: _hostEventManageLifecycleLabel(
+              context,
+              event: event,
+              phase: screenState.phase,
+            ),
+            title: screenState.eventTitle,
+          ),
+          leading: CatchIconAction(
+            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+            icon: CatchIcons.arrowBackIosNewRounded,
+            onPressed: onBackToSuccess,
+          ),
           divider: scrolledUnder,
-          title: screenState.eventTitle,
-          subtitle: event.isCancelled
-              ? context.l10n.hostsHostEventManageWorkspaceCancelled
-              : switch (screenState.phase) {
-                  HostEventWorkspacePhase.preparation =>
-                    context.l10n.hostsHostEventManageWorkspacePreparation,
-                  HostEventWorkspacePhase.runtime =>
-                    context.l10n.hostsHostEventManageWorkspaceRuntime,
-                  HostEventWorkspacePhase.recap =>
-                    context.l10n.hostsHostEventManageWorkspaceRecap,
-                },
         ),
         body: HostEventRosterDrawer(
           open: _rosterOpen,
@@ -1791,6 +1802,53 @@ class HostEventSummaryRow extends StatelessWidget {
           const CatchDivider.fieldRow(indent: 0),
           gapH12,
         ],
+      ],
+    );
+  }
+}
+
+String _hostEventManageLifecycleLabel(
+  BuildContext context, {
+  required Event event,
+  required HostEventWorkspacePhase phase,
+}) => event.isCancelled
+    ? context.l10n.hostsHostEventManageWorkspaceCancelled
+    : switch (phase) {
+        HostEventWorkspacePhase.preparation =>
+          context.l10n.hostsHostEventManageWorkspacePreparation,
+        HostEventWorkspacePhase.runtime =>
+          context.l10n.hostsHostEventManageWorkspaceRuntime,
+        HostEventWorkspacePhase.recap =>
+          context.l10n.hostsHostEventManageWorkspaceRecap,
+      };
+
+class _HostManageTopBarTitle extends StatelessWidget {
+  const _HostManageTopBarTitle({required this.eyebrow, required this.title});
+
+  final String eyebrow;
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.4;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          eyebrow,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: CatchTextStyles.kicker(context, color: t.ink3),
+        ),
+        gapH2,
+        Text(
+          title,
+          maxLines: largeText ? 3 : 1,
+          overflow: TextOverflow.ellipsis,
+          style: CatchTextStyles.titleL(context, color: t.ink),
+        ),
       ],
     );
   }

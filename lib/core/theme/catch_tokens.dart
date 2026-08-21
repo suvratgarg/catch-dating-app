@@ -2000,9 +2000,9 @@ abstract final class CatchLayout {
   /// Wrap full-bleed page bodies in [ConstrainedBox] with this maxWidth, centered.
   static const double maxContentWidth = 600;
   static const int roomMapMaxVisiblePositions = 8;
-  static const double roomMapPositionExtent = CatchSpacing.s6;
-  static const double roomMapUnitWidthFactor = 0.52;
-  static const double roomMapUnitHeightFactor = 0.48;
+  static const double roomMapPositionExtent = CatchSpacing.s5;
+  static const double roomMapUnitWidthFactor = 0.62;
+  static const double roomMapUnitHeightFactor = 0.56;
   static const double maxContentWithDockHeight =
       maxContentWidth + CatchSpacing.s16;
   static const double pageBodyHorizontalGutters = CatchSpacing.screenPx * 2;
