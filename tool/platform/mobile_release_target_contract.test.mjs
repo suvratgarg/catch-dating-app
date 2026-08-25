@@ -73,6 +73,19 @@ test("native and Firebase owners authorize only their role-platform intersection
   }
 });
 
+test("mobile package policy changes rebuild all signed installable targets", () => {
+  const result = plan("tool/platform/mobile_package_policy.json");
+
+  assert.deepEqual(result.directComponents, ["app.build-control"]);
+  assert.deepEqual(result.operations.releaseTargets, [
+    "consumer-android",
+    "consumer-ios",
+    "host-android",
+    "host-ios",
+  ]);
+  assert.deepEqual(result.operations.releaseRoles, ["consumer", "host"]);
+});
+
 test("mixed platform changes do not expand role compatibility into a Cartesian product", () => {
   const result = plan([
     "apps/host/ios/Runner/Info.plist",

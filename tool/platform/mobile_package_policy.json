@@ -2,8 +2,8 @@
   "$schema": "catch.mobile-package-policy/v2",
   "schemaVersion": 2,
   "baseline": {
-    "measuredAt": "2026-07-25",
-    "sourceRun": "https://github.com/suvratgarg/catch-dating-app/actions/runs/30171284485",
+    "measuredAt": "2026-08-25",
+    "sourceRun": "https://github.com/suvratgarg/catch-dating-app/actions/runs/32852286065",
     "mode": "Signed production IPA and AAB archives from independent apps/consumer and apps/host package roots",
     "artifactBytesDefinition": "Compressed signed archive bytes on disk.",
     "uncompressedBytesDefinition": "Sum of raw member lengths in the signed archive.",
@@ -18,16 +18,16 @@
   "platforms": {
     "ios": {
       "consumer": {
-        "baselineArtifactBytes": 47588470,
+        "baselineArtifactBytes": 49861808,
         "maxArtifactBytes": 53000000,
-        "baselineUncompressedBytes": 164123489,
+        "baselineUncompressedBytes": 172081725,
         "maxUncompressedBytes": 181000000,
         "forbiddenNativeEntries": []
       },
       "host": {
-        "baselineArtifactBytes": 46103406,
+        "baselineArtifactBytes": 49379476,
         "maxArtifactBytes": 52000000,
-        "baselineUncompressedBytes": 159600632,
+        "baselineUncompressedBytes": 169696573,
         "maxUncompressedBytes": 176000000,
         "forbiddenNativeEntries": [
           "Frameworks/health.framework/",
@@ -37,17 +37,17 @@
     },
     "android": {
       "consumer": {
-        "baselineArtifactBytes": 90560568,
+        "baselineArtifactBytes": 91537673,
         "maxArtifactBytes": 96000000,
-        "baselineUncompressedBytes": 278677595,
+        "baselineUncompressedBytes": 287636300,
         "maxUncompressedBytes": 300000000,
         "forbiddenNativeEntries": []
       },
       "host": {
-        "baselineArtifactBytes": 88631505,
-        "maxArtifactBytes": 94000000,
-        "baselineUncompressedBytes": 268490197,
-        "maxUncompressedBytes": 290000000,
+        "baselineArtifactBytes": 94430410,
+        "maxArtifactBytes": 96000000,
+        "baselineUncompressedBytes": 289520178,
+        "maxUncompressedBytes": 300000000,
         "forbiddenNativeEntries": [
           "libhealth",
           "razorpay"
