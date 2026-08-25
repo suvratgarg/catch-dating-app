@@ -4,8 +4,10 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
     show PublishEventLivePositionCallableRequest;
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'event_live_position_service.g.dart';
 
 class EventLivePositionSample {
   const EventLivePositionSample({
@@ -107,12 +109,14 @@ class GeolocatorEventLivePositionStreamGateway
   ).map(EventLivePositionSample.fromPosition);
 }
 
-final eventLivePositionPublisherProvider = Provider<EventLivePositionPublisher>(
-  (ref) =>
-      FirebaseEventLivePositionPublisher(ref.watch(firebaseFunctionsProvider)),
-);
+// keepalive: this platform facade coordinates explicit foreground location
+// sharing across Event Success and Host event management routes.
+@Riverpod(keepAlive: true)
+EventLivePositionPublisher eventLivePositionPublisher(Ref ref) =>
+    FirebaseEventLivePositionPublisher(ref.watch(firebaseFunctionsProvider));
 
-final eventLivePositionStreamGatewayProvider =
-    Provider<EventLivePositionStreamGateway>(
-      (ref) => const GeolocatorEventLivePositionStreamGateway(),
-    );
+// keepalive: the location stream is owned by an explicit sharing controller,
+// which starts and stops collection as the user changes sharing state.
+@Riverpod(keepAlive: true)
+EventLivePositionStreamGateway eventLivePositionStreamGateway(Ref ref) =>
+    const GeolocatorEventLivePositionStreamGateway();
