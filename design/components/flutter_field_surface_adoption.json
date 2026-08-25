@@ -45,7 +45,7 @@
       "reachability": "production_route",
       "screenIds": ["screen.host.event.edit"],
       "routeIds": ["hostAppEditEventScreen"],
-      "semanticFieldCount": 23,
+      "semanticFieldCount": 24,
       "bindings": [
         {
           "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
@@ -56,7 +56,7 @@
         {"file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "CatchSection.fieldRows", "expected": 6},
         {"file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "CatchSection.containedFieldRows", "expected": 2},
         {"file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "CatchField.nav", "expected": 3},
-        {"file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "CatchField.input", "expected": 11},
+        {"file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "CatchField.input", "expected": 12},
         {"file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "CatchField.choices", "expected": 1},
         {"file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "CatchField.optionCards", "expected": 2},
         {"file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "CatchField.stepper", "expected": 1},
