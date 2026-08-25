@@ -285,12 +285,12 @@ unchanged.
 
 ### F. Parity closeout and delivery
 
-- [ ] Re-run the organizer, professional Host, and public-profile parity tests;
+- [x] Re-run the organizer, professional Host, and public-profile parity tests;
   make no schema edits where the audit remains green.
-- [ ] Run schema generation/freshness, `./tool/check_data_contract.sh`, focused
+- [x] Run schema generation/freshness, `./tool/check_data_contract.sh`, focused
   Functions tests, focused Flutter tests/analyzer, React tests/typecheck/build,
   impact-derived scanners, `git diff --check`, and final scope review.
-- [ ] Derive the exact PR gate list from the final Git diff.
+- [x] Derive the exact PR gate list from the final Git diff.
 - [ ] Push every atomic commit, create the PR, and monitor exact-head CI to a
   terminal result.
 
