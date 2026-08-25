@@ -1,5 +1,14 @@
 part of 'host_create_event_screen_test.dart';
 
+Future<void> _openCreateEventFlow(WidgetTester tester) async {
+  await tester.tap(find.text('Open'));
+  await _pumpTestAnimation(tester);
+  final nameField = find.byKey(CreateEventFormKeys.name, skipOffstage: false);
+  if (nameField.evaluate().isNotEmpty) {
+    await _enterCreateEventText(tester, CreateEventFormKeys.name, 'Test event');
+  }
+}
+
 Future<void> _tapActivityKind(WidgetTester tester, String label) async {
   await _openCatchField(tester, 'Activity type');
   await _tapCreateEventChip(tester, label);

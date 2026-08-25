@@ -14,6 +14,7 @@ import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_invite_link.dart';
+import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/events/domain/saved_event.dart'
@@ -37,6 +38,7 @@ Event buildEvent({
   bool synthetic = false,
   String? seedPrefix,
   String clubId = 'club-1',
+  String name = '',
   DateTime? startTime,
   DateTime? endTime,
   String meetingPoint = 'Carter Road',
@@ -44,6 +46,7 @@ Event buildEvent({
   double startingPointLat = 19.0608,
   double startingPointLng = 72.8365,
   String? locationDetails,
+  List<EventItineraryItem> itinerary = const [],
   String? photoUrl,
   EventFormatSnapshot eventFormat = const EventFormatSnapshot.socialRun(),
   double distanceKm = 5,
@@ -77,6 +80,7 @@ Event buildEvent({
     synthetic: synthetic,
     seedPrefix: seedPrefix,
     clubId: clubId,
+    name: name,
     startTime: start,
     endTime: endTime ?? start.add(const Duration(hours: 1)),
     meetingPoint: resolvedLocation.name,
@@ -84,6 +88,7 @@ Event buildEvent({
     startingPointLat: resolvedLocation.latitude,
     startingPointLng: resolvedLocation.longitude,
     locationDetails: resolvedLocation.notes,
+    itinerary: itinerary,
     photoUrl: photoUrl,
     eventFormat: eventFormat,
     distanceKm: distanceKm,

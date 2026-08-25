@@ -370,6 +370,49 @@ export function EventRuntimeMission({children}: {children: ReactNode}) {
   return <div className="event-runtime__mission">{children}</div>;
 }
 
+export function EventRuntimeRouteMap({
+  ariaLabel,
+  help,
+  marker,
+  path,
+}: {
+  ariaLabel: string;
+  help: string;
+  marker: {latitude: number; longitude: number} | null;
+  path: readonly {latitude: number; longitude: number}[];
+}) {
+  const points = marker ? [...path, marker] : [...path];
+  if (!points.length) return null;
+  const latitudes = points.map((point) => point.latitude);
+  const longitudes = points.map((point) => point.longitude);
+  const minLatitude = Math.min(...latitudes);
+  const maxLatitude = Math.max(...latitudes);
+  const minLongitude = Math.min(...longitudes);
+  const maxLongitude = Math.max(...longitudes);
+  const project = (point: {latitude: number; longitude: number}) => ({
+    x: 10 + 80 * ((point.longitude - minLongitude) /
+      Math.max(maxLongitude - minLongitude, 0.000001)),
+    y: 90 - 80 * ((point.latitude - minLatitude) /
+      Math.max(maxLatitude - minLatitude, 0.000001)),
+  });
+  const routePoints = path.map((point) => {
+    const projected = project(point);
+    return `${projected.x},${projected.y}`;
+  }).join(" ");
+  const projectedMarker = marker ? project(marker) : null;
+  return (
+    <figure className="event-runtime__route-map">
+      <svg aria-label={ariaLabel} role="img" viewBox="0 0 100 100">
+        {routePoints ? <polyline points={routePoints} /> : null}
+        {projectedMarker ? (
+          <circle cx={projectedMarker.x} cy={projectedMarker.y} r="4" />
+        ) : null}
+      </svg>
+      <figcaption>{help}</figcaption>
+    </figure>
+  );
+}
+
 export function EventRuntimeQuestionnaire({children}: {children: ReactNode}) {
   return <div className="event-runtime__questionnaire">{children}</div>;
 }

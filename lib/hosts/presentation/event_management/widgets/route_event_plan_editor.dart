@@ -1,13 +1,19 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_field_accordion.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/route_path_builder_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:flutter/material.dart';
+
+enum _PacePreset { social, steady, fast }
 
 /// Composes route operations independently from the event's broader format.
 ///
@@ -19,11 +25,15 @@ class RouteEventPlanEditor extends StatefulWidget {
     required this.activityKind,
     required this.plan,
     required this.onChanged,
+    required this.initialCenter,
+    this.loadMapTiles = true,
   });
 
   final ActivityKind activityKind;
   final RouteEventPlan? plan;
   final ValueChanged<RouteEventPlan?> onChanged;
+  final LocationCoordinate initialCenter;
+  final bool loadMapTiles;
 
   @override
   State<RouteEventPlanEditor> createState() => _RouteEventPlanEditorState();
@@ -36,6 +46,8 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
   static const _cadenceField = 'route-cadence';
   static const _stopsField = 'route-stops';
   static const _rolesField = 'route-roles';
+  static const _paceGroupsField = 'route-pace-groups';
+  static const _trackingField = 'route-live-tracking';
 
   final CatchFieldAccordion _accordion = CatchFieldAccordion();
 
@@ -213,12 +225,133 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   icon: CatchIcons.peopleOutline,
                   iconColor: accent,
                 ),
+                CatchFieldLanes.single(
+                  key: CreateEventFormKeys.routePath,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      CatchFieldContentRow(
+                        title: context.l10n.hostsRouteEventPlanPathTitle,
+                        body: plan.path.length >= 2
+                            ? context.l10n.hostsRouteEventPlanPathCount(
+                                count: plan.path.length,
+                              )
+                            : context.l10n.hostsRouteEventPlanPathEmpty,
+                      ),
+                      gapH8,
+                      CatchButton(
+                        label: context.l10n.hostsRouteEventPlanPathAction,
+                        variant: CatchButtonVariant.secondary,
+                        onPressed: () => _editPath(plan),
+                      ),
+                    ],
+                  ),
+                ),
+                CatchField.choices<_PacePreset>(
+                  key: CreateEventFormKeys.routePaceGroups,
+                  title: context.l10n.hostsRouteEventPlanPaceGroupsTitle,
+                  body: context.l10n.hostsRouteEventPlanPaceGroupsBody,
+                  contract: CatchContractConstraints
+                      .createEventCallablePayloadEventFormatActivityDetailsRoutePlanPaceGroups,
+                  contractValue: (value) => value.name,
+                  values: _PacePreset.values,
+                  itemLabel: (value) => _pacePresetLabel(context, value),
+                  selected: _selectedPacePresets(plan),
+                  multi: true,
+                  onSelectionChanged: (selection) => widget.onChanged(
+                    plan.copyWith(paceGroups: _paceGroupsFor(selection)),
+                  ),
+                  open: _accordion.isExpanded(_paceGroupsField),
+                  onOpenChanged: (open) => _setOpen(_paceGroupsField, open),
+                  icon: CatchIcons.speedOutlined,
+                  iconColor: accent,
+                ),
+                CatchField.choices<RouteLiveTrackingMode>(
+                  key: CreateEventFormKeys.routeLiveTracking,
+                  title: context.l10n.hostsRouteEventPlanTrackingTitle,
+                  body: context.l10n.hostsRouteEventPlanTrackingBody,
+                  contract: CatchContractConstraints
+                      .createEventCallablePayloadEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode,
+                  contractValue: (value) => value.name,
+                  values: RouteLiveTrackingMode.values,
+                  itemLabel: (value) => _trackingLabel(context, value),
+                  selected: {plan.liveTrackingPolicy.mode},
+                  onSelectionChanged: (selection) => widget.onChanged(
+                    plan.copyWith(
+                      liveTrackingPolicy: RouteLiveTrackingPolicy(
+                        mode: selection.single,
+                        staleAfterSeconds: 120,
+                        retentionMinutes: 60,
+                      ),
+                    ),
+                  ),
+                  open: _accordion.isExpanded(_trackingField),
+                  onOpenChanged: (open) => _setOpen(_trackingField, open),
+                  icon: CatchIcons.locationOnOutlined,
+                  iconColor: accent,
+                ),
               ],
             ),
           ),
       ],
     );
   }
+
+  Future<void> _editPath(RouteEventPlan plan) async {
+    final path = await Navigator.of(context).push<List<RoutePoint>>(
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (_) => RoutePathBuilderScreen(
+          initialCenter: widget.initialCenter,
+          initialPath: plan.path,
+          enableNetworkTiles: widget.loadMapTiles,
+        ),
+      ),
+    );
+    if (path != null) widget.onChanged(plan.copyWith(path: path));
+  }
+
+  Set<_PacePreset> _selectedPacePresets(RouteEventPlan plan) => plan.paceGroups
+      .map(
+        (group) => _PacePreset.values.where((value) => value.name == group.id),
+      )
+      .expand((values) => values)
+      .toSet();
+
+  List<RoutePaceGroup> _paceGroupsFor(Set<_PacePreset> selection) {
+    return _PacePreset.values
+        .where(selection.contains)
+        .map(
+          (value) => RoutePaceGroup(
+            id: value.name,
+            label: _pacePresetLabel(context, value),
+            sortOrder: value.index,
+            targetPaceSecondsPerKm: switch (value) {
+              _PacePreset.social => 450,
+              _PacePreset.steady => 360,
+              _PacePreset.fast => 300,
+            },
+          ),
+        )
+        .toList(growable: false);
+  }
+
+  String _pacePresetLabel(BuildContext context, _PacePreset value) =>
+      switch (value) {
+        _PacePreset.social => context.l10n.hostsRouteEventPlanPaceSocial,
+        _PacePreset.steady => context.l10n.hostsRouteEventPlanPaceSteady,
+        _PacePreset.fast => context.l10n.hostsRouteEventPlanPaceFast,
+      };
+
+  String _trackingLabel(BuildContext context, RouteLiveTrackingMode value) =>
+      switch (value) {
+        RouteLiveTrackingMode.disabled =>
+          context.l10n.hostsRouteEventPlanTrackingDisabled,
+        RouteLiveTrackingMode.hostOnly =>
+          context.l10n.hostsRouteEventPlanTrackingHostOnly,
+        RouteLiveTrackingMode.authorizedOperators =>
+          context.l10n.hostsRouteEventPlanTrackingOperators,
+      };
 
   String _movementLabel(BuildContext context, RouteMovementMode value) =>
       switch (value) {

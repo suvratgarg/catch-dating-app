@@ -204,6 +204,12 @@ export async function createEventHandler(
   );
   assertValidEventTimeRange(data.startTimeMillis, data.endTimeMillis);
   assertValidEventConstraints(data.constraints);
+  assertValidEventItinerary({
+    itinerary: data.itinerary,
+    startTimeMillis: data.startTimeMillis,
+    endTimeMillis: data.endTimeMillis,
+    eventFormat: data.eventFormat,
+  });
   if (data.externalOrigin && data.eventSuccessDefaults?.enabled !== true) {
     throw new HttpsError(
       "failed-precondition",
@@ -865,6 +871,7 @@ function buildCreateEventDoc(
     },
   }) : normalizedPolicy;
   return {
+    name: data.name.trim(),
     eventOrigin: data.externalOrigin ? {
       mode: "externalCompanion",
       bookingAuthority: "external",
@@ -910,6 +917,7 @@ function buildCreateEventDoc(
     startingPointLat: meetingLocation.latitude,
     startingPointLng: meetingLocation.longitude,
     locationDetails: meetingLocation.notes ?? null,
+    itinerary: normalizeEventItinerary(data.itinerary),
     photoUrl: primaryPhotoUrl(eventPhotos) ?? data.photoUrl ?? null,
     eventPhotos,
     eventFormat: normalizeEventFormat(
@@ -1524,6 +1532,7 @@ function buildUpdateEventPatch(
   deps: EventMutationDeps
 ): Partial<EventDocument> {
   const patch: Partial<EventDocument> = {};
+  if (fields.name !== undefined) patch.name = fields.name.trim();
   const meetingLocation = normalizeMeetingLocationForUpdate(event, fields);
   if (fields.startTimeMillis !== undefined) {
     patch.startTime = deps.timestampFromMillis(fields.startTimeMillis);
@@ -1536,6 +1545,9 @@ function buildUpdateEventPatch(
   patch.startingPointLat = meetingLocation.latitude;
   patch.startingPointLng = meetingLocation.longitude;
   patch.locationDetails = meetingLocation.notes ?? null;
+  if (fields.itinerary !== undefined) {
+    patch.itinerary = normalizeEventItinerary(fields.itinerary);
+  }
   if (fields.eventPhotos !== undefined) {
     const eventPhotos = normalizeUploadedPhotosForFirestore(fields.eventPhotos);
     patch.eventPhotos = eventPhotos;
@@ -1546,6 +1558,9 @@ function buildUpdateEventPatch(
   if (fields.distanceKm !== undefined) patch.distanceKm = fields.distanceKm;
   if (fields.pace !== undefined) patch.pace = fields.pace;
   if (fields.description !== undefined) patch.description = fields.description;
+  if (fields.eventFormat !== undefined) {
+    patch.eventFormat = normalizeEventFormat(fields.eventFormat);
+  }
   if (fields.publicRegistrationEnabled !== undefined) {
     patch.publicRegistrationEnabled = fields.publicRegistrationEnabled;
   }
@@ -1593,6 +1608,9 @@ function hasScheduleOrLocationChange(
 ): boolean {
   return fields.startTimeMillis !== undefined ||
     fields.endTimeMillis !== undefined ||
+    fields.name !== undefined ||
+    fields.itinerary !== undefined ||
+    fields.eventFormat !== undefined ||
     fields.meetingLocation !== undefined ||
     fields.meetingPoint !== undefined ||
     fields.startingPointLat !== undefined ||
@@ -1801,7 +1819,84 @@ function assertValidMergedRunUpdate(
     event.endTime.toMillis();
   assertValidEventTimeRange(startTimeMillis, endTimeMillis);
   normalizeMeetingLocationForUpdate(event, fields);
+  if (fields.eventFormat != null &&
+      (fields.eventFormat.activityKind !== event.eventFormat.activityKind ||
+       fields.eventFormat.interactionModel !==
+        event.eventFormat.interactionModel)) {
+    throw new HttpsError(
+      "invalid-argument",
+      "Event format updates may change route details but not activity kind."
+    );
+  }
+  assertValidEventItinerary({
+    itinerary: fields.itinerary ?? event.itinerary,
+    startTimeMillis,
+    endTimeMillis,
+    eventFormat: fields.eventFormat ?? event.eventFormat,
+  });
   assertStandalonePublicRegistrationPolicy(event, fields);
+}
+
+function normalizeEventItinerary(
+  itinerary: CreateEventCallablePayload["itinerary"] |
+    EventHostUpdateFields["itinerary"]
+): NonNullable<EventDocument["itinerary"]> {
+  return (itinerary ?? []).map((entry) => ({
+    id: entry.id.trim(),
+    kind: entry.kind,
+    offsetMinutes: entry.offsetMinutes,
+    durationMinutes: entry.durationMinutes ?? null,
+    title: entry.title.trim(),
+    description: entry.description?.trim() || null,
+    location: entry.location ? normalizeMeetingLocation(entry.location) : null,
+    routeDistanceMeters: entry.routeDistanceMeters ?? null,
+  }));
+}
+
+function assertValidEventItinerary(params: {
+  itinerary?: CreateEventCallablePayload["itinerary"] |
+    EventHostUpdateFields["itinerary"];
+  startTimeMillis: number;
+  endTimeMillis: number;
+  eventFormat?: EventFormatSnapshot | null;
+}): void {
+  const itinerary = params.itinerary ?? [];
+  const eventDurationMinutes = Math.ceil(
+    (params.endTimeMillis - params.startTimeMillis) / 60000
+  );
+  const ids = new Set<string>();
+  let previousOffset = -1;
+  const routePlan = params.eventFormat?.activityDetails?.routePlan;
+  const hasRoutePath = Array.isArray(routePlan?.path) &&
+    routePlan.path.length >= 2;
+  for (const entry of itinerary) {
+    if (ids.has(entry.id)) {
+      throw new HttpsError(
+        "invalid-argument",
+        "Event itinerary ids must be unique."
+      );
+    }
+    ids.add(entry.id);
+    if (entry.offsetMinutes < previousOffset) {
+      throw new HttpsError(
+        "invalid-argument",
+        "Event itinerary offsets must be in ascending order."
+      );
+    }
+    if (entry.offsetMinutes > eventDurationMinutes) {
+      throw new HttpsError(
+        "invalid-argument",
+        "Event itinerary entries must fit inside the event window."
+      );
+    }
+    if (entry.routeDistanceMeters != null && !hasRoutePath) {
+      throw new HttpsError(
+        "invalid-argument",
+        "Route distance requires a concrete route path."
+      );
+    }
+    previousOffset = entry.offsetMinutes;
+  }
 }
 
 function assertStandalonePublicRegistrationPolicy(

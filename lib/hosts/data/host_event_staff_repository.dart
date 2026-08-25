@@ -11,6 +11,7 @@ enum HostEventOperatorPermission {
   viewRoster,
   setAttendance,
   reviewRuntimeClaims,
+  publishLiveLocation,
 }
 
 enum HostEventOperatorRole { manager, operator }

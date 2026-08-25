@@ -1834,6 +1834,7 @@ abstract final class CatchMotion {
   static const Duration cinematicMedium = Duration(seconds: 6);
   static const Duration noticeAutoDismiss = Duration(seconds: 6);
   static const Duration formExportPoll = Duration(seconds: 5);
+  static const Duration liveLocationPublishThrottle = Duration(seconds: 5);
   static const Duration liveRevealClockTick = Duration(milliseconds: 250);
   static const Duration pulse = Duration(milliseconds: 700);
   static const Duration skeletonShimmer = Duration(milliseconds: 1200);

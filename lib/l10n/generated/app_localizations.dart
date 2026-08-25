@@ -3020,6 +3020,18 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (title).
   ///
   /// In en, this message translates to:
+  /// **'Event name'**
+  String get hostsEventDetailsStepTitleEventName;
+
+  /// Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (placeholder).
+  ///
+  /// In en, this message translates to:
+  /// **'Friday night social'**
+  String get hostsEventDetailsStepPlaceholderEventName;
+
+  /// Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (title).
+  ///
+  /// In en, this message translates to:
   /// **'Format name'**
   String get hostsEventDetailsStepTitleFormatName;
 
@@ -11746,32 +11758,6 @@ abstract class AppLocalizations {
   /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'Gather at {locationName}'**
-  String eventsEventDetailDesignPrimitivesTitleGatherAtLocationname({
-    required Object locationName,
-  });
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (detail).
-  ///
-  /// In en, this message translates to:
-  /// **'Quick hellos, host check-in, and the plan for the group.'**
-  String get eventsEventDetailDesignPrimitivesDetailQuickHellosHostCheck;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Wrap up'**
-  String get eventsEventDetailDesignPrimitivesTitleWrapUp;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (detail).
-  ///
-  /// In en, this message translates to:
-  /// **'Attendees can linger naturally; private follow-up unlocks after.'**
-  String get eventsEventDetailDesignPrimitivesDetailAttendeesCanLingerNaturally;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (title).
-  ///
-  /// In en, this message translates to:
   /// **'If it fills, a waitlist'**
   String get eventsEventDetailDesignPrimitivesTitleIfItFillsA;
 
@@ -11824,51 +11810,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The host shapes the format around the room and venue.'**
   String get eventsEventDetailDesignPrimitivesVisiblecopyTheHostShapesThe;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'{distanceKm} at a {toLowerCase} pace, with host-led regroup points.'**
-  String eventsEventDetailDesignPrimitivesVisiblecopyDistancekmAtATolowercase({
-    required Object distanceKm,
-    required Object toLowerCase,
-  });
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Paired or court-based rotations keep the activity moving and social.'**
-  String get eventsEventDetailDesignPrimitivesVisiblecopyPairedOrCourtBased;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Host-led teams and rotations create a clear rhythm for the group.'**
-  String get eventsEventDetailDesignPrimitivesVisiblecopyHostLedTeamsAnd;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'A table-led format with built-in prompts and host cues.'**
-  String get eventsEventDetailDesignPrimitivesVisiblecopyATableLedFormat;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'A looser mixer with host nudges when the room needs direction.'**
-  String get eventsEventDetailDesignPrimitivesVisiblecopyALooserMixerWith;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'A host-led activity with clear arrival, activity, and follow-up moments.'**
-  String get eventsEventDetailDesignPrimitivesVisiblecopyAHostLedActivity;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'The host adapts the format to the group and venue.'**
-  String get eventsEventDetailDesignPrimitivesVisiblecopyTheHostAdaptsThe;
 
   /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).
   ///
@@ -25506,6 +25447,358 @@ abstract class AppLocalizations {
   String hostEventRehearsalActionRevision({
     required String kind,
     required int revision,
+  });
+
+  /// Route path builder title.
+  ///
+  /// In en, this message translates to:
+  /// **'Build route'**
+  String get hostsRoutePathBuilderTitle;
+
+  /// Indexed route point map label.
+  ///
+  /// In en, this message translates to:
+  /// **'Route point {index}'**
+  String hostsRoutePathBuilderPoint({required int index});
+
+  /// Empty route builder guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the map to add the first route point.'**
+  String get hostsRoutePathBuilderEmpty;
+
+  /// Route builder point count guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} route points · tap the map to keep drawing'**
+  String hostsRoutePathBuilderCount({required int count});
+
+  /// Undo the latest route point.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo point'**
+  String get hostsRoutePathBuilderUndo;
+
+  /// Clear all route points.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get hostsRoutePathBuilderClear;
+
+  /// Save route path action.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this route'**
+  String get hostsRoutePathBuilderSave;
+
+  /// Route path field title.
+  ///
+  /// In en, this message translates to:
+  /// **'Route path'**
+  String get hostsRouteEventPlanPathTitle;
+
+  /// Empty route path guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Draw the attendee-facing path on the map.'**
+  String get hostsRouteEventPlanPathEmpty;
+
+  /// Mapped route point count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} mapped points'**
+  String hostsRouteEventPlanPathCount({required int count});
+
+  /// Open route builder action.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit map'**
+  String get hostsRouteEventPlanPathAction;
+
+  /// Pace group field title.
+  ///
+  /// In en, this message translates to:
+  /// **'Pace groups'**
+  String get hostsRouteEventPlanPaceGroupsTitle;
+
+  /// Pace group field guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Select every group the Host will lead and account for.'**
+  String get hostsRouteEventPlanPaceGroupsBody;
+
+  /// Social pace group preset.
+  ///
+  /// In en, this message translates to:
+  /// **'Social · 7:30/km'**
+  String get hostsRouteEventPlanPaceSocial;
+
+  /// Steady pace group preset.
+  ///
+  /// In en, this message translates to:
+  /// **'Steady · 6:00/km'**
+  String get hostsRouteEventPlanPaceSteady;
+
+  /// Fast pace group preset.
+  ///
+  /// In en, this message translates to:
+  /// **'Fast · 5:00/km'**
+  String get hostsRouteEventPlanPaceFast;
+
+  /// Live route tracking field title.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Host position'**
+  String get hostsRouteEventPlanTrackingTitle;
+
+  /// Live route tracking privacy guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Foreground-only sharing during the event helps late arrivals find the moving group.'**
+  String get hostsRouteEventPlanTrackingBody;
+
+  /// Disabled route tracking choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get hostsRouteEventPlanTrackingDisabled;
+
+  /// Host-only route tracking choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Host only'**
+  String get hostsRouteEventPlanTrackingHostOnly;
+
+  /// Authorized operator route tracking choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Host and authorized operators'**
+  String get hostsRouteEventPlanTrackingOperators;
+
+  /// Event itinerary editor section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Run of show'**
+  String get hostsEventItineraryTitle;
+
+  /// Itinerary relative start time.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts {minutes} minutes after the event begins'**
+  String hostsEventItineraryOffset({required int minutes});
+
+  /// Edit itinerary entry action.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get hostsEventItineraryEdit;
+
+  /// Add itinerary entry title.
+  ///
+  /// In en, this message translates to:
+  /// **'Add itinerary step'**
+  String get hostsEventItineraryAdd;
+
+  /// Add itinerary entry guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish real timing, stops, transitions, and locations for attendees.'**
+  String get hostsEventItineraryAddBody;
+
+  /// Add itinerary entry action.
+  ///
+  /// In en, this message translates to:
+  /// **'Add step'**
+  String get hostsEventItineraryAddAction;
+
+  /// New itinerary entry dialog title.
+  ///
+  /// In en, this message translates to:
+  /// **'Add run-of-show step'**
+  String get hostsEventItineraryDialogAdd;
+
+  /// Existing itinerary entry dialog title.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit run-of-show step'**
+  String get hostsEventItineraryDialogEdit;
+
+  /// Delete itinerary entry action.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get hostsEventItineraryDelete;
+
+  /// Save itinerary entry action.
+  ///
+  /// In en, this message translates to:
+  /// **'Save step'**
+  String get hostsEventItinerarySave;
+
+  /// Itinerary entry title field.
+  ///
+  /// In en, this message translates to:
+  /// **'Step title'**
+  String get hostsEventItineraryFieldTitle;
+
+  /// Itinerary entry title hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Gather, activity, stop, or finish'**
+  String get hostsEventItineraryFieldTitleHint;
+
+  /// Itinerary offset field.
+  ///
+  /// In en, this message translates to:
+  /// **'Minutes after start'**
+  String get hostsEventItineraryFieldOffset;
+
+  /// Itinerary duration field.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration in minutes'**
+  String get hostsEventItineraryFieldDuration;
+
+  /// Itinerary guidance field.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendee guidance'**
+  String get hostsEventItineraryFieldDescription;
+
+  /// Itinerary entry kind field.
+  ///
+  /// In en, this message translates to:
+  /// **'Step type'**
+  String get hostsEventItineraryFieldKind;
+
+  /// Copies meeting location into itinerary entry.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the event meeting point'**
+  String get hostsEventItineraryUseMeetingPoint;
+
+  /// Optional exact location field for an itinerary entry.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop location'**
+  String get hostsEventItineraryLocationTitle;
+
+  /// Empty optional itinerary location value.
+  ///
+  /// In en, this message translates to:
+  /// **'No exact location'**
+  String get hostsEventItineraryLocationEmpty;
+
+  /// Choose an itinerary location action.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose'**
+  String get hostsEventItineraryLocationChoose;
+
+  /// Change an itinerary location action.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get hostsEventItineraryLocationChange;
+
+  /// Remove an itinerary location action.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove stop location'**
+  String get hostsEventItineraryLocationRemove;
+
+  /// Gather itinerary kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Gather'**
+  String get hostsEventItineraryKindGather;
+
+  /// Activity itinerary kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get hostsEventItineraryKindActivity;
+
+  /// Stop itinerary kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get hostsEventItineraryKindStop;
+
+  /// Break itinerary kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Break'**
+  String get hostsEventItineraryKindBreak;
+
+  /// Transition itinerary kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Transition'**
+  String get hostsEventItineraryKindTransition;
+
+  /// Finish itinerary kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish'**
+  String get hostsEventItineraryKindFinish;
+
+  /// Host live position toggle title.
+  ///
+  /// In en, this message translates to:
+  /// **'Share the moving group'**
+  String get hostEventLiveLocationTitle;
+
+  /// Host live position toggle guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this phone\'\'s location so late arrivals can find the route lead.'**
+  String get hostEventLiveLocationBody;
+
+  /// Host live position privacy guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Off by default. Sharing runs only while Catch is in the foreground.'**
+  String get hostEventLiveLocationPrivacy;
+
+  /// Host live position active status.
+  ///
+  /// In en, this message translates to:
+  /// **'Live now. Leaving the app or switching this off removes your position.'**
+  String get hostEventLiveLocationActive;
+
+  /// Host live position permission error.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission is required to share the moving group.'**
+  String get hostEventLiveLocationPermissionDenied;
+
+  /// Host live position services error.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on device location services, then try again.'**
+  String get hostEventLiveLocationServicesDisabled;
+
+  /// Host live position generic error.
+  ///
+  /// In en, this message translates to:
+  /// **'Live location could not be updated. Switch it off and try again.'**
+  String get hostEventLiveLocationFailed;
+
+  /// Rehearsal movement snapshot title.
+  ///
+  /// In en, this message translates to:
+  /// **'Movement simulation'**
+  String get hostEventRehearsalMovementTitle;
+
+  /// Rehearsal movement snapshot summary.
+  ///
+  /// In en, this message translates to:
+  /// **'{itineraryCount} itinerary steps · {routePointCount} route points · {positionCount} synthetic live positions'**
+  String hostEventRehearsalMovementSummary({
+    required int itineraryCount,
+    required int routePointCount,
+    required int positionCount,
   });
 }
 

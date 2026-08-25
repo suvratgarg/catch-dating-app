@@ -22,6 +22,7 @@ CreateEventCallableRequest createEventCallableRequestFromEvent(
   final meetingLocation = effectiveMeetingLocation.normalized();
   return CreateEventCallableRequest(
     eventId: event.id,
+    name: event.name.trim(),
     clubId: event.clubId,
     organizerId: event.organizerId,
     startTimeMillis: event.startTime.millisecondsSinceEpoch,
@@ -31,6 +32,9 @@ CreateEventCallableRequest createEventCallableRequestFromEvent(
     startingPointLat: meetingLocation.latitude,
     startingPointLng: meetingLocation.longitude,
     locationDetails: meetingLocation.notes,
+    itinerary: event.itinerary
+        .map((entry) => entry.toJson().cast<String, Object?>())
+        .toList(growable: false),
     photoUrl: event.photoUrl,
     distanceKm: event.distanceKm,
     pace: event.pace.name,
@@ -61,6 +65,7 @@ UpdateEventCallableRequest updateEventCallableRequestFromEvent(
   }
   final meetingLocation = effectiveMeetingLocation.normalized();
   final fields = <String, Object?>{
+    'name': event.name.trim(),
     'startTimeMillis': event.startTime.millisecondsSinceEpoch,
     'endTimeMillis': event.endTime.millisecondsSinceEpoch,
     'meetingPoint': meetingLocation.name,
@@ -68,12 +73,14 @@ UpdateEventCallableRequest updateEventCallableRequestFromEvent(
     'startingPointLat': meetingLocation.latitude,
     'startingPointLng': meetingLocation.longitude,
     'locationDetails': meetingLocation.notes,
+    'itinerary': event.itinerary.map((entry) => entry.toJson()).toList(),
     'photoUrl': event.photoUrl,
     if (event.eventPhotos.isNotEmpty)
       'eventPhotos': event.eventPhotos.map((photo) => photo.toJson()).toList(),
     'distanceKm': event.distanceKm,
     'pace': event.pace.name,
     'description': event.description,
+    'eventFormat': event.eventFormat.toJson(),
   };
   if (includePolicy) {
     fields.addAll({

@@ -99,6 +99,7 @@ void main() {
         final submittedEvent = await container
             .read(createEventControllerProvider.notifier)
             .submit(
+              name: 'Test event',
               clubId: '  club-7  ',
               startTime: DateTime(2025, 3, 1, 6),
               endTime: DateTime(2025, 3, 1, 7, 15),
@@ -126,6 +127,7 @@ void main() {
         final createdEvent = fakeEventRepository.createdEvent;
         expect(createdEvent, isNotNull);
         expect(createdEvent!.id, 'generated-7');
+        expect(createdEvent.name, 'Test event');
         expect(fakeImageUploadRepository.uploadedEventId, 'generated-7');
         expect(fakeImageUploadRepository.uploadedPosition, 0);
         expect(fakeImageUploadRepository.uploadedImage, photo);
@@ -192,6 +194,7 @@ void main() {
       final submittedEvent = await container
           .read(createEventControllerProvider.notifier)
           .submit(
+            name: 'Test event',
             clubId: 'club-7',
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
@@ -245,6 +248,7 @@ void main() {
         container
             .read(createEventControllerProvider.notifier)
             .submit(
+              name: 'Test event',
               clubId: 'club-7',
               startTime: DateTime(2025, 3, 1, 6),
               endTime: DateTime(2025, 3, 1, 7),
@@ -281,6 +285,7 @@ void main() {
       await container
           .read(createEventControllerProvider.notifier)
           .submit(
+            name: 'Test event',
             clubId: 'club-1',
             startTime: DateTime(2025, 3, 1, 18),
             endTime: DateTime(2025, 3, 1, 20),
@@ -321,6 +326,7 @@ void main() {
       await container
           .read(createEventControllerProvider.notifier)
           .submit(
+            name: 'Test event',
             clubId: 'club-1',
             startTime: DateTime(2026, 8, 20, 18),
             endTime: DateTime(2026, 8, 20, 20),
@@ -373,6 +379,7 @@ void main() {
         await container
             .read(createEventControllerProvider.notifier)
             .submit(
+              name: 'Test event',
               clubId: 'club-1',
               startTime: DateTime(2025, 3, 1, 18),
               endTime: DateTime(2025, 3, 1, 20),
@@ -416,6 +423,7 @@ void main() {
       await container
           .read(createEventControllerProvider.notifier)
           .submit(
+            name: 'Test event',
             clubId: 'club-1',
             startTime: DateTime(2025, 3, 1, 18),
             endTime: DateTime(2025, 3, 1, 20),
@@ -450,6 +458,7 @@ void main() {
       await container
           .read(createEventControllerProvider.notifier)
           .submit(
+            name: 'Test event',
             clubId: 'club-1',
             startTime: DateTime(2025, 3, 1, 18),
             endTime: DateTime(2025, 3, 1, 20),
@@ -493,6 +502,7 @@ void main() {
 
         await expectLater(
           () => controller.submit(
+            name: 'Test event',
             clubId: '',
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
@@ -510,6 +520,7 @@ void main() {
 
         await expectLater(
           () => controller.submit(
+            name: 'Test event',
             clubId: 'club-1',
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
@@ -527,6 +538,7 @@ void main() {
 
         await expectLater(
           () => controller.submit(
+            name: 'Test event',
             clubId: 'club-1',
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 6),
@@ -544,6 +556,7 @@ void main() {
 
         await expectLater(
           () => controller.submit(
+            name: 'Test event',
             clubId: 'club-1',
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
@@ -561,6 +574,7 @@ void main() {
 
         await expectLater(
           () => controller.submit(
+            name: 'Test event',
             clubId: 'club-1',
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
@@ -578,6 +592,7 @@ void main() {
 
         await expectLater(
           () => controller.submit(
+            name: 'Test event',
             clubId: 'club-1',
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
@@ -595,6 +610,7 @@ void main() {
 
         await expectLater(
           () => controller.submit(
+            name: 'Test event',
             clubId: 'club-1',
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
@@ -612,6 +628,7 @@ void main() {
 
         await expectLater(
           () => controller.submit(
+            name: 'Test event',
             clubId: 'club-1',
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
@@ -629,6 +646,7 @@ void main() {
 
         await expectLater(
           () => controller.submit(
+            name: 'Test event',
             clubId: 'club-1',
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),

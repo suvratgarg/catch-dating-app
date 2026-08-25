@@ -1,0 +1,15 @@
+{
+  "eventId": "event-1",
+  "clubId": "club-1",
+  "organizerId": "club-1",
+  "uid": "host-1",
+  "role": "host",
+  "latitude": 19.076,
+  "longitude": 72.8777,
+  "accuracyMeters": 8.5,
+  "headingDegrees": 91,
+  "recordedAt": {"_seconds": 1786626000, "_nanoseconds": 0},
+  "expiresAt": {"_seconds": 1786629600, "_nanoseconds": 0},
+  "createdAt": {"_seconds": 1786626000, "_nanoseconds": 0},
+  "updatedAt": {"_seconds": 1786626000, "_nanoseconds": 0}
+}

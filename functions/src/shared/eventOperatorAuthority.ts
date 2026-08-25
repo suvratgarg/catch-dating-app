@@ -16,6 +16,7 @@ export const eventOperatorPermissions: EventOperatorPermission[] = [
   "viewRoster",
   "setAttendance",
   "reviewRuntimeClaims",
+  "publishLiveLocation",
 ];
 
 export function eventStaffGrantId(eventId: string, uid: string): string {

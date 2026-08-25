@@ -1010,6 +1010,24 @@
       ]
     },
     {
+      "id": "eventLivePositions",
+      "path": "eventLivePositions/{positionId}",
+      "rulesMatch": "/eventLivePositions/{positionId}",
+      "typescriptInterface": "EventLivePositionDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "Event live-position callable",
+      "read": "server only; the public runtime receives fresh positions without account identifiers",
+      "write": "server only",
+      "exportedFunctions": [
+        "publishEventLivePosition",
+        "getEventRuntimeBootstrap"
+      ],
+      "migrationNotes": [
+        "Only event Hosts and authorized operators can publish, attendee positions are never collected, and expired positions are excluded from the public projection."
+      ]
+    },
+    {
       "id": "eventSuccessLateArrivals",
       "path": "eventSuccessLateArrivals/{resolutionId}",
       "rulesMatch": "/eventSuccessLateArrivals/{resolutionId}",

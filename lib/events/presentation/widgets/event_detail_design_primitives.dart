@@ -10,9 +10,11 @@ import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/locations/shared/catch_google_map.dart';
 import 'package:catch_dating_app/locations/shared/catch_map_preview.dart';
 import 'package:flutter/material.dart';
 
@@ -143,7 +145,7 @@ class EventDetailItinerary extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final activity = ActivityPalette.resolve(context, event.activityKind);
-    final steps = _itineraryFor(event, context.l10n);
+    final steps = _itineraryFor(event);
 
     return Column(
       children: [
@@ -186,6 +188,26 @@ class EventDetailMapCard extends StatelessWidget {
       longitude: event.effectiveStartingPointLng,
     );
     final canOpen = coordinate != null && onTap != null;
+    final routePath =
+        event.eventFormat.routePlan?.path
+            .map((point) => LocationCoordinate(point.latitude, point.longitude))
+            .toList(growable: false) ??
+        const <LocationCoordinate>[];
+    final itineraryMarkers = event.itinerary
+        .where((item) => item.location != null)
+        .map(
+          (item) => CatchMapMarker(
+            id: 'event-itinerary-${item.id}',
+            position: LocationCoordinate(
+              item.location!.latitude,
+              item.location!.longitude,
+            ),
+            hue: CatchMapMarkerHue.azure,
+            infoTitle: item.title,
+            infoSnippet: item.location!.name,
+          ),
+        )
+        .toList(growable: false);
     final trailingLabel =
         context.l10n.eventsEventDetailDesignPrimitivesActionViewMap;
 
@@ -211,6 +233,8 @@ class EventDetailMapCard extends StatelessWidget {
                   Expanded(
                     child: CatchMapPreview(
                       coordinate: coordinate,
+                      path: routePath,
+                      markers: itineraryMarkers,
                       fallbackLabel:
                           context.l10n.eventsEventPinsMapLabelEventMapPreview,
                       enableNetworkTiles: enableNetworkTiles,
@@ -668,15 +692,11 @@ class HairlineList extends StatelessWidget {
 }
 
 class ItineraryStep {
-  const ItineraryStep({
-    required this.time,
-    required this.title,
-    required this.detail,
-  });
+  const ItineraryStep({required this.time, required this.title, this.detail});
 
   final String time;
   final String title;
-  final String detail;
+  final String? detail;
 }
 
 class ItineraryRow extends StatelessWidget {
@@ -764,14 +784,16 @@ class ItineraryRow extends StatelessWidget {
                       color: titleColor,
                     ),
                   ),
-                  const SizedBox(height: CatchSpacing.micro2),
-                  Text(
-                    step.detail,
-                    style: CatchTextStyles.supporting(
-                      context,
-                      color: detailColor,
+                  if (step.detail case final detail?) ...[
+                    const SizedBox(height: CatchSpacing.micro2),
+                    Text(
+                      detail,
+                      style: CatchTextStyles.supporting(
+                        context,
+                        color: detailColor,
+                      ),
                     ),
-                  ),
+                  ],
                 ],
               ),
             ),
@@ -867,28 +889,26 @@ List<String> _hintsFor(Event event, AppLocalizations l10n) {
   ];
 }
 
-List<ItineraryStep> _itineraryFor(Event event, AppLocalizations l10n) {
-  final warmupTime = event.startTime.add(const Duration(minutes: 15));
-  return [
-    ItineraryStep(
-      time: EventFormatters.time(event.startTime),
-      title: l10n.eventsEventDetailDesignPrimitivesTitleGatherAtLocationname(
-        locationName: event.locationName,
-      ),
-      detail: l10n.eventsEventDetailDesignPrimitivesDetailQuickHellosHostCheck,
-    ),
-    ItineraryStep(
-      time: EventFormatters.time(warmupTime),
-      title: event.eventFormat.label,
-      detail: _activityPlanDetail(event, l10n),
-    ),
-    ItineraryStep(
-      time: EventFormatters.time(event.endTime),
-      title: l10n.eventsEventDetailDesignPrimitivesTitleWrapUp,
-      detail: l10n
-          .eventsEventDetailDesignPrimitivesDetailAttendeesCanLingerNaturally,
-    ),
+List<ItineraryStep> _itineraryFor(Event event) {
+  return event.itinerary
+      .map(
+        (entry) => ItineraryStep(
+          time: EventFormatters.time(entry.startsAt(event.startTime)),
+          title: entry.title,
+          detail: _itineraryDetail(entry.description, entry.location?.name),
+        ),
+      )
+      .toList(growable: false);
+}
+
+String? _itineraryDetail(String? description, String? locationName) {
+  final location = locationName?.trim();
+  final detail = description?.trim();
+  final parts = <String>[
+    if (location != null && location.isNotEmpty) location,
+    if (detail != null && detail.isNotEmpty) detail,
   ];
+  return parts.isEmpty ? null : parts.join(' · ');
 }
 
 String _interactionHint(EventInteractionModel model, AppLocalizations l10n) {
@@ -907,28 +927,6 @@ String _interactionHint(EventInteractionModel model, AppLocalizations l10n) {
       l10n.eventsEventDetailDesignPrimitivesVisiblecopyTheHostRunsThe,
     EventInteractionModel.openFormat =>
       l10n.eventsEventDetailDesignPrimitivesVisiblecopyTheHostShapesThe,
-  };
-}
-
-String _activityPlanDetail(Event event, AppLocalizations l10n) {
-  return switch (event.eventFormat.interactionModel) {
-    EventInteractionModel.pacePods =>
-      l10n.eventsEventDetailDesignPrimitivesVisiblecopyDistancekmAtATolowercase(
-        distanceKm: EventFormatters.distanceKm(event.distanceKm),
-        toLowerCase: event.pace.label.toLowerCase(),
-      ),
-    EventInteractionModel.pairedRotations =>
-      l10n.eventsEventDetailDesignPrimitivesVisiblecopyPairedOrCourtBased,
-    EventInteractionModel.teamRotations =>
-      l10n.eventsEventDetailDesignPrimitivesVisiblecopyHostLedTeamsAnd,
-    EventInteractionModel.seatedTable =>
-      l10n.eventsEventDetailDesignPrimitivesVisiblecopyATableLedFormat,
-    EventInteractionModel.freeFormMixer =>
-      l10n.eventsEventDetailDesignPrimitivesVisiblecopyALooserMixerWith,
-    EventInteractionModel.hostLedProgram =>
-      l10n.eventsEventDetailDesignPrimitivesVisiblecopyAHostLedActivity,
-    EventInteractionModel.openFormat =>
-      l10n.eventsEventDetailDesignPrimitivesVisiblecopyTheHostAdaptsThe,
   };
 }
 

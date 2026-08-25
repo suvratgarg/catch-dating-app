@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/business_rules.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
+import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -16,6 +17,7 @@ abstract class EventDraft with _$EventDraft {
     required String clubId,
     required DateTime savedAt,
     // Event Details step
+    String? name,
     String? distance,
     String? capacity,
     String? price,
@@ -33,6 +35,7 @@ abstract class EventDraft with _$EventDraft {
     String? interactionModel,
     String? paceName,
     Map<String, dynamic>? routePlan,
+    @Default([]) List<EventItineraryItem> itinerary,
     // Where step
     String? meetingPoint,
     String? locationDetails,
@@ -76,6 +79,7 @@ abstract class EventDraft with _$EventDraft {
 
 extension EventDraftX on EventDraft {
   bool get isEmpty =>
+      name == null &&
       distance == null &&
       capacity == null &&
       price == null &&
@@ -93,6 +97,7 @@ extension EventDraftX on EventDraft {
       interactionModel == null &&
       paceName == null &&
       _routePlanIsDefault &&
+      itinerary.isEmpty &&
       meetingPoint == null &&
       locationDetails == null &&
       meetingLocationAddress == null &&
@@ -129,6 +134,7 @@ extension EventDraftX on EventDraft {
 
   String get summary {
     final parts = <String>[];
+    if (name != null) parts.add(name!);
     if (distance != null) {
       var distPart = '${distance!}km';
       if (paceName != null) distPart += ' $paceName';

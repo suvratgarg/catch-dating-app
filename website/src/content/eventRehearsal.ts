@@ -13,6 +13,16 @@ export const eventRehearsalCopy = {
   completeKicker: "Practice complete",
   locationSeparator: " · ",
   virtualTimePrefix: "Virtual time",
+  runOfShowTitle: "Practice run of show",
+  routeTitle: "Synthetic movement guidance",
+  itineraryOffset: (minutes: number) => `+${minutes} min`,
+  routePoints: (count: number) =>
+    `${count} saved route ${count === 1 ? "point" : "points"}`,
+  routeMapLabel: "Saved practice route and synthetic operator position",
+  routeMapHelp:
+    "Practice schematic · This position is deterministic synthetic data.",
+  trackerRole: (role: "host" | "operator") =>
+    role === "host" ? "Synthetic Host" : "Synthetic route operator",
   promptTitle: "Your practice prompt",
   actionsTitle: "Try the guest controls",
   actionsBody:

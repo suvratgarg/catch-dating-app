@@ -82,6 +82,7 @@ _Event _$EventFromJson(Map<String, dynamic> json) => _Event(
   synthetic: json['synthetic'] as bool? ?? false,
   seedPrefix: json['seedPrefix'] as String?,
   clubId: _readOrganizerId(json, 'organizerId') as String,
+  name: json['name'] as String? ?? '',
   startTime: const TimestampConverter().fromJson(json['startTime']),
   endTime: const TimestampConverter().fromJson(json['endTime']),
   meetingPoint: json['meetingPoint'] as String,
@@ -93,6 +94,11 @@ _Event _$EventFromJson(Map<String, dynamic> json) => _Event(
   startingPointLat: (json['startingPointLat'] as num?)?.toDouble(),
   startingPointLng: (json['startingPointLng'] as num?)?.toDouble(),
   locationDetails: json['locationDetails'] as String?,
+  itinerary:
+      (json['itinerary'] as List<dynamic>?)
+          ?.map((e) => EventItineraryItem.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
   photoUrl: json['photoUrl'] as String?,
   eventPhotos:
       (json['eventPhotos'] as List<dynamic>?)
@@ -164,6 +170,7 @@ _Event _$EventFromJson(Map<String, dynamic> json) => _Event(
 
 Map<String, dynamic> _$EventToJson(_Event instance) => <String, dynamic>{
   'organizerId': instance.clubId,
+  'name': instance.name,
   'startTime': const TimestampConverter().toJson(instance.startTime),
   'endTime': const TimestampConverter().toJson(instance.endTime),
   'meetingPoint': instance.meetingPoint,
@@ -171,6 +178,7 @@ Map<String, dynamic> _$EventToJson(_Event instance) => <String, dynamic>{
   'startingPointLat': instance.startingPointLat,
   'startingPointLng': instance.startingPointLng,
   'locationDetails': instance.locationDetails,
+  'itinerary': instance.itinerary.map((e) => e.toJson()).toList(),
   'photoUrl': ?instance.photoUrl,
   'eventPhotos': instance.eventPhotos.map((e) => e.toJson()).toList(),
   'eventFormat': instance.eventFormat.toJson(),

@@ -1,5 +1,6 @@
 {
   "clubId": "club-1",
+  "name": "Sunrise Social 5K",
   "startTime": {
     "_seconds": 1778889600,
     "_nanoseconds": 0
@@ -20,6 +21,21 @@
   "startingPointLat": 22.7196,
   "startingPointLng": 75.8577,
   "locationDetails": "Meet near the main gate.",
+  "itinerary": [
+    {
+      "id": "gather",
+      "kind": "gather",
+      "offsetMinutes": 0,
+      "durationMinutes": 15,
+      "title": "Gather at the main gate"
+    },
+    {
+      "id": "run",
+      "kind": "activity",
+      "offsetMinutes": 15,
+      "title": "Social 5K"
+    }
+  ],
   "eventFormat": {
     "version": 1,
     "activityKind": "socialRun",

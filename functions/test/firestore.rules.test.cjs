@@ -1331,6 +1331,38 @@ describe("firestore.rules", () => {
       }
     });
 
+    it("keeps live operator positions server-only", async () => {
+      const position = {
+        eventId: "event-1",
+        clubId: "club-1",
+        organizerId: "club-1",
+        uid: "host-1",
+        role: "host",
+        latitude: 19.076,
+        longitude: 72.8777,
+        accuracyMeters: 8,
+        headingDegrees: 90,
+        recordedAt: Timestamp.now(),
+        expiresAt: Timestamp.fromMillis(Date.now() + 60_000),
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
+      };
+      await seed(["eventLivePositions", "event-1__host-1"], position);
+
+      for (const uid of ["host-1", "operator-1", "runner-1"]) {
+        await assertFails(getDoc(doc(
+          authedDb(uid),
+          "eventLivePositions",
+          "event-1__host-1",
+        )));
+        await assertFails(setDoc(doc(
+          authedDb(uid),
+          "eventLivePositions",
+          `event-1__${uid}`,
+        ), {...position, uid}));
+      }
+    });
+
     it("keeps runtime identity owner-private and claim review host-only", async () => {
       await seed(["organizers", "club-1"], club());
       await seed(["events", "event-1"], event());

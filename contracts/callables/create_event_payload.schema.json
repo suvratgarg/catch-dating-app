@@ -7,6 +7,7 @@
   "additionalProperties": false,
   "required": [
     "organizerId",
+    "name",
     "startTimeMillis",
     "endTimeMillis",
     "meetingPoint",
@@ -21,6 +22,7 @@
   ],
   "properties": {
     "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "name": {"type": "string", "minLength": 1, "maxLength": 120},
     "organizerId": {
       "$ref": "../shared/event_common.schema.json#/definitions/documentId"
     },
@@ -37,6 +39,13 @@
     "startingPointLat": {"type": "number", "minimum": -90, "maximum": 90},
     "startingPointLng": {"type": "number", "minimum": -180, "maximum": 180},
     "locationDetails": {"type": ["string", "null"], "maxLength": 1000},
+    "itinerary": {
+      "type": "array",
+      "maxItems": 40,
+      "items": {
+        "$ref": "../shared/event_common.schema.json#/definitions/eventItineraryItem"
+      }
+    },
     "photoUrl": {"$ref": "../shared/event_common.schema.json#/definitions/urlOrNull"},
     "eventPhotos": {
       "type": "array",

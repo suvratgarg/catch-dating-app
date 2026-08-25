@@ -7,6 +7,8 @@ import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehears
 import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_link_and_run.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_simulator.dart';
+import 'package:catch_dating_app/events/domain/event_itinerary.dart';
+import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -57,6 +59,9 @@ void main() {
     await tester.pump();
 
     expect(find.text('Dress rehearsal'), findsWidgets);
+    expect(find.text('Movement simulation'), findsOneWidget);
+    expect(find.textContaining('1 itinerary steps'), findsOneWidget);
+    expect(find.text('Meet the group at Courtyard stop.'), findsOneWidget);
     expect(find.text('Live guest phone'), findsOneWidget);
     expect(find.textContaining('anonymous synthetic guest'), findsOneWidget);
     expect(tester.takeException(), isNull);
@@ -142,6 +147,44 @@ EventRehearsalBootstrap _bootstrap({
       hostGoal: 'Learn the live flow',
       attendeePrompt: 'Say hello to someone new',
       modules: [EventRehearsalModule.arrival, EventRehearsalModule.firstHello],
+      movementSimulation: EventRehearsalMovementSimulation(
+        itinerary: [
+          EventItineraryItem(
+            id: 'stop-1',
+            kind: EventItineraryKind.stop,
+            offsetMinutes: 30,
+            durationMinutes: 20,
+            title: 'Courtyard stop',
+          ),
+        ],
+        routePlan: RouteEventPlan(
+          version: 2,
+          movementMode: RouteMovementMode.walk,
+          routeShape: RouteShape.pointToPoint,
+          groupStrategy: RouteGroupStrategy.together,
+          stopCadence: RouteStopCadence.hostedStops,
+          stopKinds: [RouteStopKind.venue],
+          roleKinds: [RouteRoleKind.routeLead],
+          path: [
+            RoutePoint(latitude: 12.9716, longitude: 77.5946),
+            RoutePoint(latitude: 12.975, longitude: 77.6),
+          ],
+          liveTrackingPolicy: RouteLiveTrackingPolicy(
+            mode: RouteLiveTrackingMode.hostOnly,
+            staleAfterSeconds: 120,
+            retentionMinutes: 60,
+          ),
+        ),
+        livePositions: [
+          EventRehearsalLivePosition(
+            role: 'host',
+            latitude: 12.972,
+            longitude: 77.595,
+            recordedOffsetMinutes: 15,
+          ),
+        ],
+        lateArrivalGuidance: 'Meet the group at Courtyard stop.',
+      ),
     ),
     setupRevision: 1,
     runtimeRevision: 2,

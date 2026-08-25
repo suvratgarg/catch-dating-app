@@ -169,7 +169,13 @@ export async function updateEventRehearsalSetupHandler(
       actorDocumentId(data.sessionId, actor.actorId)
     ));
     tx.update(sessionRef, {
-      setup: data.setup,
+      setup: {
+        ...data.setup,
+        ...(session.setup.movementSimulation &&
+            !data.setup.movementSimulation ? {
+            movementSimulation: session.setup.movementSimulation,
+          } : {}),
+      },
       scenarioId: data.scenarioId,
       actorCount: data.actorCount,
       setupRevision: session.setupRevision + 1,
@@ -535,7 +541,7 @@ export async function getEventRehearsalGuestBootstrapHandler(
   await db.collection(guestViews).doc(
     guestViewDocumentId(resolved.id, view.slotId)
   ).update({lastSeenAt: admin.firestore.Timestamp.now()});
-  return guestProjection(
+  return rehearsalGuestProjection(
     resolved.session,
     requireDoc<EventRehearsalActorDocument>(
       actorSnap,
@@ -639,7 +645,7 @@ export async function submitEventRehearsalGuestActionHandler(
   }
   const actorSnap = await db.collection(actors)
     .doc(actorDocumentId(resolved.id, actorId)).get();
-  return guestProjection(
+  return rehearsalGuestProjection(
     latest,
     requireDoc<EventRehearsalActorDocument>(
       actorSnap,
@@ -867,26 +873,77 @@ async function sourceSetup(
       (event.endTime.toMillis() - event.startTime.toMillis()) / 60000
     ))
   );
+  const setup = rehearsalSetupFromEvent(event);
   return {
     clubId: event.clubId,
-    revision: `${event.startTime.toMillis()}:${event.endTime.toMillis()}`,
-    setup: {
-      title: `${activityLabel(event.discoveryActivityKind)} dress rehearsal`,
-      locationName: event.meetingPoint || event.meetingLocation.name,
-      durationMinutes,
-      hostGoal: "Help every guest understand what happens next.",
-      attendeePrompt: "Introduce yourself to someone you have not met yet.",
-      moduleIds: [
-        "arrival",
-        "firstHello",
-        "pods",
-        "rotations",
-        "conversationCues",
-        "reveal",
-        "afterglow",
-        "accountability",
-      ],
-    },
+    revision: sha256(JSON.stringify({
+      name: event.name ?? null,
+      startTimeMillis: event.startTime.toMillis(),
+      endTimeMillis: event.endTime.toMillis(),
+      meetingLocation: event.meetingLocation,
+      itinerary: event.itinerary ?? [],
+      routePlan: event.eventFormat.activityDetails?.routePlan ?? null,
+    })).slice(0, 32),
+    setup: {...setup, durationMinutes},
+  };
+}
+
+/** Builds a frozen rehearsal snapshot with synthetic movement only. */
+export function rehearsalSetupFromEvent(event: EventDocument): RehearsalSetup {
+  const routePlan = event.eventFormat.activityDetails?.routePlan ?? null;
+  const itinerary = event.itinerary ?? [];
+  const path = routePlan?.path ?? [];
+  const trackingMode = routePlan?.version === 2 ?
+    routePlan.liveTrackingPolicy?.mode ?? "disabled" : "disabled";
+  const midpoint = path.length ? path[Math.floor(path.length / 2)] : null;
+  const livePositions: NonNullable<
+    RehearsalSetup["movementSimulation"]
+  >["livePositions"] = midpoint && trackingMode !== "disabled" ? [{
+    role: "host",
+    latitude: midpoint.latitude,
+    longitude: midpoint.longitude,
+    recordedOffsetMinutes: 30,
+  }, ...(trackingMode === "authorizedOperators" && path.length > 1 ? [{
+    role: "operator" as const,
+    latitude: path[0].latitude,
+    longitude: path[0].longitude,
+    recordedOffsetMinutes: 29,
+  }] : [])] : [];
+  const nextStop = itinerary.find((item) =>
+    item.kind === "stop" || item.kind === "finish" || Boolean(item.location)
+  );
+  return {
+    title: event.name?.trim() ||
+      `${activityLabel(event.eventFormat.activityKind)} dress rehearsal`,
+    locationName: event.meetingLocation.name || event.meetingPoint,
+    durationMinutes: Math.max(
+      30,
+      Math.min(360, Math.round(
+        (event.endTime.toMillis() - event.startTime.toMillis()) / 60000
+      ))
+    ),
+    hostGoal: "Help every guest understand what happens next.",
+    attendeePrompt: "Introduce yourself to someone you have not met yet.",
+    moduleIds: [
+      "arrival",
+      "firstHello",
+      "pods",
+      "rotations",
+      "conversationCues",
+      "reveal",
+      "afterglow",
+      "accountability",
+    ],
+    ...(routePlan || itinerary.length ? {
+      movementSimulation: {
+        itinerary,
+        routePlan,
+        livePositions,
+        lateArrivalGuidance: nextStop ?
+          `Join at the next published stop: ${nextStop.title}.` :
+          `Meet the route lead at ${event.meetingLocation.name}.`,
+      },
+    } : {}),
   };
 }
 
@@ -956,6 +1013,7 @@ async function hostProjection(
     db.collection(actions).where("sessionId", "==", sessionId)
       .limit(REHEARSAL_MAX_ACTIONS).get(),
   ]);
+  const movementSimulation = rehearsalMovementProjection(session);
   return {
     session: {
       id: sessionId,
@@ -966,7 +1024,12 @@ async function hostProjection(
       actorCount: session.actorCount,
       actionCount: session.actionCount,
       status: session.status,
-      setup: session.setup,
+      setup: {
+        ...session.setup,
+        ...(movementSimulation ? {
+          movementSimulation,
+        } : {}),
+      },
       setupRevision: session.setupRevision,
       runtimeRevision: session.runtimeRevision,
       activeStepIndex: session.activeStepIndex,
@@ -1010,11 +1073,12 @@ async function hostProjection(
   };
 }
 
-function guestProjection(
+export function rehearsalGuestProjection(
   session: EventRehearsalDocument,
   actor: EventRehearsalActorDocument,
   slotToken: string
 ): EventRehearsalGuestBootstrapCallableResponse {
+  const movementSimulation = rehearsalMovementProjection(session);
   return {
     slotToken,
     practiceBanner: "Practice mode · Nothing here affects a real event",
@@ -1028,6 +1092,9 @@ function guestProjection(
       moduleIds: session.setup.moduleIds,
       runtimeRevision: session.runtimeRevision,
       faultId: session.faultId,
+      ...(movementSimulation ? {
+        movementSimulation,
+      } : {}),
     },
     actor: {
       actorId: actor.actorId,
@@ -1038,6 +1105,40 @@ function guestProjection(
       helpRequested: actor.helpRequested,
       promptCompleted: actor.promptCompleted,
     },
+  };
+}
+
+/** Derives deterministic route progress from the virtual rehearsal clock. */
+export function rehearsalMovementProjection(
+  session: EventRehearsalDocument
+): RehearsalSetup["movementSimulation"] {
+  const movement = session.setup.movementSimulation;
+  if (!movement) return undefined;
+  const durationMinutes = Math.max(1, session.setup.durationMinutes);
+  const virtualStartedAt = session.virtualStartedAt ?? session.virtualNow;
+  const elapsedMinutes = Math.max(0, Math.min(
+    durationMinutes,
+    Math.floor(
+      (session.virtualNow.toMillis() - virtualStartedAt.toMillis()) / 60000
+    )
+  ));
+  const path = movement.routePlan?.path ?? [];
+  const progressIndex = path.length > 1 ? Math.min(
+    path.length - 1,
+    Math.round((elapsedMinutes / durationMinutes) * (path.length - 1))
+  ) : 0;
+  return {
+    ...movement,
+    livePositions: movement.livePositions.map((position, index) => {
+      const point = path.length ? path[Math.max(0, progressIndex - index)] :
+        position;
+      return {
+        ...position,
+        latitude: point.latitude,
+        longitude: point.longitude,
+        recordedOffsetMinutes: Math.max(0, elapsedMinutes - index),
+      };
+    }),
   };
 }
 

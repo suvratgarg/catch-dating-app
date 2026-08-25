@@ -65,7 +65,12 @@ function activeGrant(
     displayName: "Operator",
     phoneLastFour: "1234",
     role: "checkInOperator",
-    permissions: ["viewRoster", "setAttendance", "reviewRuntimeClaims"],
+    permissions: [
+      "viewRoster",
+      "setAttendance",
+      "reviewRuntimeClaims",
+      "publishLiveLocation",
+    ],
     status: "active",
     createdBy: "owner-1",
     createdAt: now,

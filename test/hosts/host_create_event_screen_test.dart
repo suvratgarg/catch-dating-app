@@ -416,7 +416,6 @@ void main() {
         ],
       );
       await _openCreateEventFlow(tester);
-
       await _tapActivityKind(tester, 'Open activity');
       await _pumpTestAnimation(tester);
       await _enterCreateEventText(
@@ -1404,11 +1403,6 @@ Future<void> _pumpCreateEventFlow(
       ),
     ),
   );
-  await _pumpTestAnimation(tester);
-}
-
-Future<void> _openCreateEventFlow(WidgetTester tester) async {
-  await tester.tap(find.text('Open'));
   await _pumpTestAnimation(tester);
 }
 

@@ -117,6 +117,22 @@ class CatchMapCircle {
   final VoidCallback? onTap;
 }
 
+class CatchMapPolyline {
+  const CatchMapPolyline({
+    required this.id,
+    required this.points,
+    required this.color,
+    this.width = 5,
+    this.geodesic = true,
+  });
+
+  final String id;
+  final List<LocationCoordinate> points;
+  final Color color;
+  final int width;
+  final bool geodesic;
+}
+
 class CatchGoogleMapController {
   const CatchGoogleMapController._(this._controller);
 
@@ -193,6 +209,7 @@ class CatchGoogleMap extends StatelessWidget {
     required this.initialZoom,
     this.markers = const <CatchMapMarker>{},
     this.circles = const <CatchMapCircle>{},
+    this.polylines = const <CatchMapPolyline>{},
     this.mapType = CatchMapType.normal,
     this.myLocationButtonEnabled = false,
     this.mapToolbarEnabled = false,
@@ -215,6 +232,7 @@ class CatchGoogleMap extends StatelessWidget {
   final double initialZoom;
   final Set<CatchMapMarker> markers;
   final Set<CatchMapCircle> circles;
+  final Set<CatchMapPolyline> polylines;
   final CatchMapType mapType;
   final bool myLocationButtonEnabled;
   final bool mapToolbarEnabled;
@@ -241,6 +259,7 @@ class CatchGoogleMap extends StatelessWidget {
       ),
       markers: {for (final marker in markers) _googleMarker(marker)},
       circles: {for (final circle in circles) _googleCircle(circle)},
+      polylines: {for (final polyline in polylines) _googlePolyline(polyline)},
       myLocationButtonEnabled: myLocationButtonEnabled,
       mapToolbarEnabled: mapToolbarEnabled,
       zoomControlsEnabled: zoomControlsEnabled,
@@ -311,6 +330,18 @@ gmaps.Circle _googleCircle(CatchMapCircle circle) {
     fillColor: circle.fillColor,
     consumeTapEvents: circle.consumeTapEvents,
     onTap: circle.onTap,
+  );
+}
+
+gmaps.Polyline _googlePolyline(CatchMapPolyline polyline) {
+  return gmaps.Polyline(
+    polylineId: gmaps.PolylineId(polyline.id),
+    points: polyline.points
+        .map((point) => point.toGoogleMapsLatLng())
+        .toList(growable: false),
+    color: polyline.color,
+    width: polyline.width,
+    geodesic: polyline.geodesic,
   );
 }
 

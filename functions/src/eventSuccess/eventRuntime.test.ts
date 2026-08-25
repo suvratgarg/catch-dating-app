@@ -403,11 +403,15 @@ test("bootstrap returns bounded event and own state", async () => {
     title: "Wednesday Social",
     startTimeMillis: Date.parse("2026-08-11T12:00:00.000Z"),
     endTimeMillis: Date.parse("2026-08-11T15:00:00.000Z"),
+    serverTimeMillis: timestamp().toMillis(),
     locationName: "The Courtyard",
     checkedInCount: 18,
     runtimeTermsVersion: "event-runtime-v1",
     moduleIds: [],
     interactionModel: "freeFormMixer",
+    itinerary: [],
+    routePlan: null,
+    livePositions: [],
     layout: null,
     requiredFieldIds: ["displayName", "questionnaireAnswerIds"],
     optionalFieldIds: [],
@@ -418,6 +422,111 @@ test("bootstrap returns bounded event and own state", async () => {
   assert.equal(result.participant?.clubId, "organizer-1");
   assert.equal(result.participant?.organizerId, "organizer-1");
   assert.equal((result.event as FakeData).organizerId, undefined);
+});
+
+test("authored movement and fresh positions reach bootstrap", async () => {
+  const routePlan = {
+    version: 2,
+    movementMode: "run",
+    routeShape: "loop",
+    groupStrategy: "paceGroups",
+    stopCadence: "hostedStops",
+    stopKinds: ["water"],
+    roleKinds: ["routeLead", "sweep"],
+    path: [
+      {latitude: 19.1, longitude: 72.8},
+      {latitude: 19.2, longitude: 72.9},
+    ],
+    paceGroups: [{
+      id: "social",
+      label: "Social",
+      targetPaceSecondsPerKm: 450,
+      sortOrder: 0,
+    }],
+    liveTrackingPolicy: {
+      mode: "authorizedOperators",
+      staleAfterSeconds: 300,
+      retentionMinutes: 60,
+    },
+  };
+  const h = harness({
+    "events/event-1": event({
+      name: "Monsoon Miles",
+      itinerary: [{
+        id: "gather",
+        kind: "gather",
+        offsetMinutes: 0,
+        title: "Meet the pacers",
+      }],
+      eventFormat: {
+        version: 1,
+        activityKind: "socialRun",
+        interactionModel: "pacePods",
+        activityDetails: {routePlan},
+      },
+    }),
+    "eventRuntimeParticipants/event-1_runner-1": participant({
+      requiredFieldIds: ["displayName", "paceBand"],
+      completedFieldIds: ["displayName", "paceBand"],
+      runtimeProfile: {
+        ...(participant().runtimeProfile as FakeData),
+        paceBand: "moderate",
+      },
+    }),
+    "eventAttendees/attendee-1": attendee({
+      linkedUid: "runner-1",
+      status: "checkedIn",
+    }),
+    "eventLivePositions/event-1__host-1": {
+      eventId: "event-1",
+      role: "host",
+      latitude: 19.15,
+      longitude: 72.85,
+      accuracyMeters: 8,
+      headingDegrees: 92,
+      recordedAt: timestamp("2026-08-11T09:59:00.000Z"),
+      expiresAt: timestamp("2026-08-11T11:00:00.000Z"),
+    },
+    "eventLivePositions/event-1__stale": {
+      eventId: "event-1",
+      role: "operator",
+      latitude: 19.16,
+      longitude: 72.86,
+      accuracyMeters: null,
+      headingDegrees: null,
+      recordedAt: timestamp("2026-08-11T09:50:00.000Z"),
+      expiresAt: timestamp("2026-08-11T11:00:00.000Z"),
+    },
+  });
+
+  const result = await getEventRuntimeBootstrapHandler(request(
+    "runner-1",
+    {publicRuntimeId: "runtime_123456789012345678901234"}
+  ), h.deps);
+
+  assert.equal(result.event.title, "Monsoon Miles");
+  assert.deepEqual(result.event.itinerary, [{
+    id: "gather",
+    kind: "gather",
+    offsetMinutes: 0,
+    title: "Meet the pacers",
+  }]);
+  assert.deepEqual(result.event.routePlan, routePlan);
+  assert.deepEqual(result.event.livePositions, [{
+    role: "host",
+    latitude: 19.15,
+    longitude: 72.85,
+    accuracyMeters: 8,
+    headingDegrees: 92,
+    recordedAtMillis: timestamp("2026-08-11T09:59:00.000Z").toMillis(),
+    staleAtMillis: timestamp("2026-08-11T10:04:00.000Z").toMillis(),
+  }]);
+
+  const publicResult = await getEventRuntimeBootstrapHandler(request(
+    null,
+    {publicRuntimeId: "runtime_123456789012345678901234"}
+  ), h.deps);
+  assert.deepEqual(publicResult.event.livePositions, []);
 });
 
 test("verified phone claims the matching imported attendee", async () => {

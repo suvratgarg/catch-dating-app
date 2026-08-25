@@ -3367,11 +3367,97 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['together', 'paceGroups', 'selfDirected'],
   );
 
+  static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode = CatchContractFieldConstraints(
+    path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['disabled', 'hostOnly', 'authorizedOperators'],
+  );
+
+  static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes = CatchContractFieldConstraints(
+    path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 1440,
+  );
+
+  static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanLiveTrackingPolicyStaleAfterSeconds = CatchContractFieldConstraints(
+    path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.liveTrackingPolicy.staleAfterSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 30,
+    maximum: 600,
+  );
+
   static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanMovementMode = CatchContractFieldConstraints(
     path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.movementMode',
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['run', 'walk', 'ride', 'mixed'],
+  );
+
+  static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanPaceGroups = CatchContractFieldConstraints(
+    path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.paceGroups',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 12,
+  );
+
+  static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanPaceGroupsItemsId = CatchContractFieldConstraints(
+    path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.paceGroups.items.id',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanPaceGroupsItemsLabel = CatchContractFieldConstraints(
+    path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.paceGroups.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanPaceGroupsItemsSortOrder = CatchContractFieldConstraints(
+    path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.paceGroups.items.sortOrder',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm = CatchContractFieldConstraints(
+    path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.paceGroups.items.targetPaceSecondsPerKm',
+    valueTypes: <String>['integer'],
+    minimum: 120,
+    maximum: 1800,
+  );
+
+  static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanPath = CatchContractFieldConstraints(
+    path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.path',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 2,
+    maxItems: 500,
+  );
+
+  static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanPathItemsLatitude = CatchContractFieldConstraints(
+    path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.path.items.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanPathItemsLongitude = CatchContractFieldConstraints(
+    path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.path.items.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
   );
 
   static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanRoleKinds = CatchContractFieldConstraints(
@@ -7595,11 +7681,97 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['together', 'paceGroups', 'selfDirected'],
   );
 
+  static const createEventCallablePayloadEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['disabled', 'hostOnly', 'authorizedOperators'],
+  );
+
+  static const createEventCallablePayloadEventFormatActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventFormat.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 1440,
+  );
+
+  static const createEventCallablePayloadEventFormatActivityDetailsRoutePlanLiveTrackingPolicyStaleAfterSeconds = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventFormat.activityDetails.routePlan.liveTrackingPolicy.staleAfterSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 30,
+    maximum: 600,
+  );
+
   static const createEventCallablePayloadEventFormatActivityDetailsRoutePlanMovementMode = CatchContractFieldConstraints(
     path: 'createEventCallablePayload.eventFormat.activityDetails.routePlan.movementMode',
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['run', 'walk', 'ride', 'mixed'],
+  );
+
+  static const createEventCallablePayloadEventFormatActivityDetailsRoutePlanPaceGroups = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventFormat.activityDetails.routePlan.paceGroups',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 12,
+  );
+
+  static const createEventCallablePayloadEventFormatActivityDetailsRoutePlanPaceGroupsItemsId = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventFormat.activityDetails.routePlan.paceGroups.items.id',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const createEventCallablePayloadEventFormatActivityDetailsRoutePlanPaceGroupsItemsLabel = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventFormat.activityDetails.routePlan.paceGroups.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventCallablePayloadEventFormatActivityDetailsRoutePlanPaceGroupsItemsSortOrder = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventFormat.activityDetails.routePlan.paceGroups.items.sortOrder',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const createEventCallablePayloadEventFormatActivityDetailsRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventFormat.activityDetails.routePlan.paceGroups.items.targetPaceSecondsPerKm',
+    valueTypes: <String>['integer'],
+    minimum: 120,
+    maximum: 1800,
+  );
+
+  static const createEventCallablePayloadEventFormatActivityDetailsRoutePlanPath = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventFormat.activityDetails.routePlan.path',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 2,
+    maxItems: 500,
+  );
+
+  static const createEventCallablePayloadEventFormatActivityDetailsRoutePlanPathItemsLatitude = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventFormat.activityDetails.routePlan.path.items.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const createEventCallablePayloadEventFormatActivityDetailsRoutePlanPathItemsLongitude = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventFormat.activityDetails.routePlan.path.items.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
   );
 
   static const createEventCallablePayloadEventFormatActivityDetailsRoutePlanRoleKinds = CatchContractFieldConstraints(
@@ -8370,6 +8542,108 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const createEventCallablePayloadItinerary = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.itinerary',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 40,
+  );
+
+  static const createEventCallablePayloadItineraryItemsDescription = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.itinerary.items.description',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventCallablePayloadItineraryItemsDurationMinutes = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.itinerary.items.durationMinutes',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1440,
+  );
+
+  static const createEventCallablePayloadItineraryItemsId = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.itinerary.items.id',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const createEventCallablePayloadItineraryItemsKind = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.itinerary.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['gather', 'activity', 'stop', 'break', 'transition', 'finish'],
+  );
+
+  static const createEventCallablePayloadItineraryItemsLocationAddress = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.itinerary.items.location.address',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventCallablePayloadItineraryItemsLocationLatitude = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.itinerary.items.location.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const createEventCallablePayloadItineraryItemsLocationLongitude = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.itinerary.items.location.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const createEventCallablePayloadItineraryItemsLocationName = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.itinerary.items.location.name',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventCallablePayloadItineraryItemsLocationNotes = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.itinerary.items.location.notes',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventCallablePayloadItineraryItemsLocationPlaceId = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.itinerary.items.location.placeId',
+    maxLength: 256,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventCallablePayloadItineraryItemsOffsetMinutes = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.itinerary.items.offsetMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1440,
+  );
+
+  static const createEventCallablePayloadItineraryItemsRouteDistanceMeters = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.itinerary.items.routeDistanceMeters',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const createEventCallablePayloadItineraryItemsTitle = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.itinerary.items.title',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const createEventCallablePayloadLocationDetails = CatchContractFieldConstraints(
     path: 'createEventCallablePayload.locationDetails',
     maxLength: 1000,
@@ -8422,6 +8696,14 @@ abstract final class CatchContractConstraints {
   static const createEventCallablePayloadMeetingPoint = CatchContractFieldConstraints(
     path: 'createEventCallablePayload.meetingPoint',
     maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventCallablePayloadName = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.name',
+    maxLength: 120,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
@@ -12703,11 +12985,97 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['together', 'paceGroups', 'selfDirected'],
   );
 
+  static const eventDocumentEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode = CatchContractFieldConstraints(
+    path: 'eventDocument.eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['disabled', 'hostOnly', 'authorizedOperators'],
+  );
+
+  static const eventDocumentEventFormatActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes = CatchContractFieldConstraints(
+    path: 'eventDocument.eventFormat.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 1440,
+  );
+
+  static const eventDocumentEventFormatActivityDetailsRoutePlanLiveTrackingPolicyStaleAfterSeconds = CatchContractFieldConstraints(
+    path: 'eventDocument.eventFormat.activityDetails.routePlan.liveTrackingPolicy.staleAfterSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 30,
+    maximum: 600,
+  );
+
   static const eventDocumentEventFormatActivityDetailsRoutePlanMovementMode = CatchContractFieldConstraints(
     path: 'eventDocument.eventFormat.activityDetails.routePlan.movementMode',
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['run', 'walk', 'ride', 'mixed'],
+  );
+
+  static const eventDocumentEventFormatActivityDetailsRoutePlanPaceGroups = CatchContractFieldConstraints(
+    path: 'eventDocument.eventFormat.activityDetails.routePlan.paceGroups',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 12,
+  );
+
+  static const eventDocumentEventFormatActivityDetailsRoutePlanPaceGroupsItemsId = CatchContractFieldConstraints(
+    path: 'eventDocument.eventFormat.activityDetails.routePlan.paceGroups.items.id',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const eventDocumentEventFormatActivityDetailsRoutePlanPaceGroupsItemsLabel = CatchContractFieldConstraints(
+    path: 'eventDocument.eventFormat.activityDetails.routePlan.paceGroups.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventDocumentEventFormatActivityDetailsRoutePlanPaceGroupsItemsSortOrder = CatchContractFieldConstraints(
+    path: 'eventDocument.eventFormat.activityDetails.routePlan.paceGroups.items.sortOrder',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const eventDocumentEventFormatActivityDetailsRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm = CatchContractFieldConstraints(
+    path: 'eventDocument.eventFormat.activityDetails.routePlan.paceGroups.items.targetPaceSecondsPerKm',
+    valueTypes: <String>['integer'],
+    minimum: 120,
+    maximum: 1800,
+  );
+
+  static const eventDocumentEventFormatActivityDetailsRoutePlanPath = CatchContractFieldConstraints(
+    path: 'eventDocument.eventFormat.activityDetails.routePlan.path',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 2,
+    maxItems: 500,
+  );
+
+  static const eventDocumentEventFormatActivityDetailsRoutePlanPathItemsLatitude = CatchContractFieldConstraints(
+    path: 'eventDocument.eventFormat.activityDetails.routePlan.path.items.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const eventDocumentEventFormatActivityDetailsRoutePlanPathItemsLongitude = CatchContractFieldConstraints(
+    path: 'eventDocument.eventFormat.activityDetails.routePlan.path.items.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
   );
 
   static const eventDocumentEventFormatActivityDetailsRoutePlanRoleKinds = CatchContractFieldConstraints(
@@ -13281,6 +13649,108 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['object'],
   );
 
+  static const eventDocumentItinerary = CatchContractFieldConstraints(
+    path: 'eventDocument.itinerary',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 40,
+  );
+
+  static const eventDocumentItineraryItemsDescription = CatchContractFieldConstraints(
+    path: 'eventDocument.itinerary.items.description',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventDocumentItineraryItemsDurationMinutes = CatchContractFieldConstraints(
+    path: 'eventDocument.itinerary.items.durationMinutes',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1440,
+  );
+
+  static const eventDocumentItineraryItemsId = CatchContractFieldConstraints(
+    path: 'eventDocument.itinerary.items.id',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const eventDocumentItineraryItemsKind = CatchContractFieldConstraints(
+    path: 'eventDocument.itinerary.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['gather', 'activity', 'stop', 'break', 'transition', 'finish'],
+  );
+
+  static const eventDocumentItineraryItemsLocationAddress = CatchContractFieldConstraints(
+    path: 'eventDocument.itinerary.items.location.address',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventDocumentItineraryItemsLocationLatitude = CatchContractFieldConstraints(
+    path: 'eventDocument.itinerary.items.location.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const eventDocumentItineraryItemsLocationLongitude = CatchContractFieldConstraints(
+    path: 'eventDocument.itinerary.items.location.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const eventDocumentItineraryItemsLocationName = CatchContractFieldConstraints(
+    path: 'eventDocument.itinerary.items.location.name',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventDocumentItineraryItemsLocationNotes = CatchContractFieldConstraints(
+    path: 'eventDocument.itinerary.items.location.notes',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventDocumentItineraryItemsLocationPlaceId = CatchContractFieldConstraints(
+    path: 'eventDocument.itinerary.items.location.placeId',
+    maxLength: 256,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventDocumentItineraryItemsOffsetMinutes = CatchContractFieldConstraints(
+    path: 'eventDocument.itinerary.items.offsetMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1440,
+  );
+
+  static const eventDocumentItineraryItemsRouteDistanceMeters = CatchContractFieldConstraints(
+    path: 'eventDocument.itinerary.items.routeDistanceMeters',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const eventDocumentItineraryItemsTitle = CatchContractFieldConstraints(
+    path: 'eventDocument.itinerary.items.title',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const eventDocumentLocationDetails = CatchContractFieldConstraints(
     path: 'eventDocument.locationDetails',
     maxLength: 1000,
@@ -13333,6 +13803,14 @@ abstract final class CatchContractConstraints {
   static const eventDocumentMeetingPoint = CatchContractFieldConstraints(
     path: 'eventDocument.meetingPoint',
     maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventDocumentName = CatchContractFieldConstraints(
+    path: 'eventDocument.name',
+    maxLength: 120,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
@@ -14240,6 +14718,130 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventLivePositionDocumentAccuracyMeters = CatchContractFieldConstraints(
+    path: 'eventLivePositionDocument.accuracyMeters',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const eventLivePositionDocumentClubId = CatchContractFieldConstraints(
+    path: 'eventLivePositionDocument.clubId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventLivePositionDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventLivePositionDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventLivePositionDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventLivePositionDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventLivePositionDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventLivePositionDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventLivePositionDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventLivePositionDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventLivePositionDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'eventLivePositionDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventLivePositionDocumentHeadingDegrees = CatchContractFieldConstraints(
+    path: 'eventLivePositionDocument.headingDegrees',
+    valueTypes: <String>['number'],
+    minimum: 0,
+  );
+
+  static const eventLivePositionDocumentLatitude = CatchContractFieldConstraints(
+    path: 'eventLivePositionDocument.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const eventLivePositionDocumentLongitude = CatchContractFieldConstraints(
+    path: 'eventLivePositionDocument.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const eventLivePositionDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventLivePositionDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventLivePositionDocumentRecordedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventLivePositionDocument.recordedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventLivePositionDocumentRecordedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventLivePositionDocument.recordedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventLivePositionDocumentRole = CatchContractFieldConstraints(
+    path: 'eventLivePositionDocument.role',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['host', 'operator'],
+  );
+
+  static const eventLivePositionDocumentUid = CatchContractFieldConstraints(
+    path: 'eventLivePositionDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventLivePositionDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventLivePositionDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventLivePositionDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventLivePositionDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const eventOperatorAccessCallablePayloadEventId = CatchContractFieldConstraints(
     path: 'eventOperatorAccessCallablePayload.eventId',
     maxLength: 180,
@@ -14296,9 +14898,9 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['viewRoster', 'setAttendance', 'reviewRuntimeClaims'],
+    itemEnumValues: <String>['viewRoster', 'setAttendance', 'reviewRuntimeClaims', 'publishLiveLocation'],
     minItems: 1,
-    maxItems: 3,
+    maxItems: 4,
     uniqueItems: true,
   );
 
@@ -14306,7 +14908,7 @@ abstract final class CatchContractConstraints {
     path: 'eventOperatorAccessCallableResponse.permissions.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['viewRoster', 'setAttendance', 'reviewRuntimeClaims'],
+    enumValues: <String>['viewRoster', 'setAttendance', 'reviewRuntimeClaims', 'publishLiveLocation'],
   );
 
   static const eventOperatorAccessCallableResponseStartAtMillis = CatchContractFieldConstraints(
@@ -15198,6 +15800,310 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['arrival', 'firstHello', 'pods', 'rotations', 'conversationCues', 'reveal', 'afterglow', 'accountability'],
   );
 
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationItinerary = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.itinerary',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 40,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationItineraryItemsDescription = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.itinerary.items.description',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationItineraryItemsDurationMinutes = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.itinerary.items.durationMinutes',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1440,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationItineraryItemsId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.itinerary.items.id',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationItineraryItemsKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.itinerary.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['gather', 'activity', 'stop', 'break', 'transition', 'finish'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationItineraryItemsLocationAddress = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.itinerary.items.location.address',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationItineraryItemsLocationLatitude = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.itinerary.items.location.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationItineraryItemsLocationLongitude = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.itinerary.items.location.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationItineraryItemsLocationName = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.itinerary.items.location.name',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationItineraryItemsLocationNotes = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.itinerary.items.location.notes',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationItineraryItemsLocationPlaceId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.itinerary.items.location.placeId',
+    maxLength: 256,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationItineraryItemsOffsetMinutes = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.itinerary.items.offsetMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1440,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationItineraryItemsRouteDistanceMeters = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.itinerary.items.routeDistanceMeters',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationItineraryItemsTitle = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.itinerary.items.title',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationLateArrivalGuidance = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.lateArrivalGuidance',
+    maxLength: 320,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationLivePositions = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.livePositions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 2,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationLivePositionsItemsLatitude = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.livePositions.items.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationLivePositionsItemsLongitude = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.livePositions.items.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationLivePositionsItemsRecordedOffsetMinutes = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.livePositions.items.recordedOffsetMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 360,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationLivePositionsItemsRole = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.livePositions.items.role',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['host', 'operator'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanGroupStrategy = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.groupStrategy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['together', 'paceGroups', 'selfDirected'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanLiveTrackingPolicyMode = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.liveTrackingPolicy.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['disabled', 'hostOnly', 'authorizedOperators'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanLiveTrackingPolicyRetentionMinutes = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.liveTrackingPolicy.retentionMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 1440,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanLiveTrackingPolicyStaleAfterSeconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.liveTrackingPolicy.staleAfterSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 30,
+    maximum: 600,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanMovementMode = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.movementMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['run', 'walk', 'ride', 'mixed'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanPaceGroups = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.paceGroups',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 12,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanPaceGroupsItemsId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.paceGroups.items.id',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanPaceGroupsItemsLabel = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.paceGroups.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanPaceGroupsItemsSortOrder = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.paceGroups.items.sortOrder',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.paceGroups.items.targetPaceSecondsPerKm',
+    valueTypes: <String>['integer'],
+    minimum: 120,
+    maximum: 1800,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanPath = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.path',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 2,
+    maxItems: 500,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanPathItemsLatitude = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.path.items.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanPathItemsLongitude = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.path.items.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanRoleKinds = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.roleKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+    minItems: 1,
+    maxItems: 6,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanRoleKindsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.roleKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanRouteShape = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.routeShape',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['loop', 'outAndBack', 'pointToPoint'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanStopCadence = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.stopCadence',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'flexibleStops', 'hostedStops'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanStopKinds = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.stopKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+    minItems: 1,
+    maxItems: 7,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanStopKindsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.stopKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanVersion = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.version',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const eventRehearsalBootstrapCallableResponseSessionSetupTitle = CatchContractFieldConstraints(
     path: 'eventRehearsalBootstrapCallableResponse.session.setup.title',
     maxLength: 120,
@@ -15413,6 +16319,310 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['arrival', 'firstHello', 'pods', 'rotations', 'conversationCues', 'reveal', 'afterglow', 'accountability'],
   );
 
+  static const eventRehearsalDocumentSetupMovementSimulationItinerary = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.itinerary',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 40,
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationItineraryItemsDescription = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.itinerary.items.description',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationItineraryItemsDurationMinutes = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.itinerary.items.durationMinutes',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1440,
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationItineraryItemsId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.itinerary.items.id',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationItineraryItemsKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.itinerary.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['gather', 'activity', 'stop', 'break', 'transition', 'finish'],
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationItineraryItemsLocationAddress = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.itinerary.items.location.address',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationItineraryItemsLocationLatitude = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.itinerary.items.location.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationItineraryItemsLocationLongitude = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.itinerary.items.location.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationItineraryItemsLocationName = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.itinerary.items.location.name',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationItineraryItemsLocationNotes = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.itinerary.items.location.notes',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationItineraryItemsLocationPlaceId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.itinerary.items.location.placeId',
+    maxLength: 256,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationItineraryItemsOffsetMinutes = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.itinerary.items.offsetMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1440,
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationItineraryItemsRouteDistanceMeters = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.itinerary.items.routeDistanceMeters',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationItineraryItemsTitle = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.itinerary.items.title',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationLateArrivalGuidance = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.lateArrivalGuidance',
+    maxLength: 320,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationLivePositions = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.livePositions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 2,
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationLivePositionsItemsLatitude = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.livePositions.items.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationLivePositionsItemsLongitude = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.livePositions.items.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationLivePositionsItemsRecordedOffsetMinutes = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.livePositions.items.recordedOffsetMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 360,
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationLivePositionsItemsRole = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.livePositions.items.role',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['host', 'operator'],
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationRoutePlanGroupStrategy = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.routePlan.groupStrategy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['together', 'paceGroups', 'selfDirected'],
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationRoutePlanLiveTrackingPolicyMode = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.routePlan.liveTrackingPolicy.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['disabled', 'hostOnly', 'authorizedOperators'],
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationRoutePlanLiveTrackingPolicyRetentionMinutes = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.routePlan.liveTrackingPolicy.retentionMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 1440,
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationRoutePlanLiveTrackingPolicyStaleAfterSeconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.routePlan.liveTrackingPolicy.staleAfterSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 30,
+    maximum: 600,
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationRoutePlanMovementMode = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.routePlan.movementMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['run', 'walk', 'ride', 'mixed'],
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationRoutePlanPaceGroups = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.routePlan.paceGroups',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 12,
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationRoutePlanPaceGroupsItemsId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.routePlan.paceGroups.items.id',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationRoutePlanPaceGroupsItemsLabel = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.routePlan.paceGroups.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationRoutePlanPaceGroupsItemsSortOrder = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.routePlan.paceGroups.items.sortOrder',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.routePlan.paceGroups.items.targetPaceSecondsPerKm',
+    valueTypes: <String>['integer'],
+    minimum: 120,
+    maximum: 1800,
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationRoutePlanPath = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.routePlan.path',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 2,
+    maxItems: 500,
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationRoutePlanPathItemsLatitude = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.routePlan.path.items.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationRoutePlanPathItemsLongitude = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.routePlan.path.items.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationRoutePlanRoleKinds = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.routePlan.roleKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+    minItems: 1,
+    maxItems: 6,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationRoutePlanRoleKindsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.routePlan.roleKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationRoutePlanRouteShape = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.routePlan.routeShape',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['loop', 'outAndBack', 'pointToPoint'],
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationRoutePlanStopCadence = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.routePlan.stopCadence',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'flexibleStops', 'hostedStops'],
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationRoutePlanStopKinds = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.routePlan.stopKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+    minItems: 1,
+    maxItems: 7,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationRoutePlanStopKindsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.routePlan.stopKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+  );
+
+  static const eventRehearsalDocumentSetupMovementSimulationRoutePlanVersion = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.movementSimulation.routePlan.version',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const eventRehearsalDocumentSetupTitle = CatchContractFieldConstraints(
     path: 'eventRehearsalDocument.setup.title',
     maxLength: 120,
@@ -15585,6 +16795,310 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['arrival', 'firstHello', 'pods', 'rotations', 'conversationCues', 'reveal', 'afterglow', 'accountability'],
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationItinerary = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.itinerary',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 40,
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationItineraryItemsDescription = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.itinerary.items.description',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationItineraryItemsDurationMinutes = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.itinerary.items.durationMinutes',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1440,
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationItineraryItemsId = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.itinerary.items.id',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationItineraryItemsKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.itinerary.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['gather', 'activity', 'stop', 'break', 'transition', 'finish'],
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationItineraryItemsLocationAddress = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.itinerary.items.location.address',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationItineraryItemsLocationLatitude = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.itinerary.items.location.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationItineraryItemsLocationLongitude = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.itinerary.items.location.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationItineraryItemsLocationName = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.itinerary.items.location.name',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationItineraryItemsLocationNotes = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.itinerary.items.location.notes',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationItineraryItemsLocationPlaceId = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.itinerary.items.location.placeId',
+    maxLength: 256,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationItineraryItemsOffsetMinutes = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.itinerary.items.offsetMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1440,
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationItineraryItemsRouteDistanceMeters = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.itinerary.items.routeDistanceMeters',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationItineraryItemsTitle = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.itinerary.items.title',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationLateArrivalGuidance = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.lateArrivalGuidance',
+    maxLength: 320,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationLivePositions = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.livePositions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 2,
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationLivePositionsItemsLatitude = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.livePositions.items.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationLivePositionsItemsLongitude = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.livePositions.items.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationLivePositionsItemsRecordedOffsetMinutes = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.livePositions.items.recordedOffsetMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 360,
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationLivePositionsItemsRole = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.livePositions.items.role',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['host', 'operator'],
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanGroupStrategy = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.groupStrategy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['together', 'paceGroups', 'selfDirected'],
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanLiveTrackingPolicyMode = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.liveTrackingPolicy.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['disabled', 'hostOnly', 'authorizedOperators'],
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanLiveTrackingPolicyRetentionMinutes = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.liveTrackingPolicy.retentionMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 1440,
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanLiveTrackingPolicyStaleAfterSeconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.liveTrackingPolicy.staleAfterSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 30,
+    maximum: 600,
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanMovementMode = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.movementMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['run', 'walk', 'ride', 'mixed'],
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanPaceGroups = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.paceGroups',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 12,
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanPaceGroupsItemsId = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.paceGroups.items.id',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanPaceGroupsItemsLabel = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.paceGroups.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanPaceGroupsItemsSortOrder = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.paceGroups.items.sortOrder',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.paceGroups.items.targetPaceSecondsPerKm',
+    valueTypes: <String>['integer'],
+    minimum: 120,
+    maximum: 1800,
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanPath = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.path',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 2,
+    maxItems: 500,
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanPathItemsLatitude = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.path.items.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanPathItemsLongitude = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.path.items.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanRoleKinds = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.roleKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+    minItems: 1,
+    maxItems: 6,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanRoleKindsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.roleKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanRouteShape = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.routeShape',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['loop', 'outAndBack', 'pointToPoint'],
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanStopCadence = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.stopCadence',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'flexibleStops', 'hostedStops'],
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanStopKinds = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.stopKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+    minItems: 1,
+    maxItems: 7,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanStopKindsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.stopKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanVersion = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.version',
+    required: true,
+    valueTypes: <String>['integer'],
   );
 
   static const eventRehearsalGuestBootstrapCallableResponseSessionRuntimeRevision = CatchContractFieldConstraints(
@@ -15778,6 +17292,310 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['arrival', 'firstHello', 'pods', 'rotations', 'conversationCues', 'reveal', 'afterglow', 'accountability'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationItinerary = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.itinerary',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 40,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationItineraryItemsDescription = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.itinerary.items.description',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationItineraryItemsDurationMinutes = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.itinerary.items.durationMinutes',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1440,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationItineraryItemsId = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.itinerary.items.id',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationItineraryItemsKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.itinerary.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['gather', 'activity', 'stop', 'break', 'transition', 'finish'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationItineraryItemsLocationAddress = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.itinerary.items.location.address',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationItineraryItemsLocationLatitude = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.itinerary.items.location.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationItineraryItemsLocationLongitude = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.itinerary.items.location.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationItineraryItemsLocationName = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.itinerary.items.location.name',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationItineraryItemsLocationNotes = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.itinerary.items.location.notes',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationItineraryItemsLocationPlaceId = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.itinerary.items.location.placeId',
+    maxLength: 256,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationItineraryItemsOffsetMinutes = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.itinerary.items.offsetMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1440,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationItineraryItemsRouteDistanceMeters = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.itinerary.items.routeDistanceMeters',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationItineraryItemsTitle = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.itinerary.items.title',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationLateArrivalGuidance = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.lateArrivalGuidance',
+    maxLength: 320,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationLivePositions = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.livePositions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 2,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationLivePositionsItemsLatitude = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.livePositions.items.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationLivePositionsItemsLongitude = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.livePositions.items.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationLivePositionsItemsRecordedOffsetMinutes = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.livePositions.items.recordedOffsetMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 360,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationLivePositionsItemsRole = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.livePositions.items.role',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['host', 'operator'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanGroupStrategy = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.groupStrategy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['together', 'paceGroups', 'selfDirected'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanLiveTrackingPolicyMode = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.liveTrackingPolicy.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['disabled', 'hostOnly', 'authorizedOperators'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanLiveTrackingPolicyRetentionMinutes = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.liveTrackingPolicy.retentionMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 1440,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanLiveTrackingPolicyStaleAfterSeconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.liveTrackingPolicy.staleAfterSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 30,
+    maximum: 600,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanMovementMode = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.movementMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['run', 'walk', 'ride', 'mixed'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanPaceGroups = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.paceGroups',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 12,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanPaceGroupsItemsId = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.paceGroups.items.id',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanPaceGroupsItemsLabel = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.paceGroups.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanPaceGroupsItemsSortOrder = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.paceGroups.items.sortOrder',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.paceGroups.items.targetPaceSecondsPerKm',
+    valueTypes: <String>['integer'],
+    minimum: 120,
+    maximum: 1800,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanPath = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.path',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 2,
+    maxItems: 500,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanPathItemsLatitude = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.path.items.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanPathItemsLongitude = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.path.items.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanRoleKinds = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.roleKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+    minItems: 1,
+    maxItems: 6,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanRoleKindsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.roleKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanRouteShape = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.routeShape',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['loop', 'outAndBack', 'pointToPoint'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanStopCadence = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.stopCadence',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'flexibleStops', 'hostedStops'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanStopKinds = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.stopKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+    minItems: 1,
+    maxItems: 7,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanStopKindsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.stopKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanVersion = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.version',
+    required: true,
+    valueTypes: <String>['integer'],
   );
 
   static const eventRehearsalReproductionCallableResponseSetupTitle = CatchContractFieldConstraints(
@@ -16553,9 +18371,9 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['viewRoster', 'setAttendance', 'reviewRuntimeClaims'],
-    minItems: 3,
-    maxItems: 3,
+    itemEnumValues: <String>['viewRoster', 'setAttendance', 'reviewRuntimeClaims', 'publishLiveLocation'],
+    minItems: 4,
+    maxItems: 4,
     uniqueItems: true,
   );
 
@@ -16563,7 +18381,7 @@ abstract final class CatchContractConstraints {
     path: 'eventStaffGrantDocument.permissions.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['viewRoster', 'setAttendance', 'reviewRuntimeClaims'],
+    enumValues: <String>['viewRoster', 'setAttendance', 'reviewRuntimeClaims', 'publishLiveLocation'],
   );
 
   static const eventStaffGrantDocumentPhoneLastFour = CatchContractFieldConstraints(
@@ -22290,6 +24108,109 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['pacePods', 'pairedRotations', 'teamRotations', 'seatedTable', 'freeFormMixer', 'hostLedProgram', 'openFormat'],
   );
 
+  static const getEventRuntimeBootstrapCallableResponseEventItinerary = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.itinerary',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 40,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventItineraryItemsDescription = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.itinerary.items.description',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventItineraryItemsDurationMinutes = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.itinerary.items.durationMinutes',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1440,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventItineraryItemsId = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.itinerary.items.id',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventItineraryItemsKind = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.itinerary.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['gather', 'activity', 'stop', 'break', 'transition', 'finish'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventItineraryItemsLocationAddress = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.itinerary.items.location.address',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventItineraryItemsLocationLatitude = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.itinerary.items.location.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventItineraryItemsLocationLongitude = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.itinerary.items.location.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventItineraryItemsLocationName = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.itinerary.items.location.name',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventItineraryItemsLocationNotes = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.itinerary.items.location.notes',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventItineraryItemsLocationPlaceId = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.itinerary.items.location.placeId',
+    maxLength: 256,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventItineraryItemsOffsetMinutes = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.itinerary.items.offsetMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1440,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventItineraryItemsRouteDistanceMeters = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.itinerary.items.routeDistanceMeters',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventItineraryItemsTitle = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.itinerary.items.title',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const getEventRuntimeBootstrapCallableResponseEventLayoutLabel = CatchContractFieldConstraints(
     path: 'getEventRuntimeBootstrapCallableResponse.event.layout.label',
     maxLength: 120,
@@ -22366,6 +24287,64 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['round', 'rect', 'row', 'court', 'zone'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventLivePositions = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.livePositions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 20,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventLivePositionsItemsAccuracyMeters = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.livePositions.items.accuracyMeters',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventLivePositionsItemsHeadingDegrees = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.livePositions.items.headingDegrees',
+    valueTypes: <String>['number'],
+    minimum: 0,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventLivePositionsItemsLatitude = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.livePositions.items.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventLivePositionsItemsLongitude = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.livePositions.items.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventLivePositionsItemsRecordedAtMillis = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.livePositions.items.recordedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventLivePositionsItemsRole = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.livePositions.items.role',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['host', 'operator'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventLivePositionsItemsStaleAtMillis = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.livePositions.items.staleAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
   );
 
   static const getEventRuntimeBootstrapCallableResponseEventLocationName = CatchContractFieldConstraints(
@@ -22496,12 +24475,175 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
   );
 
+  static const getEventRuntimeBootstrapCallableResponseEventRoutePlanGroupStrategy = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.routePlan.groupStrategy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['together', 'paceGroups', 'selfDirected'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventRoutePlanLiveTrackingPolicyMode = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.routePlan.liveTrackingPolicy.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['disabled', 'hostOnly', 'authorizedOperators'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventRoutePlanLiveTrackingPolicyRetentionMinutes = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.routePlan.liveTrackingPolicy.retentionMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 1440,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventRoutePlanLiveTrackingPolicyStaleAfterSeconds = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.routePlan.liveTrackingPolicy.staleAfterSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 30,
+    maximum: 600,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventRoutePlanMovementMode = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.routePlan.movementMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['run', 'walk', 'ride', 'mixed'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventRoutePlanPaceGroups = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.routePlan.paceGroups',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 12,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventRoutePlanPaceGroupsItemsId = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.routePlan.paceGroups.items.id',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventRoutePlanPaceGroupsItemsLabel = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.routePlan.paceGroups.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventRoutePlanPaceGroupsItemsSortOrder = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.routePlan.paceGroups.items.sortOrder',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.routePlan.paceGroups.items.targetPaceSecondsPerKm',
+    valueTypes: <String>['integer'],
+    minimum: 120,
+    maximum: 1800,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventRoutePlanPath = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.routePlan.path',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 2,
+    maxItems: 500,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventRoutePlanPathItemsLatitude = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.routePlan.path.items.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventRoutePlanPathItemsLongitude = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.routePlan.path.items.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventRoutePlanRoleKinds = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.routePlan.roleKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+    minItems: 1,
+    maxItems: 6,
+    uniqueItems: true,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventRoutePlanRoleKindsItems = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.routePlan.roleKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventRoutePlanRouteShape = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.routePlan.routeShape',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['loop', 'outAndBack', 'pointToPoint'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventRoutePlanStopCadence = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.routePlan.stopCadence',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'flexibleStops', 'hostedStops'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventRoutePlanStopKinds = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.routePlan.stopKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+    minItems: 1,
+    maxItems: 7,
+    uniqueItems: true,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventRoutePlanStopKindsItems = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.routePlan.stopKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventRoutePlanVersion = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.routePlan.version',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const getEventRuntimeBootstrapCallableResponseEventRuntimeTermsVersion = CatchContractFieldConstraints(
     path: 'getEventRuntimeBootstrapCallableResponse.event.runtimeTermsVersion',
     maxLength: 80,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventServerTimeMillis = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.serverTimeMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
   );
 
   static const getEventRuntimeBootstrapCallableResponseEventStartTimeMillis = CatchContractFieldConstraints(
@@ -46049,6 +48191,81 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const publishEventLivePositionCallablePayloadAccuracyMeters = CatchContractFieldConstraints(
+    path: 'publishEventLivePositionCallablePayload.accuracyMeters',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const publishEventLivePositionCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'publishEventLivePositionCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const publishEventLivePositionCallablePayloadHeadingDegrees = CatchContractFieldConstraints(
+    path: 'publishEventLivePositionCallablePayload.headingDegrees',
+    valueTypes: <String>['number'],
+    minimum: 0,
+  );
+
+  static const publishEventLivePositionCallablePayloadLatitude = CatchContractFieldConstraints(
+    path: 'publishEventLivePositionCallablePayload.latitude',
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const publishEventLivePositionCallablePayloadLongitude = CatchContractFieldConstraints(
+    path: 'publishEventLivePositionCallablePayload.longitude',
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const publishEventLivePositionCallablePayloadSharing = CatchContractFieldConstraints(
+    path: 'publishEventLivePositionCallablePayload.sharing',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const publishEventLivePositionCallableResponseExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'publishEventLivePositionCallableResponse.expiresAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const publishEventLivePositionCallableResponseRole = CatchContractFieldConstraints(
+    path: 'publishEventLivePositionCallableResponse.role',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['host', 'operator'],
+  );
+
+  static const publishEventLivePositionCallableResponseServerTimeMillis = CatchContractFieldConstraints(
+    path: 'publishEventLivePositionCallableResponse.serverTimeMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const publishEventLivePositionCallableResponseSharing = CatchContractFieldConstraints(
+    path: 'publishEventLivePositionCallableResponse.sharing',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const publishEventLivePositionCallableResponseStaleAfterSeconds = CatchContractFieldConstraints(
+    path: 'publishEventLivePositionCallableResponse.staleAfterSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 30,
+    maximum: 600,
+  );
+
   static const publishEventSuccessRotationRoundCallablePayloadConfirmed = CatchContractFieldConstraints(
     path: 'publishEventSuccessRotationRoundCallablePayload.confirmed',
     required: true,
@@ -50273,6 +52490,262 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanGroupStrategy = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.groupStrategy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['together', 'paceGroups', 'selfDirected'],
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['disabled', 'hostOnly', 'authorizedOperators'],
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 1440,
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanLiveTrackingPolicyStaleAfterSeconds = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.liveTrackingPolicy.staleAfterSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 30,
+    maximum: 600,
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanMovementMode = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.movementMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['run', 'walk', 'ride', 'mixed'],
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanPaceGroups = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.paceGroups',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 12,
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanPaceGroupsItemsId = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.paceGroups.items.id',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanPaceGroupsItemsLabel = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.paceGroups.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanPaceGroupsItemsSortOrder = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.paceGroups.items.sortOrder',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.paceGroups.items.targetPaceSecondsPerKm',
+    valueTypes: <String>['integer'],
+    minimum: 120,
+    maximum: 1800,
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanPath = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.path',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 2,
+    maxItems: 500,
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanPathItemsLatitude = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.path.items.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanPathItemsLongitude = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.path.items.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanRoleKinds = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.roleKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+    minItems: 1,
+    maxItems: 6,
+    uniqueItems: true,
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanRoleKindsItems = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.roleKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanRouteShape = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.routeShape',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['loop', 'outAndBack', 'pointToPoint'],
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanStopCadence = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.stopCadence',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'flexibleStops', 'hostedStops'],
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanStopKinds = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.stopKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+    minItems: 1,
+    maxItems: 7,
+    uniqueItems: true,
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanStopKindsItems = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.stopKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanVersion = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.version',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatActivityKind = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.activityKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['socialRun', 'running', 'walking', 'pickleball', 'padel', 'tennis', 'badminton', 'cycling', 'spinClass', 'yoga', 'strengthTraining', 'pubQuiz', 'barCrawl', 'dinner', 'singlesMixer', 'openActivity'],
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatCustomActivityLabel = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.customActivityLabel',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatDefaultModuleIds = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.defaultModuleIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 30,
+    uniqueItems: true,
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatDefaultModuleIdsItems = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.defaultModuleIds.items',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatDefaultPlaybookId = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.defaultPlaybookId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatEventSuccessPrimitivesAccountability = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.eventSuccessPrimitives.accountability',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'rollCall', 'sweep'],
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatEventSuccessPrimitivesAssignmentAlgorithm = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.eventSuccessPrimitives.assignmentAlgorithm',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'pacePods', 'socialPods', 'pairRotations', 'teamBalancer', 'tableSeating'],
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatEventSuccessPrimitivesCompatibilityPolicy = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.eventSuccessPrimitives.compatibilityPolicy',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'socialCohortBalance', 'mutualInterestOnly', 'questionnaireClueOnly'],
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatEventSuccessPrimitivesDurationShape = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.eventSuccessPrimitives.durationShape',
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'rounds', 'courses', 'segments'],
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatEventSuccessPrimitivesMatchingObjective = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.eventSuccessPrimitives.matchingObjective',
+    valueTypes: <String>['string'],
+    enumValues: <String>['coverage', 'romantic', 'affinity', 'novelty', 'balance', 'spread'],
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatEventSuccessPrimitivesPhoneAvailability = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.eventSuccessPrimitives.phoneAvailability',
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'plannedPauses', 'arrivalAndPostEventOnly', 'hostOnlyLive', 'noneDuringActivity'],
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatEventSuccessPrimitivesRotationSuitability = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.eventSuccessPrimitives.rotationSuitability',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'plannedBreaks', 'continuousRounds'],
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatEventSuccessPrimitivesUnitOutcome = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.eventSuccessPrimitives.unitOutcome',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'completion', 'score', 'rank'],
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatInteractionModel = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.interactionModel',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pacePods', 'pairedRotations', 'teamRotations', 'seatedTable', 'freeFormMixer', 'hostLedProgram', 'openFormat'],
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatVersion = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.version',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const updateEventCallablePayloadFieldsEventPhotos = CatchContractFieldConstraints(
     path: 'updateEventCallablePayload.fields.eventPhotos',
     valueTypes: <String>['array'],
@@ -50606,6 +53079,108 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const updateEventCallablePayloadFieldsItinerary = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.itinerary',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 40,
+  );
+
+  static const updateEventCallablePayloadFieldsItineraryItemsDescription = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.itinerary.items.description',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventCallablePayloadFieldsItineraryItemsDurationMinutes = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.itinerary.items.durationMinutes',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1440,
+  );
+
+  static const updateEventCallablePayloadFieldsItineraryItemsId = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.itinerary.items.id',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const updateEventCallablePayloadFieldsItineraryItemsKind = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.itinerary.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['gather', 'activity', 'stop', 'break', 'transition', 'finish'],
+  );
+
+  static const updateEventCallablePayloadFieldsItineraryItemsLocationAddress = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.itinerary.items.location.address',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventCallablePayloadFieldsItineraryItemsLocationLatitude = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.itinerary.items.location.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const updateEventCallablePayloadFieldsItineraryItemsLocationLongitude = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.itinerary.items.location.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const updateEventCallablePayloadFieldsItineraryItemsLocationName = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.itinerary.items.location.name',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventCallablePayloadFieldsItineraryItemsLocationNotes = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.itinerary.items.location.notes',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventCallablePayloadFieldsItineraryItemsLocationPlaceId = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.itinerary.items.location.placeId',
+    maxLength: 256,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventCallablePayloadFieldsItineraryItemsOffsetMinutes = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.itinerary.items.offsetMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1440,
+  );
+
+  static const updateEventCallablePayloadFieldsItineraryItemsRouteDistanceMeters = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.itinerary.items.routeDistanceMeters',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const updateEventCallablePayloadFieldsItineraryItemsTitle = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.itinerary.items.title',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const updateEventCallablePayloadFieldsLocationDetails = CatchContractFieldConstraints(
     path: 'updateEventCallablePayload.fields.locationDetails',
     maxLength: 1000,
@@ -50658,6 +53233,14 @@ abstract final class CatchContractConstraints {
   static const updateEventCallablePayloadFieldsMeetingPoint = CatchContractFieldConstraints(
     path: 'updateEventCallablePayload.fields.meetingPoint',
     maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventCallablePayloadFieldsName = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.name',
+    maxLength: 120,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
@@ -50794,6 +53377,310 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['arrival', 'firstHello', 'pods', 'rotations', 'conversationCues', 'reveal', 'afterglow', 'accountability'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationItinerary = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.itinerary',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 40,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationItineraryItemsDescription = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.itinerary.items.description',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationItineraryItemsDurationMinutes = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.itinerary.items.durationMinutes',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1440,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationItineraryItemsId = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.itinerary.items.id',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationItineraryItemsKind = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.itinerary.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['gather', 'activity', 'stop', 'break', 'transition', 'finish'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationItineraryItemsLocationAddress = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.itinerary.items.location.address',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationItineraryItemsLocationLatitude = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.itinerary.items.location.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationItineraryItemsLocationLongitude = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.itinerary.items.location.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationItineraryItemsLocationName = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.itinerary.items.location.name',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationItineraryItemsLocationNotes = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.itinerary.items.location.notes',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationItineraryItemsLocationPlaceId = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.itinerary.items.location.placeId',
+    maxLength: 256,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationItineraryItemsOffsetMinutes = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.itinerary.items.offsetMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1440,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationItineraryItemsRouteDistanceMeters = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.itinerary.items.routeDistanceMeters',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationItineraryItemsTitle = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.itinerary.items.title',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationLateArrivalGuidance = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.lateArrivalGuidance',
+    maxLength: 320,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationLivePositions = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.livePositions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 2,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationLivePositionsItemsLatitude = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.livePositions.items.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationLivePositionsItemsLongitude = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.livePositions.items.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationLivePositionsItemsRecordedOffsetMinutes = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.livePositions.items.recordedOffsetMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 360,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationLivePositionsItemsRole = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.livePositions.items.role',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['host', 'operator'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanGroupStrategy = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.groupStrategy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['together', 'paceGroups', 'selfDirected'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanLiveTrackingPolicyMode = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.liveTrackingPolicy.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['disabled', 'hostOnly', 'authorizedOperators'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanLiveTrackingPolicyRetentionMinutes = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.liveTrackingPolicy.retentionMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 1440,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanLiveTrackingPolicyStaleAfterSeconds = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.liveTrackingPolicy.staleAfterSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 30,
+    maximum: 600,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanMovementMode = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.movementMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['run', 'walk', 'ride', 'mixed'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanPaceGroups = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.paceGroups',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 12,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanPaceGroupsItemsId = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.paceGroups.items.id',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanPaceGroupsItemsLabel = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.paceGroups.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanPaceGroupsItemsSortOrder = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.paceGroups.items.sortOrder',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.paceGroups.items.targetPaceSecondsPerKm',
+    valueTypes: <String>['integer'],
+    minimum: 120,
+    maximum: 1800,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanPath = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.path',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 2,
+    maxItems: 500,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanPathItemsLatitude = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.path.items.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanPathItemsLongitude = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.path.items.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanRoleKinds = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.roleKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+    minItems: 1,
+    maxItems: 6,
+    uniqueItems: true,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanRoleKindsItems = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.roleKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanRouteShape = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.routeShape',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['loop', 'outAndBack', 'pointToPoint'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanStopCadence = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.stopCadence',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'flexibleStops', 'hostedStops'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanStopKinds = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.stopKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+    minItems: 1,
+    maxItems: 7,
+    uniqueItems: true,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanStopKindsItems = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.stopKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanVersion = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.version',
+    required: true,
+    valueTypes: <String>['integer'],
   );
 
   static const updateEventRehearsalSetupCallablePayloadSetupTitle = CatchContractFieldConstraints(
@@ -56001,7 +58888,18 @@ abstract final class CatchContractConstraints {
     'adminUpdateEventDetailsCallablePayload.fields.description': adminUpdateEventDetailsCallablePayloadFieldsDescription,
     'adminUpdateEventDetailsCallablePayload.fields.distanceKm': adminUpdateEventDetailsCallablePayloadFieldsDistanceKm,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.groupStrategy': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanGroupStrategy,
+    'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode,
+    'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes,
+    'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.liveTrackingPolicy.staleAfterSeconds': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanLiveTrackingPolicyStaleAfterSeconds,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.movementMode': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanMovementMode,
+    'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.paceGroups': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanPaceGroups,
+    'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.paceGroups.items.id': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanPaceGroupsItemsId,
+    'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.paceGroups.items.label': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanPaceGroupsItemsLabel,
+    'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.paceGroups.items.sortOrder': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanPaceGroupsItemsSortOrder,
+    'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.paceGroups.items.targetPaceSecondsPerKm': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm,
+    'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.path': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanPath,
+    'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.path.items.latitude': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanPathItemsLatitude,
+    'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.path.items.longitude': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanPathItemsLongitude,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.roleKinds': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanRoleKinds,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.roleKinds.items': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanRoleKindsItems,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.routeShape': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanRouteShape,
@@ -56592,7 +59490,18 @@ abstract final class CatchContractConstraints {
     'createEventCallablePayload.distanceKm': createEventCallablePayloadDistanceKm,
     'createEventCallablePayload.endTimeMillis': createEventCallablePayloadEndTimeMillis,
     'createEventCallablePayload.eventFormat.activityDetails.routePlan.groupStrategy': createEventCallablePayloadEventFormatActivityDetailsRoutePlanGroupStrategy,
+    'createEventCallablePayload.eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode': createEventCallablePayloadEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode,
+    'createEventCallablePayload.eventFormat.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes': createEventCallablePayloadEventFormatActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes,
+    'createEventCallablePayload.eventFormat.activityDetails.routePlan.liveTrackingPolicy.staleAfterSeconds': createEventCallablePayloadEventFormatActivityDetailsRoutePlanLiveTrackingPolicyStaleAfterSeconds,
     'createEventCallablePayload.eventFormat.activityDetails.routePlan.movementMode': createEventCallablePayloadEventFormatActivityDetailsRoutePlanMovementMode,
+    'createEventCallablePayload.eventFormat.activityDetails.routePlan.paceGroups': createEventCallablePayloadEventFormatActivityDetailsRoutePlanPaceGroups,
+    'createEventCallablePayload.eventFormat.activityDetails.routePlan.paceGroups.items.id': createEventCallablePayloadEventFormatActivityDetailsRoutePlanPaceGroupsItemsId,
+    'createEventCallablePayload.eventFormat.activityDetails.routePlan.paceGroups.items.label': createEventCallablePayloadEventFormatActivityDetailsRoutePlanPaceGroupsItemsLabel,
+    'createEventCallablePayload.eventFormat.activityDetails.routePlan.paceGroups.items.sortOrder': createEventCallablePayloadEventFormatActivityDetailsRoutePlanPaceGroupsItemsSortOrder,
+    'createEventCallablePayload.eventFormat.activityDetails.routePlan.paceGroups.items.targetPaceSecondsPerKm': createEventCallablePayloadEventFormatActivityDetailsRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm,
+    'createEventCallablePayload.eventFormat.activityDetails.routePlan.path': createEventCallablePayloadEventFormatActivityDetailsRoutePlanPath,
+    'createEventCallablePayload.eventFormat.activityDetails.routePlan.path.items.latitude': createEventCallablePayloadEventFormatActivityDetailsRoutePlanPathItemsLatitude,
+    'createEventCallablePayload.eventFormat.activityDetails.routePlan.path.items.longitude': createEventCallablePayloadEventFormatActivityDetailsRoutePlanPathItemsLongitude,
     'createEventCallablePayload.eventFormat.activityDetails.routePlan.roleKinds': createEventCallablePayloadEventFormatActivityDetailsRoutePlanRoleKinds,
     'createEventCallablePayload.eventFormat.activityDetails.routePlan.roleKinds.items': createEventCallablePayloadEventFormatActivityDetailsRoutePlanRoleKindsItems,
     'createEventCallablePayload.eventFormat.activityDetails.routePlan.routeShape': createEventCallablePayloadEventFormatActivityDetailsRoutePlanRouteShape,
@@ -56701,6 +59610,20 @@ abstract final class CatchContractConstraints {
     'createEventCallablePayload.externalOrigin.externalEventUrl': createEventCallablePayloadExternalOriginExternalEventUrl,
     'createEventCallablePayload.externalOrigin.provider': createEventCallablePayloadExternalOriginProvider,
     'createEventCallablePayload.externalOrigin.sourceExternalEventId': createEventCallablePayloadExternalOriginSourceExternalEventId,
+    'createEventCallablePayload.itinerary': createEventCallablePayloadItinerary,
+    'createEventCallablePayload.itinerary.items.description': createEventCallablePayloadItineraryItemsDescription,
+    'createEventCallablePayload.itinerary.items.durationMinutes': createEventCallablePayloadItineraryItemsDurationMinutes,
+    'createEventCallablePayload.itinerary.items.id': createEventCallablePayloadItineraryItemsId,
+    'createEventCallablePayload.itinerary.items.kind': createEventCallablePayloadItineraryItemsKind,
+    'createEventCallablePayload.itinerary.items.location.address': createEventCallablePayloadItineraryItemsLocationAddress,
+    'createEventCallablePayload.itinerary.items.location.latitude': createEventCallablePayloadItineraryItemsLocationLatitude,
+    'createEventCallablePayload.itinerary.items.location.longitude': createEventCallablePayloadItineraryItemsLocationLongitude,
+    'createEventCallablePayload.itinerary.items.location.name': createEventCallablePayloadItineraryItemsLocationName,
+    'createEventCallablePayload.itinerary.items.location.notes': createEventCallablePayloadItineraryItemsLocationNotes,
+    'createEventCallablePayload.itinerary.items.location.placeId': createEventCallablePayloadItineraryItemsLocationPlaceId,
+    'createEventCallablePayload.itinerary.items.offsetMinutes': createEventCallablePayloadItineraryItemsOffsetMinutes,
+    'createEventCallablePayload.itinerary.items.routeDistanceMeters': createEventCallablePayloadItineraryItemsRouteDistanceMeters,
+    'createEventCallablePayload.itinerary.items.title': createEventCallablePayloadItineraryItemsTitle,
     'createEventCallablePayload.locationDetails': createEventCallablePayloadLocationDetails,
     'createEventCallablePayload.meetingLocation.address': createEventCallablePayloadMeetingLocationAddress,
     'createEventCallablePayload.meetingLocation.latitude': createEventCallablePayloadMeetingLocationLatitude,
@@ -56709,6 +59632,7 @@ abstract final class CatchContractConstraints {
     'createEventCallablePayload.meetingLocation.notes': createEventCallablePayloadMeetingLocationNotes,
     'createEventCallablePayload.meetingLocation.placeId': createEventCallablePayloadMeetingLocationPlaceId,
     'createEventCallablePayload.meetingPoint': createEventCallablePayloadMeetingPoint,
+    'createEventCallablePayload.name': createEventCallablePayloadName,
     'createEventCallablePayload.organizerId': createEventCallablePayloadOrganizerId,
     'createEventCallablePayload.pace': createEventCallablePayloadPace,
     'createEventCallablePayload.photoUrl': createEventCallablePayloadPhotoUrl,
@@ -57298,7 +60222,18 @@ abstract final class CatchContractConstraints {
     'eventDocument.endTime._nanoseconds': eventDocumentEndTimeNanoseconds,
     'eventDocument.endTime._seconds': eventDocumentEndTimeSeconds,
     'eventDocument.eventFormat.activityDetails.routePlan.groupStrategy': eventDocumentEventFormatActivityDetailsRoutePlanGroupStrategy,
+    'eventDocument.eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode': eventDocumentEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode,
+    'eventDocument.eventFormat.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes': eventDocumentEventFormatActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes,
+    'eventDocument.eventFormat.activityDetails.routePlan.liveTrackingPolicy.staleAfterSeconds': eventDocumentEventFormatActivityDetailsRoutePlanLiveTrackingPolicyStaleAfterSeconds,
     'eventDocument.eventFormat.activityDetails.routePlan.movementMode': eventDocumentEventFormatActivityDetailsRoutePlanMovementMode,
+    'eventDocument.eventFormat.activityDetails.routePlan.paceGroups': eventDocumentEventFormatActivityDetailsRoutePlanPaceGroups,
+    'eventDocument.eventFormat.activityDetails.routePlan.paceGroups.items.id': eventDocumentEventFormatActivityDetailsRoutePlanPaceGroupsItemsId,
+    'eventDocument.eventFormat.activityDetails.routePlan.paceGroups.items.label': eventDocumentEventFormatActivityDetailsRoutePlanPaceGroupsItemsLabel,
+    'eventDocument.eventFormat.activityDetails.routePlan.paceGroups.items.sortOrder': eventDocumentEventFormatActivityDetailsRoutePlanPaceGroupsItemsSortOrder,
+    'eventDocument.eventFormat.activityDetails.routePlan.paceGroups.items.targetPaceSecondsPerKm': eventDocumentEventFormatActivityDetailsRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm,
+    'eventDocument.eventFormat.activityDetails.routePlan.path': eventDocumentEventFormatActivityDetailsRoutePlanPath,
+    'eventDocument.eventFormat.activityDetails.routePlan.path.items.latitude': eventDocumentEventFormatActivityDetailsRoutePlanPathItemsLatitude,
+    'eventDocument.eventFormat.activityDetails.routePlan.path.items.longitude': eventDocumentEventFormatActivityDetailsRoutePlanPathItemsLongitude,
     'eventDocument.eventFormat.activityDetails.routePlan.roleKinds': eventDocumentEventFormatActivityDetailsRoutePlanRoleKinds,
     'eventDocument.eventFormat.activityDetails.routePlan.roleKinds.items': eventDocumentEventFormatActivityDetailsRoutePlanRoleKindsItems,
     'eventDocument.eventFormat.activityDetails.routePlan.routeShape': eventDocumentEventFormatActivityDetailsRoutePlanRouteShape,
@@ -57379,6 +60314,20 @@ abstract final class CatchContractConstraints {
     'eventDocument.eventPolicy.settlement.hostPayoutTiming': eventDocumentEventPolicySettlementHostPayoutTiming,
     'eventDocument.eventPolicy.version': eventDocumentEventPolicyVersion,
     'eventDocument.genderCounts': eventDocumentGenderCounts,
+    'eventDocument.itinerary': eventDocumentItinerary,
+    'eventDocument.itinerary.items.description': eventDocumentItineraryItemsDescription,
+    'eventDocument.itinerary.items.durationMinutes': eventDocumentItineraryItemsDurationMinutes,
+    'eventDocument.itinerary.items.id': eventDocumentItineraryItemsId,
+    'eventDocument.itinerary.items.kind': eventDocumentItineraryItemsKind,
+    'eventDocument.itinerary.items.location.address': eventDocumentItineraryItemsLocationAddress,
+    'eventDocument.itinerary.items.location.latitude': eventDocumentItineraryItemsLocationLatitude,
+    'eventDocument.itinerary.items.location.longitude': eventDocumentItineraryItemsLocationLongitude,
+    'eventDocument.itinerary.items.location.name': eventDocumentItineraryItemsLocationName,
+    'eventDocument.itinerary.items.location.notes': eventDocumentItineraryItemsLocationNotes,
+    'eventDocument.itinerary.items.location.placeId': eventDocumentItineraryItemsLocationPlaceId,
+    'eventDocument.itinerary.items.offsetMinutes': eventDocumentItineraryItemsOffsetMinutes,
+    'eventDocument.itinerary.items.routeDistanceMeters': eventDocumentItineraryItemsRouteDistanceMeters,
+    'eventDocument.itinerary.items.title': eventDocumentItineraryItemsTitle,
     'eventDocument.locationDetails': eventDocumentLocationDetails,
     'eventDocument.meetingLocation.address': eventDocumentMeetingLocationAddress,
     'eventDocument.meetingLocation.latitude': eventDocumentMeetingLocationLatitude,
@@ -57387,6 +60336,7 @@ abstract final class CatchContractConstraints {
     'eventDocument.meetingLocation.notes': eventDocumentMeetingLocationNotes,
     'eventDocument.meetingLocation.placeId': eventDocumentMeetingLocationPlaceId,
     'eventDocument.meetingPoint': eventDocumentMeetingPoint,
+    'eventDocument.name': eventDocumentName,
     'eventDocument.organizerId': eventDocumentOrganizerId,
     'eventDocument.pace': eventDocumentPace,
     'eventDocument.photoUrl': eventDocumentPhotoUrl,
@@ -57515,6 +60465,23 @@ abstract final class CatchContractConstraints {
     'eventJoinRequestDecisionCallablePayload.decision': eventJoinRequestDecisionCallablePayloadDecision,
     'eventJoinRequestDecisionCallablePayload.eventId': eventJoinRequestDecisionCallablePayloadEventId,
     'eventJoinRequestDecisionCallablePayload.userId': eventJoinRequestDecisionCallablePayloadUserId,
+    'eventLivePositionDocument.accuracyMeters': eventLivePositionDocumentAccuracyMeters,
+    'eventLivePositionDocument.clubId': eventLivePositionDocumentClubId,
+    'eventLivePositionDocument.createdAt._nanoseconds': eventLivePositionDocumentCreatedAtNanoseconds,
+    'eventLivePositionDocument.createdAt._seconds': eventLivePositionDocumentCreatedAtSeconds,
+    'eventLivePositionDocument.eventId': eventLivePositionDocumentEventId,
+    'eventLivePositionDocument.expiresAt._nanoseconds': eventLivePositionDocumentExpiresAtNanoseconds,
+    'eventLivePositionDocument.expiresAt._seconds': eventLivePositionDocumentExpiresAtSeconds,
+    'eventLivePositionDocument.headingDegrees': eventLivePositionDocumentHeadingDegrees,
+    'eventLivePositionDocument.latitude': eventLivePositionDocumentLatitude,
+    'eventLivePositionDocument.longitude': eventLivePositionDocumentLongitude,
+    'eventLivePositionDocument.organizerId': eventLivePositionDocumentOrganizerId,
+    'eventLivePositionDocument.recordedAt._nanoseconds': eventLivePositionDocumentRecordedAtNanoseconds,
+    'eventLivePositionDocument.recordedAt._seconds': eventLivePositionDocumentRecordedAtSeconds,
+    'eventLivePositionDocument.role': eventLivePositionDocumentRole,
+    'eventLivePositionDocument.uid': eventLivePositionDocumentUid,
+    'eventLivePositionDocument.updatedAt._nanoseconds': eventLivePositionDocumentUpdatedAtNanoseconds,
+    'eventLivePositionDocument.updatedAt._seconds': eventLivePositionDocumentUpdatedAtSeconds,
     'eventOperatorAccessCallablePayload.eventId': eventOperatorAccessCallablePayloadEventId,
     'eventOperatorAccessCallableResponse.actorRole': eventOperatorAccessCallableResponseActorRole,
     'eventOperatorAccessCallableResponse.endAtMillis': eventOperatorAccessCallableResponseEndAtMillis,
@@ -57651,6 +60618,46 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.session.setup.locationName': eventRehearsalBootstrapCallableResponseSessionSetupLocationName,
     'eventRehearsalBootstrapCallableResponse.session.setup.moduleIds': eventRehearsalBootstrapCallableResponseSessionSetupModuleIds,
     'eventRehearsalBootstrapCallableResponse.session.setup.moduleIds.items': eventRehearsalBootstrapCallableResponseSessionSetupModuleIdsItems,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.itinerary': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationItinerary,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.itinerary.items.description': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationItineraryItemsDescription,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.itinerary.items.durationMinutes': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationItineraryItemsDurationMinutes,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.itinerary.items.id': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationItineraryItemsId,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.itinerary.items.kind': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationItineraryItemsKind,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.itinerary.items.location.address': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationItineraryItemsLocationAddress,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.itinerary.items.location.latitude': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationItineraryItemsLocationLatitude,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.itinerary.items.location.longitude': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationItineraryItemsLocationLongitude,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.itinerary.items.location.name': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationItineraryItemsLocationName,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.itinerary.items.location.notes': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationItineraryItemsLocationNotes,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.itinerary.items.location.placeId': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationItineraryItemsLocationPlaceId,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.itinerary.items.offsetMinutes': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationItineraryItemsOffsetMinutes,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.itinerary.items.routeDistanceMeters': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationItineraryItemsRouteDistanceMeters,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.itinerary.items.title': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationItineraryItemsTitle,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.lateArrivalGuidance': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationLateArrivalGuidance,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.livePositions': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationLivePositions,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.livePositions.items.latitude': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationLivePositionsItemsLatitude,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.livePositions.items.longitude': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationLivePositionsItemsLongitude,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.livePositions.items.recordedOffsetMinutes': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationLivePositionsItemsRecordedOffsetMinutes,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.livePositions.items.role': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationLivePositionsItemsRole,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.groupStrategy': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanGroupStrategy,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.liveTrackingPolicy.mode': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanLiveTrackingPolicyMode,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.liveTrackingPolicy.retentionMinutes': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanLiveTrackingPolicyRetentionMinutes,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.liveTrackingPolicy.staleAfterSeconds': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanLiveTrackingPolicyStaleAfterSeconds,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.movementMode': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanMovementMode,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.paceGroups': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanPaceGroups,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.paceGroups.items.id': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanPaceGroupsItemsId,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.paceGroups.items.label': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanPaceGroupsItemsLabel,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.paceGroups.items.sortOrder': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanPaceGroupsItemsSortOrder,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.paceGroups.items.targetPaceSecondsPerKm': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.path': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanPath,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.path.items.latitude': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanPathItemsLatitude,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.path.items.longitude': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanPathItemsLongitude,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.roleKinds': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanRoleKinds,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.roleKinds.items': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanRoleKindsItems,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.routeShape': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanRouteShape,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.stopCadence': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanStopCadence,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.stopKinds': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanStopKinds,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.stopKinds.items': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanStopKindsItems,
+    'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.version': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanVersion,
     'eventRehearsalBootstrapCallableResponse.session.setup.title': eventRehearsalBootstrapCallableResponseSessionSetupTitle,
     'eventRehearsalBootstrapCallableResponse.session.setupRevision': eventRehearsalBootstrapCallableResponseSessionSetupRevision,
     'eventRehearsalBootstrapCallableResponse.session.sourceEventId': eventRehearsalBootstrapCallableResponseSessionSourceEventId,
@@ -57680,6 +60687,46 @@ abstract final class CatchContractConstraints {
     'eventRehearsalDocument.setup.locationName': eventRehearsalDocumentSetupLocationName,
     'eventRehearsalDocument.setup.moduleIds': eventRehearsalDocumentSetupModuleIds,
     'eventRehearsalDocument.setup.moduleIds.items': eventRehearsalDocumentSetupModuleIdsItems,
+    'eventRehearsalDocument.setup.movementSimulation.itinerary': eventRehearsalDocumentSetupMovementSimulationItinerary,
+    'eventRehearsalDocument.setup.movementSimulation.itinerary.items.description': eventRehearsalDocumentSetupMovementSimulationItineraryItemsDescription,
+    'eventRehearsalDocument.setup.movementSimulation.itinerary.items.durationMinutes': eventRehearsalDocumentSetupMovementSimulationItineraryItemsDurationMinutes,
+    'eventRehearsalDocument.setup.movementSimulation.itinerary.items.id': eventRehearsalDocumentSetupMovementSimulationItineraryItemsId,
+    'eventRehearsalDocument.setup.movementSimulation.itinerary.items.kind': eventRehearsalDocumentSetupMovementSimulationItineraryItemsKind,
+    'eventRehearsalDocument.setup.movementSimulation.itinerary.items.location.address': eventRehearsalDocumentSetupMovementSimulationItineraryItemsLocationAddress,
+    'eventRehearsalDocument.setup.movementSimulation.itinerary.items.location.latitude': eventRehearsalDocumentSetupMovementSimulationItineraryItemsLocationLatitude,
+    'eventRehearsalDocument.setup.movementSimulation.itinerary.items.location.longitude': eventRehearsalDocumentSetupMovementSimulationItineraryItemsLocationLongitude,
+    'eventRehearsalDocument.setup.movementSimulation.itinerary.items.location.name': eventRehearsalDocumentSetupMovementSimulationItineraryItemsLocationName,
+    'eventRehearsalDocument.setup.movementSimulation.itinerary.items.location.notes': eventRehearsalDocumentSetupMovementSimulationItineraryItemsLocationNotes,
+    'eventRehearsalDocument.setup.movementSimulation.itinerary.items.location.placeId': eventRehearsalDocumentSetupMovementSimulationItineraryItemsLocationPlaceId,
+    'eventRehearsalDocument.setup.movementSimulation.itinerary.items.offsetMinutes': eventRehearsalDocumentSetupMovementSimulationItineraryItemsOffsetMinutes,
+    'eventRehearsalDocument.setup.movementSimulation.itinerary.items.routeDistanceMeters': eventRehearsalDocumentSetupMovementSimulationItineraryItemsRouteDistanceMeters,
+    'eventRehearsalDocument.setup.movementSimulation.itinerary.items.title': eventRehearsalDocumentSetupMovementSimulationItineraryItemsTitle,
+    'eventRehearsalDocument.setup.movementSimulation.lateArrivalGuidance': eventRehearsalDocumentSetupMovementSimulationLateArrivalGuidance,
+    'eventRehearsalDocument.setup.movementSimulation.livePositions': eventRehearsalDocumentSetupMovementSimulationLivePositions,
+    'eventRehearsalDocument.setup.movementSimulation.livePositions.items.latitude': eventRehearsalDocumentSetupMovementSimulationLivePositionsItemsLatitude,
+    'eventRehearsalDocument.setup.movementSimulation.livePositions.items.longitude': eventRehearsalDocumentSetupMovementSimulationLivePositionsItemsLongitude,
+    'eventRehearsalDocument.setup.movementSimulation.livePositions.items.recordedOffsetMinutes': eventRehearsalDocumentSetupMovementSimulationLivePositionsItemsRecordedOffsetMinutes,
+    'eventRehearsalDocument.setup.movementSimulation.livePositions.items.role': eventRehearsalDocumentSetupMovementSimulationLivePositionsItemsRole,
+    'eventRehearsalDocument.setup.movementSimulation.routePlan.groupStrategy': eventRehearsalDocumentSetupMovementSimulationRoutePlanGroupStrategy,
+    'eventRehearsalDocument.setup.movementSimulation.routePlan.liveTrackingPolicy.mode': eventRehearsalDocumentSetupMovementSimulationRoutePlanLiveTrackingPolicyMode,
+    'eventRehearsalDocument.setup.movementSimulation.routePlan.liveTrackingPolicy.retentionMinutes': eventRehearsalDocumentSetupMovementSimulationRoutePlanLiveTrackingPolicyRetentionMinutes,
+    'eventRehearsalDocument.setup.movementSimulation.routePlan.liveTrackingPolicy.staleAfterSeconds': eventRehearsalDocumentSetupMovementSimulationRoutePlanLiveTrackingPolicyStaleAfterSeconds,
+    'eventRehearsalDocument.setup.movementSimulation.routePlan.movementMode': eventRehearsalDocumentSetupMovementSimulationRoutePlanMovementMode,
+    'eventRehearsalDocument.setup.movementSimulation.routePlan.paceGroups': eventRehearsalDocumentSetupMovementSimulationRoutePlanPaceGroups,
+    'eventRehearsalDocument.setup.movementSimulation.routePlan.paceGroups.items.id': eventRehearsalDocumentSetupMovementSimulationRoutePlanPaceGroupsItemsId,
+    'eventRehearsalDocument.setup.movementSimulation.routePlan.paceGroups.items.label': eventRehearsalDocumentSetupMovementSimulationRoutePlanPaceGroupsItemsLabel,
+    'eventRehearsalDocument.setup.movementSimulation.routePlan.paceGroups.items.sortOrder': eventRehearsalDocumentSetupMovementSimulationRoutePlanPaceGroupsItemsSortOrder,
+    'eventRehearsalDocument.setup.movementSimulation.routePlan.paceGroups.items.targetPaceSecondsPerKm': eventRehearsalDocumentSetupMovementSimulationRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm,
+    'eventRehearsalDocument.setup.movementSimulation.routePlan.path': eventRehearsalDocumentSetupMovementSimulationRoutePlanPath,
+    'eventRehearsalDocument.setup.movementSimulation.routePlan.path.items.latitude': eventRehearsalDocumentSetupMovementSimulationRoutePlanPathItemsLatitude,
+    'eventRehearsalDocument.setup.movementSimulation.routePlan.path.items.longitude': eventRehearsalDocumentSetupMovementSimulationRoutePlanPathItemsLongitude,
+    'eventRehearsalDocument.setup.movementSimulation.routePlan.roleKinds': eventRehearsalDocumentSetupMovementSimulationRoutePlanRoleKinds,
+    'eventRehearsalDocument.setup.movementSimulation.routePlan.roleKinds.items': eventRehearsalDocumentSetupMovementSimulationRoutePlanRoleKindsItems,
+    'eventRehearsalDocument.setup.movementSimulation.routePlan.routeShape': eventRehearsalDocumentSetupMovementSimulationRoutePlanRouteShape,
+    'eventRehearsalDocument.setup.movementSimulation.routePlan.stopCadence': eventRehearsalDocumentSetupMovementSimulationRoutePlanStopCadence,
+    'eventRehearsalDocument.setup.movementSimulation.routePlan.stopKinds': eventRehearsalDocumentSetupMovementSimulationRoutePlanStopKinds,
+    'eventRehearsalDocument.setup.movementSimulation.routePlan.stopKinds.items': eventRehearsalDocumentSetupMovementSimulationRoutePlanStopKindsItems,
+    'eventRehearsalDocument.setup.movementSimulation.routePlan.version': eventRehearsalDocumentSetupMovementSimulationRoutePlanVersion,
     'eventRehearsalDocument.setup.title': eventRehearsalDocumentSetupTitle,
     'eventRehearsalDocument.setupRevision': eventRehearsalDocumentSetupRevision,
     'eventRehearsalDocument.sourceEventId': eventRehearsalDocumentSourceEventId,
@@ -57706,6 +60753,46 @@ abstract final class CatchContractConstraints {
     'eventRehearsalGuestBootstrapCallableResponse.session.locationName': eventRehearsalGuestBootstrapCallableResponseSessionLocationName,
     'eventRehearsalGuestBootstrapCallableResponse.session.moduleIds': eventRehearsalGuestBootstrapCallableResponseSessionModuleIds,
     'eventRehearsalGuestBootstrapCallableResponse.session.moduleIds.items': eventRehearsalGuestBootstrapCallableResponseSessionModuleIdsItems,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.itinerary': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationItinerary,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.itinerary.items.description': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationItineraryItemsDescription,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.itinerary.items.durationMinutes': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationItineraryItemsDurationMinutes,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.itinerary.items.id': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationItineraryItemsId,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.itinerary.items.kind': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationItineraryItemsKind,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.itinerary.items.location.address': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationItineraryItemsLocationAddress,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.itinerary.items.location.latitude': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationItineraryItemsLocationLatitude,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.itinerary.items.location.longitude': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationItineraryItemsLocationLongitude,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.itinerary.items.location.name': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationItineraryItemsLocationName,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.itinerary.items.location.notes': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationItineraryItemsLocationNotes,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.itinerary.items.location.placeId': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationItineraryItemsLocationPlaceId,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.itinerary.items.offsetMinutes': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationItineraryItemsOffsetMinutes,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.itinerary.items.routeDistanceMeters': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationItineraryItemsRouteDistanceMeters,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.itinerary.items.title': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationItineraryItemsTitle,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.lateArrivalGuidance': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationLateArrivalGuidance,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.livePositions': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationLivePositions,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.livePositions.items.latitude': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationLivePositionsItemsLatitude,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.livePositions.items.longitude': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationLivePositionsItemsLongitude,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.livePositions.items.recordedOffsetMinutes': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationLivePositionsItemsRecordedOffsetMinutes,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.livePositions.items.role': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationLivePositionsItemsRole,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.groupStrategy': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanGroupStrategy,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.liveTrackingPolicy.mode': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanLiveTrackingPolicyMode,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.liveTrackingPolicy.retentionMinutes': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanLiveTrackingPolicyRetentionMinutes,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.liveTrackingPolicy.staleAfterSeconds': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanLiveTrackingPolicyStaleAfterSeconds,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.movementMode': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanMovementMode,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.paceGroups': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanPaceGroups,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.paceGroups.items.id': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanPaceGroupsItemsId,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.paceGroups.items.label': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanPaceGroupsItemsLabel,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.paceGroups.items.sortOrder': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanPaceGroupsItemsSortOrder,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.paceGroups.items.targetPaceSecondsPerKm': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.path': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanPath,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.path.items.latitude': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanPathItemsLatitude,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.path.items.longitude': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanPathItemsLongitude,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.roleKinds': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanRoleKinds,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.roleKinds.items': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanRoleKindsItems,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.routeShape': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanRouteShape,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.stopCadence': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanStopCadence,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.stopKinds': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanStopKinds,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.stopKinds.items': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanStopKindsItems,
+    'eventRehearsalGuestBootstrapCallableResponse.session.movementSimulation.routePlan.version': eventRehearsalGuestBootstrapCallableResponseSessionMovementSimulationRoutePlanVersion,
     'eventRehearsalGuestBootstrapCallableResponse.session.runtimeRevision': eventRehearsalGuestBootstrapCallableResponseSessionRuntimeRevision,
     'eventRehearsalGuestBootstrapCallableResponse.session.status': eventRehearsalGuestBootstrapCallableResponseSessionStatus,
     'eventRehearsalGuestBootstrapCallableResponse.session.title': eventRehearsalGuestBootstrapCallableResponseSessionTitle,
@@ -57733,6 +60820,46 @@ abstract final class CatchContractConstraints {
     'eventRehearsalReproductionCallableResponse.setup.locationName': eventRehearsalReproductionCallableResponseSetupLocationName,
     'eventRehearsalReproductionCallableResponse.setup.moduleIds': eventRehearsalReproductionCallableResponseSetupModuleIds,
     'eventRehearsalReproductionCallableResponse.setup.moduleIds.items': eventRehearsalReproductionCallableResponseSetupModuleIdsItems,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.itinerary': eventRehearsalReproductionCallableResponseSetupMovementSimulationItinerary,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.itinerary.items.description': eventRehearsalReproductionCallableResponseSetupMovementSimulationItineraryItemsDescription,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.itinerary.items.durationMinutes': eventRehearsalReproductionCallableResponseSetupMovementSimulationItineraryItemsDurationMinutes,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.itinerary.items.id': eventRehearsalReproductionCallableResponseSetupMovementSimulationItineraryItemsId,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.itinerary.items.kind': eventRehearsalReproductionCallableResponseSetupMovementSimulationItineraryItemsKind,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.itinerary.items.location.address': eventRehearsalReproductionCallableResponseSetupMovementSimulationItineraryItemsLocationAddress,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.itinerary.items.location.latitude': eventRehearsalReproductionCallableResponseSetupMovementSimulationItineraryItemsLocationLatitude,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.itinerary.items.location.longitude': eventRehearsalReproductionCallableResponseSetupMovementSimulationItineraryItemsLocationLongitude,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.itinerary.items.location.name': eventRehearsalReproductionCallableResponseSetupMovementSimulationItineraryItemsLocationName,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.itinerary.items.location.notes': eventRehearsalReproductionCallableResponseSetupMovementSimulationItineraryItemsLocationNotes,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.itinerary.items.location.placeId': eventRehearsalReproductionCallableResponseSetupMovementSimulationItineraryItemsLocationPlaceId,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.itinerary.items.offsetMinutes': eventRehearsalReproductionCallableResponseSetupMovementSimulationItineraryItemsOffsetMinutes,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.itinerary.items.routeDistanceMeters': eventRehearsalReproductionCallableResponseSetupMovementSimulationItineraryItemsRouteDistanceMeters,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.itinerary.items.title': eventRehearsalReproductionCallableResponseSetupMovementSimulationItineraryItemsTitle,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.lateArrivalGuidance': eventRehearsalReproductionCallableResponseSetupMovementSimulationLateArrivalGuidance,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.livePositions': eventRehearsalReproductionCallableResponseSetupMovementSimulationLivePositions,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.livePositions.items.latitude': eventRehearsalReproductionCallableResponseSetupMovementSimulationLivePositionsItemsLatitude,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.livePositions.items.longitude': eventRehearsalReproductionCallableResponseSetupMovementSimulationLivePositionsItemsLongitude,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.livePositions.items.recordedOffsetMinutes': eventRehearsalReproductionCallableResponseSetupMovementSimulationLivePositionsItemsRecordedOffsetMinutes,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.livePositions.items.role': eventRehearsalReproductionCallableResponseSetupMovementSimulationLivePositionsItemsRole,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.groupStrategy': eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanGroupStrategy,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.liveTrackingPolicy.mode': eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanLiveTrackingPolicyMode,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.liveTrackingPolicy.retentionMinutes': eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanLiveTrackingPolicyRetentionMinutes,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.liveTrackingPolicy.staleAfterSeconds': eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanLiveTrackingPolicyStaleAfterSeconds,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.movementMode': eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanMovementMode,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.paceGroups': eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanPaceGroups,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.paceGroups.items.id': eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanPaceGroupsItemsId,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.paceGroups.items.label': eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanPaceGroupsItemsLabel,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.paceGroups.items.sortOrder': eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanPaceGroupsItemsSortOrder,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.paceGroups.items.targetPaceSecondsPerKm': eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.path': eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanPath,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.path.items.latitude': eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanPathItemsLatitude,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.path.items.longitude': eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanPathItemsLongitude,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.roleKinds': eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanRoleKinds,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.roleKinds.items': eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanRoleKindsItems,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.routeShape': eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanRouteShape,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.stopCadence': eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanStopCadence,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.stopKinds': eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanStopKinds,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.stopKinds.items': eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanStopKindsItems,
+    'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.version': eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanVersion,
     'eventRehearsalReproductionCallableResponse.setup.title': eventRehearsalReproductionCallableResponseSetupTitle,
     'eventRosterHandoffDocument.clubId': eventRosterHandoffDocumentClubId,
     'eventRosterHandoffDocument.createdAt._nanoseconds': eventRosterHandoffDocumentCreatedAtNanoseconds,
@@ -58625,6 +61752,20 @@ abstract final class CatchContractConstraints {
     'getEventRuntimeBootstrapCallableResponse.event.endTimeMillis': getEventRuntimeBootstrapCallableResponseEventEndTimeMillis,
     'getEventRuntimeBootstrapCallableResponse.event.eventId': getEventRuntimeBootstrapCallableResponseEventEventId,
     'getEventRuntimeBootstrapCallableResponse.event.interactionModel': getEventRuntimeBootstrapCallableResponseEventInteractionModel,
+    'getEventRuntimeBootstrapCallableResponse.event.itinerary': getEventRuntimeBootstrapCallableResponseEventItinerary,
+    'getEventRuntimeBootstrapCallableResponse.event.itinerary.items.description': getEventRuntimeBootstrapCallableResponseEventItineraryItemsDescription,
+    'getEventRuntimeBootstrapCallableResponse.event.itinerary.items.durationMinutes': getEventRuntimeBootstrapCallableResponseEventItineraryItemsDurationMinutes,
+    'getEventRuntimeBootstrapCallableResponse.event.itinerary.items.id': getEventRuntimeBootstrapCallableResponseEventItineraryItemsId,
+    'getEventRuntimeBootstrapCallableResponse.event.itinerary.items.kind': getEventRuntimeBootstrapCallableResponseEventItineraryItemsKind,
+    'getEventRuntimeBootstrapCallableResponse.event.itinerary.items.location.address': getEventRuntimeBootstrapCallableResponseEventItineraryItemsLocationAddress,
+    'getEventRuntimeBootstrapCallableResponse.event.itinerary.items.location.latitude': getEventRuntimeBootstrapCallableResponseEventItineraryItemsLocationLatitude,
+    'getEventRuntimeBootstrapCallableResponse.event.itinerary.items.location.longitude': getEventRuntimeBootstrapCallableResponseEventItineraryItemsLocationLongitude,
+    'getEventRuntimeBootstrapCallableResponse.event.itinerary.items.location.name': getEventRuntimeBootstrapCallableResponseEventItineraryItemsLocationName,
+    'getEventRuntimeBootstrapCallableResponse.event.itinerary.items.location.notes': getEventRuntimeBootstrapCallableResponseEventItineraryItemsLocationNotes,
+    'getEventRuntimeBootstrapCallableResponse.event.itinerary.items.location.placeId': getEventRuntimeBootstrapCallableResponseEventItineraryItemsLocationPlaceId,
+    'getEventRuntimeBootstrapCallableResponse.event.itinerary.items.offsetMinutes': getEventRuntimeBootstrapCallableResponseEventItineraryItemsOffsetMinutes,
+    'getEventRuntimeBootstrapCallableResponse.event.itinerary.items.routeDistanceMeters': getEventRuntimeBootstrapCallableResponseEventItineraryItemsRouteDistanceMeters,
+    'getEventRuntimeBootstrapCallableResponse.event.itinerary.items.title': getEventRuntimeBootstrapCallableResponseEventItineraryItemsTitle,
     'getEventRuntimeBootstrapCallableResponse.event.layout.label': getEventRuntimeBootstrapCallableResponseEventLayoutLabel,
     'getEventRuntimeBootstrapCallableResponse.event.layout.layoutId': getEventRuntimeBootstrapCallableResponseEventLayoutLayoutId,
     'getEventRuntimeBootstrapCallableResponse.event.layout.units': getEventRuntimeBootstrapCallableResponseEventLayoutUnits,
@@ -58635,6 +61776,14 @@ abstract final class CatchContractConstraints {
     'getEventRuntimeBootstrapCallableResponse.event.layout.units.items.label': getEventRuntimeBootstrapCallableResponseEventLayoutUnitsItemsLabel,
     'getEventRuntimeBootstrapCallableResponse.event.layout.units.items.order': getEventRuntimeBootstrapCallableResponseEventLayoutUnitsItemsOrder,
     'getEventRuntimeBootstrapCallableResponse.event.layout.units.items.shape': getEventRuntimeBootstrapCallableResponseEventLayoutUnitsItemsShape,
+    'getEventRuntimeBootstrapCallableResponse.event.livePositions': getEventRuntimeBootstrapCallableResponseEventLivePositions,
+    'getEventRuntimeBootstrapCallableResponse.event.livePositions.items.accuracyMeters': getEventRuntimeBootstrapCallableResponseEventLivePositionsItemsAccuracyMeters,
+    'getEventRuntimeBootstrapCallableResponse.event.livePositions.items.headingDegrees': getEventRuntimeBootstrapCallableResponseEventLivePositionsItemsHeadingDegrees,
+    'getEventRuntimeBootstrapCallableResponse.event.livePositions.items.latitude': getEventRuntimeBootstrapCallableResponseEventLivePositionsItemsLatitude,
+    'getEventRuntimeBootstrapCallableResponse.event.livePositions.items.longitude': getEventRuntimeBootstrapCallableResponseEventLivePositionsItemsLongitude,
+    'getEventRuntimeBootstrapCallableResponse.event.livePositions.items.recordedAtMillis': getEventRuntimeBootstrapCallableResponseEventLivePositionsItemsRecordedAtMillis,
+    'getEventRuntimeBootstrapCallableResponse.event.livePositions.items.role': getEventRuntimeBootstrapCallableResponseEventLivePositionsItemsRole,
+    'getEventRuntimeBootstrapCallableResponse.event.livePositions.items.staleAtMillis': getEventRuntimeBootstrapCallableResponseEventLivePositionsItemsStaleAtMillis,
     'getEventRuntimeBootstrapCallableResponse.event.locationName': getEventRuntimeBootstrapCallableResponseEventLocationName,
     'getEventRuntimeBootstrapCallableResponse.event.moduleIds': getEventRuntimeBootstrapCallableResponseEventModuleIds,
     'getEventRuntimeBootstrapCallableResponse.event.moduleIds.items': getEventRuntimeBootstrapCallableResponseEventModuleIdsItems,
@@ -58651,7 +61800,28 @@ abstract final class CatchContractConstraints {
     'getEventRuntimeBootstrapCallableResponse.event.questionnaireConfig.templateId': getEventRuntimeBootstrapCallableResponseEventQuestionnaireConfigTemplateId,
     'getEventRuntimeBootstrapCallableResponse.event.requiredFieldIds': getEventRuntimeBootstrapCallableResponseEventRequiredFieldIds,
     'getEventRuntimeBootstrapCallableResponse.event.requiredFieldIds.items': getEventRuntimeBootstrapCallableResponseEventRequiredFieldIdsItems,
+    'getEventRuntimeBootstrapCallableResponse.event.routePlan.groupStrategy': getEventRuntimeBootstrapCallableResponseEventRoutePlanGroupStrategy,
+    'getEventRuntimeBootstrapCallableResponse.event.routePlan.liveTrackingPolicy.mode': getEventRuntimeBootstrapCallableResponseEventRoutePlanLiveTrackingPolicyMode,
+    'getEventRuntimeBootstrapCallableResponse.event.routePlan.liveTrackingPolicy.retentionMinutes': getEventRuntimeBootstrapCallableResponseEventRoutePlanLiveTrackingPolicyRetentionMinutes,
+    'getEventRuntimeBootstrapCallableResponse.event.routePlan.liveTrackingPolicy.staleAfterSeconds': getEventRuntimeBootstrapCallableResponseEventRoutePlanLiveTrackingPolicyStaleAfterSeconds,
+    'getEventRuntimeBootstrapCallableResponse.event.routePlan.movementMode': getEventRuntimeBootstrapCallableResponseEventRoutePlanMovementMode,
+    'getEventRuntimeBootstrapCallableResponse.event.routePlan.paceGroups': getEventRuntimeBootstrapCallableResponseEventRoutePlanPaceGroups,
+    'getEventRuntimeBootstrapCallableResponse.event.routePlan.paceGroups.items.id': getEventRuntimeBootstrapCallableResponseEventRoutePlanPaceGroupsItemsId,
+    'getEventRuntimeBootstrapCallableResponse.event.routePlan.paceGroups.items.label': getEventRuntimeBootstrapCallableResponseEventRoutePlanPaceGroupsItemsLabel,
+    'getEventRuntimeBootstrapCallableResponse.event.routePlan.paceGroups.items.sortOrder': getEventRuntimeBootstrapCallableResponseEventRoutePlanPaceGroupsItemsSortOrder,
+    'getEventRuntimeBootstrapCallableResponse.event.routePlan.paceGroups.items.targetPaceSecondsPerKm': getEventRuntimeBootstrapCallableResponseEventRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm,
+    'getEventRuntimeBootstrapCallableResponse.event.routePlan.path': getEventRuntimeBootstrapCallableResponseEventRoutePlanPath,
+    'getEventRuntimeBootstrapCallableResponse.event.routePlan.path.items.latitude': getEventRuntimeBootstrapCallableResponseEventRoutePlanPathItemsLatitude,
+    'getEventRuntimeBootstrapCallableResponse.event.routePlan.path.items.longitude': getEventRuntimeBootstrapCallableResponseEventRoutePlanPathItemsLongitude,
+    'getEventRuntimeBootstrapCallableResponse.event.routePlan.roleKinds': getEventRuntimeBootstrapCallableResponseEventRoutePlanRoleKinds,
+    'getEventRuntimeBootstrapCallableResponse.event.routePlan.roleKinds.items': getEventRuntimeBootstrapCallableResponseEventRoutePlanRoleKindsItems,
+    'getEventRuntimeBootstrapCallableResponse.event.routePlan.routeShape': getEventRuntimeBootstrapCallableResponseEventRoutePlanRouteShape,
+    'getEventRuntimeBootstrapCallableResponse.event.routePlan.stopCadence': getEventRuntimeBootstrapCallableResponseEventRoutePlanStopCadence,
+    'getEventRuntimeBootstrapCallableResponse.event.routePlan.stopKinds': getEventRuntimeBootstrapCallableResponseEventRoutePlanStopKinds,
+    'getEventRuntimeBootstrapCallableResponse.event.routePlan.stopKinds.items': getEventRuntimeBootstrapCallableResponseEventRoutePlanStopKindsItems,
+    'getEventRuntimeBootstrapCallableResponse.event.routePlan.version': getEventRuntimeBootstrapCallableResponseEventRoutePlanVersion,
     'getEventRuntimeBootstrapCallableResponse.event.runtimeTermsVersion': getEventRuntimeBootstrapCallableResponseEventRuntimeTermsVersion,
+    'getEventRuntimeBootstrapCallableResponse.event.serverTimeMillis': getEventRuntimeBootstrapCallableResponseEventServerTimeMillis,
     'getEventRuntimeBootstrapCallableResponse.event.startTimeMillis': getEventRuntimeBootstrapCallableResponseEventStartTimeMillis,
     'getEventRuntimeBootstrapCallableResponse.event.title': getEventRuntimeBootstrapCallableResponseEventTitle,
     'getEventRuntimeBootstrapCallableResponse.participant.accessStatus': getEventRuntimeBootstrapCallableResponseParticipantAccessStatus,
@@ -61905,6 +65075,17 @@ abstract final class CatchContractConstraints {
     'publicRouteReservationDocument.targetPath': publicRouteReservationDocumentTargetPath,
     'publicRouteReservationDocument.updatedAt._nanoseconds': publicRouteReservationDocumentUpdatedAtNanoseconds,
     'publicRouteReservationDocument.updatedAt._seconds': publicRouteReservationDocumentUpdatedAtSeconds,
+    'publishEventLivePositionCallablePayload.accuracyMeters': publishEventLivePositionCallablePayloadAccuracyMeters,
+    'publishEventLivePositionCallablePayload.eventId': publishEventLivePositionCallablePayloadEventId,
+    'publishEventLivePositionCallablePayload.headingDegrees': publishEventLivePositionCallablePayloadHeadingDegrees,
+    'publishEventLivePositionCallablePayload.latitude': publishEventLivePositionCallablePayloadLatitude,
+    'publishEventLivePositionCallablePayload.longitude': publishEventLivePositionCallablePayloadLongitude,
+    'publishEventLivePositionCallablePayload.sharing': publishEventLivePositionCallablePayloadSharing,
+    'publishEventLivePositionCallableResponse.expiresAtMillis': publishEventLivePositionCallableResponseExpiresAtMillis,
+    'publishEventLivePositionCallableResponse.role': publishEventLivePositionCallableResponseRole,
+    'publishEventLivePositionCallableResponse.serverTimeMillis': publishEventLivePositionCallableResponseServerTimeMillis,
+    'publishEventLivePositionCallableResponse.sharing': publishEventLivePositionCallableResponseSharing,
+    'publishEventLivePositionCallableResponse.staleAfterSeconds': publishEventLivePositionCallableResponseStaleAfterSeconds,
     'publishEventSuccessRotationRoundCallablePayload.confirmed': publishEventSuccessRotationRoundCallablePayloadConfirmed,
     'publishEventSuccessRotationRoundCallablePayload.eventId': publishEventSuccessRotationRoundCallablePayloadEventId,
     'publishEventSuccessRotationRoundCallablePayload.expectedRevision': publishEventSuccessRotationRoundCallablePayloadExpectedRevision,
@@ -62483,6 +65664,41 @@ abstract final class CatchContractConstraints {
     'updateEventCallablePayload.fields.description': updateEventCallablePayloadFieldsDescription,
     'updateEventCallablePayload.fields.distanceKm': updateEventCallablePayloadFieldsDistanceKm,
     'updateEventCallablePayload.fields.endTimeMillis': updateEventCallablePayloadFieldsEndTimeMillis,
+    'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.groupStrategy': updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanGroupStrategy,
+    'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode': updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode,
+    'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes': updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes,
+    'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.liveTrackingPolicy.staleAfterSeconds': updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanLiveTrackingPolicyStaleAfterSeconds,
+    'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.movementMode': updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanMovementMode,
+    'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.paceGroups': updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanPaceGroups,
+    'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.paceGroups.items.id': updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanPaceGroupsItemsId,
+    'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.paceGroups.items.label': updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanPaceGroupsItemsLabel,
+    'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.paceGroups.items.sortOrder': updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanPaceGroupsItemsSortOrder,
+    'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.paceGroups.items.targetPaceSecondsPerKm': updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm,
+    'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.path': updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanPath,
+    'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.path.items.latitude': updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanPathItemsLatitude,
+    'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.path.items.longitude': updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanPathItemsLongitude,
+    'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.roleKinds': updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanRoleKinds,
+    'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.roleKinds.items': updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanRoleKindsItems,
+    'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.routeShape': updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanRouteShape,
+    'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.stopCadence': updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanStopCadence,
+    'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.stopKinds': updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanStopKinds,
+    'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.stopKinds.items': updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanStopKindsItems,
+    'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.version': updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanVersion,
+    'updateEventCallablePayload.fields.eventFormat.activityKind': updateEventCallablePayloadFieldsEventFormatActivityKind,
+    'updateEventCallablePayload.fields.eventFormat.customActivityLabel': updateEventCallablePayloadFieldsEventFormatCustomActivityLabel,
+    'updateEventCallablePayload.fields.eventFormat.defaultModuleIds': updateEventCallablePayloadFieldsEventFormatDefaultModuleIds,
+    'updateEventCallablePayload.fields.eventFormat.defaultModuleIds.items': updateEventCallablePayloadFieldsEventFormatDefaultModuleIdsItems,
+    'updateEventCallablePayload.fields.eventFormat.defaultPlaybookId': updateEventCallablePayloadFieldsEventFormatDefaultPlaybookId,
+    'updateEventCallablePayload.fields.eventFormat.eventSuccessPrimitives.accountability': updateEventCallablePayloadFieldsEventFormatEventSuccessPrimitivesAccountability,
+    'updateEventCallablePayload.fields.eventFormat.eventSuccessPrimitives.assignmentAlgorithm': updateEventCallablePayloadFieldsEventFormatEventSuccessPrimitivesAssignmentAlgorithm,
+    'updateEventCallablePayload.fields.eventFormat.eventSuccessPrimitives.compatibilityPolicy': updateEventCallablePayloadFieldsEventFormatEventSuccessPrimitivesCompatibilityPolicy,
+    'updateEventCallablePayload.fields.eventFormat.eventSuccessPrimitives.durationShape': updateEventCallablePayloadFieldsEventFormatEventSuccessPrimitivesDurationShape,
+    'updateEventCallablePayload.fields.eventFormat.eventSuccessPrimitives.matchingObjective': updateEventCallablePayloadFieldsEventFormatEventSuccessPrimitivesMatchingObjective,
+    'updateEventCallablePayload.fields.eventFormat.eventSuccessPrimitives.phoneAvailability': updateEventCallablePayloadFieldsEventFormatEventSuccessPrimitivesPhoneAvailability,
+    'updateEventCallablePayload.fields.eventFormat.eventSuccessPrimitives.rotationSuitability': updateEventCallablePayloadFieldsEventFormatEventSuccessPrimitivesRotationSuitability,
+    'updateEventCallablePayload.fields.eventFormat.eventSuccessPrimitives.unitOutcome': updateEventCallablePayloadFieldsEventFormatEventSuccessPrimitivesUnitOutcome,
+    'updateEventCallablePayload.fields.eventFormat.interactionModel': updateEventCallablePayloadFieldsEventFormatInteractionModel,
+    'updateEventCallablePayload.fields.eventFormat.version': updateEventCallablePayloadFieldsEventFormatVersion,
     'updateEventCallablePayload.fields.eventPhotos': updateEventCallablePayloadFieldsEventPhotos,
     'updateEventCallablePayload.fields.eventPhotos.items.createdAt._nanoseconds': updateEventCallablePayloadFieldsEventPhotosItemsCreatedAtNanoseconds,
     'updateEventCallablePayload.fields.eventPhotos.items.createdAt._seconds': updateEventCallablePayloadFieldsEventPhotosItemsCreatedAtSeconds,
@@ -62529,6 +65745,20 @@ abstract final class CatchContractConstraints {
     'updateEventCallablePayload.fields.eventPolicy.pricing.demandPricingRules.items.stepAdjustmentInPaise': updateEventCallablePayloadFieldsEventPolicyPricingDemandPricingRulesItemsStepAdjustmentInPaise,
     'updateEventCallablePayload.fields.eventPolicy.settlement.hostPayoutTiming': updateEventCallablePayloadFieldsEventPolicySettlementHostPayoutTiming,
     'updateEventCallablePayload.fields.eventPolicy.version': updateEventCallablePayloadFieldsEventPolicyVersion,
+    'updateEventCallablePayload.fields.itinerary': updateEventCallablePayloadFieldsItinerary,
+    'updateEventCallablePayload.fields.itinerary.items.description': updateEventCallablePayloadFieldsItineraryItemsDescription,
+    'updateEventCallablePayload.fields.itinerary.items.durationMinutes': updateEventCallablePayloadFieldsItineraryItemsDurationMinutes,
+    'updateEventCallablePayload.fields.itinerary.items.id': updateEventCallablePayloadFieldsItineraryItemsId,
+    'updateEventCallablePayload.fields.itinerary.items.kind': updateEventCallablePayloadFieldsItineraryItemsKind,
+    'updateEventCallablePayload.fields.itinerary.items.location.address': updateEventCallablePayloadFieldsItineraryItemsLocationAddress,
+    'updateEventCallablePayload.fields.itinerary.items.location.latitude': updateEventCallablePayloadFieldsItineraryItemsLocationLatitude,
+    'updateEventCallablePayload.fields.itinerary.items.location.longitude': updateEventCallablePayloadFieldsItineraryItemsLocationLongitude,
+    'updateEventCallablePayload.fields.itinerary.items.location.name': updateEventCallablePayloadFieldsItineraryItemsLocationName,
+    'updateEventCallablePayload.fields.itinerary.items.location.notes': updateEventCallablePayloadFieldsItineraryItemsLocationNotes,
+    'updateEventCallablePayload.fields.itinerary.items.location.placeId': updateEventCallablePayloadFieldsItineraryItemsLocationPlaceId,
+    'updateEventCallablePayload.fields.itinerary.items.offsetMinutes': updateEventCallablePayloadFieldsItineraryItemsOffsetMinutes,
+    'updateEventCallablePayload.fields.itinerary.items.routeDistanceMeters': updateEventCallablePayloadFieldsItineraryItemsRouteDistanceMeters,
+    'updateEventCallablePayload.fields.itinerary.items.title': updateEventCallablePayloadFieldsItineraryItemsTitle,
     'updateEventCallablePayload.fields.locationDetails': updateEventCallablePayloadFieldsLocationDetails,
     'updateEventCallablePayload.fields.meetingLocation.address': updateEventCallablePayloadFieldsMeetingLocationAddress,
     'updateEventCallablePayload.fields.meetingLocation.latitude': updateEventCallablePayloadFieldsMeetingLocationLatitude,
@@ -62537,6 +65767,7 @@ abstract final class CatchContractConstraints {
     'updateEventCallablePayload.fields.meetingLocation.notes': updateEventCallablePayloadFieldsMeetingLocationNotes,
     'updateEventCallablePayload.fields.meetingLocation.placeId': updateEventCallablePayloadFieldsMeetingLocationPlaceId,
     'updateEventCallablePayload.fields.meetingPoint': updateEventCallablePayloadFieldsMeetingPoint,
+    'updateEventCallablePayload.fields.name': updateEventCallablePayloadFieldsName,
     'updateEventCallablePayload.fields.pace': updateEventCallablePayloadFieldsPace,
     'updateEventCallablePayload.fields.photoUrl': updateEventCallablePayloadFieldsPhotoUrl,
     'updateEventCallablePayload.fields.priceInPaise': updateEventCallablePayloadFieldsPriceInPaise,
@@ -62555,6 +65786,46 @@ abstract final class CatchContractConstraints {
     'updateEventRehearsalSetupCallablePayload.setup.locationName': updateEventRehearsalSetupCallablePayloadSetupLocationName,
     'updateEventRehearsalSetupCallablePayload.setup.moduleIds': updateEventRehearsalSetupCallablePayloadSetupModuleIds,
     'updateEventRehearsalSetupCallablePayload.setup.moduleIds.items': updateEventRehearsalSetupCallablePayloadSetupModuleIdsItems,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.itinerary': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationItinerary,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.itinerary.items.description': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationItineraryItemsDescription,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.itinerary.items.durationMinutes': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationItineraryItemsDurationMinutes,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.itinerary.items.id': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationItineraryItemsId,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.itinerary.items.kind': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationItineraryItemsKind,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.itinerary.items.location.address': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationItineraryItemsLocationAddress,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.itinerary.items.location.latitude': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationItineraryItemsLocationLatitude,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.itinerary.items.location.longitude': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationItineraryItemsLocationLongitude,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.itinerary.items.location.name': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationItineraryItemsLocationName,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.itinerary.items.location.notes': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationItineraryItemsLocationNotes,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.itinerary.items.location.placeId': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationItineraryItemsLocationPlaceId,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.itinerary.items.offsetMinutes': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationItineraryItemsOffsetMinutes,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.itinerary.items.routeDistanceMeters': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationItineraryItemsRouteDistanceMeters,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.itinerary.items.title': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationItineraryItemsTitle,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.lateArrivalGuidance': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationLateArrivalGuidance,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.livePositions': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationLivePositions,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.livePositions.items.latitude': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationLivePositionsItemsLatitude,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.livePositions.items.longitude': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationLivePositionsItemsLongitude,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.livePositions.items.recordedOffsetMinutes': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationLivePositionsItemsRecordedOffsetMinutes,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.livePositions.items.role': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationLivePositionsItemsRole,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.groupStrategy': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanGroupStrategy,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.liveTrackingPolicy.mode': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanLiveTrackingPolicyMode,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.liveTrackingPolicy.retentionMinutes': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanLiveTrackingPolicyRetentionMinutes,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.liveTrackingPolicy.staleAfterSeconds': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanLiveTrackingPolicyStaleAfterSeconds,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.movementMode': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanMovementMode,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.paceGroups': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanPaceGroups,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.paceGroups.items.id': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanPaceGroupsItemsId,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.paceGroups.items.label': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanPaceGroupsItemsLabel,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.paceGroups.items.sortOrder': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanPaceGroupsItemsSortOrder,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.paceGroups.items.targetPaceSecondsPerKm': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.path': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanPath,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.path.items.latitude': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanPathItemsLatitude,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.path.items.longitude': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanPathItemsLongitude,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.roleKinds': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanRoleKinds,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.roleKinds.items': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanRoleKindsItems,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.routeShape': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanRouteShape,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.stopCadence': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanStopCadence,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.stopKinds': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanStopKinds,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.stopKinds.items': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanStopKindsItems,
+    'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.version': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanVersion,
     'updateEventRehearsalSetupCallablePayload.setup.title': updateEventRehearsalSetupCallablePayloadSetupTitle,
     'updateEventReviewCallablePayload.comment': updateEventReviewCallablePayloadComment,
     'updateEventReviewCallablePayload.rating': updateEventReviewCallablePayloadRating,

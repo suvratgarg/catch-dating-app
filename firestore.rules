@@ -1908,6 +1908,10 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /eventLivePositions/{positionId} {
+      allow read, write: if false;
+    }
+
     match /eventSuccessLateArrivals/{resolutionId} {
       allow get: if isAuthed()
         && resource.data.eventId is string

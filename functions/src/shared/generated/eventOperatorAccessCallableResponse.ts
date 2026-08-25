@@ -15,8 +15,13 @@ export interface EventOperatorAccessCallableResponse {
   actorRole: "manager" | "operator";
   /**
    * @minItems 1
-   * @maxItems 3
+   * @maxItems 4
    */
-  permissions: ("viewRoster" | "setAttendance" | "reviewRuntimeClaims")[];
+  permissions: (
+    | "viewRoster"
+    | "setAttendance"
+    | "reviewRuntimeClaims"
+    | "publishLiveLocation"
+  )[];
   grantExpiresAtMillis: number | null;
 }

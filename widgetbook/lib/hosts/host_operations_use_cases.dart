@@ -48,6 +48,7 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/events/domain/event_invite_link.dart';
+import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
@@ -5770,12 +5771,14 @@ class _EventDetailsStepFrame extends StatefulWidget {
 
 class _EventDetailsStepFrameState extends State<_EventDetailsStepFrame> {
   final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _nameController;
   late final TextEditingController _distanceController;
   late final TextEditingController _customActivityLabelController;
   late final TextEditingController _descriptionController;
   late ActivityKind _activityKind;
   late EventInteractionModel _interactionModel;
   RouteEventPlan? _routePlan;
+  List<EventItineraryItem> _itinerary = const [];
   PaceLevel? _pace = PaceLevel.easy;
 
   @override
@@ -5786,6 +5789,7 @@ class _EventDetailsStepFrameState extends State<_EventDetailsStepFrame> {
         : ActivityKind.socialRun;
     _interactionModel = _activityKind.defaultInteractionModel;
     _routePlan = RouteEventPlan.defaultForActivity(_activityKind);
+    _nameController = TextEditingController(text: 'Sunset Social Run');
     _distanceController = TextEditingController(text: '5');
     _customActivityLabelController = TextEditingController(text: 'Salsa mixer');
     _descriptionController = TextEditingController(
@@ -5795,6 +5799,7 @@ class _EventDetailsStepFrameState extends State<_EventDetailsStepFrame> {
 
   @override
   void dispose() {
+    _nameController.dispose();
     _distanceController.dispose();
     _customActivityLabelController.dispose();
     _descriptionController.dispose();
@@ -5810,6 +5815,7 @@ class _EventDetailsStepFrameState extends State<_EventDetailsStepFrame> {
       onRemovePhoto: (_) {},
       onReorderPhoto: (_, _) {},
       organizerName: 'Sea Face Runs',
+      nameController: _nameController,
       distanceController: _distanceController,
       customActivityLabelController: _customActivityLabelController,
       descriptionController: _descriptionController,
@@ -5826,6 +5832,10 @@ class _EventDetailsStepFrameState extends State<_EventDetailsStepFrame> {
       onPaceChanged: (pace) => setState(() => _pace = pace),
       routePlan: _routePlan,
       onRoutePlanChanged: (plan) => setState(() => _routePlan = plan),
+      itinerary: _itinerary,
+      onItineraryChanged: (itinerary) => setState(() => _itinerary = itinerary),
+      routeInitialCenter: const LocationCoordinate(19.0706, 72.8223),
+      loadMapTiles: false,
     );
   }
 }

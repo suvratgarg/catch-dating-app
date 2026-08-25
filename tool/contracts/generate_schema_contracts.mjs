@@ -584,6 +584,12 @@ const schemaSpecs = [
       "functions/src/shared/generated/eventSuccessPresenceDocument.ts",
   },
   {
+    name: "EventLivePositionDocument",
+    source: "firestore/event_live_positions.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventLivePositionDocument.ts",
+  },
+  {
     name: "EventSuccessLateArrivalDocument",
     source: "firestore/event_success_late_arrivals.schema.json",
     typeOutput:
@@ -2752,6 +2758,21 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "heartbeatEventSuccessPresenceCallableResponse.ts",
+  },
+  {
+    name: "PublishEventLivePositionCallablePayload",
+    source: "callables/publish_event_live_position_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "publishEventLivePositionCallablePayload.ts",
+  },
+  {
+    name: "PublishEventLivePositionCallableResponse",
+    source:
+      "callable_responses/publish_event_live_position_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "publishEventLivePositionCallableResponse.ts",
   },
   {
     name: "GetEventSuccessPresenceSummaryCallableResponse",

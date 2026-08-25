@@ -65,6 +65,7 @@ void main() {
       _expectValid(
         'CreateEventCallablePayload',
         CreateEventCallableRequest(
+          name: 'Cubbon Morning Social',
           eventId: 'event-1',
           organizerId: 'club-1',
           clubId: 'club-1',

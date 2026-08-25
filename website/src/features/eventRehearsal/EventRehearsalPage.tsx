@@ -7,6 +7,7 @@ import type {
 import {
   Button,
   EventRuntimeActionGrid,
+  EventRuntimeAssignments,
   EventRuntimeFrame,
   EventRuntimeKicker,
   EventRuntimeLive,
@@ -16,6 +17,7 @@ import {
   EventRuntimeNoticeStack,
   EventRuntimePanel,
   EventRuntimePracticeBanner,
+  EventRuntimeRouteMap,
   FormStatus,
 } from "../../shared/ui/primitives";
 import {availableEventRehearsalGuestActions} from "./eventRehearsalModel";
@@ -134,6 +136,12 @@ export function EventRehearsalPreview({
           <p>{bootstrap.session.attendeePrompt}</p>
         </EventRuntimeModule>
 
+        {bootstrap.session.movementSimulation ? (
+          <EventRehearsalMovementPreview
+            movement={bootstrap.session.movementSimulation}
+          />
+        ) : null}
+
         {complete ? (
           <EventRuntimeModule title={eventRehearsalCopy.completeTitle}>
             <p>{eventRehearsalCopy.completeBody}</p>
@@ -178,6 +186,56 @@ export function EventRehearsalPreview({
         </EventRuntimeNoticeStack>
       </EventRuntimeLive>
     </EventRuntimeFrame>
+  );
+}
+
+function EventRehearsalMovementPreview({
+  movement,
+}: {
+  movement: NonNullable<EventRehearsalGuestBootstrap["session"]["movementSimulation"]>;
+}) {
+  const routePath = movement.routePlan?.path ?? [];
+  const position = [...movement.livePositions].sort((left, right) =>
+    right.recordedOffsetMinutes - left.recordedOffsetMinutes
+  )[0] ?? null;
+  return (
+    <>
+      {movement.itinerary.length ? (
+        <EventRuntimeModule title={eventRehearsalCopy.runOfShowTitle}>
+          <EventRuntimeAssignments>
+            {movement.itinerary.map((item) => (
+              <article key={item.id}>
+                <span>{eventRehearsalCopy.itineraryOffset(
+                  item.offsetMinutes
+                )}</span>
+                <h3>{item.title}</h3>
+                {item.description ? <p>{item.description}</p> : null}
+                {item.location?.name ? <small>{item.location.name}</small> : null}
+              </article>
+            ))}
+          </EventRuntimeAssignments>
+        </EventRuntimeModule>
+      ) : null}
+      {movement.routePlan || position || movement.lateArrivalGuidance ? (
+        <EventRuntimeModule title={eventRehearsalCopy.routeTitle} accent="coral">
+          {routePath.length ? (
+            <p>{eventRehearsalCopy.routePoints(routePath.length)}</p>
+          ) : null}
+          {position ? (
+            <p>{eventRehearsalCopy.trackerRole(position.role)}</p>
+          ) : null}
+          <EventRuntimeRouteMap
+            ariaLabel={eventRehearsalCopy.routeMapLabel}
+            help={eventRehearsalCopy.routeMapHelp}
+            marker={position}
+            path={routePath}
+          />
+          {movement.lateArrivalGuidance ? (
+            <p>{movement.lateArrivalGuidance}</p>
+          ) : null}
+        </EventRuntimeModule>
+      ) : null}
+    </>
   );
 }
 

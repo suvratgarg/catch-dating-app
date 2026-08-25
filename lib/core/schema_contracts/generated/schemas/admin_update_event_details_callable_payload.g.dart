@@ -235,7 +235,10 @@ const schemaAdminUpdateEventDetailsCallablePayloadSchema = <String, Object?>{
                   'properties': <String, Object?>{
                     'version': <String, Object?>{
                       'type': 'integer',
-                      'const': 1,
+                      'enum': <Object?>[
+                        1,
+                        2,
+                      ],
                     },
                     'movementMode': <String, Object?>{
                       'type': 'string',
@@ -303,6 +306,99 @@ const schemaAdminUpdateEventDetailsCallablePayloadSchema = <String, Object?>{
                           'marshal',
                           'photographer',
                         ],
+                      },
+                    },
+                    'path': <String, Object?>{
+                      'type': 'array',
+                      'minItems': 2,
+                      'maxItems': 500,
+                      'items': <String, Object?>{
+                        'type': 'object',
+                        'additionalProperties': false,
+                        'required': <Object?>[
+                          'latitude',
+                          'longitude',
+                        ],
+                        'properties': <String, Object?>{
+                          'latitude': <String, Object?>{
+                            'type': 'number',
+                            'minimum': -90,
+                            'maximum': 90,
+                          },
+                          'longitude': <String, Object?>{
+                            'type': 'number',
+                            'minimum': -180,
+                            'maximum': 180,
+                          },
+                        },
+                      },
+                    },
+                    'paceGroups': <String, Object?>{
+                      'type': 'array',
+                      'maxItems': 12,
+                      'items': <String, Object?>{
+                        'type': 'object',
+                        'additionalProperties': false,
+                        'required': <Object?>[
+                          'id',
+                          'label',
+                          'sortOrder',
+                        ],
+                        'properties': <String, Object?>{
+                          'id': <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 80,
+                            'pattern': '^[A-Za-z0-9_-]+\$',
+                          },
+                          'label': <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 80,
+                          },
+                          'targetPaceSecondsPerKm': <String, Object?>{
+                            'type': <Object?>[
+                              'integer',
+                              'null',
+                            ],
+                            'minimum': 120,
+                            'maximum': 1800,
+                          },
+                          'sortOrder': <String, Object?>{
+                            'type': 'integer',
+                            'minimum': 0,
+                            'maximum': 1000,
+                          },
+                        },
+                      },
+                    },
+                    'liveTrackingPolicy': <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'required': <Object?>[
+                        'mode',
+                        'staleAfterSeconds',
+                        'retentionMinutes',
+                      ],
+                      'properties': <String, Object?>{
+                        'mode': <String, Object?>{
+                          'type': 'string',
+                          'enum': <Object?>[
+                            'disabled',
+                            'hostOnly',
+                            'authorizedOperators',
+                          ],
+                        },
+                        'staleAfterSeconds': <String, Object?>{
+                          'type': 'integer',
+                          'minimum': 30,
+                          'maximum': 600,
+                        },
+                        'retentionMinutes': <String, Object?>{
+                          'type': 'integer',
+                          'minimum': 5,
+                          'maximum': 1440,
+                        },
                       },
                     },
                   },

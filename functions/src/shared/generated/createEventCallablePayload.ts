@@ -9,6 +9,7 @@ import {UploadedPhoto} from "./uploadedPhoto";
  */
 export interface CreateEventCallablePayload {
   eventId?: string;
+  name: string;
   organizerId: string;
   /**
    * Deprecated compatibility alias for organizerId.
@@ -31,6 +32,26 @@ export interface CreateEventCallablePayload {
   startingPointLat: number;
   startingPointLng: number;
   locationDetails?: string | null;
+  /**
+   * @maxItems 40
+   */
+  itinerary?: {
+    id: string;
+    kind: "gather" | "activity" | "stop" | "break" | "transition" | "finish";
+    offsetMinutes: number;
+    durationMinutes?: number | null;
+    title: string;
+    description?: string | null;
+    location?: {
+      name: string;
+      address?: string | null;
+      placeId?: string | null;
+      latitude: number;
+      longitude: number;
+      notes?: string | null;
+    } | null;
+    routeDistanceMeters?: number | null;
+  }[];
   photoUrl?: string | null;
   eventPhotos?: UploadedPhoto[];
   distanceKm: number;
@@ -188,7 +209,7 @@ export interface CreateEventCallablePayload {
        * Composable operations for an event that moves through a route. Activity kind remains the broader format authority.
        */
       routePlan?: {
-        version: 1;
+        version: 1 | 2;
         movementMode: "run" | "walk" | "ride" | "mixed";
         routeShape: "loop" | "outAndBack" | "pointToPoint";
         groupStrategy: "together" | "paceGroups" | "selfDirected";
@@ -218,6 +239,28 @@ export interface CreateEventCallablePayload {
           | "marshal"
           | "photographer"
         )[];
+        /**
+         * @minItems 2
+         * @maxItems 500
+         */
+        path?: {
+          latitude: number;
+          longitude: number;
+        }[];
+        /**
+         * @maxItems 12
+         */
+        paceGroups?: {
+          id: string;
+          label: string;
+          targetPaceSecondsPerKm?: number | null;
+          sortOrder: number;
+        }[];
+        liveTrackingPolicy?: {
+          mode: "disabled" | "hostOnly" | "authorizedOperators";
+          staleAfterSeconds: number;
+          retentionMinutes: number;
+        };
       };
       [k: string]: unknown;
     };

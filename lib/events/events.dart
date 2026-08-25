@@ -12,6 +12,7 @@ library;
 
 // ── Domain models ───────────────────────────────────────────────────────────
 export 'domain/event.dart';
+export 'domain/event_itinerary.dart';
 export 'domain/event_constraints.dart';
 export 'domain/event_domain_readiness.dart';
 export 'domain/event_draft.dart';

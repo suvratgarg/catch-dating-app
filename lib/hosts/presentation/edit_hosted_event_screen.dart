@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
@@ -33,12 +34,16 @@ import 'package:catch_dating_app/events/data/event_participation_repository.dart
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
+import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/events/events.dart'
     show LocationPickerResult, LocationPickerScreen;
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_age_range_field.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_itinerary_editor.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/route_event_plan_editor.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_edit_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_edit_view_model.dart';
@@ -72,6 +77,10 @@ class HostEventEditSaveRequest {
 
   factory HostEventEditSaveRequest.fromForm({
     required Event event,
+    String? name,
+    List<EventItineraryItem>? itinerary,
+    bool routePlanChanged = false,
+    RouteEventPlan? routePlan,
     required bool scheduleLocked,
     required bool policyLocked,
     required DateTime selectedStartDateTime,
@@ -159,9 +168,13 @@ class HostEventEditSaveRequest {
                 .reservedPairCapacity,
           )
         : event.eventPolicy;
+    final eventFormat = routePlanChanged
+        ? _eventFormatWithRoutePlan(event.eventFormat, routePlan)
+        : event.eventFormat;
 
     return HostEventEditSaveRequest(
       nextEvent: event.copyWith(
+        name: (name ?? event.name).trim(),
         startTime: startTime,
         endTime: endTime,
         meetingPoint: meetingLocation.name,
@@ -169,6 +182,8 @@ class HostEventEditSaveRequest {
         startingPointLat: meetingLocation.latitude,
         startingPointLng: meetingLocation.longitude,
         locationDetails: meetingLocation.notes,
+        itinerary: itinerary ?? event.itinerary,
+        eventFormat: eventFormat,
         distanceKm: distanceKm,
         pace: event.eventFormat.activityKind.isDistanceBased
             ? selectedPace
@@ -210,6 +225,7 @@ class EditHostedEventScreen extends ConsumerStatefulWidget {
 
 class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
   final _meetingPointController = TextEditingController();
   final _locationDetailsController = TextEditingController();
   final _distanceController = TextEditingController();
@@ -231,6 +247,8 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
   String? _meetingLocationAddress;
   String? _meetingLocationPlaceId;
   late PaceLevel _selectedPace;
+  late List<EventItineraryItem> _itinerary;
+  late RouteEventPlan? _routePlan;
   late EventAdmissionPreset _selectedAdmissionPreset;
   late bool _cohortCapsEnabled;
   late bool _dynamicPricingEnabled;
@@ -263,7 +281,10 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
     _meetingLocationAddress = meetingLocation?.address;
     _meetingLocationPlaceId = meetingLocation?.placeId;
     _selectedPace = event.pace;
+    _itinerary = event.itinerary;
+    _routePlan = event.eventFormat.routePlan;
 
+    _nameController.text = event.name;
     _meetingPointController.text = event.locationName;
     _locationDetailsController.text = event.locationNotes ?? '';
     _distanceController.text = EventFormatters.distanceKm(
@@ -303,6 +324,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
 
   @override
   void dispose() {
+    _nameController.dispose();
     _meetingPointController.dispose();
     _locationDetailsController.dispose();
     _distanceController.dispose();
@@ -562,11 +584,67 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                           ),
                         ],
                       ),
+                      IgnorePointer(
+                        ignoring: !screenState.canEdit,
+                        child: Opacity(
+                          opacity: screenState.canEdit ? 1 : 0.56,
+                          child: Column(
+                            children: [
+                              if (widget.event.eventFormat.activityKind ==
+                                      ActivityKind.openActivity ||
+                                  _routePlan != null)
+                                RouteEventPlanEditor(
+                                  activityKind:
+                                      widget.event.eventFormat.activityKind,
+                                  plan: _routePlan,
+                                  onChanged: (plan) =>
+                                      setState(() => _routePlan = plan),
+                                  initialCenter:
+                                      _startingPoint ??
+                                      LocationCoordinate(
+                                        defaultCityDataForMarket().latitude,
+                                        defaultCityDataForMarket().longitude,
+                                      ),
+                                  loadMapTiles: widget.loadMapTiles,
+                                ),
+                              EventItineraryEditor(
+                                items: _itinerary,
+                                onChanged: (items) =>
+                                    setState(() => _itinerary = items),
+                                defaultLocation: _currentMeetingLocation,
+                                onPickLocation: _pickItineraryLocation,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                       CatchSection.fieldRows(
                         title: context
                             .l10n
                             .hostsEditHostedEventScreenLabelEventDetails,
                         children: [
+                          CatchField.input(
+                            key: CreateEventFormKeys.name,
+                            title: context
+                                .l10n
+                                .hostsEventDetailsStepTitleEventName,
+                            contract: CatchContractConstraints
+                                .updateEventCallablePayloadFieldsName,
+                            controller: _nameController,
+                            enabled: screenState.canEdit,
+                            inputHint: context
+                                .l10n
+                                .hostsEventDetailsStepPlaceholderEventName,
+                            icon: CatchIcons.editNoteOutlined,
+                            textCapitalization: TextCapitalization.words,
+                            textInputAction: TextInputAction.next,
+                            validator: (value) =>
+                                value == null || value.trim().isEmpty
+                                ? context
+                                      .l10n
+                                      .hostsEditHostedEventScreenBodyRequired
+                                : null,
+                          ),
                           if (detailsFields.isDistanceBased) ...[
                             CatchField.input(
                               key: CreateEventFormKeys.distance,
@@ -885,6 +963,10 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
 
     final request = HostEventEditSaveRequest.fromForm(
       event: widget.event,
+      name: _nameController.text,
+      itinerary: _itinerary,
+      routePlanChanged: true,
+      routePlan: _routePlan,
       scheduleLocked: screenState.scheduleLocked,
       policyLocked: screenState.policyLocked,
       selectedStartDateTime: _selectedStartDateTime,
@@ -931,6 +1013,57 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
         }
       }),
     );
+  }
+
+  Future<EventMeetingLocation?> _pickItineraryLocation(
+    EventMeetingLocation? current,
+  ) async {
+    if (_savePending) return null;
+    final deviceLocation = ref.read(deviceLocationProvider).asData?.value;
+    final result = await Navigator.of(context).push<LocationPickerResult>(
+      MaterialPageRoute(
+        builder: (_) => LocationPickerScreen(
+          countryIsoCode: countryIsoCodeForCityName(widget.club.location),
+          initialLocation: current == null
+              ? null
+              : LocationCoordinate(current.latitude, current.longitude),
+          initialCenter:
+              (current == null
+                  ? _startingPoint
+                  : LocationCoordinate(current.latitude, current.longitude)) ??
+              deviceLocation,
+          initialLabel: current?.name,
+          loadMapTiles: widget.loadMapTiles,
+        ),
+        fullscreenDialog: true,
+      ),
+    );
+    if (result == null || !mounted || _savePending) return null;
+    return EventMeetingLocation(
+      name:
+          result.displayName ??
+          current?.name ??
+          context.l10n.eventsMapPinTileTitlePinnedLocation,
+      address: result.address,
+      placeId: result.placeId,
+      latitude: result.coordinate.latitude,
+      longitude: result.coordinate.longitude,
+    ).normalized();
+  }
+
+  EventMeetingLocation? get _currentMeetingLocation {
+    final point = _startingPoint;
+    if (point == null) return widget.event.effectiveMeetingLocation;
+    final name = _meetingPointController.text.trim();
+    if (name.isEmpty) return null;
+    return EventMeetingLocation(
+      name: name,
+      address: _meetingLocationAddress,
+      placeId: _meetingLocationPlaceId,
+      latitude: point.latitude,
+      longitude: point.longitude,
+      notes: _trimToNull(_locationDetailsController.text),
+    ).normalized();
   }
 
   bool get _savePending =>
@@ -1449,6 +1582,28 @@ String? _inviteCodeHint(String value) {
   final code = value.trim();
   if (code.length <= 4) return code.isEmpty ? null : code;
   return '${code.substring(0, 2)}...${code.substring(code.length - 2)}';
+}
+
+EventFormatSnapshot _eventFormatWithRoutePlan(
+  EventFormatSnapshot format,
+  RouteEventPlan? routePlan,
+) {
+  final activityDetails = Map<String, Object?>.of(format.activityDetails);
+  if (routePlan == null) {
+    activityDetails.remove('routePlan');
+  } else {
+    activityDetails['routePlan'] = routePlan.toJson();
+  }
+  return EventFormatSnapshot(
+    version: format.version,
+    activityKind: format.activityKind,
+    interactionModel: format.interactionModel,
+    customActivityLabel: format.customActivityLabel,
+    defaultPlaybookId: format.defaultPlaybookId,
+    defaultModuleIds: format.defaultModuleIds,
+    eventSuccessPrimitives: format.eventSuccessPrimitives,
+    activityDetails: activityDetails,
+  );
 }
 
 String? _moneyRequiredValidator(

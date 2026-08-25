@@ -62,8 +62,8 @@ const schemaEventStaffGrantDocumentSchema = <String, Object?>{
     },
     'permissions': <String, Object?>{
       'type': 'array',
-      'minItems': 3,
-      'maxItems': 3,
+      'minItems': 4,
+      'maxItems': 4,
       'uniqueItems': true,
       'items': <String, Object?>{
         'type': 'string',
@@ -71,6 +71,7 @@ const schemaEventStaffGrantDocumentSchema = <String, Object?>{
           'viewRoster',
           'setAttendance',
           'reviewRuntimeClaims',
+          'publishLiveLocation',
         ],
       },
     },

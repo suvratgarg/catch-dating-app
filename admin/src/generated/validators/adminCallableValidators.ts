@@ -479,6 +479,79 @@ const model = {
             }
           }
         },
+        "eventItineraryItem": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "One public, event-local run-of-show entry. Offset is measured from the event start so rescheduling does not rewrite the itinerary.",
+          "required": [
+            "id",
+            "kind",
+            "offsetMinutes",
+            "title"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "kind": {
+              "type": "string",
+              "enum": [
+                "gather",
+                "activity",
+                "stop",
+                "break",
+                "transition",
+                "finish"
+              ]
+            },
+            "offsetMinutes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1440
+            },
+            "durationMinutes": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 1440
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "description": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 500
+            },
+            "location": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/eventMeetingLocation"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "routeDistanceMeters": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 1000000
+            }
+          }
+        },
         "nullableString": {
           "$ref": "profile_common.schema.json#/definitions/nullableString"
         },
@@ -905,7 +978,10 @@ const model = {
           "properties": {
             "version": {
               "type": "integer",
-              "const": 1
+              "enum": [
+                1,
+                2
+              ]
             },
             "movementMode": {
               "type": "string",
@@ -973,6 +1049,95 @@ const model = {
                   "marshal",
                   "photographer"
                 ]
+              }
+            },
+            "path": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 500,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "latitude",
+                  "longitude"
+                ],
+                "properties": {
+                  "latitude": {
+                    "$ref": "profile_common.schema.json#/definitions/strictLatitude"
+                  },
+                  "longitude": {
+                    "$ref": "profile_common.schema.json#/definitions/strictLongitude"
+                  }
+                }
+              }
+            },
+            "paceGroups": {
+              "type": "array",
+              "maxItems": 12,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "label",
+                  "sortOrder"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80,
+                    "pattern": "^[A-Za-z0-9_-]+$"
+                  },
+                  "label": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "targetPaceSecondsPerKm": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 120,
+                    "maximum": 1800
+                  },
+                  "sortOrder": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000
+                  }
+                }
+              }
+            },
+            "liveTrackingPolicy": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "staleAfterSeconds",
+                "retentionMinutes"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "enum": [
+                    "disabled",
+                    "hostOnly",
+                    "authorizedOperators"
+                  ]
+                },
+                "staleAfterSeconds": {
+                  "type": "integer",
+                  "minimum": 30,
+                  "maximum": 600
+                },
+                "retentionMinutes": {
+                  "type": "integer",
+                  "minimum": 5,
+                  "maximum": 1440
+                }
               }
             }
           }

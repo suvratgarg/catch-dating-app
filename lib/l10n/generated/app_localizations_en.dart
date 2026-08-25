@@ -1734,6 +1734,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsDraftPickerSheetMessageDeleteDraft => 'Delete draft';
 
   @override
+  String get hostsEventDetailsStepTitleEventName => 'Event name';
+
+  @override
+  String get hostsEventDetailsStepPlaceholderEventName => 'Friday night social';
+
+  @override
   String get hostsEventDetailsStepTitleFormatName => 'Format name';
 
   @override
@@ -7382,25 +7388,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String eventsEventDetailDesignPrimitivesTitleGatherAtLocationname({
-    required Object locationName,
-  }) {
-    return 'Gather at $locationName';
-  }
-
-  @override
-  String get eventsEventDetailDesignPrimitivesDetailQuickHellosHostCheck =>
-      'Quick hellos, host check-in, and the plan for the group.';
-
-  @override
-  String get eventsEventDetailDesignPrimitivesTitleWrapUp => 'Wrap up';
-
-  @override
-  String
-  get eventsEventDetailDesignPrimitivesDetailAttendeesCanLingerNaturally =>
-      'Attendees can linger naturally; private follow-up unlocks after.';
-
-  @override
   String get eventsEventDetailDesignPrimitivesTitleIfItFillsA =>
       'If it fills, a waitlist';
 
@@ -7437,38 +7424,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventsEventDetailDesignPrimitivesVisiblecopyTheHostShapesThe =>
       'The host shapes the format around the room and venue.';
-
-  @override
-  String eventsEventDetailDesignPrimitivesVisiblecopyDistancekmAtATolowercase({
-    required Object distanceKm,
-    required Object toLowerCase,
-  }) {
-    return '$distanceKm at a $toLowerCase pace, with host-led regroup points.';
-  }
-
-  @override
-  String get eventsEventDetailDesignPrimitivesVisiblecopyPairedOrCourtBased =>
-      'Paired or court-based rotations keep the activity moving and social.';
-
-  @override
-  String get eventsEventDetailDesignPrimitivesVisiblecopyHostLedTeamsAnd =>
-      'Host-led teams and rotations create a clear rhythm for the group.';
-
-  @override
-  String get eventsEventDetailDesignPrimitivesVisiblecopyATableLedFormat =>
-      'A table-led format with built-in prompts and host cues.';
-
-  @override
-  String get eventsEventDetailDesignPrimitivesVisiblecopyALooserMixerWith =>
-      'A looser mixer with host nudges when the room needs direction.';
-
-  @override
-  String get eventsEventDetailDesignPrimitivesVisiblecopyAHostLedActivity =>
-      'A host-led activity with clear arrival, activity, and follow-up moments.';
-
-  @override
-  String get eventsEventDetailDesignPrimitivesVisiblecopyTheHostAdaptsThe =>
-      'The host adapts the format to the group and venue.';
 
   @override
   String get eventsEventDetailDesignPrimitivesVisiblecopyPace => 'Pace';
@@ -16137,5 +16092,207 @@ class AppLocalizationsEn extends AppLocalizations {
     required int revision,
   }) {
     return '$kind · revision $revision';
+  }
+
+  @override
+  String get hostsRoutePathBuilderTitle => 'Build route';
+
+  @override
+  String hostsRoutePathBuilderPoint({required int index}) {
+    return 'Route point $index';
+  }
+
+  @override
+  String get hostsRoutePathBuilderEmpty =>
+      'Tap the map to add the first route point.';
+
+  @override
+  String hostsRoutePathBuilderCount({required int count}) {
+    return '$count route points · tap the map to keep drawing';
+  }
+
+  @override
+  String get hostsRoutePathBuilderUndo => 'Undo point';
+
+  @override
+  String get hostsRoutePathBuilderClear => 'Clear';
+
+  @override
+  String get hostsRoutePathBuilderSave => 'Use this route';
+
+  @override
+  String get hostsRouteEventPlanPathTitle => 'Route path';
+
+  @override
+  String get hostsRouteEventPlanPathEmpty =>
+      'Draw the attendee-facing path on the map.';
+
+  @override
+  String hostsRouteEventPlanPathCount({required int count}) {
+    return '$count mapped points';
+  }
+
+  @override
+  String get hostsRouteEventPlanPathAction => 'Edit map';
+
+  @override
+  String get hostsRouteEventPlanPaceGroupsTitle => 'Pace groups';
+
+  @override
+  String get hostsRouteEventPlanPaceGroupsBody =>
+      'Select every group the Host will lead and account for.';
+
+  @override
+  String get hostsRouteEventPlanPaceSocial => 'Social · 7:30/km';
+
+  @override
+  String get hostsRouteEventPlanPaceSteady => 'Steady · 6:00/km';
+
+  @override
+  String get hostsRouteEventPlanPaceFast => 'Fast · 5:00/km';
+
+  @override
+  String get hostsRouteEventPlanTrackingTitle => 'Live Host position';
+
+  @override
+  String get hostsRouteEventPlanTrackingBody =>
+      'Foreground-only sharing during the event helps late arrivals find the moving group.';
+
+  @override
+  String get hostsRouteEventPlanTrackingDisabled => 'Off';
+
+  @override
+  String get hostsRouteEventPlanTrackingHostOnly => 'Host only';
+
+  @override
+  String get hostsRouteEventPlanTrackingOperators =>
+      'Host and authorized operators';
+
+  @override
+  String get hostsEventItineraryTitle => 'Run of show';
+
+  @override
+  String hostsEventItineraryOffset({required int minutes}) {
+    return 'Starts $minutes minutes after the event begins';
+  }
+
+  @override
+  String get hostsEventItineraryEdit => 'Edit';
+
+  @override
+  String get hostsEventItineraryAdd => 'Add itinerary step';
+
+  @override
+  String get hostsEventItineraryAddBody =>
+      'Publish real timing, stops, transitions, and locations for attendees.';
+
+  @override
+  String get hostsEventItineraryAddAction => 'Add step';
+
+  @override
+  String get hostsEventItineraryDialogAdd => 'Add run-of-show step';
+
+  @override
+  String get hostsEventItineraryDialogEdit => 'Edit run-of-show step';
+
+  @override
+  String get hostsEventItineraryDelete => 'Delete';
+
+  @override
+  String get hostsEventItinerarySave => 'Save step';
+
+  @override
+  String get hostsEventItineraryFieldTitle => 'Step title';
+
+  @override
+  String get hostsEventItineraryFieldTitleHint =>
+      'Gather, activity, stop, or finish';
+
+  @override
+  String get hostsEventItineraryFieldOffset => 'Minutes after start';
+
+  @override
+  String get hostsEventItineraryFieldDuration => 'Duration in minutes';
+
+  @override
+  String get hostsEventItineraryFieldDescription => 'Attendee guidance';
+
+  @override
+  String get hostsEventItineraryFieldKind => 'Step type';
+
+  @override
+  String get hostsEventItineraryUseMeetingPoint =>
+      'Use the event meeting point';
+
+  @override
+  String get hostsEventItineraryLocationTitle => 'Stop location';
+
+  @override
+  String get hostsEventItineraryLocationEmpty => 'No exact location';
+
+  @override
+  String get hostsEventItineraryLocationChoose => 'Choose';
+
+  @override
+  String get hostsEventItineraryLocationChange => 'Change';
+
+  @override
+  String get hostsEventItineraryLocationRemove => 'Remove stop location';
+
+  @override
+  String get hostsEventItineraryKindGather => 'Gather';
+
+  @override
+  String get hostsEventItineraryKindActivity => 'Activity';
+
+  @override
+  String get hostsEventItineraryKindStop => 'Stop';
+
+  @override
+  String get hostsEventItineraryKindBreak => 'Break';
+
+  @override
+  String get hostsEventItineraryKindTransition => 'Transition';
+
+  @override
+  String get hostsEventItineraryKindFinish => 'Finish';
+
+  @override
+  String get hostEventLiveLocationTitle => 'Share the moving group';
+
+  @override
+  String get hostEventLiveLocationBody =>
+      'Use this phone\'s location so late arrivals can find the route lead.';
+
+  @override
+  String get hostEventLiveLocationPrivacy =>
+      'Off by default. Sharing runs only while Catch is in the foreground.';
+
+  @override
+  String get hostEventLiveLocationActive =>
+      'Live now. Leaving the app or switching this off removes your position.';
+
+  @override
+  String get hostEventLiveLocationPermissionDenied =>
+      'Location permission is required to share the moving group.';
+
+  @override
+  String get hostEventLiveLocationServicesDisabled =>
+      'Turn on device location services, then try again.';
+
+  @override
+  String get hostEventLiveLocationFailed =>
+      'Live location could not be updated. Switch it off and try again.';
+
+  @override
+  String get hostEventRehearsalMovementTitle => 'Movement simulation';
+
+  @override
+  String hostEventRehearsalMovementSummary({
+    required int itineraryCount,
+    required int routePointCount,
+    required int positionCount,
+  }) {
+    return '$itineraryCount itinerary steps · $routePointCount route points · $positionCount synthetic live positions';
   }
 }

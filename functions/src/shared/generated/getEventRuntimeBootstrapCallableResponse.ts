@@ -12,6 +12,7 @@ export interface GetEventRuntimeBootstrapCallableResponse {
     title: string;
     startTimeMillis: number;
     endTimeMillis: number;
+    serverTimeMillis: number;
     locationName: string;
     checkedInCount: number;
     runtimeTermsVersion: string;
@@ -27,6 +28,94 @@ export interface GetEventRuntimeBootstrapCallableResponse {
       | "freeFormMixer"
       | "hostLedProgram"
       | "openFormat";
+    /**
+     * @maxItems 40
+     */
+    itinerary: {
+      id: string;
+      kind: "gather" | "activity" | "stop" | "break" | "transition" | "finish";
+      offsetMinutes: number;
+      durationMinutes?: number | null;
+      title: string;
+      description?: string | null;
+      location?: {
+        name: string;
+        address?: string | null;
+        placeId?: string | null;
+        latitude: number;
+        longitude: number;
+        notes?: string | null;
+      } | null;
+      routeDistanceMeters?: number | null;
+    }[];
+    routePlan: null | {
+      version: 1 | 2;
+      movementMode: "run" | "walk" | "ride" | "mixed";
+      routeShape: "loop" | "outAndBack" | "pointToPoint";
+      groupStrategy: "together" | "paceGroups" | "selfDirected";
+      stopCadence: "continuous" | "flexibleStops" | "hostedStops";
+      /**
+       * @minItems 1
+       * @maxItems 7
+       */
+      stopKinds: (
+        | "water"
+        | "regroup"
+        | "venue"
+        | "photoSpot"
+        | "viewpoint"
+        | "hazard"
+        | "turnaround"
+      )[];
+      /**
+       * @minItems 1
+       * @maxItems 6
+       */
+      roleKinds: (
+        | "routeLead"
+        | "sweep"
+        | "pacer"
+        | "stopHost"
+        | "marshal"
+        | "photographer"
+      )[];
+      /**
+       * @minItems 2
+       * @maxItems 500
+       */
+      path?: {
+        latitude: number;
+        longitude: number;
+      }[];
+      /**
+       * @maxItems 12
+       */
+      paceGroups?: {
+        id: string;
+        label: string;
+        targetPaceSecondsPerKm?: number | null;
+        sortOrder: number;
+      }[];
+      liveTrackingPolicy?: {
+        mode: "disabled" | "hostOnly" | "authorizedOperators";
+        staleAfterSeconds: number;
+        retentionMinutes: number;
+      };
+    };
+    /**
+     * Fresh, privacy-bounded Host/operator positions. Stable account identifiers are never exposed.
+     *
+     * @maxItems 20
+     */
+    livePositions: {
+      role: "host" | "operator";
+      latitude: number;
+      longitude: number;
+      accuracyMeters: number | null;
+      headingDegrees: number | null;
+      recordedAtMillis: number;
+      staleAtMillis: number;
+    }[];
     layout: null | {
       layoutId: string;
       label: string;

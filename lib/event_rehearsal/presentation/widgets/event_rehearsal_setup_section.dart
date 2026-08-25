@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -165,6 +166,17 @@ class _EventRehearsalSetupSectionState
             ],
           ),
         ),
+        if (widget.session.setup.movementSimulation case final movement?)
+          CatchField.read(
+            title: context.l10n.hostEventRehearsalMovementTitle,
+            body: context.l10n.hostEventRehearsalMovementSummary(
+              itineraryCount: movement.itinerary.length,
+              routePointCount: movement.routePlan?.path.length ?? 0,
+              positionCount: movement.livePositions.length,
+            ),
+            valueText: movement.lateArrivalGuidance,
+            icon: CatchIcons.routeOutlined,
+          ),
       ],
     );
   }
@@ -212,6 +224,7 @@ class _EventRehearsalSetupSectionState
         modules: EventRehearsalModule.values
             .where(_modules.contains)
             .toList(growable: false),
+        movementSimulation: widget.session.setup.movementSimulation,
       ),
       _scenario,
       _actorCount,

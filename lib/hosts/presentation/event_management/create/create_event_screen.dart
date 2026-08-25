@@ -24,6 +24,7 @@ import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/events/events.dart'
     show LocationPickerResult, LocationPickerScreen;
@@ -51,6 +52,7 @@ import 'package:catch_dating_app/hosts/presentation/widgets/host_draft_exit_dial
 import 'package:catch_dating_app/hosts/presentation/widgets/host_operational_roster_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -157,6 +159,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   CreateEventLocationState _locationState = const CreateEventLocationState();
 
   // Step 0 — Event details
+  final _nameController = TextEditingController();
   final _distanceController = TextEditingController();
   final _capacityController = TextEditingController();
   final _priceController = TextEditingController();
@@ -173,6 +176,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       ActivityKind.socialRun.defaultInteractionModel;
   PaceLevel? _selectedPace;
   RouteEventPlan? _routePlan = RouteEventPlan.socialRun;
+  List<EventItineraryItem> _itinerary = const [];
   var _eventPhotos = const CreateEventPhotoDraftState.empty();
 
   // Step 3 — Rules
@@ -312,6 +316,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     _startTimeController.dispose();
     _meetingPointController.dispose();
     _locationDetailsController.dispose();
+    _nameController.dispose();
     _distanceController.dispose();
     _capacityController.dispose();
     _priceController.dispose();
@@ -401,6 +406,43 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
         }
       });
     }
+  }
+
+  Future<EventMeetingLocation?> _pickItineraryLocation(
+    EventMeetingLocation? current,
+  ) async {
+    final deviceLocation = ref.read(deviceLocationProvider).asData?.value;
+    final meetingLocation = _currentMeetingLocation;
+    final result = await Navigator.of(context).push<LocationPickerResult>(
+      MaterialPageRoute(
+        builder: (_) => LocationPickerScreen(
+          countryIsoCode: countryIsoCodeForCityName(widget.club.location),
+          initialLocation: current == null
+              ? null
+              : LocationCoordinate(current.latitude, current.longitude),
+          initialCenter:
+              (current == null
+                  ? _locationState.startingPoint
+                  : LocationCoordinate(current.latitude, current.longitude)) ??
+              deviceLocation,
+          initialLabel: current?.name,
+          loadMapTiles: widget.loadMapTiles,
+        ),
+        fullscreenDialog: true,
+      ),
+    );
+    if (result == null || !mounted) return null;
+    return EventMeetingLocation(
+      name:
+          result.displayName ??
+          current?.name ??
+          meetingLocation?.name ??
+          context.l10n.eventsMapPinTileTitlePinnedLocation,
+      address: result.address,
+      placeId: result.placeId,
+      latitude: result.coordinate.latitude,
+      longitude: result.coordinate.longitude,
+    ).normalized();
   }
 
   Future<void> _pickEventPhotos() async {
@@ -606,9 +648,11 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
           .get(createEventControllerProvider.notifier)
           .submit(
             clubId: widget.club.id,
+            name: _nameController.text,
             startTime: startTime,
             endTime: endTime,
             meetingLocation: meetingLocation,
+            itinerary: _itinerary,
             eventFormat: _selectedEventFormat,
             distanceKm: _distanceKmForSelectedActivity(),
             pace: _selectedPace ?? PaceLevel.easy,
@@ -837,6 +881,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
 
   CreateEventDraftSnapshot get _currentDraftSnapshot =>
       CreateEventDraftSnapshot(
+        name: _trimmedTextOrNull(_nameController),
         distance: _trimmedTextOrNull(_distanceController),
         capacity: _trimmedTextOrNull(_capacityController),
         price: _trimmedTextOrNull(_priceController),
@@ -864,6 +909,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
         interactionModel: _interactionModelDraftValue,
         paceName: _selectedPace?.name,
         routePlan: _routePlan,
+        itinerary: _itinerary,
         meetingPoint: _trimmedTextOrNull(_meetingPointController),
         locationDetails: _trimmedTextOrNull(_locationDetailsController),
         meetingLocationAddress: _locationState.meetingLocationAddress,
@@ -931,6 +977,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     );
 
     // Event details
+    if (restore.nameText != null) {
+      _nameController.text = restore.nameText!;
+    }
     if (restore.distanceText != null) {
       _distanceController.text = restore.distanceText!;
     }
@@ -963,6 +1012,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     _selectedInteractionModel = restore.interactionModel;
     _selectedPace = restore.pace;
     _routePlan = restore.routePlan;
+    _itinerary = restore.itinerary;
 
     // Where
     if (restore.meetingPointText != null) {
@@ -1266,6 +1316,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                               onReorderPhoto: _reorderEventPhoto,
                               organizerName: widget.club.name,
                               organizerLogoUrl: widget.club.profileImageUrl,
+                              nameController: _nameController,
                               distanceController: _distanceController,
                               customActivityLabelController:
                                   _customActivityLabelController,
@@ -1312,6 +1363,24 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                               routePlan: _routePlan,
                               onRoutePlanChanged: (plan) =>
                                   setState(() => _routePlan = plan),
+                              itinerary: _itinerary,
+                              onItineraryChanged: (items) =>
+                                  setState(() => _itinerary = items),
+                              defaultItineraryLocation: _currentMeetingLocation,
+                              onPickItineraryLocation: _pickItineraryLocation,
+                              routeInitialCenter:
+                                  _locationState.startingPoint ??
+                                  _locationState.initialCenter(
+                                    ref
+                                        .read(deviceLocationProvider)
+                                        .asData
+                                        ?.value,
+                                  ) ??
+                                  LocationCoordinate(
+                                    defaultCityDataForMarket().latitude,
+                                    defaultCityDataForMarket().longitude,
+                                  ),
+                              loadMapTiles: widget.loadMapTiles,
                               externalBookingMode: _externalBookingMode,
                               externalBookingProvider: _externalBookingProvider,
                               externalEventUrlController:

@@ -496,6 +496,7 @@ void main() {
       () async {
         final event = buildEvent(
           id: 'event-42',
+          name: 'Bandra Sunrise 5K',
           startingPointLat: 19.076,
           startingPointLng: 72.8777,
           photoUrl: 'https://img.example/events/event-42.jpg',
@@ -508,6 +509,7 @@ void main() {
         expect(functions.callables['createEvent']!.calls, [
           {
             'eventId': 'event-42',
+            'name': event.name,
             'clubId': event.clubId,
             'organizerId': event.organizerId,
             'startTimeMillis': event.startTime.millisecondsSinceEpoch,
@@ -516,6 +518,7 @@ void main() {
             'meetingLocation': meetingLocation!.toJson(),
             'startingPointLat': event.startingPointLat,
             'startingPointLng': event.startingPointLng,
+            'itinerary': const <Object?>[],
             'photoUrl': event.photoUrl,
             'eventFormat': event.eventFormat.toJson(),
             'distanceKm': event.distanceKm,
@@ -540,6 +543,7 @@ void main() {
       () async {
         final event = buildEvent(
           id: 'event-42',
+          name: 'Bandra Sunrise 5K',
           startingPointLat: 19.076,
           startingPointLng: 72.8777,
           photoUrl: 'https://img.example/events/event-42.jpg',
@@ -552,6 +556,7 @@ void main() {
           {
             'eventId': 'event-42',
             'fields': {
+              'name': event.name,
               'startTimeMillis': event.startTime.millisecondsSinceEpoch,
               'endTimeMillis': event.endTime.millisecondsSinceEpoch,
               'meetingPoint': event.meetingPoint,
@@ -559,10 +564,12 @@ void main() {
               'startingPointLat': event.startingPointLat,
               'startingPointLng': event.startingPointLng,
               'locationDetails': event.locationDetails,
+              'itinerary': const <Object?>[],
               'photoUrl': event.photoUrl,
               'distanceKm': event.distanceKm,
               'pace': event.pace.name,
               'description': event.description,
+              'eventFormat': event.eventFormat.toJson(),
             },
           },
         ]);
