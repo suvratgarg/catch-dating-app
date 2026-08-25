@@ -177,6 +177,12 @@
       "occurrences": 2
     },
     {
+      "path": "lib/hosts/presentation/event_management/widgets/route_path_builder_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
       "path": "lib/hosts/presentation/forms/host_form_analytics_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar",
