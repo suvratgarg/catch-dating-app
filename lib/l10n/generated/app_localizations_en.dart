@@ -7388,25 +7388,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String eventsEventDetailDesignPrimitivesTitleGatherAtLocationname({
-    required Object locationName,
-  }) {
-    return 'Gather at $locationName';
-  }
-
-  @override
-  String get eventsEventDetailDesignPrimitivesDetailQuickHellosHostCheck =>
-      'Quick hellos, host check-in, and the plan for the group.';
-
-  @override
-  String get eventsEventDetailDesignPrimitivesTitleWrapUp => 'Wrap up';
-
-  @override
-  String
-  get eventsEventDetailDesignPrimitivesDetailAttendeesCanLingerNaturally =>
-      'Attendees can linger naturally; private follow-up unlocks after.';
-
-  @override
   String get eventsEventDetailDesignPrimitivesTitleIfItFillsA =>
       'If it fills, a waitlist';
 
@@ -7443,38 +7424,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventsEventDetailDesignPrimitivesVisiblecopyTheHostShapesThe =>
       'The host shapes the format around the room and venue.';
-
-  @override
-  String eventsEventDetailDesignPrimitivesVisiblecopyDistancekmAtATolowercase({
-    required Object distanceKm,
-    required Object toLowerCase,
-  }) {
-    return '$distanceKm at a $toLowerCase pace, with host-led regroup points.';
-  }
-
-  @override
-  String get eventsEventDetailDesignPrimitivesVisiblecopyPairedOrCourtBased =>
-      'Paired or court-based rotations keep the activity moving and social.';
-
-  @override
-  String get eventsEventDetailDesignPrimitivesVisiblecopyHostLedTeamsAnd =>
-      'Host-led teams and rotations create a clear rhythm for the group.';
-
-  @override
-  String get eventsEventDetailDesignPrimitivesVisiblecopyATableLedFormat =>
-      'A table-led format with built-in prompts and host cues.';
-
-  @override
-  String get eventsEventDetailDesignPrimitivesVisiblecopyALooserMixerWith =>
-      'A looser mixer with host nudges when the room needs direction.';
-
-  @override
-  String get eventsEventDetailDesignPrimitivesVisiblecopyAHostLedActivity =>
-      'A host-led activity with clear arrival, activity, and follow-up moments.';
-
-  @override
-  String get eventsEventDetailDesignPrimitivesVisiblecopyTheHostAdaptsThe =>
-      'The host adapts the format to the group and venue.';
 
   @override
   String get eventsEventDetailDesignPrimitivesVisiblecopyPace => 'Pace';

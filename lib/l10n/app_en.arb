@@ -13617,37 +13617,6 @@
     "x-owner": "product",
     "x-surface": "events.presentation.widgets.event_detail_design_primitives"
   },
-  "eventsEventDetailDesignPrimitivesTitleGatherAtLocationname": "Gather at {locationName}",
-  "@eventsEventDetailDesignPrimitivesTitleGatherAtLocationname": {
-    "description": "Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (title).",
-    "placeholders": {
-      "locationName": {}
-    },
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "events.presentation.widgets.event_detail_design_primitives"
-  },
-  "eventsEventDetailDesignPrimitivesDetailQuickHellosHostCheck": "Quick hellos, host check-in, and the plan for the group.",
-  "@eventsEventDetailDesignPrimitivesDetailQuickHellosHostCheck": {
-    "description": "Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (detail).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "events.presentation.widgets.event_detail_design_primitives"
-  },
-  "eventsEventDetailDesignPrimitivesTitleWrapUp": "Wrap up",
-  "@eventsEventDetailDesignPrimitivesTitleWrapUp": {
-    "description": "Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (title).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "events.presentation.widgets.event_detail_design_primitives"
-  },
-  "eventsEventDetailDesignPrimitivesDetailAttendeesCanLingerNaturally": "Attendees can linger naturally; private follow-up unlocks after.",
-  "@eventsEventDetailDesignPrimitivesDetailAttendeesCanLingerNaturally": {
-    "description": "Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (detail).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "events.presentation.widgets.event_detail_design_primitives"
-  },
   "eventsEventDetailDesignPrimitivesTitleIfItFillsA": "If it fills, a waitlist",
   "@eventsEventDetailDesignPrimitivesTitleIfItFillsA": {
     "description": "Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (title).",
@@ -13706,59 +13675,6 @@
   },
   "eventsEventDetailDesignPrimitivesVisiblecopyTheHostShapesThe": "The host shapes the format around the room and venue.",
   "@eventsEventDetailDesignPrimitivesVisiblecopyTheHostShapesThe": {
-    "description": "Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "events.presentation.widgets.event_detail_design_primitives"
-  },
-  "eventsEventDetailDesignPrimitivesVisiblecopyDistancekmAtATolowercase": "{distanceKm} at a {toLowerCase} pace, with host-led regroup points.",
-  "@eventsEventDetailDesignPrimitivesVisiblecopyDistancekmAtATolowercase": {
-    "description": "Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).",
-    "placeholders": {
-      "distanceKm": {},
-      "toLowerCase": {}
-    },
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "events.presentation.widgets.event_detail_design_primitives"
-  },
-  "eventsEventDetailDesignPrimitivesVisiblecopyPairedOrCourtBased": "Paired or court-based rotations keep the activity moving and social.",
-  "@eventsEventDetailDesignPrimitivesVisiblecopyPairedOrCourtBased": {
-    "description": "Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "events.presentation.widgets.event_detail_design_primitives"
-  },
-  "eventsEventDetailDesignPrimitivesVisiblecopyHostLedTeamsAnd": "Host-led teams and rotations create a clear rhythm for the group.",
-  "@eventsEventDetailDesignPrimitivesVisiblecopyHostLedTeamsAnd": {
-    "description": "Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "events.presentation.widgets.event_detail_design_primitives"
-  },
-  "eventsEventDetailDesignPrimitivesVisiblecopyATableLedFormat": "A table-led format with built-in prompts and host cues.",
-  "@eventsEventDetailDesignPrimitivesVisiblecopyATableLedFormat": {
-    "description": "Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "events.presentation.widgets.event_detail_design_primitives"
-  },
-  "eventsEventDetailDesignPrimitivesVisiblecopyALooserMixerWith": "A looser mixer with host nudges when the room needs direction.",
-  "@eventsEventDetailDesignPrimitivesVisiblecopyALooserMixerWith": {
-    "description": "Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "events.presentation.widgets.event_detail_design_primitives"
-  },
-  "eventsEventDetailDesignPrimitivesVisiblecopyAHostLedActivity": "A host-led activity with clear arrival, activity, and follow-up moments.",
-  "@eventsEventDetailDesignPrimitivesVisiblecopyAHostLedActivity": {
-    "description": "Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "events.presentation.widgets.event_detail_design_primitives"
-  },
-  "eventsEventDetailDesignPrimitivesVisiblecopyTheHostAdaptsThe": "The host adapts the format to the group and venue.",
-  "@eventsEventDetailDesignPrimitivesVisiblecopyTheHostAdaptsThe": {
     "description": "Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",

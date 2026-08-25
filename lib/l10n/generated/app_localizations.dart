@@ -11758,32 +11758,6 @@ abstract class AppLocalizations {
   /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'Gather at {locationName}'**
-  String eventsEventDetailDesignPrimitivesTitleGatherAtLocationname({
-    required Object locationName,
-  });
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (detail).
-  ///
-  /// In en, this message translates to:
-  /// **'Quick hellos, host check-in, and the plan for the group.'**
-  String get eventsEventDetailDesignPrimitivesDetailQuickHellosHostCheck;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Wrap up'**
-  String get eventsEventDetailDesignPrimitivesTitleWrapUp;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (detail).
-  ///
-  /// In en, this message translates to:
-  /// **'Attendees can linger naturally; private follow-up unlocks after.'**
-  String get eventsEventDetailDesignPrimitivesDetailAttendeesCanLingerNaturally;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (title).
-  ///
-  /// In en, this message translates to:
   /// **'If it fills, a waitlist'**
   String get eventsEventDetailDesignPrimitivesTitleIfItFillsA;
 
@@ -11836,51 +11810,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The host shapes the format around the room and venue.'**
   String get eventsEventDetailDesignPrimitivesVisiblecopyTheHostShapesThe;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'{distanceKm} at a {toLowerCase} pace, with host-led regroup points.'**
-  String eventsEventDetailDesignPrimitivesVisiblecopyDistancekmAtATolowercase({
-    required Object distanceKm,
-    required Object toLowerCase,
-  });
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Paired or court-based rotations keep the activity moving and social.'**
-  String get eventsEventDetailDesignPrimitivesVisiblecopyPairedOrCourtBased;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Host-led teams and rotations create a clear rhythm for the group.'**
-  String get eventsEventDetailDesignPrimitivesVisiblecopyHostLedTeamsAnd;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'A table-led format with built-in prompts and host cues.'**
-  String get eventsEventDetailDesignPrimitivesVisiblecopyATableLedFormat;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'A looser mixer with host nudges when the room needs direction.'**
-  String get eventsEventDetailDesignPrimitivesVisiblecopyALooserMixerWith;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'A host-led activity with clear arrival, activity, and follow-up moments.'**
-  String get eventsEventDetailDesignPrimitivesVisiblecopyAHostLedActivity;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'The host adapts the format to the group and venue.'**
-  String get eventsEventDetailDesignPrimitivesVisiblecopyTheHostAdaptsThe;
 
   /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).
   ///
