@@ -127,6 +127,7 @@ void main() {
         final createdEvent = fakeEventRepository.createdEvent;
         expect(createdEvent, isNotNull);
         expect(createdEvent!.id, 'generated-7');
+        expect(createdEvent.name, 'Test event');
         expect(fakeImageUploadRepository.uploadedEventId, 'generated-7');
         expect(fakeImageUploadRepository.uploadedPosition, 0);
         expect(fakeImageUploadRepository.uploadedImage, photo);
